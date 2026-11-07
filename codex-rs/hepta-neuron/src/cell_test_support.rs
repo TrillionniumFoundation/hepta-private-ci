@@ -284,4 +284,3 @@ impl CellInferenceReadbackPortV1 for RecordedControl {
         Ok(self.receipt.clone())
     }
 }
-

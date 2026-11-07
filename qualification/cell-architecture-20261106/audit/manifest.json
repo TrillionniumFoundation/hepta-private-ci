@@ -1,0 +1,978 @@
+{
+  "schema": "hepta.cell-architecture.local-caller-audit.v1",
+  "latest_recorded_iteration": "r4",
+  "qualification_status": "LOCAL_SOURCE_AUDIT_PASS: r4 typed 56/56, B4 69/69, 171 boundaries / 5315 Rust files; frozen pre-native-format source only, not final product qualification",
+  "authority_granted": false,
+  "source_capture": {
+    "artifact": "src-r3.json.gz",
+    "captured_at_utc": "2026-11-07T01:19:19.191613+00:00",
+    "local_git_head": "a6f3aa12ba187448c35449c7da0a9798ae4ca987",
+    "index_tree_git_sha1": "8cbb206f47db9c841dd5a2e03c35aa9fb12e59ab",
+    "codex_rs_tree_git_sha1": "d31e8d30825164a81ea7320796b9f6d61ed09d77",
+    "matching_rust_publication_commit": "73414467c27bf238757c733e9b5035746c77e14c",
+    "later_python_publication_commit_not_tested_as_whole": "b4afdbadc247c6fadfad4e416c00a9a853affa1c",
+    "notes": [
+      "The local HEAD was the checkout base, not the tested worktree identity.",
+      "The Rust tree was verified after r3 and before the later 86-file native formatting change.",
+      "The r3 logs do not qualify the later formatted Rust tree or an entire later publication commit."
+    ]
+  },
+  "source_sets": {
+    "r1": {
+      "file_sha256": {
+        "scripts/hepta_typed_callers.py": "01140bd1bff8228b150727fddd7117e6fa88f7f587ccd084ca1d4136579e2d82",
+        "scripts/test_hepta_typed_callers.py": "9c96232cead36cdaf59a63b49c6a3bf6d92cd5d7143973f59dc22484eb7c85f7",
+        "CALLERS.toml": "6b92300c509ae28bb12c2dc3485b14b40e67fdf75ab15ca06389b62780fc82a0",
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc"
+      },
+      "binding_basis": "post-run hashes from the preserved pre-fix copy",
+      "codex_rs_tree_git_sha1": null
+    },
+    "r2": {
+      "file_sha256": {
+        "scripts/hepta_typed_callers.py": "d604b1e9b9390b90aa64b525e317dead15f19791d0317063329daad6660627c4",
+        "scripts/test_hepta_typed_callers.py": "9a73faf7a5934efd868b9b2951e48deafebe9697a3bf573e71dd5ee951532726",
+        "CALLERS.toml": "715df436da33503674ca02453360d1f03e2d919c2fd8d9e059eca9efd90be0ee",
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc"
+      },
+      "binding_basis": "post-run hashes from the unchanged staged r2 sources",
+      "codex_rs_tree_git_sha1": null
+    },
+    "r3": {
+      "file_sha256": {
+        "scripts/hepta_typed_callers.py": "8fffa0b5e70ebcc7c23b508c2e66a2ff047defce84fd313fa03d3cf8f3676f41",
+        "scripts/test_hepta_typed_callers.py": "0b03d4f2fb2d6b21592439b7485a369e10ee192ba94ae216e2a7de0bc6328682",
+        "CALLERS.toml": "715df436da33503674ca02453360d1f03e2d919c2fd8d9e059eca9efd90be0ee",
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc"
+      },
+      "binding_basis": "exact worktree hashes captured before native formatting; unchanged staged Rust verified after the run",
+      "codex_rs_tree_git_sha1": "d31e8d30825164a81ea7320796b9f6d61ed09d77"
+    },
+    "r4-a": {
+      "file_sha256": {
+        "scripts/hepta_typed_callers.py": "2330662b7beb594e27ded006b7eaec88e796be9a23191de8ad11b915c25ea435",
+        "scripts/test_hepta_typed_callers.py": "64ea9088e238a5179b4d3710871adc6cce55053901589abbc8321bef52f18289",
+        "CALLERS.toml": "715df436da33503674ca02453360d1f03e2d919c2fd8d9e059eca9efd90be0ee",
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc"
+      },
+      "source_capture": "src-r4-a.json.gz",
+      "binding_basis": "independent typed unit and B4 only; no full caller proof; Rust was being edited",
+      "codex_rs_tree_git_sha1": null
+    },
+    "r4-gen-neg": {
+      "file_sha256": {
+        "scripts/hepta_typed_callers.py": "2330662b7beb594e27ded006b7eaec88e796be9a23191de8ad11b915c25ea435",
+        "scripts/test_hepta_typed_callers.py": "3926238c597e488870ea8f8f3f6cdb1d6d9eb172fbca241183105c40f9288a03",
+        "CALLERS.toml": "715df436da33503674ca02453360d1f03e2d919c2fd8d9e059eca9efd90be0ee",
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc"
+      },
+      "source_capture": "src-r4-gen-neg.json.gz",
+      "binding_basis": "negative unit reproduction before generic-delimiter repair; no full caller proof; Rust was being edited",
+      "codex_rs_tree_git_sha1": null
+    },
+    "r4-b": {
+      "file_sha256": {
+        "scripts/hepta_typed_callers.py": "89a5450209137b2f47dc91463497fd4465e40506cb9d16b7e6caafa35a73256b",
+        "scripts/test_hepta_typed_callers.py": "3926238c597e488870ea8f8f3f6cdb1d6d9eb172fbca241183105c40f9288a03",
+        "CALLERS.toml": "715df436da33503674ca02453360d1f03e2d919c2fd8d9e059eca9efd90be0ee",
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc",
+        "scripts/verify_hepta_callers.py": "9834d4abfdff8471d6e3acb8f7b373e8d8e9d8eb25eee81e32bb6da95f1cad8e",
+        "qa/b4-no-bypass/test_verify_hepta_callers.py": "dba4c5421ed30f7ea83d2b9c160b38a3570fc05cae7de5f68310d47062783c1d",
+        "qa/b4-no-bypass/test_kernel_authority_closed_world.py": "5ea3ab6a21f48e90f414d7e7865d1ec77008c1006b4262a4ea489cca096f035a",
+        "qa/b4-no-bypass/test_root_admin_source_closure.py": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e"
+      },
+      "source_capture": "src-r4-b.json.gz",
+      "binding_basis": "independent typed unit 45/45 and B4 69/69 only; no full caller proof; Rust was being edited",
+      "codex_rs_tree_git_sha1": null
+    },
+    "r4-pat-neg": {
+      "file_sha256": {
+        "scripts/hepta_typed_callers.py": "89a5450209137b2f47dc91463497fd4465e40506cb9d16b7e6caafa35a73256b",
+        "scripts/test_hepta_typed_callers.py": "fbdacf497a397bcc42f65e2e89e8d5eaa7bbb0c44ceccebee53c4b45600dec76",
+        "CALLERS.toml": "715df436da33503674ca02453360d1f03e2d919c2fd8d9e059eca9efd90be0ee",
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc"
+      },
+      "source_capture": "src-r4-pat-neg.json.gz",
+      "binding_basis": "typed unit and/or independent B4 only; no full caller proof",
+      "codex_rs_tree_git_sha1": null
+    },
+    "r4-c": {
+      "file_sha256": {
+        "scripts/hepta_typed_callers.py": "43485a965399daf92c78464c49611741082a763233f34d4d1ae7d51e3617acdc",
+        "scripts/test_hepta_typed_callers.py": "fbdacf497a397bcc42f65e2e89e8d5eaa7bbb0c44ceccebee53c4b45600dec76",
+        "CALLERS.toml": "715df436da33503674ca02453360d1f03e2d919c2fd8d9e059eca9efd90be0ee",
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc"
+      },
+      "source_capture": "src-r4-c.json.gz",
+      "binding_basis": "typed unit and/or independent B4 only; no full caller proof",
+      "codex_rs_tree_git_sha1": null
+    },
+    "r4-guard-neg": {
+      "file_sha256": {
+        "scripts/hepta_typed_callers.py": "43485a965399daf92c78464c49611741082a763233f34d4d1ae7d51e3617acdc",
+        "scripts/test_hepta_typed_callers.py": "6730902f8638b1fce89332555d59acbd20071a78d441ffb4989acb93eacf532a",
+        "CALLERS.toml": "715df436da33503674ca02453360d1f03e2d919c2fd8d9e059eca9efd90be0ee",
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc"
+      },
+      "source_capture": "src-r4-guard-neg.json.gz",
+      "binding_basis": "negative unit reproduction only; no full caller proof",
+      "codex_rs_tree_git_sha1": null
+    },
+    "r4-d": {
+      "file_sha256": {
+        "scripts/hepta_typed_callers.py": "91663c2b54d3e3db147356a41ba225ad433d4167bcc7197964473044c74e2875",
+        "scripts/test_hepta_typed_callers.py": "6730902f8638b1fce89332555d59acbd20071a78d441ffb4989acb93eacf532a",
+        "CALLERS.toml": "715df436da33503674ca02453360d1f03e2d919c2fd8d9e059eca9efd90be0ee",
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc"
+      },
+      "source_capture": "src-r4-d.json.gz",
+      "binding_basis": "typed unit 55/55 and independent B4 only; no full caller proof",
+      "codex_rs_tree_git_sha1": null
+    },
+    "r4-struct-neg": {
+      "file_sha256": {
+        "scripts/hepta_typed_callers.py": "91663c2b54d3e3db147356a41ba225ad433d4167bcc7197964473044c74e2875",
+        "scripts/test_hepta_typed_callers.py": "a2780171c547993e5f36f3bdd0631254cf3a8634499659d68e1438e07ff1a3aa",
+        "CALLERS.toml": "715df436da33503674ca02453360d1f03e2d919c2fd8d9e059eca9efd90be0ee",
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc"
+      },
+      "source_capture": "src-r4-struct-neg.json.gz",
+      "binding_basis": "negative unit reproduction only; no full caller proof",
+      "codex_rs_tree_git_sha1": null
+    },
+    "r4": {
+      "file_sha256": {
+        "scripts/hepta_typed_callers.py": "8216714b487796958ab117ff5a3ede765eb2b70308208d5adc0f544b4b9c880e",
+        "scripts/test_hepta_typed_callers.py": "a2780171c547993e5f36f3bdd0631254cf3a8634499659d68e1438e07ff1a3aa",
+        "CALLERS.toml": "715df436da33503674ca02453360d1f03e2d919c2fd8d9e059eca9efd90be0ee",
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc",
+        "scripts/verify_hepta_callers.py": "9834d4abfdff8471d6e3acb8f7b373e8d8e9d8eb25eee81e32bb6da95f1cad8e",
+        "qa/b4-no-bypass/test_verify_hepta_callers.py": "dba4c5421ed30f7ea83d2b9c160b38a3570fc05cae7de5f68310d47062783c1d",
+        "qa/b4-no-bypass/test_kernel_authority_closed_world.py": "5ea3ab6a21f48e90f414d7e7865d1ec77008c1006b4262a4ea489cca096f035a",
+        "qa/b4-no-bypass/test_root_admin_source_closure.py": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e"
+      },
+      "source_capture": "src-r4.json.gz",
+      "binding_basis": "Exact Python hashes and independently verified frozen Rust before full proof",
+      "codex_rs_tree_git_sha1": "412371f6259acdffae1392ef92b431c2c6accc75"
+    }
+  },
+  "runs": [
+    {
+      "id": "typed-r1",
+      "source_set": "r1",
+      "status": "PASS",
+      "tests_run": 20,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "tc-r1.log.gz",
+      "exit_code_basis": "original launcher receipt",
+      "launcher": "tc-r1.run.json.gz"
+    },
+    {
+      "id": "b4-r1",
+      "source_set": "r1",
+      "status": "FAIL",
+      "tests_run": 69,
+      "failures": 1,
+      "exit_code": 1,
+      "artifact": "b4-r1.log.gz",
+      "exit_code_basis": "original launcher receipt",
+      "launcher": "b4-r1.run.json.gz"
+    },
+    {
+      "id": "caller-r1",
+      "source_set": "r1",
+      "status": "FAIL_HEPTA_CALLER_PROOF",
+      "exit_code": 1,
+      "artifact": "cp-r1.log.gz",
+      "launcher": "cp-r1.run.json.gz",
+      "failure": "authority_lease_dispatch_raw unexpected original split-owner callers: deployment_calculator.rs and deployment_notes.rs"
+    },
+    {
+      "id": "typed-r2",
+      "source_set": "r2",
+      "status": "PASS",
+      "tests_run": 26,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "tc-r2.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; no standalone launcher receipt was retained"
+    },
+    {
+      "id": "b4-r2",
+      "source_set": "r2",
+      "status": "PASS",
+      "tests_run": 69,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "b4-r2.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; no standalone launcher receipt was retained"
+    },
+    {
+      "id": "caller-r2",
+      "source_set": "r2",
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "exit_code": 0,
+      "artifact": "cp-ok.json.gz",
+      "rust_files_scanned": 5309,
+      "boundaries": 171,
+      "authority_granted": false
+    },
+    {
+      "id": "typed-r3",
+      "source_set": "r3",
+      "status": "PASS",
+      "tests_run": 30,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "tc-r3.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; no standalone launcher receipt was retained"
+    },
+    {
+      "id": "b4-r3",
+      "source_set": "r3",
+      "status": "PASS",
+      "tests_run": 69,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "b4-r3.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; no standalone launcher receipt was retained"
+    },
+    {
+      "id": "caller-r3",
+      "source_set": "r3",
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "exit_code": 0,
+      "artifact": "cp-ok.json.gz",
+      "rust_files_scanned": 5309,
+      "boundaries": 171,
+      "authority_granted": false
+    },
+    {
+      "id": "typed-r4-a",
+      "source_set": "r4-a",
+      "status": "PASS",
+      "tests_run": 43,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "tc-r4-a.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "b4-r4-a",
+      "source_set": "r4-a",
+      "status": "PASS",
+      "tests_run": 69,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "b4-r4-a.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "typed-r4-gen-neg",
+      "source_set": "r4-gen-neg",
+      "status": "FAIL",
+      "tests_run": 45,
+      "failures": 3,
+      "exit_code": 1,
+      "artifact": "tc-r4-gen-neg.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "typed-r4-b",
+      "source_set": "r4-b",
+      "status": "PASS",
+      "tests_run": 45,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "tc-r4-b.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "b4-r4-b",
+      "source_set": "r4-b",
+      "status": "PASS",
+      "tests_run": 69,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "b4-r4-b.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "typed-r4-pat-neg",
+      "source_set": "r4-pat-neg",
+      "status": "FAIL",
+      "tests_run": 54,
+      "failures": 14,
+      "exit_code": 1,
+      "artifact": "tc-r4-pat-neg.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "typed-r4-c",
+      "source_set": "r4-c",
+      "status": "PASS",
+      "tests_run": 54,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "tc-r4-c.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "b4-r4-c",
+      "source_set": "r4-c",
+      "status": "PASS",
+      "tests_run": 69,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "b4-r4-c.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "typed-r4-guard-neg",
+      "source_set": "r4-guard-neg",
+      "status": "FAIL",
+      "tests_run": 55,
+      "failures": 1,
+      "exit_code": 1,
+      "artifact": "tc-r4-guard-neg.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "typed-r4-d",
+      "source_set": "r4-d",
+      "status": "PASS",
+      "tests_run": 55,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "tc-r4-d.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "b4-r4-d",
+      "source_set": "r4-d",
+      "status": "PASS",
+      "tests_run": 69,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "b4-r4-d.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "typed-r4-struct-neg",
+      "source_set": "r4-struct-neg",
+      "status": "FAIL",
+      "tests_run": 56,
+      "failures": 5,
+      "exit_code": 1,
+      "artifact": "tc-r4-struct-neg.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "typed-r4",
+      "source_set": "r4",
+      "status": "PASS",
+      "tests_run": 56,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "tc-r4.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "b4-r4",
+      "source_set": "r4",
+      "status": "PASS",
+      "tests_run": 69,
+      "failures": 0,
+      "exit_code": 0,
+      "artifact": "b4-r4.log.gz",
+      "exit_code_basis": "observed exec_command/write_stdin completion; raw unittest summary retained"
+    },
+    {
+      "id": "caller-r4",
+      "source_set": "r4",
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "exit_code": 0,
+      "artifact": "cp-r4.json.gz",
+      "launcher": "cp-r4.run.json.gz",
+      "rust_files_scanned": 5315,
+      "boundaries": 171,
+      "authority_granted": false,
+      "duration_seconds": 330.9047463099996,
+      "source_before": "src-r4.json.gz",
+      "source_after": "src-r4-post.json.gz"
+    }
+  ],
+  "commands": {
+    "typed-r2-r3": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_hepta_typed_callers.py",
+      "-v"
+    ],
+    "b4-r2-r3": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "caller-r2-r3": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "python3",
+      "scripts/verify_hepta_callers.py"
+    ],
+    "typed-r4": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_hepta_typed_callers.py",
+      "-v"
+    ],
+    "b4-r4": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "caller-r4": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "python3",
+      "scripts/verify_hepta_callers.py"
+    ]
+  },
+  "historical_cli_attempts": [
+    {
+      "status": "COMMAND_USAGE_ERROR",
+      "exit_code": 2,
+      "artifact": "cli-bad.log.gz",
+      "launcher": "cli-bad.run.json.gz",
+      "counts_toward_test_results": false
+    },
+    {
+      "status": "SELF_TEST_PASS",
+      "exit_code": 0,
+      "artifact": "cli-ok.log.gz",
+      "launcher": "cli-ok.run.json.gz",
+      "counts_toward_test_results": false
+    }
+  ],
+  "known_defects": [
+    {
+      "id": "closed-lexical-scope-shadow",
+      "found_after": "r3",
+      "status": "repaired in r4; r3 result remains historical",
+      "reproduction": "fn f(original: &Gate) { { let original: Other = Other::new(); original.other(); } original.enter(); }",
+      "observed": "has_authority_call returned false although the final receiver is the outer Gate; reverse shadow also produced a false positive",
+      "impact": "r3 green logs do not establish scanner completeness or final source qualification"
+    },
+    {
+      "id": "closure-generic-expression-delimiter",
+      "found_after": "r4-a",
+      "negative_run": "typed-r4-gen-neg",
+      "observed": "Generic argument commas ended a live closure too early; the receiver inherited the unrelated outer type",
+      "status": "repaired in r4-b; comparisons still end at their original delimiter"
+    },
+    {
+      "id": "unsupported-active-pattern-shadow",
+      "found_after": "r4-b",
+      "negative_run": "typed-r4-pat-neg",
+      "observed": "Destructured let and active conditional/for/match bindings inherited an unrelated outer type",
+      "status": "repaired in r4-c by marking unsupported pattern names unresolved, without guessing types"
+    },
+    {
+      "id": "match-guard-keyword-boundary",
+      "found_after": "r4-c",
+      "negative_run": "typed-r4-guard-neg",
+      "observed": "The suffix if in a pattern identifier was treated as a guard keyword",
+      "status": "repaired in r4-d with a whole-keyword boundary"
+    },
+    {
+      "id": "struct-pattern-mask-erases-binding",
+      "found_after": "r4-d",
+      "negative_run": "typed-r4-struct-neg",
+      "observed": "Closed-brace lifetime masking erased names within struct patterns",
+      "status": "repaired in r4 using original equal-offset pattern slices while keeping masked lexical lifetimes"
+    }
+  ],
+  "artifact_deduplication": {
+    "cp-ok.json.gz": [
+      "caller-r2",
+      "caller-r3"
+    ],
+    "rule": "Identical raw bytes stored once; run identities and outcomes remain separate, never summed."
+  },
+  "limits": [
+    "Local Python source-scanning and negative regression evidence only.",
+    "Not a Rust compile/test, model execution, independent authority-custody or production-effect qualification.",
+    "Native/CI checks must bind and rerun on the exact final formatted source; no inherited PASS.",
+    "The conservative scanner is not a complete Rust type checker; the recorded negative cases and declared closed inventory are the demonstrated scope."
+  ],
+  "artifacts": [
+    {
+      "path": "tc-r1.log.gz",
+      "original_files": [
+        "typed-callers.log"
+      ],
+      "raw_bytes": 3639,
+      "raw_sha256": "fc2e63d7ff8b893a74f64939050d4a24dfabafb48795bff61623780b477cfbf3",
+      "gzip_bytes": 678,
+      "gzip_sha256": "0e30dba8e3c7876f75a780052b4ccfe694093ec880cff6c5027b096c88c181e7"
+    },
+    {
+      "path": "tc-r1.run.json.gz",
+      "original_files": [
+        "typed-callers.json"
+      ],
+      "raw_bytes": 366,
+      "raw_sha256": "0e70080924a19c887d2b368cdd34de70a614a225a09d806acfece5d11e9c8faa",
+      "gzip_bytes": 255,
+      "gzip_sha256": "46dc65053ac7387d8f7dadcab1bd87992a0675227d72b0bfd508557cefb938d6"
+    },
+    {
+      "path": "b4-r1.log.gz",
+      "original_files": [
+        "b4.log"
+      ],
+      "raw_bytes": 15062,
+      "raw_sha256": "5225eb03ae04f533d7577d72da32b936e7d25fb1c812f441e4be9f11efd40d0b",
+      "gzip_bytes": 2668,
+      "gzip_sha256": "fff1cf75db6b28d795d55ef5b58bea6eac08b80dca39dda5ef4a0314118e39bd"
+    },
+    {
+      "path": "b4-r1.run.json.gz",
+      "original_files": [
+        "b4.json"
+      ],
+      "raw_bytes": 329,
+      "raw_sha256": "93b378df2df7218277e2763b33f3c0afdc9c89bfc3953a490fce5471496e6274",
+      "gzip_bytes": 240,
+      "gzip_sha256": "efe75ad8da9d37ed9cfb56a69086fd74dab0b4e1bfad43948e1f7e4251df1bff"
+    },
+    {
+      "path": "cp-r1.log.gz",
+      "original_files": [
+        "caller-proof.log"
+      ],
+      "raw_bytes": 203,
+      "raw_sha256": "1a697f3e63371c7edd2708ee599ac433d5312eba0785c6de5909145e167856c0",
+      "gzip_bytes": 166,
+      "gzip_sha256": "0f88cb733617a873d9663c2d1936331c706dd56945f9f02e471e65581564c101"
+    },
+    {
+      "path": "cp-r1.run.json.gz",
+      "original_files": [
+        "caller-proof.json"
+      ],
+      "raw_bytes": 297,
+      "raw_sha256": "f30a0e91fb3bf70d5f0cb6f6c43205d3658959e5590f9e6f971df613e0453185",
+      "gzip_bytes": 230,
+      "gzip_sha256": "7376017aec11dd4f40d86c0c2b9b96ce4a4fd0984254bbb2464995f478dab4d8"
+    },
+    {
+      "path": "cli-bad.log.gz",
+      "original_files": [
+        "caller-self-test.log"
+      ],
+      "raw_bytes": 192,
+      "raw_sha256": "0211e2eb2cda4f4b267cea3f4ab12d32c2698c65d430445b17c6df47add5d924",
+      "gzip_bytes": 146,
+      "gzip_sha256": "083fda40552747f455d5bf8c270afad20136efc7629d5c06996b2eb75d5d8b13"
+    },
+    {
+      "path": "cli-bad.run.json.gz",
+      "original_files": [
+        "caller-self-test.json"
+      ],
+      "raw_bytes": 303,
+      "raw_sha256": "9a8e2d9e8768afd9eed8480b2e0d7a59deb45d44627ed3c985a38cffec48890f",
+      "gzip_bytes": 237,
+      "gzip_sha256": "1427cac665e3727ca4ed76d5b056a4283697ac188c1b13785dd886213c9fb1d1"
+    },
+    {
+      "path": "cli-ok.log.gz",
+      "original_files": [
+        "caller-self-test-corrected.log"
+      ],
+      "raw_bytes": 48,
+      "raw_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "gzip_bytes": 68,
+      "gzip_sha256": "8f11b8600506b2be436a43dd84aa7236ff909d34479f49bca268c112b8f58773"
+    },
+    {
+      "path": "cli-ok.run.json.gz",
+      "original_files": [
+        "caller-self-test-corrected.json"
+      ],
+      "raw_bytes": 300,
+      "raw_sha256": "1c21427f881f3156f50b3627c9c720ff7ab64c57c0e11104277b28939cd38a67",
+      "gzip_bytes": 234,
+      "gzip_sha256": "442eda47a9f746d0c5116e0bccaac052fb53a3413264b2d4d6475aa8a9b314b3"
+    },
+    {
+      "path": "tc-r2.log.gz",
+      "original_files": [
+        "typed-callers-r2.log"
+      ],
+      "raw_bytes": 4799,
+      "raw_sha256": "2cf8c55e75a20e29f043661836d77686e689198a418626833679ce2df4204bc8",
+      "gzip_bytes": 860,
+      "gzip_sha256": "f6651e5683d18d6bfdb6c41a6a4a1e3d0a2eac974d627f25caac7e6f56018cf4"
+    },
+    {
+      "path": "b4-r2.log.gz",
+      "original_files": [
+        "b4-r2.log"
+      ],
+      "raw_bytes": 12239,
+      "raw_sha256": "610c5f5aaaa43cb8c3ea9e1c48d4d21092d7bc9c21a2628413db503a92227c4a",
+      "gzip_bytes": 2037,
+      "gzip_sha256": "0f24b7f8dbc4c0d139720b7aaf313c9d7fd1523ceb029cb4075b586fd47aa09a"
+    },
+    {
+      "path": "tc-r3.log.gz",
+      "original_files": [
+        "typed-callers-r3.log"
+      ],
+      "raw_bytes": 5551,
+      "raw_sha256": "0e1ba3d9ccefeab20e8a56805a5d09fb5151dc73bca7672b2dff5e55849900a5",
+      "gzip_bytes": 937,
+      "gzip_sha256": "154d4d2e9128e8a9b9d36f7d0754a7d144e756ad1cdb015bb86d8adea2358f96"
+    },
+    {
+      "path": "b4-r3.log.gz",
+      "original_files": [
+        "b4-r3.log"
+      ],
+      "raw_bytes": 12239,
+      "raw_sha256": "8112f25f9f4ef5e05ba9d5dd756300cc39c977805cd8a01c5d07d7759668e805",
+      "gzip_bytes": 2037,
+      "gzip_sha256": "aa9d7c98dd62012aee9ba53471e35145044a7a38c8c07f588d574aaf1cad55be"
+    },
+    {
+      "path": "cp-ok.json.gz",
+      "original_files": [
+        "caller-proof-r2.log",
+        "caller-proof-r3.log"
+      ],
+      "raw_bytes": 79750,
+      "raw_sha256": "cbb5ecbb1720d58023fa51df1878bca88bbc39b331c26c63bcd153bf7928bd3d",
+      "gzip_bytes": 7745,
+      "gzip_sha256": "eaa12fb2c2dead29e706ddf2c508e450c39429394621a5656df2e994bc5ba2e1"
+    },
+    {
+      "path": "src-r3.json.gz",
+      "original_files": [
+        "audit-source-binding.json"
+      ],
+      "raw_bytes": 4640,
+      "raw_sha256": "b1687d621b65fcddb0463cbc6eb8315de695460f281d73c25ef699fc1e69bed4",
+      "gzip_bytes": 1366,
+      "gzip_sha256": "1b5493f758b38d05084f0bb0511495324d1e054a3fcde87f7c855ba92d9340a5"
+    },
+    {
+      "path": "src-r4-a.json.gz",
+      "original_files": [
+        "r4-first-source.json"
+      ],
+      "raw_bytes": 580,
+      "raw_sha256": "47bf0158ece1ceaa4aaff20bc07eb20491b83ea99b27268a18fb546be5004c32",
+      "gzip_bytes": 417,
+      "gzip_sha256": "280478c064c7691c6f55750b8e946d79c6dbc7bb6147d468e510c97f95882053"
+    },
+    {
+      "path": "tc-r4-a.log.gz",
+      "original_files": [
+        "typed-callers-r4-first.log"
+      ],
+      "raw_bytes": 7865,
+      "raw_sha256": "f512866387ea76aa369ba520fa1c0290a4bf0d1c30b5aec5bf66e2f2dea7ab46",
+      "gzip_bytes": 1218,
+      "gzip_sha256": "3479628c42680bcfb4cb2598d04d3d0e3e2cb539550d40bfeaaf2c932681b332"
+    },
+    {
+      "path": "b4-r4-a.log.gz",
+      "original_files": [
+        "b4-r4-first.log"
+      ],
+      "raw_bytes": 12239,
+      "raw_sha256": "953dea23a1d57c790d0743940647c6c31ebae9bea5f238fbe190e5ba5acf8c3f",
+      "gzip_bytes": 2037,
+      "gzip_sha256": "b412e4d7179fab96bbacce10acfe53f5af1f076e49ccff52c670b3ae6daf9661"
+    },
+    {
+      "path": "src-r4-gen-neg.json.gz",
+      "original_files": [
+        "r4-generic-failure-source.json"
+      ],
+      "raw_bytes": 624,
+      "raw_sha256": "1e05235c05eb3d2780ee6a66264d61e622842e470a884f55bcc10bed59f7962b",
+      "gzip_bytes": 440,
+      "gzip_sha256": "c8e154c1b81f0503c4fe35124d115527bc5aaf654af1171044c5b9be7f2b32ab"
+    },
+    {
+      "path": "tc-r4-gen-neg.log.gz",
+      "original_files": [
+        "typed-callers-r4-generic-failure.log"
+      ],
+      "raw_bytes": 10906,
+      "raw_sha256": "3dff0e47d2b7a1d823ef49e5062c85acc983e2f991c51afaf206cdd96f59dda4",
+      "gzip_bytes": 1535,
+      "gzip_sha256": "0d033578f5a03570061e9b529a6d01f8b4c1e9bf75244e279941bba9b48b90db"
+    },
+    {
+      "path": "src-r4-b.json.gz",
+      "original_files": [
+        "r4-scope-source.json"
+      ],
+      "raw_bytes": 1149,
+      "raw_sha256": "bb775ad6a707502e071e64f3c63ef69190b277f63fe37caba3ca3bcfbebc1fcb",
+      "gzip_bytes": 701,
+      "gzip_sha256": "775f2c9312ebc184c5f59de1becb4ebb5d2229206ad75fd87a17b3359b04e84d"
+    },
+    {
+      "path": "tc-r4-b.log.gz",
+      "original_files": [
+        "typed-callers-r4.log"
+      ],
+      "raw_bytes": 8221,
+      "raw_sha256": "6c4dfbe58eda79cb0ee59dc96b1d3418837ba0c12e5e00468deb2147e85b486d",
+      "gzip_bytes": 1261,
+      "gzip_sha256": "209b8cb8454d31e918b0182b8783e1f569d30610419ab5a9b2ea086ee0926257"
+    },
+    {
+      "path": "b4-r4-b.log.gz",
+      "original_files": [
+        "b4-r4.log"
+      ],
+      "raw_bytes": 12239,
+      "raw_sha256": "878d56b07b561056de319dde77dc8f63947f901b3a6be2f27d4192f049a369bd",
+      "gzip_bytes": 2036,
+      "gzip_sha256": "4a5fa702b6daf53775ed4f14f0f0fa453e969a6685671ef0c1b5053c302ba9be"
+    },
+    {
+      "path": "src-r4-pat-neg.json.gz",
+      "original_files": [
+        "r4-pattern-failure-source.json"
+      ],
+      "raw_bytes": 568,
+      "raw_sha256": "7fee5bc396cf54099bbd8098b7ea051b91ab13a394ac5d940068aa42501ba60e",
+      "gzip_bytes": 407,
+      "gzip_sha256": "0bed28f23fd61d9640959c94d7eaaa7724f8e5c823fe7a80e0c6a6bfbb06e845"
+    },
+    {
+      "path": "tc-r4-pat-neg.log.gz",
+      "original_files": [
+        "typed-callers-r4-pattern-failure.log"
+      ],
+      "raw_bytes": 23162,
+      "raw_sha256": "b2d267f09de7bc33ff464b3ce202af52109e9c281eadf5998ad1470b30e0e093",
+      "gzip_bytes": 1965,
+      "gzip_sha256": "fefce49567ad94403638509a43fed31ef5581b65c560fce1a14da066d039a0ee"
+    },
+    {
+      "path": "src-r4-c.json.gz",
+      "original_files": [
+        "r4-pattern-attempt-source.json"
+      ],
+      "raw_bytes": 568,
+      "raw_sha256": "94fdde3b00d63c69f33077cbc3492f62f2317e300082e7c21b80e4e43ed47b28",
+      "gzip_bytes": 409,
+      "gzip_sha256": "bac36872ba64c8fe230eeac587b22ea260edc8ffe6a869d5af0bd581b80f07d7"
+    },
+    {
+      "path": "tc-r4-c.log.gz",
+      "original_files": [
+        "typed-callers-r4-pattern-attempt.log"
+      ],
+      "raw_bytes": 9783,
+      "raw_sha256": "973f33ea1c6d49defe026c5f3e125512b302adda37d542911f8ba4157a458db9",
+      "gzip_bytes": 1409,
+      "gzip_sha256": "b7af4225c3ca0306b0023ab6e9a13971ac77404052eb45bdf232fe69d41dc6c5"
+    },
+    {
+      "path": "b4-r4-c.log.gz",
+      "original_files": [
+        "b4-r4-pattern-attempt.log"
+      ],
+      "raw_bytes": 12239,
+      "raw_sha256": "962dee9c8531f6f3a3eb8a0cbbf4436a30affca0b306ee74e5b77eac98129114",
+      "gzip_bytes": 2036,
+      "gzip_sha256": "19b626a033e82afd3bdae046977eb86bba9869391016d79f4cdee70a169fd0ea"
+    },
+    {
+      "path": "src-r4-guard-neg.json.gz",
+      "original_files": [
+        "r4-guard-failure-source.json"
+      ],
+      "raw_bytes": 566,
+      "raw_sha256": "b58468c6700f1ea3d0fb6085795917739eba8d19a3d99346f1655f32684dc559",
+      "gzip_bytes": 408,
+      "gzip_sha256": "e0fef081947701e4e36d50b15434c2769ccfa936c08da23831b3d98cefd46088"
+    },
+    {
+      "path": "tc-r4-guard-neg.log.gz",
+      "original_files": [
+        "typed-callers-r4-guard-failure.log"
+      ],
+      "raw_bytes": 10678,
+      "raw_sha256": "6865c3268293b81750058e74c3ac57243b3ecb947e6284b2036d5a08e2d06310",
+      "gzip_bytes": 1637,
+      "gzip_sha256": "9da310d201143a4d2e7448e90386d2323689f8258f25a1a450dc2c5d76c031f6"
+    },
+    {
+      "path": "src-r4-d.json.gz",
+      "original_files": [
+        "r4-pattern-guard-source.json"
+      ],
+      "raw_bytes": 576,
+      "raw_sha256": "338ed31b147b27c59b1f71f0a2069fbbc1afa936fc261ba575402d6950e217f6",
+      "gzip_bytes": 415,
+      "gzip_sha256": "0c3ea9d2a994e6e5066002c460a3b6af0733bee7dcd357a1437bcb92a8b1e5c1"
+    },
+    {
+      "path": "tc-r4-d.log.gz",
+      "original_files": [
+        "typed-callers-r4-final.log"
+      ],
+      "raw_bytes": 9971,
+      "raw_sha256": "e43de9e30e1377eacd10ed46a419e2341f97daee67807e8a8951843bedd90cdd",
+      "gzip_bytes": 1449,
+      "gzip_sha256": "deb611c355d98e5e61e0c520f2df820a33bd807a2a9ba1b8fc6453bfb75951d9"
+    },
+    {
+      "path": "b4-r4-d.log.gz",
+      "original_files": [
+        "b4-r4-final.log"
+      ],
+      "raw_bytes": 12239,
+      "raw_sha256": "70c68719fafa3c099a167edd239a1176ab0466a413973fea74c4aa7862b236b4",
+      "gzip_bytes": 2036,
+      "gzip_sha256": "597fc8357d3ef746f718faedac08a5b3c745bd83020022089170b3b8c96a8130"
+    },
+    {
+      "path": "src-r4-struct-neg.json.gz",
+      "original_files": [
+        "r4-struct-failure-source.json"
+      ],
+      "raw_bytes": 569,
+      "raw_sha256": "4979fb8cac79eb3d7989563bbbf8a2b67d982cdaa51cbc9a00fcd9f45760dc57",
+      "gzip_bytes": 411,
+      "gzip_sha256": "197b8af986afd29af4cbd1130e001bfc81007ddbf46d3b6139f22151607b6672"
+    },
+    {
+      "path": "tc-r4-struct-neg.log.gz",
+      "original_files": [
+        "typed-callers-r4-struct-failure.log"
+      ],
+      "raw_bytes": 15284,
+      "raw_sha256": "8f974f6cc0961b47f2bb4e7be9558b00bc74cadfcc1117355e660dec92d64d20",
+      "gzip_bytes": 1836,
+      "gzip_sha256": "1a04de208ccb1192bc04d61e324ebddc193bfd7392b043854c9d4390042e2972"
+    },
+    {
+      "path": "src-r4.json.gz",
+      "original_files": [
+        "r4-proof-source-before.json"
+      ],
+      "raw_bytes": 1622,
+      "raw_sha256": "3cc22ef7be7ae69f2af99ebcba4b3ffb910ba3f1c00624a9049bd1edf91aba37",
+      "gzip_bytes": 952,
+      "gzip_sha256": "861c29d238418dc9cf4c03f660b51b5836db3c6c382378effba87bccf62ce4d1"
+    },
+    {
+      "path": "tc-r4.log.gz",
+      "original_files": [
+        "typed-callers-r4-final2.log"
+      ],
+      "raw_bytes": 10139,
+      "raw_sha256": "66d8ea1b7f292a8149509fd7f94fd77684dffa2336edfcbc9b5d75a548d1e921",
+      "gzip_bytes": 1471,
+      "gzip_sha256": "0e9d9978b8c0e7058cabec3175d7d8162f2d98571c31d154955daf572061b9ed"
+    },
+    {
+      "path": "b4-r4.log.gz",
+      "original_files": [
+        "b4-r4-final2.log"
+      ],
+      "raw_bytes": 12239,
+      "raw_sha256": "398340b6eee77c6935ab36f9b5561515b3f910120e86a64cc1816f254b48232a",
+      "gzip_bytes": 2036,
+      "gzip_sha256": "05b1dd7ff1fba972d23d60a45d339ca32ca4e8c0afcc140de59a5554af02ff3d"
+    },
+    {
+      "path": "cp-r4.json.gz",
+      "original_files": [
+        "caller-proof-r4-first.log"
+      ],
+      "raw_bytes": 79750,
+      "raw_sha256": "5edfb07a78c0b91e4a972235ba216fe22e34bc46e6f1c05e36161b15e447cac7",
+      "gzip_bytes": 7745,
+      "gzip_sha256": "97f5fac10eff1baa1793b60e8de5873bcf92971483fcc843286c7355600c8a79"
+    },
+    {
+      "path": "cp-r4.run.json.gz",
+      "original_files": [
+        "caller-proof-r4-first.json"
+      ],
+      "raw_bytes": 594,
+      "raw_sha256": "ee4bb6f7dedd9d1983c6d0aaba0d1a9475837e1b9a088c8a8021e21259d4f8fe",
+      "gzip_bytes": 394,
+      "gzip_sha256": "62274702423cedffe2fd7d16faf9f4a7006dfa6a95297ac909e07548102e7176"
+    },
+    {
+      "path": "src-r4-post.json.gz",
+      "original_files": [
+        "r4-proof-source-after.json"
+      ],
+      "raw_bytes": 1560,
+      "raw_sha256": "56fb0cafa79875bc19391773e2133a9ab26d17d99d187649e48385fe1cd7b687",
+      "gzip_bytes": 895,
+      "gzip_sha256": "50e1a2c054ab1578650882b3516d221383fec1fc1937039908218f48d74f0f63"
+    }
+  ],
+  "source_capture_r4": {
+    "artifact": "src-r4.json.gz",
+    "codex_rs_tree_git_sha1": "412371f6259acdffae1392ef92b431c2c6accc75",
+    "temporary_index_tree_git_sha1": "74abcef5f45253d3a27ba9606a596156ee7f6d25",
+    "verified_entries": 9451,
+    "verified_blob_bytes": 128226182,
+    "rust_files": 5315,
+    "status": "Every frozen Rust blob and all eight audit source hashes matched both before and after the successful full proof",
+    "notes": [
+      "This is the frozen semantic repair before native formatting, not a claim on a subsequent whole commit.",
+      "All codex-rs blobs were matched against their Git object identities; no tree-external Rust files were present."
+    ],
+    "after_artifact": "src-r4-post.json.gz",
+    "proof_launcher": "cp-r4.run.json.gz",
+    "raw_receipt_sha256": "5edfb07a78c0b91e4a972235ba216fe22e34bc46e6f1c05e36161b15e447cac7"
+  }
+}

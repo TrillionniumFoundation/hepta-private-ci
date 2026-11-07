@@ -727,13 +727,17 @@ impl AgentdConfig {
     ) -> Result<Self, AgentdError> {
         bootstrap.require_identity(&self.identity)?;
         if self.learning_iteration_bootstrap.is_some() {
-            return Err(AgentdError::Invalid("learning iteration owner already configured".into()));
+            return Err(AgentdError::Invalid(
+                "learning iteration owner already configured".into(),
+            ));
         }
         self.learning_iteration_bootstrap = Some(bootstrap);
         Ok(self)
     }
 
-    pub(crate) fn take_learning_iteration_bootstrap(&mut self) -> Option<crate::LearningIterationRuntimeBootstrapV1> {
+    pub(crate) fn take_learning_iteration_bootstrap(
+        &mut self,
+    ) -> Option<crate::LearningIterationRuntimeBootstrapV1> {
         self.learning_iteration_bootstrap.take()
     }
 
@@ -745,13 +749,17 @@ impl AgentdConfig {
     ) -> Result<Self, AgentdError> {
         bootstrap.require_identity(&self.identity)?;
         if self.terminal_learning_bootstrap.is_some() {
-            return Err(AgentdError::Invalid("terminal learning owner already configured".into()));
+            return Err(AgentdError::Invalid(
+                "terminal learning owner already configured".into(),
+            ));
         }
         self.terminal_learning_bootstrap = Some(bootstrap);
         Ok(self)
     }
 
-    pub(crate) fn take_terminal_learning_bootstrap(&mut self) -> Option<crate::TerminalLearningRuntimeBootstrapV1> {
+    pub(crate) fn take_terminal_learning_bootstrap(
+        &mut self,
+    ) -> Option<crate::TerminalLearningRuntimeBootstrapV1> {
         self.terminal_learning_bootstrap.take()
     }
 

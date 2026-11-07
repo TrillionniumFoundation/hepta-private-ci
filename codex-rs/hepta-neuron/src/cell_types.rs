@@ -171,6 +171,8 @@ pub struct PreparedCellStepV1 {
     pub(crate) input: CellStepInputV1,
     pub(crate) encoded: CellEncodedInputV1,
     pub(crate) model_request: NeuronModelRequestV1,
+    pub(crate) representation:
+        Option<crate::cell_representation_dispatch::CellRepresentationPreparedV1>,
 }
 
 #[derive(Debug)]

@@ -415,6 +415,8 @@ pub use calculator_observer::AgentdCalculatorStateObserver;
 pub use circuit_cell::AgentdCircuitCellOwnerV1;
 pub use circuit_cell::CircuitCellErrorV1;
 pub use circuit_cell::CircuitCellExecutionV1;
+pub use circuit_cell::CircuitCellRepresentationResolverV1;
+pub use circuit_cell::CircuitCellRepresentationUseV1;
 pub use circuit_cell::CircuitCellTimeV1;
 pub use circuit_cell_binding::CircuitCellBindingV1;
 pub use circuit_cell_binding::CircuitCellRegistryV1;

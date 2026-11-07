@@ -6,9 +6,7 @@ impl DeploymentFinalUseIssuer {
         &self,
         registration: &HostAuthorityWriterRegistration,
         token_verifier: &AuthorityLeaseVerifier,
-        readback_or_dispatch: impl FnOnce(
-            Result<&AuthorityLease, AuthorityLeaseError>,
-        ) -> io::Result<T>,
+        readback_or_dispatch: impl FnOnce(Result<&AuthorityLease, AuthorityLeaseError>) -> io::Result<T>,
     ) -> io::Result<T> {
         registration.validate()?;
         let pinned = self

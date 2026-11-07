@@ -6,7 +6,7 @@ ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]
 rule = "Every privileged Hepta boundary has an exact closed set of product call sites. Test, example and definition-only uses do not grant production authority."
 
 [privileged_inventory]
-required_boundary_ids = ["supervisor_authorized_boot", "memory_production_writer_open", "cognitive_store_recovery_open", "cognitive_production_mutation_capability", "agentd_production_writer_host", "agentd_production_operation_runtime", "learning_artifact_owner_bootstrap", "learning_artifact_owner_restart", "learning_artifact_verified_current_view", "provider_effect_coordinator", "http_provider_effect_adapter", "final_use_open_state", "final_use_claim", "final_use_claim_raw", "final_use_delivery", "final_use_delivery_witness", "final_use_delivery_raw", "final_use_dispatch", "final_use_dispatch_witness", "final_use_dispatch_raw", "final_use_revocation_update", "final_use_approval_trust", "final_use_approval_verify", "final_use_revocation_feed_trust", "final_use_revocation_feed_apply", "final_use_revocation_convergence_trust", "final_use_revocation_convergence_verify", "bao_final_use_consumer", "bao_registered_consumer_new", "bao_final_use_host_new", "bao_registered_revocation_update", "bao_registered_final_use_host", "authority_lease_open_state", "authority_lease_put", "authority_lease_revoke", "authority_lease_prune", "authority_lease_epoch_advance", "authority_lease_verify_use", "authority_lease_delivery", "authority_lease_delivery_witness", "authority_lease_dispatch_raw", "authority_lease_dispatch_witness", "final_use_async_dispatch_fence", "automation_taskflow_provider_effect_bridge", "final_use_guarded_effect", "notes_original_pending_call_proof", "notes_original_operation_observation_proof", "notes_original_thread_prepare", "notes_original_writer_terminal_receipt", "memory_original_owner_current_publication", "memory_original_protected_current_readback", "original_authbus_human_delivery_read", "notes_original_human_turn_proof", "root_registered_human_text_writer", "root_registered_human_text_admission", "root_human_text_same_issuer_cas", "root_retained_human_text_lookup", "root_live_human_session_install", "root_original_human_text_verification", "notes_original_turn_unprepared_admission", "root_host_original_human_text_verification", "notes_original_human_text_verification", "root_prepared_fresh_session", "root_retained_native_ui_launch", "root_prepared_native_ui_execution", "root_material_capture_original_image", "root_material_verify_retained_image", "root_material_install_original_generation", "root_material_reopen_original_installation", "root_material_release_registered_custody", "root_material_fresh_registered_session", "root_material_recover_registered_session", "root_material_existing_session_open", "root_material_resume_registered_handoff", "root_material_current_observation_chain", "root_original_writer_descriptor_chain", "root_same_retained_service_serve", "root_registered_material_recovery", "root_registered_material_handoff_resume", "root_original_writer_purpose_send", "root_original_writer_purpose_receive", "agentd_original_root_writer_consume", "root_registered_writer_rotation", "native_original_operation_host_attach", "native_original_owner_current_ack", "native_original_terminal_history_observation", "root_original_authority_initialize", "root_original_writer_authorize", "root_same_registered_bootstrap_seal", "root_same_registered_bootstrap_capture", "root_original_physical_login_install", "root_original_writer_successor_shape", "root_original_issuer_writer_rotation", "root_physical_current_retired_adoption", "root_physical_recovery_retirement_admission", "root_physical_fresh_service_genesis", "root_physical_registered_checkpoint_genesis", "root_physical_current_backend_genesis", "root_registered_physical_current_observation", "root_original_two_descriptor_send", "root_original_two_descriptor_receive", "native_original_writer_terminal_observation", "native_original_writer_next_delivery_observation", "root_notes_original_startup_before", "root_notes_recovered_successor_startup_before", "root_notes_original_reserved_session_binding", "root_notes_registered_successor_policy_replace", "root_notes_original_issuer_policy_cas", "root_desktop_original_issuer_pair_policy_cas", "root_retained_native_ready_launch", "root_prepared_native_ready_execution", "root_prepared_native_ready_text_session", "root_original_bound_native_lanes", "root_original_bound_native_lane_acceptance", "root_original_ready_lane_bridge", "notes_original_retained_reference_projection", "desktop_original_retained_reference_projection", "memory_original_sender_read_only_cut", "notes_recorded_original_observation_proof", "notes_previous_recovery_typed_resolution", "root_live_admin_enable", "root_live_admin_mint", "root_live_admin_exchange", "root_live_admin_checked_dispatch", "root_live_admin_signed_artifact_verify", "root_live_admin_exact_issuer_head_revoke", "root_live_admin_fixed_notes_revoke_prepare", "root_live_admin_existing_effect_revoke", "root_live_admin_existing_signed_grant_revoke", "root_live_admin_same_service_signed_revoke", "root_live_admin_original_issue_observer_enable", "root_live_admin_original_issue_observation", "root_live_admin_original_bounded_lease_revoke", "root_live_admin_retained_artifact_observe", "root_live_admin_original_effect_state_observe", "root_live_admin_same_service_effect_state_observe", "agentd_original_registered_writer_custody", "agentd_original_recovered_writer_custody_factory", "agentd_original_root_handoff_unique_file", "calculator_previous_recovery_owner_target", "calculator_previous_recovery_host_attach", "calculator_previous_recovery_process_attach", "calculator_previous_recovery_runtime_selection", "calculator_previous_recovery_config_selection", "root_original_issuer_renewal_prepare", "root_original_issuer_renewal_commit", "root_desktop_original_startup_before", "root_desktop_recovered_successor_startup_before", "root_desktop_registered_successor_policy_replace", "desktop_previous_original_cut_selection", "desktop_previous_joint_config_selection", "memory_original_validated_target_retirement_ack", "memory_original_owner_current_readonly_receipt", "memory_original_notes_retirement_ack", "memory_original_calculator_retirement_ack", "memory_original_retirement_ack_commit", "authority_lease_exact_bounded_revoke", "root_live_admin_exact_issuer_revoke", "root_live_admin_committed_issuer_reply", "root_live_admin_exact_issuer_reply_record"]
+required_boundary_ids = ["supervisor_authorized_boot", "memory_production_writer_open", "cognitive_store_recovery_open", "cognitive_production_mutation_capability", "agentd_production_writer_host", "agentd_production_operation_runtime", "learning_artifact_owner_bootstrap", "learning_artifact_owner_restart", "learning_artifact_verified_current_view", "provider_effect_coordinator", "http_provider_effect_adapter", "final_use_open_state", "final_use_claim", "final_use_claim_raw", "final_use_delivery", "final_use_delivery_witness", "final_use_delivery_raw", "final_use_dispatch", "final_use_dispatch_witness", "final_use_dispatch_raw", "final_use_revocation_update", "final_use_approval_trust", "final_use_approval_verify", "final_use_revocation_feed_trust", "final_use_revocation_feed_apply", "final_use_revocation_convergence_trust", "final_use_revocation_convergence_verify", "bao_final_use_consumer", "bao_registered_consumer_new", "bao_final_use_host_new", "bao_registered_revocation_update", "bao_registered_final_use_host", "authority_lease_open_state", "authority_lease_put", "authority_lease_revoke", "authority_lease_prune", "authority_lease_epoch_advance", "authority_lease_verify_use", "authority_lease_delivery", "authority_lease_delivery_witness", "authority_lease_dispatch_raw", "authority_lease_dispatch_witness", "final_use_async_dispatch_fence", "automation_taskflow_provider_effect_bridge", "final_use_guarded_effect", "notes_original_pending_call_proof", "notes_original_operation_observation_proof", "notes_original_thread_prepare", "notes_original_writer_terminal_receipt", "memory_original_owner_current_publication", "memory_original_protected_current_readback", "original_authbus_human_delivery_read", "notes_original_human_turn_proof", "root_registered_human_text_writer", "root_registered_human_text_admission", "root_human_text_same_issuer_cas", "root_retained_human_text_lookup", "root_live_human_session_install", "root_original_human_text_verification", "notes_original_turn_unprepared_admission", "root_host_original_human_text_verification", "notes_original_human_text_verification", "root_prepared_fresh_session", "root_retained_native_ui_launch", "root_prepared_native_ui_execution", "root_material_capture_original_image", "root_material_verify_retained_image", "root_material_install_original_generation", "root_material_reopen_original_installation", "root_material_release_registered_custody", "root_material_fresh_registered_session", "root_material_recover_registered_session", "root_material_existing_session_open", "root_material_resume_registered_handoff", "root_material_current_observation_chain", "root_original_writer_descriptor_chain", "root_same_retained_service_serve", "root_registered_material_recovery", "root_registered_material_handoff_resume", "root_original_writer_purpose_send", "root_original_writer_purpose_receive", "agentd_original_root_writer_consume", "root_registered_writer_rotation", "native_original_operation_host_attach", "native_original_owner_current_ack", "native_original_terminal_history_observation", "root_original_authority_initialize", "root_original_writer_authorize", "root_same_registered_bootstrap_seal", "root_same_registered_bootstrap_capture", "root_original_physical_login_install", "root_original_writer_successor_shape", "root_original_issuer_writer_rotation", "root_physical_current_retired_adoption", "root_physical_recovery_retirement_admission", "root_physical_fresh_service_genesis", "root_physical_registered_checkpoint_genesis", "root_physical_current_backend_genesis", "root_registered_physical_current_observation", "root_original_two_descriptor_send", "root_original_two_descriptor_receive", "native_original_writer_terminal_observation", "native_original_writer_next_delivery_observation", "root_notes_original_startup_before", "root_notes_recovered_successor_startup_before", "root_notes_original_reserved_session_binding", "root_notes_registered_successor_policy_replace", "root_notes_original_issuer_policy_cas", "root_desktop_original_issuer_pair_policy_cas", "root_retained_native_ready_launch", "root_prepared_native_ready_execution", "root_prepared_native_ready_text_session", "root_original_bound_native_lanes", "root_original_bound_native_lane_acceptance", "root_original_ready_lane_bridge", "notes_original_retained_reference_projection", "desktop_original_retained_reference_projection", "memory_original_sender_read_only_cut", "notes_recorded_original_observation_proof", "notes_previous_recovery_typed_resolution", "root_live_admin_enable", "root_live_admin_mint", "root_live_admin_exchange", "root_live_admin_checked_dispatch", "root_live_admin_signed_artifact_verify", "root_live_admin_exact_issuer_head_revoke", "root_live_admin_fixed_notes_revoke_prepare", "root_live_admin_existing_effect_revoke", "root_live_admin_existing_signed_grant_revoke", "root_live_admin_same_service_signed_revoke", "root_live_admin_original_issue_observer_enable", "root_live_admin_original_issue_observation", "root_live_admin_original_bounded_lease_revoke", "root_live_admin_retained_artifact_observe", "root_live_admin_original_effect_state_observe", "root_live_admin_same_service_effect_state_observe", "agentd_original_registered_writer_custody", "agentd_original_recovered_writer_custody_factory", "agentd_original_root_handoff_unique_file", "calculator_previous_recovery_owner_target", "calculator_previous_recovery_host_attach", "calculator_previous_recovery_process_attach", "calculator_previous_recovery_runtime_selection", "calculator_previous_recovery_config_selection", "root_original_issuer_renewal_prepare", "root_original_issuer_renewal_commit", "root_desktop_original_startup_before", "root_desktop_recovered_successor_startup_before", "root_desktop_registered_successor_policy_replace", "desktop_previous_original_cut_selection", "desktop_previous_joint_config_selection", "memory_original_validated_target_retirement_ack", "memory_original_owner_current_readonly_receipt", "memory_original_notes_retirement_ack", "memory_original_calculator_retirement_ack", "memory_original_retirement_ack_commit", "authority_lease_exact_bounded_revoke", "root_live_admin_exact_issuer_revoke", "root_live_admin_committed_issuer_reply", "root_live_admin_exact_issuer_reply_record", "authority_lease_pinned_issuer_readback", "authority_lease_pinned_issuer_dispatch", "authority_lease_pinned_issuer_joint_dispatch", "authority_lease_pinned_issuer_retired_predecessor", "root_pinned_issuer_writer_readback", "root_pinned_issuer_writer_registration", "root_pinned_issuer_writer_effect", "root_pinned_issuer_writer_pair", "root_text_original_unprotected_wrapper", "authority_lease_joint_dispatch", "authority_lease_retired_predecessor"]
 
 [[boundary]]
 id = "supervisor_authorized_boot"
@@ -152,7 +152,7 @@ receiver_type = "FinalUseAuthority"
 receiver_methods = ["with_verified_use", "enter_verified_use"]
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_use", "pub fn enter_verified_use", "Arc::ptr_eq", "validate_live"]
-product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
+product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
 caller_markers = ["with_verified_use", "binding"]
 
 [[boundary]]
@@ -177,8 +177,8 @@ symbol = "FinalUseAuthority::with_dispatch_boundary"
 call_pattern = "authority\\s*\\.\\s*with_dispatch_boundary\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_dispatch_boundary", "validate_live", "dispatch_boundary"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-operations/src/durable_dispatch.rs"]
+caller_markers = [".with_dispatch_boundary(", "authorized.binding", "validate_claim_snapshot", "effect(&operation.intent)"]
 
 [[boundary]]
 id = "final_use_revocation_update"
@@ -334,7 +334,7 @@ symbol = "AuthorityLeaseVerifier::verify_use"
 call_pattern = '(?:\.\s*|AuthorityLeaseVerifier\s*::\s*)verify_use\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
-product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs", "codex-rs/hepta-agentd/src/deployment_issuer_root.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs", "codex-rs/hepta-agentd/src/deployment_writer.rs", "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs", "codex-rs/hepta-contracts/src/authority_host_issuer.rs", "codex-rs/hepta-agentd/src/deployment_calculator.rs"]
+product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs", "codex-rs/hepta-agentd/src/deployment_issuer_root.rs", "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs", "codex-rs/hepta-agentd/src/deployment_writer.rs", "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs", "codex-rs/hepta-contracts/src/authority_host_issuer.rs", "codex-rs/hepta-agentd/src/deployment_calculator.rs"]
 caller_markers = [".verify_use("]
 
 [[boundary]]
@@ -359,8 +359,8 @@ symbol = "AuthorityLeaseVerifier::with_dispatch_boundary"
 receiver_type = "AuthorityLeaseVerifier"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn with_dispatch_boundary", "with_dispatch_boundary_witness", "dispatch_boundary"]
-product_callers = ["codex-rs/hepta-agentd/src/deployment_issuer_root.rs", "codex-rs/hepta-contracts/src/authority_host_issuer.rs"]
-caller_markers = ["AuthorityLeaseVerifier", ".with_dispatch_boundary("]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_calculator.rs", "codex-rs/hepta-agentd/src/deployment_issuer_root.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs", "codex-rs/hepta-contracts/src/authority_host_issuer.rs"]
+caller_markers = [".verify_use(", ".with_dispatch_boundary("]
 
 [[boundary]]
 id = "authority_lease_dispatch_witness"
@@ -372,6 +372,105 @@ product_callers = [
   "codex-rs/hepta-agentd/src/deployment_writer.rs",
 ]
 caller_markers = ["dispatch_authority_lease_with_witness"]
+
+[[boundary]]
+id = "authority_lease_pinned_issuer_readback"
+symbol = "AuthorityLeaseVerifier::with_pinned_issuer_readback_boundary"
+call_pattern = "(?:\\.\\s*|AuthorityLeaseVerifier\\s*::\\s*)with_pinned_issuer_readback_boundary\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs"
+definition_markers = ["pub fn with_pinned_issuer_readback_boundary", "self.pair_token_owner(", "self.lock_state()?", "validate_live(", "let issuer = live_pinned_issuer(issuer_pin, &state, now);"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"]
+caller_markers = ["pinned.identity()", "with_pinned_issuer_readback_boundary"]
+
+[[boundary]]
+id = "authority_lease_pinned_issuer_dispatch"
+symbol = "AuthorityLeaseVerifier::with_pinned_issuer_dispatch_boundary"
+call_pattern = "(?:\\.\\s*|AuthorityLeaseVerifier\\s*::\\s*)with_pinned_issuer_dispatch_boundary\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs"
+definition_markers = ["pub fn with_pinned_issuer_dispatch_boundary", "self.pair_token_owner(", "self.lock_state()?", "validate_live(", "let issuer = live_pinned_issuer(issuer_pin, &state, now)?;"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"]
+caller_markers = ["pinned.identity()", "with_pinned_issuer_dispatch_boundary"]
+
+[[boundary]]
+id = "authority_lease_pinned_issuer_joint_dispatch"
+symbol = "AuthorityLeaseVerifier::with_pinned_issuer_joint_dispatch_boundary"
+call_pattern = "(?:\\.\\s*|AuthorityLeaseVerifier\\s*::\\s*)with_pinned_issuer_joint_dispatch_boundary\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs"
+definition_markers = ["pub fn with_pinned_issuer_joint_dispatch_boundary", "self.pair_token_owner(", "self.lock_state()?", "validate_live(", "first.lease.lease_id == second.lease.lease_id"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"]
+caller_markers = ["pinned.identity()", "with_pinned_issuer_joint_dispatch_boundary"]
+
+[[boundary]]
+id = "authority_lease_pinned_issuer_retired_predecessor"
+symbol = "AuthorityLeaseVerifier::with_retired_predecessor_for_pinned_issuer_boundary"
+call_pattern = "(?:\\.\\s*|AuthorityLeaseVerifier\\s*::\\s*)with_retired_predecessor_for_pinned_issuer_boundary\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs"
+definition_markers = ["pub fn with_retired_predecessor_for_pinned_issuer_boundary", "self.pair_token_owner(", "self.lock_state()?", "validate_live(", "unrevoked_pinned_issuer(issuer_pin, &state, now)?;"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"]
+caller_markers = ["pinned.identity()", "with_retired_predecessor_for_pinned_issuer_boundary"]
+
+[[boundary]]
+id = "root_pinned_issuer_writer_readback"
+symbol = "DeploymentFinalUseIssuer::with_issuer_writer_readback"
+call_pattern = "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)with_issuer_writer_readback\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
+definition_markers = ["fn with_issuer_writer_readback", "registration.validate()?", "with_pinned_issuer_readback_boundary", "actual_writer != writer", "readback_or_dispatch(issuer)"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_text.rs", "codex-rs/hepta-agentd/src/deployment_text_human.rs"]
+caller_markers = ["with_issuer_writer_readback"]
+
+[[boundary]]
+id = "root_pinned_issuer_writer_registration"
+symbol = "DeploymentFinalUseIssuer::with_live_issuer_writer_registration"
+call_pattern = "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)with_live_issuer_writer_registration\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
+definition_markers = ["fn with_live_issuer_writer_registration", "registration.validate()?", "with_pinned_issuer_dispatch_boundary", "actual_writer != writer", "dispatch(issuer)"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_authbus.rs", "codex-rs/hepta-agentd/src/deployment_calculator.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs", "codex-rs/hepta-agentd/src/deployment_writer.rs"]
+caller_markers = ["with_live_issuer_writer_registration"]
+
+[[boundary]]
+id = "root_pinned_issuer_writer_effect"
+symbol = "DeploymentFinalUseIssuer::with_live_issuer_writer_effect"
+call_pattern = "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)with_live_issuer_writer_effect\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
+definition_markers = ["fn with_live_issuer_writer_effect", "registration.validate()?", "with_pinned_issuer_joint_dispatch_boundary", "actual_writer != writer || actual_effect != effect", "dispatch(issuer)"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_calculator.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs"]
+caller_markers = ["with_live_issuer_writer_effect"]
+
+[[boundary]]
+id = "root_pinned_issuer_writer_pair"
+symbol = "DeploymentFinalUseIssuer::with_live_issuer_and_writer"
+call_pattern = "(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)with_live_issuer_and_writer\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/deployment_issuer_root.rs"
+definition_markers = ["fn with_live_issuer_and_writer", "registration.validate()?", "with_joint_dispatch_boundary", "actual_issuer != &issuer || actual_writer != writer", "dispatch(actual_issuer)"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_desktop.rs"]
+caller_markers = ["with_live_issuer_and_writer"]
+
+[[boundary]]
+id = "root_text_original_unprotected_wrapper"
+symbol = "DeploymentFinalUseIssuer::text_until"
+call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)text_until\s*\('
+definition_path = "codex-rs/hepta-agentd/src/deployment_text.rs"
+definition_markers = ["fn text_until(", "human: Option<&TextHumanBinding>", "self.text_until_checked(", "parent: None"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_joint_dispatch"
+symbol = "AuthorityLeaseVerifier::with_joint_dispatch_boundary"
+call_pattern = "(?:\\.\\s*|AuthorityLeaseVerifier\\s*::\\s*)with_joint_dispatch_boundary\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/authority_lease_pair_boundary.rs"
+definition_markers = ["pub fn with_joint_dispatch_boundary", "self.pair_token_owner(", "self.lock_state()?", "validate_live(", "!Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_issuer_root.rs"]
+caller_markers = ["actual_issuer != &issuer || actual_writer != writer"]
+
+[[boundary]]
+id = "authority_lease_retired_predecessor"
+symbol = "AuthorityLeaseVerifier::with_retired_predecessor_boundary"
+call_pattern = "(?:\\.\\s*|AuthorityLeaseVerifier\\s*::\\s*)with_retired_predecessor_boundary\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/authority_lease_pair_boundary.rs"
+definition_markers = ["pub fn with_retired_predecessor_boundary", "self.pair_token_owner(", "self.lock_state()?", "validate_live(", "!Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected"]
+product_callers = []
+caller_markers = []
 
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"
@@ -512,13 +611,13 @@ forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_writer.rs"
-required = ["HostAuthorityWriterRegistration", "AuthorityLeaseVerifier", ".verify_use(", "dispatch_authority_lease_with_witness", "VerifiedUseAuthorityRefV1::AuthorityLease", "registration.with_live("]
+required = ["HostAuthorityWriterRegistration", "AuthorityLeaseVerifier", ".verify_use(", "dispatch_authority_lease_with_witness", "VerifiedUseAuthorityRefV1::AuthorityLease", "self.with_live_issuer_writer_registration(registration, verifier"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
-required_order = [["predecessor.validate_successor(successor)?", ".with_retired_predecessor_boundary("]]
-required = ["rotate_writer_authorization", "self.validate()?", "successor.validate()?", ".verify_use(", ".with_retired_predecessor_boundary(", "predecessor.validate_successor(successor)?", "self.authority_lease.lease_id == successor.authority_lease.lease_id", "self.local_lease_id != successor.local_lease_id", "self.local_lease_generation.checked_add(1) != Some(successor.local_lease_generation)", "self.spawn_generation >= successor.spawn_generation", "self.owner_epoch >= successor.owner_epoch", "self.validate_writer_proof_identity(&state, predecessor, predecessor_proof)?", "self.validate_writer_proof(&state, successor, retained)?"]
+required_order = [["predecessor.validate_successor(successor)?", ".with_retired_predecessor_for_pinned_issuer_boundary("]]
+required = ["rotate_writer_authorization", "self.validate()?", "successor.validate()?", ".verify_use(", ".with_retired_predecessor_for_pinned_issuer_boundary(", "predecessor.validate_successor(successor)?", "self.authority_lease.lease_id == successor.authority_lease.lease_id", "self.local_lease_id != successor.local_lease_id", "self.local_lease_generation.checked_add(1) != Some(successor.local_lease_generation)", "self.spawn_generation >= successor.spawn_generation", "self.owner_epoch >= successor.owner_epoch", "self.validate_writer_proof_identity(&state, predecessor, predecessor_proof)?", "self.validate_writer_proof(&state, successor, retained)?"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
@@ -558,7 +657,7 @@ forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_notes.rs"
-required = ["writer_token", "effect_token", "writer.validate()?", "RevisionMismatch", "retired Notes lease cannot be recreated", "AuthorityLeaseRegistry", "put_lease", "registration.with_live(verifier", "self.retained_writer_authorization(registration)?", "state.writer_authorization.as_ref() != Some(&proof)", "if state.policies[slot] == next", "if state.policies[slot] != previous", "changed.policies[slot] = next", ".compare_and_set(STATE_OWNER, &state, &changed)", "writer::validate_writer_time(registration, state.head.authority_epoch, after)"]
+required = ["issuer.with_live_issuer_writer_registration(", "issuer.with_live_issuer_writer_effect(", "writer.validate()?", "RevisionMismatch", "retired Notes lease cannot be recreated", "AuthorityLeaseRegistry", "put_lease", "self.with_live_issuer_writer_registration(registration, verifier", "self.retained_writer_authorization(registration)?", "state.writer_authorization.as_ref() != Some(&proof)", "if state.policies[slot] == next", "if state.policies[slot] != previous", "changed.policies[slot] = next", ".compare_and_set(STATE_OWNER, &state, &changed)", "writer::validate_writer_time(registration, state.head.authority_epoch, after)", "Self::validate_issuer_lease_time(issuer, state.head.authority_epoch, after)?"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
@@ -704,19 +803,19 @@ call_pattern = '(?:\.\s*|RegisteredWriter\s*::\s*)human_text\s*\('
 id = "root_registered_human_text_admission"
 symbol = "DeploymentFinalUseIssuer::registered_writer_human_text"
 definition_path = "codex-rs/hepta-agentd/src/deployment_text_human.rs"
-definition_markers = ["pub(crate) fn registered_writer_human_text(", "self.lease.is_none()", "registration.with_live(leases", "self.retained_writer_authorization(registration)? != *proof", "Some(request.human)"]
+definition_markers = ["pub(crate) fn registered_writer_human_text(", "self.lease.is_none()", "self.with_issuer_writer_readback(registration, leases", "self.retained_writer_authorization(registration)? != *proof", "Some(request.human)", "parent: Some(parent)"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_writer.rs"]
 caller_markers = ["registered_writer_human_text", "&self.registration", "&self.leases", "&self.proof"]
 call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)registered_writer_human_text\s*\('
 
 [[boundary]]
 id = "root_human_text_same_issuer_cas"
-symbol = "DeploymentFinalUseIssuer::text_until"
+symbol = "DeploymentFinalUseIssuer::text_until_checked"
 definition_path = "codex-rs/hepta-agentd/src/deployment_text.rs"
-definition_markers = ["fn text_until(", "human: Option<&TextHumanBinding>", "retained.human_binding.as_ref() != human", "human_binding: human.cloned()", ".compare_and_set(STATE_OWNER, &state, &next)"]
+definition_markers = ["fn text_until_checked(", "authority: TextSigningAuthority<'_>", "retained.human_binding.as_ref() != human", "human_binding: human.cloned()", "Some(parent) => Some(parent.map_err(root::lease_error)?)", "Self::validate_issuer_lease_time(parent, state.head.authority_epoch, now)?", ".compare_and_set(STATE_OWNER, &state, &next)"]
 product_callers = ["codex-rs/hepta-agentd/src/deployment_text_human.rs"]
-caller_markers = ["registration.with_live(leases", "self.retained_writer_authorization(registration)? != *proof", "Some(request.human)"]
-call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)text_until\s*\('
+caller_markers = ["self.with_issuer_writer_readback(registration, leases", "self.retained_writer_authorization(registration)? != *proof", "Some(request.human)"]
+call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)text_until_checked\s*\('
 
 [[boundary]]
 id = "root_retained_human_text_lookup"
@@ -777,10 +876,14 @@ forbidden = ["AllowVerifier", "permit_all"]
 path = "codex-rs/hepta-agentd/src/deployment_text.rs"
 required = ["human_binding: Option<TextHumanBinding>", "human_binding: human.cloned()", "retained.human_binding.as_ref() != human", "self.text_until(identity, request_id, body, operation, None, None)", ".compare_and_set(STATE_OWNER, &state, &next)"]
 forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [
+  { function = "fn text_until(", sequence = ["human: Option<&TextHumanBinding>", "self.text_until_checked(", "TextSigningAuthority {", "parent: None"] },
+  { function = "fn text_until_checked(", sequence = ["let TextSigningAuthority {", "let _guard = self", "if lease.is_some_and", "if let Some(retained) = state", "retained.human_binding.as_ref() != human", "return Ok(envelope(", "if operation == TextIssuerOperation::Lookup", "let parent = match parent", "Some(parent) => Some(parent.map_err(root::lease_error)?)", "None if self.lease.is_none() => None", "Self::validate_issuer_lease_time(parent, state.head.authority_epoch, now)?", "if intent_sequence <= state.text_intent_sequence", "human_binding: human.cloned()", "self.store.validate_record(STATE_OWNER, &next)?", ".sign(&claims.signing_bytes())", ".compare_and_set(STATE_OWNER, &state, &next)"] }
+]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_text_human.rs"
-required = ["registration.with_live(leases", "self.retained_writer_authorization(registration)? != *proof", "Some(request.human)", "retained.human_binding.as_ref() != Some(human)", "now >= human.expires_at_ms", "now >= retained.expires_at_ms"]
+required = ["self.with_issuer_writer_readback(registration, leases", "self.retained_writer_authorization(registration)? != *proof", "Some(request.human)", "parent: Some(parent)", "retained.human_binding.as_ref() != Some(human)", "now >= human.expires_at_ms", "now >= retained.expires_at_ms"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
@@ -1102,7 +1205,7 @@ call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)validate_successor\\
 id = "root_original_issuer_writer_rotation"
 symbol = "DeploymentFinalUseIssuer::rotate_writer_authorization"
 definition_path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
-definition_markers = ["pub fn rotate_writer_authorization(", "predecessor.validate_successor(successor)?", ".with_retired_predecessor_boundary(", "self.validate_writer_proof_identity(&state, predecessor, predecessor_proof)?", "self.validate_writer_proof(&state, successor, retained)?", "self.retain_writer_authorization(&state, successor, now)"]
+definition_markers = ["pub fn rotate_writer_authorization(", "predecessor.validate_successor(successor)?", ".with_retired_predecessor_for_pinned_issuer_boundary(", "self.validate_writer_proof_identity(&state, predecessor, predecessor_proof)?", "self.validate_writer_proof(&state, successor, retained)?", "self.retain_writer_authorization(&state, successor, now)"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)rotate_writer_authorization\\s*\\("
@@ -1111,7 +1214,7 @@ call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)rotate_writer_author
 id = "root_physical_current_retired_adoption"
 symbol = "HostCognitiveCheckpoint::adopt_current_after_root_restart_with_material"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs"
-definition_markers = ["pub(crate) fn adopt_current_after_root_restart_with_material(", "Predecessor::Retired(predecessor)", "AdoptMaterial::Physical(profile)", "validate_adoption(previous, &predecessor, &registration, successor)?", "material.prepare(previous, &next)?", ".compare_and_set(STORE_OWNER, old, &next)"]
+definition_markers = ["pub(crate) fn adopt_current_after_root_restart_with_material(", "Predecessor::Retired(predecessor)", "AdoptMaterial::Physical(Box::new(profile))", "validate_adoption(previous, &predecessor, &registration, successor)?", "material.prepare(previous, &next)?", ".compare_and_set(STORE_OWNER, old, &next)"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_checkpoint_material_recovery.rs"]
 caller_markers = []
 
@@ -1144,7 +1247,7 @@ caller_markers = []
 id = "root_physical_current_backend_genesis"
 symbol = "HostCognitiveCheckpoint::initialize_fresh_with_material"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs"
-definition_markers = ["pub(crate) fn initialize_fresh_with_material(", "Self::initialize_fresh_inner(", "FreshMaterial::Physical(profile)"]
+definition_markers = ["pub(crate) fn initialize_fresh_with_material(", "Self::initialize_fresh_inner(", "FreshMaterial::Physical(Box::new(profile))"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs"]
 caller_markers = []
 
@@ -1208,7 +1311,7 @@ forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs"
-required = ["let _guard = self", "exchange_lock", "head.phase != CognitiveCheckpointPhase::Current || head.proposal.is_some()", "self.load()? != head || !self.within_expiry()?", "FreshMaterial::Physical(profile)", "material.verify(receipt(&head)?)?"]
+required = ["let _guard = self", "exchange_lock", "head.phase != CognitiveCheckpointPhase::Current || head.proposal.is_some()", "self.load()? != head || !self.within_expiry()?", "FreshMaterial::Physical(Box::new(profile))", "material.verify(receipt(&head)?)?"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
@@ -1254,7 +1357,7 @@ forbidden = ["AllowVerifier", "permit_all", "impl Clone for PreparedMaterialReco
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs"
-required = ["validate_adoption(previous, &predecessor, &registration, successor)?", "AdoptMaterial::Physical(profile)", "material.prepare(previous, &next)?", ".compare_and_set(STORE_OWNER, old, &next)", "predecessor.require_retired()?", "successor.require_alive()?"]
+required = ["validate_adoption(previous, &predecessor, &registration, successor)?", "AdoptMaterial::Physical(Box::new(profile))", "material.prepare(previous, &next)?", ".compare_and_set(STORE_OWNER, old, &next)", "predecessor.require_retired()?", "successor.require_alive()?"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
@@ -1308,7 +1411,7 @@ id = "root_desktop_original_issuer_pair_policy_cas"
 symbol = "DeploymentFinalUseIssuer::replace_registered_desktop_policy"
 call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_registered_desktop_policy\\s*\\("
 definition_path = "codex-rs/hepta-agentd/src/deployment_desktop.rs"
-definition_markers = ["pub fn replace_registered_desktop_policy(", "libc::getuid()", "libc::geteuid()", "self.replace_desktop_policy(", "registration.local_lease_generation <= 1", "registration.with_live(verifier", "self.retained_writer_authorization(registration)?", "state.writer_authorization.as_ref() != Some(&proof)", "current != [&previous_policies[0], &previous_policies[1]]", ".compare_and_set(STATE_OWNER, &state, &changed)", "writer::validate_writer_time(registration, state.head.authority_epoch, after)"]
+definition_markers = ["pub fn replace_registered_desktop_policy(", "libc::getuid()", "libc::geteuid()", "self.replace_desktop_policy(", "registration.local_lease_generation <= 1", "self.with_live_issuer_and_writer(registration", "self.retained_writer_authorization(registration)?", "state.writer_authorization.as_ref() != Some(&proof)", "current != [&previous_policies[0], &previous_policies[1]]", ".compare_and_set(STATE_OWNER, &state, &changed)", "writer::validate_writer_time(registration, state.head.authority_epoch, after)", "after >= issuer_lease.expires_at_unix_ms"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_desktop_successor.rs"]
 caller_markers = []
 
@@ -1317,7 +1420,7 @@ id = "root_notes_original_issuer_policy_cas"
 symbol = "DeploymentFinalUseIssuer::replace_registered_notes_policy"
 call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_registered_notes_policy\\s*\\("
 definition_path = "codex-rs/hepta-agentd/src/deployment_notes.rs"
-definition_markers = ["pub fn replace_registered_notes_policy(", "libc::geteuid()", "self.replace_notes_policy(", "registration.with_live(verifier", "self.retained_writer_authorization(registration)?", "state.writer_authorization.as_ref() != Some(&proof)", "if state.policies[slot] != previous", ".compare_and_set(STATE_OWNER, &state, &changed)", "writer::validate_writer_time(registration, state.head.authority_epoch, after)"]
+definition_markers = ["pub fn replace_registered_notes_policy(", "libc::geteuid()", "self.replace_notes_policy(", "self.with_live_issuer_writer_registration(registration, verifier", "self.retained_writer_authorization(registration)?", "state.writer_authorization.as_ref() != Some(&proof)", "if state.policies[slot] != previous", ".compare_and_set(STATE_OWNER, &state, &changed)", "writer::validate_writer_time(registration, state.head.authority_epoch, after)", "Self::validate_issuer_lease_time(issuer, state.head.authority_epoch, after)?"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_notes_successor.rs"]
 caller_markers = []
 
@@ -1435,13 +1538,13 @@ call_pattern = "(?:\\.\\s*|AgentdConfig\\s*::\\s*)with_original_notes_previous_r
 definition_path = "codex-rs/hepta-agentd/src/config.rs"
 definition_markers = ["pub async fn with_original_notes_previous_recovery_request(", ".latest_recovery_operation(&request.previous_target)", "self.with_original_notes_previous_recovery(request.resolved(operation_id))"]
 product_callers = ["codex-rs/hepta-agentd/src/production_launcher.rs"]
-caller_markers = [".with_original_notes_thread_seed(seed)?", ".with_original_notes_thread_session(lifetime)?", ".with_original_notes_previous_recovery_request(previous)"]
+caller_markers = [".with_original_notes_thread_seed(*seed)?", ".with_original_notes_thread_session(lifetime)?", ".with_original_notes_previous_recovery_request(previous)"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_recorded.rs"
 required = ["pub(crate) struct RecordedNotesThreadOperation", "reference: OriginalNotesThreadReference", "#[serde(rename_all = \"snake_case\")]"]
 forbidden = ["Deserialize", "unsafe", "transmute", "prepare_thread(", "submit_once(", "sign_objective(", "dispatch("]
-required_function_order = [{function = "fn lookup_budget_available(", sequence = ["end: tokio::time::Instant", "tokio::time::Instant::now() < end"]}, {function = "fn recorded_thread_operation(", sequence = ["if !lookup_budget_available(end)", "self.check_available()?", "&route.app_server_session_id", "&route.thread_id", "turn_id,", "self.run_id(&intent)?", ".retained_request_for_run(&run_id)", ".retained_operation(&run_id)", "self.verify_recorded_thread_operation(route, &request, &operation)?", "found.reference.turn_id != turn_id || found.reference.call_id != call_id"]}, {function = "fn latest_recorded_thread_operation(", sequence = ["end: tokio::time::Instant", "if !lookup_budget_available(end)", "match tokio::time::timeout_at(end, async", "self.check_available()?", ".retained_owner_requests()", "latest_matching_request(scope, requests, end)?", ".retained_operation(&request.identity().run_id)", "self.verify_recorded_thread_operation(route, &request, &operation)?", "tokio::time::Instant::now() >= end", "RecordedNotesUnknownReason::DeadlineElapsed", "Ok(result)"]}, {function = "fn latest_matching_request(", sequence = ["end: tokio::time::Instant", "for request in requests", "tokio::time::Instant::now() >= end", "serde_json::from_slice(request.exact_original())?", "decode_source_envelope_json_v1(ingress.body.source_envelope_json.as_bytes())", "source.input_schema_digest != scope.input_schema_digest", "!= scope.normalization_digest", "source.principal_scope_digest != scope.bindings.principal_scope_digest", "identity.model_tuple_digest != scope.bindings.model_tuple_digest.to_string()", "&request.origin().agent_id != scope.agent_id", "request.origin().spawn_generation > scope.spawn_generation", "request.origin().spawn_generation,", "request.origin().request_id,", "!orders.insert(order)", "RecordedNotesUnknownReason::AmbiguousOriginalOrder", "order > *previous", "tokio::time::Instant::now() >= end", "Some((_, request)) => RecordedChoice::Found(request)"]}, {function = "fn verify_recorded_thread_operation(", sequence = ["self.profile != NotesAdapterProfile::OriginalThread", "route.agent_id != self.identity.agent_id", "route.codex_home != self.identity.home_root", "verify_recorded("]}, {function = "fn verify_recorded(", sequence = ["&request.origin().original_notes_thread", "RecordedNotesUnknownReason::LegacyReferenceUnavailable", "serde_json::from_slice(request.exact_original())?", "reference_ids(reference, scope.agent_id.as_str())?", "let exact_operation = codex_hepta_memory::notes_operation_intent(", "reference.thread_id != route.thread_id", "reference.app_server_session_id != route.app_server_session_id", "&request.origin().agent_id != scope.agent_id", "request.origin().spawn_generation > scope.spawn_generation", "ingress.issuer_id != scope.bindings.issuer_id", "ingress.body.model_tuple_digest != scope.bindings.model_tuple_digest.to_string()", "ingress.body.runtime_body_digest != scope.bindings.runtime_body_digest.to_string()", "ingress.body.preference_state_digest", "scope.bindings.preference_state_digest.to_string()", "ingress.body.prompt_registry_digest != scope.bindings.prompt_registry_digest.to_string()", "ingress.body.artifact_set_digest != scope.bindings.artifact_set_digest.to_string()", "source.input_schema_digest != scope.input_schema_digest", "!= scope.normalization_digest", "source.principal_scope_digest != scope.bindings.principal_scope_digest", "source.request_id != call_intent_id", "request.identity().run_id != run_id", "operation.topic != codex_hepta_memory::NOTES_REPLACE_TOPIC_V1", "operation.operation.policy_generation() != scope.bindings.policy_generation", "exact_operation != operation.operation", "!= run_id", "!= operation.operation.semantic_digest()", "!callback_matches(", "Ok(RecordedNotesLookup::Found(RecordedNotesThreadOperation {"]}, {function = "fn callback_matches(", sequence = ["for reverse in [false, true]", "namespace: None", "Digest32::of_bytes(&serde_json::to_vec(&params)?).to_string()", "== reference.callback_sha256", "return Ok(true)", "Ok(false)"]}, {function = "fn latest_recorded_recovery_operation(", sequence = [".latest_recorded_thread_operation(", "original.target == *previous_target", "LocalOutcomeState::Indeterminate", "LocalOutcomeState::Committed", "Ok(original.run_id)"]}]
+required_function_order = [{function = "fn lookup_budget_available(", sequence = ["end: tokio::time::Instant", "tokio::time::Instant::now() < end"]}, {function = "fn recorded_thread_operation(", sequence = ["if !lookup_budget_available(end)", "self.check_available()?", "&route.app_server_session_id", "&route.thread_id", "turn_id,", "self.run_id(&intent)?", ".retained_request_for_run(&run_id)", ".retained_operation(&run_id)", "self.verify_recorded_thread_operation(route, &request, &operation)?", "found.reference.turn_id != turn_id || found.reference.call_id != call_id"]}, {function = "fn latest_recorded_thread_operation(", sequence = ["end: tokio::time::Instant", "if !lookup_budget_available(end)", "match tokio::time::timeout_at(end, async", "self.check_available()?", ".retained_owner_requests()", "latest_matching_request(scope, requests, end)?", ".retained_operation(&request.identity().run_id)", "self.verify_recorded_thread_operation(route, &request, &operation)?", "tokio::time::Instant::now() >= end", "RecordedNotesUnknownReason::DeadlineElapsed", "Ok(result)"]}, {function = "fn latest_matching_request(", sequence = ["end: tokio::time::Instant", "for request in requests", "tokio::time::Instant::now() >= end", "serde_json::from_slice(request.exact_original())?", "decode_source_envelope_json_v1(ingress.body.source_envelope_json.as_bytes())", "source.input_schema_digest != scope.input_schema_digest", "!= scope.normalization_digest", "source.principal_scope_digest != scope.bindings.principal_scope_digest", "identity.model_tuple_digest != scope.bindings.model_tuple_digest.to_string()", "&request.origin().agent_id != scope.agent_id", "request.origin().spawn_generation > scope.spawn_generation", "request.origin().spawn_generation,", "request.origin().request_id,", "!orders.insert(order)", "RecordedNotesUnknownReason::AmbiguousOriginalOrder", "order > *previous", "tokio::time::Instant::now() >= end", "Some((_, request)) => RecordedChoice::Found(Box::new(request))"]}, {function = "fn verify_recorded_thread_operation(", sequence = ["self.profile != NotesAdapterProfile::OriginalThread", "route.agent_id != self.identity.agent_id", "route.codex_home != self.identity.home_root", "verify_recorded("]}, {function = "fn verify_recorded(", sequence = ["&request.origin().original_notes_thread", "RecordedNotesUnknownReason::LegacyReferenceUnavailable", "serde_json::from_slice(request.exact_original())?", "reference_ids(reference, scope.agent_id.as_str())?", "let exact_operation = codex_hepta_memory::notes_operation_intent(", "reference.thread_id != route.thread_id", "reference.app_server_session_id != route.app_server_session_id", "&request.origin().agent_id != scope.agent_id", "request.origin().spawn_generation > scope.spawn_generation", "ingress.issuer_id != scope.bindings.issuer_id", "ingress.body.model_tuple_digest != scope.bindings.model_tuple_digest.to_string()", "ingress.body.runtime_body_digest != scope.bindings.runtime_body_digest.to_string()", "ingress.body.preference_state_digest", "scope.bindings.preference_state_digest.to_string()", "ingress.body.prompt_registry_digest != scope.bindings.prompt_registry_digest.to_string()", "ingress.body.artifact_set_digest != scope.bindings.artifact_set_digest.to_string()", "source.input_schema_digest != scope.input_schema_digest", "!= scope.normalization_digest", "source.principal_scope_digest != scope.bindings.principal_scope_digest", "source.request_id != call_intent_id", "request.identity().run_id != run_id", "operation.topic != codex_hepta_memory::NOTES_REPLACE_TOPIC_V1", "operation.operation.policy_generation() != scope.bindings.policy_generation", "exact_operation != operation.operation", "!= run_id", "!= operation.operation.semantic_digest()", "!callback_matches(", "Ok(RecordedNotesLookup::Found(Box::new("]}, {function = "fn callback_matches(", sequence = ["for reverse in [false, true]", "namespace: None", "Digest32::of_bytes(&serde_json::to_vec(&params)?).to_string()", "== reference.callback_sha256", "return Ok(true)", "Ok(false)"]}, {function = "fn latest_recorded_recovery_operation(", sequence = [".latest_recorded_thread_operation(", "original.target == *previous_target", "LocalOutcomeState::Indeterminate", "LocalOutcomeState::Committed", "Ok(original.run_id)"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-memory/src/objective_sender_read.rs"
@@ -1483,7 +1586,7 @@ required_function_order = [{function = "fn with_original_notes_previous_recovery
 path = "codex-rs/hepta-agentd/src/production_launcher.rs"
 required = [".with_original_notes_previous_recovery_request(previous)"]
 forbidden = ["AllowVerifier", "permit_all"]
-required_function_order = [{function = "fn run(", sequence = [".with_root_notes_thread_tools(", ".with_original_notes_thread_seed(seed)?", ".with_original_notes_thread_session(lifetime)?", "if let Some(previous) = previous_recovery", ".with_original_notes_previous_recovery_request(previous)", "let result = crate::run(config, arg0_paths).await"]}]
+required_function_order = [{function = "fn run(", sequence = [".with_root_notes_thread_tools(", ".with_original_notes_thread_seed(*seed)?", ".with_original_notes_thread_session(lifetime)?", "if let Some(previous) = previous_recovery", ".with_original_notes_previous_recovery_request(previous)", "let result = crate::run(config, arg0_paths).await"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_notes_deployment.rs"
@@ -1803,7 +1906,7 @@ caller_markers = ["call: &VerifiedDesktopThreadCall", "call.recorded_reference(&
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_calculator.rs"
-required = ["libc::geteuid()", ".with_dispatch_boundary(token, &actual.lease.binding, || {", "if state.policies[slot] != policy || lifetime_ms == 0", "self.writer.with_live(canonical, |_| {", "issuer.retained_writer_authorization(&self.writer)? != self.proof", "match self.registry.put_lease(lease, 0)", ".with_joint_dispatch_boundary(", "issuer.issue_registered_final_use(", "actual_writer != writer || actual_effect != &effect"]
+required = ["libc::geteuid()", ".with_dispatch_boundary(token, &actual.lease.binding, || {", "if state.policies[slot] != policy || lifetime_ms == 0", "issuer.with_live_issuer_writer_registration(&self.writer, canonical, |_| {", "issuer.retained_writer_authorization(&self.writer)? != self.proof", "match self.registry.put_lease(lease, 0)", "issuer.with_live_issuer_writer_effect(", "issuer.issue_registered_final_use(", "effect.binding != expected", "effect.expires_at_unix_ms > self.writer.authority_lease.expires_at_unix_ms", ".min(writer.expires_at_unix_ms)", ".min(effect.expires_at_unix_ms)"]
 forbidden = []
 
 [[protected_file]]
@@ -2102,7 +2205,7 @@ caller_markers = ["retained_calculator_retirement_ack(&found.run_id)"]
 id = "memory_original_retirement_ack_commit"
 symbol = "LocalLeaseOutbox::record_application_retirement_ack"
 definition_path = "codex-rs/hepta-memory/src/local_retirement_ack.rs"
-definition_markers = ["pub(crate) async fn record_application_retirement_ack(", "acknowledgement: &ProductionRetirementAck", "begin_with(\"BEGIN IMMEDIATE\")", "retained_application_retirement_ack_transaction(", "insert_event(", "self.require_current_transaction(&mut transaction).await?", "live_check()", "transaction\n            .commit()\n            .await\n            .map_err(crate::cognitive_store::unavailable)?"]
+definition_markers = ["pub(crate) async fn record_application_retirement_ack(", "acknowledgement: &ProductionRetirementAck", "self.store.begin_write_transaction().await?", "retained_application_retirement_ack_transaction(", "insert_event(", "self.require_current_transaction(&mut transaction).await?", "live_check()", "transaction\n            .commit()\n            .await\n            .map_err(crate::cognitive_store::unavailable)?"]
 call_pattern = '(?:\.\s*|LocalLeaseOutbox\s*::\s*)record_application_retirement_ack\s*\('
 product_callers = ["codex-rs/hepta-memory/src/production_retirement_ack.rs"]
 caller_markers = ["self.retirement_live_check()", "finish_application_retirement("]
@@ -2121,9 +2224,9 @@ caller_markers = ["observed_current_owner_receipt()"]
 [[protected_file]]
 path = "codex-rs/hepta-memory/src/local_retirement_ack.rs"
 required = [
-  "begin_with(\"BEGIN IMMEDIATE\")","RETIREMENT_ACK_KIND", "checked_terminal_destination(", "verify_retirement_pairing(", "verify_retirement_lease(", "verify_operation_row_incremental(", "verify_event_chain(", "verify_outbox_chain(", "LocalOutcomeState::Committed", "record.terminal_receipt_sha256 != terminal.payload_sha256", "record.lease_id != self.lease_id"]
+  "self.store.begin_write_transaction().await?","RETIREMENT_ACK_KIND", "checked_terminal_destination(", "verify_retirement_pairing(", "verify_retirement_lease(", "verify_operation_row_incremental(", "verify_event_chain(", "verify_outbox_chain(", "LocalOutcomeState::Committed", "record.terminal_receipt_sha256 != terminal.payload_sha256", "record.lease_id != self.lease_id"]
 forbidden = ["observation_pool()", "PRAGMA", "AllowVerifier", "permit_all"]
-required_function_order = [{function = "fn record_application_retirement_ack(", sequence = ["acknowledgement.record()", "begin_with(", "retained_application_retirement_ack_transaction(", "insert_event(", "live_check()", "self.require_current_transaction(&mut transaction).await?", "live_check()", "transaction\n            .commit()\n            .await\n            .map_err(crate::cognitive_store::unavailable)?"]}]
+required_function_order = [{function = "fn record_application_retirement_ack(", sequence = ["acknowledgement.record()", "self.store.begin_write_transaction().await?", "retained_application_retirement_ack_transaction(", "insert_event(", "live_check()", "self.require_current_transaction(&mut transaction).await?", "live_check()", "transaction\n            .commit()\n            .await\n            .map_err(crate::cognitive_store::unavailable)?"]}]
 
 
 [[protected_file]]
@@ -2198,3 +2301,31 @@ path = "codex-rs/hepta-agentd/src/authority_host_admin.rs"
 required = ["context.finish_committed_issuer_revocation(service, committed)?"]
 forbidden = []
 required_function_order = [{ function = "fn handle(", sequence = ["RootAdminAction::RevokeIssuer {", "service.revoke_original_issuer(", "context.finish_committed_issuer_revocation(service, committed)?", "service.admin_request(", "context.check_for(service)?", "serde_json::to_vec(&response)", "deadline::require_before(pending.end)?"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
+required = ["with_pinned_issuer_readback_boundary", "with_pinned_issuer_dispatch_boundary", "with_pinned_issuer_joint_dispatch_boundary", "actual_writer != writer || actual_effect != effect", "now >= issuer.expires_at_unix_ms"]
+forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [{ function = "fn with_issuer_writer_readback<T>(", sequence = ["registration.validate()?", "let pinned = self", "let writer = &registration.authority_lease", ".verify_use(", ".with_pinned_issuer_readback_boundary(", "pinned.identity()", "if actual_writer != writer", "readback_or_dispatch(issuer)"] }, { function = "fn with_live_issuer_writer_registration<T>(", sequence = ["registration.validate()?", "let pinned = self", "let writer = &registration.authority_lease", ".verify_use(", ".with_pinned_issuer_dispatch_boundary(", "pinned.identity()", "if actual_writer != writer", "dispatch(issuer)"] }, { function = "fn with_live_issuer_writer_effect<T>(", sequence = ["registration.validate()?", "let pinned = self", "let writer = &registration.authority_lease", "let writer_token = pinned", ".verify_use(", "let effect_token = effect_verifier", ".verify_use(", ".with_pinned_issuer_joint_dispatch_boundary(", "pinned.identity()", "if actual_writer != writer || actual_effect != effect", "dispatch(issuer)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs"
+required = ["self.pair_token_owner(", "self.lock_state()?", "live_pinned_issuer(", "unrevoked_pinned_issuer(", "retired_predecessor(", "state.revocations.contains_key(pin.0)", "state.retired_revisions.get(pin.0) == Some(&pin.1)"]
+forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [{ function = "fn with_pinned_issuer_readback_boundary<T>(", sequence = ["self.pair_token_owner(&token, expected)?", "self.lock_state()?", "let now = self.0.clock.now_unix_ms()", "validate_live(", "let issuer = live_pinned_issuer(issuer_pin, &state, now);", "let result = boundary(", "drop(state)", "Ok(result)"] }, { function = "fn with_pinned_issuer_dispatch_boundary<T>(", sequence = ["self.pair_token_owner(&token, expected)?", "self.lock_state()?", "let now = self.0.clock.now_unix_ms()", "let issuer = live_pinned_issuer(issuer_pin, &state, now)?", "validate_live(", "let result = boundary(", "drop(state)", "Ok(result)"] }, { function = "fn with_pinned_issuer_joint_dispatch_boundary<T>(", sequence = ["self.pair_token_owner(&first, expected_first)?", "self.pair_token_owner(&second, expected_second)?", "if first.lease.lease_id == second.lease.lease_id", "self.lock_state()?", "let issuer = live_pinned_issuer(issuer_pin, &state, now)?", "validate_live(", "validate_live(", "let result = boundary(", "drop(state)", "Ok(result)"] }, { function = "fn with_retired_predecessor_for_pinned_issuer_boundary<T>(", sequence = ["predecessor.validate()?", "self.pair_token_owner(&successor, expected_successor)?", "if predecessor.lease_id == successor.lease.lease_id", "self.lock_state()?", "unrevoked_pinned_issuer(issuer_pin, &state, now)?", "validate_live(", "if predecessor.authority_epoch != state.authority_epoch", "let retirement = retired_predecessor(", "let result = boundary(", "drop(state)", "Ok(result)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-memory/src/cognitive_store_barrier.rs"
+required = [".begin_with(\"BEGIN IMMEDIATE\")", "publication.begin_writes().await.map_err(unavailable)?", "managed writer has no bound checkpoint coordinator"]
+forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [{ function = "fn begin_write_transaction(", sequence = ["self.commit_gate.require_open()?", ".begin_with(", "if let Some(publication) = &self.bound_publication", "publication.begin_writes().await.map_err(unavailable)?", "else if self.commit_gate.is_managed()", "drop(self.commit_gate.transition_attempt())", "return Err(CognitiveStoreError::Unavailable(", "self.commit_gate.require_open()?", "Ok(transaction)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/authority_lease_pair_boundary.rs"
+required = ["old.revision.checked_add(1) == Some(current.revision)", "previous == *old", "state.leases.get(&old.lease_id) == Some(old)", "state.retired_revisions.get(&old.lease_id) == Some(&old.revision)"]
+forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [
+  { function = "fn with_joint_dispatch_boundary<T>(", sequence = ["self.pair_token_owner(&first, expected_first)?", "self.pair_token_owner(&second, expected_second)?", "if first.lease.lease_id == second.lease.lease_id", "self.lock_state()?", "let now = self.0.clock.now_unix_ms()", "validate_live(", "validate_live(", "let result = boundary(", "drop(state)", "Ok(result)"] },
+  { function = "fn with_retired_predecessor_boundary<T>(", sequence = ["predecessor.validate()?", "self.pair_token_owner(&successor, expected_successor)?", "if predecessor.lease_id == successor.lease.lease_id", "self.lock_state()?", "let now = self.0.clock.now_unix_ms()", "validate_live(", "if predecessor.authority_epoch != state.authority_epoch", "let retirement = retired_predecessor(", "let result = boundary(", "drop(state)", "Ok(result)"] },
+  { function = "fn pair_token_owner(", sequence = ["!Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected", "return Err(AuthorityLeaseError::BindingMismatch)", "Ok(())"] }
+]

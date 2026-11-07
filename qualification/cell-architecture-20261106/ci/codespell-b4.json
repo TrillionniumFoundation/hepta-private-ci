@@ -1,0 +1,20 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_sha": "b4afdbadc247c6fadfad4e416c00a9a853affa1c",
+  "run_id": 42323275270,
+  "job_id": 128252598282,
+  "schema": "cell_architecture_ci_observation_v1",
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42323275270/job/128252598282",
+  "observed_result": "failure",
+  "finding": "The text spelling checker treated compressed binary archive fragments as text. All reported error lines name archive payload .bin files.",
+  "error_lines": 354,
+  "archive_payload_error_lines": 354,
+  "repair": "Exclude only ./qualification/cell-unification-20261106/archive/p*.bin from text spelling; manifests, documentation and source remain checked.",
+  "repair_validation": "pending exact-head rerun",
+  "log": {
+    "path": "codespell-b4.log.gz",
+    "decoded_bytes": 74576,
+    "decoded_sha256": "e034ed7573cc213d0f8a0183e59d11a349ff6a24374c27a712cfae80e6687d49",
+    "gzip_sha256": "3e4bcf7f4b263e8d256d3294488f2488563ee3271ba6706e9eb6bf9b1ed55c32"
+  }
+}

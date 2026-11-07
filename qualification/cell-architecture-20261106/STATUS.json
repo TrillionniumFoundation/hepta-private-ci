@@ -1,0 +1,280 @@
+{
+  "schema": "hepta.cell-architecture-qualification.v1",
+  "as_of_date_utc": "2026-11-07",
+  "review": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5208",
+  "original_baseline": "a6f3aa12ba187448c35449c7da0a9798ae4ca987",
+  "integrated_upstream": "e01c860f9b43a88555dfe9120a86f7f451e760fd",
+  "tested_product_source": {
+    "commit": "87cce8066b5f41e2d462b9469a301245f43d8c23",
+    "tree": "60604de0d6ea4805fd248574ba83fe49f16b261a",
+    "rust_tree": "3deb8503bc873331518c0c536a269c00d754a8bf",
+    "clean_before_after": true
+  },
+  "post_validation_source": {
+    "merge_commit": "151dfe3d97fbe186269a2d6333ec04dbf665bde9",
+    "merge_tree_equals_tested_tree": true,
+    "javascript_format_commit": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+    "tree": "0b668cec797c009c7ba710607931f011f4338e52",
+    "javascript_files": 31,
+    "strict_ast_equal": true,
+    "whole_glob_underlying_prettier_check": "passed",
+    "rust_tree_unchanged": true,
+    "eight_audit_inputs_unchanged": true
+  },
+  "native_product": {
+    "original_job": "1a1b3d38d48-fc05-84ef",
+    "host": "desktop",
+    "rust": "1.96.0",
+    "nextest": "0.9.103",
+    "packages": [
+      "codex-hepta-neuron",
+      "codex-hepta-automation",
+      "codex-hepta-runtime",
+      "codex-hepta-agentd"
+    ],
+    "tests": {
+      "status": "passed",
+      "exit_code": 0,
+      "passed": 990,
+      "failed": 0,
+      "skipped": 66,
+      "binaries": 31,
+      "slow": 1,
+      "retries": 0,
+      "elapsed_seconds_including_compilation": 1070.945293030003,
+      "test_execution_seconds": 228.914,
+      "timeout_seconds": 4200,
+      "skip_reason_scope": "Original runner reports 66 skipped; raw log does not enumerate individual skip identities.",
+      "passed_by_package_from_raw_pass_lines": {
+        "codex-hepta-agentd": 639,
+        "codex-hepta-automation": 143,
+        "codex-hepta-neuron": 177,
+        "codex-hepta-runtime": 31
+      }
+    },
+    "strict_clippy": {
+      "status": "passed",
+      "exit_code": 0,
+      "elapsed_seconds": 288.6668489780277,
+      "timeout_seconds": 900
+    },
+    "evidence_index": "native/README.md",
+    "nextest_profile": "local",
+    "nextest_run_id": "aa0d04a1-d9a0-4d47-b71f-76a135023c16"
+  },
+  "native_python_text_07": {
+    "overall_status": "failed",
+    "source": "87cce8066b5f41e2d462b9469a301245f43d8c23",
+    "passed": {
+      "pr_format_check": true,
+      "typed_regressions": 56,
+      "b4_regressions": 69,
+      "archive_regressions": 14,
+      "complete_original_archive_members": 4087,
+      "evidence_tree_files": 157,
+      "original_codespell_cli": true
+    },
+    "failures": [
+      {
+        "gate": "full caller proof",
+        "outcome": "timeout",
+        "timeout_seconds": 900,
+        "elapsed_seconds": 900.165,
+        "stdout_bytes": 0,
+        "exit_code": 124
+      },
+      {
+        "gate": "underlying Prettier",
+        "outcome": "format_failure",
+        "existing_baseline_files": 31,
+        "repair_commit": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4"
+      }
+    ],
+    "diagnostic_only": {
+      "full_ruff": "failed",
+      "unchanged_baseline_files": [
+        "scripts/hepta_ci_chef.py",
+        "scripts/test_hepta_ci_chef.py",
+        "scripts/test_hepta_module_status_facts.py"
+      ]
+    }
+  },
+  "independent_local_caller": {
+    "schema": "hepta.final-caller-local-result.v1",
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "process_returncode": 0,
+    "timed_out": false,
+    "duration_seconds": 324.4244930290006,
+    "budget_seconds": 900,
+    "executions": 1,
+    "rust_files_scanned": 5315,
+    "boundaries": 171,
+    "authority_granted": false,
+    "rust_tree_git_sha1": "3deb8503bc873331518c0c536a269c00d754a8bf",
+    "tracked_blobs_verified_before_and_after": 9451,
+    "tracked_blob_bytes": 128230122,
+    "audit_inputs_verified_before_and_after": 8,
+    "inputs_unchanged": true,
+    "local_git_head": "a6f3aa12ba187448c35449c7da0a9798ae4ca987",
+    "whole_publication_head_clean_asserted": false,
+    "reported_native07_outcome": {
+      "status": "timeout",
+      "duration_seconds": 900.165,
+      "stdout_bytes": 0,
+      "basis": "parent reported original native07 execution; original native failure artifacts remain separate and unchanged"
+    },
+    "scope": "Independent local full caller proof on the exact formatted Rust tree and eight audit inputs; not a native07 pass, Rust product test, or production qualification."
+  },
+  "archive_platform_results": {
+    "source": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+    "run_id": 42331671872,
+    "windows": {
+      "job_id": 128279386114,
+      "status": "success",
+      "archive_tests": 14,
+      "receipt": "ci/4ce-windows-archive.json"
+    },
+    "ubuntu": {
+      "job_id": 128279386486,
+      "status": "success",
+      "archive_tests": 14,
+      "receipt": "ci/4ce-linux-archive.json"
+    },
+    "rust_product_tests_in_these_jobs": false
+  },
+  "earlier_ci_failures": [
+    "ci/b4-neuron.json",
+    "ci/b4-agentd.json",
+    "ci/codespell-b4.json"
+  ],
+  "historical_archive": {
+    "original_files": 4087,
+    "original_bytes": 116240752,
+    "payload_parts": 143,
+    "manifest_shards": 3,
+    "max_archive_file_bytes": 480000,
+    "longest_archive_path_utf16_units": 84,
+    "manifest": "../cell-unification-20261106/MIGRATION.json"
+  },
+  "qualification_limits": {
+    "ordinary_daemon_scheduler": false,
+    "all_representation_workers": false,
+    "production_gpu_batch_driver": false,
+    "running_work_cancellation_watchdogs": false,
+    "physical_all_owner_migration": false,
+    "production_lifecycle_admission": false,
+    "general_v1_to_v2_compiler": false,
+    "complete_training_credit_assignment": false,
+    "cross_cell_joint_backpropagation": false,
+    "indefinite_journal_rollover_gc": false,
+    "joint_quality_performance_memory_growth_cost_results": false
+  },
+  "authority_granted": false,
+  "interpretation": "Results remain bound to their original source, command and execution. Skips, failed preparation, timeouts and historical failures are not relabeled. Later evidence/prose publication does not create a new product execution.",
+  "earlier_archive_platform_results": {
+    "source": "b4afdbadc247c6fadfad4e416c00a9a853affa1c",
+    "run_id": 42323275294,
+    "windows": {
+      "job_id": 128252598172,
+      "status": "success",
+      "archive_tests": 14,
+      "receipt": "ci/windows-archive.json"
+    },
+    "ubuntu": {
+      "job_id": 128252598512,
+      "status": "success",
+      "archive_tests": 14,
+      "receipt": "ci/b4-linux-archive.json"
+    },
+    "rust_product_tests_in_these_jobs": false
+  },
+  "hosted_preparation_failure": {
+    "source": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+    "job_id": 128279386660,
+    "receipt": "ci/4ce-native-preparation.json",
+    "classification": "Cargo metadata dependency-index TLS transport failure before tests",
+    "product_tests": "skipped",
+    "initial_targeted_rerun_request": "rejected because containing workflow was already running",
+    "all_current_hosted_ci_green_claimed": false,
+    "later_targeted_rerun_request": "accepted after containing workflow completed; ci/4ce-rerun-request.json",
+    "later_attempt": {
+      "job_id": 128286366849,
+      "status": "success",
+      "receipt": "ci/4ce-three-owner-retry.json",
+      "original_failure_unchanged": true
+    }
+  },
+  "native_evidence": {
+    "index": "native-v2/index.json",
+    "index_sha256": "4665e038aff887d80aca4bcc5df688a33504d7606f61139e2d8e456a72276527",
+    "member_manifest": "native-v2/members.json",
+    "member_manifest_sha256": "312979a8455e55ce70284160201fe84462537a559022b232483068c5ab3f55fd",
+    "members": 1011,
+    "member_bytes": 6033160,
+    "compressed_parts": 4,
+    "largest_delivered_file_bytes": 470447,
+    "independently_verified_before_publication": true,
+    "tests_log_sha256": "be7cb119b5ed389a430e2544e0ee7dad22c05d17b1563a046d2d9d66d39efdec",
+    "clippy_log_sha256": "337d289653bc16a27be1b48ad8e6dac2ec2bc3b51bdf4d12e499410812b9c301"
+  },
+  "hosted_product": {
+    "source": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+    "tree": "0b668cec797c009c7ba710607931f011f4338e52",
+    "run_id": 42331671861,
+    "agentd": {
+      "job_id": 128279386888,
+      "attempt": 1,
+      "status": "success",
+      "passed": 639,
+      "failed": 0,
+      "skipped": 66,
+      "binaries": 17,
+      "strict_clippy": "passed",
+      "format_and_clean_source": "passed",
+      "receipt": "ci/4ce-agentd.json"
+    },
+    "three_owner": {
+      "job_id": 128286366849,
+      "attempt": 2,
+      "status": "success",
+      "passed": 351,
+      "failed": 0,
+      "skipped": 0,
+      "binaries": 14,
+      "strict_clippy": "passed",
+      "format_and_clean_source": "passed",
+      "receipt": "ci/4ce-three-owner-retry.json"
+    },
+    "test_retries": 0,
+    "interpretation": "Independent hosted executions of the same four packages. Native and hosted overlapping tests are not added as distinct coverage; original failures remain unchanged. This does not qualify all repository workflows or later whole heads."
+  },
+  "final_text_closure": {
+    "job_id": "1a1b40b1a4e-fc05-85f6",
+    "source": "e585b90d09a2565e04394d47e1576092b0e9be70",
+    "tree": "81ff0f7e2ed7a06f677168c9cd4ccc6ec133073a",
+    "status": "passed",
+    "exit_code": 0,
+    "original_codespell_cli": "passed",
+    "architecture_prefix_budget": {
+      "status": "passed",
+      "files": 75
+    },
+    "unification_prefix_budget": {
+      "status": "passed",
+      "files": 157
+    },
+    "actual_changed_text_whitespace": "passed",
+    "clean_source_unchanged": true,
+    "rust_tree_unchanged": true,
+    "eight_audit_inputs_unchanged": true,
+    "changed_qualification_files": 28,
+    "rust_or_caller_or_ast_or_prettier_rerun": false,
+    "manifest": "final-text/manifest.json",
+    "archive": "final-text/closure.tar.gz",
+    "archive_sha256": "bea26ce5cb39f7d755a031b3af6049abe94d2f854889d67ffb73fd2ee6e5bd4f",
+    "archive_bytes": 33739,
+    "members": 55,
+    "member_bytes": 160187,
+    "independently_verified_before_publication": true
+  }
+}

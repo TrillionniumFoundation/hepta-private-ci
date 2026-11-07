@@ -61,7 +61,9 @@ pub async fn run(
     let learning_iteration = config.take_learning_iteration_bootstrap();
     let terminal_learning = config.take_terminal_learning_bootstrap();
     if learning_iteration.is_some() && plasticity_bootstrap.is_none() {
-        return Err(AgentdError::Invalid("learning iteration requires the governed plasticity owner".into()));
+        return Err(AgentdError::Invalid(
+            "learning iteration requires the governed plasticity owner".into(),
+        ));
     }
     let trust_file = config
         .authbus_trust_file()

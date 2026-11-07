@@ -1,9 +1,0 @@
-# 可用于 stacked Draft PR 的短正文
-
-本变更为现有 Cell framework 补齐版本化功能合约、全局 Q24 输入桥与不可变后端注册，沿用原 owner admission、执行、commit 和 unknown 恢复路径。角色、capability、expert 版本和实例分别计数；登记身份进入操作 digest，角色或后端重命名不能重解释旧回执。主要入口是 [输入桥](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/hepta-neuron/src/cell_feature_projection.rs)、[注册表](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/hepta-neuron/src/cell_registry.rs) 和 [冻结分化提案](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/hepta-plasticity/src/differentiation_study.rs)。
-
-七类功能职责不等于 HNMF 七类 engram，也不规定恰好七个模型。保留冻结表示＋私有 Head/Adapter、生成模型＋私有 Adapter/解码状态、可训练状态模型三个可替换家族。14 项新增机制回归使用控制夹具；当前桥只接受已定义的 1..512 维全局 Q24 receipt，不能用它宣称完整 FeatureBundle、EG2 768 维兼容或真实模型效能。研究的两个场景均 HOLD，输出权限保持 DENY_ALL。
-
-组合过程中同步修复了真实 Rust owning/API 消费者、持久预算恢复、终止确认和受控工具绑定，并保留对应回归。Linux owner 退出通过持续 pidfd 观察处理，原 namespace/session/权限边界与五秒断连 oracle 不变。原 runner、跨包 helper、fixture 和 CI 接线另列，生产默认、断言、预算与 ignored 均保持；[source52 的唯一新叶](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b5209cfdf509e990f10922197b32540bf8c353a7/codex-rs/network-proxy/src/runtime.rs)只将 host-pattern fixture 与环境 DNS 前置分开，专门的地址防护测试仍完整保留。
-
-已测试源码固定为 `f74be175de66a4b351cd239d39d98cd34fe9cc1b`，197路径／26owner。source53两条Bedrock叶仅加固定阶段诊断，原await、预算及22个断言保持；不主张根因修复。原R30 strict／完整1345项目门和R31原no-p193工作区均自然0；R31为20228PASS／0FAIL／0TIMEOUT，130 reportedskip。实际scoped fix→default fmt后，最终代码登记为 `b5209cfdf509e990f10922197b32540bf8c353a7`；没有格式化后本地测试。最终SHA CI、分支和Draft PR仍待实际发布步骤。科学HOLD、DENY_ALL及所有历史失败不变，分组、双身份与原始回执见REVIEW-GUIDE.zh-CN.md和PATH-GROUPS.json。

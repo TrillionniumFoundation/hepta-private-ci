@@ -1,8 +1,0 @@
-{
-  "schema": "hepta.root-local-review-correction.v1",
-  "original_reviewer": "verify.py",
-  "corrected_reviewer": "verify_v2.py",
-  "original_result": "AssertionError before ROOT-READBACK was written",
-  "reason": "Reviewer assumed default-member scope rows repeat manifest_path; actual frozen producer stores id/name for defaults and id/name/manifest_path for members. Preserve each actual field shape and original metadata array ordering.",
-  "candidate_or_native_or_gate_modified": false
-}

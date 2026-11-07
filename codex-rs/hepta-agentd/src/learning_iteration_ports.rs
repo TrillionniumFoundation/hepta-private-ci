@@ -48,24 +48,36 @@ pub struct PreparedLearningIterationProposalV1 {
 /// ambiguous commit returns CommitUncertain. These are mandatory host duties,
 /// not guarantees provided by an in-memory implementation.
 pub trait LearningIterationOwnerPortsV1: Send + Sync {
-    fn restore<'a>(&'a self, request: &'a LearningIterationRequestV1)
-        -> LearningIterationOwnerFutureV1<'a, Option<LearningIterationSnapshotV1>>;
+    fn restore<'a>(
+        &'a self,
+        request: &'a LearningIterationRequestV1,
+    ) -> LearningIterationOwnerFutureV1<'a, Option<LearningIterationSnapshotV1>>;
 
-    fn execute_stage<'a>(&'a self, snapshot: &'a LearningIterationSnapshotV1, stage: LearningIterationStageV1)
-        -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1>;
+    fn execute_stage<'a>(
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+        stage: LearningIterationStageV1,
+    ) -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1>;
 
-    fn prepare_proposal<'a>(&'a self, snapshot: &'a LearningIterationSnapshotV1)
-        -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1>;
+    fn prepare_proposal<'a>(
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+    ) -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1>;
 
     /// Re-read the actual owner result and current signature. NextUse resolves
     /// the scoped committed state; it cannot just sign caller-supplied IDs.
     /// Agentd verifies this signature with its bootstrap-pinned trust snapshot.
     fn receipt_attestation<'a>(
-        &'a self, snapshot: &'a LearningIterationSnapshotV1,
-        receipt: &'a LearningIterationReceiptV1, now_unix_seconds: u64,
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+        receipt: &'a LearningIterationReceiptV1,
+        now_unix_seconds: u64,
     ) -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1>;
 
     /// ZERO is permitted only for create-if-absent initial registration.
-    fn checkpoint<'a>(&'a self, expected_head: Digest32, snapshot: &'a LearningIterationSnapshotV1)
-        -> LearningIterationOwnerFutureV1<'a, Digest32>;
+    fn checkpoint<'a>(
+        &'a self,
+        expected_head: Digest32,
+        snapshot: &'a LearningIterationSnapshotV1,
+    ) -> LearningIterationOwnerFutureV1<'a, Digest32>;
 }

@@ -1,6 +1,0 @@
-{
-  "path": "codex-rs/core/tests/suite/mcp_tool_exposure.rs",
-  "original": "                EventMsg::TurnComplete(_) => turn_complete = true,\n",
-  "replacement": "                EventMsg::TurnComplete(completed) => {\n                    // TurnComplete precedes retirement of its exact finish owner.\n                    if let Some(completion) = test\n                        .codex\n                        .pending_normal_turn_finish_completion(&completed.turn_id)\n                    {\n                        completion.await;\n                    }\n                    turn_complete = true;\n                }\n",
-  "expected_occurrences": 1
-}

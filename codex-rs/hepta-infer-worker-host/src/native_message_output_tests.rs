@@ -46,7 +46,12 @@ fn complete_only_message_is_observed_only_for_the_bound_turn() {
     observe_for_test(
         &mut output,
         &mut messages,
-        completed("thread-a", "turn-a", "complete-only", "fresh context accepted"),
+        completed(
+            "thread-a",
+            "turn-a",
+            "complete-only",
+            "fresh context accepted",
+        ),
     )
     .unwrap();
     assert_eq!(output.output, "fresh context accepted");
@@ -186,7 +191,12 @@ fn oversized_complete_item_preserves_previous_output_and_pending_state() {
         observe_for_test(
             &mut output,
             &mut messages,
-            completed("thread-a", "turn-a", "one", &"x".repeat(MAX_OUTPUT_BYTES + 1)),
+            completed(
+                "thread-a",
+                "turn-a",
+                "one",
+                &"x".repeat(MAX_OUTPUT_BYTES + 1)
+            ),
         )
         .is_err()
     );
@@ -216,7 +226,11 @@ fn empty_items_cannot_retain_unbounded_metadata() {
     }
     assert!(rejected);
     messages
-        .complete(&format!("0{suffix}"), "existing item still fits", &mut output)
+        .complete(
+            &format!("0{suffix}"),
+            "existing item still fits",
+            &mut output,
+        )
         .unwrap();
     assert_eq!(output, "existing item still fits");
 }
@@ -254,4 +268,3 @@ fn oversized_terminal_snapshot_cannot_authorize_completion() {
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(!output.terminal_observed);
 }
-

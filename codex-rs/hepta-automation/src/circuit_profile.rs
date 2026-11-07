@@ -36,14 +36,26 @@ pub enum CircuitJoinV2 {
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum CircuitNodeKindV2 {
     /// A bounded computation on the existing inference/transform facilities.
-    Compute { max_work: u64 },
+    Compute {
+        max_work: u64,
+    },
     /// Select exactly one declared edge; the committed choice is never rerun.
-    Decide { max_work: u64 },
-    Subcircuit { program: String, max_work: u64 },
+    Decide {
+        max_work: u64,
+    },
+    Subcircuit {
+        program: String,
+        max_work: u64,
+    },
     /// This profile joins successful computation branches. A failed required
     /// computation takes the declared fallback; unknown outcomes remain open.
-    Join { mode: CircuitJoinV2, timeout_ms: u64 },
-    Exit { outcome: CircuitExitV2 },
+    Join {
+        mode: CircuitJoinV2,
+        timeout_ms: u64,
+    },
+    Exit {
+        outcome: CircuitExitV2,
+    },
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -132,10 +144,14 @@ impl BoundedCircuitDefinitionV2 {
             || l.work_budget == 0
             || l.work_budget > i64::MAX as u64
         {
-            return Err(invalid("circuit resource limits are outside the bounded profile"));
+            return Err(invalid(
+                "circuit resource limits are outside the bounded profile",
+            ));
         }
         if self.programs.is_empty() || self.programs.len() > 32 {
-            return Err(invalid("circuit program count is outside the bounded profile"));
+            return Err(invalid(
+                "circuit program count is outside the bounded profile",
+            ));
         }
         let mut programs = BTreeMap::new();
         let mut nodes = 0_usize;
@@ -143,15 +159,23 @@ impl BoundedCircuitDefinitionV2 {
         let mut largest_degree = 0_usize;
         for program in &self.programs {
             text(&program.program_id)?;
-            if programs.insert(program.program_id.as_str(), program).is_some() {
+            if programs
+                .insert(program.program_id.as_str(), program)
+                .is_some()
+            {
                 return Err(invalid("duplicate circuit program"));
             }
             nodes += program.nodes.len();
             edges += program.edges.len();
             program.validate(l)?;
             for node in &program.nodes {
-                largest_degree = largest_degree.max(program.edges.iter()
-                    .filter(|edge| edge.from == node.node_id || edge.to == node.node_id).count());
+                largest_degree = largest_degree.max(
+                    program
+                        .edges
+                        .iter()
+                        .filter(|edge| edge.from == node.node_id || edge.to == node.node_id)
+                        .count(),
+                );
             }
         }
         if nodes > 256 || edges > 1_024 {
@@ -161,7 +185,9 @@ impl BoundedCircuitDefinitionV2 {
         // Admission must not promise a run whose bounded trace cannot persist.
         let state_bound = u64::from(l.max_activations) * (1_536 + largest_degree as u64 * 288);
         if state_bound > 7_340_032 {
-            return Err(invalid("activation/branch product exceeds circuit state byte bound"));
+            return Err(invalid(
+                "activation/branch product exceeds circuit state byte bound",
+            ));
         }
         // Process each call edge once. Enumerating ancestor paths here would
         // be exponential for a small DAG containing shared subprograms.
@@ -170,15 +196,24 @@ impl BoundedCircuitDefinitionV2 {
         for program in &self.programs {
             for node in &program.nodes {
                 if let CircuitNodeKindV2::Subcircuit { program: child, .. } = &node.kind {
-                    let child = programs.get(child.as_str()).ok_or_else(|| invalid("unknown subcircuit"))?;
+                    let child = programs
+                        .get(child.as_str())
+                        .ok_or_else(|| invalid("unknown subcircuit"))?;
                     if child.node(&child.entry_node)?.input_schema != node.input_schema
-                        || child.nodes.iter().any(|n| matches!(n.kind, CircuitNodeKindV2::Exit { .. })
-                            && n.output_schema != node.output_schema)
+                        || child.nodes.iter().any(|n| {
+                            matches!(n.kind, CircuitNodeKindV2::Exit { .. })
+                                && n.output_schema != node.output_schema
+                        })
                     {
                         return Err(invalid("subcircuit port schema mismatch"));
                     }
-                    *incoming.get_mut(child.program_id.as_str()).ok_or_else(|| invalid("unknown child"))? += 1;
-                    calls.entry(&program.program_id).or_default().push(&child.program_id);
+                    *incoming
+                        .get_mut(child.program_id.as_str())
+                        .ok_or_else(|| invalid("unknown child"))? += 1;
+                    calls
+                        .entry(&program.program_id)
+                        .or_default()
+                        .push(&child.program_id);
                 }
             }
         }
@@ -195,8 +230,13 @@ impl BoundedCircuitDefinitionV2 {
                 if depth > l.max_child_depth {
                     return Err(invalid("subcircuit depth exceeds profile"));
                 }
-                depths.entry(child).and_modify(|d| *d = (*d).max(depth)).or_insert(depth);
-                let count = incoming.get_mut(child).ok_or_else(|| invalid("unknown child"))?;
+                depths
+                    .entry(child)
+                    .and_modify(|d| *d = (*d).max(depth))
+                    .or_insert(depth);
+                let count = incoming
+                    .get_mut(child)
+                    .ok_or_else(|| invalid("unknown child"))?;
                 *count -= 1;
                 if *count == 0 {
                     pending.push(child);
@@ -215,13 +255,19 @@ impl BoundedCircuitDefinitionV2 {
     }
 
     pub(crate) fn program(&self, id: &str) -> Result<&CircuitProgramV2, TaskFlowError> {
-        self.programs.iter().find(|p| p.program_id == id).ok_or_else(|| invalid("unknown program"))
+        self.programs
+            .iter()
+            .find(|p| p.program_id == id)
+            .ok_or_else(|| invalid("unknown program"))
     }
 }
 
 impl CircuitProgramV2 {
     pub(crate) fn node(&self, id: &str) -> Result<&CircuitNodeV2, TaskFlowError> {
-        self.nodes.iter().find(|n| n.node_id == id).ok_or_else(|| invalid("unknown node"))
+        self.nodes
+            .iter()
+            .find(|n| n.node_id == id)
+            .ok_or_else(|| invalid("unknown node"))
     }
 
     fn validate(&self, limits: &CircuitLimitsV2) -> Result<(), TaskFlowError> {
@@ -245,7 +291,8 @@ impl CircuitProgramV2 {
                     }
                 }
                 CircuitNodeKindV2::Join { timeout_ms, .. } => {
-                    if *timeout_ms == 0 || *timeout_ms > limits.max_elapsed_ms
+                    if *timeout_ms == 0
+                        || *timeout_ms > limits.max_elapsed_ms
                         || node.output_schema != circuit_join_output_schema_v2()
                     {
                         return Err(invalid("invalid join timeout or output envelope schema"));
@@ -258,18 +305,26 @@ impl CircuitProgramV2 {
                 }
             }
         }
-        if matches!(self.node(&self.entry_node)?.kind, CircuitNodeKindV2::Join { .. })
-            || !matches!(self.node(&self.fallback_node)?.kind,
-                CircuitNodeKindV2::Exit { outcome: CircuitExitV2::Failed | CircuitExitV2::Abstained })
-        {
+        if matches!(
+            self.node(&self.entry_node)?.kind,
+            CircuitNodeKindV2::Join { .. }
+        ) || !matches!(
+            self.node(&self.fallback_node)?.kind,
+            CircuitNodeKindV2::Exit {
+                outcome: CircuitExitV2::Failed | CircuitExitV2::Abstained
+            }
+        ) {
             return Err(invalid("invalid circuit entry or fallback"));
         }
         let mut edge_ids = BTreeSet::new();
         let mut indegree: BTreeMap<_, usize> = nodes.iter().map(|id| (*id, 0)).collect();
         for edge in &self.edges {
             text(&edge.edge_id)?;
-            if !edge_ids.insert(edge.edge_id.as_str()) || edge.feedback_delay_ms == Some(0)
-                || edge.feedback_delay_ms.is_some_and(|d| d > limits.max_elapsed_ms)
+            if !edge_ids.insert(edge.edge_id.as_str())
+                || edge.feedback_delay_ms == Some(0)
+                || edge
+                    .feedback_delay_ms
+                    .is_some_and(|d| d > limits.max_elapsed_ms)
             {
                 return Err(invalid("duplicate edge or unbounded feedback delay"));
             }
@@ -280,19 +335,32 @@ impl CircuitProgramV2 {
             }
             // Join arrivals are observations at receipt time in this profile.
             // Delayed feedback must enter a computation before it reaches a join.
-            if edge.feedback_delay_ms.is_some() && matches!(destination.kind, CircuitNodeKindV2::Join { .. }) {
+            if edge.feedback_delay_ms.is_some()
+                && matches!(destination.kind, CircuitNodeKindV2::Join { .. })
+            {
                 return Err(invalid("delayed feedback cannot directly enter a join"));
             }
             if edge.feedback_delay_ms.is_none() {
-                *indegree.get_mut(edge.to.as_str()).ok_or_else(|| invalid("unknown edge target"))? += 1;
+                *indegree
+                    .get_mut(edge.to.as_str())
+                    .ok_or_else(|| invalid("unknown edge target"))? += 1;
             }
         }
-        let mut ready: Vec<_> = indegree.iter().filter_map(|(id, degree)| (*degree == 0).then_some(*id)).collect();
+        let mut ready: Vec<_> = indegree
+            .iter()
+            .filter_map(|(id, degree)| (*degree == 0).then_some(*id))
+            .collect();
         let mut ordered = 0;
         while let Some(id) = ready.pop() {
             ordered += 1;
-            for edge in self.edges.iter().filter(|e| e.from == id && e.feedback_delay_ms.is_none()) {
-                let degree = indegree.get_mut(edge.to.as_str()).ok_or_else(|| invalid("unknown target"))?;
+            for edge in self
+                .edges
+                .iter()
+                .filter(|e| e.from == id && e.feedback_delay_ms.is_none())
+            {
+                let degree = indegree
+                    .get_mut(edge.to.as_str())
+                    .ok_or_else(|| invalid("unknown target"))?;
                 *degree -= 1;
                 if *degree == 0 {
                     ready.push(edge.to.as_str());
@@ -300,13 +368,20 @@ impl CircuitProgramV2 {
             }
         }
         if ordered != self.nodes.len() {
-            return Err(invalid("same-round graph contains a cycle; declare delayed feedback"));
+            return Err(invalid(
+                "same-round graph contains a cycle; declare delayed feedback",
+            ));
         }
         let mut reached = BTreeSet::new();
         let mut queue = vec![self.entry_node.as_str()];
         while let Some(id) = queue.pop() {
             if reached.insert(id) {
-                queue.extend(self.edges.iter().filter(|e| e.from == id).map(|e| e.to.as_str()));
+                queue.extend(
+                    self.edges
+                        .iter()
+                        .filter(|e| e.from == id)
+                        .map(|e| e.to.as_str()),
+                );
             }
         }
         reached.insert(self.fallback_node.as_str());
@@ -317,7 +392,9 @@ impl CircuitProgramV2 {
             let outgoing = self.edges.iter().filter(|e| e.from == node.node_id).count();
             let incoming = self.edges.iter().filter(|e| e.to == node.node_id).count();
             if outgoing > 256 || incoming > 256 {
-                return Err(invalid("circuit port fan-in/out exceeds receipt byte bound"));
+                return Err(invalid(
+                    "circuit port fan-in/out exceeds receipt byte bound",
+                ));
             }
             if matches!(node.kind, CircuitNodeKindV2::Exit { .. }) != (outgoing == 0) {
                 return Err(invalid("exit has outgoing edges or non-exit has none"));
@@ -346,7 +423,10 @@ pub(crate) fn text(value: &str) -> Result<(), TaskFlowError> {
 
 pub(crate) fn digest(value: &Sha256Digest) -> Result<(), TaskFlowError> {
     if value.as_str().len() != 64
-        || !value.as_str().bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+        || !value
+            .as_str()
+            .bytes()
+            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
         || value.as_str().bytes().all(|b| b == b'0')
     {
         return Err(invalid("invalid circuit digest"));

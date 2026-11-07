@@ -1,0 +1,103 @@
+{
+  "schema": "hepta.native-closure-root-verification.v1",
+  "verified_at_utc": "2026-11-07T03:20:28.945876+00:00",
+  "scope": "Independent root read of all delivered compressed parts, every listed tar member and original product command receipts before publication. This verification is outside the payload to avoid self-reference.",
+  "index_sha256": "4665e038aff887d80aca4bcc5df688a33504d7606f61139e2d8e456a72276527",
+  "members": 1011,
+  "total_member_bytes": 6033160,
+  "all_part_and_member_hashes_verified": true,
+  "all_regular_safe_paths_and_archive_modes_verified": true,
+  "product_records": [
+    {
+      "member": "native/evidence/native-final-gates-08/clippy.json",
+      "status": "passed",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-runtime",
+        "-p",
+        "codex-hepta-agentd",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "command_exit_code": 0,
+      "source_before": {
+        "commit": "87cce8066b5f41e2d462b9469a301245f43d8c23",
+        "dirty": false,
+        "parents": [
+          "8d86de32cb0d22367eaab7994f49515187cf71d3"
+        ],
+        "tree": "60604de0d6ea4805fd248574ba83fe49f16b261a"
+      },
+      "source_after": {
+        "commit": "87cce8066b5f41e2d462b9469a301245f43d8c23",
+        "dirty": false,
+        "parents": [
+          "8d86de32cb0d22367eaab7994f49515187cf71d3"
+        ],
+        "tree": "60604de0d6ea4805fd248574ba83fe49f16b261a"
+      },
+      "elapsed_seconds": 288.6668489780277,
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "log_bytes": 22176,
+      "log_sha256": "337d289653bc16a27be1b48ad8e6dac2ec2bc3b51bdf4d12e499410812b9c301"
+    },
+    {
+      "member": "native/evidence/native-final-gates-08/tests.json",
+      "status": "passed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-runtime",
+        "-p",
+        "codex-hepta-agentd",
+        "--retries",
+        "0"
+      ],
+      "command_exit_code": 0,
+      "source_before": {
+        "commit": "87cce8066b5f41e2d462b9469a301245f43d8c23",
+        "dirty": false,
+        "parents": [
+          "8d86de32cb0d22367eaab7994f49515187cf71d3"
+        ],
+        "tree": "60604de0d6ea4805fd248574ba83fe49f16b261a"
+      },
+      "source_after": {
+        "commit": "87cce8066b5f41e2d462b9469a301245f43d8c23",
+        "dirty": false,
+        "parents": [
+          "8d86de32cb0d22367eaab7994f49515187cf71d3"
+        ],
+        "tree": "60604de0d6ea4805fd248574ba83fe49f16b261a"
+      },
+      "elapsed_seconds": 1070.945293030003,
+      "observed_passed_tests": 990,
+      "observed_failed_tests": 0,
+      "log_bytes": 196194,
+      "log_sha256": "be7cb119b5ed389a430e2544e0ee7dad22c05d17b1563a046d2d9d66d39efdec"
+    }
+  ],
+  "observed_nextest_summary": {
+    "passed": 990,
+    "failed": 0,
+    "skipped": 66,
+    "binaries": 31,
+    "slow": 1
+  },
+  "authority_granted": false
+}

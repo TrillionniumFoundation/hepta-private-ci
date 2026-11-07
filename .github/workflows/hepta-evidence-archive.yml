@@ -1,0 +1,59 @@
+name: Hepta evidence archive
+
+on:
+  pull_request:
+    paths:
+      - qualification/cell-unification-20261106/**
+      - scripts/hepta_evidence_archive.py
+      - scripts/tests/test_hepta_evidence_archive.py
+      - .github/workflows/hepta-evidence-archive.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  archive:
+    name: Verify complete evidence archive (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ORIGINAL_SHA: a6f3aa12ba187448c35449c7da0a9798ae4ca987
+      ORIGINAL_LISTING: c1e6d2104a3b33f7a37b600efd8468e2a169e7a5e624682ac6fe78a674ea6669
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out the exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Verify integrity, source coverage and bounded checkout files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          records="$RUNNER_TEMP/evidence-archive"
+          mkdir -p "$records"
+          git rev-parse HEAD HEAD^{tree} > "$records/source.txt"
+          python -B -m unittest discover -s scripts/tests -p test_hepta_evidence_archive.py -v \
+            2>&1 | tee "$records/tests.log"
+          python -B scripts/hepta_evidence_archive.py verify \
+            qualification/cell-unification-20261106/archive \
+            --expected-source "$ORIGINAL_SHA" --expected-listing "$ORIGINAL_LISTING" \
+            2>&1 | tee "$records/verification.json"
+          python -B scripts/hepta_evidence_archive.py check-tree \
+            --revision "$SOURCE_SHA" --prefix qualification/cell-unification-20261106 \
+            2>&1 | tee "$records/checkout-budget.json"
+          test -z "$(git status --porcelain)"
+      - name: Preserve verification output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: evidence-archive-${{ matrix.os }}-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/evidence-archive
+          if-no-files-found: error

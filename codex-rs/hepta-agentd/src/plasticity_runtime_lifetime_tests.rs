@@ -91,6 +91,8 @@ use crate::reopen_agentd_topology_writer_v1;
 use crate::resolve_agentd_plasticity_admission_v1;
 use crate::resolve_agentd_topology_admission_v1;
 
+#[path = "plasticity_runtime_budget_tests.rs"]
+mod budget_tests;
 #[path = "learning_iteration_runtime_tests.rs"]
 mod learning_iteration_tests;
 #[path = "terminal_learning_tests.rs"]

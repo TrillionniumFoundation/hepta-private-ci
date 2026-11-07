@@ -1,1 +1,0 @@
-Pure local static review helper stopped before report generation: KeyError: MIN_FREE_BYTES. ast.literal_eval intentionally does not evaluate the original 20 * 1024**3 expression. No runner import, execution, native source mutation or Rust occurred. Follow-up compares original/current assignment AST rather than treating this as a runner error.
