@@ -16,22 +16,33 @@ fn maximum_generation_pages_and_inputs_roundtrip_within_existing_frame() {
         input: vec![255; MAX_GENERATION_CONTROL_INPUT_BYTES],
         deadline_micros: u64::MAX,
     };
-    let request = AgentdRequest {
-        schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
-        request_id: u64::MAX,
-        spawn_generation: u64::MAX,
-        method: AgentdMethod::Generation {
-            request: Box::new(GenerationControlRequestV1::Step {
-                request: Box::new(step),
-            }),
+    for operation in [
+        GenerationControlRequestV1::Step {
+            request: Box::new(step.clone()),
         },
-    };
-    let encoded = serde_json::to_vec(&request).expect("encode maximum request");
-    assert!((encoded.len() as u64) < MAX_CONTROL_FRAME_BYTES);
-    assert_eq!(
-        serde_json::from_slice::<AgentdRequest>(&encoded).expect("decode request"),
-        request
-    );
+        GenerationControlRequestV1::LookupIntent {
+            expected_operation_id: "x".repeat(256),
+            request: Box::new(step),
+        },
+    ] {
+        let mut altered = serde_json::to_value(&operation).expect("operation value");
+        altered["allow_if_missing"] = serde_json::json!(true);
+        assert!(serde_json::from_value::<GenerationControlRequestV1>(altered).is_err());
+        let request = AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: u64::MAX,
+            spawn_generation: u64::MAX,
+            method: AgentdMethod::Generation {
+                request: Box::new(operation),
+            },
+        };
+        let encoded = serde_json::to_vec(&request).expect("encode maximum request");
+        assert!((encoded.len() as u64) < MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&encoded).expect("decode request"),
+            request
+        );
+    }
 
     let response = AgentdResponse {
         schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -82,6 +93,9 @@ fn generation_wire_rejects_unknown_fields_and_unbounded_byte_values() {
         GenerationControlResponseV1::Acknowledged {},
         GenerationControlResponseV1::CancelRequested {},
         GenerationControlResponseV1::Resumed {},
+        GenerationControlResponseV1::IntentMissing {
+            operation_id: "original-pinned-operation".into(),
+        },
     ] {
         let mut encoded = serde_json::to_value(&response).expect("encode empty response");
         assert_eq!(

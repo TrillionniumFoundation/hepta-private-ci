@@ -31,6 +31,13 @@ pub enum GenerationControlRequestV1 {
     Step {
         request: Box<GenerationStepV1>,
     },
+    /// Inspect the exact original control intent without admitting, polling or
+    /// settling it. The caller pins the derived operation ID before dispatch;
+    /// changing an intent field cannot become an unrelated missing result.
+    LookupIntent {
+        expected_operation_id: String,
+        request: Box<GenerationStepV1>,
+    },
     Reconcile {
         request_digest: [u8; 32],
     },
@@ -149,6 +156,11 @@ pub enum GenerationControlResponseV1 {
     Status(Box<GenerationStatusV1>),
     Receipt(GenerationReceiptV1),
     Pending(GenerationPendingV1),
+    /// No matching journal observation. This is not proof of no contact,
+    /// execution authority, cancellation, refund or an owner drain receipt.
+    IntentMissing {
+        operation_id: String,
+    },
     Output {
         delivery: GenerationOutputReferenceV1,
         offset: u32,

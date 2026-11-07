@@ -26,6 +26,9 @@ use crate::neuron_generation_service::spawn_neuron_generation_service;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+#[path = "neuron_generation_intent_lookup_tests.rs"]
+mod intent_lookup;
+
 struct Serving {
     client: AgentdClient,
     tasks: RuntimeTasks,
@@ -374,14 +377,25 @@ async fn typed_generation_bootstrap_does_not_implicitly_expose_control() -> Test
     let (mut tasks, lifetime) = host();
     spawn_neuron_generation_service(&mut tasks, bootstrap, Arc::clone(fixture.state()), lifetime)?;
     assert!(!fixture.state().generation_control_enabled()?);
-    assert!(
-        fixture
-            .state()
-            .generation_control(Box::new(Request::Status {}))
-            .await
-            .is_err()
-    );
+    let original = GenerationStepV1 {
+        client_operation_id: "disabled-control".into(),
+        expected_snapshot_digest: fixture.config.initial.digest()?,
+        task_digest: fixture.config.task_digest,
+        source_frontier: fixture.config.source_frontier,
+        input: vec![1, 2, 3],
+        deadline_micros: 10_000,
+    };
+    for request in [Request::Status {}, intent_lookup::lookup(&original)?] {
+        assert!(
+            fixture
+                .state()
+                .generation_control(Box::new(request))
+                .await
+                .is_err()
+        );
+    }
     assert_eq!(handle.snapshot().await?.revision, 0);
+    assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 0);
     tasks.shutdown().await;
     Ok(())
 }
@@ -420,15 +434,14 @@ async fn typed_operation_with_same_derived_id_cannot_impersonate_control_intent(
     drop(owner);
     let before = fs::read(fixture.directory.path().join("generation-journal"))?;
     let serving = Serving::start(&fixture).await?;
-    assert!(
-        serving
-            .client
-            .generation(Request::Step {
-                request: Box::new(compact)
-            })
-            .await
-            .is_err()
-    );
+    for request in [
+        Request::Step {
+            request: Box::new(compact.clone()),
+        },
+        intent_lookup::lookup(&compact)?,
+    ] {
+        assert!(serving.client.generation(request).await.is_err());
+    }
     assert_eq!(
         fs::read(fixture.directory.path().join("generation-journal"))?,
         before
@@ -499,15 +512,14 @@ async fn pending_typed_operation_with_same_derived_id_rejects_control_intent_wit
         status(&serving.client).await?.pending,
         Some(pending.clone())
     );
-    assert!(
-        serving
-            .client
-            .generation(Request::Step {
-                request: Box::new(compact)
-            })
-            .await
-            .is_err()
-    );
+    for request in [
+        Request::Step {
+            request: Box::new(compact.clone()),
+        },
+        intent_lookup::lookup(&compact)?,
+    ] {
+        assert!(serving.client.generation(request).await.is_err());
+    }
     assert_eq!(fs::read(&journal_path)?, before);
     assert_eq!(
         status(&serving.client).await?.pending,

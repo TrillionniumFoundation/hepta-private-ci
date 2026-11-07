@@ -69,6 +69,52 @@ where
                 })))
             }
             Request::Step { request } => self.control_step(*request, state),
+            Request::LookupIntent {
+                expected_operation_id,
+                request,
+            } => {
+                StableId::new(&request.client_operation_id).map_err(|_| Error::InvalidBinding)?;
+                StableId::new(&expected_operation_id).map_err(|_| Error::InvalidBinding)?;
+                let journal = self.owner.journal();
+                if request.input.len() > MAX_GENERATION_CONTROL_INPUT_BYTES
+                    || request.input.len() > journal.manifest().max_input_bytes as usize
+                {
+                    return Err(Error::Capacity);
+                }
+                if request.expected_snapshot_digest == [0; 32]
+                    || request.task_digest == [0; 32]
+                    || request.source_frontier == [0; 32]
+                    || request.deadline_micros == 0
+                {
+                    return Err(Error::InvalidBinding);
+                }
+                let operation_id = codec::operation_id(&request)?;
+                if operation_id != expected_operation_id {
+                    return Err(Error::Conflict);
+                }
+                let intent = CellGenerationIntentV2 {
+                    operation_id: operation_id.clone(),
+                    task_digest: request.task_digest,
+                    source_frontier: request.source_frontier,
+                    predecessor_digest: request.expected_snapshot_digest,
+                    input_digest: Digest32::of_bytes(&request.input).into_array(),
+                    deadline_micros: request.deadline_micros,
+                };
+                if let Some(receipt) = journal.receipt_for_intent(&intent)? {
+                    return codec::receipt(receipt).map(Response::Receipt);
+                }
+                if let Some(pending) = journal.pending_request()?
+                    && pending.operation_id == operation_id
+                {
+                    if pending.intent()? != intent {
+                        return Err(Error::Conflict);
+                    }
+                    return codec::pending(pending).map(Response::Pending);
+                }
+                // In particular, never call Step/Reconcile on absence. A
+                // foreign owner's sealed claim may have lost its response.
+                Ok(Response::IntentMissing { operation_id })
+            }
             Request::Reconcile { request_digest } => {
                 if let Some(receipt) = self
                     .owner
