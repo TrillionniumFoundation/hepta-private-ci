@@ -72,19 +72,26 @@ def integer(value, maximum, label):
 
 
 def hex_digest(value, length):
-    require(isinstance(value, str) and re.fullmatch(f"[0-9a-f]{{{length}}}", value),
-            "invalid digest")
+    require(
+        isinstance(value, str) and re.fullmatch(f"[0-9a-f]{{{length}}}", value),
+        "invalid digest",
+    )
     return value
 
 
 def portable_path(value):
-    require(isinstance(value, str) and 0 < len(value.encode()) <= 4096,
-            "invalid member path")
+    require(
+        isinstance(value, str) and 0 < len(value.encode()) <= 4096,
+        "invalid member path",
+    )
     parts = value.split("/")
-    require(all(part not in {"", ".", ".."} for part in parts)
-            and not PurePosixPath(value).is_absolute()
-            and not any(char in value for char in '\\:*?"<>|')
-            and all(ord(char) >= 32 for char in value), "unsafe member path")
+    require(
+        all(part not in {"", ".", ".."} for part in parts)
+        and not PurePosixPath(value).is_absolute()
+        and not any(char in value for char in '\\:*?"<>|')
+        and all(ord(char) >= 32 for char in value),
+        "unsafe member path",
+    )
     return value
 
 
@@ -110,8 +117,10 @@ def git_members(repo, revision, prefix):
         metadata, name = record.split(b"\t", 1)
         mode, kind, oid = metadata.decode().split()
         path = portable_path(name.decode())
-        require(kind == "blob" and mode in {"100644", "100755"},
-                "only regular Git files can be archived")
+        require(
+            kind == "blob" and mode in {"100644", "100755"},
+            "only regular Git files can be archived",
+        )
         require(path.startswith(prefix + "/"), "source prefix must be a directory")
         members.append({"path": path, "mode": mode, "git_blob": hex_digest(oid, 40)})
     require(0 < len(members) <= MAX_FILES, "empty or oversized source tree")
@@ -153,9 +162,12 @@ def pack(repo, revision, prefix, output, part_bytes=PART_BYTES):
         with gzip.GzipFile(fileobj=payload, mode="wb", filename="", mtime=0) as zipped:
             for member in members:
                 path = repo / member["path"]
-                require(path.resolve().is_relative_to(repo.resolve())
-                        and not path.is_symlink() and path.is_file(),
-                        f"missing or unsafe source file: {path}")
+                require(
+                    path.resolve().is_relative_to(repo.resolve())
+                    and not path.is_symlink()
+                    and path.is_file(),
+                    f"missing or unsafe source file: {path}",
+                )
                 size = path.stat().st_size
                 total += size
                 require(total <= MAX_TOTAL, "source exceeds archive byte budget")
@@ -171,14 +183,18 @@ def pack(repo, revision, prefix, output, part_bytes=PART_BYTES):
             payload_bytes += len(block)
             parts.append(write_file(output, f"p{len(parts):05d}.bin", block))
     shards, pending, length = [], [], 3
-    require(sum(len(encoded(entry)) + 1 for entry in entries) + 2 <= MAX_MANIFEST_BYTES,
-            "total manifest bytes exceed limit")
+    require(
+        sum(len(encoded(entry)) + 1 for entry in entries) + 2 <= MAX_MANIFEST_BYTES,
+        "total manifest bytes exceed limit",
+    )
     for entry in entries:
         record_size = len(encoded(entry)) + 1
         if pending and length + record_size > MAX_INDEX:
             raw = encoded(pending)
             item = write_file(output, f"m{len(shards):05d}.json.gz", compressed(raw))
-            shards.append(dict(item, decoded_bytes=len(raw), decoded_sha256=digest(raw)))
+            shards.append(
+                dict(item, decoded_bytes=len(raw), decoded_sha256=digest(raw))
+            )
             pending, length = [], 3
         pending.append(entry)
         length += record_size
@@ -187,12 +203,22 @@ def pack(repo, revision, prefix, output, part_bytes=PART_BYTES):
         item = write_file(output, f"m{len(shards):05d}.json.gz", compressed(raw))
         shards.append(dict(item, decoded_bytes=len(raw), decoded_sha256=digest(raw)))
     index = {
-        "format": FORMAT, "source_revision": revision, "source_prefix": prefix,
-        "source_listing_sha256": digest(encoded(members)), "member_count": len(entries),
-        "total_bytes": total, "payload_bytes": payload_bytes,
-        "payload_sha256": payload_hash.hexdigest(), "members": shards, "parts": parts,
+        "format": FORMAT,
+        "source_revision": revision,
+        "source_prefix": prefix,
+        "source_listing_sha256": digest(encoded(members)),
+        "member_count": len(entries),
+        "total_bytes": total,
+        "payload_bytes": payload_bytes,
+        "payload_sha256": payload_hash.hexdigest(),
+        "members": shards,
+        "parts": parts,
     }
-    write_file(output, "index.json", json.dumps(index, indent=2, sort_keys=True).encode() + b"\n")
+    write_file(
+        output,
+        "index.json",
+        json.dumps(index, indent=2, sort_keys=True).encode() + b"\n",
+    )
     return index
 
 
@@ -200,8 +226,10 @@ def read_file(archive, item, name):
     require(item["name"] == name, "noncanonical archive part name or ordering")
     size = integer(item["bytes"], PART_BYTES, "archive file size")
     data = regular_bytes(archive / name, PART_BYTES)
-    require(len(data) == size and digest(data) == hex_digest(item["sha256"], 64),
-            f"archive file integrity mismatch: {name}")
+    require(
+        len(data) == size and digest(data) == hex_digest(item["sha256"], 64),
+        f"archive file integrity mismatch: {name}",
+    )
     return data
 
 
@@ -213,32 +241,46 @@ def read_index(archive):
     integer(index["member_count"], MAX_FILES, "member count")
     integer(index["total_bytes"], MAX_TOTAL, "total bytes")
     integer(index["payload_bytes"], MAX_TOTAL + MAX_TOTAL // 100, "payload bytes")
-    require(isinstance(index["members"], list) and 0 < len(index["members"]) <= MAX_FILES,
-            "invalid member shards")
-    require(isinstance(index["parts"], list) and 0 < len(index["parts"]) <= MAX_FILES,
-            "invalid payload parts")
+    require(
+        isinstance(index["members"], list) and 0 < len(index["members"]) <= MAX_FILES,
+        "invalid member shards",
+    )
+    require(
+        isinstance(index["parts"], list) and 0 < len(index["parts"]) <= MAX_FILES,
+        "invalid payload parts",
+    )
     entries, decoded_total = [], 0
     for position, item in enumerate(index["members"]):
         data = read_file(archive, item, f"m{position:05d}.json.gz")
         with gzip.GzipFile(fileobj=io.BytesIO(data)) as stream:
             raw = stream.read(MAX_INDEX + 1)
-        require(len(raw) == integer(item["decoded_bytes"], MAX_INDEX, "manifest bytes")
-                and digest(raw) == hex_digest(item["decoded_sha256"], 64),
-                "member manifest integrity mismatch")
+        require(
+            len(raw) == integer(item["decoded_bytes"], MAX_INDEX, "manifest bytes")
+            and digest(raw) == hex_digest(item["decoded_sha256"], 64),
+            "member manifest integrity mismatch",
+        )
         decoded_total += len(raw)
-        require(decoded_total <= MAX_MANIFEST_BYTES, "total manifest bytes exceed limit")
+        require(
+            decoded_total <= MAX_MANIFEST_BYTES, "total manifest bytes exceed limit"
+        )
         shard = decoded(raw)
-        require(isinstance(shard, list) and 0 < len(shard) <= MAX_FILES - len(entries),
-                "invalid member shard")
+        require(
+            isinstance(shard, list) and 0 < len(shard) <= MAX_FILES - len(entries),
+            "invalid member shard",
+        )
         entries.extend(shard)
     require(len(entries) == index["member_count"], "member count mismatch")
     previous, total, listing = "", 0, []
     for entry in entries:
-        require(set(entry) == {"path", "mode", "git_blob", "bytes", "sha256"},
-                "unexpected member fields")
+        require(
+            set(entry) == {"path", "mode", "git_blob", "bytes", "sha256"},
+            "unexpected member fields",
+        )
         path = portable_path(entry["path"])
-        require(path > previous and path.startswith(index["source_prefix"] + "/"),
-                "duplicate, unordered, or out-of-scope member")
+        require(
+            path > previous and path.startswith(index["source_prefix"] + "/"),
+            "duplicate, unordered, or out-of-scope member",
+        )
         previous = path
         require(entry["mode"] in {"100644", "100755"}, "invalid file mode")
         hex_digest(entry["git_blob"], 40)
@@ -247,11 +289,17 @@ def read_index(archive):
         require(total <= MAX_TOTAL, "member bytes exceed limit")
         listing.append({key: entry[key] for key in ("path", "mode", "git_blob")})
     require(total == index["total_bytes"], "total member bytes mismatch")
-    require(digest(encoded(listing)) == hex_digest(index["source_listing_sha256"], 64),
-            "source listing mismatch")
-    expected = {"index.json"} | {item["name"] for item in index["members"] + index["parts"]}
-    require({path.name for path in archive.iterdir()} == expected,
-            "unlisted or missing archive files")
+    require(
+        digest(encoded(listing)) == hex_digest(index["source_listing_sha256"], 64),
+        "source listing mismatch",
+    )
+    expected = {"index.json"} | {
+        item["name"] for item in index["members"] + index["parts"]
+    }
+    require(
+        {path.name for path in archive.iterdir()} == expected,
+        "unlisted or missing archive files",
+    )
     return index, entries, listing
 
 
@@ -267,8 +315,10 @@ def inspect_payload(payload, entries, destination=None):
                 with path.open("xb") as output:
                     actual = copy_member(stream, output, entry["bytes"])
                 path.chmod(0o755 if entry["mode"] == "100755" else 0o644)
-            require(actual == (entry["sha256"], entry["git_blob"]),
-                    f"member integrity mismatch: {entry['path']}")
+            require(
+                actual == (entry["sha256"], entry["git_blob"]),
+                f"member integrity mismatch: {entry['path']}",
+            )
         require(not stream.read(1), "unlisted trailing payload")
 
 
@@ -276,14 +326,21 @@ def inspect_payload(payload, entries, destination=None):
 def verified_payload(archive, repo=None, expected_source=None, expected_listing=None):
     index, entries, listing = read_index(archive)
     if expected_source is not None:
-        require(index["source_revision"] == hex_digest(expected_source, 40),
-                "unexpected source revision")
+        require(
+            index["source_revision"] == hex_digest(expected_source, 40),
+            "unexpected source revision",
+        )
     if expected_listing is not None:
-        require(index["source_listing_sha256"] == hex_digest(expected_listing, 64),
-                "unexpected original source listing")
+        require(
+            index["source_listing_sha256"] == hex_digest(expected_listing, 64),
+            "unexpected original source listing",
+        )
     if repo is not None:
-        require(git_members(repo, index["source_revision"], index["source_prefix"]) == listing,
-                "archive does not cover the exact original Git subtree")
+        require(
+            git_members(repo, index["source_revision"], index["source_prefix"])
+            == listing,
+            "archive does not cover the exact original Git subtree",
+        )
     with tempfile.TemporaryFile() as payload:
         payload_hash, total = hashlib.sha256(), 0
         for position, item in enumerate(index["parts"]):
@@ -292,24 +349,43 @@ def verified_payload(archive, repo=None, expected_source=None, expected_listing=
             require(total <= index["payload_bytes"], "payload exceeds declared size")
             payload_hash.update(data)
             payload.write(data)
-        require(total == index["payload_bytes"]
-                and payload_hash.hexdigest() == hex_digest(index["payload_sha256"], 64),
-                "whole payload integrity mismatch")
+        require(
+            total == index["payload_bytes"]
+            and payload_hash.hexdigest() == hex_digest(index["payload_sha256"], 64),
+            "whole payload integrity mismatch",
+        )
         inspect_payload(payload, entries)
         yield index, entries, payload
 
 
-def verify(archive, repo=None, expected_source=None, destination=None, expected_listing=None):
-    with verified_payload(archive, repo, expected_source, expected_listing) as (index, entries, payload):
+def verify(
+    archive, repo=None, expected_source=None, destination=None, expected_listing=None
+):
+    with verified_payload(archive, repo, expected_source, expected_listing) as (
+        index,
+        entries,
+        payload,
+    ):
         if destination is not None:
-            require(not destination.exists() and not destination.is_symlink(),
-                    "restore destination must not exist")
+            require(
+                not destination.exists() and not destination.is_symlink(),
+                "restore destination must not exist",
+            )
             destination.mkdir(parents=False, exist_ok=False)
             inspect_payload(payload, entries, destination)
-        return {key: index[key] for key in (
-            "format", "source_revision", "source_prefix", "member_count", "total_bytes",
-            "payload_bytes", "payload_sha256", "source_listing_sha256",
-        )}
+        return {
+            key: index[key]
+            for key in (
+                "format",
+                "source_revision",
+                "source_prefix",
+                "member_count",
+                "total_bytes",
+                "payload_bytes",
+                "payload_sha256",
+                "source_listing_sha256",
+            )
+        }
 
 
 def check_tree(repo, revision, max_path, max_blob, prefix=None):
@@ -360,14 +436,30 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == "pack":
-            result = pack(args.repo, args.revision, args.prefix, args.output, args.part_bytes)
+            result = pack(
+                args.repo, args.revision, args.prefix, args.output, args.part_bytes
+            )
         elif args.command == "check-tree":
-            result = check_tree(args.repo, args.revision, args.max_path, args.max_blob, args.prefix)
+            result = check_tree(
+                args.repo, args.revision, args.max_path, args.max_blob, args.prefix
+            )
         else:
-            result = verify(args.archive, args.repo, args.expected_source,
-                            getattr(args, "destination", None), args.expected_listing)
-    except (ArchiveError, OSError, ValueError, KeyError, TypeError, EOFError,
-            subprocess.CalledProcessError) as error:
+            result = verify(
+                args.archive,
+                args.repo,
+                args.expected_source,
+                getattr(args, "destination", None),
+                args.expected_listing,
+            )
+    except (
+        ArchiveError,
+        OSError,
+        ValueError,
+        KeyError,
+        TypeError,
+        EOFError,
+        subprocess.CalledProcessError,
+    ) as error:
         print(f"evidence archive rejected: {error}", file=sys.stderr)
         return 1
     print(json.dumps(result, indent=2, sort_keys=True))

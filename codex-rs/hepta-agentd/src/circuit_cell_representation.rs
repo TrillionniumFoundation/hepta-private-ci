@@ -2,10 +2,10 @@
 //! Current endpoint observations are reacquired at model contact; historical
 //! readback does not require the old producer to remain the selected version.
 
-use codex_hepta_neuron::CellNativeRepresentationInputV1;
 use codex_hepta_neuron::CellDefinitionV1;
 use codex_hepta_neuron::CellEncodedInputV1;
 use codex_hepta_neuron::CellEncodingRequestV1;
+use codex_hepta_neuron::CellNativeRepresentationInputV1;
 use codex_hepta_neuron::InferredCellStepV1;
 use codex_hepta_neuron::PreparedCellStepV1;
 use codex_hepta_neuron::RegisteredCellBackendV1;

@@ -1,9 +1,9 @@
+use pretty_assertions::assert_eq;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
-use pretty_assertions::assert_eq;
 
 use super::*;
 

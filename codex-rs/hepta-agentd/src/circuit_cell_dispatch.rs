@@ -19,7 +19,11 @@ pub(super) struct MonotonicCircuitCellClockV1<C> {
 
 impl<C: FnMut() -> CircuitCellTimeV1> MonotonicCircuitCellClockV1<C> {
     pub(super) fn new(clock: C, last: CircuitCellTimeV1) -> Self {
-        Self { clock, last, invalid: false }
+        Self {
+            clock,
+            last,
+            invalid: false,
+        }
     }
 
     pub(super) fn sample(&mut self) -> CircuitCellTimeV1 {
@@ -32,7 +36,10 @@ impl<C: FnMut() -> CircuitCellTimeV1> MonotonicCircuitCellClockV1<C> {
             // An invalid sample is an absorbing failure, never a clamped time
             // or a claim of currentness. Both existing guards reject zero:
             // valid Cell input/admission timestamps are strictly positive.
-            return CircuitCellTimeV1 { circuit_millis: 0, cell_micros: 0 };
+            return CircuitCellTimeV1 {
+                circuit_millis: 0,
+                cell_micros: 0,
+            };
         }
         self.last = observed;
         observed

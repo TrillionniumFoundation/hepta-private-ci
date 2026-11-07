@@ -359,7 +359,7 @@ fn exact_semantics_producer_scope_frontier_and_consumer_budget_are_required() {
         CellRepresentationNegotiationV1::direct(producer.clone(), consumer.clone(), different),
         Err(E::Incompatible)
     ));
-    let mut smaller = consumer.clone();
+    let mut smaller = consumer;
     smaller.max_payload_bytes = source.payload_bytes() - 1;
     let current = current(&producer, &smaller);
     let limited = checked(CellRepresentationNegotiationV1::direct(

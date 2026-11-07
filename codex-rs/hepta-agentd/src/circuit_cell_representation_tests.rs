@@ -133,7 +133,7 @@ fn projected_materials() -> (
         max_payload_bytes: profile.max_payload_bytes,
     };
     let consumer = CellRepresentationConsumerV1 {
-        consumer_id: registration.backend_id.clone(),
+        consumer_id: registration.backend_id,
         generation,
         binding_digest: backend.digest(),
         accepted_profiles: vec![checked(output.digest())],

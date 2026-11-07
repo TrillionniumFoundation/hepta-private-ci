@@ -2,9 +2,9 @@
 //! Cell pipeline, then returns a completion only after the Cell owner commits.
 //! This computation facility never invokes tools or publishes external effects.
 
+use std::cell::RefCell;
 use std::error::Error;
 use std::fmt;
-use std::cell::RefCell;
 
 use codex_hepta_automation::CircuitCompletionV2;
 use codex_hepta_automation::CircuitComputationAdmissionV2;

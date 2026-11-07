@@ -3,8 +3,8 @@
 
 use codex_hepta_types::Digest32;
 
-use crate::CellExecutionError;
 use crate::CellEncodingRequestV1;
+use crate::CellExecutionError;
 use crate::CellNativeRepresentationInputV1;
 use crate::CellRepresentationUseV1;
 use crate::CellScopeV1;
@@ -109,7 +109,8 @@ impl RegisteredCellBackendV1 {
             observed_at_micros: None,
         };
         let mut inferred = infer_admitted_cell(prepared, owner, &mut guarded, admitted_at_micros)?;
-        inferred.not_before_micros = guarded.observed_at_micros
+        inferred.not_before_micros = guarded
+            .observed_at_micros
             .ok_or(CellExecutionError::ModelBindingMismatch)?;
         Ok(inferred)
     }

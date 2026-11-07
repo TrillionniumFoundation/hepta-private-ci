@@ -44,44 +44,61 @@ class EvidenceArchiveTests(unittest.TestCase):
         self.git("commit", "-qm", "original evidence")
         self.revision = self.git("rev-parse", "HEAD").strip()
         self.output = self.root / "archive"
-        self.index = archive.pack(self.repo, self.revision, "evidence", self.output, 128)
+        self.index = archive.pack(
+            self.repo, self.revision, "evidence", self.output, 128
+        )
 
     def git(self, *args):
-        return subprocess.check_output(["git", *args], cwd=self.repo, text=True,
-                                       stderr=subprocess.PIPE)
+        return subprocess.check_output(
+            ["git", *args], cwd=self.repo, text=True, stderr=subprocess.PIPE
+        )
 
     def write_index(self):
         (self.output / "index.json").write_bytes(archive.encoded(self.index))
 
     def entries(self):
-        return json.loads(gzip.decompress((self.output / "m00000.json.gz").read_bytes()))
+        return json.loads(
+            gzip.decompress((self.output / "m00000.json.gz").read_bytes())
+        )
 
     def rewrite_entries(self, entries):
         raw = archive.encoded(entries)
         data = archive.compressed(raw)
         (self.output / "m00000.json.gz").write_bytes(data)
-        self.index["members"] = [{
-            "name": "m00000.json.gz", "bytes": len(data), "sha256": archive.digest(data),
-            "decoded_bytes": len(raw), "decoded_sha256": archive.digest(raw),
-        }]
+        self.index["members"] = [
+            {
+                "name": "m00000.json.gz",
+                "bytes": len(data),
+                "sha256": archive.digest(data),
+                "decoded_bytes": len(raw),
+                "decoded_sha256": archive.digest(raw),
+            }
+        ]
         self.index["member_count"] = len(entries)
         self.index["total_bytes"] = sum(entry["bytes"] for entry in entries)
-        listing = [{key: entry[key] for key in ("path", "mode", "git_blob")}
-                   for entry in entries]
+        listing = [
+            {key: entry[key] for key in ("path", "mode", "git_blob")}
+            for entry in entries
+        ]
         self.index["source_listing_sha256"] = archive.digest(archive.encoded(listing))
         self.write_index()
 
     def payload(self):
-        return gzip.decompress(b"".join((self.output / part["name"]).read_bytes()
-                                      for part in self.index["parts"]))
+        return gzip.decompress(
+            b"".join(
+                (self.output / part["name"]).read_bytes()
+                for part in self.index["parts"]
+            )
+        )
 
     def rewrite_payload(self, raw):
         for part in self.index["parts"]:
             (self.output / part["name"]).unlink()
         data = archive.compressed(raw)
         (self.output / "p00000.bin").write_bytes(data)
-        self.index["parts"] = [{"name": "p00000.bin", "bytes": len(data),
-                                "sha256": archive.digest(data)}]
+        self.index["parts"] = [
+            {"name": "p00000.bin", "bytes": len(data), "sha256": archive.digest(data)}
+        ]
         self.index["payload_bytes"] = len(data)
         self.index["payload_sha256"] = archive.digest(data)
         self.write_index()
@@ -89,20 +106,29 @@ class EvidenceArchiveTests(unittest.TestCase):
     def test_exact_source_restore_keeps_binary_crlf_empty_files_and_modes(self):
         target = self.root / "restored"
         result = archive.verify(self.output, self.repo, self.revision, target)
-        restored = {str(path.relative_to(target)).replace("\\", "/"): path.read_bytes()
-                    for path in target.rglob("*") if path.is_file()}
+        restored = {
+            str(path.relative_to(target)).replace("\\", "/"): path.read_bytes()
+            for path in target.rglob("*")
+            if path.is_file()
+        }
         self.assertEqual(restored, self.files)
         self.assertEqual(result["member_count"], len(self.files))
-        self.assertEqual({row["path"]: row["mode"] for row in self.entries()},
-                         dict.fromkeys(self.files, "100644") | {"evidence/empty": "100755"})
+        self.assertEqual(
+            {row["path"]: row["mode"] for row in self.entries()},
+            dict.fromkeys(self.files, "100644") | {"evidence/empty": "100755"},
+        )
         self.assertGreater(len(self.index["parts"]), 1)
 
     def test_archive_is_reproducible_and_source_is_unmodified(self):
         other = self.root / "second"
         archive.pack(self.repo, self.revision, "evidence", other, 128)
-        self.assertEqual({p.name: p.read_bytes() for p in self.output.iterdir()},
-                         {p.name: p.read_bytes() for p in other.iterdir()})
-        self.assertEqual({name: (self.repo / name).read_bytes() for name in self.files}, self.files)
+        self.assertEqual(
+            {p.name: p.read_bytes() for p in self.output.iterdir()},
+            {p.name: p.read_bytes() for p in other.iterdir()},
+        )
+        self.assertEqual(
+            {name: (self.repo / name).read_bytes() for name in self.files}, self.files
+        )
 
     def test_modified_or_missing_source_never_creates_a_valid_index(self):
         source = self.repo / "evidence/original.log"
@@ -155,8 +181,14 @@ class EvidenceArchiveTests(unittest.TestCase):
 
     def test_unsafe_and_duplicate_paths_cannot_escape_restore(self):
         original = self.entries()
-        for name in ("../escape", "/absolute", "evidence/../escape", "evidence\\escape",
-                     "evidence/C:drive", "outside/entry"):
+        for name in (
+            "../escape",
+            "/absolute",
+            "evidence/../escape",
+            "evidence\\escape",
+            "evidence/C:drive",
+            "outside/entry",
+        ):
             with self.subTest(name=name):
                 entries = json.loads(json.dumps(original))
                 entries[0]["path"] = name
@@ -184,7 +216,9 @@ class EvidenceArchiveTests(unittest.TestCase):
     def test_wrong_source_and_existing_destination_are_rejected(self):
         with self.assertRaisesRegex(archive.ArchiveError, "unexpected source"):
             archive.verify(self.output, expected_source="f" * 40)
-        with self.assertRaisesRegex(archive.ArchiveError, "unexpected original source listing"):
+        with self.assertRaisesRegex(
+            archive.ArchiveError, "unexpected original source listing"
+        ):
             archive.verify(self.output, expected_listing="f" * 64)
         destination = self.root / "existing"
         destination.mkdir()
@@ -217,12 +251,18 @@ class EvidenceArchiveTests(unittest.TestCase):
             self.assertGreater(len(index["members"]), 1)
             self.assertEqual(archive.verify(output, self.repo)["member_count"], 34)
             with mock.patch.object(archive, "MAX_MANIFEST_BYTES", 2500):
-                with self.assertRaisesRegex(archive.ArchiveError, "total manifest bytes"):
+                with self.assertRaisesRegex(
+                    archive.ArchiveError, "total manifest bytes"
+                ):
                     archive.verify(output)
 
     def test_checkout_budget_checks_actual_git_bytes_and_paths(self):
-        self.assertEqual(archive.check_tree(self.repo, self.revision, 190, 512_000,
-                                            "evidence")["files_checked"], 4)
+        self.assertEqual(
+            archive.check_tree(self.repo, self.revision, 190, 512_000, "evidence")[
+                "files_checked"
+            ],
+            4,
+        )
         large = self.repo / "evidence" / "large.bin"
         large.write_bytes(b"x" * 512_001)
         self.git("add", ".")
@@ -232,16 +272,34 @@ class EvidenceArchiveTests(unittest.TestCase):
         large.write_bytes(b"bounded")
         self.git("add", ".")
         blob = self.git("hash-object", "-w", "evidence/large.bin").strip()
-        self.git("update-index", "--add", "--cacheinfo", f"100644,{blob},evidence/{'x' * 190}")
+        self.git(
+            "update-index",
+            "--add",
+            "--cacheinfo",
+            f"100644,{blob},evidence/{'x' * 190}",
+        )
         tree = self.git("write-tree").strip()
         with self.assertRaisesRegex(archive.ArchiveError, "checkout budget violations"):
             archive.check_tree(self.repo, tree, 190, 512_000, "evidence")
 
     def test_cli_verifies_without_materializing_original_paths(self):
         (self.repo / "evidence").rename(self.root / "original-files")
-        result = subprocess.run([sys.executable, "-B", str(SCRIPT), "verify", str(self.output),
-                                 "--repo", str(self.repo), "--expected-source", self.revision],
-                                capture_output=True, text=True, check=False)
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-B",
+                str(SCRIPT),
+                "verify",
+                str(self.output),
+                "--repo",
+                str(self.repo),
+                "--expected-source",
+                self.revision,
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(result.stdout)["member_count"], 4)
 

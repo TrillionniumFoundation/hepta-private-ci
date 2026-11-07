@@ -728,10 +728,14 @@ def main() -> int:
             or "authority.claim(y)" not in cfg_code
         ):
             raise VerificationFailure("cfg-test stripping self-test failed")
-        generic = {"required_function_order": [{
-            "function": "fn guarded<T>(",
-            "sequence": ["pair()", "lock()", "live()", "dispatch()"],
-        }]}
+        generic = {
+            "required_function_order": [
+                {
+                    "function": "fn guarded<T>(",
+                    "sequence": ["pair()", "lock()", "live()", "dispatch()"],
+                }
+            ]
+        }
         _verify_function_order(
             generic,
             "fn guarded<T>() { pair(); lock(); live(); dispatch(); }",
@@ -745,7 +749,9 @@ def main() -> int:
             "fn guarded<T>() { pair(); lock(); live(); dispatch(); } fn guarded<T>() {}",
         ):
             try:
-                _verify_function_order(generic, _strip_rust_non_code(invalid), "generic.rs")
+                _verify_function_order(
+                    generic, _strip_rust_non_code(invalid), "generic.rs"
+                )
             except VerificationFailure:
                 pass
             else:
