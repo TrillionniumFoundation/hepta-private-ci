@@ -204,17 +204,19 @@ jobs:
           LANE: ${{ matrix.lane }}
           TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
           SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-          PARENT_SHA: f915ee92fdce3d2c4fd8e39be92dd0db04555938
+          PRODUCT_PARENT_SHA: f915ee92fdce3d2c4fd8e39be92dd0db04555938
+          DIFF_PARENT_SHA: 806d17a16624b90f8bd8955978296e128fa01432
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
-          git merge-base --is-ancestor "$PARENT_SHA" "$TESTED_SHA"
+          git merge-base --is-ancestor "$PRODUCT_PARENT_SHA" "$TESTED_SHA"
+          git merge-base --is-ancestor "$DIFF_PARENT_SHA" "$SOURCE_SHA"
           if [[ "$LANE" == "prospective-merge" ]]; then
             git merge-base --is-ancestor "$SOURCE_SHA" "$TESTED_SHA"
           fi
           expected_files="$(printf '%s\n' ".github/workflows/blocking-ci.yml")"
-          actual_files="$(git diff --name-only "$PARENT_SHA" "$SOURCE_SHA")"
+          actual_files="$(git diff --name-only "$DIFF_PARENT_SHA" "$SOURCE_SHA")"
           test "$actual_files" = "$expected_files"
           printf 'TaskFlow %s SHA: %s\n' "$LANE" "$TESTED_SHA"
 
