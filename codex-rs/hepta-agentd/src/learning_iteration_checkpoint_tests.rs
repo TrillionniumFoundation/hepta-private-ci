@@ -169,7 +169,7 @@ fn foreign_owner_request_skipped_stage_and_divergent_successor_leave_current_unc
     let mut branch = LearningIterationCoordinatorV1::from_snapshot(initial.clone())?;
     let mut receipt = snapshots[1].receipts[0].clone();
     receipt.evidence_digest = Digest32::of_bytes(b"different actual receipt");
-    branch.record(receipt, 20)?;
+    branch.record(receipt, /*now_unix_seconds*/ 20)?;
     assert_eq!(
         reopened.checkpoint(initial.head_digest, branch.snapshot()),
         Err(Error::Conflict)

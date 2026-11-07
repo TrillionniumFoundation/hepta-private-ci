@@ -81,7 +81,7 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
                 episode_digest,
                 completed_task_receipt,
             } => {
-                w.u8(0)?;
+                w.u8(/*value*/ 0)?;
                 w.digest(*episode_digest)?;
                 w.digest(*completed_task_receipt)?;
             }
@@ -92,7 +92,7 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
                 rows,
                 bytes,
             } => {
-                w.u8(1)?;
+                w.u8(/*value*/ 1)?;
                 for digest in [snapshot_digest, episode_digest, withdrawal_frontier] {
                     w.digest(*digest)?;
                 }
@@ -105,7 +105,7 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
                 milliseconds,
                 artifact_bytes,
             } => {
-                w.u8(2)?;
+                w.u8(/*value*/ 2)?;
                 w.bundle(candidate)?;
                 for value in [steps, milliseconds, artifact_bytes] {
                     w.u64(*value)?;
@@ -116,7 +116,7 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
                 evaluation_profile,
                 disposition,
             } => {
-                w.u8(3)?;
+                w.u8(/*value*/ 3)?;
                 w.digest(*candidate_bundle)?;
                 w.digest(*evaluation_profile)?;
                 w.u8(match disposition {
@@ -130,7 +130,7 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
                 composition_digest,
                 disposition,
             } => {
-                w.u8(4)?;
+                w.u8(/*value*/ 4)?;
                 w.digest(*candidate_bundle)?;
                 w.id(proposal_id)?;
                 w.digest(*composition_digest)?;
@@ -143,7 +143,7 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
                 candidate_bundle,
                 selection_digest,
             } => {
-                w.u8(5)?;
+                w.u8(/*value*/ 5)?;
                 w.digest(*candidate_bundle)?;
                 w.digest(*selection_digest)?;
             }
@@ -155,7 +155,7 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
                 committed_step_receipt,
                 state_cutover_receipt,
             } => {
-                w.u8(6)?;
+                w.u8(/*value*/ 6)?;
                 w.digest(*candidate_bundle)?;
                 w.partition(state_partition)?;
                 for digest in [
@@ -175,7 +175,7 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
                 committed_step_receipt,
                 task_owner_publication,
             } => {
-                w.u8(7)?;
+                w.u8(/*value*/ 7)?;
                 w.digest(*retained_bundle)?;
                 w.partition(state_partition)?;
                 for digest in [

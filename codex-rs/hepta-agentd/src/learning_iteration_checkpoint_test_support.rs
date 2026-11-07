@@ -283,7 +283,7 @@ pub(super) fn snapshots(decision: Decision) -> anyhow::Result<Vec<LearningIterat
     let mut coordinator = LearningIterationCoordinatorV1::new(request, owners)?;
     let mut snapshots = vec![coordinator.snapshot().clone()];
     for observation in observations {
-        coordinator.record(learning_test_receipt(&coordinator, observation), 20)?;
+        coordinator.record(learning_test_receipt(&coordinator, observation), /*now_unix_seconds*/ 20)?;
         snapshots.push(coordinator.snapshot().clone());
     }
     Ok(snapshots)
