@@ -1,0 +1,155 @@
+{
+  "scope": "Previously recorded identities only; none of these private inputs or Rust source bodies is read or exported by this preparation.",
+  "private_originals": {
+    "console": {
+      "bytes": 45011,
+      "sha256": "ff7ab787bdcb96287b2744b5928523e10ede0b29cdab34364513b6b7f6d8c6dd",
+      "mode": "0600",
+      "fresh_second_decoded_read_equal": true,
+      "actual_checkout": "8b0fcf80afb95c5199be9b5f131d6454663c1632"
+    },
+    "wrappers": [
+      {
+        "source_head": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "run_id": 42353199414,
+        "artifact_id": 13568260268,
+        "artifact_name": "ndu-native-synapse-diagnostics-arm64-42353199414-1-manifest",
+        "artifact_api_file": "/dev/shm/ndu_arm42_failure_20261107/ARTIFACTS_API.json",
+        "artifact_api_identity": {
+          "bytes": 14391,
+          "sha256": "46dad44305e13cff0adab243faa573b90505f94d246d70ea4e22e079df537dd6"
+        },
+        "role": "manifest",
+        "official_complete_zip": {
+          "bytes": 21253917,
+          "sha256": "11c8ad717e752a2ccbe8a3ff0cc9e9f47ca2e3c7b0385cb93f3a1a098152a2ae"
+        },
+        "all_zip_member_crc_and_sha_verified": {
+          "DIAGNOSTICS.json": {
+            "bytes": 261056,
+            "sha256": "f95a615bc59c62d29460eb68e0b43a876ebed8d5273dd3826c76c528d9b73680",
+            "crc32": "aae0848f",
+            "zip_compression": 0
+          },
+          "PROJECTION.json": {
+            "bytes": 300896,
+            "sha256": "2ce02e9e962b7f7f9572dfdb6cb10af71dcaaa5118811d8005c29c774be18ae9",
+            "crc32": "2d1577f4",
+            "zip_compression": 0
+          },
+          "SOURCE_DIRECTORY.json": {
+            "bytes": 20691563,
+            "sha256": "a000126bc2fbd9285973a4bed69c41c1ee5b6696fe4aa7798b11c2bfba7bf0c9",
+            "crc32": "99209a4e",
+            "zip_compression": 0
+          }
+        },
+        "complete_zip_wrapper": {
+          "file": "artifact-13568260268.zip.gz",
+          "bytes": 957774,
+          "sha256": "d9d5ea5ee2d5d4fd78adf045f8613891892a910179784c3123558a19f537811a"
+        },
+        "compression": {
+          "format": "gzip",
+          "level": 9,
+          "mtime": 0,
+          "members": 1
+        },
+        "original_zip_roundtrip_byte_equal": true,
+        "raw_zip_written_to_disk": false,
+        "zip_members_extracted_to_disk": false,
+        "wrapper_mode": "0600",
+        "free_bytes_before_wrapper": 5178687488,
+        "free_bytes_after_wrapper": 5177729024,
+        "qualification_or_promotion": false,
+        "scope": "Whole original ZIP bytes, not a digest-only or selected-content substitute. Projection/source/business interpretation is a separate audit. No rejected content is reconstructed."
+      },
+      {
+        "source_head": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "run_id": 42353199414,
+        "artifact_id": 13567472872,
+        "artifact_name": "ndu-native-synapse-diagnostics-arm64-42353199414-1-part-01",
+        "artifact_api_file": "/dev/shm/ndu_arm42_failure_20261107/ARTIFACTS_API.json",
+        "artifact_api_identity": {
+          "bytes": 14391,
+          "sha256": "46dad44305e13cff0adab243faa573b90505f94d246d70ea4e22e079df537dd6"
+        },
+        "role": "1",
+        "official_complete_zip": {
+          "bytes": 69734546,
+          "sha256": "a9decf8d808f4f104cd45c5495b4995007718c7d6c5cd220a1c1e64e48f5321d"
+        },
+        "all_zip_member_crc_and_sha_verified": {
+          "part-01.tar.part": {
+            "bytes": 69734400,
+            "sha256": "906d072b97db61b011cf329e3cce30c3aa94ab2407fafa110e40fe56c38a8a01",
+            "crc32": "d6a9f69f",
+            "zip_compression": 0
+          }
+        },
+        "complete_zip_wrapper": {
+          "file": "artifact-13567472872.zip.gz",
+          "bytes": 10485847,
+          "sha256": "5e5038c10f5284a374d21ec2613c38af304ddc566df7d834069d6ecd75b144b9"
+        },
+        "compression": {
+          "format": "gzip",
+          "level": 9,
+          "mtime": 0,
+          "members": 1
+        },
+        "original_zip_roundtrip_byte_equal": true,
+        "raw_zip_written_to_disk": false,
+        "zip_members_extracted_to_disk": false,
+        "wrapper_mode": "0600",
+        "free_bytes_before_wrapper": 5177716736,
+        "free_bytes_after_wrapper": 5167226880,
+        "qualification_or_promotion": false,
+        "scope": "Whole original ZIP bytes, not a digest-only or selected-content substitute. Projection/source/business interpretation is a separate audit. No rejected content is reconstructed."
+      }
+    ],
+    "retained_directory": "/dev/shm/ndu_arm42_failure_20261107/reviewed-diagnostics",
+    "retained_permission_bits": "0600",
+    "raw_private_contents_not_for_publication": true
+  },
+  "four_Rust_source_leaves": [
+    {
+      "path": "/dev/shm/ndu_arm42_failure_20261107/source/runtime.rs",
+      "bytes": 24286,
+      "sha256": "3b983a64f68bc8aed5e2b7fabb432ac5bd9023f750d601960ee1826d63338404"
+    },
+    {
+      "path": "/dev/shm/ndu_arm42_failure_20261107/source/store.rs",
+      "bytes": 151045,
+      "sha256": "8264b8de5dbca3d5fa1048092978c89b765e0e2d5ca2f32322aab4601f282598"
+    },
+    {
+      "path": "/dev/shm/ndu_arm42_failure_20261107/source/supervisor_matrix.rs",
+      "bytes": 31847,
+      "sha256": "021fd2d4cef0a765e651676a7efd06a58dc77f7932d184001d1ade8cf09b3bed"
+    },
+    {
+      "path": "/dev/shm/ndu_arm42_failure_20261107/source/sdk.rs",
+      "bytes": 29341,
+      "sha256": "9462a09f15bf7130413669dba1c29cd737c9421740c7307d2218782fd5d68848"
+    }
+  ],
+  "original_auditor_identity": {
+    "local_path": "/dev/shm/ndu_arm42_failure_20261107/audit_initial_stage_source_failure/audit_native_failure.py",
+    "bytes": 19224,
+    "sha256": "0ec98730519ace5ca128a55628ad341491e8eb444b4c7caddadb7a743260ad23",
+    "git_blob_sha": "a8aac0d9a0b5f48ffe640035b4d7cce54dd0200e",
+    "source_stat_mode": "100644",
+    "source_permission_bits": "0644"
+  },
+  "final_auditor_identity": {
+    "local_path": "/dev/shm/ndu_arm42_failure_20261107/audit_native_failure.py",
+    "bytes": 21202,
+    "sha256": "c9927883b3755e20dd23f78c3965a275c7f133ee38dad01b2aa1b6a6b3458653",
+    "git_blob_sha": "aa2c31195c01106d451d6cc181ae7ab714821f62",
+    "source_stat_mode": "100644",
+    "source_permission_bits": "0644"
+  },
+  "replay_complete": false,
+  "new_archive_created": false
+}

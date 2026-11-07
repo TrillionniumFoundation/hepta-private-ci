@@ -1,0 +1,55 @@
+{
+  "source_head": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+  "run_id": 42353199414,
+  "artifact_id": 13568260268,
+  "artifact_name": "ndu-native-synapse-diagnostics-arm64-42353199414-1-manifest",
+  "artifact_api_file": "/dev/shm/ndu_arm42_failure_20261107/ARTIFACTS_API.json",
+  "artifact_api_identity": {
+    "bytes": 14391,
+    "sha256": "46dad44305e13cff0adab243faa573b90505f94d246d70ea4e22e079df537dd6"
+  },
+  "role": "manifest",
+  "official_complete_zip": {
+    "bytes": 21253917,
+    "sha256": "11c8ad717e752a2ccbe8a3ff0cc9e9f47ca2e3c7b0385cb93f3a1a098152a2ae"
+  },
+  "all_zip_member_crc_and_sha_verified": {
+    "DIAGNOSTICS.json": {
+      "bytes": 261056,
+      "sha256": "f95a615bc59c62d29460eb68e0b43a876ebed8d5273dd3826c76c528d9b73680",
+      "crc32": "aae0848f",
+      "zip_compression": 0
+    },
+    "PROJECTION.json": {
+      "bytes": 300896,
+      "sha256": "2ce02e9e962b7f7f9572dfdb6cb10af71dcaaa5118811d8005c29c774be18ae9",
+      "crc32": "2d1577f4",
+      "zip_compression": 0
+    },
+    "SOURCE_DIRECTORY.json": {
+      "bytes": 20691563,
+      "sha256": "a000126bc2fbd9285973a4bed69c41c1ee5b6696fe4aa7798b11c2bfba7bf0c9",
+      "crc32": "99209a4e",
+      "zip_compression": 0
+    }
+  },
+  "complete_zip_wrapper": {
+    "file": "artifact-13568260268.zip.gz",
+    "bytes": 957774,
+    "sha256": "d9d5ea5ee2d5d4fd78adf045f8613891892a910179784c3123558a19f537811a"
+  },
+  "compression": {
+    "format": "gzip",
+    "level": 9,
+    "mtime": 0,
+    "members": 1
+  },
+  "original_zip_roundtrip_byte_equal": true,
+  "raw_zip_written_to_disk": false,
+  "zip_members_extracted_to_disk": false,
+  "wrapper_mode": "0600",
+  "free_bytes_before_wrapper": 5178687488,
+  "free_bytes_after_wrapper": 5177729024,
+  "qualification_or_promotion": false,
+  "scope": "Whole original ZIP bytes, not a digest-only or selected-content substitute. Projection/source/business interpretation is a separate audit. No rejected content is reconstructed."
+}

@@ -1,0 +1,48 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_arm42_failure_20261107/download_wrapped_zip.py"
+      ],
+      "exit_code": 0,
+      "stdout": "1 file left unchanged\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_arm42_failure_20261107/download_wrapped_zip.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_arm42_failure_20261107/download_wrapped_zip.py"
+      ],
+      "exit_code": 0,
+      "stdout": "1 file already formatted\n",
+      "stderr": ""
+    }
+  ],
+  "source": {
+    "bytes": 6612,
+    "sha256": "ac9aaf3951980652ca0fcd1d1980f59e58e2e1ae66eac1164ea58f21c2321bd5"
+  },
+  "all_exit_zero": true,
+  "HOME_inherited": true,
+  "native_execution": false
+}
