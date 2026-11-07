@@ -145,7 +145,8 @@ def freeze(args):
     merge(budget["source_pins"]); remember("budget", budget)
     directory = Path(__file__).parent
     for name in ("freeze_mechanism_plan.py", "mechanism_analysis.py", "tests/test_mechanism_analysis.py",
-                 "MECHANISM_PILOT_PROTOCOL.md", "MECHANISM_RESOLUTION_RESULT.json", "MECHANISM_RESOLUTION_RESULT.md"):
+                 "MECHANISM_PILOT_PROTOCOL.md", "MECHANISM_EXECUTION_AMENDMENT_20261107.md",
+                 "MECHANISM_RESOLUTION_RESULT.json", "MECHANISM_RESOLUTION_RESULT.md"):
         path = directory / name
         source_pins[str(path.relative_to(directory.parents[1]))] = file_sha(path)
     for name in ("run_resolution_probe.py", "resolution_reference.py", "RESOLUTION_PROTOCOL.md"):
@@ -168,7 +169,19 @@ def freeze(args):
                 execution_environment=execution,
                 bundle_construction_environment={k: metadata[k] for k in ("schema", "python", "numpy", "scipy")},
                 runtime_feasibility_policy=dict(non_task_probe_max_wall_seconds=450, fit_timeout_seconds=480,
-                                                cloud_job_max_seconds=600, replay_unknown_fits=False),
+                                                provider="kaggle", cloud_job_max_seconds=3000,
+                                                minimum_remaining_before_operation_seconds=720,
+                                                supervisor_startup_and_drain_reserve_seconds=60,
+                                                export_and_close_reserve_seconds=180,
+                                                one_statistical_group_and_phase_per_provider_job=True,
+                                                operations_per_runner_invocation=1,
+                                                execution_gpu_index=0, concurrent_fits=1,
+                                                selection_in_separate_provider_phase=True,
+                                                evaluation_after_verified_selection_lock=True,
+                                                exact_verified_history_before_next_provider_job=True,
+                                                halt_owner_on_unknown_or_identity_environment_integrity_failure=True,
+                                                replay_failed_or_timeout_fits=False,
+                                                replay_unknown_fits=False),
                 original_campaign_completion_credit=0, hepta_ndu_completion_credit=0,
                 formal_training_attempts_before_freeze=0, full_physical_energy_joules=None,
                 external_retention_status="unmeasured", expansion_admission="HOLD")

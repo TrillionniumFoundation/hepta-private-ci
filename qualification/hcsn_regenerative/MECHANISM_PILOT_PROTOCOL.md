@@ -154,9 +154,21 @@ Each fit has a 480-second hard wall deadline and no automatic retry. Finite
 runtime blocks cover 20 previously unstarted fits. Existing completed,
 failed, unknown or claimed attempts are never overwritten or silently replayed.
 The 20-fit group is a statistical selection group, not a cloud-job boundary.
-A provider job may run one fit, with bootstrap/export headroom inside its
-600-second limit; selection and evaluation use separate jobs after every
-training terminal in the group is present. No test can run before that lock.
+A Kaggle provider job has a 3,000-second limit and may run sequential one-fit
+runner invocations from the same statistical group and phase. Before claiming
+any fit or selected evaluation, at least 720 seconds must remain: the full
+480-second operation budget, 60 seconds for supervisor/startup/termination,
+and 180 seconds for export and close. If the remaining time is unknown or
+insufficient, no new operation is claimed; the existing evidence is exported.
+GPU 0 executes one fit at a time. The next provider job starts only after the
+prior authoritative terminal and complete history capsule have been verified.
+Selection uses a separate phase after every training terminal in the group
+is present; evaluation starts in a later phase after the lock is read back.
+No test can run before that lock. Any unknown attempt or failed identity,
+environment, or integrity check halts the owner for read-only reconciliation.
+Known failed or timed-out attempts remain in the denominator and are not
+replayed. The pretraining execution-envelope amendment and its rationale are
+recorded in `MECHANISM_EXECUTION_AMENDMENT_20261107.md`.
 Block segmentation does not reduce any fit budget or change the 160-fit
 denominator. A unique runtime owner and stable block identities are required;
 local file claims do not establish global mutual exclusion against unrelated
