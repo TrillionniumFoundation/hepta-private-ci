@@ -206,9 +206,16 @@ pub(crate) mod linux {
         // Zero is an invalid clock sample, never an invented successful time.
         // Admission rejects it and the native process refuses zero before spawn.
         let clock: Arc<dyn Fn() -> u64 + Send + Sync> = Arc::new(|| boottime_micros().unwrap_or(0));
+        let open_worker = match d.config.manifest.profile.as_str() {
+            JointGenerationProcessWorkerV1::PROFILE => JointGenerationProcessWorkerV1::open_files,
+            JointGenerationProcessWorkerV1::RESIDENT_PROFILE => {
+                JointGenerationProcessWorkerV1::open_resident_files
+            }
+            _ => return Err(invalid("unsupported Joint generation process profile")),
+        };
         let assets = files::open_assets(&d)?;
         let worker = Arc::new(
-            JointGenerationProcessWorkerV1::open_files(
+            open_worker(
                 JointGenerationProcessConfigV1 {
                     executable: d.executable.path.clone(),
                     executable_digest: parse_digest(&d.executable.digest)?.into_array(),

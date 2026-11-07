@@ -174,6 +174,19 @@ impl JointGenerationProcessWorkerV1 {
         Ok(worker)
     }
 
+    /// Explicit resident transport over the host's already opened files. This
+    /// preserves `open_files` content/device checks and never reopens the asset
+    /// paths. A failed or uncertain resident session is not respawned or replayed.
+    pub fn open_resident_files(
+        config: JointGenerationProcessConfigV1,
+        files: JointGenerationProcessFilesV1,
+        clock: Arc<dyn Fn() -> u64 + Send + Sync>,
+    ) -> Result<Self, CellGenerationErrorV2> {
+        let mut worker = Self::open_files(config, files, clock)?;
+        worker.resident = Some(resident::ResidentTransport::default());
+        Ok(worker)
+    }
+
     pub fn profile(&self) -> &'static str {
         if self.resident.is_some() {
             Self::RESIDENT_PROFILE

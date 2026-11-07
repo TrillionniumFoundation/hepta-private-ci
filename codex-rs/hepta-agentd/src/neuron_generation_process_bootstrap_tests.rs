@@ -163,6 +163,36 @@ fn identity_assets_clock_and_descriptor_are_checked_before_any_owner_creation() 
 }
 
 #[test]
+fn resident_profile_selection_keeps_exact_profile_and_manifest_checks() -> Result<()> {
+    let mut f = Fixture::new()?;
+    let original: CellGenerationConfigV2 = serde_json::from_value(f.descriptor["config"].clone())?;
+    for (profile, runtime_digest) in [
+        (
+            format!(
+                "{}-unknown",
+                JointGenerationProcessWorkerV1::RESIDENT_PROFILE
+            ),
+            original.manifest.runtime_digest,
+        ),
+        (
+            JointGenerationProcessWorkerV1::RESIDENT_PROFILE.to_owned(),
+            [99; 32],
+        ),
+    ] {
+        let mut config = original.clone();
+        config.manifest.profile = profile;
+        config.manifest.runtime_digest = runtime_digest;
+        config.initial.manifest_digest = config.manifest.digest()?;
+        f.descriptor["config"] = serde_json::to_value(config)?;
+        assert!(f.load().is_err());
+        for name in ["cell.journal", "independent.witness", "control.journal"] {
+            assert!(!f.directory.path().join(name).exists());
+        }
+    }
+    Ok(())
+}
+
+#[test]
 fn paths_reject_aliases_and_reopen_never_falls_back_to_creation() -> Result<()> {
     let mut f = Fixture::new()?;
     f.descriptor["mode"] = Value::String("reopen".into());
@@ -271,8 +301,78 @@ async fn compute(
 
 #[tokio::test]
 async fn actual_joint_reopens_the_same_clock_journal_prefix_and_original_result() -> Result<()> {
+    profile_lifecycle(JointGenerationProcessWorkerV1::PROFILE).await
+}
+
+#[tokio::test]
+async fn ordinary_resident_joint_reuses_assets_and_reopens_original_result() -> Result<()> {
+    profile_lifecycle(JointGenerationProcessWorkerV1::RESIDENT_PROFILE).await
+}
+
+fn assert_process_ipc(
+    request: &CellGenerationRequestV2,
+    receipt: &CellGenerationReceiptV2,
+    successor: &CellRuntimeSnapshotV2,
+    profile: &str,
+    asset_bytes: usize,
+) -> Result<()> {
+    let input: JointGenerationInputV1 = serde_json::from_slice(&request.input)?;
+    let command_bytes = match input.command {
+        JointGenerationCommandV1::Init { .. } => 10,
+        JointGenerationCommandV1::Advance { .. } => 2,
+        JointGenerationCommandV1::Auto { .. } => 5,
+        JointGenerationCommandV1::Commit { .. } => 6,
+    };
+    let (asset_bytes, framing_bytes) = match profile {
+        JointGenerationProcessWorkerV1::PROFILE => (asset_bytes, 0),
+        JointGenerationProcessWorkerV1::RESIDENT_PROFILE if request.predecessor.revision == 0 => {
+            (asset_bytes, 8)
+        }
+        JointGenerationProcessWorkerV1::RESIDENT_PROFILE => (0, 8),
+        _ => anyhow::bail!("unexpected fixture profile"),
+    };
+    let delta_bytes = successor
+        .prefix
+        .len()
+        .checked_sub(request.predecessor.prefix.len())
+        .ok_or_else(|| anyhow::anyhow!("committed prefix shrank"))?;
+    // Count the real wire ABI independently of the transport's I/O counters.
+    // A warm resident request must omit both loaded asset packets, while its
+    // request and response each retain their four-byte framing prefix.
+    let request_envelope_bytes = 8 + 32 + 4 * 4;
+    let response_envelope_bytes = 8 + 32 + 1 + 4 * 8 + 2 * 4 + 64;
+    let expected_bytes = request_envelope_bytes
+        + response_envelope_bytes
+        + command_bytes
+        + asset_bytes
+        + framing_bytes
+        + request.predecessor.state.len()
+        + request.predecessor.prefix.len()
+        + successor.state.len()
+        + delta_bytes;
+    let observed_bytes = receipt
+        .cost
+        .entries()
+        .iter()
+        .find(|entry| entry.stage == CellCostStageV2::Communication)
+        .and_then(|entry| entry.metrics.communication_bytes)
+        .ok_or_else(|| anyhow::anyhow!("missing measured process IPC bytes"))?;
+    assert_eq!(observed_bytes, u64::try_from(expected_bytes)?);
+    Ok(())
+}
+
+async fn profile_lifecycle(profile: &str) -> Result<()> {
     let mut f = Fixture::new()?;
-    let config: CellGenerationConfigV2 = serde_json::from_value(f.descriptor["config"].clone())?;
+    let mut config: CellGenerationConfigV2 =
+        serde_json::from_value(f.descriptor["config"].clone())?;
+    config.manifest.profile = profile.to_owned();
+    config.initial.manifest_digest = config.manifest.digest()?;
+    f.descriptor["config"] = serde_json::to_value(&config)?;
+    let asset_bytes =
+        usize::try_from(fs::metadata(f.directory.path().join("synthetic-weights.hps"))?.len())?
+            + usize::try_from(
+                fs::metadata(f.directory.path().join("synthetic-public.hps"))?.len(),
+            )?;
     let public_digest = f.descriptor["public"]["digest"]
         .as_str()
         .ok_or_else(|| anyhow::anyhow!("public digest"))?
@@ -289,7 +389,7 @@ async fn actual_joint_reopens_the_same_clock_journal_prefix_and_original_result(
     let cancellation = CancellationToken::new();
     let mut tasks = RuntimeTasks::new(cancellation.clone(), Duration::from_secs(2))?;
     spawn_neuron_generation_service(&mut tasks, bootstrap, state.clone(), cancellation)?;
-    let (_, initialized) = compute(
+    let (init, initialized) = compute(
         &handle,
         &config,
         public_digest,
@@ -304,9 +404,16 @@ async fn actual_joint_reopens_the_same_clock_journal_prefix_and_original_result(
         initialized.disposition,
         CellGenerationDispositionV2::Advanced
     );
+    assert_process_ipc(
+        &init,
+        &initialized,
+        &handle.snapshot().await?,
+        profile,
+        asset_bytes,
+    )?;
     // These fixed synthetic weights prohibit initial STOP. Exercise one real
     // continuation before stopping, without changing the model's legal actions.
-    let (_, advanced) = compute(
+    let (shared, advanced) = compute(
         &handle,
         &config,
         public_digest,
@@ -317,6 +424,13 @@ async fn actual_joint_reopens_the_same_clock_journal_prefix_and_original_result(
     )
     .await?;
     assert_eq!(advanced.disposition, CellGenerationDispositionV2::Advanced);
+    assert_process_ipc(
+        &shared,
+        &advanced,
+        &handle.snapshot().await?,
+        profile,
+        asset_bytes,
+    )?;
     let (stop, receipt) = compute(
         &handle,
         &config,
@@ -329,6 +443,7 @@ async fn actual_joint_reopens_the_same_clock_journal_prefix_and_original_result(
     .await?;
     assert_eq!(receipt.disposition, CellGenerationDispositionV2::Stopped);
     let snapshot = handle.snapshot().await?;
+    assert_process_ipc(&stop, &receipt, &snapshot, profile, asset_bytes)?;
     fixture::verify_stopped(&snapshot.state, &snapshot.prefix, &f.assets)?;
     let output = handle.pending_output().await?;
     assert!(output.is_some());
