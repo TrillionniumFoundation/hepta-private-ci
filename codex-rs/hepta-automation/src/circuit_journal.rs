@@ -12,6 +12,7 @@ use sqlx::Transaction;
 use crate::BoundedCircuitDefinitionV2;
 use crate::CircuitCommandReceiptV2;
 use crate::CircuitCommandStatusV2;
+use crate::CircuitEventV2;
 use crate::CircuitRunV2;
 use crate::TaskFlowError;
 use crate::circuit_history::CircuitLedgerEventV2;
@@ -23,6 +24,9 @@ pub(crate) struct CircuitHistoryV2 {
     pub run: CircuitRunV2,
     pub commands: BTreeMap<String, Sha256Digest>,
     pub last_digest: Sha256Digest,
+    // Derived from the verified event chain, never from an untrusted projection.
+    // This admission counter is deliberately outside the V2 state/hash format.
+    lease_transitions: u64,
 }
 
 pub(crate) fn encode<T: Serialize>(value: &T) -> Result<String, TaskFlowError> {
@@ -131,6 +135,7 @@ pub(crate) async fn load(
     let mut commands = BTreeMap::new();
     let mut previous = Sha256Digest::for_bytes(b"hepta.circuit.genesis.v2");
     let mut expected_seq = 0_u64;
+    let mut lease_transitions = 0_u64;
     loop {
         // Bound memory independently of total run history. Keep the same SQLite
         // snapshot while replaying these pages; no observer can splice a tail.
@@ -179,6 +184,7 @@ pub(crate) async fn load(
                 return Err(corrupt("circuit event or state digest mismatch"));
             }
             previous = digest;
+            lease_transitions += u64::from(matches!(payload, CircuitLedgerEventV2::Claimed { .. }));
             run = Some(next);
             expected_seq += 1;
         }
@@ -194,7 +200,7 @@ pub(crate) async fn load(
     {
         return Err(corrupt("circuit projection differs from its causal history"));
     }
-    Ok(Some(CircuitHistoryV2 { definition, run, commands, last_digest: previous }))
+    Ok(Some(CircuitHistoryV2 { definition, run, commands, last_digest: previous, lease_transitions }))
 }
 
 /// Shared transaction tail for ordinary commands and the sealed computation
@@ -226,6 +232,35 @@ pub(crate) async fn persist_transition(
         return Err(invalid("circuit recovery history bound reached"));
     }
     let (run, dispatches) = event.replay(Some(&history.run), &history.definition, owner)?;
+    // The three per-activation slots are for a single computation claim, an
+    // indeterminate observation and final settlement. Polling and lease renewal
+    // must not consume them. Advance already stops at max_events + 1. From the
+    // existing 64 slots, reserve one final stop and one expired-lease recovery
+    // handoff, leaving 62 ordinary transitions. The final handoff cannot issue
+    // fresh computation. Its own expiry remains an exhausted, unresolved HOLD;
+    // the finite journal does not promise an unlimited number of recoveries.
+    // Apply these checks only to new writes: old canonical histories must replay
+    // byte-for-byte, and an exact retry above still returns AlreadyApplied.
+    if let CircuitLedgerEventV2::Claimed { now_ms, .. } = event {
+        let reserved_handoff = history.lease_transitions == 62 && *now_ms >= history.run.writer.expires_at_ms;
+        if history.lease_transitions >= 62 && !reserved_handoff {
+            return Err(invalid("circuit ordinary lease allowance exhausted; final expired-lease handoff remains reserved"));
+        }
+    }
+    if history.lease_transitions >= 63
+        && (matches!(event, CircuitLedgerEventV2::ComputationClaimed { .. })
+            || matches!(event, CircuitLedgerEventV2::Applied { event: CircuitEventV2::Advance { .. }, .. })
+                && run.stop_reason.is_none())
+    {
+        return Err(invalid("circuit final recovery lease permits only original-work settlement or stopping"));
+    }
+    if history.run.stop_reason.is_some()
+        && matches!(event, CircuitLedgerEventV2::Applied {
+            event: CircuitEventV2::Advance { .. } | CircuitEventV2::Cancel, ..
+        })
+    {
+        return Err(invalid("stopped circuit requires readback or reconciliation, not another scheduling command"));
+    }
     let state_json = encode(&run)?;
     if state_json.len() > 8_388_608 {
         return Err(invalid("circuit state exceeds byte bound"));
@@ -245,3 +280,7 @@ pub(crate) async fn persist_transition(
     append(tx, &run, command_id, event, &history.last_digest).await?;
     Ok(CircuitCommandReceiptV2 { status: CircuitCommandStatusV2::Applied, run, dispatches })
 }
+
+#[cfg(test)]
+#[path = "circuit_recovery_budget_tests.rs"]
+mod recovery_budget_tests;
