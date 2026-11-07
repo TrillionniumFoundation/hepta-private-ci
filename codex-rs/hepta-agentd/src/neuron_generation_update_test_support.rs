@@ -425,7 +425,7 @@ fn cost(
     Ok(cost)
 }
 
-pub(super) fn config() -> anyhow::Result<CellGenerationConfigV2> {
+pub(crate) fn config() -> anyhow::Result<CellGenerationConfigV2> {
     let manifest = CellBackendManifestV2 {
         profile: "generation-update-file-test".into(),
         source_digest: [1; 32],

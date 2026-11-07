@@ -20,6 +20,11 @@ use crate::neuron_generation_channel_v2;
 use crate::neuron_generation_current::PublishedNeuronGenerationUpdateV1;
 use crate::neuron_generation_update_live::LiveGenerationCurrent;
 
+#[path = "neuron_generation_update_learning.rs"]
+mod learning;
+
+pub use learning::learning_retained_task_operation_id_v1;
+
 pub struct AgentdGenerationUpdateRuntimeOptionsV1 {
     pub queue_capacity: usize,
     pub control_endpoint: bool,

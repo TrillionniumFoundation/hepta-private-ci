@@ -149,6 +149,28 @@ pub struct PublishedNeuronGenerationUpdateV1 {
 }
 
 impl PublishedNeuronGenerationUpdateV1 {
+    pub(crate) fn operation_id(&self) -> &str {
+        &self.record.intent.operation_id
+    }
+
+    pub(crate) fn previous(&self) -> &CellGenerationOwnerBindingV1 {
+        &self.record.intent.previous
+    }
+
+    pub(crate) fn selection_observation_digest(&self) -> Digest32 {
+        Digest32::from_array(self.record.intent.selection)
+    }
+
+    /// The actual published record, including the consumed grant and witness;
+    /// the preparable intent digest alone is not a publication receipt.
+    pub(crate) fn publication_digest(&self) -> Result<Digest32, AgentdError> {
+        let bytes = serde_json::to_vec(self.record.as_ref()).map_err(invalid)?;
+        Ok(Digest32::of_parts(&[
+            b"hepta.agentd.generation-publication.v1\0",
+            &bytes,
+        ]))
+    }
+
     pub fn completion(&self) -> NeuronGenerationPredecessorCompletionV1 {
         self.record.intent.completion
     }
