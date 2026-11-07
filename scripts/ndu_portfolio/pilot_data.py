@@ -129,6 +129,7 @@ def make_plan(source_sha, profile):
             "development_policy_episodes": 216,
         },
         "collection_features": "train_only; development_fixed_trials_pay_no_unused_encoder_cost",
+        "cache_policy": "common_resident_vlm; setup_inclusive_in_phase_and_worker_budget; amortization_unregistered",
         "tuning": "two_development_fixed_schedules_shared_by_all_policies; no_heldout_claim",
         "evaluation": "human_consensus_casefold_whitespace.v1; text_only; offline",
         "independent_cluster_count": None,

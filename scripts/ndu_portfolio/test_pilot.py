@@ -82,13 +82,24 @@ class PilotContracts(unittest.TestCase):
             "text": "public fixture request",
             "image_rgb": np.zeros((8, 8, 3), dtype=np.uint8),
         }
+
+        def fixture_setup(_plan, setup_args):
+            _write(
+                setup_args.output / "SHARED_SETUP.json",
+                {
+                    "evidence_kind": "explicit_model_free_fixture",
+                    "claim_status": "HOLD",
+                },
+            )
+            return backend
+
         with (
             patch.object(
                 pilot_cli,
                 "load_pool",
                 return_value=(cases, {"scientific_admission": False}),
             ),
-            patch.object(pilot_cli, "backend_for", return_value=backend),
+            patch.object(pilot_cli, "backend_for", side_effect=fixture_setup),
             patch.object(
                 pilot_cli,
                 "FrozenSmolEncoder",
