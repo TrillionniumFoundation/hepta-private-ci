@@ -37,7 +37,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -B -m unittest -v loop_tests 2>&1 | tee "$RUNNER_TEMP/cell-receipt-recovery/receipts.log"
+          python3 -B -m unittest -v loop_tests test_attempt_accounting 2>&1 | tee "$RUNNER_TEMP/cell-receipt-recovery/receipts.log"
       - name: Verify bounded phase waits and failure accounting
         working-directory: qualification/cell-learning-loop-v1/decision_replay
         shell: bash
