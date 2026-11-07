@@ -1,0 +1,14 @@
+E713 [*] Test for membership should be `not in`
+   --> /dev/shm/ndu_root_continuation_20261107/review_terminal_packets.py:252:17
+    |
+250 |     require(
+251 |         all(
+252 |             not Path(name).suffix.lower() in {".zip", ".gz", ".xml", ".raw"}
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+253 |             and "/reviewed-diagnostics/" not in name
+254 |             for name in members
+    |
+help: Convert to `not in`
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.
