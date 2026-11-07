@@ -7,6 +7,7 @@ import sys
 import tomllib
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -50,23 +51,67 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
 
     def public_methods(self, source_path: str, type_name: str) -> set[str]:
         code = self.lexical_code(source_path)
-        match = re.search(rf"\bimpl\s+{re.escape(type_name)}\s*\{{", code)
-        self.assertIsNotNone(match, f"missing impl block for {type_name}")
-        assert match is not None
-        brace = code.find("{", match.start())
-        end = CALLER_PROOF._matching_delimiter(code, brace, "{", "}")
-        self.assertIsNotNone(end, f"unbalanced impl block for {type_name}")
-        assert end is not None
-        block = code[brace + 1 : end]
+        matches = list(re.finditer(rf"\bimpl\s+{re.escape(type_name)}\s*\{{", code))
+        self.assertTrue(matches, f"missing impl block for {type_name}: {source_path}")
         methods: set[str] = set()
-        for method in re.finditer(
-            r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
-        ):
-            prefix = block[: method.start()]
-            depth = prefix.count("{") - prefix.count("}")
-            if depth == 0:
-                methods.add(method.group(1))
+        for match in matches:
+            brace = code.find("{", match.start())
+            end = CALLER_PROOF._matching_delimiter(code, brace, "{", "}")
+            self.assertIsNotNone(end, f"unbalanced impl block for {type_name}")
+            assert end is not None
+            block = code[brace + 1 : end]
+            for method in re.finditer(
+                r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
+            ):
+                prefix = block[: method.start()]
+                depth = prefix.count("{") - prefix.count("}")
+                if depth == 0:
+                    name = method.group(1)
+                    self.assertNotIn(
+                        name, methods, f"duplicate public method: {type_name}::{name}"
+                    )
+                    methods.add(name)
         return methods
+
+    def public_type_methods(self, row: dict[str, object]) -> set[str]:
+        type_name = str(row["typeName"])
+        additional = row.get("additionalSourcePaths", [])
+        self.assertIsInstance(additional, list)
+        assert isinstance(additional, list)
+        self.assertTrue(all(isinstance(path, str) and path for path in additional))
+        paths = [str(row["sourcePath"]), *additional]
+        self.assertEqual(len(paths), len(set(paths)), f"duplicate impl source: {type_name}")
+        observed: set[str] = set()
+        for source_path in paths:
+            methods = self.public_methods(source_path, type_name)
+            self.assertFalse(
+                observed & methods, f"duplicate public method source: {type_name}"
+            )
+            observed.update(methods)
+        return observed
+
+    def source_markers(self, row: dict[str, object]) -> tuple[str, ...]:
+        additional = row.get("additionalSourceMarkers", [])
+        self.assertIsInstance(additional, list)
+        assert isinstance(additional, list)
+        self.assertTrue(all(isinstance(marker, str) and marker for marker in additional))
+        # Keep the original type anchor. Explicit extra symbols cover split
+        # modules whose authority type is imported only by their parent.
+        return (str(row["typeMarker"]), *additional)
+
+    def observed_callers(
+        self, row: dict[str, object], sources: list[tuple[str, str, str]]
+    ) -> set[str]:
+        markers = self.source_markers(row)
+        definition = str(row["definitionPath"])
+        patterns = [re.compile(str(value)) for value in row["callPatterns"]]
+        observed: set[str] = set()
+        for relative, raw, code in sources:
+            if relative == definition or not any(marker in raw for marker in markers):
+                continue
+            if any(pattern.search(code) for pattern in patterns):
+                observed.add(relative)
+        return observed
 
     def public_free_functions(self, source_path: str) -> set[str]:
         code = self.lexical_code(source_path)
@@ -151,7 +196,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                     boundary_ids,
                     f"{type_name}::{method}: missing canonical privileged boundary",
                 )
-            observed = self.public_methods(str(row["sourcePath"]), type_name)
+            observed = self.public_type_methods(row)
             self.assertEqual(
                 observed,
                 privileged_methods | non_privileged_methods,
@@ -181,7 +226,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
-        type_markers = {str(row["typeMarker"]) for row in rows}
+        source_markers = {marker for row in rows for marker in self.source_markers(row)}
         # Read each physical source once. Repeating this scan for every
         # boundary adds I/O while proving exactly the same closed set.
         sources = []
@@ -190,29 +235,82 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             if any(fragment in f"/{relative}" for fragment in ignored):
                 continue
             raw = path.read_text(encoding="utf-8")
-            if any(marker in raw for marker in type_markers):
+            if any(marker in raw for marker in source_markers):
                 code = CALLER_PROOF._strip_cfg_test_items(
                     CALLER_PROOF._strip_rust_non_code(raw)
                 )
                 sources.append((relative, raw, code))
         for row in rows:
             boundary_id = str(row["id"])
-            type_marker = str(row["typeMarker"])
-            definition = str(row["definitionPath"])
-            patterns = [re.compile(str(value)) for value in row["callPatterns"]]
             expected = {str(value) for value in row["allowedCallers"]}
-            observed: set[str] = set()
-            for relative, raw, code in sources:
-                if relative == definition or type_marker not in raw:
-                    continue
-                if any(pattern.search(code) for pattern in patterns):
-                    observed.add(relative)
+            observed = self.observed_callers(row, sources)
             with self.subTest(boundary=boundary_id):
                 self.assertEqual(
                     observed,
                     expected,
                     f"{boundary_id}: independent kernel.authority caller set drifted",
                 )
+
+    def test_all_explicit_companion_impls_contribute_public_methods(self) -> None:
+        row = {
+            "typeName": "AuthorityLeaseVerifier",
+            "sourcePath": "owner.rs",
+            "additionalSourcePaths": ["companion.rs"],
+        }
+        sources = {
+            "owner.rs": "impl AuthorityLeaseVerifier { pub fn verify_use() {} }",
+            "companion.rs": (
+                "impl AuthorityLeaseVerifier { pub fn first_boundary<T>() {} }"
+                "impl AuthorityLeaseVerifier { pub fn second_boundary<T>() {} }"
+            ),
+        }
+        with mock.patch.object(self, "lexical_code", side_effect=sources.__getitem__):
+            self.assertEqual(
+                self.public_type_methods(row),
+                {"verify_use", "first_boundary", "second_boundary"},
+            )
+            duplicate = {**row, "additionalSourcePaths": ["owner.rs"]}
+            with self.assertRaisesRegex(AssertionError, "duplicate impl source"):
+                self.public_type_methods(duplicate)
+
+    def test_explicit_symbols_cover_split_callers_without_a_type_import(self) -> None:
+        method = "with_pinned_issuer_readback_boundary"
+        row = {
+            "typeMarker": "AuthorityLeaseVerifier",
+            "additionalSourceMarkers": [method],
+            "definitionPath": "definition.rs",
+            "callPatterns": [rf"(?:\.\s*|AuthorityLeaseVerifier\s*::\s*){method}\s*\("],
+        }
+        raw_sources = [
+            ("split.rs", f"use super::*; fn call() {{ owner.{method}(token); }}"),
+            ("unexpected.rs", f"fn call() {{ foreign.{method}(token); }}"),
+            ("definition.rs", f"fn internal() {{ owner.{method}(token); }}"),
+            (
+                "non_code.rs",
+                f'// owner.{method}(token);\nconst TEXT: &str = "owner.{method}(token)";',
+            ),
+            ("test_only.rs", f"#[cfg(test)] fn call() {{ owner.{method}(token); }}"),
+        ]
+        sources = [
+            (
+                path,
+                raw,
+                CALLER_PROOF._strip_cfg_test_items(CALLER_PROOF._strip_rust_non_code(raw)),
+            )
+            for path, raw in raw_sources
+        ]
+        self.assertEqual(
+            self.observed_callers(row, sources), {"split.rs", "unexpected.rs"}
+        )
+        original_anchor = {
+            **row,
+            "additionalSourceMarkers": ["AbsentCompanionSymbol"],
+        }
+        typed = f"use AuthorityLeaseVerifier; fn call() {{ owner.{method}(token); }}"
+        self.assertEqual(
+            self.observed_callers(original_anchor, [("typed.rs", typed, typed)]),
+            {"typed.rs"},
+        )
 
 
 if __name__ == "__main__":

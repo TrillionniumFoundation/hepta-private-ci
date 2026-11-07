@@ -73,7 +73,13 @@
       "privilegedMethods": {
         "verify_use": "authority_lease_verify_use",
         "with_verified_use": "authority_lease_delivery",
-        "with_dispatch_boundary": "authority_lease_dispatch_raw"
+        "with_dispatch_boundary": "authority_lease_dispatch_raw",
+        "with_joint_dispatch_boundary": "authority_lease_joint_dispatch",
+        "with_retired_predecessor_boundary": "authority_lease_retired_predecessor",
+        "with_pinned_issuer_readback_boundary": "authority_lease_pinned_issuer_readback",
+        "with_pinned_issuer_dispatch_boundary": "authority_lease_pinned_issuer_dispatch",
+        "with_pinned_issuer_joint_dispatch_boundary": "authority_lease_pinned_issuer_joint_dispatch",
+        "with_retired_predecessor_for_pinned_issuer_boundary": "authority_lease_pinned_issuer_retired_predecessor"
       },
       "nonPrivilegedMethods": [
         "owner_id",
@@ -81,6 +87,10 @@
         "capacity",
         "read_lease",
         "read_revocation"
+      ],
+      "additionalSourcePaths": [
+        "codex-rs/hepta-contracts/src/authority_lease_pair_boundary.rs",
+        "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs"
       ]
     },
     {
@@ -227,7 +237,6 @@
       "allowedCallers": [
         "codex-rs/hepta-memory/src/production_writer.rs",
         "codex-rs/hepta-ndu/src/owner.rs",
-        "codex-rs/hepta-operations/src/durable_store.rs",
         "codex-rs/hepta-prompt-registry/src/admission.rs",
         "codex-rs/hepta-prompt-registry/src/durable.rs",
         "codex-rs/hepta-runtime/src/organs.rs"
@@ -261,7 +270,12 @@
         "\\.\\s*with_dispatch_boundary\\s*\\(",
         "FinalUseAuthority\\s*::\\s*with_dispatch_boundary\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-operations/src/durable_dispatch.rs"
+      ],
+      "additionalSourceMarkers": [
+        "AuthorizedDispatch"
+      ]
     },
     {
       "id": "final_use_revocation_update",
@@ -461,10 +475,17 @@
         "AuthorityLeaseVerifier\\s*::\\s*verify_use\\s*\\("
       ],
       "allowedCallers": [
+        "codex-rs/hepta-agentd/src/deployment_calculator.rs",
+        "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs",
         "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+        "codex-rs/hepta-agentd/src/deployment_notes.rs",
         "codex-rs/hepta-agentd/src/deployment_writer.rs",
+        "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
         "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
         "codex-rs/hepta-fleet/src/authority_port.rs"
+      ],
+      "additionalSourceMarkers": [
+        "verify_use"
       ]
     },
     {
@@ -495,8 +516,13 @@
         "AuthorityLeaseVerifier\\s*::\\s*with_dispatch_boundary\\s*\\("
       ],
       "allowedCallers": [
+        "codex-rs/hepta-agentd/src/deployment_calculator.rs",
         "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+        "codex-rs/hepta-agentd/src/deployment_notes.rs",
         "codex-rs/hepta-contracts/src/authority_host_issuer.rs"
+      ],
+      "additionalSourceMarkers": [
+        "DeploymentFinalUseIssuer"
       ]
     },
     {
@@ -533,6 +559,94 @@
       ],
       "allowedCallers": [
         "codex-rs/hepta-automation/src/authorized_effect.rs"
+      ]
+    },
+    {
+      "id": "authority_lease_joint_dispatch",
+      "typeMarker": "AuthorityLeaseVerifier",
+      "additionalSourceMarkers": [
+        "with_joint_dispatch_boundary"
+      ],
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease_pair_boundary.rs",
+      "callPatterns": [
+        "\\.\\s*with_joint_dispatch_boundary\\s*\\(",
+        "AuthorityLeaseVerifier\\s*::\\s*with_joint_dispatch_boundary\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/deployment_issuer_root.rs"
+      ]
+    },
+    {
+      "id": "authority_lease_retired_predecessor",
+      "typeMarker": "AuthorityLeaseVerifier",
+      "additionalSourceMarkers": [
+        "with_retired_predecessor_boundary"
+      ],
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease_pair_boundary.rs",
+      "callPatterns": [
+        "\\.\\s*with_retired_predecessor_boundary\\s*\\(",
+        "AuthorityLeaseVerifier\\s*::\\s*with_retired_predecessor_boundary\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "id": "authority_lease_pinned_issuer_readback",
+      "typeMarker": "AuthorityLeaseVerifier",
+      "additionalSourceMarkers": [
+        "with_pinned_issuer_readback_boundary"
+      ],
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs",
+      "callPatterns": [
+        "\\.\\s*with_pinned_issuer_readback_boundary\\s*\\(",
+        "AuthorityLeaseVerifier\\s*::\\s*with_pinned_issuer_readback_boundary\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
+      ]
+    },
+    {
+      "id": "authority_lease_pinned_issuer_dispatch",
+      "typeMarker": "AuthorityLeaseVerifier",
+      "additionalSourceMarkers": [
+        "with_pinned_issuer_dispatch_boundary"
+      ],
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs",
+      "callPatterns": [
+        "\\.\\s*with_pinned_issuer_dispatch_boundary\\s*\\(",
+        "AuthorityLeaseVerifier\\s*::\\s*with_pinned_issuer_dispatch_boundary\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
+      ]
+    },
+    {
+      "id": "authority_lease_pinned_issuer_joint_dispatch",
+      "typeMarker": "AuthorityLeaseVerifier",
+      "additionalSourceMarkers": [
+        "with_pinned_issuer_joint_dispatch_boundary"
+      ],
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs",
+      "callPatterns": [
+        "\\.\\s*with_pinned_issuer_joint_dispatch_boundary\\s*\\(",
+        "AuthorityLeaseVerifier\\s*::\\s*with_pinned_issuer_joint_dispatch_boundary\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
+      ]
+    },
+    {
+      "id": "authority_lease_pinned_issuer_retired_predecessor",
+      "typeMarker": "AuthorityLeaseVerifier",
+      "additionalSourceMarkers": [
+        "with_retired_predecessor_for_pinned_issuer_boundary"
+      ],
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs",
+      "callPatterns": [
+        "\\.\\s*with_retired_predecessor_for_pinned_issuer_boundary\\s*\\(",
+        "AuthorityLeaseVerifier\\s*::\\s*with_retired_predecessor_for_pinned_issuer_boundary\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
       ]
     }
   ]
