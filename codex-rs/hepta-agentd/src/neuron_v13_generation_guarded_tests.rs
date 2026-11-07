@@ -137,62 +137,81 @@ fn guarded_control_lock_failure_keeps_preparation_bound_to_its_original_task() -
 #[test]
 fn typed_forward_reopens_original_prepared_files_and_requires_a_distinct_signed_operation()
 -> anyhow::Result<()> {
-    let f = Fixture::new()?;
-    let prepared = f.prepare("pending-v13-update")?;
-    let intent_digest = prepared.intent_digest();
-    let original_binding = prepared.final_use_binding().clone();
-    let original = f.update.sign(&original_binding)?;
-    f.update.reject_publication_write();
-    assert!(prepared.publish(&original).is_err());
-    assert_eq!(f.update.authority.capacity()?.used_nonces, 1);
-    let pending = f.bytes()?;
-    assert!(matches!(recover_agentd_v13_generation_update_v1(
-        f.update.reopen_current()?, f.update.authorities()?, f.update.selection()?,
-        f.inputs()?, AgentdGenerationUpdateRecoveryV1 {
-            operation_id: "pending-v13-update".into(), intent_digest,
-        },
-    ), Err(AgentdError::Invalid(message)) if message.contains("remains pending; no redispatch")));
-    assert_eq!(f.bytes()?, pending);
-    let target_before = f.host.owner_bytes()?;
-    let forward = prepare_agentd_v13_generation_forward_recovery_v1(
-        f.update.reopen_current()?,
-        f.update.authorities()?,
-        f.update.old_journal()?,
-        f.update.selection()?,
-        f.inputs()?,
-        AgentdGenerationForwardRecoveryV1 {
-            original_operation_id: "pending-v13-update".into(),
-            original_intent_digest: intent_digest,
-            new_operation_id: "operator-forward-v13".into(),
-        },
-    )?;
-    assert_ne!(forward.final_use_binding(), &original_binding);
-    assert_ne!(forward.intent_digest(), intent_digest);
-    assert_eq!(f.host.owner_bytes()?, target_before);
-    let signed = f.update.sign(forward.final_use_binding())?;
-    assert_ne!(signed.grant.nonce, original.grant.nonce);
-    let forward_intent = forward.intent_digest();
-    f.update.lose_publication_ack();
-    assert!(forward.publish(&signed).is_err());
-    assert_eq!(f.update.authority.capacity()?.used_nonces, 2);
-    assert_eq!(f.host.owner_bytes()?, target_before);
-    let published = f.bytes()?;
-    let claims = f.update.bytes("final-use/authority.claims")?;
-    let ready = recover_agentd_v13_generation_update_v1(
-        f.update.reopen_current()?,
-        f.update.authorities()?,
-        f.update.selection()?,
-        f.inputs()?,
-        AgentdGenerationUpdateRecoveryV1 {
-            operation_id: "operator-forward-v13".into(),
-            intent_digest: forward_intent,
-        },
-    )?;
-    assert_eq!(f.bytes()?, published);
-    assert_eq!(f.update.bytes("final-use/authority.claims")?, claims);
-    assert_eq!(f.update.authority.capacity()?.used_nonces, 2);
-    assert!(target_before[2].is_empty());
-    drop(ready);
+    enum LostAckOwner {
+        Original,
+        Reopened,
+    }
+    for lost_ack_owner in [LostAckOwner::Original, LostAckOwner::Reopened] {
+        let f = Fixture::new()?;
+        let prepared = f.prepare("pending-v13-update")?;
+        let intent_digest = prepared.intent_digest();
+        let original_binding = prepared.final_use_binding().clone();
+        let original = f.update.sign(&original_binding)?;
+        f.update.reject_publication_write();
+        assert!(prepared.publish(&original).is_err());
+        assert_eq!(f.update.authority.capacity()?.used_nonces, 1);
+        let pending = f.bytes()?;
+        assert!(matches!(recover_agentd_v13_generation_update_v1(
+            f.update.reopen_current()?, f.update.authorities()?, f.update.selection()?,
+            f.inputs()?, AgentdGenerationUpdateRecoveryV1 {
+                operation_id: "pending-v13-update".into(), intent_digest,
+            },
+        ), Err(AgentdError::Invalid(message)) if message.contains("remains pending; no redispatch")));
+        assert_eq!(f.bytes()?, pending);
+        let target_before = f.host.owner_bytes()?;
+        let (current, lose_publication_ack) = f.update.reopen_current_with_ack_loss_hook()?;
+        let forward = prepare_agentd_v13_generation_forward_recovery_v1(
+            current,
+            f.update.authorities()?,
+            f.update.old_journal()?,
+            f.update.selection()?,
+            f.inputs()?,
+            AgentdGenerationForwardRecoveryV1 {
+                original_operation_id: "pending-v13-update".into(),
+                original_intent_digest: intent_digest,
+                new_operation_id: "operator-forward-v13".into(),
+            },
+        )?;
+        assert_ne!(forward.final_use_binding(), &original_binding);
+        assert_ne!(forward.intent_digest(), intent_digest);
+        assert_eq!(f.host.owner_bytes()?, target_before);
+        let signed = f.update.sign(forward.final_use_binding())?;
+        assert_ne!(signed.grant.nonce, original.grant.nonce);
+        let forward_intent = forward.intent_digest();
+        let before_publication = f.bytes()?;
+        match lost_ack_owner {
+            LostAckOwner::Original => {
+                // A stale fixture handle cannot inject a fault into the reopened owner.
+                f.update.lose_publication_ack();
+                drop(forward.publish(&signed)?);
+            }
+            LostAckOwner::Reopened => {
+                lose_publication_ack();
+                assert!(matches!(forward.publish(&signed),
+                    Err(AgentdError::Invalid(message)) if message == "Unavailable"));
+            }
+        }
+        assert_eq!(f.update.authority.capacity()?.used_nonces, 2);
+        assert_eq!(f.host.owner_bytes()?, target_before);
+        let published = f.bytes()?;
+        assert_ne!(published, before_publication);
+        let claims = f.update.bytes("final-use/authority.claims")?;
+        let ready = recover_agentd_v13_generation_update_v1(
+            f.update.reopen_current()?,
+            f.update.authorities()?,
+            f.update.selection()?,
+            f.inputs()?,
+            AgentdGenerationUpdateRecoveryV1 {
+                operation_id: "operator-forward-v13".into(),
+                intent_digest: forward_intent,
+            },
+        )?;
+        assert_eq!(f.bytes()?, published);
+        assert_eq!(f.update.bytes("final-use/authority.claims")?, claims);
+        assert_eq!(f.update.authority.capacity()?.used_nonces, 2);
+        assert!(target_before[2].is_empty());
+        drop(ready);
+    }
     Ok(())
 }
 
