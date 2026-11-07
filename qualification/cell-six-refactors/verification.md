@@ -69,9 +69,11 @@ Python 3.12.14、NumPy 2.3.5 下，`unittest discover` **20/20 通过**：11 项
 
 | 原始归档 | bytes | SHA-256 |
 | --- | ---: | --- |
-| [native-a8dd9d46.tar.gz](evidence/native-a8dd9d46.tar.gz) | 531,052 | `4a65450b81e7fe82483f5568d020d821a74587ddf53026f9affa6bfb06b2d655` |
-| [native-c058c08f.tar.gz](evidence/native-c058c08f.tar.gz) | 538,535 | `e9bc765e153a79a15fab46433aa49ca57cfe25d1e48b76941dc627ae6f3634b3` |
-| [native-cb6f0a4a.tar.gz](evidence/native-cb6f0a4a.tar.gz) | 563,937 | `a6f32c739eae672bcb946b8c0496f3c2009a98fa3a6f8542b87d1ccc0d63cb07` |
+| [native-a8dd9d46.tar.gz 分片](evidence/native-a8dd9d46.tar.gz.parts/) | 531,052 | `4a65450b81e7fe82483f5568d020d821a74587ddf53026f9affa6bfb06b2d655` |
+| [native-c058c08f.tar.gz 分片](evidence/native-c058c08f.tar.gz.parts/) | 538,535 | `e9bc765e153a79a15fab46433aa49ca57cfe25d1e48b76941dc627ae6f3634b3` |
+| [native-cb6f0a4a.tar.gz 分片](evidence/native-cb6f0a4a.tar.gz.parts/) | 563,937 | `a6f32c739eae672bcb946b8c0496f3c2009a98fa3a6f8542b87d1ccc0d63cb07` |
+
+原压缩字节现以不超过 256 KiB 的有序分片保存，没有解包重压缩。按[恢复说明](../historical-blob-storage-v1/README.md)可在仓库外新目录还原上述原件，并复核原 SHA-256。历史总索引和三份 archive-verification 回执保留原字节、原路径和原哈希；[存储清单](../historical-blob-storage-v1/ARCHIVE.json)记录新位置。该存储变更不重跑或升级原资格。
 
 所有归档按固定远端版本分块读取；每块和整包均校验 SHA-256。拒绝路径越界、链接和重复目的路径后，逐项核对 raw-index 的大小与哈希。raw-index 不自引用，其身份由完整归档哈希固定。完整 helper JSONL、stderr 和其他原始记录在 tar.gz 中保留；状态、摘要、最终 JUnit 与测试日志另提供原字节可读副本。小体积本地/首次失败/父级摘要直接保留，不改写失败记录。
 

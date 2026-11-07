@@ -17,7 +17,7 @@ not qualify the final source.
 Fresh [kernel](evidence/cloud-20261105/attempt-safe/kernel.json),
 [mechanism](evidence/cloud-20261105/attempt-safe/mechanisms.json),
 [smoke](evidence/cloud-20261105/attempt-safe/smoke.json), and
-[full resource accounting](evidence/cloud-20261105/attempt-safe/full.json)
+[full resource accounting](evidence/cloud-20261105/attempt-safe/full.json.gz)
 receipts bind source `06052c42c6075f888d953397546b75b4ddf247f3` through verified file hashes. Earlier `qualified-source/` and `final/` receipts are historical snapshots, not the current qualification. Read every status and count; optional
 unavailability makes a report partial even when the CLI exits zero. No GPU is
 exposed in this environment: all **170 unique full combinations remain
@@ -25,6 +25,12 @@ unavailable, with zero completed CUDA runs**. The 400-step, 64-example,
 1,638,400-token per-run budget is unchanged and has not executed. CUDA A/B/Mamba2
 forward/backward at `(64,64,2)`, B's full-budget peak memory and trained-grid
 qualification, and GPU physical energy remain open.
+
+The historical `full.json` now uses lossless gzip storage; its original decoded
+bytes, SHA-256, summary and population-audit receipts are unchanged. Follow the
+[bounded readback instructions](../historical-blob-storage-v1/README.md) to verify
+or restore it into a new directory outside the repository. Do not invoke the
+benchmark to restore this artifact: that entry point can execute experiments.
 
 The benchmark now writes atomic per-run JSON and validation-selected weights to
 `<output-stem>.runs/`. Repeating the same command reuses completed runs only when
