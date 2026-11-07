@@ -196,6 +196,21 @@ jobs:
             --timings \
             --archive-file "${archive_dir}/${NEXTEST_ARCHIVE_FILE}"
 
+      - name: Build and verify the same-source Linux Joint runtime helper
+        if: ${{ runner.os == 'Linux' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          helper_dir="${RUNNER_TEMP}/${TEST_HELPERS_ARTIFACT}/joint"
+          python3 ../scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --target "${CODEX_CI_TARGET}" --cargo-profile "${CODEX_CI_PROFILE}" \
+            --output-dir "${helper_dir}"
+          python3 ../scripts/hepta_cell_test_helpers.py \
+            --verify-only --package codex-hepta-infer-worker-host \
+            --target "${CODEX_CI_TARGET}" --cargo-profile "${CODEX_CI_PROFILE}" \
+            --output-dir "${helper_dir}"
+
       - name: Build runtime test helpers
         if: ${{ runner.os == 'Linux' || runner.os == 'Windows' }}
         shell: bash
@@ -370,6 +385,40 @@ jobs:
           name: ${{ env.TEST_HELPERS_ARTIFACT }}
           path: ${{ runner.temp }}/${{ env.TEST_HELPERS_ARTIFACT }}
 
+      - name: Verify and expose the transported Linux Joint helper
+        if: ${{ runner.os == 'Linux' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          helper_dir="${RUNNER_TEMP}/${TEST_HELPERS_ARTIFACT}/joint"
+          python3 - "${helper_dir}/bin/hepta-joint-propose" <<'PY'
+          from pathlib import Path
+          import stat, sys
+          path = Path(sys.argv[1])
+          if not stat.S_ISREG(path.lstat().st_mode):
+              raise RuntimeError("Downloaded Joint helper is not a regular file")
+          path.chmod(0o555)
+          PY
+          python3 ../scripts/hepta_cell_test_helpers.py \
+            --verify-only --transported --package codex-hepta-infer-worker-host \
+            --target "${CODEX_CI_TARGET}" --cargo-profile "${CODEX_CI_PROFILE}" \
+            --output-dir "${helper_dir}" | tee "${RUNNER_TEMP}/joint-helper-before.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads((Path(os.environ["RUNNER_TEMP"]) / "joint-helper-before.json").read_text())
+          assert report["complete"] is True and report["exit_code"] == 0
+          environment = report["runtime_environment"]
+          expected = {prefix + name for prefix in ("CARGO_BIN_EXE_", "NEXTEST_BIN_EXE_")
+                      for name in ("hepta-joint-propose", "hepta_joint_propose")}
+          assert set(environment) == expected
+          assert len(set(environment.values())) == 1
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as stream:
+              for key, value in sorted(environment.items()):
+                  assert isinstance(value, str) and not any(c in value for c in "\r\n\0")
+                  stream.write(f"{key}={value}\n")
+          PY
+
       - name: tests
         id: test
         shell: bash
@@ -438,6 +487,18 @@ jobs:
           RUST_BACKTRACE: 1
           RUST_MIN_STACK: "8388608" # 8 MiB
           NEXTEST_STATUS_LEVEL: leak
+
+      - name: Verify the transported Joint helper after the original shard
+        if: ${{ always() && runner.os == 'Linux' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_cell_test_helpers.py \
+            --verify-only --transported --require-runtime-env \
+            --package codex-hepta-infer-worker-host \
+            --target "${CODEX_CI_TARGET}" --cargo-profile "${CODEX_CI_PROFILE}" \
+            --output-dir "${RUNNER_TEMP}/${TEST_HELPERS_ARTIFACT}/joint" \
+            | tee "${RUNNER_TEMP}/joint-helper-after.json"
 
       - name: Upload nextest JUnit report
         if: always()

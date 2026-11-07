@@ -26,6 +26,8 @@ use crate::neuron_generation_service::spawn_neuron_generation_service;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+#[path = "neuron_generation_cost_wire_tests.rs"]
+mod cost_wire;
 #[path = "neuron_generation_intent_lookup_tests.rs"]
 mod intent_lookup;
 

@@ -29,7 +29,7 @@ def save_json(path, value):
     temporary.replace(path)
 
 
-def build_command(package):
+def build_command(package, target=None, cargo_profile=None):
     command = [
         "cargo",
         "build",
@@ -38,6 +38,10 @@ def build_command(package):
         "-p",
         package,
     ]
+    if target is not None:
+        command.extend(["--target", target])
+    if cargo_profile is not None:
+        command.extend(["--profile", cargo_profile])
     for binary in HELPERS[package]:
         command.extend(["--bin", binary])
     return command
@@ -79,7 +83,10 @@ def file_identity(metadata):
     )
 
 
-def verify_helpers(root, output, requested_packages):
+def verify_helpers(
+    root, output, requested_packages, *, target=None, cargo_profile=None,
+    transported=False, require_runtime_env=False,
+):
     """Observe existing preparation evidence without building or rewriting it."""
     report = {
         "schema_version": 1,
@@ -89,6 +96,9 @@ def verify_helpers(root, output, requested_packages):
         "source_before": None,
         "source_after": None,
         "selected_packages": [],
+        "target": target,
+        "cargo_profile": cargo_profile,
+        "transported": transported,
         "artifacts": {},
         "complete": False,
         "exit_code": 1,
@@ -122,9 +132,31 @@ def verify_helpers(root, output, requested_packages):
             "source HEAD differs from helper preparation",
         )
         require(
-            manifest.get("workspace") == str(root / "codex-rs"),
-            "helper workspace differs from the current source",
+            manifest.get("target") == target
+            and manifest.get("cargo_profile") == cargo_profile,
+            "helper target or Cargo profile differs from the request",
         )
+        original_output = output
+        if transported:
+            require(
+                requested_packages == ["codex-hepta-infer-worker-host"]
+                and target in ("x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu")
+                and cargo_profile is not None,
+                "transported verification requires the exact Linux Joint helper",
+            )
+            for key in ("workspace", "output_dir"):
+                value = manifest.get(key)
+                require(
+                    isinstance(value, str) and Path(value).is_absolute()
+                    and not any(c in value for c in "\r\n\0"),
+                    "invalid original helper directory: " + key,
+                )
+            original_output = Path(manifest["output_dir"])
+        else:
+            require(
+                manifest.get("workspace") == str(root / "codex-rs"),
+                "helper workspace differs from the current source",
+            )
         selected = manifest.get("selected_packages")
         require(
             isinstance(selected, list)
@@ -159,7 +191,7 @@ def verify_helpers(root, output, requested_packages):
             require(
                 build.get("package") == package
                 and build.get("binaries") == list(HELPERS[package])
-                and build.get("command") == build_command(package)
+                and build.get("command") == build_command(package, target, cargo_profile)
                 and build.get("complete") is True
                 and build.get("cargo_finished") is True
                 and type(build.get("exit_code")) is int
@@ -167,6 +199,7 @@ def verify_helpers(root, output, requested_packages):
                 f"helper build receipt is not complete for {package}",
             )
         expected_environment = {}
+        runtime_environment = {}
         for binary, package in expected.items():
             artifact = artifacts[binary]
             require(isinstance(artifact, dict), f"invalid artifact metadata: {binary}")
@@ -187,11 +220,13 @@ def verify_helpers(root, output, requested_packages):
                 f"invalid compiler or pinned executable path: {binary}",
             )
             suffix = ".exe" if Path(compiler_path).suffix == ".exe" else ""
+            require(not transported or not suffix, "Linux helper cannot have an EXE suffix")
             pinned = output / "bin" / f"{binary}{suffix}"
             require(
-                executable == str(pinned)
+                executable == str(original_output / "bin" / f"{binary}{suffix}")
                 and pinned.resolve(strict=True) == pinned
-                and pinned.is_file(),
+                and pinned.is_file()
+                and not any(c in str(pinned) for c in "\r\n\0"),
                 f"executable is not the pinned attempt copy: {binary}",
             )
             digest, size = hashlib.sha256(), 0
@@ -230,12 +265,21 @@ def verify_helpers(root, output, requested_packages):
                 not stat.S_IMODE(after.st_mode) & 0o222 and os.access(pinned, os.X_OK),
                 f"pinned helper is writable or not executable: {binary}",
             )
-            expected_environment.update(helper_environment(binary, pinned))
+            expected_environment.update(helper_environment(binary, executable))
+            runtime_environment.update(helper_environment(binary, pinned))
             observed["match"] = True
         require(
             isinstance(environment, dict) and environment == expected_environment,
             "exported helper environment differs from the exact pinned copies",
         )
+        if transported:
+            for key, value in runtime_environment.items():
+                require(
+                    (key in os.environ or not require_runtime_env)
+                    and (key not in os.environ or os.environ[key] == value),
+                    "runtime helper alias differs or is missing: " + key,
+                )
+            report["runtime_environment"] = runtime_environment
     except Exception as error:
         report["error"] = f"{type(error).__name__}: {error}"
     finally:
@@ -258,6 +302,10 @@ def main():
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--github-env", type=Path)
     parser.add_argument("--package", action="append", choices=tuple(HELPERS))
+    parser.add_argument("--target")
+    parser.add_argument("--cargo-profile")
+    parser.add_argument("--transported", action="store_true")
+    parser.add_argument("--require-runtime-env", action="store_true")
     parser.add_argument(
         "--verify-only",
         action="store_true",
@@ -267,13 +315,27 @@ def main():
     selected_packages = args.package or list(HELPERS)
     if len(selected_packages) != len(set(selected_packages)):
         parser.error("a helper package may be selected only once")
+    for value in (args.target, args.cargo_profile):
+        if value is not None and (
+            not value or value.startswith("-")
+            or any(not (c.isascii() and (c.isalnum() or c in "-_.")) for c in value)
+        ):
+            parser.error("target and Cargo profile must be explicit names")
+    if args.transported and not args.verify_only:
+        parser.error("--transported is read-only verification")
+    if args.require_runtime_env and not (args.verify_only and args.transported):
+        parser.error("--require-runtime-env requires transported verification")
     root = Path(__file__).resolve().parents[1]
     workspace = root / "codex-rs"
     output = args.output_dir.resolve()
     if args.verify_only:
         if args.github_env is not None:
             parser.error("--github-env cannot be written in --verify-only mode")
-        report = verify_helpers(root, output, selected_packages)
+        report = verify_helpers(
+            root, output, selected_packages, target=args.target,
+            cargo_profile=args.cargo_profile, transported=args.transported,
+            require_runtime_env=args.require_runtime_env,
+        )
         print(json.dumps(report, indent=2), flush=True)
         return report["exit_code"]
     output.mkdir(parents=True, exist_ok=True)
@@ -288,6 +350,9 @@ def main():
         "source_status_before": None,
         "source_status_after": None,
         "workspace": str(workspace),
+        "output_dir": str(output),
+        "target": args.target,
+        "cargo_profile": args.cargo_profile,
         "selected_packages": selected_packages,
         "builds": [],
         "artifacts": {},
@@ -315,7 +380,7 @@ def main():
             )
         for package in selected_packages:
             binaries = HELPERS[package]
-            command = build_command(package)
+            command = build_command(package, args.target, args.cargo_profile)
             stdout_path = output / f"{package}.jsonl"
             stderr_path = output / f"{package}.stderr.log"
             build = {

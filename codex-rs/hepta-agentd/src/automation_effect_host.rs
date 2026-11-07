@@ -323,13 +323,15 @@ impl AgentdAutomationEffectHost {
                     .execute_authorized_taskflow_effect(
                         &self.authority,
                         &mut driver,
-                        intent,
-                        wire_payload,
-                        &fence,
-                        signed_grant,
-                        &binding,
-                        command_id,
-                        now_ms,
+                        AuthorizedEffectDispatchRequest {
+                            intent,
+                            wire_payload,
+                            fence: &fence,
+                            signed_grant,
+                            expected_binding: &binding,
+                            command_id,
+                            now_ms,
+                        },
                     )
                     .await
                     .map_err(|error| {

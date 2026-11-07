@@ -5,6 +5,7 @@ import contextlib
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
 import runpy
 import shutil
@@ -125,19 +126,34 @@ class PinnedHelperVerificationTests(unittest.TestCase):
             json.dumps(self.environment), encoding="utf-8"
         )
 
-    def verify(self, output=None, packages=("codex-app-server",)):
+    def verify(
+        self, output=None, packages=("codex-app-server",), *, extra=(),
+        root=None, environment=None,
+    ):
+        root = root or self.root
         command = [
             sys.executable,
-            str(self.script),
+            str(root / "scripts" / SCRIPT.name),
             "--verify-only",
             "--output-dir",
             str(output or self.output),
         ]
         for package in packages:
             command.extend(["--package", package])
+        command.extend(extra)
+        if environment is None and "--transported" in extra:
+            environment = {
+                key: value for key, value in os.environ.items()
+                if key not in {
+                    prefix + name
+                    for prefix in ("CARGO_BIN_EXE_", "NEXTEST_BIN_EXE_")
+                    for name in ("hepta-joint-propose", "hepta_joint_propose")
+                }
+            }
         result = subprocess.run(
             command,
-            cwd=self.root,
+            cwd=root,
+            env=environment,
             capture_output=True,
             text=True,
             check=False,
@@ -146,6 +162,160 @@ class PinnedHelperVerificationTests(unittest.TestCase):
         report = json.loads(result.stdout)
         self.assertEqual(result.returncode, report["exit_code"])
         return report
+
+    def prepare_joint_transport(self):
+        namespace = runpy.run_path(str(self.script))
+        target, profile = "aarch64-unknown-linux-gnu", "ci"
+        compiler = self.workspace / "target" / target / profile / "hepta-joint-propose"
+        compiler.parent.mkdir(parents=True)
+        content = b"synthetic Joint helper bytes; never executed\n"
+        compiler.write_bytes(content)
+        compiler.chmod(0o755)
+        pinned = self.output / "bin" / "hepta-joint-propose"
+        pinned.write_bytes(content)
+        pinned.chmod(0o555)
+        package = "codex-hepta-infer-worker-host"
+        self.manifest.update(
+            target=target, cargo_profile=profile, output_dir=str(self.output),
+            selected_packages=[package],
+            artifacts={"hepta-joint-propose": {
+                "package": package, "package_id": "synthetic-joint-helper",
+                "compiler_executable": str(compiler), "executable": str(pinned),
+                "profile": {"test": False}, "bytes": len(content),
+                "sha256": hashlib.sha256(content).hexdigest(),
+            }},
+            builds=[{
+                "package": package, "binaries": ["hepta-joint-propose"],
+                "command": namespace["build_command"](package, target, profile),
+                "complete": True, "cargo_finished": True, "exit_code": 0,
+            }],
+        )
+        self.environment = {
+            prefix + name: str(pinned)
+            for prefix in ("CARGO_BIN_EXE_", "NEXTEST_BIN_EXE_")
+            for name in ("hepta-joint-propose", "hepta_joint_propose")
+        }
+        self.save_evidence()
+        moved = self.output.parent / "downloaded-joint"
+        shutil.copytree(self.output, moved)
+        clone = self.root.parent / "consumer-repo"
+        subprocess.run(
+            ["git", "clone", "--quiet", "--local", "--no-hardlinks", str(self.root), str(clone)],
+            check=True, capture_output=True,
+        )
+        (clone / "codex-rs").mkdir()
+        flags = ("--transported", "--target", target, "--cargo-profile", profile)
+        return moved, clone, flags
+
+    def test_transport_requires_same_source_target_profile_and_preserves_originals(self):
+        moved, clone, flags = self.prepare_joint_transport()
+        before = {p.name: p.read_bytes() for p in moved.glob("*.json")}
+        report = self.verify(
+            moved, ("codex-hepta-infer-worker-host",), extra=flags, root=clone,
+        )
+        self.assertTrue(report["complete"], report)
+        self.assertEqual(report["source_before"], report["source_after"])
+        self.assertEqual(report["source_before"]["head"], self.head)
+        self.assertEqual(report["runtime_environment"], {
+            key: str(moved / "bin" / "hepta-joint-propose") for key in self.environment
+        })
+        self.assertEqual(before, {p.name: p.read_bytes() for p in moved.glob("*.json")})
+        for wrong in (
+            ("--transported", "--target", "x86_64-unknown-linux-gnu", "--cargo-profile", "ci"),
+            ("--transported", "--target", "aarch64-unknown-linux-gnu", "--cargo-profile", "release"),
+        ):
+            with self.subTest(flags=wrong):
+                self.assertFalse(self.verify(
+                    moved, ("codex-hepta-infer-worker-host",), extra=wrong, root=clone,
+                )["complete"])
+        (clone / "source.txt").write_text("changed consumer source\n")
+        self.assertFalse(self.verify(
+            moved, ("codex-hepta-infer-worker-host",), extra=flags, root=clone,
+        )["complete"])
+        subprocess.run(
+            ["git", "-C", str(clone), "-c", "user.name=Transport regression",
+             "-c", "user.email=transport@example.invalid", "commit", "-qam", "Different source"],
+            check=True, capture_output=True,
+        )
+        self.assertFalse(self.verify(
+            moved, ("codex-hepta-infer-worker-host",), extra=flags, root=clone,
+        )["complete"])
+
+    def test_transported_tamper_and_original_alias_drift_are_rejected(self):
+        moved, clone, flags = self.prepare_joint_transport()
+        pinned = moved / "bin" / "hepta-joint-propose"
+        original = pinned.read_bytes()
+        pinned.chmod(0o755)
+        pinned.write_bytes(b"X" + original[1:])
+        pinned.chmod(0o555)
+        self.assertFalse(self.verify(
+            moved, ("codex-hepta-infer-worker-host",), extra=flags, root=clone,
+        )["complete"])
+        pinned.chmod(0o755)
+        pinned.write_bytes(original)
+        pinned.chmod(0o555)
+        environment = dict(self.environment)
+        environment["NEXTEST_BIN_EXE_hepta_joint_propose"] = str(pinned)
+        (moved / "env.json").write_text(json.dumps(environment))
+        self.assertFalse(self.verify(
+            moved, ("codex-hepta-infer-worker-host",), extra=flags, root=clone,
+        )["complete"])
+
+    def test_transported_runtime_requires_every_alias_to_match(self):
+        moved, clone, flags = self.prepare_joint_transport()
+        runtime = {key: str(moved / "bin" / "hepta-joint-propose") for key in self.environment}
+        environment = {**os.environ, **runtime}
+        report = self.verify(
+            moved, ("codex-hepta-infer-worker-host",),
+            extra=(*flags, "--require-runtime-env"), root=clone, environment=environment,
+        )
+        self.assertTrue(report["complete"], report)
+        for missing in (True, False):
+            changed = dict(environment)
+            key = "CARGO_BIN_EXE_hepta_joint_propose"
+            if missing:
+                del changed[key]
+            else:
+                changed[key] = str(self.output / "bin" / "hepta-joint-propose")
+            with self.subTest(missing=missing):
+                self.assertFalse(self.verify(
+                    moved, ("codex-hepta-infer-worker-host",),
+                    extra=(*flags, "--require-runtime-env"), root=clone, environment=changed,
+                )["complete"])
+
+    def test_build_uses_explicit_target_profile_and_requires_them_at_verification(self):
+        output = self.output.parent / "target-profile-build"
+        namespace = runpy.run_path(str(self.script))
+        expected = [
+            "cargo", "build", "--locked", "--message-format=json-render-diagnostics",
+            "-p", "codex-app-server", "--target", "aarch64-unknown-linux-gnu",
+            "--profile", "ci", "--bin", "codex-app-server", "--bin", "exec-server",
+        ]
+        real_run = subprocess.run
+
+        def cargo_build(command, **kwargs):
+            if command[0] != "cargo":
+                return real_run(command, **kwargs)
+            self.assertEqual(command, expected)
+            for binary, artifact in self.manifest["artifacts"].items():
+                kwargs["stdout"].write((json.dumps({
+                    "reason": "compiler-artifact", "package_id": artifact["package_id"],
+                    "target": {"name": binary, "kind": ["bin"]},
+                    "executable": artifact["compiler_executable"], "profile": artifact["profile"],
+                }) + "\n").encode())
+            kwargs["stdout"].write(b'{"reason":"build-finished","success":true}\n')
+            return subprocess.CompletedProcess(command, 0)
+
+        flags = ["--target", "aarch64-unknown-linux-gnu", "--cargo-profile", "ci"]
+        arguments = [str(self.script), "--output-dir", str(output), "--package", "codex-app-server", *flags]
+        with (
+            mock.patch.object(sys, "argv", arguments),
+            mock.patch.object(subprocess, "run", side_effect=cargo_build),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            self.assertEqual(namespace["main"](), 0)
+        self.assertTrue(self.verify(output, extra=flags)["complete"])
+        self.assertFalse(self.verify(output)["complete"])
 
     def test_pinned_copies_survive_cargo_path_rewrites_without_evidence_writes(self):
         for artifact in self.manifest["artifacts"].values():

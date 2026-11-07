@@ -100,6 +100,8 @@ pub(super) fn cost(value: &CellTaskCostV2) -> Result<GenerationCostSummaryV1, Er
                     CellCostStageV2::Recovery => "recovery",
                     CellCostStageV2::Communication => "communication",
                     CellCostStageV2::Evaluation => "evaluation",
+                    CellCostStageV2::ModelAcquisition => "model_acquisition",
+                    CellCostStageV2::Migration => "migration",
                 }
                 .to_string()
             })
