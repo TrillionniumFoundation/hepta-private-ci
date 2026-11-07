@@ -22,13 +22,13 @@ jobs:
       - uses: ./.github/actions/setup-ci-build
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.96.0
 
       - name: Run cargo-deny
         id: cargo_deny
         uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246 # v2
         with:
-          rust-version: 1.95.0
+          rust-version: 1.96.0
           manifest-path: ./codex-rs/Cargo.toml
 
       - name: Preserve a same-version host diagnostic after failure
