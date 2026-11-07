@@ -2,11 +2,14 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+#[cfg(unix)]
 use crate::DispatchEffect;
 use crate::DurableOperationError;
 use crate::DurableOperationIntentV1 as OperationIntentV1;
+#[cfg(unix)]
 use crate::DurableOperationState;
 use crate::DurableOperationStore;
+#[cfg(unix)]
 use crate::DurableOutboxState;
 
 fn id(value: &str) -> StableId {

@@ -2300,3 +2300,125 @@ fn finish_release_drain(
     control.set_exit(agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
 }
+
+#[test]
+fn read_current_neuron_agent_process_v1_requires_live_unfenced_agentd()
+-> Result<(), SupervisorError> {
+    use codex_hepta_control_plane::RuntimeModuleAbiV1;
+    use codex_hepta_control_plane::RuntimeModuleStateClassV1;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::StableId;
+
+    use crate::NeuronAgentProcessCorrelationErrorV1;
+    use crate::RuntimeModuleInitializationWitnessV1;
+    use crate::RuntimeModuleSupervisorV1;
+
+    fn stable(s: &str) -> StableId {
+        StableId::new(s).expect("stable")
+    }
+    fn digest(s: &str) -> Digest32 {
+        Digest32::of_bytes(s.as_bytes())
+    }
+
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+
+    let mut modules = RuntimeModuleSupervisorV1::new();
+    let generation = Generation::new(2).expect("module generation");
+    let candidate = digest("selected-neuron-module-abi-candidate");
+    let module_id = stable("neuron.runtime");
+    let abi = RuntimeModuleAbiV1 {
+        module_id: module_id.clone(),
+        owner_id: stable(fleet.first.as_str()),
+        generation,
+        implementation_digest: digest("neuron-compiled-driver"),
+        candidate_artifact_digest: candidate,
+        predecessor_generation: None,
+        rollback_predecessor_digest: Digest32::ZERO,
+        state_class: RuntimeModuleStateClassV1::Stateful,
+        dependencies: Vec::new(),
+        input_ports: Vec::new(),
+        output_ports: Vec::new(),
+        authoritative_domains: [stable("neuron-checkpoint")].into_iter().collect(),
+        effect_scope: Default::default(),
+    };
+    // Test-only injection of a synthetic selection: the production path
+    // requires a real VerifiedSelfEvolutionSelectionV1 opaque token.
+    modules
+        .register_shadow_for_test(abi, digest("signed-selection-fixture"))
+        .expect("selected Shadow fixture");
+    modules
+        .enter_canary(&module_id, generation)
+        .expect("canary");
+    modules
+        .promote_new_initialized_module(
+            &module_id,
+            generation,
+            digest("canary-fixture"),
+            RuntimeModuleInitializationWitnessV1 {
+                initial_state_digest: digest("new-frozen-checkpoint"),
+                readiness_digest: digest("startup-readiness"),
+            },
+        )
+        .expect("promoted fixture");
+
+    // ACTIVE module is not enough without the live process.
+    assert!(matches!(
+        supervisor.read_current_neuron_agent_process_v1(
+            &modules,
+            &fleet.first,
+            generation,
+            candidate,
+        ),
+        Err(NeuronAgentProcessCorrelationErrorV1::NotRunning),
+    ));
+    supervisor.start(&fleet.first, command()?, now)?;
+    // A process awaiting health is not a serving process.
+    assert!(
+        supervisor
+            .read_current_neuron_agent_process_v1(&modules, &fleet.first, generation, candidate,)
+            .is_err()
+    );
+    control.set_healthy(&fleet.first);
+    supervisor.tick(now);
+    let observation = supervisor
+        .read_current_neuron_agent_process_v1(&modules, &fleet.first, generation, candidate)
+        .expect("live selected module and healthy process");
+    assert!(observation.validate_integrity());
+    assert_eq!(observation.selected_module.module_generation, generation);
+    assert_ne!(observation.process_runtime_generation, 0);
+    assert_ne!(observation.process_spawn_generation, 0);
+    supervisor
+        .revalidate_current_neuron_agent_process_v1(&modules, &observation)
+        .expect("current live observation");
+
+    // A healthy different Agentd process cannot be substituted merely
+    // because a selected module exists elsewhere in this Supervisor.
+    assert!(
+        supervisor
+            .read_current_neuron_agent_process_v1(&modules, &fleet.second, generation, candidate,)
+            .is_err()
+    );
+    let mut forged = observation.clone();
+    forged.process_system_id += 1;
+    forged.diagnostic_digest = forged.computed_digest();
+    assert!(forged.validate_integrity());
+    assert!(
+        supervisor
+            .revalidate_current_neuron_agent_process_v1(&modules, &forged)
+            .is_err()
+    );
+
+    // Restart immediately invalidates the previously observed generation.
+    supervisor.restart(&fleet.first, now)?;
+    assert!(
+        supervisor
+            .revalidate_current_neuron_agent_process_v1(&modules, &observation)
+            .is_err()
+    );
+    Ok(())
+}

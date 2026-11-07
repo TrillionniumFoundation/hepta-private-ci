@@ -1,9 +1,11 @@
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
+use std::sync::Arc;
 
 use codex_hepta_infer_core::NeuronFeatureObservationV1;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
@@ -19,6 +21,9 @@ const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
 const MAX_NEURON_FEATURES: usize = 512;
+// Bounded in-process tombstones. Production restart replay still requires the
+// independent durable reservation owner and a new generation fence.
+const MAX_NEURON_ATTEMPTS: usize = 65_536;
 const Q24_STATE_LIMIT: i64 = 8 * (1_i64 << 24);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -137,6 +142,12 @@ pub enum Error {
     FeatureLimit,
     FeatureOutputMismatch,
     FeatureContract,
+    NeuronReservationReplay,
+    NeuronReservationCapacity,
+    /// A prior model-load/unload outcome is unknown; retire this Worker
+    /// generation rather than reusing potentially leaked physical resources.
+    WorkerQuarantined,
+    ModelHandleConflict,
 }
 
 impl fmt::Display for Error {
@@ -157,11 +168,38 @@ pub trait ModelDriver {
     fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error>;
 }
 
+/// An opaque, allocation-backed identity for one actual in-process Worker.
+/// A restart must NEVER inherit a former Worker's file-load tickets merely
+/// because its public worker ID, generation, handle and load ordinal repeat.
+#[derive(Clone, Debug)]
+pub(crate) struct WorkerInstanceIdentity(Arc<()>);
+
+impl WorkerInstanceIdentity {
+    fn new() -> Self {
+        Self(Arc::new(()))
+    }
+
+    pub(crate) fn matches(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.0, &other.0)
+    }
+}
+
+impl PartialEq for WorkerInstanceIdentity {
+    fn eq(&self, other: &Self) -> bool {
+        self.matches(other)
+    }
+}
+
+impl Eq for WorkerInstanceIdentity {}
+
 #[derive(Debug)]
 struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
     active_requests: usize,
+    // Strictly increasing within this Worker instance, even if the driver
+    // reuses an opaque handle or an identical manifest after unload.
+    load_revision: u64,
 }
 
 #[derive(Debug)]
@@ -171,7 +209,20 @@ pub struct InferenceWorker<D: ModelDriver> {
     grant: ResourceGrant,
     driver: D,
     models: BTreeMap<String, LoadedModel>,
+    // Never recycle a load identity inside one live Worker generation.
+    // This is not an independently durable process-incarnation fence.
+    next_load_revision: u64,
+    // Arc identity is unique per live constructor, including when a restarted
+    // process reuses every externally visible label. Never serialize it.
+    instance_identity: WorkerInstanceIdentity,
     active_requests: BTreeMap<String, String>,
+    // Exact request and reservation identity cannot run twice within one
+    // Worker instance, even if a fresh ModelPort is constructed around it.
+    used_neuron_requests: BTreeSet<Digest32>,
+    used_neuron_reservations: BTreeSet<Digest32>,
+    /// Unknown model-loader/unloader outcome poisons all future work in this
+    /// instance, including attempts with freshly issued reservations.
+    quarantined: bool,
 }
 
 impl<D: ModelDriver> InferenceWorker<D> {
@@ -193,7 +244,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
             grant,
             driver,
             models: BTreeMap::new(),
+            next_load_revision: 0,
+            instance_identity: WorkerInstanceIdentity::new(),
             active_requests: BTreeMap::new(),
+            used_neuron_requests: BTreeSet::new(),
+            used_neuron_reservations: BTreeSet::new(),
+            quarantined: false,
         })
     }
 
@@ -201,10 +257,63 @@ impl<D: ModelDriver> InferenceWorker<D> {
         &self.worker_id
     }
 
+    /// Current worker generation owned by this runtime instance. A process
+    /// restart changes this; it is not an independent signed deployment fence.
+    pub fn worker_generation(&self) -> u64 {
+        self.generation
+    }
+
+    /// In-memory incarnation identity. A restarted Worker may reuse a
+    /// public ID/generation but cannot inherit the previous instance token.
+    /// Never serialize, hash a pointer, or use this as a signed host fence.
+    pub(crate) fn worker_instance_identity(&self) -> WorkerInstanceIdentity {
+        self.instance_identity.clone()
+    }
+
+    /// Exact in-process loaded model incarnation, distinct from the Worker
+    /// process identity. Unload/reload of identical weights advances this
+    /// monotonic ordinal, so old usage cannot be current after replacement.
+    /// The revision is NOT a signed or crash-durable model-load witness.
+    pub(crate) fn current_neuron_model_load_revision(&self, model_id: &str) -> Option<u64> {
+        self.models.get(model_id).map(|model| model.load_revision)
+    }
+
+    /// An ambiguous physical model-load or unload outcome requires external
+    /// retirement/restart; changing the grant cannot clear this fence.
+    #[must_use]
+    pub fn is_quarantined(&self) -> bool {
+        self.quarantined
+    }
+
+    /// Read only the actual in-memory loaded model and require a current
+    /// resource grant. This does not prove a physical CAS load or selection.
+    pub(crate) fn inspected_neuron_manifest(
+        &self,
+        now_ms: u64,
+        model_id: &str,
+    ) -> Result<&ModelManifest, Error> {
+        self.validate_current_grant(now_ms)?;
+        self.models
+            .get(model_id)
+            .map(|model| &model.manifest)
+            .ok_or(Error::ModelNotLoaded)
+    }
+
     pub fn load_model(
         &mut self,
         now_ms: u64,
         manifest: ModelManifest,
+    ) -> Result<ModelLoadObservation, Error> {
+        self.load_model_with(now_ms, manifest, |driver, selected| driver.load(selected))
+    }
+
+    /// Shared single-owner admission for legacy and explicitly file-bound loads.
+    /// An FD-bound path never falls back to ModelDriver::load.
+    pub(crate) fn load_model_with(
+        &mut self,
+        now_ms: u64,
+        manifest: ModelManifest,
+        loader: impl FnOnce(&mut D, &ModelManifest) -> Result<DriverModelHandle, Error>,
     ) -> Result<ModelLoadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_manifest(&manifest)?;
@@ -215,11 +324,51 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
-            return Err(Error::ModelCapacity);
+        // Bound the SUM of model resident allocations, not each individual
+        // handle in isolation. With MAX_MODELS <= 8, this bounded reduction
+        // cannot introduce a global lock or a per-cell O(n) hot-path scan.
+        let already_loaded = self
+            .models
+            .values()
+            .try_fold(0_u64, |sum, entry| {
+                sum.checked_add(entry.handle.observed_memory_bytes)
+            })
+            .ok_or(Error::ArithmeticOverflow)?;
+        // Reserve this exact in-process load identity BEFORE invoking an
+        // effectful driver. Unknown failures must never reuse its ordinal.
+        let load_revision = self
+            .next_load_revision
+            .checked_add(1)
+            .ok_or(Error::ArithmeticOverflow)?;
+        self.next_load_revision = load_revision;
+        // ModelDriver::load may allocate before returning an error. Fence the
+        // entire Worker before calling it: only a fully checked live handle or
+        // independently completed cleanup can release this fence.
+        self.quarantined = true;
+        let handle = loader(&mut self.driver, &manifest)?;
+        if validate_identity(&handle.opaque_id, "model handle").is_err() {
+            return self.dispose_failed_load(handle, Error::InvalidIdentity("model handle"));
+        }
+        if self
+            .models
+            .values()
+            .any(|entry| entry.handle.opaque_id == handle.opaque_id)
+        {
+            // A reused opaque handle may alias a *currently live* model. Do
+            // NOT call unload on it: that could destroy the first model.
+            // The real loader violated identity isolation; quarantine forever.
+            return Err(Error::ModelHandleConflict);
+        }
+        let total_resident = already_loaded
+            .checked_add(handle.observed_memory_bytes)
+            .ok_or(Error::ArithmeticOverflow);
+        if handle.observed_memory_bytes == 0
+            || total_resident.is_err()
+            || total_resident
+                .ok()
+                .is_none_or(|value| value > self.grant.maximum_memory_bytes)
+        {
+            return self.dispose_failed_load(handle, Error::ModelCapacity);
         }
         let observation = ModelLoadObservation {
             model_id: manifest.model_id.clone(),
@@ -234,9 +383,24 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 manifest,
                 handle,
                 active_requests: 0,
+                load_revision,
             },
         );
+        self.quarantined = false;
         Ok(observation)
+    }
+
+    /// Cleanup of an unadmitted physical model is itself a fallible, possibly
+    /// indeterminate driver operation. A failed cleanup cannot release the
+    /// Worker quarantine, even if the next model has different identifiers.
+    fn dispose_failed_load(
+        &mut self,
+        handle: DriverModelHandle,
+        rejection: Error,
+    ) -> Result<ModelLoadObservation, Error> {
+        self.driver.unload(handle)?;
+        self.quarantined = false;
+        Err(rejection)
     }
 
     pub fn run(
@@ -290,6 +454,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .ok_or(Error::ArithmeticOverflow)?;
         self.active_requests
             .insert(request.request_id.clone(), model_id.to_string());
+        // An ordinary model driver may have mutated device state before
+        // returning an error, panicking, or losing terminal observation.
+        // Quarantine before the physical invocation and clear it ONLY for a
+        // fully validated, explicitly terminal result. This matches the typed
+        // Neuron path's unknown-outcome fence.
+        self.quarantined = true;
         let observed = self.driver.run(&loaded.handle, &request);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
@@ -317,6 +487,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
             }
             (ExecutionStatus::Failed, observed.output_digest, true)
         };
+        // No backend error, invalid output, resource overrun or uncertain
+        // terminal status may rehabilitate the Worker. A known Failed result
+        // with a valid terminal receipt is allowed to release the fence.
+        if terminal_observed {
+            self.quarantined = false;
+        }
         Ok(InferenceExecutionObservation {
             request_id: request.request_id,
             reservation_id: request.reservation_id,
@@ -342,8 +518,14 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        // Retain the tracked handle until the driver confirms success. On an
+        // error the physical unload is unknown, so the entire Worker remains
+        // quarantined rather than pretending the released budget is reusable.
+        let handle = loaded.handle.clone();
+        self.quarantined = true;
+        self.driver.unload(handle)?;
+        self.models.remove(model_id);
+        self.quarantined = false;
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -351,7 +533,69 @@ impl<D: ModelDriver> InferenceWorker<D> {
         })
     }
 
+    /// Read the actual in-process Neuron request/reservation tombstones without
+    /// consuming them. The durable inference.control owner independently checks
+    /// the matching reservation and current dispatch state. Neither owner alone
+    /// can prove exactly-once execution across a Worker process restart.
+    pub(crate) fn verify_neuron_attempt_unconsumed(
+        &self,
+        request_id: &str,
+        reservation_id: &str,
+    ) -> Result<(), Error> {
+        validate_identity(request_id, "request")?;
+        validate_identity(reservation_id, "reservation")?;
+        let request_hash = Digest32::of_bytes(request_id.as_bytes());
+        let reservation_hash = Digest32::of_bytes(reservation_id.as_bytes());
+        if self.used_neuron_requests.contains(&request_hash)
+            || self.used_neuron_reservations.contains(&reservation_hash)
+        {
+            return Err(Error::NeuronReservationReplay);
+        }
+        if self.used_neuron_requests.len() >= MAX_NEURON_ATTEMPTS
+            || self.used_neuron_reservations.len() >= MAX_NEURON_ATTEMPTS
+        {
+            return Err(Error::NeuronReservationCapacity);
+        }
+        Ok(())
+    }
+
+    /// Consume one preexisting invocation identity before any model/lease check.
+    /// This is NOT reservation authentication or crash-durable deduplication.
+    /// A full tombstone budget fails closed until a separately admitted new
+    /// Worker generation is created by the authoritative host.
+    pub(crate) fn consume_neuron_attempt(&mut self, request: &WorkerRequest) -> Result<(), Error> {
+        validate_identity(&request.request_id, "request")?;
+        validate_identity(&request.reservation_id, "reservation")?;
+        let request_hash = Digest32::of_bytes(request.request_id.as_bytes());
+        let reservation_hash = Digest32::of_bytes(request.reservation_id.as_bytes());
+        let replay = self.used_neuron_requests.contains(&request_hash)
+            || self.used_neuron_reservations.contains(&reservation_hash);
+        if replay {
+            // Also tombstone the unused half of a mixed duplicate pair.
+            // Otherwise two rejected attempts could be recombined to form a
+            // third usable request without fresh external admission.
+            if self.used_neuron_requests.len() < MAX_NEURON_ATTEMPTS {
+                self.used_neuron_requests.insert(request_hash);
+            }
+            if self.used_neuron_reservations.len() < MAX_NEURON_ATTEMPTS {
+                self.used_neuron_reservations.insert(reservation_hash);
+            }
+            return Err(Error::NeuronReservationReplay);
+        }
+        if self.used_neuron_requests.len() >= MAX_NEURON_ATTEMPTS
+            || self.used_neuron_reservations.len() >= MAX_NEURON_ATTEMPTS
+        {
+            return Err(Error::NeuronReservationCapacity);
+        }
+        self.used_neuron_requests.insert(request_hash);
+        self.used_neuron_reservations.insert(reservation_hash);
+        Ok(())
+    }
+
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
+        if self.quarantined {
+            return Err(Error::WorkerQuarantined);
+        }
         validate_grant(now_ms, &self.grant)
     }
 }
@@ -454,6 +698,9 @@ pub struct NeuronFeatureRequest {
 pub struct DriverNeuronFeatureObservation {
     pub terminal_observed: bool,
     pub succeeded: bool,
+    /// Tokens the backend actually observed consuming. A claimed quota is not
+    /// evidence of physical usage, so validate this after the driver returns.
+    pub consumed_tokens: u32,
     pub encoder_digest: String,
     pub head_digest: String,
     pub drive_q24: Vec<i64>,
@@ -470,6 +717,7 @@ pub struct NeuronFeatureExecutionObservation {
     pub reservation_id: String,
     pub worker_generation: u64,
     pub manifest: ModelManifest,
+    pub consumed_tokens: u32,
     pub encoder_digest: String,
     pub head_digest: String,
     pub input_digest: String,
@@ -495,7 +743,23 @@ pub trait NeuronFeatureDriver: ModelDriver {
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
-    pub fn run_neuron_features(
+    /// Legacy direct feature execution for module-local tests only. Production
+    /// must obtain its one-use WorkerNeuronControlPort from the fsynced
+    /// claim_neuron_durable_dispatch_v1 path.
+    #[cfg(test)]
+    pub(crate) fn run_neuron_features(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        request: NeuronFeatureRequest,
+    ) -> Result<NeuronFeatureExecutionObservation, Error> {
+        self.consume_neuron_attempt(&request.authorization)?;
+        self.run_neuron_features_consumed(now_ms, model_id, request)
+    }
+
+    /// Internal continuation after an in-process identity tombstone has been
+    /// committed. Only the owner that consumed the identity may call this.
+    fn run_neuron_features_consumed(
         &mut self,
         now_ms: u64,
         model_id: &str,
@@ -522,6 +786,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
+        // Never rely solely on the upstream durable owner to enforce token
+        // budgets. Ordinary Worker::run checks both limits; the typed Neuron
+        // path must impose the same bounds before invoking the real driver.
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || request.authorization.maximum_tokens
+                > request.authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
+        }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
             || request.authorization.lease_payload_digest != payload_digest
@@ -538,6 +811,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                 head_digest: request.head_digest,
                 input_digest: request.input_digest,
                 status: ExecutionStatus::Cancelled,
+                consumed_tokens: 0,
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
                 observed_memory_bytes: loaded.handle.observed_memory_bytes,
@@ -556,22 +830,55 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             request.authorization.request_id.clone(),
             model_id.to_string(),
         );
+        // A typed physical driver can panic or abort after mutating device
+        // state. Fence the entire Worker BEFORE invoking it, just like the
+        // generic run path; no caught unwind may admit a second reservation.
+        self.quarantined = true;
         let observed = self.driver.run_neuron_features(&loaded.handle, &request);
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(error) => {
+                // A failing physical backend might already have mutated its
+                // model/device state. Quarantine the entire instance, not
+                // merely the one durable reservation that was tombstoned.
+                self.quarantined = true;
+                return Err(error);
+            }
+        };
+        // These are POST-driver observations. An overrun is not evidence that
+        // the backend remained safe for a fresh reservation/model invocation.
+        if observed.consumed_tokens > request.authorization.maximum_tokens
+            || observed.consumed_tokens > request.authorization.reservation_maximum_tokens
+            || observed.consumed_tokens > loaded.manifest.maximum_tokens
+        {
+            self.quarantined = true;
+            return Err(Error::TokenLimit);
+        }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            self.quarantined = true;
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {
+            self.quarantined = true;
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(&request, &observed)?;
+            if let Err(error) = validate_neuron_feature_output(&request, &observed) {
+                self.quarantined = true;
+                return Err(error);
+            }
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
         };
+        // Only explicitly observed and structurally checked terminal results
+        // may release the pre-driver quarantine. Uncertain outcomes and any
+        // post-driver error above leave the Worker quarantined for this generation.
+        if observed.terminal_observed {
+            self.quarantined = false;
+        }
         Ok(NeuronFeatureExecutionObservation {
             request_id: request.authorization.request_id,
             reservation_id: request.authorization.reservation_id,
@@ -581,6 +888,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             head_digest: observed.head_digest,
             input_digest: request.input_digest,
             status,
+            consumed_tokens: observed.consumed_tokens,
             drive_q24: observed.drive_q24,
             prediction_q24: observed.prediction_q24,
             observed_memory_bytes: observed.observed_memory_bytes,
@@ -593,63 +901,101 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
-    /// Execute the worker path and project the observed result into the
-    /// inference-control-owned typed receipt.
-    pub fn run_neuron_features_receipt(
+    /// Module-local compatibility test path. Not compiled into the product
+    /// library: a caller must fsync inference.control's Dispatching claim
+    /// before executing the typed Neuron Worker/ModelPort.
+    #[cfg(test)]
+    pub(crate) fn run_neuron_features_receipt(
         &mut self,
         now_ms: u64,
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureReceiptV1, Error> {
-        let request_copy = request.clone();
-        let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        let generation =
-            Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
-        let control_request = NeuronFeatureRequestV1 {
-            request_id: StableId::new(request_copy.authorization.request_id)
-                .map_err(|_| Error::FeatureContract)?,
-            generation,
-            model_id: StableId::new(observed.manifest.model_id.clone())
-                .map_err(|_| Error::FeatureContract)?,
-            encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
-            head_digest: parse_digest32(&request_copy.head_digest)?,
-            weights_digest: parse_digest32(&request_copy.weights_digest)?,
-            input_digest: parse_digest32(&request_copy.input_digest)?,
-            feature_vector_q24: request_copy.feature_vector_q24,
-            expected_output_width: request_copy.expected_output_width,
-        };
-        let runtime_tuple = NeuronModelRuntimeTupleV1 {
-            model_id: control_request.model_id.clone(),
-            model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
-            weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
-            tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
-            preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
-            quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
-            runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
-            device_digest: parse_digest32(&observed.manifest.device_digest)?,
-        };
-        let status = match observed.status {
-            ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
-            ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
-            ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
-            ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
-        };
-        build_neuron_feature_receipt_v1(
-            &control_request,
-            runtime_tuple,
-            NeuronFeatureObservationV1 {
-                encoder_digest: parse_digest32(&observed.encoder_digest)?,
-                head_digest: parse_digest32(&observed.head_digest)?,
-                drive_q24: observed.drive_q24,
-                prediction_q24: observed.prediction_q24,
-                observed_memory_bytes: observed.observed_memory_bytes,
-                transient_allocation_bytes: observed.transient_allocation_bytes,
-                queue_age_micros: observed.queue_age_micros,
-                latency_micros: observed.latency_micros,
-                status,
-            },
+        let logical_generation =
+            Generation::new(self.generation).map_err(|_| Error::FeatureContract)?;
+        self.consume_neuron_attempt(&request.authorization)?;
+        self.run_neuron_features_receipt_with_cost_consumed(
+            now_ms,
+            model_id,
+            request,
+            logical_generation,
         )
-        .map_err(|_| Error::FeatureContract)
+        .map(|(receipt, _)| receipt)
+    }
+
+    /// The actual per-invocation token count is retained beside the typed
+    /// Neuron feature receipt. Never reinterpret the original V1 wire bytes:
+    /// existing consumer/replay digests remain byte-for-byte unchanged.
+    ///
+    /// Only callers that already consumed an authenticated Worker reservation
+    /// may reach this boundary. Resource use after an unknown physical failure
+    /// must not be invented: those paths return an error and no cost receipt.
+    pub(crate) fn run_neuron_features_receipt_with_cost_consumed(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        request: NeuronFeatureRequest,
+        logical_generation: Generation,
+    ) -> Result<(NeuronFeatureReceiptV1, u32), Error> {
+        let request_copy = request.clone();
+        let observed = self.run_neuron_features_consumed(now_ms, model_id, request)?;
+        let consumed_tokens = observed.consumed_tokens;
+        // The worker generation is already checked by durable Assignment.
+        // The typed request/receipt generation names the NEURON model, which
+        // is allowed to survive an independently restarted Worker process.
+        let receipt = (|| -> Result<NeuronFeatureReceiptV1, Error> {
+            let control_request = NeuronFeatureRequestV1 {
+                request_id: StableId::new(request_copy.authorization.request_id)
+                    .map_err(|_| Error::FeatureContract)?,
+                generation: logical_generation,
+                model_id: StableId::new(observed.manifest.model_id.clone())
+                    .map_err(|_| Error::FeatureContract)?,
+                encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
+                head_digest: parse_digest32(&request_copy.head_digest)?,
+                weights_digest: parse_digest32(&request_copy.weights_digest)?,
+                input_digest: parse_digest32(&request_copy.input_digest)?,
+                feature_vector_q24: request_copy.feature_vector_q24,
+                expected_output_width: request_copy.expected_output_width,
+            };
+            let runtime_tuple = NeuronModelRuntimeTupleV1 {
+                model_id: control_request.model_id.clone(),
+                model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
+                weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
+                tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
+                preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
+                quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
+                runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
+                device_digest: parse_digest32(&observed.manifest.device_digest)?,
+            };
+            let status = match observed.status {
+                ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
+                ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
+                ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
+                ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
+            };
+            build_neuron_feature_receipt_v1(
+                &control_request,
+                runtime_tuple,
+                NeuronFeatureObservationV1 {
+                    encoder_digest: parse_digest32(&observed.encoder_digest)?,
+                    head_digest: parse_digest32(&observed.head_digest)?,
+                    drive_q24: observed.drive_q24,
+                    prediction_q24: observed.prediction_q24,
+                    observed_memory_bytes: observed.observed_memory_bytes,
+                    transient_allocation_bytes: observed.transient_allocation_bytes,
+                    queue_age_micros: observed.queue_age_micros,
+                    latency_micros: observed.latency_micros,
+                    status,
+                },
+            )
+            .map_err(|_| Error::FeatureContract)
+        })();
+        // All projection errors here happen AFTER the physical driver returned.
+        // A corrupt typed receipt cannot leave a reusable model generation.
+        if receipt.is_err() {
+            self.quarantined = true;
+        }
+        receipt.map(|receipt| (receipt, consumed_tokens))
     }
 }
 
@@ -711,6 +1057,14 @@ fn validate_neuron_feature_output(
     validate_digest(&value.head_digest, "head")?;
     Ok(())
 }
+
+#[path = "neuron_weight_file.rs"]
+mod neuron_weight_file;
+pub use neuron_weight_file::NeuronFileBoundModelLoadV1;
+pub use neuron_weight_file::NeuronPreopenedWeightModelDriver;
+pub use neuron_weight_file::NeuronWeightFileDiagnosticErrorV1;
+pub use neuron_weight_file::NeuronWeightFileDiagnosticV1;
+pub use neuron_weight_file::inspect_loaded_neuron_weight_file_v1;
 
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]

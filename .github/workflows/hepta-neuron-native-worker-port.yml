@@ -1,0 +1,82 @@
+name: Hepta Neuron real Worker/ModelPort seam (diagnostic)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-infer-worker-host/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "scripts/hepta_neuron_lock_dependency_check.py"
+      - ".github/scripts/test_hepta_neuron_lock_dependency_check.py"
+      - "codex-rs/hepta-infer-worker-host/src/neuron_worker_control.rs"
+      - "codex-rs/hepta-infer-worker-host/src/neuron_worker_control_tests.rs"
+      - "codex-rs/hepta-agentd/src/neuron_runtime.rs"
+      - "codex-rs/hepta-agentd/src/neuron_tick_observation.rs"
+      - "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs"
+      - "codex-rs/hepta-infer-worker-host/src/neuron_durable_assignment.rs"
+      - "codex-rs/hepta-infer-worker-host/src/neuron_durable_assignment_tests.rs"
+      - "codex-rs/hepta-infer-core/src/durable_control.rs"
+      - "codex-rs/hepta-infer-core/src/durable_control_tests.rs"
+      - "codex-rs/hepta-infer-core/src/durable_control_tests.rs"
+      - "codex-rs/hepta-infer-core/src/native_control.rs"
+      - "codex-rs/hepta-infer-core/src/native_control_tests.rs"
+      - "codex-rs/hepta-infer-worker-host/src/lib.rs"
+      - "codex-rs/hepta-infer-worker-host/src/model_worker.rs"
+      - "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs"
+      - "codex-rs/hepta-infer-worker-host/src/neuron_weight_file.rs"
+      - "codex-rs/hepta-infer-worker-host/src/neuron_physical_candidate.rs"
+      - "codex-rs/hepta-agentd/src/neuron_selected_artifact.rs"
+      - "qualification/neuron-model-trials/NATIVE_WORKER_MODEL_PORT.md"
+      - ".github/workflows/hepta-neuron-native-worker-port.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: hepta-neuron-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  native-worker-model-port:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Check out exact experimental commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Fast offline Cargo.lock local-path regression
+        run: |
+          python3 -m unittest discover -s ../.github/scripts -p 'test_hepta_neuron_lock_dependency_check.py' -v
+          python3 ../scripts/hepta_neuron_lock_dependency_check.py
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Verify exact Rustfmt
+        run: cargo fmt --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
+      - name: Verify pre-driver durable claim, recovery and rejection
+        run: cargo test --locked -p codex-hepta-infer-core --lib
+      - name: Compile native Worker and ModelPort
+        run: cargo check --locked -p codex-hepta-infer-worker-host --all-targets
+      - name: Exercise exact prepared Worker reservations through Neuron ModelPort
+        run: cargo test --locked -p codex-hepta-infer-worker-host --lib neuron_worker_control::tests
+      - name: Native Worker lifecycle regression
+        run: cargo test --locked -p codex-hepta-infer-worker-host --lib model_worker::tests
+      - name: Verify real weight-file SHA-256 and preopened FD-bound load
+        run: cargo test --locked -p codex-hepta-infer-worker-host --lib model_worker::neuron_weight_file::tests
+      - name: Verify durable inference-control assigned Worker source
+        run: cargo test --locked -p codex-hepta-infer-worker-host --lib neuron_durable_assignment::tests
+      - name: Verify independently selected descriptor versus physical Worker model tuple
+        run: cargo test --locked -p codex-hepta-infer-worker-host --lib neuron_physical_candidate::tests
+      - name: Strict correctness Clippy
+        run: cargo clippy --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --lib -- -D clippy::correctness
+      - name: Reject worktree changes
+        working-directory: ${{ github.workspace }}
+        run: |
+          git diff --check
+          git diff --exit-code

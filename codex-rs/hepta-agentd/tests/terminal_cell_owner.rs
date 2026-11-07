@@ -512,6 +512,63 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
         .grant_shared_experience(&access, &replay_request, 0)
         .await
         .unwrap();
+    let frozen_ledger = ledger.snapshot().unwrap();
+    let trial_plan = DatasetFreezePlanV2 {
+        snapshot_id: id("shared.dataset"),
+        objective_digest: digest("objective"),
+        inclusion_policy_digest: digest("all-active-owner-episodes"),
+    };
+    let freeze_payload = dataset_freeze_signing_payload_v2(&frozen_ledger, &trial_plan).unwrap();
+    let frozen_signature = sign(
+        ledger.verifier(),
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        &freeze_payload,
+    );
+    let source_binding = host
+        .read_neuron_trial_shared_source_v1(
+            replay.policy_id(),
+            &ledger,
+            &frozen_ledger,
+            &trial_plan,
+            &frozen_signature,
+            &data,
+            50,
+        )
+        .await
+        .unwrap();
+    assert!(source_binding.validate_integrity());
+    assert_eq!(source_binding.ledger_source.terminal_joins.len(), 2);
+    assert_eq!(source_binding.source_support_digest, support);
+    assert_eq!(source_binding.source_memory_id, memory.id.memory_id);
+    assert_eq!(source_binding.source_memory_revision, memory.id.revision);
+    let content_digest: Digest32 = memory.content_sha256.as_str().parse().unwrap();
+    assert_eq!(source_binding.source_content_digest, content_digest);
+    let mut altered = source_binding.clone();
+    altered.replay_policy_revision += 1;
+    assert!(!altered.validate_integrity());
+    let mut altered = source_binding.clone();
+    altered.source_memory_revision += 1;
+    assert!(!altered.validate_integrity());
+    let mut altered = source_binding.clone();
+    altered.source_content_digest = digest("wrong-content");
+    assert!(!altered.validate_integrity());
+    // Rehashing a forged incomplete trial batch never passes admission.
+    let mut altered = source_binding.clone();
+    altered.ledger_source.pending_episodes += 1;
+    altered.ledger_source.diagnostic_digest = altered.ledger_source.computed_digest();
+    altered.diagnostic_digest = altered.computed_digest();
+    assert!(!altered.validate_integrity());
+    let mut altered = source_binding.clone();
+    altered.ledger_source.censored_episodes += 1;
+    altered.ledger_source.diagnostic_digest = altered.ledger_source.computed_digest();
+    altered.diagnostic_digest = altered.computed_digest();
+    assert!(!altered.validate_integrity());
+    let mut altered = source_binding.clone();
+    altered.ledger_source.terminal_joins[0].decision_support_digest = digest("different-root");
+    altered.ledger_source.diagnostic_digest = altered.ledger_source.computed_digest();
+    altered.diagnostic_digest = altered.computed_digest();
+    assert!(!altered.validate_integrity());
     // Equal content under a different source ID cannot authorize these decisions.
     let twin = source
         .remember_memory(
@@ -541,6 +598,19 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     assert_ne!(
         twin_use.source_support_digest(),
         replay.source_support_digest()
+    );
+    assert!(
+        host.read_neuron_trial_shared_source_v1(
+            twin_use.policy_id(),
+            &ledger,
+            &frozen_ledger,
+            &trial_plan,
+            &frozen_signature,
+            &data,
+            50,
+        )
+        .await
+        .is_err()
     );
     assert!(matches!(
         host.train(twin_use.policy_id(), &ledger, &data, profile(1), 50)
@@ -708,6 +778,19 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
         host.load(candidate.clone(), &ledger, &registry, &payload, 50)
             .await
             .is_err()
+    );
+    assert!(
+        host.read_neuron_trial_shared_source_v1(
+            replay.policy_id(),
+            &ledger,
+            &frozen_ledger,
+            &trial_plan,
+            &frozen_signature,
+            &data,
+            50,
+        )
+        .await
+        .is_err()
     );
     registry
         .append(artifacts::ArtifactEvent::Revoke(artifacts::StateChange {

@@ -4,12 +4,24 @@ use sqlx::sqlite::SqlitePoolOptions;
 use super::*;
 
 #[tokio::test]
+#[allow(
+    clippy::disallowed_methods,
+    reason = "this disposable in-memory schema oracle contains no owner data or durable SQLite state"
+)]
 async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected() {
     let pool = SqlitePoolOptions::new()
         .max_connections(1)
         .connect("sqlite::memory:")
         .await
         .expect("reference SQLite");
+    // Do not let this test-only Clippy exception become a persistent SQLite
+    // writer. Production connections remain bound to the codex-state shim.
+    let main_file: String =
+        sqlx::query_scalar("SELECT file FROM pragma_database_list WHERE name = 'main'")
+            .fetch_one(&pool)
+            .await
+            .expect("schema oracle SQLite main database");
+    assert!(main_file.is_empty(), "schema oracle must be in-memory");
     MIGRATOR.run(&pool).await.expect("compiled migration chain");
     // Recovery and startup share one canonical schema inventory. A migration
     // adding a logical table must bind its contents, not silently ignore it.

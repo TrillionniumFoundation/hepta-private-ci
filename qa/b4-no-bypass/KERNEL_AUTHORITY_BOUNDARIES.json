@@ -184,6 +184,7 @@
         "FinalUseAuthority\\s*::\\s*claim\\s*\\("
       ],
       "allowedCallers": [
+        "codex-rs/hepta-agentd/src/neuron_runtime.rs",
         "codex-rs/hepta-automation/src/authorized_effect.rs",
         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
         "codex-rs/hepta-memory/src/production_writer.rs",
@@ -503,6 +504,7 @@
         "FinalUseAuthority\\s*::\\s*with_verified_effect\\s*\\("
       ],
       "allowedCallers": [
+        "codex-rs/hepta-agentd/src/neuron_runtime.rs",
         "codex-rs/hepta-automation/src/authorized_effect.rs"
       ]
     },

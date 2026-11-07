@@ -1,0 +1,52 @@
+name: Hepta Neuron Supervisor active candidate diagnostic
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-supervisor/src/module_runtime.rs"
+      - "codex-rs/hepta-supervisor/src/neuron_process_correlation.rs"
+      - "codex-rs/hepta-supervisor/src/supervisor_tests.rs"
+      - "codex-rs/hepta-supervisor/src/lib.rs"
+      - "qualification/neuron-model-trials/NATIVE_SUPERVISOR_SELECTION.md"
+      - ".github/workflows/hepta-neuron-native-supervisor-selection.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: hepta-neuron-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  native-supervisor-selected:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Checkout exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Rustfmt Supervisor module
+        run: cargo fmt --package codex-hepta-supervisor -- --check
+      - name: Compile production Supervisor library
+        run: cargo check --locked -p codex-hepta-supervisor --lib
+      - name: Test read-only selected Neuron module lifecycle
+        run: cargo test --locked -p codex-hepta-supervisor --lib read_neuron_active_candidate_v1
+      - name: Test real Agentd process generation plus selected Neuron module
+        run: cargo test --locked -p codex-hepta-supervisor --lib read_current_neuron_agent_process_v1
+      - name: Check strict Supervisor correctness
+        run: cargo clippy --locked -p codex-hepta-supervisor --lib -- -D clippy::correctness
+      - name: Ensure clean tracked source
+        working-directory: ${{ github.workspace }}
+        run: |
+          git diff --check
+          git diff --exit-code

@@ -265,9 +265,7 @@ impl DurableInferenceControl {
         request: NativeRequest,
         maximum_in_flight: usize,
     ) -> Result<NativeRunRecord, Error> {
-        if self.poisoned {
-            return Err(Error::WriterUnavailable);
-        }
+        self.ensure_writer_available()?;
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt;
@@ -401,6 +399,7 @@ impl DurableInferenceControl {
 
     /// This records intent only: an interrupt acknowledgement never frees a slot.
     pub fn cancel_native(&mut self, request_id: &str) -> Result<NativeRunRecord, Error> {
+        self.ensure_writer_available()?;
         let record = self
             .native
             .records
@@ -450,6 +449,7 @@ impl DurableInferenceControl {
         request_id: &str,
         output: NativeRunOutput,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_writer_available()?;
         let record = self
             .native
             .records

@@ -411,6 +411,29 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         }))
     }
 
+    /// Bind the local immutable model config to an independently acknowledged
+    /// checkpoint, without running a model or changing any state.
+    /// This is not a production route selection, host attestation, or NDU receipt.
+    pub fn read_local_checkpoint_binding_v1(
+        &self,
+    ) -> Result<crate::NeuronLocalCheckpointBindingV1, NeuronRuntimeError> {
+        if self.pending.is_some() {
+            return Err(NeuronRuntimeError::PendingReconciliation);
+        }
+        let anchor = self
+            .journal
+            .current_anchor()?
+            .ok_or(NeuronRuntimeError::CheckpointMismatch)?;
+        if self.witness.current()? != Some(anchor) {
+            return Err(NeuronRuntimeError::RecoveryWitnessMismatch);
+        }
+        Ok(crate::NeuronLocalCheckpointBindingV1::from_owner(
+            self.config.clone(),
+            self.journal.registered_scope(),
+            anchor,
+        ))
+    }
+
     pub fn current_eligibility_sample(
         &self,
     ) -> Result<Option<crate::EligibilityTraceSampleV1>, NeuronRuntimeError> {
