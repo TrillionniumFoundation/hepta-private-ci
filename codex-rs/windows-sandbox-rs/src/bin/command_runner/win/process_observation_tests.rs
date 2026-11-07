@@ -34,12 +34,12 @@ fn command(script: &str) -> Result<Command> {
     let shell = std::path::PathBuf::from(std::env::var_os("SystemRoot").context("SystemRoot")?)
         .join("System32/cmd.exe");
     let mut command = Command::new(shell);
-    // The cmd /C payload is a command tail, not one quoted argv token.
-    // Command::arg(script) makes cmd interpret `"exit /b 7"` as syntax and
-    // return exit 1 on the original Windows runner. These are test-only,
-    // fixed scripts; never pass user-controlled text to raw_arg.
+    // Keep the /C tail a compound command. The original bare `exit N`
+    // form is parsed inconsistently by the real Windows cmd.exe runner here;
+    // an inert echo prefix preserves the tested interactive exit code while
+    // avoiding batch-only `exit /b N`. These fixed test strings are not input.
     command.args(["/D", "/C"]);
-    command.raw_arg(script);
+    command.arg(format!("echo. & {script}"));
     // Run the original real cmd.exe child in a redirected headless test worker.
     // Keep its actual exit-status, owned-handle and pending-state assertions.
     command.creation_flags(CREATE_NO_WINDOW);
@@ -205,7 +205,7 @@ fn reduced(process: BorrowedHandle<'_>, rights: u32) -> io::Result<OwnedHandle> 
 #[test]
 fn original_signalled_exit_zero_seven_and_259_require_successful_query() -> Result<()> {
     for code in [0, 7, 259] {
-        with_child(command(&format!("exit /b {code}"))?, |child, deadline| {
+        with_child(command(&format!("exit {code}"))?, |child, deadline| {
             assert_eq!(
                 observe_process(child.as_handle(), remaining(deadline)?)?,
                 ProcessObservation::Exited(code)
@@ -218,7 +218,7 @@ fn original_signalled_exit_zero_seven_and_259_require_successful_query() -> Resu
 
 #[test]
 fn actual_wait_and_query_rights_failures_do_not_publish_exit() -> Result<()> {
-    with_child(command("exit /b 7")?, |child, deadline| {
+    with_child(command("exit 7")?, |child, deadline| {
         assert_eq!(
             observe_process(child.as_handle(), remaining(deadline)?)?,
             ProcessObservation::Exited(7)
@@ -239,7 +239,7 @@ fn actual_wait_and_query_rights_failures_do_not_publish_exit() -> Result<()> {
 
 #[test]
 fn actual_live_child_is_pending_until_original_stdin_closes() -> Result<()> {
-    with_child(command("set /p value= & exit /b 0")?, |child, deadline| {
+    with_child(command("set /p value= & exit 0")?, |child, deadline| {
         assert_eq!(
             observe_process(child.as_handle(), /*timeout_ms*/ 0)?,
             ProcessObservation::Pending

@@ -111,10 +111,10 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 03521b2f32346a49cccde8ff72e8c7b886b31222
+      CHAIN_SOURCE_SHA: 8df4b21d893906570d48f5beafabb3b31e0aefbc
       CHAIN_EXECUTION_PROFILE: hepta-integrated-chain-execution-v12
       CHAIN_BASE_SHA: dd6e1c3cbeacbdc532b0679297835b3a0aac78f0
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '03521b2f32346a49cccde8ff72e8c7b886b31222' || 'ebe23e4bd9eeb704479e588e873edc2c61bf7e76' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '8df4b21d893906570d48f5beafabb3b31e0aefbc' || '0fd0c94b94ae7181bf387d52e650be8dd359325f' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -1219,8 +1219,8 @@ jobs:
       TESTED_SHA: ${{ github.event.pull_request.head.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       HEPTA_CI_LANE: source-head
-      CHAIN_INSTALLED_SOURCE_SHA: 03521b2f32346a49cccde8ff72e8c7b886b31222
-      CHAIN_INSTALLED_TREE: e0235248ecae2a67717c8b9ff2e3f25774ba63d7
+      CHAIN_INSTALLED_SOURCE_SHA: 8df4b21d893906570d48f5beafabb3b31e0aefbc
+      CHAIN_INSTALLED_TREE: 6f5aaa2af0432e27e24b6bd2ad18013ab4423d14
       CHAIN_INSTALLED_EXECUTION_PROFILE: hepta-integrated-chain-execution-v12
       RUSTUP_TOOLCHAIN: "1.95.0"
       CARGO_INCREMENTAL: "0"

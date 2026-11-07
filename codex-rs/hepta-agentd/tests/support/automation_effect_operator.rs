@@ -142,7 +142,7 @@ impl Service {
                                     ServiceRole::Frontier,
                                     PqTrustOperationV2::FrontierLoad { owner_id },
                                 ) if owner_id == SIGNER => PqTrustOutcomeV2::Frontier {
-                                    value: *current.lock().unwrap(),
+                                    value: *current.lock().map_err(|_| anyhow::anyhow!("frontier service state poisoned"))?,
                                 },
                                 (
                                     ServiceRole::Frontier,
@@ -152,7 +152,7 @@ impl Service {
                                         next,
                                     },
                                 ) if owner_id == SIGNER => {
-                                    let mut value = current.lock().unwrap();
+                                    let mut value = current.lock().map_err(|_| anyhow::anyhow!("frontier service state poisoned"))?;
                                     if &*value == expected {
                                         *value = *next;
                                         cas.fetch_add(1, Ordering::SeqCst);

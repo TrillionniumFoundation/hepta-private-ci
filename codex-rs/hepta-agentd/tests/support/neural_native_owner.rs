@@ -79,6 +79,7 @@ pub fn model(
     let target_contract = fs::read(directory.join("target-contract.json"))?;
     let contract: serde_json::Value = serde_json::from_slice(&target_contract)?;
     let wrapped_adapter = fs::read(directory.join("wrapped-adapter.json"))?;
+    let runtime_snapshot = fs::read(directory.join("runtime-snapshot.json"))?;
     let mut source_pins = BTreeMap::new();
     for relative in [
         "formal/pon-nakamoto-v1/llm_adapter_contract.py",
@@ -100,6 +101,7 @@ pub fn model(
         materials: input.materials.clone(),
         run_directory: input.output.join(format!("original-{name}-model-session")),
         source_pins,
+        runtime_snapshot,
         target_contract,
         wrapped_adapter,
         contract_digest: parent["contract"]

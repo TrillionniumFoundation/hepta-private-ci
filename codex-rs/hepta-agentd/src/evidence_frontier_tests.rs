@@ -120,7 +120,7 @@ async fn recovery_frontier_refuses_valid_classical_v1_and_v2_signatures() -> Res
     for version in [1, 2] {
         // Real legacy messages/signatures remain historically valid; neither
         // receives present recovery authority from the PQ loader.
-        let preimage = legacy_signing_bytes(&fixture.frontier, version);
+        let preimage = legacy_signing_bytes(&fixture.frontier, version)?;
         let signature = key.sign(&preimage);
         key.verifying_key().verify_strict(&preimage, &signature)?;
         let mut legacy = serde_json::to_value(&fixture.frontier)?;
@@ -190,7 +190,7 @@ async fn recovery_frontier_authenticates_both_effect_fields() -> Result<()> {
     Ok(())
 }
 
-fn legacy_signing_bytes(frontier: &EvidenceRecoveryFrontierV4, version: u32) -> Vec<u8> {
+fn legacy_signing_bytes(frontier: &EvidenceRecoveryFrontierV4, version: u32) -> Result<Vec<u8>> {
     let mut bytes = if version == 3 {
         b"hepta.kernel.evidence.recovery-frontier.pq.v3\0".to_vec()
     } else {
@@ -232,16 +232,16 @@ fn legacy_signing_bytes(frontier: &EvidenceRecoveryFrontierV4, version: u32) -> 
     bytes.extend_from_slice(&frontier.signer_key_epoch.to_be_bytes());
     if version == 3 {
         bytes.extend_from_slice(
-            &canonical_hex_bytes::<32>(&frontier.signer_public_key_id_hex).expect("key id"),
+            &canonical_hex_bytes::<32>(&frontier.signer_public_key_id_hex)?,
         );
     }
-    bytes
+    Ok(bytes)
 }
 
 #[tokio::test]
 async fn recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots() -> Result<()> {
     let fixture = Fixture::new().await?;
-    let message = legacy_signing_bytes(&fixture.frontier, /*version*/ 3);
+    let message = legacy_signing_bytes(&fixture.frontier, /*version*/ 3)?;
     let signature = fixture.key.sign_exact_message(&message)?;
     PqNativeVerifier::from_pinned_spki(fixture.key.public_spki(), fixture.key.public_key_id())?
         .verify_exact_message(&message, &signature)?;

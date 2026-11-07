@@ -403,6 +403,23 @@ pub(crate) unsafe fn create_workspace_write_token_with_caps_from(
     )
 }
 
+/// Test-only diagnostic constructor with a separate read-only restricting cohort.
+/// Read-only SIDs constrain read access but are not added to the child-object
+/// default DACL, which grants only the write-capability SIDs.
+#[cfg(test)]
+pub(crate) unsafe fn create_workspace_write_token_with_caps_and_read_sids_from(
+    base_token: HANDLE,
+    psid_capabilities: &[*mut c_void],
+    read_only_sids: &[*mut c_void],
+) -> Result<HANDLE> {
+    create_token_with_caps_from(
+        base_token,
+        psid_capabilities,
+        read_only_sids,
+        RestrictingIdentity::Exclude,
+    )
+}
+
 /// Construct a raw `WRITE_RESTRICTED` token including capability, user and additional SIDs.
 ///
 /// This FFI helper does not verify a dedicated sandbox identity and provides no
@@ -530,7 +547,17 @@ unsafe fn create_token_with_caps_from(
     }
 
     let mut new_token: HANDLE = 0;
-    let flags = DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED;
+    // Capability-only workspace tokens must require BOTH the ordinary token
+    // identity and a capability SID for every access. WRITE_RESTRICTED checks
+    // only the restricting SID set for writes; FILE_DELETE_CHILD is not a
+    // sufficient boundary under inherited broad-identity directory ACEs.
+    let flags = DISABLE_MAX_PRIVILEGE
+        | LUA_TOKEN
+        | if matches!(restricting_identity, RestrictingIdentity::Include) {
+            WRITE_RESTRICTED
+        } else {
+            0
+        };
     let ok = CreateRestrictedToken(
         base_token,
         flags,

@@ -1,8 +1,7 @@
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::AssertSqlSafe;
-use sqlx::Connection;
-use sqlx::SqliteConnection;
+use sqlx::SqlitePool;
 
 use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
@@ -22,14 +21,21 @@ const TERMINAL_KEYS: &str = "CREATE TABLE provider_invocation_terminals (
     attempt_id TEXT NOT NULL UNIQUE
 );";
 
-async fn key_connection(intents: &str, terminals: &str) -> Result<SqliteConnection> {
-    let mut connection = SqliteConnection::connect("sqlite::memory:").await?;
+async fn key_connection(intents: &str, terminals: &str) -> Result<(tempfile::TempDir, SqlitePool)> {
+    let directory = tempfile::tempdir()?;
+    let config = SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(
+        directory.path().to_path_buf(),
+    )?);
+    let database = directory.path().join("key-schema.sqlite");
+    let pool = config.open_durable_evidence_pool(&database).await?;
+    let mut connection = pool.acquire().await?;
     // Audited test-only DDL: callers supply the literal key schemas above or
     // their fixed negative-case replacements below, never external input.
     sqlx::raw_sql(AssertSqlSafe(format!("{intents}\n{terminals}")))
-        .execute(&mut connection)
+        .execute(&mut *connection)
         .await?;
-    Ok(connection)
+    drop(connection);
+    Ok((directory, pool))
 }
 
 #[tokio::test]
@@ -81,10 +87,11 @@ async fn recovery_invocation_schema_refuses_non_rowid_or_composite_sequences() -
             } else {
                 (INTENT_KEYS, altered.as_str())
             };
-            let mut connection = key_connection(intents, terminals).await?;
+            let (_directory, pool) = key_connection(intents, terminals).await?;
+            let mut connection = pool.acquire().await?;
             assert!(
                 matches!(
-                    verify(&mut connection).await,
+                    verify(&mut *connection).await,
                     Err(EvidenceError::Corrupt(_))
                 ),
                 "accepted {table}: {case}"
@@ -143,7 +150,8 @@ async fn recovery_invocation_schema_requires_exact_unconditional_column_uniquene
             Replacement::ExtraColumn,
             Replacement::OtherCollation,
         ] {
-            let mut connection = key_connection(&intents, &terminals).await?;
+            let (_directory, pool) = key_connection(&intents, &terminals).await?;
+            let mut connection = pool.acquire().await?;
             // All index, table and column names come from the fixed required
             // roster above; no database or external text supplies identifiers.
             for (index, owner, keys) in required {
@@ -151,14 +159,14 @@ async fn recovery_invocation_schema_requires_exact_unconditional_column_uniquene
                     "CREATE UNIQUE INDEX {index} ON {owner} ({})",
                     keys.join(", ")
                 )))
-                .execute(&mut connection)
+                .execute(&mut *connection)
                 .await?;
             }
             // Establish a real accepted control before replacing exactly one
             // key with a structure that cannot supply its original guarantee.
-            verify(&mut connection).await?;
+            verify(&mut *connection).await?;
             sqlx::query(AssertSqlSafe(format!("DROP INDEX {name}")))
-                .execute(&mut connection)
+                .execute(&mut *connection)
                 .await?;
             let keys = columns.join(", ");
             let replacement_sql = match replacement {
@@ -191,12 +199,12 @@ async fn recovery_invocation_schema_requires_exact_unconditional_column_uniquene
                 // The replacement is built only from the same fixed roster
                 // and the literal malformed-constraint clauses in this match.
                 sqlx::query(AssertSqlSafe(sql))
-                    .execute(&mut connection)
+                    .execute(&mut *connection)
                     .await?;
             }
             assert!(
                 matches!(
-                    verify(&mut connection).await,
+                    verify(&mut *connection).await,
                     Err(EvidenceError::Corrupt(_))
                 ),
                 "accepted {name}: {replacement:?}"

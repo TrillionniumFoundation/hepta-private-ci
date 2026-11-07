@@ -1,7 +1,9 @@
 use super::*;
 use crate::acl::add_deny_write_ace;
 use crate::acl::ensure_allow_mask_aces;
+use crate::acl::ensure_allow_mask_aces_with_inheritance;
 use crate::acl::ensure_allow_write_aces;
+use crate::acl::ensure_filesystem_mutation_deny;
 use crate::acl::fetch_dacl_handle;
 use pretty_assertions::assert_eq;
 use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
@@ -16,6 +18,8 @@ use windows_sys::Win32::Security::RevertToSelf;
 use windows_sys::Win32::Security::TokenRestrictedSids;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 
 #[path = "token_full_restriction_tests.rs"]
 mod full_restriction;
@@ -333,23 +337,27 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
     {
         // SAFETY: token remains owned throughout this impersonation scope.
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
-        std::fs::write(&existing, "before repair")?;
+        std::fs::write(&existing, "before repair")
+            .map_err(|error| anyhow!("pre-repair capability write failed: {error}"))?;
     }
-    // SAFETY: the fixture and validated capability SID are live for the repair.
-    let repaired = unsafe { add_deny_write_ace(fixture.path(), capability.as_ptr())? };
+    // The strict restricting-SID token checks reads as well as writes. Use the
+    // mutation-only deny so DELETE/FILE_DELETE_CHILD and data writes are denied
+    // without also denying READ_CONTROL/SYNCHRONIZE needed by the read control.
+    let repaired = unsafe { ensure_filesystem_mutation_deny(fixture.path(), capability.as_ptr())? };
     // SAFETY: the same objects remain live. Check native directory and file
     // storage retains the constructor's complete mask and inheritance scope.
     let repeated_repairs = unsafe {
         (
-            add_deny_write_ace(fixture.path(), capability.as_ptr())?,
-            add_deny_write_ace(&existing, capability.as_ptr())?,
-            add_deny_write_ace(&existing, capability.as_ptr())?,
+            ensure_filesystem_mutation_deny(fixture.path(), capability.as_ptr())?,
+            ensure_filesystem_mutation_deny(&existing, capability.as_ptr())?,
+            ensure_filesystem_mutation_deny(&existing, capability.as_ptr())?,
         )
     };
     let (read, denied) = {
         // SAFETY: token remains owned throughout this impersonation scope.
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
-        let read = std::fs::read_to_string(&existing)?;
+        let read = std::fs::read_to_string(&existing)
+            .map_err(|error| anyhow!("post-repair capability read failed: {error}"))?;
         let denied = [
             std::fs::write(&existing, "after repair"),
             std::fs::write(&created, "created"),
@@ -383,6 +391,7 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     let cap_a = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
     let cap_b = LocalSid::from_string("S-1-5-21-111-222-333-444")?;
     let other_cap = LocalSid::from_string("S-1-5-21-121-232-343-454")?;
+    let read_only = LocalSid::from_string("S-1-5-21-131-242-353-464")?;
     let mut logon = unsafe { get_logon_sid_bytes(base.0)? };
     let mut everyone = unsafe { world_sid()? };
     // Deliberately grant broad inherited DELETE and parent DELETE_CHILD inside
@@ -411,11 +420,21 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     // A stale capability for another root must not authorize this token either.
     unsafe {
         ensure_allow_write_aces(&outside, &[other_cap.as_ptr()])?;
+        ensure_allow_mask_aces_with_inheritance(
+            &outside,
+            &[read_only.as_ptr()],
+            FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
+            CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE,
+        )?;
     }
     std::fs::write(outside.join("keep.txt"), "outside")?;
     std::fs::create_dir(outside.join("keep-dir"))?;
     let token = OwnedToken(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])?
+        create_workspace_write_token_with_caps_and_read_sids_from(
+            base.0,
+            &[cap_a.as_ptr(), cap_b.as_ptr()],
+            &[read_only.as_ptr()],
+        )?
     });
     let outside_acl = (
         fixture_acl_snapshot(&outside, &cap_a)?,
@@ -428,6 +447,7 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
         (
             token_has_restricting_sid(token.0, cap_a.as_ptr())?,
             token_has_restricting_sid(token.0, cap_b.as_ptr())?,
+            token_has_restricting_sid(token.0, read_only.as_ptr())?,
             token_has_restricting_sid(token.0, logon.as_mut_ptr().cast())?,
             token_has_restricting_sid(token.0, everyone.as_mut_ptr().cast())?,
         )
