@@ -104,6 +104,7 @@ impl FinalUseAuthority {
         store.revalidate_owner()?;
         Ok(Self(Arc::new(Inner {
             signer_id,
+            profile: FinalUseAuthenticationProfile::ClassicalV1,
             issuer_keys,
             state: Mutex::new(state),
             active_dispatches: AtomicUsize::new(0),
