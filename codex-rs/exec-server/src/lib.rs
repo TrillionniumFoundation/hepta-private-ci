@@ -24,6 +24,9 @@ mod noise_channel;
 mod noise_relay;
 mod process;
 mod process_sandbox;
+#[cfg(all(test, target_os = "linux"))]
+#[path = "read_delegation_guard_tests.rs"]
+mod read_delegation_guard_tests;
 mod regular_file;
 mod relay;
 mod relay_proto;
