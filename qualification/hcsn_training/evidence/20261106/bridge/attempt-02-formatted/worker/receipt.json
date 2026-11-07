@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "mechanism": "task_mse_bp_v1",
+  "binding": {
+    "scope_digest": "2e543a502d97d3080df6611378d8c52c36b93c71e7bf0d78b19a12451f142601",
+    "generation": 1,
+    "writer_epoch": 1,
+    "clock_epoch": "49f3c56ed1545326eb00bc3db6a1338baba9977b9b1b5783d80ed76ad45b2851",
+    "model_digest": "123bb675e1629322609e6c31062e645a8544dfd21d42ae9befe7828c8550a56f",
+    "profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28"
+  },
+  "request_digest": "a5b6c20e3332df321ad80a7f3d635065e802b37931f3be03fd1a21f792ee378a",
+  "base_checkpoint_sha256": "123bb675e1629322609e6c31062e645a8544dfd21d42ae9befe7828c8550a56f",
+  "execution_sources": {
+    "hcsn/__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "hcsn/attempts.py": "4b1ea35d42f2a88307228c4d039b5654395c0648058855e7b1a51e3a78437b22",
+    "hcsn/audit_population.py": "2154a964a2722a0859ae3b1dda98af9a40c4376d4580146e4b3c1b7079e15136",
+    "hcsn/baselines.py": "a98cbbe7b1ba15486a44a2dd06542b64e39560012df395a2f2f393e67561640d",
+    "hcsn/benchmark.py": "d6b96100a09e9bbcccd6d7ff998771600c08c9b0c6f9d0354849afb044b94540",
+    "hcsn/cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6",
+    "hcsn/checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "hcsn/execution.py": "cec0644b0ae13721a5162eba217c183f2aa69adc73909a2183bd3dd5727abcd7",
+    "hcsn/mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+    "hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "hcsn/population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+    "hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "hcsn/rematerialization.py": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+    "hcsn/tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+    "hcsn/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hcsn/tests/test_audit_population.py": "249a8118632082d802bebed55005abd100ebaf292290e5573822d594ef57dc6d",
+    "hcsn/tests/test_benchmark.py": "15939465d403647ecbd924dfb97297aee43c0c8e64e69d196d157ebdf19852e2",
+    "hcsn/tests/test_cells.py": "e579936cb01bd810636ab5de963ed2f24a64013da0056d8568d45d42d5ebd79b",
+    "hcsn/tests/test_checks.py": "54c994b9a6ca76d9e048f5fb0b3f770bfe4f6025329d29be22808b493e3ca68f",
+    "hcsn/tests/test_execution.py": "7c887fb9e38d7d39ba2f53238dbd0b2bb61fb5b0f6cf4454e9684caaa8a561cc",
+    "hcsn/tests/test_hx_tensor.py": "d1c405651f956b112d907f4109c0d759648703b6d6b303e503cb716228fde7a4",
+    "hcsn/tests/test_population.py": "85dacb782ac9cf6f61f7c5c70027693d3ef50f83da24ce40348658ea0ed04c95",
+    "hcsn/tests/test_population_torch.py": "7bf3ba7a2f54f8dd7707a166fddf0a5f91c90d017a4e3564666a8f9ec0798076",
+    "hcsn/tests/test_reference.py": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d",
+    "hcsn/tests/test_tensor.py": "355ba9bf747bc427acb0f10c8525ed80bc5f6e55f9f897602141bf0b6cb4421f",
+    "hcsn/validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045",
+    "hcsn_training/__init__.py": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+    "hcsn_training/handoff.py": "7809cc14ccd5750049e4a2b91462ed9655a30db0c2535d35e3e0f7c6472f2c21",
+    "hcsn_training/joint_graph.py": "a43a93520746de5e3d320f0699246149dfffadba439804953b71a7ddbda99835",
+    "hcsn_training/verify_bridge.py": "8daa13a0da4f036b5ec4152c7af61b650756706ad42385547ce9ef2a5a228052",
+    "hcsn_training/worker.py": "81e4c2b7f053604548157bc75d3ea4f10a86dfd986cbf9f76f84c78c2ec609ea"
+  },
+  "execution_source_digest": "1adbf2d66a749896a95f54617c0a3576000b523fb08fc9bcfde8b6ff07ea095b",
+  "runtime_tuple": {
+    "python": "3.12.14",
+    "torch": "2.8.0+cpu",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "dtype": "torch.float64",
+    "device": "cpu"
+  },
+  "runtime_tuple_digest": "df1367953fa4b34e7b0321209968ef46fbab829076d3cab7ae90088cf5b6cf9c",
+  "dataset_digest": "acc923254078e7df13994daefe3c010824dff04d44f7c8ffdd048d5ab84bafef",
+  "graph_digest": "a3d7d66e6a55795c5231eb60fb9fea6bffae9f2b628c8f07018c45973a0ee208",
+  "edge_timing": "previous_boundary",
+  "base_weights_digest": "c94b9e4dc492b118883ffff8616f94bac16f995f5a6b39e8c609c7cb6c3befbb",
+  "candidate_weights_digest": "773e42f2a4f7878b191aa9d5bf39d1fb93e9b9b9ed6fe89ffad3a38f96a59cd4",
+  "inputs_digest": "7319e182842c55fb7e0c3c118eecc978182530b00f7d3dc6782e9196a4720f31",
+  "targets_digest": "8602cecd3ba3077ffa659532249fcac259f30347385b3334eeffa443177463a7",
+  "schedule_digest": "567722bd28f5e142ea0c85e18e1827835fd14c594bf7da32071eabe40fcee9a6",
+  "target_time_micros": 1250017,
+  "optimizer": {
+    "kind": "sgd",
+    "momentum": 0,
+    "learning_rate": 0.02,
+    "steps": 1
+  },
+  "logical_cells": 2,
+  "trainable_parameters": 172,
+  "gradient_cells": 2,
+  "gradient_parameters": 172,
+  "completed_optimizer_steps": 1,
+  "gradient_digest": "6ed360128a09d495e6f29cd4ff6dbb6359cc82472c31ad3004d357b4bd8a911f",
+  "training_examples_seen": 2,
+  "training_intervals_seen": 8,
+  "gradients": [
+    {
+      "loss": 0.48740461049153605,
+      "gradient_digest": "e8074092bbd12faec39d44388e185febd4d7448cd702b9ec726f51cafebd5944",
+      "per_cell_gradient_norm": {
+        "memory": 0.10856586408473307,
+        "association": 0.602926634668431
+      }
+    }
+  ],
+  "final_prediction": [
+    [
+      0.6860291049723922
+    ],
+    [
+      0.6838268462568036
+    ]
+  ],
+  "torch_version": "2.8.0+cpu",
+  "physical_energy_joules": null,
+  "energy_missing_reason": "no physical counter in this CPU development adapter",
+  "measurement_scope": "proposal validation/base reload/copy/BP/final forward/serialization; excludes caller load and publication",
+  "candidate_only": true,
+  "evaluation_passed": false,
+  "checkpoint_sha256": "283a4f7e4d123fceb7806a20634cd422b7cbf361a1728163238ddca0b7ff4296",
+  "checkpoint_bytes": 11459,
+  "wall_seconds": 0.26892468000005465,
+  "cpu_seconds": 0.2688873789999997,
+  "cpu_threads": 1,
+  "worker_cost_through_checkpoint_fsync": {
+    "wall_seconds": 0.2950745989983261,
+    "cpu_seconds": 0.29078347500000046,
+    "excluded": "diagnostic and binary-handoff generation/publication"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "observed_utc": "2026-11-05T13:55:32.322367+00:00",
+  "cwd": "/workspace/hepta-private-ci",
+  "base_commit": "2fafe548213d69756a5de59b9680316a93afb5e1",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "cpu_count": 5,
+  "gpu_device_nodes": [],
+  "cuda_installations": [],
+  "rapl_energy_files": [],
+  "network_policy": {
+    "version": 1,
+    "vpn_configured": false,
+    "automatic_tailscale_access": false,
+    "http_proxy": "http://proxy:8080",
+    "http_network_policy": {
+      "type": "unrestricted"
+    },
+    "tcp_connect_proxy": "http://proxy:8088",
+    "tcp_network_access": {
+      "domains": [],
+      "ip_ranges": []
+    }
+  },
+  "network_observation": "git fetch succeeds with executor network access using inherited proxy; no network policy changes",
+  "isolation": "work/hcsn-venv; official torch==2.8.0 CPU wheel",
+  "cuda_full_gate": "open: no GPU device nodes, nvidia-smi or CUDA installation",
+  "gpu_energy_gate": "open: no GPU or GPU energy counter",
+  "rust_format": "just fmt attempted in codex-rs; just command unavailable; no Rust files changed",
+  "research_software": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu",
+    "ncps": "1.0.1",
+    "triton": null,
+    "causal-conv1d": null,
+    "mamba-ssm": null,
+    "nvidia-ml-py": null
+  },
+  "cuda_runtime": null,
+  "cuda_available": false,
+  "cuda_device_count": 0,
+  "driver_version": null,
+  "driver_missing_reason": "No exposed NVIDIA GPU, driver utility, or NVML interface; no driver version measured"
+}

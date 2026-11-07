@@ -365,8 +365,12 @@ mod production_composition;
 mod production_launcher;
 #[cfg(target_os = "linux")]
 mod production_root_composition;
+#[cfg(target_os = "linux")]
+mod pq_final_use;
 mod production_writer_host;
 mod prompt_runtime;
+#[cfg(target_os = "linux")]
+mod protected_file;
 mod qualification_writer;
 mod runtime;
 #[cfg(target_os = "linux")]

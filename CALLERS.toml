@@ -6,7 +6,7 @@ ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]
 rule = "Every privileged Hepta boundary has an exact closed set of product call sites. Test, example and definition-only uses do not grant production authority."
 
 [privileged_inventory]
-required_boundary_ids = ["supervisor_authorized_boot", "memory_production_writer_open", "cognitive_store_recovery_open", "cognitive_production_mutation_capability", "agentd_production_writer_host", "agentd_production_operation_runtime", "learning_artifact_owner_bootstrap", "learning_artifact_owner_restart", "learning_artifact_verified_current_view", "provider_effect_coordinator", "http_provider_effect_adapter", "final_use_open_state", "final_use_claim", "final_use_claim_raw", "final_use_delivery", "final_use_delivery_witness", "final_use_delivery_raw", "final_use_dispatch", "final_use_dispatch_witness", "final_use_dispatch_raw", "final_use_revocation_update", "final_use_approval_trust", "final_use_approval_verify", "final_use_revocation_feed_trust", "final_use_revocation_feed_apply", "final_use_revocation_convergence_trust", "final_use_revocation_convergence_verify", "bao_final_use_consumer", "bao_registered_consumer_new", "bao_final_use_host_new", "bao_registered_revocation_update", "bao_registered_final_use_host", "authority_lease_open_state", "authority_lease_put", "authority_lease_revoke", "authority_lease_prune", "authority_lease_epoch_advance", "authority_lease_verify_use", "authority_lease_delivery", "authority_lease_delivery_witness", "authority_lease_dispatch_raw", "authority_lease_dispatch_witness", "final_use_async_dispatch_fence", "automation_taskflow_provider_effect_bridge", "final_use_guarded_effect", "notes_original_pending_call_proof", "notes_original_operation_observation_proof", "notes_original_thread_prepare", "notes_original_writer_terminal_receipt", "memory_original_owner_current_publication", "memory_original_protected_current_readback", "original_authbus_human_delivery_read", "notes_original_human_turn_proof", "root_registered_human_text_writer", "root_registered_human_text_admission", "root_human_text_same_issuer_cas", "root_retained_human_text_lookup", "root_live_human_session_install", "root_original_human_text_verification", "notes_original_turn_unprepared_admission", "root_host_original_human_text_verification", "notes_original_human_text_verification", "root_prepared_fresh_session", "root_retained_native_ui_launch", "root_prepared_native_ui_execution", "root_material_capture_original_image", "root_material_verify_retained_image", "root_material_install_original_generation", "root_material_reopen_original_installation", "root_material_release_registered_custody", "root_material_fresh_registered_session", "root_material_recover_registered_session", "root_material_existing_session_open", "root_material_resume_registered_handoff", "root_material_current_observation_chain", "root_original_writer_descriptor_chain", "root_same_retained_service_serve", "root_registered_material_recovery", "root_registered_material_handoff_resume", "root_original_writer_purpose_send", "root_original_writer_purpose_receive", "agentd_original_root_writer_consume", "root_registered_writer_rotation", "native_original_operation_host_attach", "native_original_owner_current_ack", "native_original_terminal_history_observation", "root_original_authority_initialize", "root_original_writer_authorize", "root_same_registered_bootstrap_seal", "root_same_registered_bootstrap_capture", "root_original_physical_login_install", "root_original_writer_successor_shape", "root_original_issuer_writer_rotation", "root_physical_current_retired_adoption", "root_physical_recovery_retirement_admission", "root_physical_fresh_service_genesis", "root_physical_registered_checkpoint_genesis", "root_physical_current_backend_genesis", "root_registered_physical_current_observation", "root_original_two_descriptor_send", "root_original_two_descriptor_receive", "native_original_writer_terminal_observation", "native_original_writer_next_delivery_observation", "root_notes_original_startup_before", "root_notes_recovered_successor_startup_before", "root_notes_original_reserved_session_binding", "root_notes_registered_successor_policy_replace", "root_notes_original_issuer_policy_cas", "root_desktop_original_issuer_pair_policy_cas", "root_retained_native_ready_launch", "root_prepared_native_ready_execution", "root_prepared_native_ready_text_session", "root_original_bound_native_lanes", "root_original_bound_native_lane_acceptance", "root_original_ready_lane_bridge", "notes_original_retained_reference_projection", "desktop_original_retained_reference_projection", "memory_original_sender_read_only_cut", "notes_recorded_original_observation_proof", "notes_previous_recovery_typed_resolution", "root_live_admin_enable", "root_live_admin_mint", "root_live_admin_exchange", "root_live_admin_checked_dispatch", "root_live_admin_signed_artifact_verify", "root_live_admin_exact_issuer_head_revoke", "root_live_admin_fixed_notes_revoke_prepare", "root_live_admin_existing_effect_revoke", "root_live_admin_existing_signed_grant_revoke", "root_live_admin_same_service_signed_revoke", "root_live_admin_original_issue_observer_enable", "root_live_admin_original_issue_observation", "root_live_admin_original_bounded_lease_revoke", "root_live_admin_retained_artifact_observe", "root_live_admin_original_effect_state_observe", "root_live_admin_same_service_effect_state_observe", "agentd_original_registered_writer_custody", "agentd_original_recovered_writer_custody_factory", "agentd_original_root_handoff_unique_file", "calculator_previous_recovery_owner_target", "calculator_previous_recovery_host_attach", "calculator_previous_recovery_process_attach", "calculator_previous_recovery_runtime_selection", "calculator_previous_recovery_config_selection", "root_original_issuer_renewal_prepare", "root_original_issuer_renewal_commit", "root_desktop_original_startup_before", "root_desktop_recovered_successor_startup_before", "root_desktop_registered_successor_policy_replace", "desktop_previous_original_cut_selection", "desktop_previous_joint_config_selection", "memory_original_validated_target_retirement_ack", "memory_original_owner_current_readonly_receipt", "memory_original_notes_retirement_ack", "memory_original_calculator_retirement_ack", "memory_original_retirement_ack_commit", "authority_lease_exact_bounded_revoke", "root_live_admin_exact_issuer_revoke", "root_live_admin_committed_issuer_reply", "root_live_admin_exact_issuer_reply_record"]
+required_boundary_ids = ["supervisor_authorized_boot", "memory_production_writer_open", "cognitive_store_recovery_open", "cognitive_production_mutation_capability", "agentd_production_writer_host", "agentd_production_operation_runtime", "learning_artifact_owner_bootstrap", "learning_artifact_owner_restart", "learning_artifact_verified_current_view", "provider_effect_coordinator", "http_provider_effect_adapter", "final_use_open_state", "final_use_claim", "final_use_claim_raw", "final_use_delivery", "final_use_delivery_witness", "final_use_delivery_raw", "final_use_dispatch", "final_use_dispatch_witness", "final_use_dispatch_raw", "final_use_revocation_update", "final_use_approval_trust", "final_use_approval_verify", "final_use_revocation_feed_trust", "final_use_revocation_feed_apply", "final_use_revocation_convergence_trust", "final_use_revocation_convergence_verify", "bao_final_use_consumer", "bao_registered_consumer_new", "bao_final_use_host_new", "bao_registered_revocation_update", "bao_registered_final_use_host", "authority_lease_open_state", "authority_lease_put", "authority_lease_revoke", "authority_lease_prune", "authority_lease_epoch_advance", "authority_lease_verify_use", "authority_lease_delivery", "authority_lease_delivery_witness", "authority_lease_dispatch_raw", "authority_lease_dispatch_witness", "final_use_async_dispatch_fence", "automation_taskflow_provider_effect_bridge", "final_use_guarded_effect", "notes_original_pending_call_proof", "notes_original_operation_observation_proof", "notes_original_thread_prepare", "notes_original_writer_terminal_receipt", "memory_original_owner_current_publication", "memory_original_protected_current_readback", "original_authbus_human_delivery_read", "notes_original_human_turn_proof", "root_registered_human_text_writer", "root_registered_human_text_admission", "root_human_text_same_issuer_cas", "root_retained_human_text_lookup", "root_live_human_session_install", "root_original_human_text_verification", "notes_original_turn_unprepared_admission", "root_host_original_human_text_verification", "notes_original_human_text_verification", "root_prepared_fresh_session", "root_retained_native_ui_launch", "root_prepared_native_ui_execution", "root_material_capture_original_image", "root_material_verify_retained_image", "root_material_install_original_generation", "root_material_reopen_original_installation", "root_material_release_registered_custody", "root_material_fresh_registered_session", "root_material_recover_registered_session", "root_material_existing_session_open", "root_material_resume_registered_handoff", "root_material_current_observation_chain", "root_original_writer_descriptor_chain", "root_same_retained_service_serve", "root_registered_material_recovery", "root_registered_material_handoff_resume", "root_original_writer_purpose_send", "root_original_writer_purpose_receive", "agentd_original_root_writer_consume", "root_registered_writer_rotation", "native_original_operation_host_attach", "native_original_owner_current_ack", "native_original_terminal_history_observation", "root_original_authority_initialize", "root_original_writer_authorize", "root_same_registered_bootstrap_seal", "root_same_registered_bootstrap_capture", "root_original_physical_login_install", "root_original_writer_successor_shape", "root_original_issuer_writer_rotation", "root_physical_current_retired_adoption", "root_physical_recovery_retirement_admission", "root_physical_fresh_service_genesis", "root_physical_registered_checkpoint_genesis", "root_physical_current_backend_genesis", "root_registered_physical_current_observation", "root_original_two_descriptor_send", "root_original_two_descriptor_receive", "native_original_writer_terminal_observation", "native_original_writer_next_delivery_observation", "root_notes_original_startup_before", "root_notes_recovered_successor_startup_before", "root_notes_original_reserved_session_binding", "root_notes_registered_successor_policy_replace", "root_notes_original_issuer_policy_cas", "root_desktop_original_issuer_pair_policy_cas", "root_retained_native_ready_launch", "root_prepared_native_ready_execution", "root_prepared_native_ready_text_session", "root_original_bound_native_lanes", "root_original_bound_native_lane_acceptance", "root_original_ready_lane_bridge", "notes_original_retained_reference_projection", "desktop_original_retained_reference_projection", "memory_original_sender_read_only_cut", "notes_recorded_original_observation_proof", "notes_previous_recovery_typed_resolution", "root_live_admin_enable", "root_live_admin_mint", "root_live_admin_exchange", "root_live_admin_checked_dispatch", "root_live_admin_signed_artifact_verify", "root_live_admin_exact_issuer_head_revoke", "root_live_admin_fixed_notes_revoke_prepare", "root_live_admin_existing_effect_revoke", "root_live_admin_existing_signed_grant_revoke", "root_live_admin_same_service_signed_revoke", "root_live_admin_original_issue_observer_enable", "root_live_admin_original_issue_observation", "root_live_admin_original_bounded_lease_revoke", "root_live_admin_retained_artifact_observe", "root_live_admin_original_effect_state_observe", "root_live_admin_same_service_effect_state_observe", "agentd_original_registered_writer_custody", "agentd_original_recovered_writer_custody_factory", "agentd_original_root_handoff_unique_file", "calculator_previous_recovery_owner_target", "calculator_previous_recovery_host_attach", "calculator_previous_recovery_process_attach", "calculator_previous_recovery_runtime_selection", "calculator_previous_recovery_config_selection", "root_original_issuer_renewal_prepare", "root_original_issuer_renewal_commit", "root_desktop_original_startup_before", "root_desktop_recovered_successor_startup_before", "root_desktop_registered_successor_policy_replace", "desktop_previous_original_cut_selection", "desktop_previous_joint_config_selection", "memory_original_validated_target_retirement_ack", "memory_original_owner_current_readonly_receipt", "memory_original_notes_retirement_ack", "memory_original_calculator_retirement_ack", "memory_original_retirement_ack_commit", "authority_lease_exact_bounded_revoke", "root_live_admin_exact_issuer_revoke", "root_live_admin_committed_issuer_reply", "root_live_admin_exact_issuer_reply_record", "final_use_pq_open_state", "final_use_pq_approval_trust", "final_use_pq_revocation_feed_trust", "final_use_pq_revocation_feed_confirm", "final_use_pq_revocation_convergence_trust", "agentd_pq_final_use_open"]
 
 [[boundary]]
 id = "supervisor_authorized_boot"
@@ -125,7 +125,7 @@ id = "final_use_claim_raw"
 symbol = "FinalUseAuthority::claim"
 receiver_type = "FinalUseAuthority"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
-definition_markers = ["pub fn claim(", "verify_strict", "used_nonces"]
+definition_markers = ["pub fn claim(", "self.grant_signing_input(signed, expected)?", "candidate.key.verify(&input, &signed.signature)", "used_nonces"]
 product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
 caller_markers = ["authority", "binding"]
 
@@ -186,7 +186,7 @@ symbol = "FinalUseAuthority::update_revocations"
 call_pattern = '(?:\.\s*|FinalUseAuthority\s*::\s*)update_revocations\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn update_revocations", "StaleRevocationHead", "store.persist"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/root_authority_session.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/root_authority_session.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-contracts/src/final_use_control_pq.rs"]
 caller_markers = ["update_revocations"]
 
 [[boundary]]
@@ -202,7 +202,7 @@ id = "final_use_approval_verify"
 symbol = "FinalUseApprovalVerifier::verify"
 call_pattern = "approval_verifier\\s*\\.\\s*verify\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
-definition_markers = ["pub struct FinalUseApprovalVerifier", "pub fn verify(", "verify_strict"]
+definition_markers = ["pub struct FinalUseApprovalVerifier", "pub fn verify(", "verify_key_ring(", "candidate.key.verify(input, signature)"]
 product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
 caller_markers = ["approval_verifier", ".verify(grant, approval)", "BaoFinalUseHostError::Control"]
 
@@ -432,12 +432,16 @@ forbidden = ["impl Default for HttpProviderEffectAdapter"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use.rs"
-required = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub fn open_state_dir_with_issuer_keys(", "FinalUseIssuerTrustKey", "pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn deliver_final_use_with_witness", "pub fn dispatch_final_use", "pub fn dispatch_final_use_with_witness", "pub fn claim(", "pub fn with_verified_use", "pub fn with_dispatch_boundary", "FinalUseFrontier", "VerifiedUseTokenWitnessV1", "verify_strict", "validate_live"]
+# Source digests record the reviewed bytes and require independent verification;
+# this baseline caller checker enforces markers, not source_sha256 values.
+source_sha256 = "70bc8625b6624bc20fe0a768c281c6f66fb9421e1dec07f43691f958e676e0c0"
+required = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub fn open_state_dir_with_issuer_keys(", "FinalUseIssuerTrustKey", "pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn deliver_final_use_with_witness", "pub fn dispatch_final_use", "pub fn dispatch_final_use_with_witness", "pub fn claim(", "pub fn with_verified_use", "pub fn with_dispatch_boundary", "FinalUseFrontier", "VerifiedUseTokenWitnessV1", "authority_authentication::PinnedAuthorityKey", "self.grant_signing_input(signed, expected)?", "candidate.key.verify(&input, &signed.signature)", "validate_live"]
 forbidden = ["impl Default for FinalUseAuthority", "pub fn permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use_control.rs"
-required = ["pub struct FinalUseApprovalVerifier", "pub struct FinalUseRevocationFeedVerifier", "pub struct FinalUseRevocationConvergenceVerifier", "pub struct FinalUseTrustKey", "pub fn new_with_keys(", "RevocationFeedStale", "verify_strict", "update_revocations", "missing_nodes"]
+source_sha256 = "4bc589b9295c128f2eb677b9cba879a75436783a97e1f94ebddaf1d70d9ba3c2"
+required = ["pub struct FinalUseApprovalVerifier", "pub struct FinalUseRevocationFeedVerifier", "pub struct FinalUseRevocationConvergenceVerifier", "pub struct FinalUseTrustKey", "pub fn new_with_keys(", "RevocationFeedStale", "authority_authentication::PinnedAuthorityKey", "verify_key_ring(", "candidate.key.verify(input, signature)", "update_revocations", "missing_nodes"]
 forbidden = ["impl Default for FinalUseApprovalVerifier", "impl Default for FinalUseRevocationFeedVerifier", "permit_all"]
 
 [[protected_file]]
@@ -2198,3 +2202,113 @@ path = "codex-rs/hepta-agentd/src/authority_host_admin.rs"
 required = ["context.finish_committed_issuer_revocation(service, committed)?"]
 forbidden = []
 required_function_order = [{ function = "fn handle(", sequence = ["RootAdminAction::RevokeIssuer {", "service.revoke_original_issuer(", "context.finish_committed_issuer_revocation(service, committed)?", "service.admin_request(", "context.check_for(service)?", "serde_json::to_vec(&response)", "deadline::require_before(pending.end)?"] }]
+
+# PQ constructors retain the existing final-use owner. Only this private host
+# composition may open or refresh its production profile on this branch.
+[[boundary]]
+id = "final_use_pq_open_state"
+symbol = "FinalUseAuthority::open_pq_state_dir_with_issuer_keys"
+receiver_type = "FinalUseAuthority"
+definition_path = "codex-rs/hepta-contracts/src/final_use_pq.rs"
+definition_markers = ["pub fn open_pq_state_dir_with_issuer_keys", "pin_pq_keys", "clock.now_unix_ms()", "frontier_store.load", "AntiRollbackViolation"]
+product_callers = ["codex-rs/hepta-agentd/src/pq_final_use.rs"]
+caller_markers = ["FinalUseAuthority::open_pq_state_dir_with_issuer_keys", "FinalUseAuthenticationProfile::MlDsa65V2", "clock.now_unix_ms()?", "frontier.load"]
+
+[[boundary]]
+id = "final_use_pq_approval_trust"
+symbol = "FinalUseApprovalVerifier::new_pq_with_keys"
+receiver_type = "FinalUseApprovalVerifier"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+definition_markers = ["impl FinalUseApprovalVerifier", "pub fn new_pq_with_keys", "control_keys(keys)?", "FinalUseAuthenticationProfile::MlDsa65V2"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "final_use_pq_revocation_feed_trust"
+symbol = "FinalUseRevocationFeedVerifier::new_pq_with_keys"
+receiver_type = "FinalUseRevocationFeedVerifier"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+definition_markers = ["impl FinalUseRevocationFeedVerifier", "pub fn new_pq_with_keys", "control_keys(keys)?", "FinalUseAuthenticationProfile::MlDsa65V2"]
+product_callers = ["codex-rs/hepta-agentd/src/pq_final_use.rs"]
+caller_markers = ["FinalUseRevocationFeedVerifier::new_pq_with_keys", "self.revocation_keys"]
+
+[[boundary]]
+id = "final_use_pq_revocation_feed_confirm"
+symbol = "FinalUseRevocationFeedVerifier::apply_or_confirm_current"
+receiver_type = "FinalUseRevocationFeedVerifier"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+definition_markers = ["pub fn apply_or_confirm_current", "self.profile != authority.authentication_profile()", "self.verify_signed(signed, now_unix_ms)?", "update_revocations"]
+product_callers = ["codex-rs/hepta-agentd/src/pq_final_use.rs"]
+caller_markers = ["apply_or_confirm_current", "FinalUseAuthenticationProfile::MlDsa65V2", "self.clock.now_unix_ms()?"]
+
+[[boundary]]
+id = "final_use_pq_revocation_convergence_trust"
+symbol = "FinalUseRevocationConvergenceVerifier::new_pq"
+receiver_type = "FinalUseRevocationConvergenceVerifier"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+definition_markers = ["impl FinalUseRevocationConvergenceVerifier", "pub fn new_pq(", "control_keys(node.keys)?", "pinned.is_empty()", "FinalUseAuthenticationProfile::MlDsa65V2"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "agentd_pq_final_use_open"
+symbol = "PqFinalUseConfig::open"
+receiver_type = "PqFinalUseConfig"
+definition_path = "codex-rs/hepta-agentd/src/pq_final_use.rs"
+definition_markers = ["pub(crate) struct PqFinalUseConfig", "pub(crate) fn open(", "self.validate_roles_and_paths(owner, additional_roles)?", "UnixPqAuthorityClock::new", "UnixPqFinalUseFrontier::new", "FinalUseAuthority::open_pq_state_dir_with_issuer_keys"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_hcsn_pq.rs"]
+caller_markers = ["pub(super) fn open_hcsn_pq", "HcsnProductionProfile::MlDsa65", "verify_exact_message", "gate.refresh"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/authority_authentication.rs"
+source_sha256 = "487fc561a16d61426d7c3011e5c873c551ff3cff58447a5924bd3550af940e44"
+required = ["pub(crate) enum PinnedAuthorityKey", "Self::Classical(key)", "key.verify_strict(message, &signature).is_ok()", "Self::MlDsa65(key)", "key.verify_exact_message(message, signature).is_ok()", "PqNativeVerifier::from_pinned_spki"]
+forbidden = ["impl Default for PinnedAuthorityKey", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/pq_auth.rs"
+source_sha256 = "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d"
+required = ["pub fn from_pinned_spki", "key_id != expected_key_id", "SPKI_PREFIX", "Signature::<MlDsa65>::try_from", "PQ_MAX_MESSAGE_BYTES", ".verify(message, &signature)"]
+forbidden = ["impl Default for PqNativeVerifier", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use_pq.rs"
+source_sha256 = "ae4db0e2845a6e14d9f8b9823530a0c0f5d5e810673093353e8e5cb0aec5956b"
+required = ["pub fn open_pq_state_dir_with_issuer_keys", "FinalUseAuthenticationProfile::MlDsa65V2", "pin_pq_keys", "open_pq_key_ring_exact", "frontier_store.load", "AntiRollbackViolation"]
+forbidden = ["pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+source_sha256 = "38d782089568165e8c3f6830fea9288fedc234ebdd305b321f68ece11a8e37bc"
+required = ["pub fn apply_or_confirm_current", "self.profile != authority.authentication_profile()", "self.verify_signed(signed, now_unix_ms)?", "current != signed.update.head", "update_revocations"]
+forbidden = ["pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use_live_owner.rs"
+source_sha256 = "2aafe9a918c8ecc2d5c99fba3befbcf8b3b78db980f30f37d5a7780a57343b9c"
+required = ["pub(super) fn ensure_live_state", "pub(super) fn ensure_current_effect_state", "self.ensure_live_state(state)?", "frontier_store.load(&self.signer_id)", "state.failed = true", "FinalUseError::AntiRollbackViolation"]
+forbidden = ["impl Default for Inner", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use_store.rs"
+source_sha256 = "1ce76b4189d1a1fb41998072e4a71d9a6080db5e252d69321ac6447ec43d9ff6"
+required = ["PqIssuerKeyRing", "pub(super) fn open_pq_key_ring_exact", "STATE_SCHEMA_PQ_V4", "pub(super) fn append_claim", "file.sync_all()", "self.root.sync_all()"]
+forbidden = ["impl Default for Store", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/pq_final_use.rs"
+source_sha256 = "8e3a4411ae86afbf56c51cd7fab679c1810dbd95fa82525845e7732ff5695ae4"
+required = ["self.validate_roles_and_paths(owner, additional_roles)?", "PqNativeVerifier::from_pinned_spki", "keys.insert(*key.public_spki())", "apply_or_confirm_current(authority, &signed, now)?", "token.claimed_revocation_head_sha256() != digest", "pub(crate) struct LockedDispatchLease", "now >= valid_until_unix_ms"]
+forbidden = ["FinalUseAuthority::open_state_dir", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/automation_hcsn_pq.rs"
+source_sha256 = "a10e908c37b551e506759acfe2b9dd57e3b335c8c75edf8fef0ddfcd7631c392"
+required = ["HcsnProductionProfile::MlDsa65", "config.deployment_key.public_key_id", "key.verify_exact_message", "gate.refresh", "driver_with_contact_guard", "OnceLock::<LockedDispatchLease>::new()", "driver.pq_claim = Some"]
+forbidden = ["FinalUseAuthority::open_state_dir", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/automation_hcsn_source.rs"
+source_sha256 = "a3de028824146432600daa04b58f4fcfd43ada45abae4cc00ab7a0ef524b2274"
+required = ["pub(super) struct HcsnSourceManifest", "impl<'de> Deserialize<'de> for HcsnSourceManifest", "entries.insert(path, digest).is_some()", "pub(super) fn verify", "observe_inventory(repository)? != expected", "if &digest != expected_digest", "MAX_SOURCE_FILES", "MAX_SOURCE_BYTES", "qualification/hcsn_training", "qualification/__init__.py", "OFlags::NOFOLLOW", "metadata.nlink() != 1", "file_observation(&initial) != file_observation(&named)"]
+forbidden = ["impl Default for HcsnSourceManifest", "pub fn permit_all"]

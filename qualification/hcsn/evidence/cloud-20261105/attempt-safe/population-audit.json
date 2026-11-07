@@ -1,0 +1,266 @@
+{
+  "benchmark": "qualification/hcsn/evidence/cloud-20261105/attempt-safe/smoke.json",
+  "benchmark_sha256": "42d9224251fcee5e5a71f9da88542f72c06636fabd335986785b6fda7b412aae",
+  "scope": "validation-selected B; verified original held-out inputs; no retraining or selection",
+  "device": "cpu",
+  "records": [
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 0,
+      "status": "audited",
+      "checkpoint_sha256": "400981bf6b6b266a0ac469cdd83a4ea834c66e2765237afc0f8ffd7a4313cfc8",
+      "test_split_sha256": "8adc6dbef831cbc0ed3a85a5a451e403ade660944bc63af8582cd45ef30b9979",
+      "resolutions": [
+        {
+          "factor": 1,
+          "config": {
+            "bins": 32,
+            "x_max": 2.5,
+            "dt": 0.1,
+            "sigma": 0.15,
+            "rest_margin": 0.8,
+            "reset_margin": 0.8,
+            "leak": 3.0,
+            "base_drift": 0.0,
+            "refractory": 0.24,
+            "recovery_tau": 0.6,
+            "recovery_strength": 0.2
+          },
+          "effective_refractory": 0.30000000000000004,
+          "maximum_mass_error": 3.5762786865234375e-07,
+          "maximum_escape": 0.0,
+          "minimum_mass": 0.0,
+          "test_mse": 0.37538662552833557,
+          "output_rms_change": 0.0
+        },
+        {
+          "factor": 2,
+          "config": {
+            "bins": 64,
+            "x_max": 2.5,
+            "dt": 0.05,
+            "sigma": 0.15,
+            "rest_margin": 0.8,
+            "reset_margin": 0.8,
+            "leak": 3.0,
+            "base_drift": 0.0,
+            "refractory": 0.30000000000000004,
+            "recovery_tau": 0.6,
+            "recovery_strength": 0.2
+          },
+          "effective_refractory": 0.30000000000000004,
+          "maximum_mass_error": 4.172325134277344e-07,
+          "maximum_escape": 0.0,
+          "minimum_mass": 0.0,
+          "test_mse": 0.37739476561546326,
+          "output_rms_change": 0.11983766406774521
+        },
+        {
+          "factor": 4,
+          "config": {
+            "bins": 128,
+            "x_max": 2.5,
+            "dt": 0.025,
+            "sigma": 0.15,
+            "rest_margin": 0.8,
+            "reset_margin": 0.8,
+            "leak": 3.0,
+            "base_drift": 0.0,
+            "refractory": 0.30000000000000004,
+            "recovery_tau": 0.6,
+            "recovery_strength": 0.2
+          },
+          "effective_refractory": 0.30000000000000004,
+          "maximum_mass_error": 5.960464477539062e-07,
+          "maximum_escape": 0.0,
+          "minimum_mass": 0.0,
+          "test_mse": 0.37907934188842773,
+          "output_rms_change": 0.17800284922122955
+        }
+      ],
+      "factor_one_forward_exact": true,
+      "replayed_test_mse": 0.37538662552833557
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 1,
+      "status": "audited",
+      "checkpoint_sha256": "e9088c5778049de93dc2afd5bb532c46c5583f02e9dcc5fcf58a5e1ce860d110",
+      "test_split_sha256": "8adc6dbef831cbc0ed3a85a5a451e403ade660944bc63af8582cd45ef30b9979",
+      "resolutions": [
+        {
+          "factor": 1,
+          "config": {
+            "bins": 32,
+            "x_max": 2.5,
+            "dt": 0.1,
+            "sigma": 0.15,
+            "rest_margin": 0.8,
+            "reset_margin": 0.8,
+            "leak": 3.0,
+            "base_drift": 0.0,
+            "refractory": 0.24,
+            "recovery_tau": 0.6,
+            "recovery_strength": 0.2
+          },
+          "effective_refractory": 0.30000000000000004,
+          "maximum_mass_error": 3.5762786865234375e-07,
+          "maximum_escape": 0.0,
+          "minimum_mass": 0.0,
+          "test_mse": 0.3698462247848511,
+          "output_rms_change": 0.0
+        },
+        {
+          "factor": 2,
+          "config": {
+            "bins": 64,
+            "x_max": 2.5,
+            "dt": 0.05,
+            "sigma": 0.15,
+            "rest_margin": 0.8,
+            "reset_margin": 0.8,
+            "leak": 3.0,
+            "base_drift": 0.0,
+            "refractory": 0.30000000000000004,
+            "recovery_tau": 0.6,
+            "recovery_strength": 0.2
+          },
+          "effective_refractory": 0.30000000000000004,
+          "maximum_mass_error": 4.172325134277344e-07,
+          "maximum_escape": 0.0,
+          "minimum_mass": 0.0,
+          "test_mse": 0.36821216344833374,
+          "output_rms_change": 0.11322792619466782
+        },
+        {
+          "factor": 4,
+          "config": {
+            "bins": 128,
+            "x_max": 2.5,
+            "dt": 0.025,
+            "sigma": 0.15,
+            "rest_margin": 0.8,
+            "reset_margin": 0.8,
+            "leak": 3.0,
+            "base_drift": 0.0,
+            "refractory": 0.30000000000000004,
+            "recovery_tau": 0.6,
+            "recovery_strength": 0.2
+          },
+          "effective_refractory": 0.30000000000000004,
+          "maximum_mass_error": 6.556510925292969e-07,
+          "maximum_escape": 0.0,
+          "minimum_mass": 0.0,
+          "test_mse": 0.3707738518714905,
+          "output_rms_change": 0.16601403057575226
+        }
+      ],
+      "factor_one_forward_exact": true,
+      "replayed_test_mse": 0.3698462247848511
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 2,
+      "status": "audited",
+      "checkpoint_sha256": "a5d0f1d9edba126f0c23c615494a83092da31219f71b570ce393ae8d1fcdcfb6",
+      "test_split_sha256": "8adc6dbef831cbc0ed3a85a5a451e403ade660944bc63af8582cd45ef30b9979",
+      "resolutions": [
+        {
+          "factor": 1,
+          "config": {
+            "bins": 32,
+            "x_max": 2.5,
+            "dt": 0.1,
+            "sigma": 0.15,
+            "rest_margin": 0.8,
+            "reset_margin": 0.8,
+            "leak": 3.0,
+            "base_drift": 0.0,
+            "refractory": 0.24,
+            "recovery_tau": 0.6,
+            "recovery_strength": 0.2
+          },
+          "effective_refractory": 0.30000000000000004,
+          "maximum_mass_error": 3.5762786865234375e-07,
+          "maximum_escape": 0.0,
+          "minimum_mass": 0.0,
+          "test_mse": 0.36559009552001953,
+          "output_rms_change": 0.0
+        },
+        {
+          "factor": 2,
+          "config": {
+            "bins": 64,
+            "x_max": 2.5,
+            "dt": 0.05,
+            "sigma": 0.15,
+            "rest_margin": 0.8,
+            "reset_margin": 0.8,
+            "leak": 3.0,
+            "base_drift": 0.0,
+            "refractory": 0.30000000000000004,
+            "recovery_tau": 0.6,
+            "recovery_strength": 0.2
+          },
+          "effective_refractory": 0.30000000000000004,
+          "maximum_mass_error": 4.76837158203125e-07,
+          "maximum_escape": 0.0,
+          "minimum_mass": 0.0,
+          "test_mse": 0.3658762276172638,
+          "output_rms_change": 0.13632911443710327
+        },
+        {
+          "factor": 4,
+          "config": {
+            "bins": 128,
+            "x_max": 2.5,
+            "dt": 0.025,
+            "sigma": 0.15,
+            "rest_margin": 0.8,
+            "reset_margin": 0.8,
+            "leak": 3.0,
+            "base_drift": 0.0,
+            "refractory": 0.30000000000000004,
+            "recovery_tau": 0.6,
+            "recovery_strength": 0.2
+          },
+          "effective_refractory": 0.30000000000000004,
+          "maximum_mass_error": 5.960464477539062e-07,
+          "maximum_escape": 0.0,
+          "minimum_mass": 0.0,
+          "test_mse": 0.3737031817436218,
+          "output_rms_change": 0.19774353504180908
+        }
+      ],
+      "factor_one_forward_exact": true,
+      "replayed_test_mse": 0.36559009552001953
+    }
+  ],
+  "requested_b_runs": 3,
+  "completed_b_runs": 3,
+  "limitations": [
+    "Smoke weights do not qualify full-budget B.",
+    "Joint refinement sensitivity is descriptive; no universal convergence threshold asserted."
+  ],
+  "audited_b_runs": 3,
+  "failed_b_audits": 0,
+  "status": "passed",
+  "source_files_sha256": {
+    "population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "attempts.py": "9c43646b29a2f5fbecd7f8adf0f5da2ee25d0e23768ec3b420d5c79bacc4d470",
+    "__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "baselines.py": "914a244abe4014a919b35539c4db04a9d334f627981d07fda20935af90026408",
+    "tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+    "validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045",
+    "reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "audit_population.py": "97e6d7cae07ddf35448e8e6f67c42bf3c75dc9216b4a52df320a1dbdbe0dcee8",
+    "population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+    "mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+    "benchmark.py": "fc55f0f71cf35af742a423a407e42defb828c84285b9a6602b91d9b314ac2830",
+    "cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6"
+  }
+}
