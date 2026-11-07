@@ -15,6 +15,47 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use codex_hepta_infer_core::NeuronFeatureReceiptV1;
+pub use codex_hepta_infer_core::NeuronFeatureRequestV1;
+pub use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+
+mod cell;
+mod cell_batch;
+mod cell_binding;
+mod cell_cost_comparison;
+mod cell_generation_control;
+mod cell_generation_journal;
+mod cell_generation_observation;
+mod cell_generation_state;
+mod cell_generation_types;
+mod cell_inference;
+#[cfg(target_os = "linux")]
+mod cell_joint_generation;
+#[cfg(target_os = "linux")]
+mod cell_joint_process;
+#[cfg(target_os = "linux")]
+mod cell_joint_protocol;
+mod cell_journal;
+mod cell_journal_codec;
+mod cell_owner;
+mod cell_owner_inventory;
+mod cell_owner_population;
+mod cell_population;
+mod cell_roles;
+mod cell_task_cost;
+#[cfg(test)]
+mod cell_test_support;
+mod cell_types;
+mod cell_update;
+#[cfg(target_os = "linux")]
+mod cell_v13_assets;
+#[cfg(target_os = "linux")]
+mod cell_v13_generation;
+#[cfg(target_os = "linux")]
+mod cell_v13_process;
+#[cfg(target_os = "linux")]
+mod cell_v13_protocol;
+mod continuous_time;
 mod deletion;
 mod inference_control;
 mod journal;
@@ -28,6 +69,154 @@ mod runtime_types;
 mod sparse;
 mod witness;
 
+pub use cell::commit_cell_step;
+pub use cell::decide_cell;
+pub use cell::enter_cell_step;
+pub use cell::prepare_cell_step;
+pub use cell_batch::CellBatchQueueV1;
+pub use cell_batch::CellBatchResultV1;
+pub use cell_batch::CellMicrobatchInferenceControlPortV1;
+pub use cell_binding::canonical_cell_step_request_digest_v1;
+pub use cell_cost_comparison::CellCostComparisonBasisV2;
+pub use cell_cost_comparison::CellCostComparisonErrorV2;
+pub use cell_cost_comparison::CellCostComparisonRunV2;
+pub use cell_cost_comparison::CellCostDifferenceV2;
+pub use cell_cost_comparison::compare_cell_task_costs_v2;
+pub use cell_generation_control::CellGenerationWorkerV2;
+pub use cell_generation_control::ControlledCellGenerationConfigV2;
+pub use cell_generation_control::ControlledCellGenerationPortV2;
+pub use cell_generation_journal::CellGenerationCheckpointReceiptV2;
+pub use cell_generation_journal::CellGenerationJournalMetricsV2;
+pub use cell_generation_journal::CellGenerationJournalV2;
+pub use cell_generation_journal::CellGenerationMigratedStateV2;
+pub use cell_generation_journal::CellGenerationMigrationContextV2;
+pub use cell_generation_journal::CellGenerationMigrationReceiptV2;
+pub use cell_generation_journal::CellGenerationMigrationVerifierV2;
+pub use cell_generation_observation::CellGenerationObservationV1;
+pub use cell_generation_state::CellGenerationConfigV2;
+pub use cell_generation_types::CellBackendManifestV2;
+pub use cell_generation_types::CellEvolutionBindingV2;
+pub use cell_generation_types::CellGenerationControlPortV2;
+pub use cell_generation_types::CellGenerationDispositionV2;
+pub use cell_generation_types::CellGenerationErrorV2;
+pub use cell_generation_types::CellGenerationIntentV2;
+pub use cell_generation_types::CellGenerationProposalV2;
+pub use cell_generation_types::CellGenerationReceiptV2;
+pub use cell_generation_types::CellGenerationRequestV2;
+pub use cell_generation_types::CellGenerationScopeV2;
+pub use cell_generation_types::CellLearningBindingV2;
+pub use cell_generation_types::CellOutputChunkV2;
+pub use cell_generation_types::CellRuntimeSnapshotV2;
+pub use cell_inference::CellInferenceReadbackPortV1;
+pub use cell_inference::infer_cell;
+pub use cell_inference::recover_cell_inference;
+#[cfg(target_os = "linux")]
+pub use cell_joint_generation::JointGenerationProcessConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_generation::JointGenerationProcessFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_generation::JointGenerationProcessWorkerV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationActionV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationCommandV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationInputV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationModalityV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationSamplerV1;
+pub use cell_journal::CellJournalPartitionV1;
+pub use cell_journal::CellOwnerJournalV1;
+pub use cell_owner::CellPartitionOwnerV1;
+pub use cell_owner_inventory::CellOwnerBackendV1;
+pub use cell_owner_inventory::CellOwnerControlStateV1;
+pub use cell_owner_inventory::CellOwnerInventoryBytesV1;
+pub use cell_owner_inventory::CellOwnerInventoryCensusV1;
+pub use cell_owner_inventory::CellOwnerInventoryErrorV1;
+pub use cell_owner_inventory::CellOwnerInventoryFenceV1;
+pub use cell_owner_inventory::CellOwnerInventoryRecordV1;
+pub use cell_owner_inventory::CellOwnerInventoryV1;
+pub use cell_owner_inventory::cell_owner_inventory_census_v1;
+pub use cell_owner_population::CellOwnerIdentityV2;
+pub use cell_owner_population::CellOwnerPopulationErrorV2;
+pub use cell_owner_population::CellOwnerPopulationObservationV2;
+pub use cell_owner_population::CellOwnerRegistrationV2;
+pub use cell_owner_population::admit_generation_with_population_v2;
+pub use cell_owner_population::cell_decision_input_schema_v2;
+pub use cell_owner_population::cell_decision_output_schema_v2;
+pub use cell_owner_population::cell_owner_population_census_v2;
+pub use cell_population::CellActiveInstanceV1;
+pub use cell_population::CellExpertVersionV1;
+pub use cell_population::CellInstanceDispositionV1;
+pub use cell_population::CellInstanceV1;
+pub use cell_population::CellPopulationCensusV1;
+pub use cell_population::CellPopulationErrorV1;
+pub use cell_population::CellPopulationLimitsV1;
+pub use cell_population::CellPopulationV1;
+pub use cell_roles::CellCapabilityContractV1;
+pub use cell_roles::CellCapabilityErrorV1;
+pub use cell_roles::CellFunctionalRoleV1;
+pub use cell_roles::DeterministicCellSupportV1;
+pub use cell_task_cost::CellCostAccountingV2;
+pub use cell_task_cost::CellCostEntryV2;
+pub use cell_task_cost::CellCostMetricsV2;
+pub use cell_task_cost::CellCostOutcomeV2;
+pub use cell_task_cost::CellCostRecordV2;
+pub use cell_task_cost::CellCostStageV2;
+pub use cell_task_cost::CellCostTotalV2;
+pub use cell_task_cost::CellTaskCostErrorV2;
+pub use cell_task_cost::CellTaskCostIdentityV2;
+pub use cell_task_cost::CellTaskCostSummaryV2;
+pub use cell_task_cost::CellTaskCostV2;
+pub use cell_types::CellCandidateKindV1;
+pub use cell_types::CellCandidateMaskV1;
+pub use cell_types::CellCandidateV1;
+pub use cell_types::CellDecisionReceiptV1;
+pub use cell_types::CellDefinitionV1;
+pub use cell_types::CellEncodedInputV1;
+pub use cell_types::CellEncodingRequestV1;
+pub use cell_types::CellExecutionCostV1;
+pub use cell_types::CellExecutionError;
+pub use cell_types::CellInferenceAdmissionV1;
+pub use cell_types::CellInputEncoderV1;
+pub use cell_types::CellOwnerSnapshotV1;
+pub use cell_types::CellPolicyEntryV1;
+pub use cell_types::CellScopeV1;
+pub use cell_types::CellStateOwnerV1;
+pub use cell_types::CellStateProposalV1;
+pub use cell_types::CellStepEntryV1;
+pub use cell_types::CellStepInputV1;
+pub use cell_types::InferredCellStepV1;
+pub use cell_types::PreparedCellStepV1;
+pub use cell_update::CellUpdateBudgetV1;
+pub use cell_update::CellUpdateCandidateV1;
+pub use cell_update::CellUpdateOutcomeV1;
+pub use cell_update::CellUpdatePortV1;
+pub use cell_update::CellUpdateRequestV1;
+pub use cell_update::propose_cell_update;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationAssetFileV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationProcessConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationProcessFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationProcessWorkerV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_protocol::V13LearningClosureV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_protocol::V13TaskInputV1;
+pub use continuous_time::HcsnClockCheckpointV1;
+pub use continuous_time::HcsnClockIdentityV1;
+pub use continuous_time::HcsnIntegrationV1;
+pub use continuous_time::HcsnIntervalPlanV1;
+pub use continuous_time::HcsnTimeError;
+pub use continuous_time::HcsnTimeProfileV1;
+pub use continuous_time::commit_hcsn_batch_v1;
+pub use continuous_time::commit_hcsn_interval_v1;
+pub use continuous_time::plan_hcsn_batch_v1;
+pub use continuous_time::plan_hcsn_interval_v1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;

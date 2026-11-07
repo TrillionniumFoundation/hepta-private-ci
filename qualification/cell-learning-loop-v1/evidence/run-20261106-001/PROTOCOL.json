@@ -1,0 +1,61 @@
+{
+  "adoption_policy": "reject candidate without independent nine-arm future and complete cost evidence",
+  "candidate_use": "offline shadow evaluation only; no formal future round registered",
+  "cell": "semantic-memory",
+  "child_deadline_seconds": 60,
+  "cost_unknowns": [
+    "energy_joules",
+    "billed_usd",
+    "historical_acquisition",
+    "p99_seconds",
+    "full_retained_byte_seconds",
+    "host_network_bytes"
+  ],
+  "donor_head": "0abc3f5132c944d517e6a75d6d5362819fd285ec",
+  "encoder_sha256": "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+  "feedback_id": "cedar-intake",
+  "feedback_then_dependency_revision": "Cedar 1->2 precedes training; skills 1->2 follows parent_next",
+  "frozen_at_utc": "2026-11-06T07:33:41.909264+00:00",
+  "future_natural_source_groups": 0,
+  "maximum_training_attempts": 1,
+  "model_dir": "/workspace/scratch/40d04650905b/v13-work/minilm",
+  "oracle": "literal goldens are frozen separately; inference receives text/features and payload only",
+  "parent_artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+  "parent_data_id": "a365892342cd04abfc2f4c762470cf0f2945c3c191cc3d91519132e2d9cfac9b",
+  "parent_state_sha256": "8a03519dff1585b1b49c808371c7e143dac2f91e5cd6a2bef5da5fdceb9f0654",
+  "phases": [
+    "bootstrap",
+    "feedback",
+    "train",
+    "verify",
+    "evaluate",
+    "candidate_next",
+    "publish",
+    "parent_next",
+    "revise_dependency",
+    "fence"
+  ],
+  "retention": "all historical 72 typed-output cases; descriptive, not independent replication",
+  "runtime": {
+    "blas_threads": 1,
+    "executable": "/workspace/scratch/40d04650905b/v13-work/venv/bin/python",
+    "onnx_inter_op_threads": 1,
+    "onnx_intra_op_threads": 1,
+    "packages": {
+      "numpy": "2.3.5",
+      "onnxruntime": "1.23.2",
+      "tokenizers": "0.21.4"
+    },
+    "python": "3.12.14"
+  },
+  "sampler_transition": "restore complete parent; explicit new data resets sampler using inherited RNG",
+  "schedule": {
+    "batch_size": 20,
+    "lr": 0.01,
+    "steps": 16
+  },
+  "schema": "hepta.cell-learning.engineering.protocol.v1",
+  "scientific_benefit_claimed": false,
+  "scope": "v13-provenance-independent-run",
+  "source_parent_semantics": "parent has never trained on Cedar revision 1 or 2"
+}

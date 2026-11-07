@@ -13,9 +13,10 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdPayload;
-use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -129,10 +130,14 @@ fn two_real_pairs_restart_one_without_peer_pid_churn() -> Result<()> {
 
 #[test]
 fn five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash() -> Result<()> {
+    let setup_started = Instant::now();
+    trace_pair_stage(setup_started, "five_case_enter");
     let _pair_product_test_guard = PAIR_PRODUCT_TEST_LOCK
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner);
+    trace_pair_stage(setup_started, "five_case_lock_acquired");
     let mut fixture = PairFleet::new(5)?;
+    trace_pair_stage(setup_started, "five_case_new_complete");
     let started = Instant::now();
     fixture.warm_first_pair()?;
     eprintln!(
@@ -203,8 +208,18 @@ struct PairFleet {
     supervisor: Option<Supervisor<UnixProcessDriver>>,
 }
 
+fn trace_pair_stage(stage_started: Instant, stage: impl std::fmt::Display) {
+    eprintln!(
+        "paired-stage {stage} elapsed={:?} process_id={}",
+        stage_started.elapsed(),
+        std::process::id()
+    );
+}
+
 impl PairFleet {
     fn new(count: usize) -> Result<Self> {
+        let new_started = Instant::now();
+        trace_pair_stage(new_started, format_args!("new_enter count={count}"));
         // The child fixtures bind the same compact control sockets as the
         // product.  Keep the synthetic fleet under a short root so Darwin's
         // SUN_LEN limit is exercised against production geometry, not the
@@ -227,13 +242,17 @@ impl PairFleet {
             agents.push(agent_id);
         }
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
-        let fixture_binary = std::env::current_exe()?;
+        // Bazel may expose this test executable through a symlink. Install
+        // real fixture bytes through the original regular-file release gate.
+        let fixture_binary = temp.path().join("paired-child-process");
+        std::fs::copy(std::env::current_exe()?, &fixture_binary)?;
         let child_args = vec![
             "--exact".to_string(),
             "paired_child_process".to_string(),
             "--ignored".to_string(),
             "--nocapture".to_string(),
         ];
+        trace_pair_stage(new_started, "install_enter");
         registry.install_release_bundle(
             release_id.clone(),
             &fixture_binary,
@@ -241,10 +260,14 @@ impl PairFleet {
             Some(&fixture_binary),
             child_args,
         )?;
+        trace_pair_stage(new_started, "install_complete");
         for agent_id in &agents {
+            trace_pair_stage(new_started, format_args!("allow_enter agent={agent_id}"));
             registry.allow_release(agent_id, &release_id)?;
+            trace_pair_stage(new_started, format_args!("allow_complete agent={agent_id}"));
             write_binding(&registry, agent_id)?;
         }
+        trace_pair_stage(new_started, "recover_enter");
         let (supervisor, report) = Supervisor::recover(
             registry.clone(),
             UnixProcessDriver::new(64).map_err(anyhow::Error::msg)?,
@@ -252,6 +275,8 @@ impl PairFleet {
             Instant::now(),
         )?;
         assert!(report.faults.is_empty());
+        trace_pair_stage(new_started, "recover_complete");
+        trace_pair_stage(new_started, "new_complete");
         Ok(Self {
             _temp: temp,
             registry,
@@ -274,19 +299,36 @@ impl PairFleet {
     }
 
     fn warm_first_pair(&mut self) -> Result<()> {
+        let warm_started = Instant::now();
+        trace_pair_stage(warm_started, "warm_enter");
         let agent_id = self.agents[0].clone();
+        trace_pair_stage(warm_started, "warm_resolve_enter");
         let release =
             AgentRelease::try_from(self.registry.resolve_release(&agent_id, &self.release_id)?)?;
+        trace_pair_stage(warm_started, "warm_resolve_complete");
+        trace_pair_stage(warm_started, "warm_spawn_enter");
         self.supervisor
             .as_mut()
             .context("supervisor")?
             .start_release(&agent_id, release, Instant::now())?;
+        trace_pair_stage(warm_started, "warm_spawn_complete");
+        trace_pair_stage(warm_started, "warm_ready_enter");
         self.wait_agents_ready(std::slice::from_ref(&agent_id), Duration::from_secs(60))?;
+        trace_pair_stage(warm_started, "warm_ready_complete");
+        trace_pair_stage(warm_started, "warm_kill_enter");
         self.supervisor
             .as_mut()
             .context("supervisor")?
             .kill(&agent_id)?;
-        self.wait_agents_inactive(std::slice::from_ref(&agent_id), Duration::from_secs(10))
+        trace_pair_stage(warm_started, "warm_kill_complete");
+        trace_pair_stage(warm_started, "warm_inactive_enter");
+        let result =
+            self.wait_agents_inactive(std::slice::from_ref(&agent_id), Duration::from_secs(10));
+        trace_pair_stage(
+            warm_started,
+            format_args!("warm_return success={}", result.is_ok()),
+        );
+        result
     }
 
     fn wait_ready(&mut self, timeout: Duration) -> Result<()> {
@@ -524,6 +566,15 @@ fn paired_child_process() {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct FixtureAgentRequest {
+    schema_version: u32,
+    request_id: u64,
+    spawn_generation: u64,
+    method: serde_json::Value,
+}
+
 fn run_agent_child() -> Result<()> {
     let fleet_root = HeptaFleetRoot::from_env()?;
     let agent_id = AgentId::parse(std::env::var("HEPTA_AGENT_ID")?)?;
@@ -532,11 +583,12 @@ fn run_agent_child() -> Result<()> {
     let socket = layout.agentd_control_socket().to_path_buf();
     prepare_fixture_socket(&socket)?;
     let listener = UnixListener::bind(&socket)?;
+    let mut admission_closed = false;
     for stream in listener.incoming() {
         let mut reader = BufReader::new(stream?);
         let mut bytes = Vec::new();
         reader.read_until(b'\n', &mut bytes)?;
-        let request: AgentdRequest = serde_json::from_slice(&bytes)?;
+        let request: FixtureAgentRequest = serde_json::from_slice(&bytes)?;
         let run_root = PathBuf::from(
             std::env::var_os("HEPTA_AGENT_RUN_ROOT").context("HEPTA_AGENT_RUN_ROOT")?,
         );
@@ -544,23 +596,55 @@ fn run_agent_child() -> Result<()> {
             PathBuf::from(std::env::var_os("HEPTA_AGENT_HOME").context("HEPTA_AGENT_HOME")?);
         let workspace = std::env::current_dir()?;
         let lifecycle = latest_lifecycle(&run_root)?;
-        let running = lifecycle.lifecycle == AgentLifecycle::Running;
+        let payload = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION
+            || request.spawn_generation != spawn_generation
+        {
+            AgentdPayload::Error {
+                code: "invalid_fixture_envelope".to_string(),
+                message: "fixture request schema or spawn generation does not match".to_string(),
+            }
+        } else {
+            match serde_json::from_value(request.method) {
+                Ok(AgentdMethod::Health) => AgentdPayload::Health(HealthSnapshot {
+                    promotion_ready: true,
+                    ready: lifecycle.lifecycle == AgentLifecycle::Running && !admission_closed,
+                    fenced: false,
+                    lifecycle: lifecycle.lifecycle,
+                    process_id: std::process::id(),
+                    workspace,
+                    home_root,
+                    run_root,
+                }),
+                Ok(AgentdMethod::Drain) if lifecycle.lifecycle == AgentLifecycle::Draining => {
+                    // This control-only child has no turn runner or delivery outbox;
+                    // every work-admission method below is rejected. Close its local
+                    // admission before reporting the actual empty-work drain state.
+                    admission_closed = true;
+                    AgentdPayload::Drain(DrainSnapshot {
+                        admission_closed,
+                        running_turns: 0,
+                        drained: admission_closed,
+                        lifecycle: lifecycle.lifecycle,
+                        fenced: false,
+                    })
+                }
+                Ok(AgentdMethod::Drain) => AgentdPayload::Error {
+                    code: "invalid_fixture_lifecycle".to_string(),
+                    message: "fixture drain requires the persisted draining lifecycle".to_string(),
+                },
+                Ok(_) | Err(_) => AgentdPayload::Error {
+                    code: "unsupported_fixture_method".to_string(),
+                    message: "controlled fixture supports only health and drain".to_string(),
+                },
+            }
+        };
         let response = AgentdResponse {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id: request.request_id,
             agent_id: agent_id.clone(),
             spawn_generation,
             current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
-                promotion_ready: true,
-                ready: running,
-                fenced: false,
-                lifecycle: lifecycle.lifecycle,
-                process_id: std::process::id(),
-                workspace,
-                home_root,
-                run_root,
-            }),
+            payload,
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;

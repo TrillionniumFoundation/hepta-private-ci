@@ -8,6 +8,14 @@
 //! receipt and no scheduler, router, KG writer, or production caller is wired
 //! here.
 
+#[path = "local_effect_entry.rs"]
+mod effect_entry;
+
+#[path = "local_retained_operation.rs"]
+mod retained_operation;
+#[path = "local_retirement_ack.rs"]
+mod retirement_ack;
+
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::time::SystemTime;
@@ -32,6 +40,29 @@ use thiserror::Error;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::framing::frame_part;
+use crate::production_hos2::Hos2ProtocolConflict;
+use crate::production_hos2::Hos2TerminalReceipt;
+
+#[path = "local_hos2_ordering.rs"]
+mod hos2_ordering;
+pub(crate) use hos2_ordering::validate_hos2_predecessor;
+
+#[derive(Clone, Copy)]
+enum ReconciliationEvidence<'a> {
+    General(LocalReconcileOutcome),
+    Hos2Terminal(&'a Hos2TerminalReceipt),
+    NotesTerminal(&'a crate::production_notes::NotesTerminalReceipt),
+    NotesPreDispatchRejected(&'a crate::production_writer::NotesPreDispatchRejection),
+    CalculatorTerminal(&'a crate::production_calculator::CalculatorTerminalReceipt),
+    CalculatorPreDispatchRejected(&'a crate::production_writer::CalculatorPreDispatchRejection),
+    Hos2ProtocolConflict(&'a Hos2ProtocolConflict),
+}
+
+struct OutcomeTransition<'a> {
+    allowed: &'a [LocalOutcomeState],
+    resulting_state: LocalOutcomeState,
+    allow_exact_replay: bool,
+}
 
 pub const LOCAL_LEASE_OUTBOX_NAMESPACE: &str = "local_development_only";
 pub const LOCAL_LEASE_OUTBOX_SCHEMA_VERSION: u32 = 1;
@@ -474,11 +505,7 @@ impl LocalLeaseOutbox {
                 "host-bound lease requires an explicit authority/owner/expiry binding".to_string(),
             ));
         }
-        let mut transaction = store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = store.begin_write_transaction().await?;
         let (latest, _) =
             load_lease_chain(&mut transaction, &lease_id, store.owner_agent_id()).await?;
         let (state, replay) = match latest {
@@ -760,11 +787,7 @@ impl LocalLeaseOutbox {
             ));
         }
 
-        let mut transaction = store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = store.begin_write_transaction().await?;
         let (latest, _) =
             load_lease_chain(&mut transaction, &lease_id, store.owner_agent_id()).await?;
         let Some(previous) = latest else {
@@ -938,13 +961,13 @@ impl LocalLeaseOutbox {
         // recovery seam as proof that the lease is still current.
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         self.verify_current_in_transaction(&mut transaction).await?;
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(())
@@ -959,14 +982,14 @@ impl LocalLeaseOutbox {
     pub(crate) async fn verify_current_hot_path(&self) -> Result<(), LocalLeaseOutboxError> {
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(())
@@ -1196,12 +1219,7 @@ impl LocalLeaseOutbox {
         })?;
         validate_lease_binding(&handle_binding)?;
 
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_write_transaction().await?;
         let (latest, _) =
             load_lease_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
         let Some(previous) = latest else {
@@ -1288,12 +1306,7 @@ impl LocalLeaseOutbox {
         &self,
         state: LocalLeaseState,
     ) -> Result<LocalLease, LocalLeaseOutboxError> {
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_write_transaction().await?;
         let (latest, _) =
             load_lease_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
         let Some(previous) = latest else {
@@ -1425,12 +1438,7 @@ impl LocalLeaseOutbox {
         operation: Option<OperationIntentV1>,
         fault: Option<LocalAdmissionFault>,
     ) -> Result<LocalAdmission, LocalLeaseOutboxError> {
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_write_transaction().await?;
         let admission = self
             .admit_in_transaction_inner(
                 &mut transaction,
@@ -1505,6 +1513,15 @@ impl LocalLeaseOutbox {
         }
         let lease = self.current_lease(transaction).await?;
         ensure_current_active(&lease, self)?;
+        if topic == crate::HOS2_INSTALL_TOPIC_V1 {
+            hos2_ordering::validate_hos2_admission(
+                transaction,
+                &self.owner_agent_id,
+                operation.as_ref(),
+                &payload_json,
+            )
+            .await?;
+        }
         // CognitiveStore::open/reopen performs the complete append-only
         // journal audit. Under this BEGIN IMMEDIATE owner transaction the hot
         // path validates only the exact occurrence/operation rows it consumes.
@@ -1726,7 +1743,7 @@ impl LocalLeaseOutbox {
     ) -> Result<DurableOperationDispatchBinding, LocalLeaseOutboxError> {
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
@@ -1792,7 +1809,7 @@ impl LocalLeaseOutbox {
             expected_predecessor_sha256,
         };
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(binding)
@@ -1967,12 +1984,7 @@ impl LocalLeaseOutbox {
                 "inherited queued payload digest mismatch".to_string(),
             ));
         }
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_write_transaction().await?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
         let admission = find_admission(
@@ -2073,6 +2085,11 @@ impl LocalLeaseOutbox {
             ));
         }
 
+        if outbox.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+            let request = crate::Hos2InstallBudgetV1::from_json(&outbox.payload_json)
+                .map_err(LocalLeaseOutboxError::Corrupt)?;
+            validate_hos2_predecessor(&mut transaction, &self.owner_agent_id, &request).await?;
+        }
         let kind = "indeterminate";
         let payload = format!("dispatch_started_pending_ack:{}", operation_digest.as_str());
         let payload_digest = Sha256Digest::for_bytes(payload.as_bytes());
@@ -2343,35 +2360,144 @@ impl LocalLeaseOutbox {
         occurrence_key: impl Into<String>,
         outcome: LocalReconcileOutcome,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
-        self.append_reconciliation(occurrence_key.into(), outcome)
-            .await
+        self.append_reconciliation(
+            occurrence_key.into(),
+            ReconciliationEvidence::General(outcome),
+        )
+        .await
+    }
+
+    pub(crate) async fn reconcile_notes_terminal(
+        &self,
+        occurrence_key: &str,
+        receipt: &crate::production_notes::NotesTerminalReceipt,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            occurrence_key.to_string(),
+            ReconciliationEvidence::NotesTerminal(receipt),
+        )
+        .await
+    }
+
+    pub(crate) async fn reject_notes_before_dispatch(
+        &self,
+        proof: &crate::production_writer::NotesPreDispatchRejection,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            proof.parts().0.occurrence_key.clone(),
+            ReconciliationEvidence::NotesPreDispatchRejected(proof),
+        )
+        .await
+    }
+
+    pub(crate) async fn reconcile_calculator_terminal(
+        &self,
+        occurrence_key: &str,
+        receipt: &crate::production_calculator::CalculatorTerminalReceipt,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            occurrence_key.to_string(),
+            ReconciliationEvidence::CalculatorTerminal(receipt),
+        )
+        .await
+    }
+
+    pub(crate) async fn reject_calculator_before_dispatch(
+        &self,
+        proof: &crate::production_writer::CalculatorPreDispatchRejection,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            proof.parts().0.occurrence_key.clone(),
+            ReconciliationEvidence::CalculatorPreDispatchRejected(proof),
+        )
+        .await
+    }
+
+    pub(crate) async fn reconcile_hos2_terminal(
+        &self,
+        occurrence_key: &str,
+        receipt: &Hos2TerminalReceipt,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            occurrence_key.to_string(),
+            ReconciliationEvidence::Hos2Terminal(receipt),
+        )
+        .await
+    }
+
+    pub(crate) async fn record_hos2_protocol_conflict(
+        &self,
+        occurrence_key: &str,
+        evidence: &Hos2ProtocolConflict,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            occurrence_key.to_string(),
+            ReconciliationEvidence::Hos2ProtocolConflict(evidence),
+        )
+        .await
     }
 
     async fn append_reconciliation(
         &self,
         occurrence_key: String,
-        outcome: LocalReconcileOutcome,
+        evidence: ReconciliationEvidence<'_>,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
-        let (kind, resulting_state) = match outcome {
-            LocalReconcileOutcome::Committed => {
-                ("reconcile_committed", LocalOutcomeState::Committed)
+        let outcome = match evidence {
+            ReconciliationEvidence::General(outcome) => outcome,
+            ReconciliationEvidence::Hos2Terminal(receipt) => receipt.outcome(),
+            ReconciliationEvidence::NotesTerminal(receipt) => receipt.outcome(),
+            ReconciliationEvidence::NotesPreDispatchRejected(_) => LocalReconcileOutcome::Rejected,
+            ReconciliationEvidence::CalculatorTerminal(receipt) => receipt.outcome(),
+            ReconciliationEvidence::CalculatorPreDispatchRejected(_) => {
+                LocalReconcileOutcome::Rejected
             }
-            LocalReconcileOutcome::Rejected => ("reconcile_rejected", LocalOutcomeState::Rejected),
-            LocalReconcileOutcome::StillIndeterminate => (
-                "reconcile_still_indeterminate",
-                LocalOutcomeState::Indeterminate,
-            ),
+            ReconciliationEvidence::Hos2ProtocolConflict(_) => {
+                LocalReconcileOutcome::StillIndeterminate
+            }
         };
-        let payload = outcome.as_str().to_string();
+        let (kind, resulting_state) =
+            if matches!(evidence, ReconciliationEvidence::Hos2ProtocolConflict(_)) {
+                // The existing local rollback slot disables this intent without
+                // claiming that the destination is terminal or an effect undone.
+                ("rolled_back", LocalOutcomeState::RolledBack)
+            } else {
+                match outcome {
+                    LocalReconcileOutcome::Committed => {
+                        ("reconcile_committed", LocalOutcomeState::Committed)
+                    }
+                    LocalReconcileOutcome::Rejected => {
+                        ("reconcile_rejected", LocalOutcomeState::Rejected)
+                    }
+                    LocalReconcileOutcome::StillIndeterminate => (
+                        "reconcile_still_indeterminate",
+                        LocalOutcomeState::Indeterminate,
+                    ),
+                }
+            };
+        let payload = match evidence {
+            ReconciliationEvidence::NotesTerminal(receipt) => receipt.as_str().to_string(),
+            ReconciliationEvidence::NotesPreDispatchRejected(proof) => proof.parts().2.to_string(),
+            ReconciliationEvidence::CalculatorTerminal(receipt) => receipt.as_str().to_string(),
+            ReconciliationEvidence::CalculatorPreDispatchRejected(proof) => {
+                proof.parts().2.to_string()
+            }
+            ReconciliationEvidence::Hos2Terminal(receipt) => {
+                receipt.to_json().map_err(LocalLeaseOutboxError::Invalid)?
+            }
+            ReconciliationEvidence::Hos2ProtocolConflict(conflict) => {
+                conflict.to_json().map_err(LocalLeaseOutboxError::Invalid)?
+            }
+            ReconciliationEvidence::General(outcome) => outcome.as_str().to_string(),
+        };
+        validate_text(
+            &payload,
+            "reconciliation payload",
+            /*max_bytes*/ 65_536,
+        )?;
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
 
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_write_transaction().await?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
         let admission = find_admission(
@@ -2401,6 +2527,108 @@ impl LocalLeaseOutbox {
             &outbox,
         )?;
 
+        if outbox.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+            match evidence {
+                ReconciliationEvidence::Hos2Terminal(receipt) => receipt
+                    .matches(&outbox.payload_json)
+                    .map_err(LocalLeaseOutboxError::Invalid)?,
+                ReconciliationEvidence::Hos2ProtocolConflict(conflict) => conflict
+                    .matches(&occurrence_key, &outbox.payload_json)
+                    .map_err(LocalLeaseOutboxError::Invalid)?,
+                ReconciliationEvidence::NotesTerminal(_)
+                | ReconciliationEvidence::NotesPreDispatchRejected(_)
+                | ReconciliationEvidence::CalculatorTerminal(_)
+                | ReconciliationEvidence::CalculatorPreDispatchRejected(_) => {
+                    return Err(LocalLeaseOutboxError::Invalid(
+                        "application evidence targets HOS2".to_string(),
+                    ));
+                }
+                ReconciliationEvidence::General(LocalReconcileOutcome::StillIndeterminate) => {}
+                ReconciliationEvidence::General(
+                    LocalReconcileOutcome::Committed | LocalReconcileOutcome::Rejected,
+                ) => {
+                    return Err(LocalLeaseOutboxError::AccessDenied(
+                        "HOS2 terminal settlement requires the native observation owner"
+                            .to_string(),
+                    ));
+                }
+            }
+        } else if outbox.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+            match evidence {
+                ReconciliationEvidence::NotesTerminal(receipt) => receipt
+                    .matches(&outbox.payload_json)
+                    .map_err(LocalLeaseOutboxError::Invalid)?,
+                ReconciliationEvidence::NotesPreDispatchRejected(proof) => {
+                    let (request, _, _) = proof.parts();
+                    if request.lease_id != self.lease_id
+                        || request.occurrence_key != occurrence_key
+                        || request.topic != outbox.topic
+                        || request.payload_json != outbox.payload_json
+                    {
+                        return Err(LocalLeaseOutboxError::AccessDenied(
+                            "Notes pre-entry proof targets a different operation".to_string(),
+                        ));
+                    }
+                }
+                ReconciliationEvidence::General(LocalReconcileOutcome::StillIndeterminate) => {}
+                ReconciliationEvidence::General(
+                    LocalReconcileOutcome::Committed | LocalReconcileOutcome::Rejected,
+                ) => {
+                    return Err(LocalLeaseOutboxError::AccessDenied(
+                        "Notes terminal settlement requires the original observation owner"
+                            .to_string(),
+                    ));
+                }
+                ReconciliationEvidence::Hos2Terminal(_)
+                | ReconciliationEvidence::Hos2ProtocolConflict(_)
+                | ReconciliationEvidence::CalculatorTerminal(_)
+                | ReconciliationEvidence::CalculatorPreDispatchRejected(_) => {
+                    return Err(LocalLeaseOutboxError::Invalid(
+                        "another destination's evidence targets Notes".to_string(),
+                    ));
+                }
+            }
+        } else if outbox.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1 {
+            match evidence {
+                ReconciliationEvidence::CalculatorTerminal(receipt) => receipt
+                    .matches(&outbox.payload_json)
+                    .map_err(LocalLeaseOutboxError::Invalid)?,
+                ReconciliationEvidence::CalculatorPreDispatchRejected(proof) => {
+                    let (request, _, _) = proof.parts();
+                    if request.lease_id != self.lease_id
+                        || request.occurrence_key != occurrence_key
+                        || request.topic != outbox.topic
+                        || request.payload_json != outbox.payload_json
+                    {
+                        return Err(LocalLeaseOutboxError::AccessDenied(
+                            "Calculator pre-entry proof targets a different operation".into(),
+                        ));
+                    }
+                }
+                ReconciliationEvidence::General(LocalReconcileOutcome::StillIndeterminate) => {}
+                ReconciliationEvidence::General(
+                    LocalReconcileOutcome::Committed | LocalReconcileOutcome::Rejected,
+                ) => {
+                    return Err(LocalLeaseOutboxError::AccessDenied(
+                        "Calculator terminal settlement requires the original observation owner"
+                            .into(),
+                    ));
+                }
+                ReconciliationEvidence::Hos2Terminal(_)
+                | ReconciliationEvidence::Hos2ProtocolConflict(_)
+                | ReconciliationEvidence::NotesTerminal(_)
+                | ReconciliationEvidence::NotesPreDispatchRejected(_) => {
+                    return Err(LocalLeaseOutboxError::Invalid(
+                        "another destination's evidence targets Calculator".into(),
+                    ));
+                }
+            }
+        } else if !matches!(evidence, ReconciliationEvidence::General(_)) {
+            return Err(LocalLeaseOutboxError::Invalid(
+                "typed observation targets a different outbox".to_string(),
+            ));
+        }
+
         let current = current_outcome(
             &mut transaction,
             &self.lease_id,
@@ -2423,6 +2651,24 @@ impl LocalLeaseOutbox {
         )
         .await?
         .ok_or_else(|| corrupt("occurrence event chain is missing"))?;
+        if let ReconciliationEvidence::NotesPreDispatchRejected(proof) = evidence
+            && (latest.event_id != proof.parts().1
+                || latest.generation != self.generation
+                || latest.fencing_token != self.fencing_token)
+        {
+            return Err(LocalLeaseOutboxError::AccessDenied(
+                "Notes pre-entry proof is not the current dispatch claim".to_string(),
+            ));
+        }
+        if let ReconciliationEvidence::CalculatorPreDispatchRejected(proof) = evidence
+            && (latest.event_id != proof.parts().1
+                || latest.generation != self.generation
+                || latest.fencing_token != self.fencing_token)
+        {
+            return Err(LocalLeaseOutboxError::AccessDenied(
+                "Calculator pre-entry proof is not the current dispatch claim".into(),
+            ));
+        }
         let current_fence =
             latest.generation == self.generation && latest.fencing_token == self.fencing_token;
         let admission_fence = admission.generation == self.generation
@@ -2569,21 +2815,18 @@ impl LocalLeaseOutbox {
         resulting_state: LocalOutcomeState,
         allow_exact_replay: bool,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_write_transaction().await?;
         let outcome = self
             .append_outcome_in_transaction(
                 &mut transaction,
                 occurrence_key,
                 kind,
                 payload,
-                allowed,
-                resulting_state,
-                allow_exact_replay,
+                OutcomeTransition {
+                    allowed,
+                    resulting_state,
+                    allow_exact_replay,
+                },
             )
             .await?;
         transaction
@@ -2608,9 +2851,11 @@ impl LocalLeaseOutbox {
             occurrence_key,
             "reconcile_committed",
             receipt,
-            &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
-            LocalOutcomeState::Committed,
-            /*allow_exact_replay*/ true,
+            OutcomeTransition {
+                allowed: &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
+                resulting_state: LocalOutcomeState::Committed,
+                allow_exact_replay: true,
+            },
         )
         .await
     }
@@ -2621,10 +2866,13 @@ impl LocalLeaseOutbox {
         occurrence_key: String,
         kind: &str,
         payload: String,
-        allowed: &[LocalOutcomeState],
-        resulting_state: LocalOutcomeState,
-        allow_exact_replay: bool,
+        transition: OutcomeTransition<'_>,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        let OutcomeTransition {
+            allowed,
+            resulting_state,
+            allow_exact_replay,
+        } = transition;
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         validate_text(&payload, "outcome payload", /*max_bytes*/ 65_536)?;
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
@@ -2651,6 +2899,32 @@ impl LocalLeaseOutbox {
         .await?
         .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
         ensure_current_occurrence_fence(self, &admission, &outbox)?;
+        if outbox.topic == crate::NOTES_REPLACE_TOPIC_V1
+            && matches!(kind, "reconcile_committed" | "reconcile_rejected")
+        {
+            return Err(LocalLeaseOutboxError::AccessDenied(
+                "Notes terminal settlement requires the original observation owner".to_string(),
+            ));
+        }
+        if outbox.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1
+            && matches!(kind, "reconcile_committed" | "reconcile_rejected")
+        {
+            return Err(LocalLeaseOutboxError::AccessDenied(
+                "Calculator terminal settlement requires the original observation owner".into(),
+            ));
+        }
+        if outbox.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+            if matches!(kind, "reconcile_committed" | "reconcile_rejected") {
+                return Err(LocalLeaseOutboxError::AccessDenied(
+                    "HOS2 terminal settlement requires the native observation owner".to_string(),
+                ));
+            }
+            if kind == "indeterminate" && !allow_exact_replay {
+                let request = crate::Hos2InstallBudgetV1::from_json(&outbox.payload_json)
+                    .map_err(LocalLeaseOutboxError::Corrupt)?;
+                validate_hos2_predecessor(transaction, &self.owner_agent_id, &request).await?;
+            }
+        }
         let current = current_outcome(
             transaction,
             &self.lease_id,
@@ -2658,6 +2932,18 @@ impl LocalLeaseOutbox {
             &self.owner_agent_id,
         )
         .await?;
+        if matches!(
+            outbox.topic.as_str(),
+            crate::NOTES_REPLACE_TOPIC_V1
+                | crate::CALCULATOR_EVALUATE_TOPIC_V1
+                | crate::HOS2_INSTALL_TOPIC_V1
+        ) && kind == "rolled_back"
+            && current == LocalOutcomeState::Indeterminate
+        {
+            return Err(LocalLeaseOutboxError::AccessDenied(
+                "unknown external effects require observation before cancellation".to_string(),
+            ));
+        }
         if !allowed.contains(&current) {
             match (
                 allow_exact_replay,
@@ -2763,7 +3049,7 @@ impl LocalLeaseOutbox {
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
@@ -2805,7 +3091,7 @@ impl LocalLeaseOutbox {
         )
         .await?;
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(state)
@@ -2844,7 +3130,7 @@ impl LocalLeaseOutbox {
 
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
@@ -2896,7 +3182,7 @@ impl LocalLeaseOutbox {
             ));
         }
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(())
@@ -2920,12 +3206,7 @@ impl LocalLeaseOutbox {
     ) -> Result<LocalReplayFinalization, LocalLeaseOutboxError> {
         let occurrence_key = occurrence_key.into();
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_write_transaction().await?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
         let events =
@@ -3014,7 +3295,7 @@ impl LocalLeaseOutbox {
     pub async fn snapshot_counts(&self) -> Result<LocalLeaseOutboxCounts, LocalLeaseOutboxError> {
         let mut transaction = self
             .store
-            .pool
+            .observation_pool()
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
@@ -3025,7 +3306,7 @@ impl LocalLeaseOutbox {
         let outbox_rows =
             count_rows(&mut transaction, "cognitive_local_outbox", &self.lease_id).await?;
         transaction
-            .commit()
+            .rollback()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         Ok(LocalLeaseOutboxCounts {
@@ -3033,6 +3314,22 @@ impl LocalLeaseOutbox {
             event_rows,
             outbox_rows,
         })
+    }
+
+    /// Reuse the original host-bound lease fence in a caller-owned SQLite write
+    /// transaction without appending an effect or opening a second transaction.
+    pub(crate) async fn require_current_transaction(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+    ) -> Result<LocalLease, LocalLeaseOutboxError> {
+        if self.binding().is_none() {
+            return Err(LocalLeaseOutboxError::Invalid(
+                "owner transaction requires a host-bound lease".to_string(),
+            ));
+        }
+        let lease = self.current_lease(transaction).await?;
+        ensure_current_active(&lease, self)?;
+        Ok(lease)
     }
 
     async fn current_lease(
@@ -4168,6 +4465,7 @@ async fn verify_event_chain(
             event_sha256,
         });
     }
+    retirement_ack::verify_retirement_lease(lease_id, &events)?;
     Ok(events)
 }
 
@@ -4243,6 +4541,9 @@ fn advance_outcome_state(
             ),
             "rolled_back",
         ) => LocalOutcomeState::RolledBack,
+        (Some(LocalOutcomeState::Committed), retirement_ack::RETIREMENT_ACK_KIND) => {
+            LocalOutcomeState::Committed
+        }
         (Some(state), _) => {
             return Err(corrupt(format!(
                 "occurrence {occurrence_key} has invalid {kind} transition from {}",
@@ -4291,6 +4592,12 @@ fn ensure_no_unresolved_outcomes_except(
         // outcome append).  Only the handle's current generation may block a
         // normal release/rollback; expiry is the explicit quarantine path
         // for an older generation.
+        // A successor may acknowledge a historical Committed occurrence.
+        // Its neutral metadata was checked against the full original chain;
+        // it introduces no current-generation admission or unresolved work.
+        if event.kind == retirement_ack::RETIREMENT_ACK_KIND {
+            continue;
+        }
         if event.generation != generation || event.fencing_token != fencing_token {
             continue;
         }
@@ -4491,6 +4798,7 @@ fn verify_event_outbox_pairing(
             outbox_rows.len()
         )));
     }
+    retirement_ack::verify_retirement_pairing(events, outbox_rows)?;
     Ok(())
 }
 

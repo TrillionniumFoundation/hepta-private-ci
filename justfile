@@ -1,11 +1,13 @@
 set working-directory := "codex-rs"
-set positional-arguments
+set positional-arguments := true
+
 export CODEX_REPO_ROOT := justfile_directory()
 export JUST_SHELL := justfile_directory() / "scripts/just-shell.py"
+
 set shell := ["python3", "-c", 'import os, runpy; runpy.run_path(os.environ["JUST_SHELL"], run_name="__main__")']
 set windows-shell := ["python", "-c", 'import os, runpy; runpy.run_path(os.environ["JUST_SHELL"], run_name="__main__")']
 
-rust_min_stack := "8388608" # 8 MiB
+rust_min_stack := "8388608"
 python := if os_family() == "windows" { "python" } else { "python3" }
 
 # Display help
@@ -13,7 +15,9 @@ help:
     just -l
 
 # `codex`
+
 alias c := codex
+
 codex *args:
     cargo run --bin codex -- {args}
 
@@ -83,6 +87,7 @@ install:
 # Run `cargo install --locked cargo-nextest` if you don't have it installed.
 # Scoped workspace packages use fresh manifest metadata; Cargo still compiles
 # all requested targets/features. Graph filters and full runs use full metadata.
+
 # Set HEPTA_NEXTTEST_FULL_METADATA=1 to force the normal nextest metadata path.
 [unix]
 test *args:
@@ -93,6 +98,7 @@ test *args:
     $env:RUST_MIN_STACK = "{{ rust_min_stack }}"; $env:NEXTEST_PROFILE = "local"; {{ python }} ../scripts/run-nextest.py @($args | Select-Object -Skip 1)
 
 # Run from the repository root so scripts that resolve paths from `cwd` see
+
 # the same layout they use in GitHub Actions.
 [no-cd]
 test-github-scripts:
@@ -116,6 +122,7 @@ bench-e2e:
     bazel test --compilation_mode=opt --cache_test_results=no --test_output=streamed //codex-rs:e2e-benchmarks
 
 # Run Bazel-backed end-to-end macrobenchmarks once per case with release-like
+
 # Rust cfg paths but fastbuild codegen.
 bench-e2e-smoke:
     # Avoid optimizer cost because smoke runs only check that benchmarks work.
@@ -125,6 +132,7 @@ bench-e2e-smoke:
 
 # Build and run Codex from source using Bazel.
 # On Unix, use `[no-cd]` and `--run_under="cd $PWD &&"` to ensure Bazel runs
+
 # the command in the current working directory.
 [no-cd]
 [unix]

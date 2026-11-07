@@ -1,0 +1,68 @@
+name: Hepta strong-control evidence integrity
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - qualification/cell-differentiation/**
+      - .github/workflows/hepta-cell-strong-control-readback.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-strong-control-readback-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  evidence:
+    name: Preserve original failure denominator and scientific HOLD
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Bind source and prepare the pinned CPU readback runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/strong-control-readback"
+          git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/strong-control-readback/source.txt"
+          python3 -m venv "$RUNNER_TEMP/strong-control-readback-venv"
+          "$RUNNER_TEMP/strong-control-readback-venv/bin/python" -m pip install numpy==2.3.5 \
+            2>&1 | tee "$RUNNER_TEMP/strong-control-readback/runtime.txt"
+          "$RUNNER_TEMP/strong-control-readback-venv/bin/python" --version \
+            > "$RUNNER_TEMP/strong-control-readback/python.txt"
+      - name: Check implementation fixtures and adversarial archive handling
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/strong-control-readback-venv/bin/python" -m unittest discover \
+            -s qualification/cell-differentiation -p 'test_strong_control*.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/strong-control-readback/tests.txt"
+      - name: Read all original evidence and require scientific HOLD
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/strong-control-readback-venv/bin/python" \
+            qualification/cell-differentiation/strong_control_archive.py \
+            --evidence qualification/cell-differentiation/strong-control-evidence/attempt-20261106-01 \
+            --expect-decision HOLD \
+            | tee "$RUNNER_TEMP/strong-control-readback/audit.json"
+          git diff --check
+          git diff --exit-code
+      - name: Retain original readback logs including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: strong-control-readback-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/strong-control-readback/
+          if-no-files-found: error
+          retention-days: 14

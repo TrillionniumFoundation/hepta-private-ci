@@ -103,6 +103,7 @@ async fn responses_lite_uses_input_items_for_instructions_and_tools() -> Result<
     .await;
 
     let mut builder = test_codex()
+        .with_internal_metadata_for_mock()
         .with_model_info_override("gpt-5.4", |model_info| {
             model_info.use_responses_lite = true;
             model_info.tool_mode = Some(ToolMode::CodeMode);
@@ -247,10 +248,12 @@ async fn responses_lite_prepares_images() -> Result<()> {
     .await;
     let image_url = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==";
     let remote_image_url = "https://example.com/image.png";
-    let mut builder = test_codex().with_model_info_override("gpt-5.4", |model_info| {
-        model_info.use_responses_lite = true;
-        configure_image_capable_model(model_info);
-    });
+    let mut builder = test_codex()
+        .with_internal_metadata_for_mock()
+        .with_model_info_override("gpt-5.4", |model_info| {
+            model_info.use_responses_lite = true;
+            configure_image_capable_model(model_info);
+        });
     let test = builder.build(&server).await?;
 
     test.codex
@@ -446,11 +449,18 @@ async fn responses_lite_does_not_expose_standalone_web_search_for_bedrock_provid
         .with_config(|config| {
             configure_responses_tools(config);
             config.model_provider.name = "Amazon Bedrock".to_string();
+            config.model_provider.mock_internal_chat_metadata = None;
             config.model_provider.requires_openai_auth = false;
             config.model_provider.http_headers = None;
             config.model_provider.supports_standalone_web_search = false;
         });
     let test = builder.build(&server).await?;
+    assert!(
+        !test
+            .config
+            .model_provider
+            .accepts_internal_chat_message_metadata_for_request(&format!("{}/v1", server.uri()),)
+    );
 
     test.submit_turn("Use standalone web search").await?;
 

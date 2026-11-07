@@ -1,0 +1,198 @@
+{
+  "schema": "hepta.cell-six-refactors.native-gate.v1",
+  "source_sha": "a8dd9d4639ebe781ceb06afdf09e3fdcb9bf48be",
+  "source_tree": "999653ebe8167c67ce0559719fb1581a8cb28396",
+  "mode": "all",
+  "started_unix_ns": 1793952236076880239,
+  "state": "passed",
+  "phases": [
+    {
+      "name": "scoped-fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      "started_unix_ns": 1793952236132343627,
+      "exit_code": 0,
+      "ended_unix_ns": 1793952326213255391,
+      "log": {
+        "file": "scoped-fix.log",
+        "bytes": 19975,
+        "sha256": "3262d99b722d6cc2b94c1f864dd38ffe198c763d30b518ae82425c8f0ff32209"
+      }
+    },
+    {
+      "name": "scoped-strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--tests",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_unix_ns": 1793952326242571142,
+      "exit_code": 0,
+      "ended_unix_ns": 1793952430941389211,
+      "log": {
+        "file": "scoped-strict.log",
+        "bytes": 19929,
+        "sha256": "52730dc34476db0de97c704d01665a2543bb5cdcd724013df27923d2fdbc8f02"
+      }
+    },
+    {
+      "name": "helpers",
+      "command": [
+        "/usr/bin/python3",
+        "/home/qq/work/hepta-cell-six-371753-20261106/source/scripts/hepta_cell_test_helpers.py",
+        "--output-dir",
+        "/home/qq/work/hepta-cell-six-371753-20261106/records/gate-a8dd9d46/helpers"
+      ],
+      "started_unix_ns": 1793952430967388696,
+      "exit_code": 0,
+      "ended_unix_ns": 1793952437853607291,
+      "log": {
+        "file": "helpers.log",
+        "bytes": 473,
+        "sha256": "fb94c27dc7c8ab252b587ca240a5611e9699ead8b7dec4149fff2d5230c62f24"
+      }
+    },
+    {
+      "name": "scoped-test",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-infer-core",
+        "--test-threads",
+        "2"
+      ],
+      "started_unix_ns": 1793952437878417877,
+      "exit_code": 0,
+      "ended_unix_ns": 1793952578489010574,
+      "log": {
+        "file": "scoped-test.log",
+        "bytes": 160332,
+        "sha256": "457a6e74524ef2f8b29d1fef36011994302cef136cf0e974d296708a61e63cb4"
+      }
+    }
+  ],
+  "packages": [
+    "codex-hepta-neuron",
+    "codex-hepta-agentd",
+    "codex-hepta-infer-worker-host",
+    "codex-hepta-infer-core"
+  ],
+  "whole_workspace_tested": false,
+  "qualification_authority": "DENY_ALL",
+  "platform": [
+    "Linux",
+    "ai395",
+    "7.0.0-38-generic",
+    "#38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026",
+    "x86_64"
+  ],
+  "initial_free_bytes": 35868471296,
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+  "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+  "nextest": "cargo-nextest 0.9.146 (8af696ddc 2026-09-21)\nrelease: 0.9.146\ncommit-hash: 8af696ddcce8fff2962d6a5168b6d138b8616a35\ncommit-date: 2026-09-21\nhost: x86_64-unknown-linux-gnu",
+  "junit_candidates": [
+    {
+      "path": "/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/target/nextest/local/junit.xml",
+      "exists": true,
+      "fresh": true
+    },
+    {
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/target/nextest/local/junit.xml",
+      "exists": false,
+      "fresh": false
+    }
+  ],
+  "junit": {
+    "file": "junit.xml",
+    "bytes": 202499,
+    "sha256": "a1e63838ffb6aac9681936cf0874ad1f44896fd0ba6e70744e3fd66106365903",
+    "source_path": "/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/target/nextest/local/junit.xml",
+    "cases": 954,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "helper_artifacts_after_test": {
+    "codex": {
+      "file": "codex",
+      "bytes": 1420246384,
+      "sha256": "8c958c4231bd2237d494bfb5693745cc3b7c18eda98c1abbe87832160fc95bfc"
+    },
+    "codex-exec": {
+      "file": "codex-exec",
+      "bytes": 1131254592,
+      "sha256": "0c0eb3730ead1cfab3cf8f05bf24116a0c0e6fefc1c38bd2722ee82b7de8a5a1"
+    },
+    "codex-app-server": {
+      "file": "codex-app-server",
+      "bytes": 1145480272,
+      "sha256": "ac12fa0c99ec594d8839dfcbeb1d25c9160e74b511f77efe0b225ca01db116c5"
+    },
+    "exec-server": {
+      "file": "exec-server",
+      "bytes": 411816352,
+      "sha256": "bb3976b0515514797ef3de0bd2a1cfda2a1cd51258036f76b35ae3014581ac8d"
+    },
+    "codex-code-mode-host": {
+      "file": "codex-code-mode-host",
+      "bytes": 328668928,
+      "sha256": "99bf79a1f514c72618a2bd1ea15d3125073b112104ab2d0f8d838a10cdf9f351"
+    },
+    "test_stdio_server": {
+      "file": "test_stdio_server",
+      "bytes": 63579320,
+      "sha256": "c0da17d3e4672fe6db2982ad8e6bcf17ec8daa7dd1138fff0cc9f4eae1283e39"
+    },
+    "test_streamable_http_server": {
+      "file": "test_streamable_http_server",
+      "bytes": 81269792,
+      "sha256": "bd9046bcf2728da397efc1a53160e0213783213c086677da855fc8726f97dba8"
+    },
+    "codex-linux-sandbox": {
+      "file": "codex-linux-sandbox",
+      "bytes": 242942752,
+      "sha256": "741ed99b6e574606075ceac8c06170639703fe8314462bcc95f3f300e1fc6dc1"
+    },
+    "codex-execve-wrapper": {
+      "file": "codex-execve-wrapper",
+      "bytes": 232685752,
+      "sha256": "8bfe38a46b12299693419593208a48256ee9dabcac4e28178c38697807dd4149"
+    },
+    "hepta-joint-propose": {
+      "file": "hepta-joint-propose",
+      "bytes": 6100536,
+      "sha256": "b01b1ae908d5c39562a0448f6e25b443aebb619f6a9fece38dc21b2bdf8a1966"
+    }
+  },
+  "helper_artifacts_unchanged": true,
+  "exit_code": 0,
+  "ended_unix_ns": 1793952580813082959,
+  "final_free_bytes": 46721331200
+}

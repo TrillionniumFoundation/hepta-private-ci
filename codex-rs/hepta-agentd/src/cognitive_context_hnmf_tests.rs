@@ -74,7 +74,9 @@ async fn fixture(
 ) {
     let temp = tempfile::tempdir().unwrap();
     let fleet = temp.path().join("fleet");
-    std::fs::create_dir_all(&fleet).unwrap();
+    let fleet = std::fs::create_dir_all(&fleet)
+        .and_then(|()| fleet.canonicalize())
+        .unwrap();
     let owner = AgentId::parse(format!("00000000-0000-4000-8000-{suffix:012}")).unwrap();
     let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
     let store = CognitiveStore::open(&layout).await.unwrap();
@@ -257,11 +259,13 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
     let accepted = crate::cognitive_context::revalidate_with_retrieval_context(
         &store,
         &owner,
-        &snapshot.snapshot_digest,
-        &snapshot.read_digest,
-        snapshot.omitted_records,
-        &snapshot.items,
-        snapshot.plan.as_ref(),
+        crate::cognitive_context::CognitiveContextRevalidationInput {
+            snapshot_digest: &snapshot.snapshot_digest,
+            read_digest: &snapshot.read_digest,
+            omitted_records: snapshot.omitted_records,
+            items: &snapshot.items,
+            plan: snapshot.plan.as_ref(),
+        },
         None,
         1,
         Some(&stable),
@@ -282,11 +286,13 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
     let rejected = crate::cognitive_context::revalidate_with_retrieval_context(
         &store,
         &owner,
-        &snapshot.snapshot_digest,
-        &snapshot.read_digest,
-        snapshot.omitted_records,
-        &snapshot.items,
-        snapshot.plan.as_ref(),
+        crate::cognitive_context::CognitiveContextRevalidationInput {
+            snapshot_digest: &snapshot.snapshot_digest,
+            read_digest: &snapshot.read_digest,
+            omitted_records: snapshot.omitted_records,
+            items: &snapshot.items,
+            plan: snapshot.plan.as_ref(),
+        },
         None,
         1,
         Some(&changed),

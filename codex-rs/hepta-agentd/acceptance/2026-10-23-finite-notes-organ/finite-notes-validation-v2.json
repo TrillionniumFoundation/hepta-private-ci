@@ -1,0 +1,68 @@
+{
+  "status": "validation in progress; not qualified",
+  "qualified": false,
+  "scope": "Original finite Notes Agentd/Fleet/runtime with explicit Root, issuer, and application fixtures; not installed Root or executable size qualification",
+  "source": "3528961a92ef69ff965a12b559952f745d02d109",
+  "checkout": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-notes-drain-lock-fix",
+  "negative": {
+    "host": "main",
+    "job_id": "1a16aa7cacb-1b6abb-3e03",
+    "source": "95cd485f5f9cf362d19ca56c428e3492a632a545",
+    "state": "failed",
+    "exit_code": 100,
+    "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/finite-notes-negative-v1.log",
+    "actual": "Fleet drain mutex reentry failed after20.020s under unchanged watchdog"
+  },
+  "previous_positive": {
+    "host": "main",
+    "job_id": "1a16ab6adae-1b6abb-3e64",
+    "source": "1246ec31781559d54516441c18dba14bc79543f9",
+    "state": "failed",
+    "exit_code": 100,
+    "passed": 14,
+    "failed": 1,
+    "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/finite-notes-positive-v1.log",
+    "actual": "drain regression passed1.826s; scope fixture failed because original default30s claim had not expired within10s"
+  },
+  "current": {
+    "host": "main",
+    "job_id": "1a16af9ddf8-1b6abb-3f1c",
+    "state": "failed",
+    "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/finite-notes-positive-v2.log",
+    "exit_code": 100,
+    "passed": 14,
+    "failed": 1,
+    "seconds": 136.773,
+    "provenance": "work/owner-test-artifacts/finite-notes-positive-v2-codex-hepta-agentd/provenance.json",
+    "failure": "fixture attempted D2 in same namespace while D1 lacked original durable native terminal evidence"
+  },
+  "required_same_run_tests": [
+    "notes_document_observer::tests::notes_objective_private_document_observer_correlates_fresh_nonce_and_never_writes_effect",
+    "notes_document_observer::tests::notes_objective_recovery_handle_retains_no_effect_descriptor_and_correlates_discovery",
+    "runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown",
+    "runtime::hos2_recovery_tests::notes_tests::composition_tests::notes_objective_protected_factory_checks_complete_binding_before_recovery_and_reuses_owner",
+    "runtime::hos2_recovery_tests::notes_tests::composition_tests::notes_objective_session_registration_returns_observer_for_the_same_private_target",
+    "runtime::hos2_recovery_tests::notes_tests::notes_recovered_writer_persists_lost_reply_and_retires_without_replay",
+    "runtime::hos2_recovery_tests::notes_tests::objective_tests::finite_notes_static_execution_uses_original_publication_owner_and_recovers_lost_ack_fixture",
+    "runtime::hos2_recovery_tests::notes_tests::objective_tests::reconciliation_scope_tests::finite_notes_reconciler_excludes_device_grants_dispatch_and_observation",
+    "runtime::hos2_recovery_tests::notes_tests::objective_tests::signed_notes_objective_uses_original_run_and_operation_then_recovers_lost_ack_without_reentry",
+    "runtime::hos2_recovery_tests::notes_tests::previous_tests::notes_objective_previous_receipt_host_reconciles_without_registering_dispatch_or_issuer",
+    "state::notes_objective::lock_tests::notes_objective_drain_does_not_reenter_run_mutex",
+    "state::notes_objective::lock_tests::notes_objective_unknown_reads_original_owner_without_renewing_expired_admission",
+    "state::notes_organ::tests::finite_notes_readiness_keeps_app_server_and_text_ingress_closed",
+    "state::notes_organ::tests::missing_original_root_cannot_open_notes_organ_admission",
+    "state::notes_organ::tests::original_fleet_draining_and_permanent_fence_close_finite_notes_readiness"
+  ],
+  "fixture_adjustment": "Use original claim_dispatch_lease(5000) as existing actual_reconciler test; production default30s, real clock/backoff and test10s unchanged; assert actual InvalidSignature and Indeterminate before waiting",
+  "source_freshness": [
+    "work/finite-notes-positive-v2.source",
+    "work/finite-notes-positive-v2.bytes-before",
+    "work/finite-notes-positive-v2.bytes-after"
+  ],
+  "remaining": [
+    "actual15 final source tests",
+    "seal actual fresh Agentd ELF",
+    "scopedAgentd fix and committed-range fmt",
+    "report target release"
+  ]
+}

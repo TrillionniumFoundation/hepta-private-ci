@@ -35,12 +35,46 @@ const RUN_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 
 const TASK_SHUTDOWN_GRACE: Duration = Duration::from_secs(3);
 
-pub async fn run(
+pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
+    run_with_shutdown(config, arg0_paths, shutdown_signal()).await
+}
+
+/// Run the ordinary Agentd composition with an explicit embedded-host stop
+/// request. Startup, real App Server readiness, Fleet fences and drain are the
+/// same as `run`; completing the future requests the existing drain sequence
+/// and does not bypass outstanding owners or grant model/effect authority.
+pub async fn run_with_shutdown(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
+    shutdown: impl Future<Output = Result<(), AgentdError>> + Send,
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
+    let sockets = config.take_socket_inputs();
+    #[cfg(target_os = "linux")]
+    let notes_ui = config.take_original_notes_ui();
+    #[cfg(target_os = "linux")]
+    let notes_thread_tools = config.take_original_notes_thread_tools();
+    #[cfg(target_os = "linux")]
+    let desktop_thread_tools = config.take_original_desktop_thread_tools();
+    #[cfg(target_os = "linux")]
+    let app_server_model_tools = if desktop_thread_tools.is_some() {
+        crate::app_runtime::AppServerModelToolProfile::OriginalDesktop
+    } else if notes_thread_tools.is_some() {
+        crate::app_runtime::AppServerModelToolProfile::OriginalNotes
+    } else {
+        crate::app_runtime::AppServerModelToolProfile::Standard
+    };
+    #[cfg(not(target_os = "linux"))]
+    let app_server_model_tools = crate::app_runtime::AppServerModelToolProfile::Standard;
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
+    let learning_iteration = config.take_learning_iteration_bootstrap();
+    let terminal_learning = config.take_terminal_learning_bootstrap();
+    let neuron_generation = config.take_neuron_generation_bootstrap();
+    if learning_iteration.is_some() && plasticity_bootstrap.is_none() {
+        return Err(AgentdError::Invalid(
+            "learning iteration requires the governed plasticity owner".into(),
+        ));
+    }
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
@@ -79,6 +113,23 @@ pub async fn run(
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
+    let notes_objective = config.notes_objective();
+    let desktop_objective = config.desktop_objective();
+    if notes_objective.is_some() && desktop_objective.is_some() {
+        return Err(AgentdError::Invalid(
+            "multiple finite Objective profiles selected".into(),
+        ));
+    }
+    if (notes_objective.is_some() || desktop_objective.is_some())
+        && (production_writer_host.is_none()
+            || intelligence_product.is_some()
+            || intelligence_invocation.is_some()
+            || neuron_generation.is_some())
+    {
+        return Err(AgentdError::Invalid(
+            "Notes Objective requires original operations and a dedicated finite profile".into(),
+        ));
+    }
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -93,6 +144,21 @@ pub async fn run(
         registry,
         EVENT_CAPACITY,
     )?);
+    if let Some(bootstrap) = &neuron_generation {
+        bootstrap.attach(&state)?;
+    }
+    if let Some(notes) = notes_objective {
+        state
+            .notes_objective
+            .set(notes)
+            .map_err(|_| AgentdError::Invalid("Notes Objective already attached".into()))?;
+    }
+    if let Some(desktop) = desktop_objective {
+        state
+            .desktop_objective
+            .set(desktop)
+            .map_err(|_| AgentdError::Invalid("Desktop Objective already attached".into()))?;
+    }
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
     if let Some(host) = intuition_policy_host {
@@ -210,12 +276,28 @@ pub async fn run(
                 )
             })?;
             let (host, interval) = operations.attach(Arc::clone(recovered_host)).await?;
-            state.attach_production_operations(Arc::clone(&host))?;
-            production_writer_host = Some(Arc::clone(&host));
             Some((host, interval))
+        }
+        None if state.notes_objective.get().is_some()
+            || state.desktop_objective.get().is_some() =>
+        {
+            let host = production_writer_host.as_ref().ok_or_else(|| {
+                AgentdError::Protocol("Notes requires its precomposed original owner".into())
+            })?;
+            Some((Arc::clone(host), GENERATION_POLL_INTERVAL))
         }
         None => None,
     };
+    if let Some((host, _)) = &production_operations {
+        if let Some(notes) = state.notes_objective.get() {
+            notes.validate_host(host)?;
+        }
+        if let Some(desktop) = state.desktop_objective.get() {
+            desktop.validate_host(host)?;
+        }
+        state.attach_production_operations(Arc::clone(host))?;
+        production_writer_host = Some(Arc::clone(host));
+    }
     let cognitive_runtime = attach_federation_after_generation_fence(
         &state,
         cognitive_runtime,
@@ -239,12 +321,30 @@ pub async fn run(
     }
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
-    let control = AgentdControlServer::bind(
-        identity.control_socket.clone(),
-        Arc::clone(&state),
-        cancellation.clone(),
-    )
-    .await?;
+    let (control, app_server_socket) = match sockets {
+        crate::config::AgentdSocketInputs::Bind => (
+            AgentdControlServer::bind(
+                identity.control_socket.clone(),
+                Arc::clone(&state),
+                cancellation.clone(),
+            )
+            .await?,
+            crate::app_runtime::AppServerSocket::Bind,
+        ),
+        #[cfg(target_os = "linux")]
+        crate::config::AgentdSocketInputs::RootBound {
+            control,
+            app_server,
+        } => (
+            AgentdControlServer::from_root_bound(
+                control,
+                &identity.control_socket,
+                Arc::clone(&state),
+                cancellation.clone(),
+            )?,
+            crate::app_runtime::AppServerSocket::RootBound(app_server),
+        ),
+    };
     // The single task host owns cancellation and joining on every exit path.
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
@@ -256,6 +356,24 @@ pub async fn run(
             )?;
         }
         tasks.spawn_required("control-server", control.run())?;
+        #[cfg(target_os = "linux")]
+        if let Some(ui) = notes_ui {
+            tasks.spawn_required("notes-literal-ui", ui.run(cancellation.clone()))?;
+        }
+        #[cfg(target_os = "linux")]
+        if let Some(tools) = notes_thread_tools {
+            tasks.spawn_required(
+                "notes-original-thread-tools",
+                tools.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
+        #[cfg(target_os = "linux")]
+        if let Some(tools) = desktop_thread_tools {
+            tasks.spawn_required(
+                "desktop-original-thread-tools",
+                tools.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
         let app_identity = identity.clone();
         let app_state = Arc::clone(&state);
         let app_drain = state.app_server_drain_handle();
@@ -267,6 +385,8 @@ pub async fn run(
                 cognitive_runtime,
                 app_state,
                 production_writer_host,
+                app_server_socket,
+                app_server_model_tools,
             )
             .await
             .map_err(AgentdError::from)?;
@@ -292,6 +412,26 @@ pub async fn run(
                 owner.run(Arc::clone(&state), cancellation.clone()),
             )?;
         }
+        if let Some(owner) = learning_iteration {
+            tasks.spawn_required(
+                "learning-iteration-owner",
+                owner.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
+        if let Some(owner) = terminal_learning {
+            tasks.spawn_required(
+                "terminal-learning-owner",
+                owner.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
+        if let Some(bootstrap) = neuron_generation {
+            crate::neuron_generation_service::spawn_neuron_generation_service(
+                &mut tasks,
+                bootstrap,
+                Arc::clone(&state),
+                cancellation.clone(),
+            )?;
+        }
         spawn_automation_service(
             &mut tasks,
             automation_store,
@@ -309,7 +449,7 @@ pub async fn run(
     }
     tasks
         .run_until(async move {
-            shutdown_signal().await?;
+            shutdown.await?;
             // Keep control and owner reconciliation alive throughout drain.
             drain_runtime(state).await
         })
@@ -403,15 +543,66 @@ where
     Ok(cognitive_runtime)
 }
 
-async fn run_production_operation_reconciler(
+enum OperationReconcileProfile {
+    Full,
+    Notes(crate::AgentdNotesObjectiveConfig),
+}
+
+pub(crate) async fn run_production_operation_reconciler(
     host: Arc<crate::AgentdProductionWriterHost>,
     interval: Duration,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
+    run_operation_reconciler(
+        host,
+        OperationReconcileProfile::Full,
+        interval,
+        cancellation,
+    )
+    .await
+}
+
+pub(crate) async fn run_notes_operation_reconciler(
+    host: Arc<crate::AgentdProductionWriterHost>,
+    notes: crate::AgentdNotesObjectiveConfig,
+    interval: Duration,
+    cancellation: CancellationToken,
+) -> Result<(), AgentdError> {
+    notes.validate_host(&host)?;
+    run_operation_reconciler(
+        host,
+        OperationReconcileProfile::Notes(notes),
+        interval,
+        cancellation,
+    )
+    .await
+}
+
+async fn run_operation_reconciler(
+    host: Arc<crate::AgentdProductionWriterHost>,
+    profile: OperationReconcileProfile,
+    interval: Duration,
+    cancellation: CancellationToken,
+) -> Result<(), AgentdError> {
     loop {
-        // Reconcile immediately after startup/restart, then at a bounded
-        // cadence. Agentd never dispatches from this recovery loop.
-        host.reconcile(256).await?;
+        // Native pre-boundary proofs require a fresh external grant even on
+        // restart. The separate observer below never resends unknown effects.
+        if cancellation.is_cancelled() {
+            return Ok(());
+        }
+        match &profile {
+            OperationReconcileProfile::Full => {
+                host.reauthorize_pending(/*limit*/ 256).await?;
+                host.reconcile(/*limit*/ 256).await?;
+            }
+            OperationReconcileProfile::Notes(notes) => {
+                let destination = notes.target.destination_id();
+                host.reauthorize_pending_for_destination(&destination, /*limit*/ 256)
+                    .await?;
+                host.reconcile_for_destination(&destination, /*limit*/ 256)
+                    .await?;
+            }
+        }
         tokio::select! {
             _ = cancellation.cancelled() => return Ok(()),
             _ = tokio::time::sleep(interval) => {}
@@ -459,6 +650,9 @@ async fn monitor_runtime(
                 Err(_not_ready) => {}
             }
         }
+        if app_server_ready && let Some(host) = state.objective_runtime.get() {
+            host.reconcile_notes(&state).await?;
+        }
         tokio::select! {
             () = cancellation.cancelled() => return Ok(()),
             () = tokio::time::sleep(GENERATION_POLL_INTERVAL) => {}
@@ -494,12 +688,12 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
     Ok(())
 }
 
-async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
+pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
     state.mark_draining()?;
     let drain_deadline = Instant::now() + RUN_DRAIN_GRACE;
     loop {
         state.expire_run_deadlines()?;
-        if state.active_run_count()? == 0 {
+        if state.active_run_count()? == 0 && state.neuron_generation_drain_blockers()? == 0 {
             return Ok(());
         }
         if Instant::now() >= drain_deadline {
@@ -511,7 +705,7 @@ async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
     state.mark_unresolved_runs_indeterminate("shutdown_drain_timeout")?;
     let reconcile_deadline = Instant::now() + RUN_RECONCILE_GRACE;
     loop {
-        if state.unresolved_run_count()? == 0 {
+        if state.unresolved_run_count()? == 0 && state.neuron_generation_drain_blockers()? == 0 {
             return Ok(());
         }
         if Instant::now() >= reconcile_deadline {
@@ -521,17 +715,18 @@ async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
     }
 
     let unresolved = state.unresolved_run_count()?;
-    if unresolved == 0 {
+    let generation_blockers = state.neuron_generation_drain_blockers()?;
+    if unresolved == 0 && generation_blockers == 0 {
         Ok(())
     } else {
         Err(AgentdError::Protocol(format!(
-            "agentd shutdown left {unresolved} indeterminate run(s); owner recovery is required"
+            "agentd shutdown left {unresolved} indeterminate run(s) and {generation_blockers} generation service blocker(s); owner recovery is required"
         )))
     }
 }
 
 #[cfg(unix)]
-async fn shutdown_signal() -> Result<(), AgentdError> {
+pub(crate) async fn shutdown_signal() -> Result<(), AgentdError> {
     let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
     let mut interrupt = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())?;
     tokio::select! {
@@ -546,10 +741,14 @@ async fn shutdown_signal() -> Result<(), AgentdError> {
 }
 
 #[cfg(not(unix))]
-async fn shutdown_signal() -> Result<(), AgentdError> {
+pub(crate) async fn shutdown_signal() -> Result<(), AgentdError> {
     tokio::signal::ctrl_c().await.map_err(Into::into)
 }
 
 #[cfg(test)]
 #[path = "runtime_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "production_hos2_host_tests.rs"]
+mod hos2_recovery_tests;

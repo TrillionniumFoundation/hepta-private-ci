@@ -46,18 +46,32 @@ pub enum SharedTerminalCellError {
 
 /// Immutable candidate with the exact source use and dataset retained for later
 /// revalidation. Exposing the artifact does not authorize adoption or an effect.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SharedTerminalCandidateV1 {
     artifact: TabularOperatorArtifactV1,
     dataset: DatasetSnapshotReceiptV3,
     source: SharedExperienceUseV1,
     payload_digest: Digest32,
     payload_bytes: u64,
+    training_samples: usize,
 }
 
 impl SharedTerminalCandidateV1 {
     pub fn artifact(&self) -> &TabularOperatorArtifactV1 {
         &self.artifact
+    }
+
+    pub fn dataset(&self) -> &DatasetSnapshotReceiptV3 {
+        &self.dataset
+    }
+    pub fn payload_digest(&self) -> Digest32 {
+        self.payload_digest
+    }
+    pub fn payload_bytes(&self) -> u64 {
+        self.payload_bytes
+    }
+    pub fn training_samples(&self) -> usize {
+        self.training_samples
     }
 }
 
@@ -99,6 +113,10 @@ impl AgentdSharedReplayHostV1 {
         })
     }
 
+    pub fn consumer_agent_id(&self) -> &AgentId {
+        self.consumer.agent_id()
+    }
+
     pub async fn train(
         &self,
         policy_id: &Sha256Digest,
@@ -107,10 +125,30 @@ impl AgentdSharedReplayHostV1 {
         profile: TerminalCellProfileV1,
         now: u64,
     ) -> Result<SharedTerminalCandidateV1, SharedTerminalCellError> {
-        let source = self
+        let source = self.training_source(policy_id).await?;
+        let candidate = Self::fit_from_source(source, ledger, dataset, profile, now)?;
+        self.revalidate(&candidate, ledger, now).await?;
+        Ok(candidate)
+    }
+
+    pub(crate) async fn training_source(
+        &self,
+        policy_id: &Sha256Digest,
+    ) -> Result<SharedExperienceUseV1, SharedTerminalCellError> {
+        Ok(self
             .source
             .read_shared_experience(&self.consumer, policy_id, &self.purpose)
-            .await?;
+            .await?)
+    }
+
+    /// Synchronous bounded work, so a shared ledger guard never crosses an await.
+    pub(crate) fn fit_from_source(
+        source: SharedExperienceUseV1,
+        ledger: &LedgerWriter,
+        dataset: &DatasetSnapshotReceiptV3,
+        profile: TerminalCellProfileV1,
+        now: u64,
+    ) -> Result<SharedTerminalCandidateV1, SharedTerminalCellError> {
         let support: Digest32 = source
             .source_support_digest()
             .as_str()
@@ -129,6 +167,7 @@ impl AgentdSharedReplayHostV1 {
         }) {
             return Err(SharedTerminalCellError::Binding("decision source support"));
         }
+        let training_samples = frozen.sample_count();
         let artifact = fit_terminal_cell_from_owner_v1(ledger, frozen, now)?;
         let bytes = encode_tabular_payload_v1(&artifact)
             .map_err(|_| SharedTerminalCellError::Binding("artifact encoding"))?;
@@ -138,8 +177,8 @@ impl AgentdSharedReplayHostV1 {
             source,
             payload_digest: Digest32::of_bytes(&bytes),
             payload_bytes: bytes.len() as u64,
+            training_samples,
         };
-        self.revalidate(&candidate, ledger, now).await?;
         Ok(candidate)
     }
 
@@ -222,19 +261,31 @@ impl AgentdSharedReplayHostV1 {
         Ok(())
     }
 
+    pub(crate) async fn revalidate_training_source(
+        &self,
+        source: &SharedExperienceUseV1,
+    ) -> Result<(), SharedTerminalCellError> {
+        let current = self.training_source(source.policy_id()).await?;
+        if &current != source {
+            return Err(SharedTerminalCellError::Binding("source use changed"));
+        }
+        Ok(())
+    }
+
+    pub(crate) async fn revalidate_source(
+        &self,
+        candidate: &SharedTerminalCandidateV1,
+    ) -> Result<(), SharedTerminalCellError> {
+        self.revalidate_training_source(&candidate.source).await
+    }
+
     async fn revalidate(
         &self,
         candidate: &SharedTerminalCandidateV1,
         ledger: &LedgerWriter,
         now: u64,
     ) -> Result<(), SharedTerminalCellError> {
-        let current = self
-            .source
-            .read_shared_experience(&self.consumer, candidate.source.policy_id(), &self.purpose)
-            .await?;
-        if current != candidate.source {
-            return Err(SharedTerminalCellError::Binding("source use changed"));
-        }
+        self.revalidate_source(candidate).await?;
         ledger.revalidate_dataset_snapshot(&candidate.dataset, now)?;
         Ok(())
     }

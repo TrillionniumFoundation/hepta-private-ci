@@ -1,0 +1,738 @@
+{
+  "schema": "hepta.source-navigation-observation-rebind.v1",
+  "schemaVersion": 1,
+  "sourceCandidate": {
+    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+  },
+  "scope": "source_navigation_only",
+  "executionEvidenceTransferred": false,
+  "qualificationRulesModified": false,
+  "priorRecordRecovery": "git cat-file blob <previousMap.blob> returns the entire original record, including its exact identity and old claims; compare its SHA-256 and byte count.",
+  "reason": "Maps inherited two non-ancestor branch observations. The original strict ancestry refusal is correct and remains unchanged. New navigation observations supersede those invalid current-candidate bindings without fabricating ancestry or renewing execution claims.",
+  "records": [
+    {
+      "module": "automation.taskflow",
+      "mapPath": "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "44753d0f6dfe14cee0b8fc4bbcb117b8b05cb3c3",
+        "sha256": "24c41b1aadeaac19cbb0757a7bb7a253b1e9c2e95c105425965e2f20d2d087a9",
+        "bytes": 16231
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": true,
+        "repositoryControlledSourceBoundaryGapsClosed": true,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "repositoryControlledProductCompositionGapsClosed": false,
+        "calendarV2ProductControlComplete": true,
+        "externalEffectProductCompositionComplete": false,
+        "agedTurnRecoveryLivenessGapClosed": true,
+        "terminalObserverPerPassBounded": true,
+        "terminalObserverDurableContinuation": true,
+        "externalEffectAsyncBridgeComplete": true,
+        "externalEffectExactWireBindingComplete": true,
+        "externalEffectDurableRecoveryIdentityComplete": true,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "cognitive.read",
+      "mapPath": "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "757935cc9c1a034a3b4ee55104ae813687012c63",
+        "sha256": "0a59ed201d93f6c0e25966492ffd74b46f018355b7018e4b7313a16e7b70fcdb",
+        "bytes": 13842
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "control.engineering",
+      "mapPath": "docs/modules/control.engineering/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "4dd8c5a5f55f44d50e6f407528f14bc92f77d1c4",
+        "sha256": "e4cd15094f9bf63d24d80c9a1276ef65d6596394d0be2191c62251057bee3b10",
+        "bytes": 41250
+      },
+      "previousSourceBase": {
+        "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
+        "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+      },
+      "previousObservedAtHead": {
+        "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
+        "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
+        "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+      },
+      "replacementObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "reason": "Restore the map's already-declared, actual ancestor integrationBaseline as integration provenance; replace the non-ancestor current-source observation independently.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "control.runtime",
+      "mapPath": "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "15e2ee01e8b0e625de1345b1eec34857f7c262dc",
+        "sha256": "4b7f34b6262e0960f7e24305cc9c5110417e6dcb4a4ddec85e36af8699f03cf5",
+        "bytes": 8719
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": null,
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": null,
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "inference.control",
+      "mapPath": "docs/modules/inference.control/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "35c0b9d2745b09809c50e70b669b60cece74a90f",
+        "sha256": "8b4a93cc61507304536646fd94e884359395efc0bbaddcd8b996df82d11fb3cd",
+        "bytes": 6615
+      },
+      "previousSourceBase": {
+        "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
+        "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+      },
+      "previousObservedAtHead": null,
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": true,
+        "repositoryControlledSourceBoundaryGapsClosed": false,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": null,
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "intelligence.control",
+      "mapPath": "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "a787ea0b2d6f09ad8b8615ccc19873ad371a1af8",
+        "sha256": "2530d4a5cc6ced863545f383946aff8f4f83ddb5fd1d47ac8d7c9f25fa6c6203",
+        "bytes": 27379
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "kernel.operations",
+      "mapPath": "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "d372ee420a45cb8ec236bee1f384da825f5430b4",
+        "sha256": "01bcd2a1fae432aa8e36db8a59d0e4fcf96e17c957fbc9067e6f7856751e75c1",
+        "bytes": 15534
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "knowledge.graph",
+      "mapPath": "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "6f19021fa142d34f0bac40f1a8874766fba01c4e",
+        "sha256": "63f634312cfbe49e38b6d8460bfa51470c7543bafbd611e7466fffefda0a571a",
+        "bytes": 12925
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "learning.artifacts",
+      "mapPath": "docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "ce691a34d5a7b4f2cc3cd3925b09d7576f88ff4d",
+        "sha256": "ba0e74c95868d3ace2ff74b687d9be2aa2a800d0239a886ddbed668e5438b955",
+        "bytes": 20322
+      },
+      "previousSourceBase": {
+        "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
+        "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+      },
+      "previousObservedAtHead": null,
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": null,
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "learning.ledger",
+      "mapPath": "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "c7e3294b4d009e90d25984715001b3df719483c5",
+        "sha256": "011bcb6d1cf6c04a9b263d314364c5013bd941837ef36da2f09130bc0e07c528",
+        "bytes": 20360
+      },
+      "previousSourceBase": {
+        "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
+        "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+      },
+      "previousObservedAtHead": null,
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "durableRunStartJournalSourceImplemented": true,
+        "authenticatedProductRunStartComposition": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": null,
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "learning.operator",
+      "mapPath": "docs/modules/learning.operator/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "89a7280561c415d049a2af5cdd6091fb30586b07",
+        "sha256": "469641b383fbed5778b52692065a8b6622363d2be3699fe73dea7ef2c1fdb571",
+        "bytes": 13869
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "publicOperationInventoryComplete": true,
+        "explicitReadConsumerComposed": true,
+        "defaultProductLoopWired": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "learning.plasticity",
+      "mapPath": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "ca55c5f84f39502be8bcde743aa3f391dff0aa41",
+        "sha256": "6b757ce9a9afa11852756ba91680a8dd001976bfb3726ad2a7487d8d00f3bbc1",
+        "bytes": 36985
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": null,
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": null,
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "memory.federation",
+      "mapPath": "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "15ac734cf551d8c976cb7e8a00db378554c5d1d0",
+        "sha256": "c6292f5ba0465c15bc674b55fd60558331c367bc0fa10a474530d6e1d96517f6",
+        "bytes": 9796
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "memory.retrieval",
+      "mapPath": "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "8fd94e7a29b72137a3cb73bdd5dda33804892877",
+        "sha256": "e78b3a5f44126a97053a29c3a170c89267fc0a60aed0809f10b0374853061046",
+        "bytes": 12397
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "platform.types",
+      "mapPath": "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "ec940aa0d3b29400b8e7b9ff471d686139588086",
+        "sha256": "19868f2b5f2fa821f530e886aecfbfeed711ca20222e1bb2113cf77d3e4f1125",
+        "bytes": 9635
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousClaimBoundary": {
+        "implementedOperationMappingComplete": true,
+        "ownedTargetProtocolSourceComplete": false,
+        "nativeSourceMappingComplete": false,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": true,
+        "repositoryControlledSourceBoundaryGapsClosed": false,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "runtime.codex",
+      "mapPath": "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "a78fc528a83438da44f3dcb77d7c89082efde107",
+        "sha256": "b0b1d65450a90e78f393d0d9786747b359520a335c2f7a361df3e0521abedf30",
+        "bytes": 15566
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": null,
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": false,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": false,
+        "repositoryControlledSourceBoundaryGapsClosed": false,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": null,
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "runtime.supervisor",
+      "mapPath": "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "7e6f5145baacbc1c63079eb9ee96b8ac56c3d41e",
+        "sha256": "3902122a8c3cb99bcc8382453616369425375187c509cce12126dfd9c868f470",
+        "bytes": 17941
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1",
+        "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": true,
+        "repositoryControlledSourceBoundaryGapsClosed": true,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
+      },
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": []
+    },
+    {
+      "module": "utility.ndu",
+      "mapPath": "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "blob": "0e8b30848604c045e2cb7b1e89bae008d4772e32",
+        "sha256": "8ebba1c13db0520051d77f75a1dde3f47bec39f344e0e50fe3371b5533aab554",
+        "bytes": 27695
+      },
+      "previousSourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "previousObservedAtHead": null,
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "requestLocalReadOnlyProductExecutionProved": true,
+        "authenticatedOwnerSourceImplemented": true,
+        "authenticatedProductionProductExecutionProved": false,
+        "productionWriterSourceImplemented": true,
+        "productionWriterActivated": false,
+        "stochasticAdmissionSourceImplemented": true,
+        "independentDecisionSourceImplemented": true,
+        "independentDecisionEvidenceProved": false,
+        "namedHostQualificationReceiptProved": false,
+        "implementedOperationMappingComplete": true
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": null,
+      "reason": "Replace a navigation observation inherited from a different branch with a newly observed candidate; do not interpret the old branch identity as candidate ancestry or execution evidence.",
+      "withdrawnClaims": [
+        {
+          "path": "claimBoundary.requestLocalReadOnlyProductExecutionProved",
+          "oldValue": true,
+          "newValue": false,
+          "reason": "The old read-only execution assertion has no retained execution receipt for this candidate. Reobserving source cannot renew it."
+        }
+      ]
+    }
+  ]
+}

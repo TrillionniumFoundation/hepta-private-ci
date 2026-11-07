@@ -7,6 +7,10 @@
 
 #![forbid(unsafe_code)]
 
+mod cell_lifecycle;
+mod cell_lifecycle_journal;
+mod cell_lifecycle_recovery;
+mod cell_lifecycle_transition;
 mod organs;
 mod topology_execution;
 
@@ -48,6 +52,19 @@ use sqlx::SqliteConnection;
 use sqlx::sqlite::SqliteConnectOptions;
 use zeroize::Zeroizing;
 
+pub use cell_lifecycle::RuntimeCellLifecycleError;
+pub use cell_lifecycle::RuntimeCellLifecycleIntentV1;
+pub use cell_lifecycle::RuntimeCellLifecycleNativeOutcomeV1;
+pub use cell_lifecycle::RuntimeCellLifecycleObservationV1;
+pub use cell_lifecycle::RuntimeCellLifecycleObserverV1;
+pub use cell_lifecycle::RuntimeCellLifecyclePlanV1;
+pub use cell_lifecycle::RuntimeCellLifecycleSnapshotV1;
+pub use cell_lifecycle::RuntimeCellLifecycleStageV1;
+pub use cell_lifecycle::RuntimeCellStructuralChangeV1;
+pub use cell_lifecycle_journal::RuntimeCellLifecycleAnchorStoreV1;
+pub use cell_lifecycle_journal::RuntimeCellLifecycleAnchorV1;
+pub use cell_lifecycle_journal::RuntimeCellLifecycleJournalV1;
+pub use cell_lifecycle_journal::runtime_cell_lifecycle_journal_scope_v1;
 pub use topology_execution::RuntimeTopologyApplyReceiptV1;
 pub use topology_execution::RuntimeTopologyApplyRequestV1;
 pub use topology_execution::RuntimeTopologyExecutionError;
@@ -125,23 +142,39 @@ impl HeptaRuntime {
             .map_err(|error| anyhow::anyhow!("{error}"))
     }
 
+    /// Admit a product topology transition only through the Control lifecycle owner.
+    ///
+    /// Execution currently fails closed before consuming a grant or invoking
+    /// migration/cutover. Admission requires independently authenticated host,
+    /// operator and observer custody, durable CNS route publication, and current
+    /// generation/recovery fences owned by the same Control lifecycle. A proposal,
+    /// signed final-use grant or caller-provided migration callback is insufficient.
     pub fn apply_governed_topology(
         &self,
         authority: &codex_hepta_contracts::FinalUseAuthority,
         signed_grant: &codex_hepta_contracts::SignedFinalUseGrant,
         request: RuntimeTopologyApplyRequestV1,
     ) -> Result<RuntimeTopologyApplyReceiptV1> {
+        topology_execution::require_control_lifecycle_admission_v1()?;
         self.organs
             .apply_governed_topology(authority, signed_grant, request)
             .map_err(|error| anyhow::anyhow!("{error}"))
     }
 
+    /// Recover a product topology through the same mandatory lifecycle admission.
+    ///
+    /// This remains unavailable until Control can reconcile durable native
+    /// receipts against independently retained current generation and revocation
+    /// floors. Restoring a snapshot must not restore consumed grants, retired keys
+    /// or permission to repeat an external effect. Denial precedes grant consumption
+    /// and every migration/recovery callback; read-only snapshots remain available.
     pub fn recover_governed_topology(
         &self,
         authority: &codex_hepta_contracts::FinalUseAuthority,
         signed_grant: &codex_hepta_contracts::SignedFinalUseGrant,
         request: RuntimeTopologyApplyRequestV1,
     ) -> Result<RuntimeTopologyApplyReceiptV1> {
+        topology_execution::require_control_lifecycle_admission_v1()?;
         self.organs
             .recover_governed_topology(authority, signed_grant, request)
             .map_err(|error| anyhow::anyhow!("{error}"))

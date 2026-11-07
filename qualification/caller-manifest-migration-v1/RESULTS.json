@@ -1,0 +1,214 @@
+{
+  "adoption_performed": false,
+  "baseline_commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+  "baseline_migration_tests": {
+    "errors": 9,
+    "exit_code": 1,
+    "failures": 4,
+    "log": "baseline-migration-tests.log.gz",
+    "tests": 5
+  },
+  "baseline_pr": 5089,
+  "baseline_verify": {
+    "command": [
+      "python",
+      "-B",
+      "scripts/verify_hepta_callers.py",
+      "verify"
+    ],
+    "exit_code": 1,
+    "first_failure": "final_use_delivery_raw: missing codex-rs/hepta-operations/src/durable_store.rs",
+    "log": "baseline-verifier.stderr.log.gz"
+  },
+  "compared_pr_heads": {
+    "5157": "402d865faaae67f36ba2d7d1b83db31420b6369d",
+    "5162": "bf0179d110bbf96508235ac6008bde9083157f24",
+    "5182": "9b132c8511358089cb140f1600ccafe6840a1dbf",
+    "5187": "8fd4a52f8a841e7397b2088730857ff762aab78f"
+  },
+  "diagnostics": {
+    "baseline-full-scan-errors.json.gz": "Parent read-only per-boundary diagnostic scan; original CLI failure remains separately retained.",
+    "baseline-independent-caller-inventory.log.gz": "First full 72-test B4 run: two stale independent caller sets, reconciled in data only.",
+    "diagnostic-migration-fixture.log.gz": "Initial test fixture assumed every duplicate protected-file row had required_order; corrected before the baseline migration run.",
+    "diagnostic-recorded-notes-marker.log.gz": "Original 52-test caller suite found the first edited boxed return marker did not preserve its newline; exact source marker corrected.",
+    "qa-57-tests.log.gz": "Original caller module plus five migration groups; successful before complete original B4 discovery."
+  },
+  "executed_source": {
+    "CALLERS.toml": {
+      "bytes": 200280,
+      "sha256": "2f69123a82d8e23e7859027372289d421430a60aa359e674eb6036f25f8f63d1"
+    },
+    "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": {
+      "bytes": 19140,
+      "sha256": "42c52530dd69c9cf9797cdd152dabca10c34b5d2408c2f8f5e8acec7cc75f674"
+    },
+    "qa/b4-no-bypass/test_caller_manifest_migrations.py": {
+      "bytes": 7302,
+      "sha256": "f8e1d716c5d5a993f7b5b07bee8486e79a173270f518fbf419153e3c61395953"
+    },
+    "qa/b4-no-bypass/test_kernel_authority_closed_world.py": {
+      "bytes": 9571,
+      "sha256": "868dc981a1d0333d76702f8c70babee4f523e0c28c232a002191ac8bc176d937"
+    },
+    "qa/b4-no-bypass/test_root_admin_source_closure.py": {
+      "bytes": 4867,
+      "sha256": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e"
+    },
+    "qa/b4-no-bypass/test_verify_hepta_callers.py": {
+      "bytes": 39257,
+      "sha256": "dba4c5421ed30f7ea83d2b9c160b38a3570fc05cae7de5f68310d47062783c1d"
+    },
+    "scripts/hepta_typed_callers.py": {
+      "bytes": 7672,
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+    },
+    "scripts/verify_hepta_callers.py": {
+      "bytes": 29947,
+      "sha256": "43f048d1b33ec7e00dcf7cadd953dca2b0893a5cc8df0123a2321e1eb9b39368"
+    }
+  },
+  "full_original_verify": {
+    "authority_granted": false,
+    "baseline_commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+    "boundaries": 160,
+    "command": [
+      "python",
+      "-B",
+      "scripts/verify_hepta_callers.py",
+      "verify"
+    ],
+    "cwd": "/workspace/scratch/b520837f9caa/memory-adoption",
+    "exit_code": 0,
+    "finished_at": "2026-11-06T23:59:02.039800+00:00",
+    "manifest_sha256": "2f69123a82d8e23e7859027372289d421430a60aa359e674eb6036f25f8f63d1",
+    "protected_entries": 144,
+    "rust_files_scanned": 5328,
+    "started_at": "2026-11-06T23:52:49.054526+00:00",
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "stderr": "caller-proof.stderr.log.gz",
+    "stdout": "caller-proof.stdout.json.gz",
+    "wall_seconds": 372.9678150239997
+  },
+  "limitations": [
+    "Local source proof and Python QA do not establish runtime adoption or integrated required CI.",
+    "The independent type-marker inventory remains a distinct limited projection; the original whole-source caller verifier records the moved dispatch caller."
+  ],
+  "logs": {
+    "b4-72-tests.log.gz": {
+      "bytes": 2127,
+      "sha256": "d24e46874bde18bcaea419bca541e64a3c4cb8586cd800678d995bbd73fe82e0",
+      "uncompressed_bytes": 12719,
+      "uncompressed_sha256": "c48ac0d16216b50cb23c8cef1fea135bc8bcffbb832d0655ba940c8d9be6ed9f"
+    },
+    "baseline-full-scan-errors.json.gz": {
+      "bytes": 582,
+      "sha256": "66552123fa8f7242378dc36df6fc03b9703ac1c8a04c8388d38435d18e32cbc3",
+      "uncompressed_bytes": 1604,
+      "uncompressed_sha256": "dad5df8b491aeb672832b5262da2def7411a24d5bf603f23fbc150968cd79ef7"
+    },
+    "baseline-independent-caller-inventory.log.gz": {
+      "bytes": 2469,
+      "sha256": "26a72116336d040d34b11ab151e0b319da0516ac4fbc93cdbe2b443293422aa9",
+      "uncompressed_bytes": 14787,
+      "uncompressed_sha256": "ab20478315c2e11b3eded9ef1493a6ff1208b3f3d61bcbac62a367a6c4610f88"
+    },
+    "baseline-migration-tests.log.gz": {
+      "bytes": 1529,
+      "sha256": "9018c80559558c2b7e2558813db5d89a2cb932eb0d34b4c9f942d4e63422cd53",
+      "uncompressed_bytes": 18340,
+      "uncompressed_sha256": "774127a211fefc435efa6dacee6a3d700ee47465bf22b6fab33a98074c026850"
+    },
+    "baseline-verifier.stderr.log.gz": {
+      "bytes": 150,
+      "sha256": "1eb04dda466d6c40dccbecb3e48bd9bbdfa5092a999e13709cc9beccc734d91c",
+      "uncompressed_bytes": 144,
+      "uncompressed_sha256": "cc2912d95bca6410c1b56e6a36bf00db450c149889c3e824329299c32ec0381c"
+    },
+    "caller-proof.stderr.log.gz": {
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "caller-proof.stdout.json.gz": {
+      "bytes": 7363,
+      "sha256": "de85de457c15f9808dadca310f0793575936f82d85d17877cf78084c4072519e",
+      "uncompressed_bytes": 74369,
+      "uncompressed_sha256": "a8b10e3feacb3c0a6c5ec6d4e7f0c8c19e3eab7dbfafdae3a41ea9dc9902110b"
+    },
+    "diagnostic-migration-fixture.log.gz": {
+      "bytes": 1498,
+      "sha256": "ece97971d26ca1af72345f1d31cce4faa70f88920ba4b24b0f1a3a9165bf5f4d",
+      "uncompressed_bytes": 18067,
+      "uncompressed_sha256": "fab67802ec60c1d99d34df020260c368139bca3123b083249ef3687923c1e016"
+    },
+    "diagnostic-recorded-notes-marker.log.gz": {
+      "bytes": 2396,
+      "sha256": "bbce944fad7b817ba531a52cd9f34ba78f2282a63979b0e8aaa38c6b3fea09c9",
+      "uncompressed_bytes": 12376,
+      "uncompressed_sha256": "e180cc7167928db5264a09a11ffe19cf91af7234e57d5ee9d532814fa065353b"
+    },
+    "qa-57-tests.log.gz": {
+      "bytes": 1650,
+      "sha256": "22117de8ade258e577e92bbfb7d1dcb61fdb7423ac0a61b3379881959e0596dc",
+      "uncompressed_bytes": 9828,
+      "uncompressed_sha256": "13879f56194f6ffbc523e632d79d006871041c4362cf1bc6c00954b683ebbd3c"
+    },
+    "self-test.log.gz": {
+      "bytes": 68,
+      "sha256": "8f11b8600506b2be436a43dd84aa7236ff909d34479f49bca268c112b8f58773",
+      "uncompressed_bytes": 48,
+      "uncompressed_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    }
+  },
+  "model_loads": 0,
+  "optimizer_updates": 0,
+  "original_b4_qa": {
+    "command": [
+      "python",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "log": "b4-72-tests.log.gz",
+    "skipped": 0,
+    "tests": 72
+  },
+  "production_deployment": false,
+  "runtime_authority_granted": false,
+  "rust_source": {
+    "all_bytes_equal_baseline_blobs": true,
+    "files": 5328,
+    "git_blob_inventory_sha256": "24716ad4d43a0b771b386e3c183225ee7e6697f887a65047b4f062e4dbb9ce94"
+  },
+  "schema": "hepta.caller-manifest.migration.validation.v1",
+  "self_test": {
+    "command": [
+      "python",
+      "-B",
+      "scripts/verify_hepta_callers.py",
+      "self-test"
+    ],
+    "exit_code": 0,
+    "log": "self-test.log.gz"
+  },
+  "unchanged": {
+    "authority_table": true,
+    "existing_qa_modules": true,
+    "ignored_path_fragments": true,
+    "independent_public_classification": true,
+    "required_boundary_inventory": true,
+    "runtime_rust": true,
+    "source_roots": true,
+    "verifier_modules": true
+  }
+}

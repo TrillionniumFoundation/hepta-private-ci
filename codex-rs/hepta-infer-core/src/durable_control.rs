@@ -9,12 +9,18 @@ use std::fs::{self};
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
+use std::io::Seek;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+#[path = "generation_control.rs"]
+pub mod generation;
 #[path = "native_control.rs"]
 pub mod native;
+#[cfg(target_os = "linux")]
+#[path = "durable_control_file.rs"]
+mod owned_file;
 
 const MAX_RECORDS: usize = 16_384;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
@@ -173,6 +179,7 @@ pub struct DurableInferenceControl {
     file: File,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
+    generation: generation::GenerationJournal,
     capacity: usize,
     journal_bytes: u64,
     poisoned: bool,
@@ -195,10 +202,46 @@ impl DurableInferenceControl {
             options.mode(0o600);
         }
         let file = options.open(&path)?;
+        let control = Self::replay_file(file, path, capacity)?;
+        #[cfg(unix)]
+        {
+            let parent = control
+                .path
+                .parent()
+                .filter(|parent| !parent.as_os_str().is_empty())
+                .unwrap_or_else(|| Path::new("."));
+            File::open(parent)?.sync_all()?;
+        }
+        Ok(control)
+    }
+
+    /// Replay an already opened, host-selected Linux read/append file. This method
+    /// never accesses the diagnostic pathname or its parent. The host chooses
+    /// create-new versus reopen, retains responsibility for storage identity,
+    /// and syncs the actual containing directory when creating an entry. Replay,
+    /// locking and append-sync use only the supplied descriptor. Its flags must
+    /// be readable and append-mode; the caller must not retain a writer or change
+    /// the shared descriptor flags afterwards.
+    #[cfg(target_os = "linux")]
+    pub fn open_file(file: File, path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
+        owned_file::validate_read_append(&file)?;
+        Self::replay_file(file, path, capacity)
+    }
+
+    fn replay_file(mut file: File, path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
+        if capacity == 0 || capacity > MAX_RECORDS {
+            return Err(Error::CapacityExceeded);
+        }
+        if !file.metadata()?.is_file() {
+            return Err(Error::CorruptJournal("journal is not a regular file"));
+        }
+        let path = path.as_ref().to_path_buf();
         // Lock before replay: two owners must never admit from the same stale cut.
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
+        file.rewind()?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
+        let mut generation = generation::GenerationJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
@@ -228,28 +271,40 @@ impl DurableInferenceControl {
             }
             if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
                 native.replay(json)?;
+            } else if let Some(json) = line.strip_prefix(generation::JOURNAL_PREFIX) {
+                generation.replay(json)?;
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
-            if records.len() + native.records.len() > capacity
-                || records.keys().any(|id| native.records.contains_key(id))
+            if records.len() + native.records.len() + generation.records.len() > capacity
+                || records.keys().any(|id| {
+                    native.records.contains_key(id) || generation.records.contains_key(id)
+                })
+                || native
+                    .records
+                    .keys()
+                    .any(|id| generation.records.contains_key(id))
+                || journal_bytes
+                    .checked_add(generation.reserved_bytes()?)
+                    .ok_or(Error::ArithmeticOverflow)?
+                    > MAX_JOURNAL_BYTES
             {
                 return Err(Error::CapacityExceeded);
             }
         }
-        #[cfg(unix)]
+        if journal_bytes
+            .checked_add(generation.reserved_bytes()?)
+            .ok_or(Error::ArithmeticOverflow)?
+            > MAX_JOURNAL_BYTES
         {
-            let parent = path
-                .parent()
-                .filter(|parent| !parent.as_os_str().is_empty())
-                .unwrap_or_else(|| Path::new("."));
-            File::open(parent)?.sync_all()?;
+            return Err(Error::CapacityExceeded);
         }
         Ok(Self {
             path,
             file,
             records,
             native,
+            generation,
             capacity,
             journal_bytes,
             poisoned: false,
@@ -268,10 +323,14 @@ impl DurableInferenceControl {
             }
             return Err(Error::Conflict);
         }
-        if self.native.records.contains_key(&request.request_id) {
+        if self.native.records.contains_key(&request.request_id)
+            || self.generation.records.contains_key(&request.request_id)
+        {
             return Err(Error::Conflict);
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
+        if self.records.len() + self.native.records.len() + self.generation.records.len()
+            >= self.capacity
+        {
             return Err(Error::CapacityExceeded);
         }
         let event = Event::Submit(request);
@@ -449,6 +508,14 @@ impl DurableInferenceControl {
     }
 
     fn append(&mut self, encoded: &str) -> Result<(), Error> {
+        self.append_with_generation_reserve(encoded, self.generation.reserved_bytes()?)
+    }
+
+    fn ensure_append_capacity(
+        &self,
+        encoded: &str,
+        generation_reserved: u64,
+    ) -> Result<u64, Error> {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
@@ -456,9 +523,23 @@ impl DurableInferenceControl {
             .journal_bytes
             .checked_add(encoded.len() as u64)
             .ok_or(Error::ArithmeticOverflow)?;
-        if encoded.len() > MAX_JOURNAL_LINE_BYTES || next_bytes > MAX_JOURNAL_BYTES {
+        if encoded.len() > MAX_JOURNAL_LINE_BYTES
+            || next_bytes
+                .checked_add(generation_reserved)
+                .ok_or(Error::ArithmeticOverflow)?
+                > MAX_JOURNAL_BYTES
+        {
             return Err(Error::CapacityExceeded);
         }
+        Ok(next_bytes)
+    }
+
+    fn append_with_generation_reserve(
+        &mut self,
+        encoded: &str,
+        generation_reserved: u64,
+    ) -> Result<(), Error> {
+        let next_bytes = self.ensure_append_capacity(encoded, generation_reserved)?;
         let persisted = self
             .file
             .write_all(encoded.as_bytes())
@@ -892,3 +973,7 @@ mod tests;
 #[cfg(test)]
 #[path = "durable_history_tests.rs"]
 mod history_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "durable_control_file_tests.rs"]
+mod file_tests;

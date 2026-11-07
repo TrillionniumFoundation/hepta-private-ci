@@ -47,6 +47,10 @@ pub struct InitializeCapabilities {
     /// Opt into receiving experimental API methods and fields.
     #[serde(default)]
     pub experimental_api: bool,
+    /// Accept `process/indeterminate` and its retained-owner, no-handle-reuse semantics.
+    /// Required together with experimentalApi for `process/spawn`.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub process_indeterminate: bool,
     /// Opt into `attestation/generate` requests for upstream `x-oai-attestation`.
     #[serde(default)]
     pub request_attestation: bool,
@@ -77,6 +81,11 @@ pub struct InitializeResponse {
     /// Operating system for the running app-server target, for example
     /// `"macos"`, `"linux"`, or `"windows"`.
     pub platform_os: String,
+    /// True only when this connection negotiated processIndeterminate and kept
+    /// both process/exited and process/indeterminate notifications enabled.
+    /// Missing on older servers; clients must treat absence as unsupported.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub process_indeterminate: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]

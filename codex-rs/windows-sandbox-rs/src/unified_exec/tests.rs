@@ -3,6 +3,9 @@
 #[path = "acl_setup_tests.rs"]
 mod acl_setup_tests;
 
+#[path = "delete_permission_tests.rs"]
+mod delete_permission_tests;
+
 use super::WindowsSandboxSessionRequest;
 use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
 use super::spawn_windows_sandbox_session_for_level;
@@ -710,11 +713,16 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             &script,
             concat!(
                 "@echo off\r\n",
-                "del /f /q \"%WORKSPACE_DELETE%\"\r\n",
-                "del /f /q \"%TEMP_DELETE%\"\r\n",
-                "del /f /q \"%TMP_DELETE%\"\r\n",
-                "del /f /q \"%OUTSIDE_DELETE%\"\r\n",
-                "rmdir \"%PROTECTED_GIT_DIR%\"\r\n",
+                "del /f /q \"%WORKSPACE_DELETE%\" 2>&1\r\n",
+                "echo delete-workspace-error=%errorlevel%\r\n",
+                "del /f /q \"%TEMP_DELETE%\" 2>&1\r\n",
+                "echo delete-temp-error=%errorlevel%\r\n",
+                "del /f /q \"%TMP_DELETE%\" 2>&1\r\n",
+                "echo delete-tmp-error=%errorlevel%\r\n",
+                "del /f /q \"%OUTSIDE_DELETE%\" 2>&1\r\n",
+                "echo delete-outside-error=%errorlevel%\r\n",
+                "rmdir \"%PROTECTED_GIT_DIR%\" 2>&1\r\n",
+                "echo delete-protected-error=%errorlevel%\r\n",
                 "exit /b 0\r\n",
             ),
         )
@@ -771,6 +779,52 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(/*secs*/ 10))
                 .await;
         let stdout = String::from_utf8_lossy(&stdout);
+        let diagnostics = crate::token::delete_diagnostics::observe_legacy(
+            codex_home.path(),
+            &workspace,
+            &[&workspace, &temp_root, &tmp_root],
+            &[
+                ("workspace-dir", workspace.as_path()),
+                ("workspace-file", workspace_file.as_path()),
+                ("temp-dir", temp_root.as_path()),
+                ("temp-file", temp_file.as_path()),
+                ("tmp-dir", tmp_root.as_path()),
+                ("tmp-file", tmp_file.as_path()),
+                ("outside-dir", outside_root.as_path()),
+                ("outside-file", outside_file.as_path()),
+                ("protected-dir", protected_git_dir.as_path()),
+            ],
+        );
+        eprintln!(
+            "delete-native legacy-observation-complete={}",
+            diagnostics.is_ok()
+        );
+
+        // Observe only these owned fixture objects after the original child has
+        // completed. Preserve the original postcondition tuple and error checks.
+        {
+            use std::io::Write;
+
+            for (label, path) in [
+                ("outside_file", &outside_file),
+                ("protected_git_directory", &protected_git_dir),
+            ] {
+                let state = fs::metadata(path)
+                    .map(|metadata| (metadata.is_file(), metadata.is_dir(), metadata.len()))
+                    .map_err(|error| (error.kind(), error.raw_os_error()));
+                let _ = writeln!(
+                    std::io::stderr().lock(),
+                    "windows_boundary_diag legacy_metadata={label} path={path:?} state={state:?}"
+                );
+            }
+            let readback = fs::read_to_string(&outside_file)
+                .map(|value| (value.len(), value == "outside"))
+                .map_err(|error| (error.kind(), error.raw_os_error()));
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "windows_boundary_diag legacy_outside_readback={readback:?}"
+            );
+        }
 
         assert_eq!(
             (

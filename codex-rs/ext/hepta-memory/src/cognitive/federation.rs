@@ -14,7 +14,6 @@ use codex_extension_api::ExtensionMetrics;
 use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderPolicyFuture;
 use codex_extension_api::ModelProviderRequestKind;
-use codex_extension_api::ModelProviderSha256Digest;
 use codex_extension_api::TurnInputContext;
 use codex_extension_api::TurnInputContributor;
 use codex_hepta_contracts::AgentId;
@@ -861,12 +860,6 @@ fn federation_source_binding(
     ))
 }
 
-fn api_digest(
-    digest: &Sha256Digest,
-) -> Result<ModelProviderSha256Digest, ModelProviderPolicyError> {
-    ModelProviderSha256Digest::parse(digest.as_str())
-}
-
 fn final_use_capability_window_current(
     revalidation_started_at: i64,
     final_use_now: i64,
@@ -1213,7 +1206,9 @@ mod tests {
     async fn revoke_removes_prepared_federated_context_from_next_physical_send() {
         let temp = tempfile::tempdir().expect("tempdir");
         let fleet_root = temp.path().join("fleet");
-        std::fs::create_dir_all(&fleet_root).expect("fleet root");
+        let fleet_root = std::fs::create_dir_all(&fleet_root)
+            .and_then(|()| fleet_root.canonicalize())
+            .expect("fleet root");
         let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet").layout();
         let owner_id = AgentId::parse(OWNER_ID).expect("owner id");
         let consumer_id = AgentId::parse(CONSUMER_ID).expect("consumer id");
@@ -1261,6 +1256,9 @@ mod tests {
         let workspace = temp.path().join("consumer-workspace");
         std::fs::create_dir_all(&workspace).expect("consumer workspace");
         let workspace = workspace.canonicalize().expect("canonical workspace");
+        let workspace_uri = PathUri::from_host_native_path(&workspace).expect("workspace uri");
+        // Grant and physical send use the same native path carried by the turn URI.
+        let workspace = workspace_uri.to_path_buf();
         let capability = owner
             .grant_federated_recall(
                 &owner_access,
@@ -1294,7 +1292,7 @@ mod tests {
                 }],
                 environments: vec![TurnInputEnvironment {
                     environment_id: "primary".to_string(),
-                    cwd: PathUri::from_host_native_path(&workspace).expect("workspace uri"),
+                    cwd: workspace_uri,
                     is_primary: true,
                 }],
             },

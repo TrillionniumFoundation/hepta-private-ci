@@ -9,7 +9,13 @@ retries = 1
 path = "junit.xml"
 
 [profile.local]
-inherits = "default"
+# Nextest 0.9.103 inherits custom profiles from default implicitly.
+# The optional inherits key requires Nextest 0.9.115 or newer.
+
+[profile.local.junit]
+# Declare the output on the profile selected by `just test` explicitly, also
+# for CI's pinned Nextest 0.9.103. Missing reports must fail the collection gate.
+path = "junit.xml"
 
 [test-groups.app_server_protocol_codegen]
 max-threads = 1
@@ -91,6 +97,17 @@ slow-timeout = { period = "45s", terminate-after = 2 }
 # its 10-minute harness budget is not a runtime latency acceptance threshold.
 [test-groups.hepta_durable_capacity]
 max-threads = 1
+
+[[profile.default.overrides]]
+# This opt-in qualification starts real companion windows and performs several
+# original SQLite writer close/reopen and acknowledged receipt transactions.
+# Keep every operation deadline and assertion; bound the complete durable run
+# separately from the ordinary 60-second unit-test watchdog. Never retry a
+# killed lifecycle automatically, because it owns real child processes.
+filter = 'package(codex-hepta-agentd) & test(notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 8 }
+retries = 0
 
 [[profile.default.overrides]]
 filter = 'package(codex-hepta-learning-ledger) & test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits)'

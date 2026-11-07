@@ -1,0 +1,236 @@
+name: Hepta Cell framework native validation
+
+on:
+  push:
+    branches:
+      - codex/cell-framework-20261105
+      - codex/neuron-convergence-20261106-734df8
+      - codex/neuron-generation-bridge-20261106-734df8
+      - codex/neuron-normal-entry-20261106-734df8
+      - codex/neuron-v13-runtime-20261106-734df8
+      - codex/cell-p0-p5-convergence-20261106-b520
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-cell-framework-native-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  TESTED_SHA: ${{ github.sha }}
+  BASE_SHA: ${{ github.event.before }}
+  HEPTA_CI_LANE: source-head
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  NEXTEST_TEST_THREADS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  native:
+    name: Cell framework (${{ matrix.owner }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - owner: mechanisms
+            helper_packages: --package codex-hepta-infer-worker-host
+            packages: >-
+              -p codex-hepta-neuron -p codex-hepta-learning-artifacts
+              -p codex-hepta-automation -p codex-hepta-runtime
+              -p codex-hepta-control-plane
+              -p codex-hepta-context-compiler -p codex-utils-pty
+              -p codex-hepta-intelligence
+              -p codex-hepta-intelligence-eval
+              -p codex-hepta-infer-core
+          - owner: agentd-composition
+            helper_packages: ""
+            packages: >-
+              -p codex-hepta-agentd -p codex-core
+              -p codex-app-server
+              -p codex-hepta-contracts
+              -p codex-mcp
+              -p codex-model-provider-info -p codex-exec-server
+              -p codex-hepta-agent-protocol -p codex-hepta-memory
+              -p codex-hepta-infer-worker-host -p codex-shell-escalation
+              -p codex-linux-sandbox -p codex-hepta-memory-extension
+              -p codex-hepta-supervisor
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Bind source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/cell-framework-records"
+          git show --no-patch --format=fuller > "$RUNNER_TEMP/cell-framework-records/source-identity.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/cell-framework-records/source-tree.txt"
+      - name: Install native build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
+      - name: Enable the repository's Linux namespace test prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Match .github/actions/setup-ci on this disposable hosted runner.
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if [[ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]]; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash for existing owner tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Resolve repository-verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Record pinned toolchain and locked dependency resolution
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          rustup show active-toolchain
+          rustc --version --verbose
+          cargo --version
+          cargo metadata --locked --format-version=1 > "$RUNNER_TEMP/cell-framework-records/cargo-metadata.json"
+          test -z "$(git status --porcelain)"
+      - name: Verify the helper and JUnit evidence gates
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cell-framework-records/evidence-gate-tests.json" \
+            -- python3 -m unittest discover -s scripts -p 'test_hepta_ci_junit.py'
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cell-framework-records/helper-gate-tests.json" \
+            -- python3 -m unittest discover -s scripts -p 'test_hepta_cell_test_helpers.py'
+      - name: Verify the bounded V13 process protocol
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 9 \
+            --output "$RUNNER_TEMP/cell-framework-records/v13-protocol-tests.json" \
+            -- python3 -B -m unittest discover -s qualification/neuron-v13-generation \
+            -p test_proposal_worker.py -v
+      - name: Strict lint of the changed owners and dependencies
+        env:
+          PACKAGES: ${{ matrix.packages }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r -a packages <<< "$PACKAGES"
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/cell-framework-records/clippy.json" \
+            -- just clippy --locked "${packages[@]}" -- -D warnings
+      - name: Strict lint of the explicit V13 runtime example
+        if: matrix.owner == 'agentd-composition'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/cell-framework-records/v13-example-clippy.json" \
+            -- just clippy --locked -p codex-hepta-agentd \
+            --example neuron_v13_acceptance -- -D warnings
+      - name: Build real same-source test helpers from Cargo metadata
+        if: matrix.owner == 'agentd-composition'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 2700 \
+            --output "$RUNNER_TEMP/cell-framework-records/helper-build.json" \
+            -- python3 scripts/hepta_cell_test_helpers.py \
+            --output-dir "$RUNNER_TEMP/cell-framework-records/helpers" \
+            --github-env "$GITHUB_ENV"
+      - name: Build the real generation helper for Neuron mechanisms
+        if: matrix.owner == 'mechanisms'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/cell-framework-records/helper-build.json" \
+            -- python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/cell-framework-records/helpers" \
+            --github-env "$GITHUB_ENV"
+      - name: Run scoped suites through the repository runner
+        env:
+          PACKAGES: ${{ matrix.packages }}
+          HELPER_PACKAGES: ${{ matrix.helper_packages }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r -a packages <<< "$PACKAGES"
+          read -r -a helper_packages <<< "$HELPER_PACKAGES"
+          records="$RUNNER_TEMP/cell-framework-records"
+          junit="codex-rs/target/nextest/local/junit.xml"
+          if [[ -f "$junit" ]]; then
+            mv "$junit" "$records/scoped-prior-junit-excluded.xml"
+          fi
+          set +e
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 4200 --minimum-tests 1 \
+            --output "$records/scoped-tests.json" \
+            -- just test --locked "${packages[@]}"
+          result=$?
+          python3 scripts/hepta_cell_test_helpers.py --output-dir "$records/helpers" \
+            --verify-only "${helper_packages[@]}" > "$records/helpers-after-scoped.json"
+          helper_result=$?
+          python3 scripts/hepta_ci_junit.py --execution "$records/scoped-tests.json" \
+            --junit "$junit" --output "$records/junit-scoped.xml"
+          junit_result=$?
+          set -e
+          if [[ "$result" -ne 0 ]]; then exit "$result"; fi
+          if [[ "$helper_result" -ne 0 ]]; then exit "$helper_result"; fi
+          exit "$junit_result"
+      - name: Run the complete default workspace after the Core suite
+        if: matrix.owner == 'agentd-composition'
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/cell-framework-records"
+          junit="codex-rs/target/nextest/local/junit.xml"
+          if [[ -f "$junit" ]]; then
+            mv "$junit" "$records/workspace-prior-junit-excluded.xml"
+          fi
+          set +e
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 4200 --minimum-tests 1 \
+            --output "$records/workspace-tests.json" \
+            -- just test --locked
+          result=$?
+          python3 scripts/hepta_cell_test_helpers.py --output-dir "$records/helpers" \
+            --verify-only > "$records/helpers-after-workspace.json"
+          helper_result=$?
+          python3 scripts/hepta_ci_junit.py --execution "$records/workspace-tests.json" \
+            --junit "$junit" --output "$records/junit-workspace.xml"
+          junit_result=$?
+          set -e
+          if [[ "$result" -ne 0 ]]; then exit "$result"; fi
+          if [[ "$helper_result" -ne 0 ]]; then exit "$helper_result"; fi
+          exit "$junit_result"
+      - name: Retain final source state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/cell-framework-records/source-after.txt"
+          git status --porcelain > "$RUNNER_TEMP/cell-framework-records/source-status-after.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Retain real outputs even when qualification fails
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-framework-${{ matrix.owner }}-${{ github.sha }}-${{ github.run_attempt }}
+          # Retain source-bound logs, manifests and reports. Executable copies
+          # stay on the runner; their exact bytes/modes/hashes are in manifests.
+          path: |
+            ${{ runner.temp }}/cell-framework-records
+            !${{ runner.temp }}/cell-framework-records/helpers/bin/**
+          if-no-files-found: error
+          retention-days: 14

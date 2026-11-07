@@ -46,6 +46,10 @@ pub struct WindowsSandboxProvisioningSettings {
     pub allow_local_binding: bool,
 }
 
+/// Existing broker termination grace, shared with its native exit observer.
+#[cfg(target_os = "windows")]
+pub const RUNNER_TERMINATION_WAIT_MS: u32 = 5_000;
+
 #[cfg(target_os = "windows")]
 mod acl;
 #[cfg(target_os = "windows")]
@@ -54,6 +58,9 @@ mod allow;
 mod audit;
 #[cfg(target_os = "windows")]
 mod cap;
+#[cfg(all(test, target_os = "windows"))]
+#[path = "delete_permission_matrix_tests.rs"]
+mod delete_permission_matrix;
 #[cfg(target_os = "windows")]
 mod deny_read_acl;
 #[cfg(target_os = "windows")]
@@ -70,6 +77,11 @@ mod helper_materialization;
 mod hide_users;
 #[cfg(target_os = "windows")]
 mod identity;
+#[cfg(target_os = "windows")]
+mod legacy_admission;
+#[cfg(all(target_os = "windows", test))]
+#[path = "legacy_admission_tests.rs"]
+mod legacy_admission_tests;
 #[cfg(target_os = "windows")]
 mod logging;
 #[cfg(target_os = "windows")]
@@ -113,6 +125,9 @@ mod setup;
 mod setup_error;
 
 #[cfg(target_os = "windows")]
+mod setup_process;
+
+#[cfg(target_os = "windows")]
 mod spawn_prep;
 
 #[cfg(target_os = "windows")]
@@ -128,6 +143,11 @@ pub(crate) use elevated::ipc_framed;
 
 #[cfg(target_os = "windows")]
 pub(crate) use elevated::runner_client;
+
+#[cfg(target_os = "windows")]
+pub use elevated::runner_client::RunnerCleanupReconciliation;
+#[cfg(target_os = "windows")]
+pub use elevated::runner_client::reconcile_runner_cleanup;
 
 #[cfg(target_os = "windows")]
 pub(crate) use elevated::runner_pipe;
@@ -227,6 +247,8 @@ pub use ipc_framed::read_frame;
 #[cfg(target_os = "windows")]
 pub use ipc_framed::write_frame;
 #[cfg(target_os = "windows")]
+pub use legacy_admission::LegacyWindowsSandboxIsolationUnavailable;
+#[cfg(target_os = "windows")]
 pub use logging::current_log_file_path;
 #[cfg(target_os = "windows")]
 pub use logging::current_log_file_path_for_codex_home;
@@ -298,6 +320,9 @@ pub use setup_error::sanitize_setup_metric_tag_value;
 pub use setup_error::setup_error_path;
 #[cfg(target_os = "windows")]
 pub use setup_error::write_setup_error_report;
+#[cfg(target_os = "windows")]
+#[doc(hidden)]
+pub use setup_process::spawn_setup_helper;
 #[cfg(target_os = "windows")]
 pub use stdio_bridge::forward_sandbox_session_stdio;
 #[cfg(target_os = "windows")]
@@ -739,12 +764,15 @@ mod windows_impl {
         cwd: &Path,
         env_map: &HashMap<String, String>,
     ) -> Result<()> {
-        let Ok(permissions) = super::resolved_permissions::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+        match permission_profile {
+            PermissionProfile::Disabled | PermissionProfile::External { .. } => return Ok(()),
+            PermissionProfile::Managed { .. } => {}
+        }
+        super::legacy_admission::require_legacy_filesystem_isolation()?;
+        let permissions = super::resolved_permissions::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
             permission_profile,
             workspace_roots,
-        ) else {
-            return Ok(());
-        };
+        )?;
         if !permissions.uses_write_capabilities_for_cwd(cwd, env_map) {
             return Ok(());
         }

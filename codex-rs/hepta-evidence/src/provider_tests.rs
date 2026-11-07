@@ -1035,3 +1035,6 @@ async fn open_rejects_legacy_provider_rows_without_host_binding_digest() {
             if detail.contains("predate host request binding evidence")
     ));
 }
+
+#[path = "provider_storage_class_tests.rs"]
+mod storage_class_tests;

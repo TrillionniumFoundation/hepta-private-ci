@@ -1,0 +1,91 @@
+{
+  "archive": "/workspace/scratch/37175388b26f/native-c058c08f.tar.gz",
+  "archive_bytes": 538535,
+  "archive_sha256": "e9bc765e153a79a15fab46433aa49ca57cfe25d1e48b76941dc627ae6f3634b3",
+  "staging_root": "/workspace/scratch/37175388b26f/evidence-staging/native-c058c08f",
+  "tar_members": 29,
+  "regular_files": 29,
+  "directories_in_tar": 0,
+  "rejected_links_or_escapes": 0,
+  "indexed_files_verified": 28,
+  "indexed_bytes_verified": 7189284,
+  "expanded_bytes_including_index": 7194018,
+  "raw_index_bytes": 4734,
+  "raw_index_sha256": "11425e331c0cbb8d1238b2c2802d2e53b4680b7bee1ec89dbbd52c57fb3de66e",
+  "unindexed_files": [
+    "native-c058c08f/raw-index.json"
+  ],
+  "evidence_status": "retained failed attempt, not final pass",
+  "junit": {
+    "tests": 954,
+    "passed": 952,
+    "failures": 2,
+    "errors": 0,
+    "skipped": 0,
+    "failed_tests": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "neuron_generation_runtime::tests::joint::resident_joint_control_service_preserves_real_output_cost_and_owner_on_reopen"
+      },
+      {
+        "classname": "codex-hepta-neuron",
+        "name": "cell_task_cost::tests::missing_stage_and_unknown_measurement_are_not_measured_zero"
+      }
+    ],
+    "error_tests": []
+  },
+  "source_sha": "c058c08fcf188d66b9d378ccc97630b3bc9dbade",
+  "source_tree": "22751eaede7f4f5a636653d2caba343bba7ef0b4",
+  "native_state": "failed",
+  "native_exit_code": 100,
+  "phase_exit_codes": [
+    {
+      "name": "scoped-fix",
+      "exit_code": 0
+    },
+    {
+      "name": "scoped-strict",
+      "exit_code": 0
+    },
+    {
+      "name": "helpers",
+      "exit_code": 0
+    },
+    {
+      "name": "scoped-test",
+      "exit_code": 100
+    }
+  ],
+  "packages": {
+    "codex-hepta-agentd": {
+      "tests": 653,
+      "passed": 652,
+      "failures": 1,
+      "errors": 0,
+      "skipped_nodes": 0
+    },
+    "codex-hepta-infer-core": {
+      "tests": 35,
+      "passed": 35,
+      "failures": 0,
+      "errors": 0,
+      "skipped_nodes": 0
+    },
+    "codex-hepta-infer-worker-host": {
+      "tests": 57,
+      "passed": 57,
+      "failures": 0,
+      "errors": 0,
+      "skipped_nodes": 0
+    },
+    "codex-hepta-neuron": {
+      "tests": 209,
+      "passed": 208,
+      "failures": 1,
+      "errors": 0,
+      "skipped_nodes": 0
+    }
+  },
+  "runner_skipped": 67,
+  "whole_workspace_tested": false
+}

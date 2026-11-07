@@ -408,7 +408,7 @@ async fn setup_turn_one_with_spawned_child(
         }),
         child_response_delay,
         /*wait_for_parent_notification*/ true,
-        |builder| builder,
+        |builder| builder.with_internal_metadata_for_mock(),
     )
     .await?;
     Ok((test, spawned_id))
@@ -1187,90 +1187,92 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
         ]),
     )
     .await;
-    let mut builder = test_codex().with_config(move |config| {
-        config
-            .features
-            .enable(Feature::Collab)
-            .expect("test config should allow feature update");
-        config
-            .features
-            .enable(Feature::MultiAgentV2)
-            .expect("test config should allow feature update");
-        let model_catalog = config.model_catalog.get_or_insert_with(|| {
-            bundled_models_response().expect("bundled models.json should parse")
-        });
-        for model in [INHERITED_MODEL, V2_DEFAULT_MODEL, V2_REQUESTED_MODEL] {
-            let model_info = model_catalog
-                .models
-                .iter_mut()
-                .find(|model_info| model_info.slug == model)
-                .unwrap_or_else(|| panic!("{model} should exist in bundled models.json"));
-            let multi_agent = model_info
-                .model_messages
-                .as_mut()
-                .expect("bundled model should include model messages")
-                .multi_agent
-                .get_or_insert_with(MultiAgentMessages::default);
-            multi_agent.role = Some(MultiAgentRoleMessages {
-                root: Some(format!("{model} root role.")),
-                subagent: Some(format!("{model} subagent role.")),
+    let mut builder = test_codex()
+        .with_internal_metadata_for_mock()
+        .with_config(move |config| {
+            config
+                .features
+                .enable(Feature::Collab)
+                .expect("test config should allow feature update");
+            config
+                .features
+                .enable(Feature::MultiAgentV2)
+                .expect("test config should allow feature update");
+            let model_catalog = config.model_catalog.get_or_insert_with(|| {
+                bundled_models_response().expect("bundled models.json should parse")
             });
+            for model in [INHERITED_MODEL, V2_DEFAULT_MODEL, V2_REQUESTED_MODEL] {
+                let model_info = model_catalog
+                    .models
+                    .iter_mut()
+                    .find(|model_info| model_info.slug == model)
+                    .unwrap_or_else(|| panic!("{model} should exist in bundled models.json"));
+                let multi_agent = model_info
+                    .model_messages
+                    .as_mut()
+                    .expect("bundled model should include model messages")
+                    .multi_agent
+                    .get_or_insert_with(MultiAgentMessages::default);
+                multi_agent.role = Some(MultiAgentRoleMessages {
+                    root: Some(format!("{model} root role.")),
+                    subagent: Some(format!("{model} subagent role.")),
+                });
+                if matches!(
+                    selection,
+                    FullHistoryV2ModelSelection::MultiAgentModeTransitions
+                ) && model == INHERITED_MODEL
+                {
+                    model_info
+                        .supported_reasoning_levels
+                        .push(ReasoningEffortPreset {
+                            effort: ReasoningEffort::Ultra,
+                            description: "Ultra".to_string(),
+                        });
+                }
+            }
+            if matches!(selection, FullHistoryV2ModelSelection::WorldStateIdentity) {
+                config
+                    .features
+                    .enable(Feature::TokenBudget)
+                    .expect("test config should allow feature update");
+                config.model_context_window = Some(128_000);
+            }
+            if matches!(selection, FullHistoryV2ModelSelection::ConfiguredDefault) {
+                config.developer_instructions = None;
+                config.multi_agent_v2.subagent_developer_instructions =
+                    Some(FULL_HISTORY_SUBAGENT_DEVELOPER_INSTRUCTIONS.to_string());
+            }
+            if matches!(selection, FullHistoryV2ModelSelection::CurrentTimeReminders) {
+                config
+                    .features
+                    .enable(Feature::CurrentTimeReminder)
+                    .expect("test config should allow feature update");
+                config.current_time_reminder = Some(CurrentTimeReminderConfig {
+                    reminder_interval_seconds: 0,
+                    ..CurrentTimeReminderConfig::default()
+                });
+            }
+            if matches!(
+                selection,
+                FullHistoryV2ModelSelection::MultiAgentModeInstructions
+            ) {
+                config.multi_agent_v2.multi_agent_mode_hint_text =
+                    Some(FULL_HISTORY_MULTI_AGENT_MODE_HINT.to_string());
+            }
             if matches!(
                 selection,
                 FullHistoryV2ModelSelection::MultiAgentModeTransitions
-            ) && model == INHERITED_MODEL
-            {
-                model_info
-                    .supported_reasoning_levels
-                    .push(ReasoningEffortPreset {
-                        effort: ReasoningEffort::Ultra,
-                        description: "Ultra".to_string(),
-                    });
+            ) {
+                config.multi_agent_v2.root_agent_usage_hint_text =
+                    Some(FULL_HISTORY_SHARED_USAGE_HINT.to_string());
+                config.multi_agent_v2.subagent_usage_hint_text =
+                    Some(FULL_HISTORY_SHARED_USAGE_HINT.to_string());
             }
-        }
-        if matches!(selection, FullHistoryV2ModelSelection::WorldStateIdentity) {
-            config
-                .features
-                .enable(Feature::TokenBudget)
-                .expect("test config should allow feature update");
-            config.model_context_window = Some(128_000);
-        }
-        if matches!(selection, FullHistoryV2ModelSelection::ConfiguredDefault) {
-            config.developer_instructions = None;
-            config.multi_agent_v2.subagent_developer_instructions =
-                Some(FULL_HISTORY_SUBAGENT_DEVELOPER_INSTRUCTIONS.to_string());
-        }
-        if matches!(selection, FullHistoryV2ModelSelection::CurrentTimeReminders) {
-            config
-                .features
-                .enable(Feature::CurrentTimeReminder)
-                .expect("test config should allow feature update");
-            config.current_time_reminder = Some(CurrentTimeReminderConfig {
-                reminder_interval_seconds: 0,
-                ..CurrentTimeReminderConfig::default()
-            });
-        }
-        if matches!(
-            selection,
-            FullHistoryV2ModelSelection::MultiAgentModeInstructions
-        ) {
-            config.multi_agent_v2.multi_agent_mode_hint_text =
-                Some(FULL_HISTORY_MULTI_AGENT_MODE_HINT.to_string());
-        }
-        if matches!(
-            selection,
-            FullHistoryV2ModelSelection::MultiAgentModeTransitions
-        ) {
-            config.multi_agent_v2.root_agent_usage_hint_text =
-                Some(FULL_HISTORY_SHARED_USAGE_HINT.to_string());
-            config.multi_agent_v2.subagent_usage_hint_text =
-                Some(FULL_HISTORY_SHARED_USAGE_HINT.to_string());
-        }
-        config.model = Some(INHERITED_MODEL.to_string());
-        config.model_reasoning_effort = Some(INHERITED_REASONING_EFFORT);
-        config.agent_default_subagent_model = Some(V2_DEFAULT_MODEL.to_string());
-        config.agent_default_subagent_reasoning_effort = Some(V2_DEFAULT_REASONING_EFFORT);
-    });
+            config.model = Some(INHERITED_MODEL.to_string());
+            config.model_reasoning_effort = Some(INHERITED_REASONING_EFFORT);
+            config.agent_default_subagent_model = Some(V2_DEFAULT_MODEL.to_string());
+            config.agent_default_subagent_reasoning_effort = Some(V2_DEFAULT_REASONING_EFFORT);
+        });
     if matches!(selection, FullHistoryV2ModelSelection::WorldStateIdentity) {
         builder = builder.with_history_mode(ThreadHistoryMode::Paginated);
     }

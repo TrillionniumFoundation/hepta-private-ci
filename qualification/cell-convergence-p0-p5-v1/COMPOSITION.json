@@ -1,0 +1,284 @@
+{
+  "schema_version": 1,
+  "composition_id": "cell-convergence-p0-p5-v1",
+  "qualification": "HOLD",
+  "candidate_identity": {
+    "binding": "CI-generated receipt for the actual checkout",
+    "head_sha": null,
+    "tested_sha": null,
+    "tree_sha": null,
+    "base_sha": null,
+    "merge_sha": null,
+    "self_referential_head_pin": false,
+    "required_receipt_fields": [
+      "head_sha",
+      "tested_sha",
+      "tree_sha",
+      "base_sha",
+      "merge_sha",
+      "checkout_lane",
+      "workflow_source_sha",
+      "composition_file_sha256",
+      "cargo_lock_sha256",
+      "bazel_lock_sha256",
+      "rust_toolchain_sha256",
+      "run_id",
+      "run_attempt"
+    ]
+  },
+  "target_branch": "codex/cell-p0-p5-convergence-20261106-b520",
+  "source_components": [
+    {
+      "id": "cell_rsi_followthrough",
+      "pull_request": 5089,
+      "source_commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55"
+    },
+    {
+      "id": "cell_memory_resident_owner_population",
+      "pull_request": 4938,
+      "source_commit": "f09dea504916d551e13fe36752dd1e833bcaa51b"
+    },
+    {
+      "id": "cell_normal_entry_neuron_v13",
+      "pull_request": 4963,
+      "source_commit": "3b31842504121e8ae40909db1edc17e7790cf688"
+    },
+    {
+      "id": "hcsn_permissions_recovery",
+      "pull_request": 5067,
+      "source_commit": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be"
+    },
+    {
+      "id": "product_core_final_use",
+      "pull_request": 4855,
+      "source_commit": "a86267a0525448870c47a641fb54cd510543ba7a"
+    }
+  ],
+  "integration_history": {
+    "merge_commits": [
+      "a35f5162e084ad78f3ac8c29c4185879d093bfa0",
+      "0f60efaf8bed433cf26131f36f7648b83b385015",
+      "3ad3eb953b065134cf1c0d2b0b730940b0c28e48",
+      "ab89bfceec021437eebd1e37f331f441076c76ac"
+    ],
+    "memory_ledger_repair_commit": "dea4acd6f5d6892380972ce7fcf7e7cf1f88404c",
+    "ancestry_verification": "Verify these complete commit identities against the final candidate ancestry",
+    "not_qualification_results": true,
+    "local_history": {
+      "merge_commits": [
+        "d0e90e179887d9d018f2cc547d855b90d0bfc2ab",
+        "f778c50ac7445d746133ad7822f9044ba1c97bb3",
+        "34122eb78334b5c3c9dda5d92f9f22f56e719822",
+        "fd3dd5e83b8b8731cdf355c95a16e31e49ff7f3f"
+      ],
+      "memory_ledger_repair_commit": "650401bd2f2ac736cd895197e7cee6d21280e42b",
+      "ancestry_verification": "Original local construction history; see PUBLICATION.json for tree-identical GitHub commit identities",
+      "not_qualification_results": true
+    },
+    "publication_receipt": "PUBLICATION.json"
+  },
+  "original_ci": {
+    "status": "PENDING_NEW_CANDIDATE_RESULTS",
+    "workflow_changes_require_full_repo": true,
+    "blocking_workflow": ".github/workflows/blocking-ci.yml",
+    "blocking_required_job": "required",
+    "blocking_dependencies": [
+      "scope",
+      "hepta-contract-gate",
+      "bazel",
+      "blob-size-policy",
+      "cargo-deny",
+      "codespell",
+      "repo-checks",
+      "rust-ci",
+      "sdk",
+      "hepta-scoped",
+      "lightweight"
+    ],
+    "additional_source_defined_fanins": [
+      {
+        "workflow": ".github/workflows/hepta-architecture-convergence.yml",
+        "job": "required"
+      },
+      {
+        "workflow": ".github/workflows/rust-ci.yml",
+        "job": "results"
+      },
+      {
+        "workflow": ".github/workflows/bazel.yml",
+        "job": "test-windows"
+      }
+    ],
+    "native_workflows": [
+      ".github/workflows/hepta-cell-framework-native.yml",
+      ".github/workflows/hepta-hcsn-training-bridge.yml"
+    ],
+    "scope_skips_require_original_condition_proof": true,
+    "unknown_failure_cancelled_are_success": false,
+    "optional_gate_can_replace_original_gate": false,
+    "branch_protection_contexts": "Not independently verified: the integration connection cannot read the protected-branch settings",
+    "large_artifact_download_is_not_an_extra_ci_gate": true
+  },
+  "qualification_states": {
+    "P0": {
+      "status": "PENDING",
+      "required": [
+        "One frozen source/tree/configuration combination",
+        "Complete original applicable CI results for that candidate",
+        "All events, run attempts and pages retained, including failed/cancelled/skipped results",
+        "Actual tested checkout and merge identity bound per lane"
+      ],
+      "missing": [
+        "Fresh exact-candidate original CI terminal results"
+      ]
+    },
+    "P1": {
+      "status": "HOLD",
+      "required": [
+        "Predeclared positive gain on a new real task",
+        "Predeclared retention conditions for old capabilities",
+        "Comparable complete cost including failed attempts and evaluation",
+        "Formal adoption followed by cold start and use on the next real task"
+      ],
+      "missing": [
+        "Candidate-bound positive adoption and retention evidence",
+        "Complete comparable cost",
+        "Cold-start and next-real-task adoption receipt"
+      ]
+    },
+    "P2": {
+      "status": "HOLD_IMPLEMENTATION_AND_NATIVE",
+      "required": [
+        "Multiple representation profiles",
+        "Real worker through ordinary entry",
+        "Bounded feedback Circuit",
+        "Cancellation and recovery under a different owner",
+        "All parts exercised together on this candidate"
+      ],
+      "current_entry_facts": {
+        "ordinary_cli_representation": "Joint",
+        "joint_execution_modes": [
+          "OneShot",
+          "Resident"
+        ],
+        "execution_modes_are_distinct_representations": false,
+        "v13_typed_bootstrap_and_example_connected_to_ordinary_startup": false,
+        "q24_circuit_explicit_owner_connected_to_ordinary_startup": false,
+        "hcsn_taskflow_effect_is_cell_generation_worker_v2": false
+      },
+      "source_review": [
+        {
+          "component": "Joint ordinary entry",
+          "paths": [
+            "codex-rs/hepta-neuron/src/cell_joint_generation.rs",
+            "codex-rs/hepta-agentd/src/neuron_generation_process_bootstrap.rs"
+          ],
+          "finding": "OneShot and Resident use the same input, state and output schemas"
+        },
+        {
+          "component": "Q24 Circuit",
+          "paths": [
+            "codex-rs/hepta-neuron/src/cell_types.rs",
+            "codex-rs/hepta-agentd/src/circuit_cell.rs"
+          ],
+          "finding": "Explicit owner construction does not activate the ordinary startup path"
+        },
+        {
+          "component": "V13",
+          "paths": [
+            "codex-rs/hepta-neuron/src/cell_v13_generation.rs",
+            "codex-rs/hepta-agentd/src/neuron_v13_generation_bootstrap.rs"
+          ],
+          "finding": "Typed bootstrap and acceptance example exist; ordinary CLI selection remains unchanged"
+        },
+        {
+          "component": "HCSN",
+          "paths": [
+            "qualification/hcsn_training/worker.py",
+            "codex-rs/hepta-agentd/src/automation_hcsn_pq.rs"
+          ],
+          "finding": "Real task worker is registered as an independent TaskFlow effect, not CellGenerationWorkerV2"
+        }
+      ],
+      "missing": [
+        "Implement multiple representation profiles through ordinary startup; Joint OneShot and Resident share one representation contract",
+        "Connect V13 typed bootstrap and Q24 Circuit explicit owner to ordinary startup",
+        "Compose real worker, bounded feedback, cancellation and cross-owner recovery through the ordinary entry",
+        "Candidate-bound ordinary-entry native execution and complete receipts after those implementation gaps close"
+      ],
+      "mechanism_tests_alone_sufficient": false
+    },
+    "P3": {
+      "status": "HOLD",
+      "required": [
+        "Same initial state and visible information",
+        "Same capacity and cumulative training budget",
+        "Same selective updates for fixed-expert and unsplit controls",
+        "Failed attempts remain in the denominator",
+        "Measured improvement over both controls and complete comparable cost"
+      ],
+      "historical_readback": {
+        "planned": 10,
+        "valid": 6,
+        "failed": 4,
+        "valid_test_predictions": 3456,
+        "planned_test_predictions": 5760,
+        "archive": "qualification/cell-differentiation/strong-control-evidence/attempt-20261106-01/original-attempt.tar.gz",
+        "archive_sha256": "c7d9d905e450bd2f21700f0be3a456b86b0613e714d3be9a04585b575ae27a42",
+        "source_commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+        "positive_effect_established": false,
+        "failed_raw_payloads_reconstructed": false,
+        "complete_cost_established": false
+      },
+      "missing": [
+        "Positive advantage over both strong controls",
+        "Original missing failed payloads/cost remain gaps",
+        "Evidence from actual differentiated topology and service behavior"
+      ],
+      "archive_audit_success_is_adoption": false
+    },
+    "P4": {
+      "status": "HOLD",
+      "required": [
+        "A descendant actually performs improvement work",
+        "Same initial system, hidden tasks and total budget",
+        "Descendant improver beats predecessor improver"
+      ],
+      "missing": [
+        "Actual descendant-led improvement comparison with matched conditions"
+      ],
+      "lineage_protocol_tests_sufficient": false
+    },
+    "P5": {
+      "status": "HOLD",
+      "required": [
+        "Same candidate and service window",
+        "Quality",
+        "Tail latency",
+        "Effective throughput",
+        "Resources",
+        "Fault recovery",
+        "State growth",
+        "Total cost"
+      ],
+      "missing": [
+        "Joint long-duration service evidence with all required measurements"
+      ],
+      "local_latency_or_history_probes_sufficient": false
+    }
+  },
+  "evidence_rules": {
+    "old_head_results_transfer": false,
+    "retries_overwrite_old_results": false,
+    "skips_count_as_passes": false,
+    "protocol_test_count_is_model_experiment": false,
+    "archive_metadata_alone_proves_payload": false,
+    "failed_attempt_cost_may_be_replaced_by_zero": false,
+    "production_authority_granted": false
+  },
+  "protected_campaign": {
+    "name": "hcsn-cuda-170run-20261105-r1",
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "start_retry_change_performed_by_this_work": false
+  }
+}

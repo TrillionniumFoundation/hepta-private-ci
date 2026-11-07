@@ -26,6 +26,7 @@ use crate::outgoing_message::ConnectionId;
 use crate::outgoing_message::ConnectionRequestId;
 use crate::outgoing_message::OutgoingMessageSender;
 use crate::outgoing_message::RequestContext;
+use crate::plugin_startup_owner::PluginStartupOwner;
 use crate::request_processors::AccountRequestProcessor;
 use crate::request_processors::AppsRequestProcessor;
 use crate::request_processors::CatalogRequestProcessor;
@@ -160,6 +161,7 @@ fn reject_removed_permission_profile(request: &JSONRPCRequest) -> Result<(), JSO
 pub(crate) struct MessageProcessor {
     outgoing: Arc<OutgoingMessageSender>,
     models_refresh_worker: ModelsRefreshWorker,
+    plugin_startup_owner: PluginStartupOwner,
     turn_cost_worker: Option<TurnCostWorker>,
     skills_watcher: Arc<SkillsWatcher>,
     account_processor: AccountRequestProcessor,
@@ -199,6 +201,7 @@ pub(crate) struct ConnectionSessionState {
 #[derive(Debug)]
 pub(crate) struct InitializedConnectionSessionState {
     pub(crate) experimental_api_enabled: bool,
+    pub(crate) process_indeterminate_enabled: bool,
     pub(crate) opted_out_notification_methods: HashSet<String>,
     pub(crate) app_server_client_name: String,
     pub(crate) client_version: String,
@@ -229,6 +232,12 @@ impl ConnectionSessionState {
         self.initialized
             .get()
             .is_some_and(|session| session.experimental_api_enabled)
+    }
+
+    pub(crate) fn process_indeterminate_enabled(&self) -> bool {
+        self.initialized
+            .get()
+            .is_some_and(|session| session.process_indeterminate_enabled)
     }
 
     pub(crate) fn opted_out_notification_methods(&self) -> HashSet<String> {
@@ -403,6 +412,7 @@ impl MessageProcessor {
         let models_manager = thread_manager.get_models_manager();
         let models_refresh_worker =
             crate::models_refresh_worker::spawn(&models_manager, config.http_client_factory());
+        let plugin_startup_owner = PluginStartupOwner::new(thread_manager.plugins_manager());
         let turn_cost_worker =
             TurnCostWorker::spawn(Arc::clone(&config), Arc::clone(&auth_manager));
         thread_manager
@@ -603,6 +613,7 @@ impl MessageProcessor {
         Self {
             outgoing,
             models_refresh_worker,
+            plugin_startup_owner,
             turn_cost_worker,
             skills_watcher,
             account_processor,
@@ -634,6 +645,7 @@ impl MessageProcessor {
     }
 
     pub(crate) fn clear_runtime_references(&self) {
+        self.plugin_startup_owner.cancel();
         self.account_processor.clear_external_auth();
         self.apps_processor.shutdown();
         self.models_refresh_worker.shutdown();
@@ -813,6 +825,7 @@ impl MessageProcessor {
     }
 
     pub(crate) async fn drain_background_tasks(&self) {
+        self.plugin_startup_owner.shutdown();
         self.models_refresh_worker.shutdown();
         if let Some(worker) = &self.turn_cost_worker {
             worker.shutdown();
@@ -1655,9 +1668,12 @@ impl MessageProcessor {
                     .login_account(request_id.clone(), params)
                     .await
             },
-            ClientRequest::BedrockDiscover { .. } | ClientRequest::BedrockSetup { .. } => Err(
-                crate::error_code::method_not_found("Amazon Bedrock setup is not implemented"),
-            ),
+            ClientRequest::BedrockDiscover { params, .. } => {
+                processor.account_processor.bedrock_discover(params).await
+            },
+            ClientRequest::BedrockSetup { params, .. } => {
+                processor.account_processor.bedrock_setup(params).await
+            },
             ClientRequest::LogoutAccount { .. } => {
                 processor.account_processor
                     .logout_account(request_id.clone())
@@ -1734,11 +1750,18 @@ impl MessageProcessor {
                     .command_exec_terminate(request_id.clone(), params)
                     .await
             },
-            ClientRequest::ProcessSpawn { params, .. } => processor
-                .process_exec_processor
-                .process_spawn(request_id.clone(), params)
-                .await
-                .map(|()| None),
+            ClientRequest::ProcessSpawn { params, .. } => {
+                if !session.process_indeterminate_enabled() {
+                    return Err(invalid_request(
+                        "process/spawn requires negotiated processIndeterminate and both process/exited and process/indeterminate notifications",
+                    ));
+                }
+                processor
+                    .process_exec_processor
+                    .process_spawn(request_id.clone(), params)
+                    .await
+                    .map(|()| None)
+            },
             ClientRequest::ProcessWriteStdin { params, .. } => {
                 processor.process_exec_processor
                     .process_write_stdin(request_id.clone(), params)
