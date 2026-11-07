@@ -1,0 +1,97 @@
+{
+  "observed_at_utc": "2026-11-07T02:21:50.005688+00:00",
+  "scope": "The 25 existing publication payload files; this receipt and six captured command outputs are additional evidence.",
+  "publication_files": 32,
+  "new_codespell_ignores_or_skips": false,
+  "HOME_inherited": true,
+  "checks": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap29_checkpoint_root/review.py",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/restore.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap29_checkpoint_root/review.py",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/restore.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 26,
+        "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "-m",
+        "codespell_lib",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/CHECKS.json",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/CODESPELL.json",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/CODESPELL.stderr",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/CODESPELL.stdout",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/INDEX.json",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/README.md",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/RESTORE.json",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/RESTORE.stderr",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/RESTORE.stdout",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/RUFF.json",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/RUFF.stderr",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/RUFF.stdout",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/native-evidence.tar.xz.part000.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/restore.py",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/BWRAP29_CHECKPOINT_PUBLICATION_MANIFEST.json",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_checkpoint_checks/FINAL_CHECKS.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap29_checkpoint_root/ROOT_REVIEW.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap29_checkpoint_root/SOURCE_API.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap29_checkpoint_root/review.py",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap29_checkpoint_root/fresh_api_0.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap29_checkpoint_root/fresh_api_1.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap29_checkpoint_root/fresh_api_2.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap29_checkpoint_root/fresh_api_3.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap29_checkpoint_root/restore.stdout",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap29_checkpoint_root/restore.stderr"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}
