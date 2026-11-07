@@ -26,6 +26,12 @@ mod learning;
 
 pub(crate) use learning::GenerationLearningReadbackV1;
 pub use learning::learning_retained_task_operation_id_v1;
+#[cfg(test)]
+pub(crate) use learning::tests::baseline as learning_test_baseline;
+#[cfg(test)]
+pub(crate) use learning::tests::decision as learning_test_decision;
+#[cfg(test)]
+pub(crate) use learning::tests::observed as learning_test_receipt;
 
 pub struct AgentdGenerationUpdateRuntimeOptionsV1 {
     pub queue_capacity: usize,

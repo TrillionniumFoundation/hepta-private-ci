@@ -240,4 +240,4 @@ fn invalid(error: impl std::fmt::Display) -> AgentdError {
 
 #[cfg(test)]
 #[path = "neuron_generation_update_learning_tests.rs"]
-mod tests;
+pub(super) mod tests;
