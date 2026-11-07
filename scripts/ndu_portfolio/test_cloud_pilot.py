@@ -233,6 +233,21 @@ class CloudPilotContracts(unittest.TestCase):
                 sha(pool / "CANDIDATES.json"),
                 sha(pool / "HISTORY.json"),
             )
+            carry = root / "CPU_TRANSFER.json"
+            carry_data = {
+                "status": "completed",
+                "kind": "exact_metadata_subset_and_nine_image_transfer",
+                "prior_body_bytes": 11064483,
+                "new_body_bytes": 6605313,
+                "cumulative_body_bytes": 17669796,
+                "shared_cap_bytes": 26214400,
+                "images": [{"id": case["id"]} for case in cases],
+                "admission": {
+                    "manifest_sha256": manifest_pin,
+                    "history_sha256": history_pin,
+                },
+            }
+            write(carry, carry_data)
             archive = io.BytesIO()
             with zipfile.ZipFile(archive, "w") as stream:
                 for name in pilot_data.CASE_IDS:
@@ -240,7 +255,7 @@ class CloudPilotContracts(unittest.TestCase):
             archive_bytes = archive.getvalue()
 
             def remote(download, url):
-                self.assertEqual(download.bytes_read, 11064483)
+                self.assertEqual(download.bytes_read, 17669796)
                 self.assertEqual(url, acquire_vizwiz.IMAGES)
                 download.bytes_read += len(archive_bytes)
                 return io.BytesIO(archive_bytes)
@@ -255,10 +270,19 @@ class CloudPilotContracts(unittest.TestCase):
                 ),
                 patch.object(acquire_vizwiz, "RangeArchive", side_effect=remote),
             ):
-                transfer_images(pool, root / "transfer")
+                transfer_images(
+                    pool,
+                    root / "transfer",
+                    prior_transfer_receipt=carry,
+                    prior_transfer_receipt_sha256=sha(carry),
+                )
             receipt = json.loads((root / "transfer/TRANSFER.json").read_text())
             self.assertEqual(
-                receipt["cumulative_body_bytes"], 11064483 + len(archive_bytes)
+                receipt["cumulative_body_bytes"], 17669796 + len(archive_bytes)
+            )
+            self.assertEqual(receipt["prior_transfer_receipt_sha256"], sha(carry))
+            self.assertEqual(
+                (root / "transfer/PRIOR_TRANSFER.json").read_bytes(), carry.read_bytes()
             )
             self.assertEqual(receipt["new_body_bytes"], len(archive_bytes))
             self.assertEqual(len(receipt["images"]), 9)
@@ -268,6 +292,50 @@ class CloudPilotContracts(unittest.TestCase):
                 (sha(pool / "CANDIDATES.json"), sha(pool / "HISTORY.json")),
                 (manifest_pin, history_pin),
             )
+            for i, changes in enumerate(
+                (
+                    {"new_body_bytes": 0, "cumulative_body_bytes": 11064483},
+                    {"new_body_bytes": 6605314},
+                    {"shared_cap_bytes": 26214401},
+                    {"cumulative_body_bytes": True},
+                    {
+                        "admission": {
+                            "manifest_sha256": "0" * 64,
+                            "history_sha256": history_pin,
+                        }
+                    },
+                    {"images": carry_data["images"][:-1]},
+                )
+            ):
+                with self.subTest(changes=changes):
+                    write(carry, dict(carry_data, **changes))
+                    with (
+                        patch.object(pilot_data, "MANIFEST_SHA", manifest_pin),
+                        patch.object(pilot_data, "HISTORY_SHA", history_pin),
+                        patch.object(acquire_vizwiz, "RangeArchive") as no_download,
+                        self.assertRaises(ValueError),
+                    ):
+                        transfer_images(
+                            pool,
+                            root / f"rejected-{i}",
+                            prior_transfer_receipt=carry,
+                            prior_transfer_receipt_sha256=sha(carry),
+                        )
+                    no_download.assert_not_called()
+            write(carry, carry_data)
+            with (
+                patch.object(pilot_data, "MANIFEST_SHA", manifest_pin),
+                patch.object(pilot_data, "HISTORY_SHA", history_pin),
+                patch.object(acquire_vizwiz, "RangeArchive") as no_download,
+                self.assertRaisesRegex(ValueError, "hash differs"),
+            ):
+                transfer_images(
+                    pool,
+                    root / "rejected-hash",
+                    prior_transfer_receipt=carry,
+                    prior_transfer_receipt_sha256="0" * 64,
+                )
+            no_download.assert_not_called()
 
 
 if __name__ == "__main__":
