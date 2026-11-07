@@ -252,7 +252,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: cell-cost-owner-replay-${{ matrix.lane }}
-          path: "$RUNNER_TEMP/cell-cost-evidence"
+          path: ${{ runner.temp }}/cell-cost-evidence
           if-no-files-found: error
           retention-days: 14
 
