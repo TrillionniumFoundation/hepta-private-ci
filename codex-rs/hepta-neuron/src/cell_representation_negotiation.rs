@@ -112,7 +112,13 @@ impl CellRepresentationNegotiationV1 {
         profile: CellRepresentationProfileV1,
     ) -> Result<Self, CellRepresentationErrorV1> {
         let profile = profile.into_compact()?;
-        Self::negotiate(producer, consumer, profile.clone(), profile, /*projection*/ None)
+        Self::negotiate(
+            producer,
+            consumer,
+            profile.clone(),
+            profile,
+            /*projection*/ None,
+        )
     }
 
     pub fn projected(
@@ -122,7 +128,13 @@ impl CellRepresentationNegotiationV1 {
         output_profile: CellRepresentationProfileV1,
         projection: CellProjectionComponentV1,
     ) -> Result<Self, CellRepresentationErrorV1> {
-        Self::negotiate(producer, consumer, input_profile, output_profile, Some(projection))
+        Self::negotiate(
+            producer,
+            consumer,
+            input_profile,
+            output_profile,
+            Some(projection),
+        )
     }
 
     fn negotiate(
@@ -172,7 +184,8 @@ impl CellRepresentationNegotiationV1 {
         producer.offered_profiles = producer.offered_profiles.into_boxed_slice().into_vec();
         consumer.consumer_id = compact_id(&consumer.consumer_id)?;
         consumer.accepted_profiles = consumer.accepted_profiles.into_boxed_slice().into_vec();
-        consumer.qualified_projections = consumer.qualified_projections.into_boxed_slice().into_vec();
+        consumer.qualified_projections =
+            consumer.qualified_projections.into_boxed_slice().into_vec();
         if let Some(component) = &mut projection {
             component.component_id = compact_id(&component.component_id)?;
         }

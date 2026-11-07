@@ -10,10 +10,10 @@ use codex_hepta_types::StableId;
 use crate::InferenceControlModelPort;
 use crate::NeuronModelError;
 use crate::NeuronModelPort;
-use crate::cell_types::*;
 use crate::cell_inference::ReceiptPort;
 use crate::cell_inference::admission_for_step;
 use crate::cell_inference::feature_request;
+use crate::cell_types::*;
 use crate::runtime_types::validate_model_output;
 
 /// The inference.control owner authenticates observations and retains dispatch
@@ -93,7 +93,11 @@ impl CellBatchQueueV1 {
         {
             return Err(CellExecutionError::CapacityExceeded);
         }
-        Ok(Self { queue: VecDeque::new(), limits, retained_payload_bytes: 0 })
+        Ok(Self {
+            queue: VecDeque::new(),
+            limits,
+            retained_payload_bytes: 0,
+        })
     }
 
     pub fn observation(&self) -> CellBatchQueueObservationV1 {
@@ -128,7 +132,9 @@ impl CellBatchQueueV1 {
         mut prepared: PreparedCellStepV1,
         now_micros: u64,
     ) -> Result<(), CellExecutionError> {
-        if now_micros < prepared.input.monotonic_micros || now_micros >= prepared.input.deadline_micros {
+        if now_micros < prepared.input.monotonic_micros
+            || now_micros >= prepared.input.deadline_micros
+        {
             return Err(CellExecutionError::DeadlineExceeded);
         }
         // StableId bounds logical length, but its input String may have spare
@@ -139,11 +145,21 @@ impl CellBatchQueueV1 {
             &mut prepared.input.scope.agent_id,
             &mut prepared.input.scope.cell_id,
             &mut prepared.input.scope.run_id,
-        ].into_iter().chain(prepared.input.candidates.iter_mut().map(|mask| &mut mask.candidate_id)) {
+        ]
+        .into_iter()
+        .chain(
+            prepared
+                .input
+                .candidates
+                .iter_mut()
+                .map(|mask| &mut mask.candidate_id),
+        ) {
             *id = StableId::new(id.as_str()).map_err(|_| CellExecutionError::InvalidInput)?;
         }
         let payload_bytes = retained_input_bytes(&prepared)?;
-        let retained_payload_bytes = self.retained_payload_bytes.checked_add(payload_bytes)
+        let retained_payload_bytes = self
+            .retained_payload_bytes
+            .checked_add(payload_bytes)
             .ok_or(CellExecutionError::CapacityExceeded)?;
         if self.queue.len() == self.limits.max_queued
             || payload_bytes > self.limits.max_batch_payload_bytes
@@ -158,7 +174,9 @@ impl CellBatchQueueV1 {
             return Err(CellExecutionError::OperationConflict);
         }
         self.queue.push_back(QueuedCell {
-            prepared, enqueued_at_micros: now_micros, payload_bytes,
+            prepared,
+            enqueued_at_micros: now_micros,
+            payload_bytes,
         });
         self.retained_payload_bytes = retained_payload_bytes;
         Ok(())
@@ -184,7 +202,8 @@ impl CellBatchQueueV1 {
             let candidate = &self.queue[index].prepared;
             if candidate.definition.runtime == group[0].prepared.definition.runtime
                 && candidate.definition.bundle_digest == group[0].prepared.definition.bundle_digest
-                && candidate.definition.state_schema_digest == group[0].prepared.definition.state_schema_digest
+                && candidate.definition.state_schema_digest
+                    == group[0].prepared.definition.state_schema_digest
                 && self.queue[index].payload_bytes
                     <= self.limits.max_batch_payload_bytes - batch_payload_bytes
             {
@@ -241,7 +260,8 @@ impl CellBatchQueueV1 {
         if ready.is_empty() {
             return completed;
         }
-        let requests: Vec<_> = ready.iter()
+        let requests: Vec<_> = ready
+            .iter()
             .map(|(p, _)| feature_request(&p.model_request))
             .collect();
         match model.execute_feature_batch(&requests) {
@@ -257,31 +277,52 @@ impl CellBatchQueueV1 {
             Ok(mut results) => {
                 let valid_membership = results.len() == requests.len()
                     && requests.iter().all(|request| {
-                        results.iter().filter(|r| {
-                            Some(r.request_digest) == neuron_feature_request_digest_v1(request).ok()
-                        }).count() == 1
+                        results
+                            .iter()
+                            .filter(|r| {
+                                Some(r.request_digest)
+                                    == neuron_feature_request_digest_v1(request).ok()
+                            })
+                            .count()
+                            == 1
                     });
                 for (prepared, queue_age) in ready {
                     let scope = prepared.input.scope.clone();
                     let operation_id = prepared.input.operation_id.clone();
-                    let expected = neuron_feature_request_digest_v1(&feature_request(&prepared.model_request)).ok();
+                    let expected =
+                        neuron_feature_request_digest_v1(&feature_request(&prepared.model_request))
+                            .ok();
                     let result = if !valid_membership {
                         Err(CellExecutionError::ModelBindingMismatch)
-                    } else if let Some(index) = results.iter().position(|r| Some(r.request_digest) == expected) {
+                    } else if let Some(index) = results
+                        .iter()
+                        .position(|r| Some(r.request_digest) == expected)
+                    {
                         let mut port = ReceiptPort(results.remove(index));
-                        match InferenceControlModelPort::new(&mut port).execute(&prepared.model_request) {
+                        match InferenceControlModelPort::new(&mut port)
+                            .execute(&prepared.model_request)
+                        {
                             Err(error) => Err(CellExecutionError::Backend(error)),
                             Ok(mut output) => {
-                                output.queue_age_micros = output.queue_age_micros.saturating_add(queue_age);
+                                output.queue_age_micros =
+                                    output.queue_age_micros.saturating_add(queue_age);
                                 validate_model_output(&prepared.definition.runtime, &output)
                                     .map_err(|_| CellExecutionError::ModelBindingMismatch)
-                                    .map(|()| InferredCellStepV1 { prepared, output, not_before_micros: dispatch_at_micros })
+                                    .map(|()| InferredCellStepV1 {
+                                        prepared,
+                                        output,
+                                        not_before_micros: dispatch_at_micros,
+                                    })
                             }
                         }
                     } else {
                         Err(CellExecutionError::ModelBindingMismatch)
                     };
-                    completed.push(CellBatchResultV1 { scope, operation_id, result });
+                    completed.push(CellBatchResultV1 {
+                        scope,
+                        operation_id,
+                        result,
+                    });
                 }
             }
         }
@@ -293,27 +334,44 @@ fn retained_input_bytes(prepared: &PreparedCellStepV1) -> Result<u64, CellExecut
     let observation = u64::try_from(prepared.input.observation.capacity());
     let encoded = u64::try_from(prepared.encoded.feature_vector_q24.capacity());
     let request = u64::try_from(prepared.model_request.feature_vector_q24.capacity());
-    let candidates = u64::try_from(prepared.input.candidates.capacity()).ok()
+    let candidates = u64::try_from(prepared.input.candidates.capacity())
+        .ok()
         .and_then(|count| count.checked_mul(std::mem::size_of::<CellCandidateMaskV1>() as u64));
     let identifiers = [
         &prepared.input.operation_id,
         &prepared.input.scope.agent_id,
         &prepared.input.scope.cell_id,
         &prepared.input.scope.run_id,
-    ].into_iter().chain(prepared.input.candidates.iter().map(|mask| &mask.candidate_id))
-        .try_fold(0_u64, |total, id| u64::try_from(id.as_str().len()).ok().and_then(|bytes| total.checked_add(bytes)));
-    observation.ok()
+    ]
+    .into_iter()
+    .chain(
+        prepared
+            .input
+            .candidates
+            .iter()
+            .map(|mask| &mask.candidate_id),
+    )
+    .try_fold(0_u64, |total, id| {
+        u64::try_from(id.as_str().len())
+            .ok()
+            .and_then(|bytes| total.checked_add(bytes))
+    });
+    observation
+        .ok()
         .zip(encoded.ok())
         .zip(request.ok())
         .zip(candidates)
         .zip(identifiers)
-        .and_then(|((((observation, encoded), request), candidates), identifiers)| {
-            encoded.checked_add(request)
-                .and_then(|features| features.checked_mul(8))
-                .and_then(|features| observation.checked_add(features))
-                .and_then(|buffers| buffers.checked_add(candidates))
-                .and_then(|buffers| buffers.checked_add(identifiers))
-        })
+        .and_then(
+            |((((observation, encoded), request), candidates), identifiers)| {
+                encoded
+                    .checked_add(request)
+                    .and_then(|features| features.checked_mul(8))
+                    .and_then(|features| observation.checked_add(features))
+                    .and_then(|buffers| buffers.checked_add(candidates))
+                    .and_then(|buffers| buffers.checked_add(identifiers))
+            },
+        )
         .ok_or(CellExecutionError::CapacityExceeded)
 }
 
@@ -322,7 +380,8 @@ fn queue_age_at(
     enqueued_at_micros: u64,
     now_micros: u64,
 ) -> Result<u64, CellExecutionError> {
-    let age = now_micros.checked_sub(enqueued_at_micros)
+    let age = now_micros
+        .checked_sub(enqueued_at_micros)
         .ok_or(CellExecutionError::DeadlineExceeded)?;
     if now_micros < prepared.input.monotonic_micros
         || now_micros >= prepared.input.deadline_micros

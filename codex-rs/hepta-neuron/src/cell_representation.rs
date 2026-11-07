@@ -33,7 +33,9 @@ pub struct CellRepresentationContextV1 {
 pub enum CellTensorValueV1 {
     Present(Vec<u8>),
     /// Explicit absence with a versioned reason, never a fabricated zero tensor.
-    Missing { reason: StableId },
+    Missing {
+        reason: StableId,
+    },
 }
 
 /// Tensor order exactly matches the profile. No decoder may guess names or
@@ -82,11 +84,14 @@ impl CellRepresentationV1 {
             let absence = match value {
                 CellTensorValueV1::Present(bytes) => {
                     if bytes.len() as u64 != layout.byte_len()?
-                        || (layout.role == CellTensorRoleV1::Mask && bytes.iter().any(|value| *value > 1))
+                        || (layout.role == CellTensorRoleV1::Mask
+                            && bytes.iter().any(|value| *value > 1))
                     {
                         return Err(E::InvalidPayload);
                     }
-                    payload_bytes = payload_bytes.checked_add(bytes.len() as u64).ok_or(E::Capacity)?;
+                    payload_bytes = payload_bytes
+                        .checked_add(bytes.len() as u64)
+                        .ok_or(E::Capacity)?;
                     None
                 }
                 CellTensorValueV1::Missing { reason } => {
@@ -152,7 +157,15 @@ impl CellRepresentationV1 {
             }
         }
         let digest = Digest32::of_bytes(&manifest);
-        Ok(Self { profile, profile_digest, context, values, payload_bytes, manifest, digest })
+        Ok(Self {
+            profile,
+            profile_digest,
+            context,
+            values,
+            payload_bytes,
+            manifest,
+            digest,
+        })
     }
 
     pub fn profile(&self) -> &CellRepresentationProfileV1 {

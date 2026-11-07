@@ -46,7 +46,9 @@ where
         representation: CircuitCellRepresentationUseV1<'_, R>,
         clock: impl FnMut() -> CircuitCellTimeV1,
     ) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1> {
-        representation.input.validate_backend(representation.backend)?;
+        representation
+            .input
+            .validate_backend(representation.backend)?;
         let binding = self.registry.bind_input(admission.dispatch(), &input)?;
         if binding.cell != representation.backend.registration().definition
             || input.observation != representation.input.observation_bytes()

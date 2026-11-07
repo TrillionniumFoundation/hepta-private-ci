@@ -31,9 +31,16 @@ impl RuntimeCellStateRoleV2 {
     /// Canonical roster. An inapplicable component still requires an explicit
     /// schema-bound absence record; omission never means an empty optimizer.
     pub const ALL: [Self; 10] = [
-        Self::Parameters, Self::Optimizer, Self::RandomGenerator, Self::Sampler,
-        Self::PrivateState, Self::SourceReferences, Self::MemoryReferences,
-        Self::Routing, Self::RequestLedger, Self::EffectLedger,
+        Self::Parameters,
+        Self::Optimizer,
+        Self::RandomGenerator,
+        Self::Sampler,
+        Self::PrivateState,
+        Self::SourceReferences,
+        Self::MemoryReferences,
+        Self::Routing,
+        Self::RequestLedger,
+        Self::EffectLedger,
     ];
 }
 
@@ -68,36 +75,65 @@ pub struct RuntimeCellStateManifestV2 {
 
 impl RuntimeCellStateManifestV2 {
     pub fn state_root(&self) -> Result<Digest32, Error> {
-        if self.cells.len() > 64 || self.cells.windows(2).any(|pair| pair[0] >= pair[1])
-            || self.components.len() != RuntimeCellStateRoleV2::ALL.len() || self.writer_fence == 0
+        if self.cells.len() > 64
+            || self.cells.windows(2).any(|pair| pair[0] >= pair[1])
+            || self.components.len() != RuntimeCellStateRoleV2::ALL.len()
+            || self.writer_fence == 0
         {
             return Err(Error::InvalidPlan);
         }
         let mut bytes = b"hepta.runtime.cell-complete-state.v2\0".to_vec();
-        for id in [&self.agent_id, &self.writer_id] { push_id(&mut bytes, id); }
-        for digest in [self.principal_scope, self.topology, self.bundle, self.source_frontier] {
-            if digest.is_zero() { return Err(Error::InvalidPlan); }
+        for id in [&self.agent_id, &self.writer_id] {
+            push_id(&mut bytes, id);
+        }
+        for digest in [
+            self.principal_scope,
+            self.topology,
+            self.bundle,
+            self.source_frontier,
+        ] {
+            if digest.is_zero() {
+                return Err(Error::InvalidPlan);
+            }
             bytes.extend_from_slice(digest.as_array());
         }
-        for number in [self.generation.get(), self.writer_fence, u64::from(self.inflight_requests), u64::from(self.unknown_effects)] {
+        for number in [
+            self.generation.get(),
+            self.writer_fence,
+            u64::from(self.inflight_requests),
+            u64::from(self.unknown_effects),
+        ] {
             bytes.extend_from_slice(&number.to_be_bytes());
         }
         bytes.extend_from_slice(&(self.cells.len() as u32).to_be_bytes());
-        for cell in &self.cells { push_id(&mut bytes, cell); }
+        for cell in &self.cells {
+            push_id(&mut bytes, cell);
+        }
         let mut total = 0_u64;
         for (component, role) in self.components.iter().zip(RuntimeCellStateRoleV2::ALL) {
             if component.role != role || component.encoded_bytes == 0 {
                 return Err(Error::InvalidPlan);
             }
-            total = total.checked_add(component.encoded_bytes).ok_or(Error::Capacity)?;
-            if total > MAX_STATE_BYTES { return Err(Error::Capacity); }
-            if role == RuntimeCellStateRoleV2::PrivateState && component.owner_id != self.writer_id {
+            total = total
+                .checked_add(component.encoded_bytes)
+                .ok_or(Error::Capacity)?;
+            if total > MAX_STATE_BYTES {
+                return Err(Error::Capacity);
+            }
+            if role == RuntimeCellStateRoleV2::PrivateState && component.owner_id != self.writer_id
+            {
                 return Err(Error::ScopeMismatch);
             }
             bytes.push(role as u8);
             push_id(&mut bytes, &component.owner_id);
-            for digest in [component.owner_checkpoint, component.schema, component.content_digest] {
-                if digest.is_zero() { return Err(Error::InvalidPlan); }
+            for digest in [
+                component.owner_checkpoint,
+                component.schema,
+                component.content_digest,
+            ] {
+                if digest.is_zero() {
+                    return Err(Error::InvalidPlan);
+                }
                 bytes.extend_from_slice(digest.as_array());
             }
             bytes.extend_from_slice(&component.encoded_bytes.to_be_bytes());
@@ -122,27 +158,47 @@ impl<'a> RuntimeCellVerifiedStateV2<'a> {
         contents: &'a [&'a [u8]],
         maximum_bytes: u64,
     ) -> Result<Self, Error> {
-        let verified = Self { manifest, contents, maximum_bytes, root: manifest.state_root()? };
+        let verified = Self {
+            manifest,
+            contents,
+            maximum_bytes,
+            root: manifest.state_root()?,
+        };
         verified.revalidate()?;
         Ok(verified)
     }
 
-    pub fn state_root(&self) -> Digest32 { self.root }
-    pub fn manifest(&self) -> &RuntimeCellStateManifestV2 { self.manifest }
+    pub fn state_root(&self) -> Digest32 {
+        self.root
+    }
+    pub fn manifest(&self) -> &RuntimeCellStateManifestV2 {
+        self.manifest
+    }
 
     fn revalidate(&self) -> Result<(), Error> {
-        if self.maximum_bytes == 0 || self.maximum_bytes > MAX_STATE_BYTES
+        if self.maximum_bytes == 0
+            || self.maximum_bytes > MAX_STATE_BYTES
             || self.contents.len() != self.manifest.components.len()
-        { return Err(Error::Capacity); }
+        {
+            return Err(Error::Capacity);
+        }
         let mut total = 0_u64;
         for (component, bytes) in self.manifest.components.iter().zip(self.contents) {
-            total = total.checked_add(component.encoded_bytes).ok_or(Error::Capacity)?;
-            if total > self.maximum_bytes { return Err(Error::Capacity); }
-            if bytes.len() as u64 != component.encoded_bytes || Digest32::of_bytes(bytes) != component.content_digest {
+            total = total
+                .checked_add(component.encoded_bytes)
+                .ok_or(Error::Capacity)?;
+            if total > self.maximum_bytes {
+                return Err(Error::Capacity);
+            }
+            if bytes.len() as u64 != component.encoded_bytes
+                || Digest32::of_bytes(bytes) != component.content_digest
+            {
                 return Err(Error::InvalidObservation);
             }
         }
-        if self.manifest.state_root()? != self.root { return Err(Error::InvalidPlan); }
+        if self.manifest.state_root()? != self.root {
+            return Err(Error::InvalidPlan);
+        }
         Ok(())
     }
 }
@@ -156,12 +212,17 @@ pub fn runtime_cell_state_transfer_digest_v2(
     transform: Digest32,
     qualification: Digest32,
 ) -> Result<Digest32, Error> {
-    if transform.is_zero() || qualification.is_zero() { return Err(Error::InvalidPlan); }
+    if transform.is_zero() || qualification.is_zero() {
+        return Err(Error::InvalidPlan);
+    }
     predecessor.revalidate()?;
     successor.revalidate()?;
     Ok(Digest32::of_parts(&[
-        b"hepta.runtime.cell-state-transfer.v2\0", predecessor.root.as_array(),
-        successor.root.as_array(), transform.as_array(), qualification.as_array(),
+        b"hepta.runtime.cell-state-transfer.v2\0",
+        predecessor.root.as_array(),
+        successor.root.as_array(),
+        transform.as_array(),
+        qualification.as_array(),
     ]))
 }
 
@@ -188,14 +249,25 @@ impl<'a> RuntimeCellLifecyclePlanV2<'a> {
         transform: Digest32,
         qualification: Digest32,
     ) -> Result<Self, Error> {
-        let bound = Self { plan, predecessor, successor, transform, qualification };
+        let bound = Self {
+            plan,
+            predecessor,
+            successor,
+            transform,
+            qualification,
+        };
         bound.validate()?;
         Ok(bound)
     }
 
-    pub fn plan_digest(&self) -> Result<Digest32, Error> { self.plan.digest() }
+    pub fn plan_digest(&self) -> Result<Digest32, Error> {
+        self.plan.digest()
+    }
 
-    pub(crate) fn validate_observed_bundle(&self, observation: &crate::RuntimeCellLifecycleObservationV1) -> Result<(), Error> {
+    pub(crate) fn validate_observed_bundle(
+        &self,
+        observation: &crate::RuntimeCellLifecycleObservationV1,
+    ) -> Result<(), Error> {
         let requested = observation.stage.code();
         let stage = if observation.outcome == crate::RuntimeCellLifecycleNativeOutcomeV1::Applied {
             requested
@@ -207,7 +279,9 @@ impl<'a> RuntimeCellLifecyclePlanV2<'a> {
         } else {
             self.predecessor.manifest.bundle
         };
-        if observation.bundle != expected.to_string() { return Err(Error::InvalidObservation); }
+        if observation.bundle != expected.to_string() {
+            return Err(Error::InvalidObservation);
+        }
         Ok(())
     }
 
@@ -215,30 +289,50 @@ impl<'a> RuntimeCellLifecyclePlanV2<'a> {
         self.plan.digest()?;
         let before = self.predecessor.manifest;
         let after = self.successor.manifest;
-        if [before, after].iter().any(|state| state.inflight_requests != 0 || state.unknown_effects != 0) {
+        if [before, after]
+            .iter()
+            .any(|state| state.inflight_requests != 0 || state.unknown_effects != 0)
+        {
             return Err(Error::ReconciliationRequired);
         }
         for state in [before, after] {
-            if state.agent_id != self.plan.agent_id || state.principal_scope != self.plan.principal_scope {
+            if state.agent_id != self.plan.agent_id
+                || state.principal_scope != self.plan.principal_scope
+            {
                 return Err(Error::ScopeMismatch);
             }
         }
-        if before.cells != self.plan.predecessors || after.cells != self.plan.successors
-            || before.generation != self.plan.predecessor_generation || after.generation != self.plan.successor_generation
-            || before.writer_id != self.plan.handoff.from_owner || after.writer_id != self.plan.handoff.to_owner
+        if before.cells != self.plan.predecessors
+            || after.cells != self.plan.successors
+            || before.generation != self.plan.predecessor_generation
+            || after.generation != self.plan.successor_generation
+            || before.writer_id != self.plan.handoff.from_owner
+            || after.writer_id != self.plan.handoff.to_owner
             || before.writer_fence != self.plan.handoff.predecessor_writer_fence
             || after.writer_fence != self.plan.handoff.successor_writer_fence
-            || before.topology != self.plan.predecessor_topology || after.topology != self.plan.successor_topology
-            || before.source_frontier != after.source_frontier || after.bundle != self.plan.successor_bundle
-            || self.predecessor.root != self.plan.predecessor_state_root || self.successor.root != self.plan.successor_state_root
-        { return Err(Error::InvalidPlan); }
+            || before.topology != self.plan.predecessor_topology
+            || after.topology != self.plan.successor_topology
+            || before.source_frontier != after.source_frontier
+            || after.bundle != self.plan.successor_bundle
+            || self.predecessor.root != self.plan.predecessor_state_root
+            || self.successor.root != self.plan.successor_state_root
+        {
+            return Err(Error::InvalidPlan);
+        }
         // Model/topology restoration cannot roll back or move the external
         // effect owner. Preserve its exact ledger bytes and owner checkpoint.
-        if before.components.last() != after.components.last() { return Err(Error::InvalidObservation); }
+        if before.components.last() != after.components.last() {
+            return Err(Error::InvalidObservation);
+        }
         let transfer = runtime_cell_state_transfer_digest_v2(
-            self.predecessor, self.successor, self.transform, self.qualification,
+            self.predecessor,
+            self.successor,
+            self.transform,
+            self.qualification,
         )?;
-        if transfer != self.plan.handoff.migration_digest { return Err(Error::InvalidPlan); }
+        if transfer != self.plan.handoff.migration_digest {
+            return Err(Error::InvalidPlan);
+        }
         Ok(())
     }
 }

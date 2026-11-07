@@ -21,7 +21,8 @@ pub(super) async fn submit_iteration_proposal_v1(
 ) -> Result<LearningIterationReceiptV1, LearningIterationRuntimeErrorV1> {
     let snapshot = coordinator.snapshot();
     let context = &snapshot.request;
-    let mismatch = || LearningIterationRuntimeErrorV1::Validation(LearningIterationError::ContextMismatch);
+    let mismatch =
+        || LearningIterationRuntimeErrorV1::Validation(LearningIterationError::ContextMismatch);
     let candidate = coordinator.candidate().ok_or_else(mismatch)?;
     let candidate_bundle = candidate.digest().map_err(LearningIterationError::from)?;
     let lineage = candidate.training_lineage.as_ref().ok_or_else(mismatch)?;
@@ -30,10 +31,14 @@ pub(super) async fn submit_iteration_proposal_v1(
     if prepared.iteration_head != snapshot.head_digest
         || prepared.candidate_bundle != candidate_bundle
         || prepared.evaluation_evidence != evaluation.evidence_digest
-    { return Err(mismatch()); }
+    {
+        return Err(mismatch());
+    }
     require_ready(state)?;
     let now = clock()?;
-    if now >= context.envelope.expiry_unix_seconds { return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded); }
+    if now >= context.envelope.expiry_unix_seconds {
+        return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
+    }
     let (composition_digest, disposition) = match prepared.payload {
         LearningIterationProposalPayloadV1::Parameter(request) => {
             if request.proposal_id != context.operation_id
@@ -45,17 +50,37 @@ pub(super) async fn submit_iteration_proposal_v1(
                 || request.admission.window.window_id != context.envelope.envelope_id
                 || request.admission.dataset_digest != lineage.dataset
                 || request.admission.update_rule_digest != lineage.update_rule
-                || request.generator_profile.mutation_policy.mutation_grammar_digest != context.envelope.grammar_digest
-                || request.generated.candidates.len() > usize::from(context.envelope.maximum_candidates)
+                || request
+                    .generator_profile
+                    .mutation_policy
+                    .mutation_grammar_digest
+                    != context.envelope.grammar_digest
+                || request.generated.candidates.len()
+                    > usize::from(context.envelope.maximum_candidates)
                 || request.generator_attestation.principal_id != snapshot.owners.trainer
-                || request.evaluations.iter().any(|evaluation| evaluation.bundle.evaluator.principal_id != snapshot.owners.evaluator)
-                || request.no_change_attestation.as_ref().is_some_and(|attestation| attestation.principal_id != snapshot.owners.evaluator)
-            { return Err(mismatch()); }
-            let receipt = state.submit_parameter_plasticity_v1(*request, now).await
+                || request.evaluations.iter().any(|evaluation| {
+                    evaluation.bundle.evaluator.principal_id != snapshot.owners.evaluator
+                })
+                || request
+                    .no_change_attestation
+                    .as_ref()
+                    .is_some_and(|attestation| {
+                        attestation.principal_id != snapshot.owners.evaluator
+                    })
+            {
+                return Err(mismatch());
+            }
+            let receipt = state
+                .submit_parameter_plasticity_v1(*request, now)
+                .await
                 .map_err(LearningIterationRuntimeErrorV1::Proposal)?;
             let disposition = match receipt.disposition {
-                ParameterPlasticityDispositionV1::UpdateCandidates => LearningProposalDispositionV1::UpdateCandidates,
-                ParameterPlasticityDispositionV1::NoAdmissibleUpdate => LearningProposalDispositionV1::NoAdmissibleUpdate,
+                ParameterPlasticityDispositionV1::UpdateCandidates => {
+                    LearningProposalDispositionV1::UpdateCandidates
+                }
+                ParameterPlasticityDispositionV1::NoAdmissibleUpdate => {
+                    LearningProposalDispositionV1::NoAdmissibleUpdate
+                }
             };
             (receipt.composition_digest, disposition)
         }
@@ -70,18 +95,30 @@ pub(super) async fn submit_iteration_proposal_v1(
                 || request.admission.evaluation_receipt_digest != evaluation.evidence_digest
                 || request.generator_attestation.principal_id != snapshot.owners.trainer
                 || request.evaluator_attestation.principal_id != snapshot.owners.evaluator
-            { return Err(mismatch()); }
-            let receipt = state.submit_topology_plasticity_v1(*request, now).await
+            {
+                return Err(mismatch());
+            }
+            let receipt = state
+                .submit_topology_plasticity_v1(*request, now)
+                .await
                 .map_err(LearningIterationRuntimeErrorV1::Proposal)?;
-            (receipt.composition_digest, LearningProposalDispositionV1::UpdateCandidates)
+            (
+                receipt.composition_digest,
+                LearningProposalDispositionV1::UpdateCandidates,
+            )
         }
     };
     Ok(LearningIterationReceiptV1 {
-        operation_id: context.operation_id.clone(), predecessor: snapshot.head_digest,
-        actor_id: snapshot.owners.proposal.clone(), evidence_digest: composition_digest,
+        operation_id: context.operation_id.clone(),
+        predecessor: snapshot.head_digest,
+        actor_id: snapshot.owners.proposal.clone(),
+        evidence_digest: composition_digest,
         observed_unix_seconds: clock()?,
         observation: LearningIterationObservationV1::Proposal {
-            candidate_bundle, proposal_id: context.operation_id.clone(), composition_digest, disposition,
+            candidate_bundle,
+            proposal_id: context.operation_id.clone(),
+            composition_digest,
+            disposition,
         },
     })
 }

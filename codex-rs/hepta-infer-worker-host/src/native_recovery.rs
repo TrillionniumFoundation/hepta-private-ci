@@ -286,9 +286,7 @@ fn reconciled_terminal_output(
         }
     }
     let (status, boundary_status) = match receipt.status {
-        AdapterStatus::Succeeded => {
-            (NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded)
-        }
+        AdapterStatus::Succeeded => (NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded),
         AdapterStatus::Failed => (NativeRunStatus::Failed, NativeBoundaryStatus::Failed),
         AdapterStatus::Interrupted => (
             NativeRunStatus::Interrupted,
@@ -347,9 +345,8 @@ fn reconciled_terminal_output(
     // or observation loss; a later completion must not silently become success.
     if record.cancel_requested && output.boundary_status == NativeBoundaryStatus::Succeeded {
         output.boundary_status = NativeBoundaryStatus::Quarantined;
-        output.stop_reason = Some(
-            "durable cancellation intent has no preserved boundary observation".to_string(),
-        );
+        output.stop_reason =
+            Some("durable cancellation intent has no preserved boundary observation".to_string());
     }
     downgrade_for_owner_loss(&mut output);
     Ok(Some(output))

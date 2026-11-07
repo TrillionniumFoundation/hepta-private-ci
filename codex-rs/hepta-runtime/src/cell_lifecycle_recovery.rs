@@ -17,7 +17,16 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         max_events: u64,
         observer: &impl RuntimeCellLifecycleObserverV1,
     ) -> Result<Self, RuntimeCellLifecycleError> {
-        Self::recover_with_profile(pool, plan, writer_epoch, anchor, max_events, observer, |_| Ok(())).await
+        Self::recover_with_profile(
+            pool,
+            plan,
+            writer_epoch,
+            anchor,
+            max_events,
+            observer,
+            |_| Ok(()),
+        )
+        .await
     }
 
     /// Keep profile checks inside the same verified SQLite snapshot and before
@@ -29,13 +38,19 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         anchor: A,
         max_events: u64,
         observer: &impl RuntimeCellLifecycleObserverV1,
-        validate_profile: impl Fn(&RuntimeCellLifecycleObservationV1) -> Result<(), RuntimeCellLifecycleError>,
+        validate_profile: impl Fn(
+            &RuntimeCellLifecycleObservationV1,
+        ) -> Result<(), RuntimeCellLifecycleError>,
     ) -> Result<Self, RuntimeCellLifecycleError> {
         if writer_epoch == 0 || !(1..=16_384).contains(&max_events) {
             return Err(RuntimeCellLifecycleError::Capacity);
         }
         let mut journal = Self {
-            pool, agent_id: plan.agent_id.clone(), writer_epoch, anchor, max_events,
+            pool,
+            agent_id: plan.agent_id.clone(),
+            writer_epoch,
+            anchor,
+            max_events,
         };
         journal.check_scope(plan)?;
         let expected = journal.anchor.current()?;
@@ -45,14 +60,23 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         if expected.scope_digest != runtime_cell_lifecycle_journal_scope_v1(&journal.agent_id) {
             return Err(RuntimeCellLifecycleError::ScopeMismatch);
         }
-        let mut tx = journal.pool.begin_with("BEGIN IMMEDIATE").await.map_err(unavailable)?;
+        let mut tx = journal
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
         let (sequence, head) = read_head(&mut tx, &journal.agent_id).await?;
         let already_anchored = sequence == expected.sequence && head == expected.head;
-        if (!already_anchored && expected.sequence.checked_add(1) != Some(sequence)) || sequence > max_events {
+        if (!already_anchored && expected.sequence.checked_add(1) != Some(sequence))
+            || sequence > max_events
+        {
             return Err(RuntimeCellLifecycleError::CommitUncertain);
         }
         let actual = RuntimeCellLifecycleAnchorV1 {
-            scope_digest: expected.scope_digest, writer_epoch, sequence, head,
+            scope_digest: expected.scope_digest,
+            writer_epoch,
+            sequence,
+            head,
         };
         verify_chain(&mut tx, &journal.agent_id, actual, max_events).await?;
         replay_in(&mut tx, plan, max_events).await?;
@@ -60,8 +84,8 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
             .bind(journal.agent_id.as_str()).bind(plan.operation_id.as_str())
             .fetch_all(&mut *tx).await.map_err(unavailable)?;
         for bytes in profile_events {
-            let event: LifecycleEventV1 = serde_json::from_str(&bytes)
-                .map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
+            let event: LifecycleEventV1 =
+                serde_json::from_str(&bytes).map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
             if let LifecycleEventV1::Observed { observation, .. } = event {
                 validate_profile(&observation)?;
             }
@@ -91,10 +115,13 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         if operation != plan.operation_id.as_str() || digest != plan.digest()?.to_string() {
             return Err(RuntimeCellLifecycleError::ScopeMismatch);
         }
-        let event: LifecycleEventV1 = serde_json::from_str(&bytes)
-            .map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
+        let event: LifecycleEventV1 =
+            serde_json::from_str(&bytes).map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
         match event {
-            LifecycleEventV1::Observed { observation, authentication } => {
+            LifecycleEventV1::Observed {
+                observation,
+                authentication,
+            } => {
                 // A self-consistent database suffix proves no physical outcome.
                 // Re-authenticate the entire observation under current trust.
                 crate::cell_lifecycle_transition::validate_observation(plan, &observation)?;
@@ -105,9 +132,13 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
             }
             LifecycleEventV1::Created { .. } | LifecycleEventV1::Prepared { .. } => {}
         }
-        journal.anchor.compare_and_swap(expected, actual)
+        journal
+            .anchor
+            .compare_and_swap(expected, actual)
             .map_err(|_| RuntimeCellLifecycleError::CommitUncertain)?;
-        tx.commit().await.map_err(|_| RuntimeCellLifecycleError::CommitUncertain)?;
+        tx.commit()
+            .await
+            .map_err(|_| RuntimeCellLifecycleError::CommitUncertain)?;
         Ok(journal)
     }
 }

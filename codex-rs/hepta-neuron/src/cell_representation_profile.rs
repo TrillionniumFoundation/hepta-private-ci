@@ -149,8 +149,12 @@ impl CellRepresentationProfileV1 {
             for axis in &mut tensor.axes {
                 *axis = compact_id(axis)?;
             }
-            tensor.axes = std::mem::take(&mut tensor.axes).into_boxed_slice().into_vec();
-            tensor.shape = std::mem::take(&mut tensor.shape).into_boxed_slice().into_vec();
+            tensor.axes = std::mem::take(&mut tensor.axes)
+                .into_boxed_slice()
+                .into_vec();
+            tensor.shape = std::mem::take(&mut tensor.shape)
+                .into_boxed_slice()
+                .into_vec();
         }
         self.tensors = self.tensors.into_boxed_slice().into_vec();
         Ok(self)
@@ -205,16 +209,21 @@ impl CellRepresentationProfileV1 {
                 bytes.push(0);
             }
             CellRepresentationKindV1::TokenSequence { tokenizer_digest } => {
-                let token_counts: BTreeSet<_> = self
-                    .tensors
-                    .iter()
-                    .map(|tensor| tensor.shape[0])
-                    .collect();
+                let token_counts: BTreeSet<_> =
+                    self.tensors.iter().map(|tensor| tensor.shape[0]).collect();
                 if tokenizer_digest.is_zero()
-                    || self.tensors.iter().filter(|tensor| tensor.role == R::Tokens).count() != 1
+                    || self
+                        .tensors
+                        .iter()
+                        .filter(|tensor| tensor.role == R::Tokens)
+                        .count()
+                        != 1
                     || !roles.is_subset(&BTreeSet::from([R::Tokens, R::Mask, R::Coordinates]))
                     || token_counts.len() != 1
-                    || self.tensors.iter().any(|tensor| tensor.axes[0].as_str() != "token")
+                    || self
+                        .tensors
+                        .iter()
+                        .any(|tensor| tensor.axes[0].as_str() != "token")
                     || !modalities.is_empty()
                 {
                     return Err(E::InvalidProfile);
@@ -231,9 +240,11 @@ impl CellRepresentationProfileV1 {
                     || modalities.len() < 2
                     || self.tensors.iter().any(|tensor| tensor.modality.is_none())
                     || !roles.is_subset(&BTreeSet::from([R::Features, R::Mask, R::Coordinates]))
-                    || !self.tensors.iter().flat_map(|tensor| &tensor.axes).any(|axis| {
-                        matches!(axis.as_str(), "time" | "height" | "width" | "space")
-                    })
+                    || !self
+                        .tensors
+                        .iter()
+                        .flat_map(|tensor| &tensor.axes)
+                        .any(|axis| matches!(axis.as_str(), "time" | "height" | "width" | "space"))
                 {
                     return Err(E::InvalidProfile);
                 }
@@ -252,9 +263,18 @@ impl CellRepresentationProfileV1 {
                 bytes.push(3);
                 bytes.extend_from_slice(codec_digest.as_array());
             }
-            CellRepresentationKindV1::TrainableState { training_protocol_digest } => {
+            CellRepresentationKindV1::TrainableState {
+                training_protocol_digest,
+            } => {
                 if training_protocol_digest.is_zero()
-                    || roles != BTreeSet::from([R::Weights, R::Optimizer, R::Rng, R::Sampler, R::TrainingCursor])
+                    || roles
+                        != BTreeSet::from([
+                            R::Weights,
+                            R::Optimizer,
+                            R::Rng,
+                            R::Sampler,
+                            R::TrainingCursor,
+                        ])
                     || !modalities.is_empty()
                 {
                     return Err(E::InvalidProfile);
@@ -267,7 +287,11 @@ impl CellRepresentationProfileV1 {
         bytes.extend_from_slice(&(self.tensors.len() as u64).to_be_bytes());
         for tensor in &self.tensors {
             push_id(&mut bytes, &tensor.name);
-            bytes.extend_from_slice(&[tensor.role as u8, tensor.dtype as u8, u8::from(tensor.optional)]);
+            bytes.extend_from_slice(&[
+                tensor.role as u8,
+                tensor.dtype as u8,
+                u8::from(tensor.optional),
+            ]);
             bytes.extend_from_slice(&(tensor.shape.len() as u64).to_be_bytes());
             for (extent, axis) in tensor.shape.iter().zip(&tensor.axes) {
                 bytes.extend_from_slice(&extent.to_be_bytes());

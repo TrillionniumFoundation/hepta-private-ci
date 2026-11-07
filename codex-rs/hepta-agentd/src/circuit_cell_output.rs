@@ -13,23 +13,34 @@ pub fn circuit_cell_output_schema_v1() -> Sha256Digest {
     Sha256Digest::for_bytes(b"hepta.circuit.cell-policy-output.v1")
 }
 
-pub(super) fn encode_receipt(receipt: &CellDecisionReceiptV1) -> Result<Vec<u8>, CircuitCellErrorV1> {
+pub(super) fn encode_receipt(
+    receipt: &CellDecisionReceiptV1,
+) -> Result<Vec<u8>, CircuitCellErrorV1> {
     if receipt.authority != AuthorityPosture::DENY_ALL
-        || receipt.policy.is_empty() || receipt.policy.len() > 256
+        || receipt.policy.is_empty()
+        || receipt.policy.len() > 256
     {
         return Err(CircuitCellErrorV1::InvalidReceipt);
     }
     let mut bytes = b"hepta.circuit.committed-cell-decision.v1\0".to_vec();
     for id in [
-        &receipt.operation_id, &receipt.scope.agent_id, &receipt.scope.cell_id,
-        &receipt.scope.run_id, &receipt.selected_candidate,
+        &receipt.operation_id,
+        &receipt.scope.agent_id,
+        &receipt.scope.cell_id,
+        &receipt.scope.run_id,
+        &receipt.selected_candidate,
     ] {
         push_text(&mut bytes, id.as_str());
     }
     for digest in [
-        receipt.operation_digest, receipt.semantic_request_digest, receipt.scope.principal_digest,
-        receipt.bundle_digest, receipt.source_frontier, receipt.checkpoint_before,
-        receipt.checkpoint_after, receipt.model_output_digest,
+        receipt.operation_digest,
+        receipt.semantic_request_digest,
+        receipt.scope.principal_digest,
+        receipt.bundle_digest,
+        receipt.source_frontier,
+        receipt.checkpoint_before,
+        receipt.checkpoint_after,
+        receipt.model_output_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
@@ -38,9 +49,13 @@ pub(super) fn encode_receipt(receipt: &CellDecisionReceiptV1) -> Result<Vec<u8>,
     bytes.push(u8::from(receipt.deadline_exceeded));
     let cost = &receipt.cost;
     for quantity in [
-        cost.model_latency_micros, cost.queue_age_micros, cost.resident_bytes,
-        cost.transient_allocation_bytes, cost.checkpoint_bytes,
-        cost.consumed_input_bytes as u64, cost.truncated_input_bytes as u64,
+        cost.model_latency_micros,
+        cost.queue_age_micros,
+        cost.resident_bytes,
+        cost.transient_allocation_bytes,
+        cost.checkpoint_bytes,
+        cost.consumed_input_bytes as u64,
+        cost.truncated_input_bytes as u64,
     ] {
         bytes.extend_from_slice(&quantity.to_be_bytes());
     }
@@ -52,16 +67,21 @@ pub(super) fn encode_receipt(receipt: &CellDecisionReceiptV1) -> Result<Vec<u8>,
     }
     // The only admitted authority encoding is DENY_ALL.
     bytes.push(0);
-    if bytes.len() > 65_536 { return Err(CircuitCellErrorV1::InvalidReceipt); }
+    if bytes.len() > 65_536 {
+        return Err(CircuitCellErrorV1::InvalidReceipt);
+    }
     Ok(bytes)
 }
 
 /// Exclude operation IDs, checkpoints and cost from the semantic output so an
 /// unchanged policy remains unchanged across feedback activations. The separate
 /// completion receipt binds every omitted audit field to the same invocation.
-pub(super) fn encode_output(receipt: &CellDecisionReceiptV1) -> Result<Vec<u8>, CircuitCellErrorV1> {
+pub(super) fn encode_output(
+    receipt: &CellDecisionReceiptV1,
+) -> Result<Vec<u8>, CircuitCellErrorV1> {
     if receipt.authority != AuthorityPosture::DENY_ALL
-        || receipt.policy.is_empty() || receipt.policy.len() > 256
+        || receipt.policy.is_empty()
+        || receipt.policy.len() > 256
     {
         return Err(CircuitCellErrorV1::InvalidReceipt);
     }
@@ -78,6 +98,8 @@ pub(super) fn encode_output(receipt: &CellDecisionReceiptV1) -> Result<Vec<u8>, 
         bytes.push(u8::from(entry.allowed));
         bytes.extend_from_slice(&entry.probability_ppm.to_be_bytes());
     }
-    if bytes.len() > 65_536 { return Err(CircuitCellErrorV1::InvalidReceipt); }
+    if bytes.len() > 65_536 {
+        return Err(CircuitCellErrorV1::InvalidReceipt);
+    }
     Ok(bytes)
 }

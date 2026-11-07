@@ -58,7 +58,10 @@ impl CellGlobalQ24SelectionV1 {
         for index in &indices {
             bytes.extend_from_slice(&index.to_be_bytes());
         }
-        Ok(Self { indices: indices.into_boxed_slice().into_vec(), parameters_digest: Digest32::of_bytes(&bytes) })
+        Ok(Self {
+            indices: indices.into_boxed_slice().into_vec(),
+            parameters_digest: Digest32::of_bytes(&bytes),
+        })
     }
 
     pub fn parameters_digest(&self) -> Digest32 {
@@ -164,7 +167,8 @@ impl CellNativeRepresentationInputV1 {
             }
             None
         } else {
-            let pending = owner.pending_inference(&input.scope)?
+            let pending = owner
+                .pending_inference(&input.scope)?
                 .ok_or(CellExecutionError::InferenceNotAdmitted)?;
             if pending.operation_id != input.operation_id
                 || pending.semantic_request_digest != request_digest
@@ -188,7 +192,11 @@ impl CellNativeRepresentationInputV1 {
         })?;
         if let Some(pending) = pending {
             let prepared = prepare_from_snapshot(
-                definition, pending.snapshot, &restored, input.clone(), pending.admitted_at_micros,
+                definition,
+                pending.snapshot,
+                &restored,
+                input.clone(),
+                pending.admitted_at_micros,
                 CellPreparationModeV1::AdmittedRecovery,
             )?;
             if prepared.model_request != pending.model_request {
@@ -208,14 +216,23 @@ impl CellNativeRepresentationInputV1 {
 
         negotiation.check_source(source)?;
         let registration = backend.registration();
-        let component = negotiation.projection.as_ref().ok_or(E::ProjectionRequired)?;
+        let component = negotiation
+            .projection
+            .as_ref()
+            .ok_or(E::ProjectionRequired)?;
         let width = registration.definition.runtime.input_feature_dimension;
         if negotiation.consumer.consumer_id != registration.backend_id
             || negotiation.consumer.binding_digest != backend.digest()
             || component.implementation_digest != CellGlobalQ24SelectionV1::implementation_digest()
             || component.parameters_digest != selection.parameters_digest()
-            || !matches!(negotiation.input_profile.kind, CellRepresentationKindV1::GlobalVector)
-            || !matches!(negotiation.output_profile.kind, CellRepresentationKindV1::GlobalVector)
+            || !matches!(
+                negotiation.input_profile.kind,
+                CellRepresentationKindV1::GlobalVector
+            )
+            || !matches!(
+                negotiation.output_profile.kind,
+                CellRepresentationKindV1::GlobalVector
+            )
             || negotiation.output_profile.semantic_schema_digest
                 != cell_global_feature_schema_digest_v1(width).map_err(|_| E::Incompatible)?
             || negotiation.output_profile.tensors[0].dtype != CellTensorDtypeV1::SignedQ24Le
@@ -247,15 +264,24 @@ impl CellNativeRepresentationInputV1 {
             if u64::from(*index) >= layout.shape[0] {
                 return Err(E::InvalidPayload);
             }
-            let start = (*index as usize).checked_mul(element_bytes).ok_or(E::Capacity)?;
-            let bytes = raw.get(start..start + element_bytes).ok_or(E::InvalidPayload)?;
+            let start = (*index as usize)
+                .checked_mul(element_bytes)
+                .ok_or(E::Capacity)?;
+            let bytes = raw
+                .get(start..start + element_bytes)
+                .ok_or(E::InvalidPayload)?;
             features.push(decode_q24(bytes, layout.dtype)?);
         }
         let component_digest = component.digest()?;
         let encoder_digest = registration.definition.runtime.encoder_digest;
         let mut observation = Vec::with_capacity(observation_len as usize);
         observation.extend_from_slice(PREFIX);
-        for digest in [backend.digest(), negotiation.digest(), component_digest, encoder_digest] {
+        for digest in [
+            backend.digest(),
+            negotiation.digest(),
+            component_digest,
+            encoder_digest,
+        ] {
             observation.extend_from_slice(digest.as_array());
         }
         observation.extend_from_slice(&(source.manifest().len() as u64).to_be_bytes());
@@ -332,21 +358,28 @@ impl CellNativeRepresentationInputV1 {
 
     /// Check the frozen backend identity even on historical readback. This does
     /// not establish that the backend or either endpoint is still current.
-    pub fn validate_backend(&self, backend: &RegisteredCellBackendV1) -> Result<(), CellExecutionError> {
+    pub fn validate_backend(
+        &self,
+        backend: &RegisteredCellBackendV1,
+    ) -> Result<(), CellExecutionError> {
         if self.backend_digest != backend.digest() {
             return Err(CellExecutionError::IncompatibleBundle);
         }
         Ok(())
     }
 
-    fn validate_request(&self, request: &CellEncodingRequestV1<'_>) -> Result<(), CellExecutionError> {
+    fn validate_request(
+        &self,
+        request: &CellEncodingRequestV1<'_>,
+    ) -> Result<(), CellExecutionError> {
         if request.scope != &self.scope {
             return Err(CellExecutionError::ScopeMismatch);
         }
         if request.source_frontier != self.source_frontier {
             return Err(CellExecutionError::StaleSource);
         }
-        if request.encoder_digest != self.encoder_digest || request.observation != self.observation {
+        if request.encoder_digest != self.encoder_digest || request.observation != self.observation
+        {
             return Err(CellExecutionError::EncodingMismatch);
         }
         Ok(())
@@ -354,7 +387,10 @@ impl CellNativeRepresentationInputV1 {
 }
 
 impl CellInputEncoderV1 for CellNativeRepresentationInputV1 {
-    fn encode(&self, request: &CellEncodingRequestV1<'_>) -> Result<CellEncodedInputV1, CellExecutionError> {
+    fn encode(
+        &self,
+        request: &CellEncodingRequestV1<'_>,
+    ) -> Result<CellEncodedInputV1, CellExecutionError> {
         self.validate_request(request)?;
         Ok(CellEncodedInputV1 {
             encoder_digest: self.encoder_digest,
@@ -392,7 +428,13 @@ impl RegisteredCellBackendV1 {
         if snapshot.source_frontier != input.source_frontier {
             return Err(CellExecutionError::StaleSource);
         }
-        enter_cell_step(&self.registration().definition, owner, representation, input, now_micros)
+        enter_cell_step(
+            &self.registration().definition,
+            owner,
+            representation,
+            input,
+            now_micros,
+        )
     }
 
     /// Reconstruct and read back the original admission. UNKNOWN still owns
@@ -417,7 +459,12 @@ impl RegisteredCellBackendV1 {
             checkpoint: None,
         })?;
         recover_cell_inference(
-            &self.registration().definition, owner, representation, input, readback, now_micros,
+            &self.registration().definition,
+            owner,
+            representation,
+            input,
+            readback,
+            now_micros,
         )
     }
 }
@@ -430,7 +477,9 @@ fn decode_q24(bytes: &[u8], dtype: CellTensorDtypeV1) -> Result<i64, CellReprese
             i64::from_le_bytes(bytes.try_into().map_err(|_| E::InvalidPayload)?)
         }
         CellTensorDtypeV1::F32Le => {
-            let value = f64::from(f32::from_le_bytes(bytes.try_into().map_err(|_| E::InvalidPayload)?));
+            let value = f64::from(f32::from_le_bytes(
+                bytes.try_into().map_err(|_| E::InvalidPayload)?,
+            ));
             if !value.is_finite() || !(-8.0..=8.0).contains(&value) {
                 return Err(E::InvalidPayload);
             }

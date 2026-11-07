@@ -28,10 +28,20 @@ impl<'a, P, C> GuardedCellDispatchV1<'a, P, C> {
         cell_deadline_micros: u64,
         validate_new_use: &'a mut dyn FnMut() -> Result<(), CellExecutionError>,
     ) -> Self {
-        Self { control, clock, not_before, circuit_deadline_ms, cell_deadline_micros, observed: None, validate_new_use }
+        Self {
+            control,
+            clock,
+            not_before,
+            circuit_deadline_ms,
+            cell_deadline_micros,
+            observed: None,
+            validate_new_use,
+        }
     }
 
-    pub(super) fn observed_at(&self) -> Option<CircuitCellTimeV1> { self.observed }
+    pub(super) fn observed_at(&self) -> Option<CircuitCellTimeV1> {
+        self.observed
+    }
 }
 
 impl<P, C> NeuronInferenceControlPort for GuardedCellDispatchV1<'_, P, C>
