@@ -68,6 +68,21 @@ fn complete_denies_compare_mapped_masks_and_require_every_right() -> Result<()> 
             FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD,
             true,
         ),
+        (
+            DenyAceKind::Write,
+            (FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD) & !READ_CONTROL,
+            true,
+        ),
+        (
+            DenyAceKind::Write,
+            (FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD) & !SYNCHRONIZE,
+            true,
+        ),
+        (
+            DenyAceKind::Write,
+            (FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD) & !(READ_CONTROL | SYNCHRONIZE),
+            true,
+        ),
         (DenyAceKind::Write, FILE_GENERIC_WRITE, false),
         (DenyAceKind::Write, FILE_GENERIC_READ, false),
         (DenyAceKind::Write, DELETE, false),
@@ -254,7 +269,12 @@ fn normalized_deny_pair_requires_every_right_in_effective_and_recursive_scopes()
         (DenyAceKind::Read, FILE_GENERIC_READ),
         (
             DenyAceKind::Write,
-            FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD,
+            FILE_WRITE_DATA
+                | FILE_APPEND_DATA
+                | FILE_WRITE_EA
+                | FILE_WRITE_ATTRIBUTES
+                | DELETE
+                | FILE_DELETE_CHILD,
         ),
     ] {
         let mut complete = NativeAcl::new()?;
@@ -276,6 +296,60 @@ fn normalized_deny_pair_requires_every_right_in_effective_and_recursive_scopes()
             }
         }
     }
+    Ok(())
+}
+
+#[test]
+fn fresh_write_deny_preserves_generic_read_and_denies_data_mutation() -> Result<()> {
+    let fixture = tempfile::tempdir()?;
+    let path = fixture.path().join("readable.txt");
+    std::fs::write(&path, "readable")?;
+    let file = OpenOptions::new()
+        .access_mode(READ_CONTROL | WRITE_DAC)
+        .open(&path)?;
+    // SAFETY: the existing path supplies a descriptor owned by the restore guard.
+    let (dacl, descriptor) = unsafe { fetch_dacl_handle(&path)? };
+    let restore = RestoreDacl {
+        file,
+        dacl,
+        descriptor,
+    };
+    let everyone = LocalSid::from_string("S-1-1-0")?;
+    // SAFETY: the owned fixture and validated SID remain live; restoration uses
+    // the writable handle retained before the deny was added.
+    let repaired = unsafe { add_deny_write_ace(&path, everyone.as_ptr())? };
+    let readable = (|| -> std::io::Result<String> {
+        let mut contents = String::new();
+        OpenOptions::new()
+            .access_mode(FILE_GENERIC_READ)
+            .open(&path)?
+            .read_to_string(&mut contents)?;
+        Ok(contents)
+    })()
+    .map_err(|error| error.kind());
+    let denied = [
+        FILE_WRITE_DATA,
+        FILE_APPEND_DATA,
+        FILE_WRITE_EA,
+        FILE_WRITE_ATTRIBUTES,
+    ]
+    .map(|access| {
+        OpenOptions::new()
+            .access_mode(access | SYNCHRONIZE)
+            .open(&path)
+            .map(drop)
+            .err()
+            .map(|error| error.kind())
+    });
+    drop(restore);
+    assert_eq!(
+        (repaired, readable, denied),
+        (
+            true,
+            Ok("readable".to_string()),
+            [Some(std::io::ErrorKind::PermissionDenied); 4],
+        ),
+    );
     Ok(())
 }
 
