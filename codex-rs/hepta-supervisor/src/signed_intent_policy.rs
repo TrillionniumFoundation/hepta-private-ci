@@ -35,10 +35,44 @@ impl SignedIntentPqAuthority {
         self.verify_at(intent, self.issued_at_unix_seconds)
     }
 
+    /// Borrow only public-key preparation for the exact retained policy bytes.
+    /// The caller's current policy may differ from historical grant authority;
+    /// that case reconstructs the original verifier and never substitutes keys.
+    pub(crate) fn verify_historical_for_with_prepared(
+        &self,
+        intent: &SignedSupervisorIntent,
+        prepared: &H7H89ProductionGrantVerifier,
+    ) -> Result<(), SupervisorError> {
+        self.verify_at_with_prepared(intent, self.issued_at_unix_seconds, Some(prepared))
+    }
+
     fn verify_at(&self, intent: &SignedSupervisorIntent, now: u64) -> Result<(), SupervisorError> {
-        let verifier = self
-            .validated_verifier(intent)
+        self.verify_at_with_prepared(intent, now, /*prepared*/ None)
+    }
+
+    fn verify_at_with_prepared(
+        &self,
+        intent: &SignedSupervisorIntent,
+        now: u64,
+        prepared: Option<&H7H89ProductionGrantVerifier>,
+    ) -> Result<(), SupervisorError> {
+        self.validate_for(intent)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        // Exact raw bytes include every role, epoch, key pin and encoding. A
+        // digest, signer ID or previously successful signature is insufficient.
+        // This borrows no permission, clock, frontier or signature observation.
+        let reconstructed;
+        let verifier = match prepared
+            .filter(|verifier| verifier.policy_bytes() == Some(self.policy_json.as_bytes()))
+        {
+            Some(verifier) => verifier,
+            None => {
+                reconstructed =
+                    H7H89ProductionGrantVerifier::from_pq_policy_bytes(self.policy_json.as_bytes())
+                        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                &reconstructed
+            }
+        };
         let agent = codex_hepta_contracts::AgentId::parse(intent.agent_id.clone())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         verifier
@@ -60,16 +94,9 @@ impl SignedIntentPqAuthority {
         &self,
         intent: &SignedSupervisorIntent,
     ) -> Result<(), SignedIntentError> {
-        self.validated_verifier(intent).map(|_| ())
-    }
-
-    // The shape/binding check already constructs the verifier for these exact
-    // policy bytes. Its caller can use the same prepared keys to verify the
-    // actual signatures and supplied time, without parsing the policy twice.
-    fn validated_verifier(
-        &self,
-        intent: &SignedSupervisorIntent,
-    ) -> Result<H7H89ProductionGrantVerifier, SignedIntentError> {
+        // Read/rewrite validation checks canonical keys and all bindings. It
+        // grants no signature observation; verify_at separately obtains the
+        // canonical verifier and checks both real signatures on every call.
         if Sha256Digest::parse(self.binding.policy_sha256.as_str()).is_err()
             || self.issued_at_unix_seconds == 0
             || self.expires_at_unix_seconds <= self.issued_at_unix_seconds
@@ -80,13 +107,13 @@ impl SignedIntentPqAuthority {
                 "signed intent PQ authority is malformed".to_string(),
             ));
         }
-        let verifier =
-            H7H89ProductionGrantVerifier::from_pq_policy_bytes(self.policy_json.as_bytes())
+        let policy_sha256 =
+            H7H89ProductionGrantVerifier::validate_pq_policy_bytes(self.policy_json.as_bytes())
                 .map_err(|error| SignedIntentError::Invalid(error.to_string()))?;
         self.grant
             .validate_shape(&self.h7_envelope)
             .map_err(|error| SignedIntentError::Invalid(error.to_string()))?;
-        if verifier.policy_sha256() != Some(&self.binding.policy_sha256)
+        if policy_sha256 != self.binding.policy_sha256
             || self.grant.pq_authority.as_ref() != Some(&self.binding)
             || self.grant.grant_sha256 != intent.grant_sha256
             || self.grant.agent_id != intent.agent_id
@@ -111,7 +138,7 @@ impl SignedIntentPqAuthority {
                 "retained PQ proof differs from its admitted intent".to_string(),
             ));
         }
-        Ok(verifier)
+        Ok(())
     }
 }
 

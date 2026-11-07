@@ -6,6 +6,8 @@ use codex_hepta_memory::H7QualificationRuntime;
 use codex_hepta_memory::H7SignedArtifactTransition;
 use codex_hepta_memory::H7TrajectoryEvent;
 use pretty_assertions::assert_eq;
+use sha2::Digest;
+use sha2::Sha256;
 
 pub(crate) struct AuthorityFixture {
     pub(crate) policy: Vec<u8>,
@@ -185,6 +187,81 @@ fn prepared_policy_still_rejects_invalid_pins_in_every_role() {
     }
     let verifier = H7H89ProductionGrantVerifier::from_pq_policy_bytes(&fixture.policy).unwrap();
     assert_eq!(verifier.policy_bytes(), Some(fixture.policy.as_slice()));
+}
+
+#[test]
+fn canonical_policy_validation_rejects_malformed_keys_in_every_role() {
+    let fixture = fixture_at(/*issued*/ 100, /*expires*/ 500);
+    let original: ProductionAuthorityPolicyV1 = serde_json::from_slice(&fixture.policy).unwrap();
+    assert_eq!(
+        H7H89ProductionGrantVerifier::validate_pq_policy_bytes(&fixture.policy).unwrap(),
+        Sha256Digest::for_bytes(&fixture.policy)
+    );
+    #[derive(Clone, Copy, Debug)]
+    enum Role {
+        Grant,
+        Artifact,
+        Recovery,
+    }
+    #[derive(Clone, Copy, Debug)]
+    enum Corruption {
+        Pin,
+        Algorithm,
+        Truncated,
+        Appended,
+        Base64,
+        Epoch,
+        Identifier,
+    }
+    for role in [Role::Grant, Role::Artifact, Role::Recovery] {
+        for corruption in [
+            Corruption::Pin,
+            Corruption::Algorithm,
+            Corruption::Truncated,
+            Corruption::Appended,
+            Corruption::Base64,
+            Corruption::Epoch,
+            Corruption::Identifier,
+        ] {
+            let mut changed = original.clone();
+            let identity = match role {
+                Role::Grant => &mut changed.grant,
+                Role::Artifact => &mut changed.artifact,
+                Role::Recovery => &mut changed.recovery,
+            };
+            let mut spki = STANDARD.decode(&identity.public_spki_base64).unwrap();
+            match corruption {
+                Corruption::Pin => identity.public_key_id[0] ^= 1,
+                Corruption::Algorithm => spki[20] ^= 1,
+                Corruption::Truncated => spki.truncate(spki.len() - 1),
+                Corruption::Appended => spki.push(/*value*/ 0),
+                Corruption::Base64 => identity.public_spki_base64.replace_range(..1, "!"),
+                Corruption::Epoch => identity.signer_epoch = 0,
+                Corruption::Identifier => identity.signer_id = "invalid role".to_string(),
+            }
+            if matches!(
+                corruption,
+                Corruption::Algorithm | Corruption::Truncated | Corruption::Appended
+            ) {
+                // Recompute the raw pin so these refusals depend on the strict
+                // SPKI algorithm/length checks, not an incidental pin mismatch.
+                let mut digest = Sha256::new();
+                digest.update(b"TRNM/PoN/PQKey/v1\0");
+                digest.update(&spki);
+                identity.public_key_id = digest.finalize().into();
+                identity.public_spki_base64 = STANDARD.encode(spki);
+            }
+            let bytes = serde_json::to_vec(&changed).unwrap();
+            assert!(
+                H7H89ProductionGrantVerifier::validate_pq_policy_bytes(&bytes).is_err(),
+                "shape accepted {role:?} {corruption:?}"
+            );
+            assert!(
+                H7H89ProductionGrantVerifier::from_pq_policy_bytes(&bytes).is_err(),
+                "prepared verifier accepted {role:?} {corruption:?}"
+            );
+        }
+    }
 }
 
 #[test]
