@@ -1,0 +1,90 @@
+{
+  "observed_at_utc": "2026-11-07T02:15:36.762506+00:00",
+  "scope": "The 18 existing publication payload files; this receipt and six captured command outputs are additional evidence.",
+  "publication_files": 25,
+  "new_codespell_ignores_or_skips": false,
+  "HOME_inherited": true,
+  "checks": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/review.py",
+        "/workspace/scratch/3f6a885bb83c/round3_native/authority_terminal_evidence_20261107/restore.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/review.py",
+        "/workspace/scratch/3f6a885bb83c/round3_native/authority_terminal_evidence_20261107/restore.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 26,
+        "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "-m",
+        "codespell_lib",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git",
+        "/workspace/scratch/3f6a885bb83c/round3_native/authority_terminal_evidence_20261107/CODESPELL.json",
+        "/workspace/scratch/3f6a885bb83c/round3_native/authority_terminal_evidence_20261107/INDEX.json",
+        "/workspace/scratch/3f6a885bb83c/round3_native/authority_terminal_evidence_20261107/READER_CHECK.json",
+        "/workspace/scratch/3f6a885bb83c/round3_native/authority_terminal_evidence_20261107/README.md",
+        "/workspace/scratch/3f6a885bb83c/round3_native/authority_terminal_evidence_20261107/ROUNDTRIP.json",
+        "/workspace/scratch/3f6a885bb83c/round3_native/authority_terminal_evidence_20261107/native-evidence.tar.xz.part000.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_native/authority_terminal_evidence_20261107/restore.py",
+        "/workspace/scratch/3f6a885bb83c/round3_native/AUTHORITY_TERMINAL_CHECKPOINT_PUBLICATION_MANIFEST.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/ROOT_REVIEW.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/SOURCE_API.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/review.py",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/INITIAL_REVIEW.txt",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/INITIAL_REVIEW_FAILURE.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/initial-review.tool-output.txt",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/restore.stdout",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/restore.stderr",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/restore-v2.stdout",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/restore-v2.stderr"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

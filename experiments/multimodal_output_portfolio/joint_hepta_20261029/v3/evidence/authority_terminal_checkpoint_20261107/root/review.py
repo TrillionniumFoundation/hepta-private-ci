@@ -1,0 +1,313 @@
+"""Restore the selected Windows terminal evidence without executing its sources."""
+
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import re
+import stat
+import subprocess
+import sys
+
+
+ROOT = Path("/workspace/scratch/3f6a885bb83c")
+OUT = ROOT / "round3_local_qualification/authority_terminal_checkpoint_root"
+PACKAGE = ROOT / "round3_native/authority_terminal_evidence_20261107"
+DESTINATION = ROOT / "round3_root_restore_authority_terminal_20261107_v2"
+
+
+def require(value, message):
+    if not value:
+        raise ValueError(message)
+
+
+def identity(data):
+    return {
+        "bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "git_blob": hashlib.sha1(
+            b"blob " + str(len(data)).encode() + b"\0" + data
+        ).hexdigest(),
+    }
+
+
+def original_json(relative, sha):
+    data = (DESTINATION / relative).read_bytes()
+    require(identity(data)["sha256"] == sha, "frozen root evidence identity")
+    return json.loads(data)
+
+
+def main():
+    publication = (
+        ROOT / "round3_native/AUTHORITY_TERMINAL_CHECKPOINT_PUBLICATION_MANIFEST.json"
+    )
+    require(
+        identity(publication.read_bytes())["sha256"]
+        == "26afbeb2c2cd18cf51cfc564f211dd059910d53bff0905aa4143deab6cdb400c",
+        "fixed publication manifest",
+    )
+    manifest = json.loads(publication.read_bytes())
+    require(
+        len(manifest["files"]) == len({row["path"] for row in manifest["files"]}) == 7,
+        "complete unique publication set",
+    )
+    for row in manifest["files"]:
+        path = Path(row["local_path"])
+        require(
+            identity(path.read_bytes())
+            == {
+                "bytes": row["bytes"],
+                "sha256": row["sha256"],
+                "git_blob": row["git_blob_sha"],
+            },
+            "publication file identity",
+        )
+        require(
+            not path.is_symlink()
+            and stat.S_IMODE(path.stat().st_mode) == 0o644
+            and row["mode"] == "100644",
+            "ordinary publication mode",
+        )
+    index_raw = (PACKAGE / "INDEX.json").read_bytes()
+    index = json.loads(index_raw)
+    require(
+        identity(index_raw)["sha256"]
+        == manifest["index_sha256"]
+        == "95c439bacbfb9425a78eb3d2461d1055e788b66df7611db7e6e84da14fa9a390",
+        "sealed index",
+    )
+    reader = (PACKAGE / "restore.py").read_bytes()
+    template = (
+        ROOT / "round3_native/sdk_product_evidence_20261106/restore.py"
+    ).read_bytes()
+    require(
+        identity(template)["sha256"]
+        == "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+        "fixed published canonical reader",
+    )
+    api_path = OUT / "SOURCE_API.json"
+    api = json.loads(api_path.read_bytes())
+    require(len(api["canonical_reader"]) == 1, "one fresh canonical reader leaf")
+    leaf = next(iter(api["canonical_reader"].values()))
+    require(
+        leaf["sha"] == identity(template)["git_blob"]
+        and leaf["size"] == len(template)
+        and leaf["mode"] == "100644",
+        "remote canonical reader binding",
+    )
+    pattern = rb'EXPECTED_INDEX_SHA256 = \(\n    "([a-f0-9]{64})"\n\)'
+    old, new = re.findall(pattern, template), re.findall(pattern, reader)
+    require(
+        len(old) == len(new) == 1 and new[0].decode() == manifest["index_sha256"],
+        "one fixed seal literal",
+    )
+    require(
+        template.replace(old[0], new[0], 1) == reader,
+        "canonical reader differs only in the INDEX seal",
+    )
+    require(not DESTINATION.exists(), "new inert restore destination")
+    command = [
+        sys.executable,
+        "-B",
+        "-O",
+        str(PACKAGE / "restore.py"),
+        str(DESTINATION),
+    ]
+    process = subprocess.run(command, capture_output=True)
+    for name, data in (
+        ("restore-v2.stdout", process.stdout),
+        ("restore-v2.stderr", process.stderr),
+    ):
+        with (OUT / name).open("xb") as stream:
+            stream.write(data)
+    require(
+        process.returncode == 0 and process.stderr == b"",
+        "actual optimized restore succeeded",
+    )
+    totals = json.loads(process.stdout)
+    require(
+        totals["files"] == len(index["files"]) == 90
+        and totals["bytes"] == 2517254
+        and not totals["executed_sources"],
+        "complete selected member totals",
+    )
+    members = {row["path"]: row for row in index["files"]}
+    require(
+        len(members) == 90
+        and {
+            str(path.relative_to(DESTINATION))
+            for path in DESTINATION.rglob("*")
+            if path.is_file()
+        }
+        == set(members),
+        "exact recovered path set",
+    )
+    for name, row in members.items():
+        original, restored = ROOT / name, DESTINATION / name
+        raw = restored.read_bytes()
+        require(
+            raw == original.read_bytes()
+            and len(raw) == row["bytes"]
+            and hashlib.sha256(raw).hexdigest() == row["sha256"],
+            "every recovered byte matches the frozen original",
+        )
+        require(
+            stat.S_ISREG(restored.lstat().st_mode)
+            and stat.S_IMODE(restored.stat().st_mode) == 0o644,
+            "all recovered files inert and ordinary",
+        )
+        require(
+            format(stat.S_IMODE(original.stat().st_mode), "04o")
+            == row["source_permission_bits"]
+            and format(original.stat().st_mode, "06o") == row["source_stat_mode"],
+            "original mode record exact",
+        )
+    native = original_json(
+        "round3_local_qualification/authority5203_root/ROOT_REVIEW.json",
+        "591b44dc7da5fc26a6779337fa2b3e10baa3ee273a8af70256eb2fb4a7f2be12",
+    )
+    clippy = original_json(
+        "round3_local_qualification/authority5203_clippy_root/ROOT_REVIEW.json",
+        "9538dfe85a2bb2cf3c383c5f73a02e23fb807108a0e85c4f31a7f3e40b8ea30c",
+    )
+    formatter = original_json(
+        "round3_local_qualification/windows39/ROOT_REVIEW.json",
+        "346cd81da5f556f2e1645dae988072de6ba143b986286284477204bb4976c76a",
+    )
+    require(
+        native["run"] == 42320716996
+        and native["attempt"] == 1
+        and native["job"] == 128247705210
+        and native["owning_job_conclusion"] == "failure",
+        "original native failure scope",
+    )
+    require(
+        native["fixed_original_records_verified"] == 276
+        and native["printed_probe_blocks"] == 1
+        and native["target"] == "NONCACHED_FAILURE_82.2_SECONDS",
+        "complete fixed record and target scope",
+    )
+    require(
+        len(native["case_results"]) == 3
+        and set(native["case_results"].values()) == {"DIRECT_NATIVE_FAILURE"},
+        "three direct failures remain failures",
+    )
+    require(
+        native["scenarios"][0]["original_oracle"]
+        and native["scenarios"][3]["inside_successes"] == 5
+        and not native["scenarios"][3]["original_oracle"],
+        "F0 evidence and invalid F3 intervention retained",
+    )
+    require(
+        native["F3_workspace_and_inherited_child_A_allow_masks"]
+        == {"0": {"1": [1245631], "2": [1245631]}, "3": {"1": [64], "2": [64]}},
+        "actual replacement masks preserved",
+    )
+    require(
+        clippy["job"] == 128247705196
+        and clippy["official_job_and_clean_worktree"] == "success"
+        and not clippy["runtime_cases_qualified"],
+        "Clippy success retains its build-only boundary",
+    )
+    require(
+        formatter["exit_code"] == 0
+        and len(formatter["after"]) == 107
+        and formatter["owned_status_and_bytes_exact"],
+        "original source39 formatter evidence",
+    )
+    status = json.loads(
+        (
+            DESTINATION
+            / "round3_native/authority_terminal_checkpoint_inputs/RUN_STATUS.json"
+        ).read_bytes()
+    )
+    require(
+        status["complete_fixed_records"] == 276
+        and status["all_three_case_results"] == "FAILED"
+        and status["correction_native_execution_in_this_packet"] == "NOT_OBSERVED",
+        "terminal old source and pending corrective source are separate",
+    )
+    require(
+        not status["product_p0_closed"]
+        and not status["private_console_included"]
+        and not status["workflow_dispatch_or_rerun"],
+        "qualification limits preserved",
+    )
+    correction = status["correction_source"]
+    head = json.loads(api["corrected_source"]["structuredContent"]["content"])
+    require(
+        head["sha"] == correction["head"] == "778051593ba54468591ca9ac15ec53b88b83a7c7"
+        and head["tree"]["sha"]
+        == correction["tree"]
+        == "15c9d446ae45ec9bdc5cd95c9114450ef02d7256",
+        "fresh source39 head and tree",
+    )
+    require(
+        [row["sha"] for row in head["parents"]] == [native["head"]]
+        and correction["pr"] == 5214,
+        "strict original failed-source parent",
+    )
+    require(
+        not any(
+            Path(name).name in {"job_128247705210.log", "job_128247705196.log"}
+            for name in members
+        ),
+        "private native consoles excluded",
+    )
+    require(
+        identity(
+            (
+                ROOT / "round3_native/read_authority_evidence_20261107/INDEX.json"
+            ).read_bytes()
+        )["sha256"]
+        == "b02e9c68d9d5e40b0d6283717d8fbda4e6fd8629f6a7ac0b7aadfc0a3ad21d02",
+        "earlier queued checkpoint remains unchanged",
+    )
+    receipt = {
+        "observed_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "publication": identity(publication.read_bytes()),
+        "index": identity(index_raw),
+        "reader": identity(reader),
+        "original_published_reader": identity(template),
+        "fresh_source_API": identity(api_path.read_bytes()),
+        "reader_only_seal_changed": True,
+        "command": command,
+        "exit_code": process.returncode,
+        "files": 90,
+        "bytes": 2517254,
+        "every_original_member_byte_and_mode_record_verified": True,
+        "all_restored_files_inert_0644": True,
+        "source38_owning_job": "FAILURE",
+        "source38_fixed_records": 276,
+        "source38_case_failures": 3,
+        "source38_clippy": "SUCCESS_BUILD_SCOPE_ONLY",
+        "source39_PR": 5214,
+        "source39_native_in_packet": "NOT_OBSERVED",
+        "earlier_queued_packet_unchanged": True,
+        "product_P0_closed": False,
+        "archive_sources_executed": False,
+        "native_commands_or_scanner_executed": False,
+        "limits": [
+            "The exact selected records are recoverable. The two excluded private job consoles cannot be reconstructed from this packet.",
+            "The old owning target and three cases failed. F0 satisfies one prepared fixture; it does not establish a production repair.",
+            "The F3 control replaced the active write mask; its failed prediction did not test the intended additive intervention.",
+            "F4 operation fields exist, but its final assertion was not reached after the F3 failure.",
+            "The source39 review and initial queued snapshot do not qualify its native execution. Later observations require an additive receipt.",
+        ],
+    }
+    with (OUT / "ROOT_REVIEW.json").open("x") as stream:
+        json.dump(receipt, stream, indent=2)
+        stream.write("\n")
+    print(
+        json.dumps(
+            {
+                "root_review": identity((OUT / "ROOT_REVIEW.json").read_bytes()),
+                "files": 90,
+                "bytes": 2517254,
+            }
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()
