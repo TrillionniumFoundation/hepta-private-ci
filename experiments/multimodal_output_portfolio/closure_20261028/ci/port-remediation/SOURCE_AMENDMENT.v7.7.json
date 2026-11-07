@@ -1,0 +1,175 @@
+{
+  "changes": {
+    "MODULE.bazel.lock": {
+      "after": {
+        "bytes": 1726069,
+        "sha256": "63ab34b77082fc8071db478d70dcbc480be2ea45c39742b773bd9060948fbe6d"
+      },
+      "before": {
+        "bytes": 1725951,
+        "sha256": "90225dce14839069862401db906babcee1d1f19349f2da87024740e97747adaf"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/Cargo.lock": {
+      "after": {
+        "bytes": 419586,
+        "sha256": "89eb9733de276a103feaea3240ac81c7af49bdceddffd691c5d4f015dbcc98ec"
+      },
+      "before": {
+        "bytes": 419355,
+        "sha256": "f1e6fa0a988a0454cac28c061259fb229f53642ebc11cce09395ac899bff1781"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/hepta-contracts/Cargo.toml": {
+      "after": {
+        "bytes": 996,
+        "sha256": "cb84bfd6db8ea96535e22edfe31b6de7c35120af7a6129158f79aba69ca73350"
+      },
+      "before": {
+        "bytes": 868,
+        "sha256": "c15189253bfa062f3b41d9b861833c0271cb8d5903b0667a028a6154d6903efd"
+      },
+      "mode": "100644"
+    }
+  },
+  "inventory": {
+    "added": ["codex-rs/hepta-contracts/Cargo.toml"],
+    "current_count": 325,
+    "previous_count": 324,
+    "replaced": ["MODULE.bazel.lock", "codex-rs/Cargo.lock"]
+  },
+  "native_proposal": {
+    "all_four_actual_configured_analyses_passed": true,
+    "artifact": {
+      "artifact_id": 13560075488,
+      "bytes": 2676893,
+      "git_blob": "8c1325effb0eeea6b36f98c9bdba132439501bb7",
+      "sha256": "72c203bdfd3fb9fe304fc37ed389caa0b9f7e081c544cc04fc0c464735b94820"
+    },
+    "attempt": 1,
+    "complete_metadata_comparison_ran_privately": true,
+    "complete_private_metadata_offline_replayed": false,
+    "exact_commands_exit_zero": 24,
+    "head": "de7bef019b5bc77ee543bcbb11e494d1d8501c6e",
+    "job_id": 128294588508,
+    "original_all_features_cargo_deny_passed": true,
+    "run_id": 42336527502,
+    "safe_metadata_projection_is_lossless": false,
+    "tree": "91dfcc9fd1ea583753a25770f2e5d062e1f6d015"
+  },
+  "operation": "bind-native-linux-aarch64-sha256-backend",
+  "parents": {
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/BUILD_AMENDMENT.v7.3.json": {
+      "bytes": 2820,
+      "sha256": "2ebd2e0ceacf4f22f2c3b28b7397d353c52e95d944ef664e9dcf6cb70b0e6a5e"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/DEPENDENCY_AMENDMENT.v7.2.json": {
+      "bytes": 76071,
+      "sha256": "334d6a0000bb6c14c1f8742e680c799d7e9f768e035ce06a99593bedd0e1d538"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json": {
+      "bytes": 9120,
+      "sha256": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/LOCK_AMENDMENT.v7.5.json": {
+      "bytes": 5700,
+      "sha256": "1642fee9bf4497169d2a2645e01864e8c74435071887dcea7bc2c8315123ab83"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.1.json": {
+      "bytes": 3256,
+      "sha256": "f802638dd5d01f3b3d7583986848c1ad6264c3ec478ed055f4e1edebc7a0d40a"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.4.json": {
+      "bytes": 3111,
+      "sha256": "56c5b2a709caa0ae7749e1281c9e6ac56085244303cdbb8b158fc26d1cf106d0"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.6.json": {
+      "bytes": 7869,
+      "sha256": "5257b59677889b9bff1eb295b6a04c6929fe3a153d25bbee0d21ed00f54c2144"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json": {
+      "bytes": 348278,
+      "sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f"
+    }
+  },
+  "previously_unsealed_source_inputs": {
+    "codex-rs/hepta-contracts/Cargo.toml": {
+      "bytes": 868,
+      "sha256": "c15189253bfa062f3b41d9b861833c0271cb8d5903b0667a028a6154d6903efd"
+    }
+  },
+  "promotion_allowed": false,
+  "proofs": {
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/current-product-source-binding.json.gz": {
+      "bytes": 828,
+      "sha256": "6b0dd9ba462ff0a243d610dacdd841156e6174146c2fefece47e0cadbd9391f5"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/independent-artifact-audit.json.gz": {
+      "bytes": 9488,
+      "sha256": "a7281d95feaecfa6e8de0e20eb776c2c2334881068ca9764e1794b3a71fa521f"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/native-artifact-manifest.json.gz": {
+      "bytes": 4314,
+      "sha256": "67483c4be642387768e942c8de71221aeb3dfe9640958cfa3cb742d0ed4913ba"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/native-cargo-proof.json.gz": {
+      "bytes": 258,
+      "sha256": "1c3a79805efdc17fab9352dd82f4f5a16adaeb34246e3438da6efeacf74fdc86"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/native-metadata-custody.json.gz": {
+      "bytes": 446,
+      "sha256": "18776b08c2698294df0cec7a8f34306060d9251e36b0f57a433756f5f0d52f85"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/native-metadata-proof.json.gz": {
+      "bytes": 499,
+      "sha256": "80439b601ea3b04869baecb1250d5c01bdea53d144ae505e8723e822e7d0ab0b"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/native-module-proof.json.gz": {
+      "bytes": 213,
+      "sha256": "46aad5eaeba4198b4e9da3a950b6b5259402b054e33c76ad9f85127a67a7f217"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/native-platform-proof.json.gz": {
+      "bytes": 783,
+      "sha256": "2b98367e9acf745fd359222493d093ef712b2eccb0f87c149ed517afd72e4617"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/native-proposal-spec.json.gz": {
+      "bytes": 2885,
+      "sha256": "aa420dc77be9362fb00c4ea63f5b3deb11668d4bdcdae27c9291170ee5a033fa"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/native-result.json.gz": {
+      "bytes": 4206,
+      "sha256": "b462267596cdb4603521bcd3424dc26fad64e4fe9ecbb96fb942c7cffb874ad0"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/native-source-after.json.gz": {
+      "bytes": 156,
+      "sha256": "ce6909ccf65ec57391dd4ca5fe0bf7dc1a2f7878c76686223aa303deabb8194b"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/native-source-before.json.gz": {
+      "bytes": 820,
+      "sha256": "f972d72768575d8c63dba17d6ec8754eb5a8dea81f99eecfa2dbae266befc17a"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/original-native.patch.gz": {
+      "bytes": 1095,
+      "sha256": "81e91e670d18a3913a15088175f9c46610ec0a12bc05f3083ba295a3e84d2052"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/root-artifact-review.json.gz": {
+      "bytes": 3713,
+      "sha256": "14074c08f3c6ad1e9984ff5dc09203ff36f3493307bb8bc8bdce39c94c7641e8"
+    },
+    "qualification/ndu-ci-repairs-20261107/port-linux-aarch64-sha256-native/safe-native-terminal-observations.json.gz": {
+      "bytes": 2408,
+      "sha256": "d00ba214324883c47dfbbcfac8302b915240b6c665f2c05fdf0532f7f5bcebe4"
+    }
+  },
+  "reviewed_product_parent": {
+    "branch": "research/ndu-windows-access-terminal-evidence-20261107",
+    "head": "95b23ddeb3067b6003a34cef935a7726c03c4ed7",
+    "pull_request": 5239,
+    "tree": "fa071f96aed966365fd181a84b9d60f5d59473a7"
+  },
+  "reviewed_product_tree": "05f2b4c2f97542a769c3db9145f526e83d627999",
+  "schema": "hepta.port-linux-aarch64-sha256-amendment.v1",
+  "scope": "The three exact accepted native outputs only: target-specific hepta-contracts declaration, one new registry package/edge, and one MODULE fact. All old seals, native proofs, scanners, policy inputs, commands, profiles, assertions and timeouts remain unchanged. Configuration analysis is separate from owning ARM execution and speed qualification."
+}
