@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.integrated-validation-summary.v1",
+  "current_code_commit": "be596c37135c3b62760f79c368454ccaf70487dc",
+  "unique_current_test_coverage": 303,
+  "counts": {
+    "portfolio": 171,
+    "semantic": 49,
+    "decision_audit": 83
+  },
+  "current_coverage_passed": true,
+  "selected_runtime_skips": 0,
+  "hosted_ci_executed": false,
+  "real_gpu_executed": false,
+  "scientific_acceptance": false,
+  "attempts": [
+    {
+      "path": "attempt-001/RESULT.json",
+      "tests": 303,
+      "errors": 7,
+      "reason": "One missing inherited finite-oracle dependency caused seven subtest errors; all other selected groups passed."
+    },
+    {
+      "path": "attempt-002/RESULT.json",
+      "tests": 83,
+      "errors": 0,
+      "reason": "Both unchanged inherited reference modules were restored from the pinned runtime source; only the affected group was repeated."
+    }
+  ],
+  "unchanged_successful_sources": [
+    {
+      "group": "portfolio",
+      "files": 36,
+      "same_bytes_as_successful_attempt": true
+    },
+    {
+      "group": "semantic",
+      "files": 12,
+      "same_bytes_as_successful_attempt": true
+    }
+  ],
+  "format": {
+    "command": "just fmt --base 6df2610103fb514d847cce8845a9c68490c85dbf",
+    "exit_code": 0,
+    "ast_equivalent": true,
+    "file_bytes_changed": false
+  },
+  "interpretation": "303 distinct tests are covered by these two receipts; executed attempts total 386, not 386 independent tests or scientific observations."
+}
