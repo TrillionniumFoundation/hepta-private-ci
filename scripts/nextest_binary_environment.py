@@ -6,6 +6,10 @@ with Nextest's binaries-only listing, then pass the reported paths to the origin
 run command. The original double-build path can reuse its cache, but is not
 guaranteed to perform no compilation or artifact replacement.
 
+An explicit executable copy must match the official artifact's length and SHA,
+with every supplied alias resolving to the same copy. Both files are observed
+again after execution; byte changes never authorize a different helper.
+
 For the scoped metadata path, a supported command executes the official listed
 binaries without a second Cargo build. Build selectors remain on the original
 listing command; test options remain on the execution command. Unsupported
@@ -505,6 +509,7 @@ def bind_environment(listing, metadata, inherited, *, windows=None):
             for alias in {name, name.replace("-", "_")}
         }
         preserved, added = [], []
+        explicit = None
         for key in sorted(keys):
             if key not in inherited_keys:
                 continue
@@ -513,19 +518,40 @@ def bind_environment(listing, metadata, inherited, *, windows=None):
             require(
                 prior.is_absolute()
                 and prior.is_file()
-                and prior.resolve() == canonical,
-                f"existing explicit binary environment has another identity: {original_key}",
+                and stat.S_ISREG(prior.lstat().st_mode),
+                f"existing explicit binary environment is not a regular executable: {original_key}",
             )
+            observed_explicit = file_observation(prior, executable=True)
             require(
-                file_observation(prior, executable=True)["sha256"]
-                == observation["sha256"],
+                all(
+                    observed_explicit[field] == observation[field]
+                    for field in ("bytes", "sha256")
+                ),
                 f"existing binary bytes differ: {original_key}",
             )
+            require(
+                explicit is None
+                or all(
+                    explicit[field] == observed_explicit[field]
+                    for field in (
+                        "canonical_path",
+                        "bytes",
+                        "sha256",
+                        "mode",
+                        "device",
+                        "inode",
+                        "mtime_ns",
+                        "ctime_ns",
+                    )
+                ),
+                f"existing binary aliases have different identities: {original_key}",
+            )
+            explicit = observed_explicit
             preserved.append(original_key)
         for alias in sorted({name, name.replace("-", "_")}):
             key = environment_key("NEXTEST_BIN_EXE_" + alias, windows)
             if key not in inherited_keys:
-                child[key] = str(target / relative)
+                child[key] = explicit["path"] if explicit else str(target / relative)
                 added.append(key)
         evidence.append(
             {
@@ -537,6 +563,7 @@ def bind_environment(listing, metadata, inherited, *, windows=None):
                 "target_source": file_observation(targets[0]["src_path"]),
                 "official_artifact": artifact,
                 "executable": observation,
+                "explicit_executable": explicit,
                 "preserved_keys": preserved,
                 "added_keys": added,
             }
@@ -669,6 +696,15 @@ def run(command, metadata=None):
                 file_observation(item["executable"]["path"], executable=True)
                 for item in helpers
             ]
+            explicit_payloads = [
+                item["explicit_executable"]
+                for item in helpers
+                if item["explicit_executable"] is not None
+            ]
+            receipt["explicit_payloads_after"] = [
+                file_observation(item["path"], executable=True)
+                for item in explicit_payloads
+            ]
             require(
                 receipt["source_after"] == after_build,
                 "source changed during the original run",
@@ -676,6 +712,10 @@ def run(command, metadata=None):
             require(
                 receipt["payloads_after"] == [item["executable"] for item in helpers],
                 "reported helper identity/bytes changed during the original run",
+            )
+            require(
+                receipt["explicit_payloads_after"] == explicit_payloads,
+                "explicit helper identity/bytes changed during the original run",
             )
             receipt["execution_inputs_after"] = [
                 file_observation(item["path"]) for item in execution_inputs

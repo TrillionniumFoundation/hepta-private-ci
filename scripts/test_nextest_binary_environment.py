@@ -254,14 +254,82 @@ class IdentityBoundaryTests(unittest.TestCase):
                         },
                     )
 
-    def test_same_bytes_at_an_unrelated_explicit_path_remain_a_conflict(self):
-        artifact = self.add("fixture")
-        other = self.root / "historical"
+    def test_equal_executable_copy_preserves_aliases_and_both_observations(self):
+        artifact = self.add("fixture-tool")
+        other = self.root / "prepared-copy"
         other.write_bytes(artifact.read_bytes())
         other.chmod(0o700)
-        with self.assertRaises(ENV.BinaryEnvironmentError):
+        inherited = {
+            "CARGO_BIN_EXE_fixture-tool": str(other),
+            "CARGO_BIN_EXE_fixture_tool": str(other),
+            "NEXTEST_BIN_EXE_fixture-tool": str(other),
+        }
+        child, evidence = ENV.bind_environment(self.listing, self.metadata, inherited)
+        self.assertEqual(
+            child, {**inherited, "NEXTEST_BIN_EXE_fixture_tool": str(other)}
+        )
+        self.assertEqual(
+            evidence[0]["executable"], ENV.file_observation(artifact, executable=True)
+        )
+        self.assertEqual(
+            evidence[0]["explicit_executable"],
+            ENV.file_observation(other, executable=True),
+        )
+
+    def test_changed_copy_bytes_and_lengths_are_rejected(self):
+        artifact = self.add("fixture", payload=b"original executable bytes")
+        other = self.root / "prepared-copy"
+        for payload in (
+            b"X" + artifact.read_bytes()[1:], artifact.read_bytes() + b"X"
+        ):
+            with self.subTest(payload=payload):
+                other.write_bytes(payload)
+                other.chmod(0o700)
+                with self.assertRaisesRegex(
+                    ENV.BinaryEnvironmentError, "binary bytes differ"
+                ):
+                    ENV.bind_environment(
+                        self.listing,
+                        self.metadata,
+                        {"NEXTEST_BIN_EXE_fixture": str(other)},
+                    )
+
+    def test_equal_bytes_do_not_authorize_conflicting_alias_paths(self):
+        artifact = self.add("fixture-tool")
+        other = self.root / "prepared-copy"
+        other.write_bytes(artifact.read_bytes())
+        other.chmod(0o700)
+        with self.assertRaisesRegex(
+            ENV.BinaryEnvironmentError, "aliases have different identities"
+        ):
             ENV.bind_environment(
-                self.listing, self.metadata, {"NEXTEST_BIN_EXE_fixture": str(other)}
+                self.listing,
+                self.metadata,
+                {
+                    "CARGO_BIN_EXE_fixture-tool": str(other),
+                    "NEXTEST_BIN_EXE_fixture_tool": str(artifact),
+                },
+            )
+
+    @unittest.skipIf(
+        os.name == "nt", "symlink setup requires separate Windows permission"
+    )
+    def test_equal_symlink_and_nonexecutable_copies_are_rejected(self):
+        artifact = self.add("fixture")
+        other = self.root / "prepared-copy"
+        other.symlink_to(artifact)
+        with self.assertRaisesRegex(
+            ENV.BinaryEnvironmentError, "not a regular executable"
+        ):
+            ENV.bind_environment(
+                self.listing, self.metadata, {"CARGO_BIN_EXE_fixture": str(other)}
+            )
+        other.unlink()
+        other.write_bytes(artifact.read_bytes())
+        other.chmod(0o600)
+        with self.assertRaisesRegex(ENV.BinaryEnvironmentError, "not executable"):
+            ENV.bind_environment(
+                self.listing, self.metadata, {"CARGO_BIN_EXE_fixture": str(other)}
             )
 
     def test_duplicate_names_and_normalized_aliases_are_rejected(self):
@@ -437,6 +505,36 @@ class IdentityBoundaryTests(unittest.TestCase):
         self.assertEqual(receipt["command_exit_code"], 0)
         self.assertEqual(receipt["status"], "BINARY_IDENTITY_REJECTED")
         self.assertIn("changed during", receipt["error"])
+
+    def test_changed_explicit_copy_after_success_is_rejected(self):
+        artifact = self.add("fixture")
+        other = self.root / "prepared-copy"
+        other.write_bytes(artifact.read_bytes())
+        other.chmod(0o700)
+        command = ["cargo", "nextest", "run", "--no-fail-fast", "-p", "fixture"]
+
+        def fake_call(argv, **kwargs):
+            if argv[2] == "list":
+                kwargs["stdout"].write(json.dumps(self.listing).encode())
+            else:
+                self.assertEqual(kwargs["env"]["NEXTEST_BIN_EXE_fixture"], str(other))
+                other.write_bytes(b"changed during original command")
+            return 0
+
+        with (
+            patch.dict(ENV.os.environ, {"CARGO_BIN_EXE_fixture": str(other)}),
+            patch.object(ENV.subprocess, "call", side_effect=fake_call),
+        ):
+            self.assertEqual(ENV.run(command, self.metadata), 1)
+        receipt = json.loads(
+            next(self.target.glob("hepta-nextest/*/receipt.json")).read_text()
+        )
+        self.assertEqual(receipt["command_exit_code"], 0)
+        self.assertEqual(receipt["status"], "BINARY_IDENTITY_REJECTED")
+        self.assertIn("explicit helper identity/bytes changed", receipt["error"])
+        self.assertEqual(
+            receipt["payloads_after"], [receipt["helpers"][0]["executable"]]
+        )
 
     def test_scoped_empty_helper_list_does_not_add_package_or_environment(self):
         command = [

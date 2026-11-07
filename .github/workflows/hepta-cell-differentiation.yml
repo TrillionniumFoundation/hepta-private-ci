@@ -93,6 +93,24 @@ jobs:
           git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/cell-native-evidence/source.txt"
           cp codex-rs/rust-toolchain.toml "$RUNNER_TEMP/cell-native-evidence/"
           sha256sum codex-rs/Cargo.lock > "$RUNNER_TEMP/cell-native-evidence/lock.sha256"
+      - name: Resolve repository-verified V8 artifacts for the real helper
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Build and verify the real same-source Joint helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/cell-native-evidence/helpers" \
+            --github-env "$GITHUB_ENV" \
+            2>&1 | tee "$RUNNER_TEMP/cell-native-evidence/helper-build.log"
+          python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/cell-native-evidence/helpers" \
+            --verify-only > "$RUNNER_TEMP/cell-native-evidence/helpers-before-tests.json"
       - name: Run the existing package test entry point
         working-directory: codex-rs
         shell: bash
@@ -119,6 +137,15 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/cell-native-evidence/format.log"
           git diff --check
           git diff --exit-code
+      - name: Verify the pinned helper after the original native checks
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/cell-native-evidence/helpers" \
+            --verify-only > "$RUNNER_TEMP/cell-native-evidence/helpers-after-tests.json"
       - name: Retain exact native results including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
