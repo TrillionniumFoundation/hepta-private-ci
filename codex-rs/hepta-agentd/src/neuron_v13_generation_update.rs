@@ -50,6 +50,24 @@ pub struct AgentdV13GenerationUpdateInputsV1<'a> {
 }
 
 impl AgentdV13GenerationUpdateInputsV1<'_> {
+    /// Reopen the actual predecessor files using the original V13 witness,
+    /// identity and Linux boot contract. The cold update coordinator still
+    /// proves the retained journal is drained and requires its current owner.
+    /// This starts no worker, appends no preparation cost and grants no use or
+    /// publication authority. Missing or invalid history never initializes.
+    pub fn reopen_predecessor(
+        self,
+    ) -> Result<AgentdGenerationUpdatePredecessorFilesV1<FileAnchorWitnessStore>, AgentdError> {
+        let (target, backend) = self.open(V13GenerationOwnerModeV1::Reopen)?;
+        drop(backend);
+        Ok(AgentdGenerationUpdatePredecessorFilesV1 {
+            file: target.file,
+            witness: target.witness,
+            config: target.config,
+            max_records: target.max_records,
+        })
+    }
+
     pub(crate) fn open(
         self,
         mode: V13GenerationOwnerModeV1,

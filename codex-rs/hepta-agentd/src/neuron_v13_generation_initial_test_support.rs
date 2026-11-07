@@ -145,9 +145,9 @@ impl Fixture {
     pub(super) async fn predecessor(
         &self,
     ) -> anyhow::Result<AgentdGenerationUpdatePredecessorFilesV1<FileAnchorWitnessStore>> {
-        let (target, backend) = timeout(Duration::from_secs(5), async {
+        timeout(Duration::from_secs(5), async {
             loop {
-                match self.inputs()?.open(V13GenerationOwnerModeV1::Reopen) {
+                match self.inputs()?.reopen_predecessor() {
                     Ok(opened) => return Ok::<_, anyhow::Error>(opened),
                     Err(AgentdError::Invalid(message)) if message == "WriterUnavailable" => {
                         sleep(Duration::from_millis(1)).await;
@@ -156,17 +156,7 @@ impl Fixture {
                 }
             }
         })
-        .await??;
-        // Reuse the actual predecessor's V13 witness/boot contract, never the
-        // generic fixture's different witness namespace. No cost or actor is
-        // produced by reopening these capabilities for terminal takeover.
-        drop(backend);
-        Ok(AgentdGenerationUpdatePredecessorFilesV1 {
-            file: target.file,
-            witness: target.witness,
-            config: target.config,
-            max_records: target.max_records,
-        })
+        .await?
     }
 }
 
