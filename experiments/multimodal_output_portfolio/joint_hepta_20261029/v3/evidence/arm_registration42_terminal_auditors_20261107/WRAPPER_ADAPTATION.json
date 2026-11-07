@@ -1,0 +1,11 @@
+{
+  "original_source": "round3_ci/port_diagnosis/arm5248/download_wrapped_zip.py",
+  "original_bytes": 6340,
+  "original_sha256": "aa54623684e614b7bab5ada789898687b752e2f3bd9014e2ae2232b360049b95",
+  "changes": [
+    "Bind original ARM42 head and run",
+    "Read ephemeral transfer URL from a private 0600 file and immediately unlink; URL is never an argv value or receipt field"
+  ],
+  "candidate_helpers_executed": false,
+  "native_execution": false
+}
