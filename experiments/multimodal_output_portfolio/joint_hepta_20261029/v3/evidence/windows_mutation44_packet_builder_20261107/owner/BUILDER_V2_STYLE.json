@@ -1,0 +1,40 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_windows44_checkpoint_20261107/build_windows44_checkpoint_v2.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_windows44_checkpoint_20261107/build_windows44_checkpoint_v2.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_windows44_checkpoint_20261107/build_windows44_checkpoint_v2.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "format_ast_same": true,
+  "six_helper_ast_unchanged": true,
+  "before_sha256": "7c7c0e6295301f50414cb2efb2aaea60f23cc8aa78759fbadc3952fe67b567f7",
+  "after_sha256": "e934b2a451f748bc83bcecaca027351e8184dcce5c0e9c75a2a9a765cccbde6d",
+  "after_lines": 474
+}

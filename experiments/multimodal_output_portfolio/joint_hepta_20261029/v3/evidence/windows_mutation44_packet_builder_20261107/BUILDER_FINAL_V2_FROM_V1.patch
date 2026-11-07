@@ -1,0 +1,91 @@
+--- frozen_windows44_v1
++++ windows44_final_v2
+@@ -18,10 +18,10 @@
+ 
+ ROOT = Path("/workspace/scratch/3f6a885bb83c")
+ HERE = Path("/dev/shm/ndu_windows44_checkpoint_20261107")
+-ROSTER = HERE / "INPUT_ROSTER.json"
+-ROSTER_SHA = "91d8207d90177d14c456d2dab88802c9d152bb80602ea1b11c082b949f2f5257"
+-OUTPUT = HERE / "packet"
+-CHECKS = HERE / "checks"
++ROSTER = HERE / "INPUT_ROSTER_v2.json"
++ROSTER_SHA = "14df96951737d091acda46a1ec4c167e31f9d4244ad3dfd875bcceb71f194146"
++OUTPUT = HERE / "packet_v2"
++CHECKS = HERE / "checks_v2"
+ TEMPLATE = ROOT / "round3_native/access_terminal_checkpoint_inputs/reviewed_restore.py"
+ TEMPLATE_SHA = "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d"
+ OLD_SEAL = "f4d8ee695d5928ae3543e7c13e8198ee3ee01228b4e5d0bd78345af6126a6089"
+@@ -96,8 +96,8 @@
+     need(digest(roster_raw) == ROSTER_SHA, "FROZEN_ROSTER")
+     selection = json.loads(roster_raw)
+     need(
+-        selection["packet_original_count"] == 184
+-        and selection["packet_original_bytes"] == 1904082,
++        selection["packet_original_count"] == 183
++        and selection["packet_original_bytes"] == 1895194,
+         "EXACT_ROSTER_SCOPE",
+     )
+     rows = [
+@@ -112,7 +112,7 @@
+         for row in selection["packet_files"]
+     ]
+     need(
+-        len(rows) == 184 and sum(row["bytes"] for row in rows) == 1904082,
++        len(rows) == 183 and sum(row["bytes"] for row in rows) == 1895194,
+         "EXACT_ROSTER_TOTAL",
+     )
+     plain = [
+@@ -134,6 +134,15 @@
+             and row["mode"] == "0644",
+             "PLAIN_SOURCE_IDENTITY",
+         )
++    all_plain_bytes = []
++    for row in selection["separate_plain_publication"]:
++        value = Path(row["source_path"]).read_bytes()
++        need(
++            len(value) == row["bytes"] and digest(value) == row["sha256"],
++            "ALL_PLAIN_IDENTITY",
++        )
++        all_plain_bytes.append(value)
++    need(len(all_plain_bytes) == 6, "SIX_PLAIN_FILES")
+     originals, inventory = {}, []
+     for row in sorted(rows, key=lambda item: item["path"]):
+         path = Path(row["source_path"])
+@@ -151,6 +160,7 @@
+             "SAFE_ROSTER_DATA",
+         )
+         raw = path.read_bytes()
++        need(all(raw != value for value in all_plain_bytes), "PLAIN_FINAL_BYTE_ALIAS")
+         need(len(raw) == row["bytes"] and digest(raw) == row["sha256"], "FROZEN_BYTES")
+         need(
+             format(stat.S_IMODE(metadata.st_mode), "04o")
+@@ -228,6 +238,8 @@
+             "omitted_implementation_identity_only"
+         ],
+         "input_roster_sha256": ROSTER_SHA,
++        "roster_revision": selection["revision_from"],
++        "plain_byte_exclusion": selection["plain_byte_exclusion"],
+         "published_plain_algorithm_PRs": [5279, 5280],
+         "source_restore": "Inert regular 0644; original permission/stat modes and original source_path are evidence records",
+         "lossless_boundary": "Exactly the selected source, finite records and APIs. No private console or execution ZIP content is included or reconstructed.",
+@@ -289,7 +301,7 @@
+         },
+     )
+     (OUTPUT / "README.md").write_text(
+-        f"# Windows44 mutation-mask native evidence\n\nThis additive packet preserves exactly {len(inventory)} selected safe originals and {sum(map(len, originals.values())):,} bytes. The source is PR #5270, head 883b85f2c0198e9373022e8082d866c080178c0a. Its original run 42352197933, attempt 1, ended in failure. The owning Windows sandbox target failed after 114.1 seconds.\n\nThe prepared full-restriction probe and three specific ACL units passed. Both original production regressions failed. The outside deletion calls in the broad regression returned success; the legacy tuple remained unchanged. Zero FULL records were emitted: F0-F4 numeric, access and cleanup fields remain unobserved. Repeated case lines are not independent trials. Product P0 and old-ACL migration remain open.\n\nThe four finalized observation and independent root audit algorithms are plain source in PRs #5279 and #5280 under observer/ and root/. The additional analysis/bind_call_chain45.py and analysis/CALL_CHAIN_AND_NEXT_UNIT.md are also plain source. They are excluded from the compressed member roster. Historical failed parser predecessors and their failure receipts remain in the packet.\n\nRun `python -B restore.py /absolute/path/to-a-new-directory` with Python 3.12 or later. The destination must not exist. The canonical reader differs only in its fixed INDEX seal, {seal}. It checks bounded gzip/xz data, complete unique regular membership and all byte hashes before writing inert 0644 files. It does not execute archived source.\n\nINDEX keeps each real source_path, exact archive alias, original permission/stat modes and byte identity. No original was moved. Complete ordinary and optimized Python memory roundtrips compared all 184 members and modes. No duplicate extraction tree was created. The original reader remains unchanged except for the seal literal.\n\nThe lossless claim covers only these exact selected safe members. Private original console bytes and the initial LF-normalized capture, execution ZIPs, signed transfer URLs, binaries and broad environment output are excluded. No excluded bytes are reconstructed or encoded. Audit algorithms requiring the excluded console cannot be replayed fully from this packet. Three historical source-review implementations are identity-referenced only; their receipts do not imply those implementations are included.\n\nThe Windows45 report is a conditional argument about the present raw token interface, not a general impossibility claim about Windows. It creates no production authority and launches no new native experiment. Earlier source and evidence packets remain unchanged.\n"
++        f"# Windows44 mutation-mask native evidence\n\nThis additive packet preserves exactly {len(inventory)} selected safe originals and {sum(map(len, originals.values())):,} bytes. The source is PR #5270, head 883b85f2c0198e9373022e8082d866c080178c0a. Its original run 42352197933, attempt 1, ended in failure. The owning Windows sandbox target failed after 114.1 seconds.\n\nThe prepared full-restriction probe and three specific ACL units passed. Both original production regressions failed. The outside deletion calls in the broad regression returned success; the legacy tuple remained unchanged. Zero FULL records were emitted: F0-F4 numeric, access and cleanup fields remain unobserved. Repeated case lines are not independent trials. Product P0 and old-ACL migration remain open.\n\nThe four finalized observation and independent root audit algorithms are plain source in PRs #5279 and #5280 under observer/ and root/. The additional analysis/bind_call_chain45.py and analysis/CALL_CHAIN_AND_NEXT_UNIT.md are also plain source. They are excluded from the compressed member roster. Historical failed parser predecessors and their failure receipts remain in the packet.\n\nRun `python -B restore.py /absolute/path/to-a-new-directory` with Python 3.12 or later. The destination must not exist. The canonical reader differs only in its fixed INDEX seal, {seal}. It checks bounded gzip/xz data, complete unique regular membership and all byte hashes before writing inert 0644 files. It does not execute archived source.\n\nINDEX keeps each real source_path, exact archive alias, original permission/stat modes and byte identity. No original was moved. Complete ordinary and optimized Python memory roundtrips compared all 183 members and modes. No duplicate extraction tree was created. The original reader remains unchanged except for the seal literal.\n\nThe lossless claim covers only these exact selected safe members. Private original console bytes and the initial LF-normalized capture, execution ZIPs, signed transfer URLs, binaries and broad environment output are excluded. No excluded bytes are reconstructed or encoded. Audit algorithms requiring the excluded console cannot be replayed fully from this packet. Three historical source-review implementations are identity-referenced only; their receipts do not imply those implementations are included.\n\nThe Windows45 report is a conditional argument about the present raw token interface, not a general impossibility claim about Windows. It creates no production authority and launches no new native experiment. Earlier source and evidence packets remain unchanged. The initial 184-member packet was not published: its path-only exclusion admitted one 8,888-byte alias identical to the final plain assertion parser. This version removes only that redundant alias. The original packet, alias and two genuinely failed parser predecessors remain preserved.\n"
+     )
+     ruff = str(ROOT / "round3_ci/ruff_tooling/ruff")
+     config = str(ROOT / "round3_ci/ruff_tooling/pyproject.toml")
+@@ -433,9 +445,9 @@
+     }
+     need(manifest["nonmechanical_publication_lines"] <= 800, "PUBLICATION_LINE_BOUND")
+     manifest["source_builder_identity"] = identity(Path(__file__).read_bytes())
+-    manifest["builder_review"] = str(HERE / "BUILDER_CHANGE_REVIEW.json")
++    manifest["builder_review"] = str(HERE / "BUILDER_V2_CHANGE_REVIEW.json")
+     manifest["published_plain_algorithms"] = [5279, 5280]
+-    path = HERE / "WINDOWS44_TERMINAL_CHECKPOINT_PUBLICATION_MANIFEST.json"
++    path = HERE / "WINDOWS44_TERMINAL_CHECKPOINT_PUBLICATION_MANIFEST_v2.json"
+     write(path, manifest)
+     print(
+         json.dumps(
