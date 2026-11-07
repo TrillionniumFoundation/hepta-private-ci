@@ -39,18 +39,18 @@ fn ok<T, E: Debug>(result: Result<T, E>) -> T {
     }
 }
 
-struct IterationPorts {
+pub(crate) struct IterationPorts {
     signing: SigningFixture,
-    verifier: LearningEvidenceVerifierV1,
+    pub(crate) verifier: LearningEvidenceVerifierV1,
     proposal: Option<ParameterPlasticityProductRequestV1>,
     evaluation: LearningEvaluationDispositionV1,
     checkpoint: Mutex<Option<LearningIterationSnapshotV1>>,
-    executed: Mutex<Vec<LearningIterationStageV1>>,
+    pub(crate) executed: Mutex<Vec<LearningIterationStageV1>>,
     lose_ack_once: AtomicBool,
-    corrupt_signature: AtomicBool,
+    pub(crate) corrupt_signature: AtomicBool,
 }
 impl IterationPorts {
-    fn owners(&self) -> LearningIterationOwnersV1 {
+    pub(crate) fn owners(&self) -> LearningIterationOwnersV1 {
         LearningIterationOwnersV1 {
             evidence_trust_digest: self.verifier.trust_digest(),
             experience: self.signing.principals[1].principal_id.clone(),
@@ -62,7 +62,7 @@ impl IterationPorts {
             next_use_observer: self.signing.principals[1].principal_id.clone(),
         }
     }
-    fn new(
+    pub(crate) fn new(
         proposal: Option<ParameterPlasticityProductRequestV1>,
         evaluation: LearningEvaluationDispositionV1,
     ) -> Self {
@@ -237,11 +237,11 @@ impl LearningIterationOwnerPortsV1 for IterationPorts {
     }
 }
 
-fn iteration_request(daemon: &AgentdFixture) -> LearningIterationRequestV1 {
+pub(crate) fn iteration_request(identity: &crate::AgentdIdentity) -> LearningIterationRequestV1 {
     LearningIterationRequestV1 {
         operation_id: id("proposal:agentd-lifetime"),
         principal_id: id("principal:task-owner"),
-        agent_id: id(&daemon.identity.agent_id.to_string()),
+        agent_id: id(&identity.agent_id.to_string()),
         cell_id: id("cell:one"),
         source_run_id: id("run:source"),
         completed_task_receipt: digest("completed-task"),
@@ -360,7 +360,7 @@ async fn coordinator_uses_native_proposal_owner_and_reconciles_lost_ack() {
         ports.verifier.clone(),
         2,
     ));
-    let request = iteration_request(&daemon);
+    let request = iteration_request(&daemon.identity);
     assert!(matches!(
         iteration.process(&state, request.clone(), || Ok(50)).await,
         Err(LearningIterationRuntimeErrorV1::CommitUncertain)
@@ -405,7 +405,7 @@ async fn invalid_signature_prevents_dataset_training_and_checkpoint_progress() {
     ));
     assert!(matches!(
         owner
-            .process(&state, iteration_request(&daemon), || Ok(50))
+            .process(&state, iteration_request(&daemon.identity), || Ok(50))
             .await,
         Err(LearningIterationRuntimeErrorV1::Evidence(
             SignedEvidenceError::InvalidSignature
@@ -439,7 +439,7 @@ async fn terminal_rejection_replays_after_expiry_without_retraining() {
         ports.verifier.clone(),
         2,
     ));
-    let request = iteration_request(&daemon);
+    let request = iteration_request(&daemon.identity);
     let first = ok(owner.process(&state, request.clone(), || Ok(50)).await);
     let replay = ok(owner.process(&state, request, || Ok(100)).await);
     assert_eq!(replay, first);
@@ -462,7 +462,7 @@ async fn scope_and_generation_readiness_refuse_before_owner_work() {
         2,
     ));
     let state = daemon.state();
-    let mut wrong = iteration_request(&daemon);
+    let mut wrong = iteration_request(&daemon.identity);
     wrong.agent_id = id("agent:other");
     assert!(matches!(
         owner.process(&state, wrong, || Ok(50)).await,
@@ -476,7 +476,7 @@ async fn scope_and_generation_readiness_refuse_before_owner_work() {
     ));
     assert!(matches!(
         owner
-            .process(&not_ready, iteration_request(&daemon), || Ok(50))
+            .process(&not_ready, iteration_request(&daemon.identity), || Ok(50))
             .await,
         Err(LearningIterationRuntimeErrorV1::Unavailable)
     ));
@@ -523,7 +523,7 @@ async fn separate_keys_under_one_controller_cannot_self_evaluate() {
     ));
     assert!(matches!(
         owner
-            .process(&state, iteration_request(&daemon), || Ok(50))
+            .process(&state, iteration_request(&daemon.identity), || Ok(50))
             .await,
         Err(LearningIterationRuntimeErrorV1::Evidence(
             SignedEvidenceError::ControllerCollision
