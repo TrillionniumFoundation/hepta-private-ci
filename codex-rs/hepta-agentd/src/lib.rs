@@ -672,6 +672,10 @@ pub use neuron_cell_evaluation::CellTrainingObservationV1;
 pub use neuron_cell_evaluation::freeze_cell_evaluation_plan_v1;
 pub use neuron_generation::AgentdNeuronGenerationOwnerV2;
 #[cfg(unix)]
+pub use neuron_generation_current::AgentdLearningNoUpdateInputsV1;
+#[cfg(unix)]
+pub use neuron_generation_current::AgentdLearningNoUpdateNextUseV1;
+#[cfg(unix)]
 pub use neuron_generation_current::NeuronGenerationCurrentOwnerV1;
 #[cfg(unix)]
 pub use neuron_generation_current::NeuronGenerationInitialReadbackV1;
@@ -682,6 +686,8 @@ pub use neuron_generation_current::NeuronGenerationUpdatePublicationV1;
 #[cfg(unix)]
 pub use neuron_generation_current::NeuronGenerationUpdateReadbackV1;
 #[cfg(unix)]
+pub use neuron_generation_current::PreparedAgentdLearningNoUpdateTaskV1;
+#[cfg(unix)]
 pub use neuron_generation_current::PreparedNeuronGenerationInitialV1;
 #[cfg(unix)]
 pub use neuron_generation_current::PreparedNeuronGenerationUpdateV1;
@@ -689,6 +695,10 @@ pub use neuron_generation_current::PreparedNeuronGenerationUpdateV1;
 pub use neuron_generation_current::PublishedNeuronGenerationInitialV1;
 #[cfg(unix)]
 pub use neuron_generation_current::PublishedNeuronGenerationUpdateV1;
+#[cfg(unix)]
+pub use neuron_generation_current::observe_agentd_evaluated_no_update_next_use_v1;
+#[cfg(unix)]
+pub use neuron_generation_current::prepare_agentd_generation_evaluated_no_update_task_v1;
 pub use neuron_generation_episode::append_neuron_generation_outcome_v1;
 #[cfg(unix)]
 pub use neuron_generation_initial::PreparedAgentdGenerationInitialV1;

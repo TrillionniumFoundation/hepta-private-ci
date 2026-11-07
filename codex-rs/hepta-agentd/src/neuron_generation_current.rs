@@ -27,6 +27,8 @@ use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 mod initial;
 #[path = "neuron_generation_current_initial_types.rs"]
 mod initial_types;
+#[path = "neuron_generation_no_update.rs"]
+mod no_update;
 #[path = "neuron_generation_current_prepare.rs"]
 mod prepare;
 #[path = "neuron_generation_current_store.rs"]
@@ -38,6 +40,11 @@ use initial_types::InitialState;
 pub use initial_types::NeuronGenerationInitialReadbackV1;
 pub use initial_types::PreparedNeuronGenerationInitialV1;
 pub use initial_types::PublishedNeuronGenerationInitialV1;
+pub use no_update::AgentdLearningNoUpdateInputsV1;
+pub use no_update::AgentdLearningNoUpdateNextUseV1;
+pub use no_update::PreparedAgentdLearningNoUpdateTaskV1;
+pub use no_update::observe_agentd_evaluated_no_update_next_use_v1;
+pub use no_update::prepare_agentd_generation_evaluated_no_update_task_v1;
 use types::CurrentHead;
 pub use types::NeuronGenerationPredecessorCompletionV1;
 pub use types::NeuronGenerationUpdateReadbackV1;
