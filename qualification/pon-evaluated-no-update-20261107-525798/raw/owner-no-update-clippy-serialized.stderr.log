@@ -1,0 +1,82 @@
+cargo clippy --fix --tests --allow-dirty {args}
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo clippy --fix --lib -p i18n-config -- --no-deps` to apply 2 suggestions)
+    Checking codex-hepta-agentd v0.0.0 (/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107/codex-rs/hepta-agentd)
+    Checking codex-hepta-infer-worker-host v0.0.0 (/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107/codex-rs/hepta-infer-worker-host)
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/learning_no_update_test_support.rs:55:5
+    |
+ 55 |     assert_eq!(recovered.snapshot(), &terminal);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/learning_no_update_test_support.rs:6:5
+    |
+  6 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/learning_no_update_test_support.rs:56:5
+    |
+ 56 |     assert_eq!(ok(ports.executed.lock()).len(), 4);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/learning_no_update_test_support.rs:6:5
+    |
+  6 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0659`.
+error: could not compile `codex-hepta-agentd` (lib test) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: recipe `fix` failed on line 58 with exit code 101

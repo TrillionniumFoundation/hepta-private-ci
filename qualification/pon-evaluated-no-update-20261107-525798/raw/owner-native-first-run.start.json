@@ -1,0 +1,27 @@
+{
+  "schema": "hepta-native-acceptance-invocation-v1",
+  "source": {
+    "head": "d87f33a1817a0a308bca51205eedfc602007223b",
+    "tree": "7371b6ff1958cbce8a2b5da019d2c2a52c75d699",
+    "status": "",
+    "sparse": ".github\ncodex-rs\ndocs\nscripts\ntools"
+  },
+  "cwd": "/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107/codex-rs",
+  "argv": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(neuron_generation) | test(learning_iteration)",
+    "--status-level",
+    "all",
+    "--final-status-level",
+    "all"
+  ],
+  "build_jobs": "2",
+  "target_dir": "/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107-build",
+  "started_utc": "2026-11-07T13:01:40.899049+00:00",
+  "scope": "native owner tests; synthetic control worker; no production authority or customer-demand claim"
+}

@@ -287,6 +287,17 @@ fn require_source(
             "learning result does not bind this incumbent task checkpoint",
         ));
     }
+    if request
+        .selected_bundle
+        .digest()
+        .map_err(invalid)?
+        .into_array()
+        != selected.bundle_digest()
+    {
+        return Err(invalid(
+            "learning bundle does not match the selected generation manifest",
+        ));
+    }
     Ok(())
 }
 

@@ -1,0 +1,48 @@
+{
+  "schema": "hepta-native-acceptance-invocation-v1",
+  "source": {
+    "head": "d87f33a1817a0a308bca51205eedfc602007223b",
+    "tree": "7371b6ff1958cbce8a2b5da019d2c2a52c75d699",
+    "status": "",
+    "sparse": ".github\ncodex-rs\ndocs\nscripts\ntools"
+  },
+  "cwd": "/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107/codex-rs",
+  "argv": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(neuron_generation) | test(learning_iteration)",
+    "--status-level",
+    "all",
+    "--final-status-level",
+    "all"
+  ],
+  "build_jobs": "2",
+  "target_dir": "/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107-build",
+  "started_utc": "2026-11-07T13:01:40.899049+00:00",
+  "scope": "native owner tests; synthetic control worker; no production authority or customer-demand claim",
+  "exit_code": 101,
+  "wall_seconds": 1164.3284849349875,
+  "child_user_seconds": 2011.78425,
+  "child_system_seconds": 251.15945299999998,
+  "maximum_child_rss_kib": 3100620,
+  "finished_utc": "2026-11-07T13:21:05.227887+00:00",
+  "source_after": {
+    "head": "d87f33a1817a0a308bca51205eedfc602007223b",
+    "tree": "7371b6ff1958cbce8a2b5da019d2c2a52c75d699",
+    "status": ""
+  },
+  "logs": {
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "bytes": 65104,
+      "sha256": "1a573ae549cc861ec4fe21df5f6bbdd44338df007ec83a8dfe14469528ea84ba"
+    }
+  }
+}

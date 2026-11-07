@@ -1,0 +1,52 @@
+{
+  "classification": "preparation_failure_no_native_tests_executed",
+  "job_status": {
+    "at_unix_ms": 1794056225587,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 124,
+    "job_id": "1a1b610e7ff-12894-220",
+    "launch_nonce": "b6906c64be6cc041d1ff91c75022045d",
+    "log_bytes": {
+      "stderr": {
+        "seen": 221,
+        "stored": 221
+      },
+      "stdout": {
+        "seen": 0,
+        "stored": 0
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "timed_out",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": true
+  },
+  "stream_files": [
+    {
+      "path": "preparation-checkout-timeout.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "preparation-checkout-timeout.stderr.log",
+      "bytes": 221,
+      "sha256": "8dacb03f55d785fd3a195b52f4c458ba0e64a2d11545a24cd3cd80e96a0102c1"
+    }
+  ]
+}

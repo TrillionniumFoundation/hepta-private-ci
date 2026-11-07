@@ -1,0 +1,45 @@
+{
+  "schema": "hepta-native-helper-build-v2",
+  "source": {
+    "head": "e0a3bd2bde77c58a0ae7d211214f326371a72a4a",
+    "tree": "a28ed8f9dbc3569b8108e7f5fe5096b16c881792",
+    "status": ""
+  },
+  "argv": [
+    "cargo",
+    "build",
+    "--locked",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--bin",
+    "hepta-joint-propose",
+    "--message-format=json"
+  ],
+  "started_utc": "2026-11-07T14:42:10.650475+00:00",
+  "build_jobs": "2",
+  "target_dir": "/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107-build",
+  "exit_code": 0,
+  "wall_seconds": 55.70721674594097,
+  "child_user_seconds": 48.709846,
+  "child_system_seconds": 5.462969,
+  "maximum_child_rss_kib": 2832732,
+  "source_after": {
+    "head": "e0a3bd2bde77c58a0ae7d211214f326371a72a4a",
+    "tree": "a28ed8f9dbc3569b8108e7f5fe5096b16c881792",
+    "status": ""
+  },
+  "finished_utc": "2026-11-07T14:43:06.402775+00:00",
+  "source_integrity_pass": true,
+  "logs": {
+    "stdout": {
+      "bytes": 1095498,
+      "sha256": "6c72af09cf27c358c897c99ecd6f2ad62a563fbff95f999a148ccfc239b54da0"
+    },
+    "stderr": {
+      "bytes": 343,
+      "sha256": "8290aea690a5eae174d5c9a97ddf2f64dfcca77d541fd750fd14a7999540166c"
+    }
+  },
+  "executable": "/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107-build/debug/hepta-joint-propose",
+  "executable_sha256": "63c46cd5945d191bf882884a218da576cf2dfdeeb10334894cb795f25fc1eff3"
+}

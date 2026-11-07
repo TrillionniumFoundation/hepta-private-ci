@@ -40,6 +40,7 @@ pub struct AgentdGenerationSelectionObservationV1 {
     withdrawal_head: Digest32,
     payload: Digest32,
     manifest: [u8; 32],
+    bundle: [u8; 32],
 }
 
 impl AgentdGenerationSelectionObservationV1 {
@@ -72,6 +73,12 @@ impl AgentdGenerationSelectionObservationV1 {
     #[must_use]
     pub const fn manifest_digest(&self) -> [u8; 32] {
         self.manifest
+    }
+
+    /// Read from the verified manifest already committed by `digest()`.
+    #[must_use]
+    pub const fn bundle_digest(&self) -> [u8; 32] {
+        self.bundle
     }
 
     #[must_use]
@@ -151,6 +158,7 @@ impl AgentdSelectedGenerationV1 {
             withdrawal_head: withdrawal.head_digest(),
             payload: signed.content_digest,
             manifest: manifest_digest,
+            bundle: manifest.bundle_digest,
         };
         Ok(Self {
             manifest,
