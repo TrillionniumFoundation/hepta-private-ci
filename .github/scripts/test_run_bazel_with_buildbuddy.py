@@ -357,7 +357,6 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
 
         self.assertEqual(result.returncode, 37, result.stderr)
 
-
     def test_buildbuddy_wrapper_is_executable_on_posix(self) -> None:
         if os.name == "nt":
             self.skipTest("POSIX executable mode is not represented by Windows ACLs")
