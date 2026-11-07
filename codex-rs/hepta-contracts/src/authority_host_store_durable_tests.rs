@@ -5,16 +5,25 @@ use std::sync::mpsc;
 
 #[test]
 fn a_visible_rename_cannot_be_read_as_current_before_publication_finishes() {
+    #[derive(Debug)]
+    enum PublicationEvent {
+        VisibleRename,
+        Completed(Result<(), AuthorityTrustError>),
+    }
+
     let directory = tempfile::tempdir().unwrap();
     let root = test_directory(directory.path());
     let store = Arc::new(
         HostAuthorityFrontierStore::initialize(root.clone(), OWNER.into(), 1_u64).unwrap(),
     );
-    let (entered, observed) = mpsc::channel();
+    let (events, observed) = mpsc::channel();
+    let entered = events.clone();
     let (resume, released) = mpsc::channel();
     let released = Mutex::new(released);
     *root.before_directory_sync.lock().unwrap() = Some(Arc::new(move || {
-        entered.send(()).map_err(std::io::Error::other)?;
+        entered
+            .send(PublicationEvent::VisibleRename)
+            .map_err(std::io::Error::other)?;
         released
             .lock()
             .unwrap()
@@ -22,8 +31,25 @@ fn a_visible_rename_cannot_be_read_as_current_before_publication_finishes() {
             .map_err(std::io::Error::other)
     }));
     let writing = store.clone();
-    let publisher = std::thread::spawn(move || writing.compare_and_set(OWNER, &1, &2));
-    observed.recv_timeout(Duration::from_secs(10)).unwrap();
+    let publisher = std::thread::spawn(move || {
+        let result = writing.compare_and_set(OWNER, &1, &2);
+        let _ = events.send(PublicationEvent::Completed(result));
+        result
+    });
+    let entered = match observed.recv_timeout(Duration::from_secs(10)) {
+        Ok(PublicationEvent::VisibleRename) => Ok(()),
+        Ok(PublicationEvent::Completed(result)) => {
+            Err(format!("publisher completed before the rename barrier: {result:?}"))
+        }
+        Err(error) => Err(format!("rename barrier was not observed: {error:?}")),
+    };
+    if let Err(error) = entered {
+        *root.before_directory_sync.lock().unwrap() = None;
+        drop(resume);
+        let finished = publisher.is_finished();
+        let joined = finished.then(|| publisher.join());
+        panic!("{error}; publisher_finished={finished}; joined={joined:?}");
+    }
     // The real data-file fsync and rename have finished; directory durability
     // is deliberately not acknowledged yet. Only the unsafe private read sees
     // the new value. Public reads/open must contend on the publication lock.

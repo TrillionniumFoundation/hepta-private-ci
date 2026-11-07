@@ -30,6 +30,9 @@ mod durable_tests;
 #[path = "authority_host_store_cache_tests.rs"]
 mod cache_tests;
 
+#[path = "authority_host_store_lock_tests.rs"]
+mod lock_tests;
+
 #[test]
 fn explicit_large_record_bound_reopens_without_relaxing_default_or_cas_bound() {
     let directory = tempfile::tempdir().unwrap();

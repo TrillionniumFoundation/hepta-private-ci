@@ -39,6 +39,23 @@ enum DirectoryAccess {
     Private,
 }
 
+/// Release the acquired lock at this process's authority boundary even if a
+/// child still retains a duplicate of the same open file description.
+struct AuthorityFileLock {
+    file: File,
+    owner_pid: u32,
+}
+
+impl Drop for AuthorityFileLock {
+    fn drop(&mut self) {
+        // An inherited guard must not unlock its parent's live critical section.
+        // Closing this process's descriptor remains the fallback if unlock fails.
+        if std::process::id() == self.owner_pid {
+            let _ = rustix::fs::flock(&self.file, FlockOperation::Unlock);
+        }
+    }
+}
+
 /// Retained root-owned directory, opened through non-writable root ancestors.
 /// No Agent-writable path, symlink, or caller-provided ownership claim is used.
 pub struct RootAuthorityDirectory {
@@ -99,17 +116,19 @@ impl RootAuthorityDirectory {
         Ok(file)
     }
 
-    fn lock(&self, name: &str) -> Result<File, AuthorityTrustError> {
+    fn lock(&self, name: &str) -> Result<AuthorityFileLock, AuthorityTrustError> {
+        let owner_pid = std::process::id();
         let file = self.open_private(name, OFlags::RDWR | OFlags::CREATE)?;
         rustix::fs::flock(&file, FlockOperation::NonBlockingLockExclusive)
             .map_err(|_| AuthorityTrustError::Conflict)?;
+        let lock = AuthorityFileLock { file, owner_pid };
         let path = rustix::fs::statat(&self.directory, name, AtFlags::SYMLINK_NOFOLLOW)
             .map_err(|_| AuthorityTrustError::Unavailable)?;
-        let descriptor = rustix::fs::fstat(&file).map_err(|_| AuthorityTrustError::Unavailable)?;
+        let descriptor = rustix::fs::fstat(&lock.file).map_err(|_| AuthorityTrustError::Unavailable)?;
         if path.st_dev != descriptor.st_dev || path.st_ino != descriptor.st_ino {
             return Err(AuthorityTrustError::Invalid);
         }
-        Ok(file)
+        Ok(lock)
     }
 
     fn exists(&self, name: &str) -> Result<bool, AuthorityTrustError> {
@@ -306,7 +325,7 @@ impl<F: Serialize + DeserializeOwned + Eq> HostAuthorityFrontierStore<F> {
         Ok(())
     }
 
-    fn publication_lock(&self) -> Result<File, AuthorityTrustError> {
+    fn publication_lock(&self) -> Result<AuthorityFileLock, AuthorityTrustError> {
         match self.root.lock(&format!("{}.lock", self.name)) {
             Ok(lock) => Ok(lock),
             Err(error) => {
