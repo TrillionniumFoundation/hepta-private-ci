@@ -391,9 +391,10 @@ fn collect_openssh_programdata_path_matrix() -> Result<(), Box<dyn Error>> {
             Some(Component::Prefix(prefix)) => match prefix.kind() {
                 Prefix::VerbatimDisk(drive) => drive,
                 _ => {
-                    return Err(
-                        io::Error::other("diagnostic requires a local verbatim drive path").into(),
-                    );
+                    return Err(io::Error::other(
+                        "diagnostic requires a local verbatim drive path",
+                    )
+                    .into());
                 }
             },
             _ => {

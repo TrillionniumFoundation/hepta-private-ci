@@ -30,7 +30,14 @@ fn draw_room(
 // Only unrelated timeline/toolbar widgets are absent from this small surface.
 fn editor(
     text: &str,
-) -> (Cx, RoomScreen, TextInputRef, ChatWorkspace, DrawPass, DrawList2d) {
+) -> (
+    Cx,
+    RoomScreen,
+    TextInputRef,
+    ChatWorkspace,
+    DrawPass,
+    DrawList2d,
+) {
     let mut cx = Cx::new(Box::new(|_, _| {}));
     let view = cx.with_vm(|vm| {
         makepad_widgets::script_mod(vm);
@@ -152,7 +159,14 @@ fn full_state_same_text_commit_publishes_only_after_composition_ends() {
 fn full_state_cancel_keeps_the_committed_draft() {
     let (mut cx, mut room, input, mut workspace, _pass, _draw_list) = editor("retained draft");
     let committed = workspace.draft().clone();
-    full_state(&mut cx, &mut room, &input, &mut workspace, "retained draft中文", Some(14..16));
+    full_state(
+        &mut cx,
+        &mut room,
+        &input,
+        &mut workspace,
+        "retained draft中文",
+        Some(14..16),
+    );
     assert!(input.is_composing());
     assert_eq!(workspace.draft(), &committed);
     assert_eq!(
@@ -175,11 +189,25 @@ fn full_state_cancel_keeps_the_committed_draft() {
 fn full_state_changed_commit_uses_the_original_changed_action() {
     let (mut cx, mut room, input, mut workspace, _pass, _draw_list) = editor("base ");
     let committed = workspace.draft().clone();
-    full_state(&mut cx, &mut room, &input, &mut workspace, "base 中", Some(5..6));
+    full_state(
+        &mut cx,
+        &mut room,
+        &input,
+        &mut workspace,
+        "base 中",
+        Some(5..6),
+    );
     assert!(input.is_composing());
     assert_eq!(workspace.draft(), &committed);
     assert_eq!(
-        full_state(&mut cx, &mut room, &input, &mut workspace, "base 中文", /*composition*/ None),
+        full_state(
+            &mut cx,
+            &mut room,
+            &input,
+            &mut workspace,
+            "base 中文",
+            /*composition*/ None
+        ),
         Some("base 中文".to_owned())
     );
     assert!(!input.is_composing());
@@ -207,7 +235,14 @@ fn full_state_same_text_rejected_commit_restores_the_exact_editor_checkpoint() {
     assert!(input.is_composing());
     assert_eq!(workspace.draft().text, committed_text);
     assert_eq!(
-        full_state(&mut cx, &mut room, &input, &mut workspace, &oversized, /*composition*/ None),
+        full_state(
+            &mut cx,
+            &mut room,
+            &input,
+            &mut workspace,
+            &oversized,
+            /*composition*/ None
+        ),
         None
     );
     assert!(!input.is_composing());
@@ -219,7 +254,14 @@ fn full_state_same_text_rejected_commit_restores_the_exact_editor_checkpoint() {
 #[test]
 fn full_state_late_same_text_commit_cannot_edit_the_new_room() {
     let (mut cx, mut room, input, mut workspace, _pass, _draw_list) = editor("old room ");
-    full_state(&mut cx, &mut room, &input, &mut workspace, "old room private", Some(9..16));
+    full_state(
+        &mut cx,
+        &mut room,
+        &input,
+        &mut workspace,
+        "old room private",
+        Some(9..16),
+    );
     assert!(input.is_composing());
     let rendered = room.active_key;
     assert!(workspace.new_draft());
