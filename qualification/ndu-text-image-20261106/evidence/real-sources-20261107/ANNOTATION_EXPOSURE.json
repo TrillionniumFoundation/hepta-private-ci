@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.annotation-exposure.v1",
+  "archive_sha256": "dbc32fc1e3f1b1039aea906030d569d6c238b4ddb2eea5e3453a6a565c829ec9",
+  "archive_members": [
+    {
+      "path": "test.json",
+      "bytes": 805564,
+      "crc32": 2909720324
+    },
+    {
+      "path": "train.json",
+      "bytes": 21117996,
+      "crc32": 3327889688
+    },
+    {
+      "path": "val.json",
+      "bytes": 4476209,
+      "crc32": 3008604158
+    }
+  ],
+  "parsed_member": "train.json",
+  "parsed_record_count": 20523,
+  "all_train_references_available_to_acquisition_process": true,
+  "other_archive_members_locally_accessible": true,
+  "actor_or_critic_reference_access_authorized": false,
+  "fresh_confirmation_established": false,
+  "note": "Current candidate HISTORY lists selected image cases only, not the complete project/model exposure registry. The externally registered owner history must include this whole annotation exposure."
+}

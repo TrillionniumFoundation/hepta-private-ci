@@ -1,0 +1,36 @@
+{
+  "confirmation_acquisition": false,
+  "cumulative_body_byte_cap": 26214400,
+  "family_assignment": null,
+  "image_archive": "https://vizwiz.cs.colorado.edu/VizWiz_final/images/train.zip",
+  "previous_acquisition_receipt": {
+    "bytes": 15985,
+    "path": "DEVELOPMENT_ACQUISITION_RECEIPT.json",
+    "sha256": "715b9e282dab82bed785c53cbe12d4c8fb804cedc67b6287222124dc6cb7f7f0"
+  },
+  "previous_candidate_manifest": {
+    "bytes": 5466,
+    "path": "DEVELOPMENT_CANDIDATES.json",
+    "sha256": "d0f0f69385e56dc156ca1bfd1847509388eef6c6e60f0ef3e20ee80e18ce7350"
+  },
+  "prior_body_bytes_read": 6219434,
+  "project_split": "train",
+  "runtime_source_sha256": {
+    "acquire_vizwiz.py": "4aaa31d0d4d729e4ce5063404e5153f0437f91a6a2e85cc9e0b9bae0f0dca86a",
+    "extend_vizwiz.py": "0e635ce5c56650319787b05c20cc955555b8409bfe603519864b2434073f753d",
+    "materials.py": "174fc08fa6c86cbc48dc44b774d40230f75ee9194c071c0a4a90e4262139697c",
+    "source_pool.py": "7e5c008c44843369cf40afdb66255bc7e040788494cefc2655fb9a7954b02f79",
+    "state.py": "c60bce8e28884243599299e8f95e10b4d978b212951ff46942fde4fbf250c0eb"
+  },
+  "schema": "hepta.vizwiz-pilot-training-extension.v1",
+  "selected_images": [
+    "VizWiz_train_00000003.jpg",
+    "VizWiz_train_00000004.jpg",
+    "VizWiz_train_00000005.jpg",
+    "VizWiz_train_00000006.jpg",
+    "VizWiz_train_00000007.jpg",
+    "VizWiz_train_00000008.jpg"
+  ],
+  "selection_rule": "next six image filenames after the three frozen development candidates; no answer/effect filter",
+  "upstream_split": "train"
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.acquisition-preflight-observation.v1",
+  "record_type": "transcribed_from_observed_initial_head_tool_output",
+  "before_first_acquisition_plan": true,
+  "requests": [
+    {
+      "method": "HEAD",
+      "url": "https://vizwiz.cs.colorado.edu/VizWiz_final/vqa_data/Annotations.zip",
+      "status": 200,
+      "body_bytes_read": 0,
+      "declared_resource_bytes": 1711273,
+      "request_wall_seconds": 5.674163747999046
+    },
+    {
+      "method": "HEAD",
+      "url": "https://vizwiz.cs.colorado.edu/VizWiz_final/images/train.zip",
+      "status": 200,
+      "body_bytes_read": 0,
+      "declared_resource_bytes": 11298421598,
+      "request_wall_seconds": 5.706094224000481
+    },
+    {
+      "method": "HEAD",
+      "url": "https://vizwiz.cs.colorado.edu/VizWiz_final/vqa_data/API.zip",
+      "status": 200,
+      "body_bytes_read": 0,
+      "declared_resource_bytes": 185601325,
+      "request_wall_seconds": 5.672415979999641
+    }
+  ],
+  "requests_were_concurrent": true,
+  "aggregate_wall_seconds": null,
+  "cpu_seconds": null,
+  "unknown_costs": [
+    "process_startup",
+    "concurrent_supervision",
+    "CPU",
+    "wire_headers",
+    "energy",
+    "actual_charges"
+  ],
+  "model_execution": false
+}
