@@ -118,6 +118,14 @@ jobs:
             args+=(--base "$BASE_SHA")
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}" | tee "$RUNNER_TEMP/hepta-command-records/scope.json"
+      - name: Install pinned NDU semantic-state test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/hepta-architecture-venv"
+          "$RUNNER_TEMP/hepta-architecture-venv/bin/python" -m pip install --disable-pip-version-check -r scripts/ndu_portfolio/requirements.txt
+          echo "$RUNNER_TEMP/hepta-architecture-venv/bin" >> "$GITHUB_PATH"
+
       - name: Test execution-record rejection and retained diagnostics
         run: |
           set -euo pipefail
