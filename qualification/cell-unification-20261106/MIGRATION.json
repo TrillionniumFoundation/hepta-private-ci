@@ -31,7 +31,7 @@
     "checkout": "failure",
     "product_tests": "skipped"
   },
-  "new_windows_execution": "not_observed",
+  "new_windows_execution": "archive_validation_success",
   "new_native_product_qualification": false,
   "scope": "Storage representation only. Original failures, unknown results, budgets and scientific claims are unchanged.",
   "records": [
@@ -85,5 +85,20 @@
       "decoded_bytes": 50090,
       "decoded_sha256": "79fa14018c3bf757fc13edc8db0d7c67c06e5144c41a307f27e9d45fa60242da"
     }
-  ]
+  ],
+  "new_windows_job": {
+    "source_sha": "b4afdbadc247c6fadfad4e416c00a9a853affa1c",
+    "run_id": 42323275294,
+    "job_id": 128252598172,
+    "checkout": "success",
+    "archive_regressions": {
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0
+    },
+    "complete_archive_verification": "success",
+    "path_and_blob_budget": "success",
+    "product_tests": "not_in_this_job",
+    "receipt": "../cell-architecture-20261106/ci/windows-archive.json"
+  }
 }

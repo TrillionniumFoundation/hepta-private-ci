@@ -35,7 +35,11 @@
 
 [`CellNativeRepresentationInputV1::project`][representation-native] 是本候选已经实现的执行适配器：从 global F32 或 signed Q24 表示按显式、唯一、有序坐标选择生成至多 512 个 Q24 值，检查全部输入值有限且位于 `[-8, 8]`，使用 ties-to-even，不静默补值或裁剪。完整 source manifest、全部原 tensor 字节、backend／negotiation／component／encoder pins 和输出进入原 observation 身份；未选中的维度变化也会使同一 operation 冲突。
 
-密封投影保存原双方契约与 backend 身份。`validate_backend` 比较冻结的完整 backend digest，在历史读回时也不能用同 definition、不同 expert／capability 的 backend 重标旧输入；`validate_current_use` 另核对新取得的双方契约、scope 和 frontier。`enter_representation` 在原 [`enter_cell_step`][cell] 前执行这些检查；排队或 durable admission 之后仍需在真正模型接触前重新取得观测并复验。[密封绑定与新入口][representation-native]
+密封投影保存原双方契约与 backend 身份。`validate_backend` 比较冻结的完整 backend digest，在历史读回时也不能用同 definition、不同 expert／capability 的 backend 重标旧输入；`validate_current_use` 另核对新取得的双方契约、scope 和 frontier。`enter_representation` 先执行这些检查，再复用原 prepare／lookup 主体，并在 prepared step 中保存只有内部 typed 入口才能构造的冻结 context。它只保存 backend、完整 negotiation、source 和 output 的固定 digest，不再复制完整 tensor。[密封绑定与新入口][representation-native]、[原准备主体][cell]
+
+`infer_representation` 要求该私有 context 与密封投影精确一致，并通过 `CellRepresentationResolverV1` 在 durable admission 前和之后分别重新取得双方当前契约。此公开入口接收 live clock closure，在每次 resolver 返回后采样 Cell 时钟；admission 后到期或时间倒退会拒绝模型接触并保持原 pending，成功返回的决定时间下界也提升到实际 contact 采样。因此单独调用 neuron typed API 也不能把旧时间戳当作最终截止时间检查。[typed dispatch 与 resolver][representation-dispatch]、[慢 resolver／admission 与时钟回退回归源码][representation-clock-tests]
+
+公共 `prepare_cell_step`／`enter_cell_step` 拒绝表示的保留前缀；公共 `infer_cell` 和 batch enqueue 同时拒绝该前缀或私有 context。因此即使调用方保留公开 encoder，或先合法 prepare 后再发生切代，也不能把旧表示送入这些没有 resolver 的入口。表示 batch 暂不支持，明确拒绝；没有公开的 bool 可以跳过检查。历史 `recover_cell_inference` 仍只读原 admission，不因这些 fresh-entry 拒绝而丢失原事实。[绕路拒绝回归源码][representation-dispatch-tests]
 
 `restore_admitted` 解决进程重启后只剩原始材料、旧 endpoint 已不再被选择时的重建：先向原 Cell owner 查询精确 operation／semantic request 的 pending 或 committed 记录，再以冻结 negotiation、source 与 selection 重建完整 observation。pending 路径还使用原 snapshot 重建完整 model request 并要求逐项相等；缺失原 admission、替代 operation、修改完整来源或模型请求均不能借此创建新工作。此入口不调用模型、不写状态，也不把历史 pins 冒充 current。[冷重建实现][representation-native]
 
@@ -61,9 +65,11 @@
 
 [`AgentdCircuitCellOwnerV1::execute_representation`][circuit-cell-representation] 是实际非测试 caller：接收原 Circuit owner 签发的 admission、完整输入与密封投影，始终检查冻结 backend、Circuit／Cell definition 及 observation 字节；之后复用原 state owner、inference control 和执行主体。`CircuitCellRepresentationResolverV1` 负责从现有 owner 解析并认证当前观测，不能从投影对象复制旧 pins。
 
-新工作在准备前取得双方 current-use 观测；完成 durable inference admission 后，[`GuardedCellDispatchV1`][circuit-cell-dispatch] 再次调用 resolver、验证双方契约，再读取时钟核对 Cell／Circuit 截止时间与 lease，随后才接触共享 model port。admission 前拒绝不会新增 Cell pending；admission 后拒绝保留原 pending 与 Circuit reservation，不调用模型，也不以拒绝自动获得重试资格。
+新工作在准备前取得双方 current-use 观测，并通过私有 pipeline strategy 使用同一个 neuron typed 入口：`infer_representation` 在 admission 紧前和 durable admission 之后再各解析一次 current，并从真实 clock 采样 Cell 时间。`CircuitCellRepresentationResolverV1` 是 neuron resolver trait 的公开别名，没有另一套可跳过的 freshness flag。最后一次 resolver 与 neuron Cell 时间检查通过后，[`GuardedCellDispatchV1`][circuit-cell-dispatch] 才再次读取同一个时钟，核对 Cell／Circuit 截止时间与 lease，随后接触共享 model port；两个检查顺序借用原 clock，没有用旧样本充当新采样。admission 前拒绝不会新增 Cell pending；admission 后拒绝保留原 pending 与 Circuit reservation，不调用模型，也不以拒绝自动获得重试资格。[复用的私有 pipeline][circuit-cell-pipeline]、[resolver 后 Circuit 时钟回归源码][circuit-cell-representation-guard-tests]
 
 已有 pending 的恢复和 committed receipt 的 replay 不调用 live resolver，只核对原冻结身份并走原 readback／lookup。这使 producer 切代或投影资格变化阻断新计算，同时保留已发生事实的对账路径。旧通用 `execute` 使用 `is_representation_observation` 拒绝该保留前缀，要求这种输入经 typed 表示入口；前缀识别只是协议路由约束，不认证输入，也不替代实际 authority／owner 的权限边界。[入口与复用执行主体][circuit-cell]、[表示接线回归源码][circuit-cell-representation-tests]
+
+新增组合恢复回归实际关闭并重开 Circuit SQLite store、Cell journal 与 witness，丢弃旧投影，分别从原 pending 和已提交 Cell receipt 重建，再由 typed Circuit 入口读回原路线；受控 inference owner 保留原回执，断言没有第二次模型调用、没有 live resolver 调用且 Circuit 只结算原 reservation。这是回归源码的范围说明，执行结果仍须绑定本候选运行回执。[Circuit／Cell 冷恢复源码][circuit-cell-representation-recovery-tests]
 
 ### 本候选的有界排队
 
@@ -172,7 +178,7 @@ Cell journal 保存 durable inference admission、足以重建 checkpoint 的 ti
 
 历史证据迁移已经实际完成：原 `a6f3aa12ba187448c35449c7da0a9798ae4ca987` 的 **4,087 个文件、116,240,752 字节**通过完整归档校验，并在新目录实际恢复，逐文件与原字节、Git blob 和 Git mode 一致。原先 47 个大于 512,000 字节的文件和 37 个超过 190 UTF-16 单位的路径，改为 143 个不超过 480,000 字节的 payload parts、3 个压缩成员清单及稳定索引；最终证据树的最长相对路径为 84 UTF-16 单位。完整 payload 为 68,586,635 字节，SHA-256 为 `684f8fef0dad5b6fa75b0ab295c47872178edbe713966a157454b043f61b9752`。原字节与失败状态保持原义，归档不产生新的真实性认证或模型资格。[迁移回执][evidence-migration]、[完整成员与分块索引][evidence-archive-index]、[恢复说明][evidence-index]
 
-原 [Windows job 128184561094](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42302804112/job/128184561094) 的完整解码日志已保存在 [原失败日志][windows-checkout-log]，其 checkout 失败与后续产品测试跳过保存在 [原步骤回执][windows-checkout-record]，没有改记为产品测试失败或通过。[`hepta-evidence-archive.yml`][archive-workflow] 固定原 source／listing 并配置 Ubuntu、Windows 的完整性与 checkout-path 预算检查，始终上传验证输出；**本轮尚未观察到新的 Windows CI 执行结果**。归档的本地完整恢复结果不替代这项平台门，也不证明同候选的质量、服务性能或长期状态增长资格。
+原 [Windows job 128184561094](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42302804112/job/128184561094) 的完整解码日志已保存在 [原失败日志][windows-checkout-log]，其 checkout 失败与后续产品测试跳过保存在 [原步骤回执][windows-checkout-record]，没有改记为产品测试失败或通过。[`hepta-evidence-archive.yml`][archive-workflow] 固定原 source／listing 并配置 Ubuntu、Windows 的完整性与 checkout-path 预算检查，始终上传验证输出；本轮已观察到 `b4afdbadc247c6fadfad4e416c00a9a853affa1c` 在 Windows 2025 的实际 checkout、14 项归档回归、完整归档验证及路径／blob 预算检查全部通过；[原 job 128252598172](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42323275294/job/128252598172) 的完整原始日志与 hash 保存在 [独立回执](ci/windows-archive.json)。这关闭了该提交的 Windows 归档／checkout 门，不是 Rust 产品测试、同候选质量、服务性能或长期状态增长资格。
 
 ## 8. 验收与剩余工作
 
@@ -196,6 +202,9 @@ Cell journal 保存 durable inference admission、足以重建 checkpoint 的 ti
 [representation]: ../../codex-rs/hepta-neuron/src/cell_representation.rs
 [representation-negotiation]: ../../codex-rs/hepta-neuron/src/cell_representation_negotiation.rs
 [representation-native]: ../../codex-rs/hepta-neuron/src/cell_representation_native.rs
+[representation-dispatch]: ../../codex-rs/hepta-neuron/src/cell_representation_dispatch.rs
+[representation-dispatch-tests]: ../../codex-rs/hepta-neuron/src/cell_representation_dispatch_tests.rs
+[representation-clock-tests]: ../../codex-rs/hepta-neuron/src/cell_representation_clock_tests.rs
 [representation-tests]: ../../codex-rs/hepta-neuron/src/cell_representation_tests.rs
 [representation-recovery-tests]: ../../codex-rs/hepta-neuron/src/cell_representation_recovery_tests.rs
 [cell]: ../../codex-rs/hepta-neuron/src/cell.rs
@@ -217,8 +226,11 @@ Cell journal 保存 durable inference admission、足以重建 checkpoint 的 ti
 [circuit-budget-tests]: ../../codex-rs/hepta-automation/src/circuit_recovery_budget_tests.rs
 [circuit-cell]: ../../codex-rs/hepta-agentd/src/circuit_cell.rs
 [circuit-cell-dispatch]: ../../codex-rs/hepta-agentd/src/circuit_cell_dispatch.rs
+[circuit-cell-pipeline]: ../../codex-rs/hepta-agentd/src/circuit_cell_pipeline.rs
 [circuit-cell-representation]: ../../codex-rs/hepta-agentd/src/circuit_cell_representation.rs
 [circuit-cell-representation-tests]: ../../codex-rs/hepta-agentd/src/circuit_cell_representation_tests.rs
+[circuit-cell-representation-recovery-tests]: ../../codex-rs/hepta-agentd/src/circuit_cell_representation_recovery_tests.rs
+[circuit-cell-representation-guard-tests]: ../../codex-rs/hepta-agentd/src/circuit_cell_representation_guard_tests.rs
 [lifecycle]: ../../codex-rs/hepta-runtime/src/cell_lifecycle.rs
 [lifecycle-journal]: ../../codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs
 [lifecycle-recovery]: ../../codex-rs/hepta-runtime/src/cell_lifecycle_recovery.rs
