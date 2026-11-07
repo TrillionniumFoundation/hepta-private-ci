@@ -91,6 +91,13 @@ pub(crate) enum CircuitLedgerEventV2 {
         execution_request_digest: Sha256Digest,
         input_digest: Sha256Digest,
     },
+    #[serde(rename = "computation_completed_with_transfer_v1")]
+    ComputationCompletedWithTransferV1 {
+        fence: CircuitFenceIdentityV2,
+        expected_revision: u64,
+        now_ms: u64,
+        event: CircuitEventV2,
+    },
 }
 
 impl CircuitLedgerEventV2 {
@@ -126,6 +133,30 @@ impl CircuitLedgerEventV2 {
                     return Err(TaskFlowError::StaleFence);
                 }
                 run.reduce(definition, event, *now_ms)
+            }
+            Self::ComputationCompletedWithTransferV1 {
+                fence,
+                expected_revision,
+                now_ms,
+                event,
+            } => {
+                let completion = crate::circuit_computation_transfer::completion(event)?;
+                let run = previous.ok_or_else(|| invalid("transfer before run creation"))?;
+                if run
+                    .activations
+                    .get(&completion.activation_id)
+                    .and_then(|activation| activation.execution_request_digest.as_ref())
+                    .is_none()
+                {
+                    return Err(invalid("transfer has no original computation claim"));
+                }
+                Self::Applied {
+                    fence: fence.clone(),
+                    expected_revision: *expected_revision,
+                    now_ms: *now_ms,
+                    event: event.clone(),
+                }
+                .replay(previous, definition, owner)
             }
             Self::ComputationClaimedWithInputV1 {
                 fence,

@@ -27,7 +27,7 @@ fn root_worker_receives_exact_sealed_registration_with_independent_namespace() {
         ChildIdentity::Worker,
     );
     let actual = process::observe(worker.child.id()).unwrap();
-    let mut held = fixture
+    let held = fixture
         .session
         .as_ref()
         .unwrap()

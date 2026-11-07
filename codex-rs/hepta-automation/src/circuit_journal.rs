@@ -24,6 +24,7 @@ pub(crate) struct CircuitHistoryV2 {
     pub run: CircuitRunV2,
     pub commands: BTreeMap<String, Sha256Digest>,
     pub input_digests: BTreeMap<u64, Sha256Digest>,
+    pub transfer_digests: BTreeMap<u64, Sha256Digest>,
     pub last_digest: Sha256Digest,
 }
 
@@ -201,6 +202,7 @@ pub(crate) async fn load(
     let mut run = None;
     let mut commands = BTreeMap::new();
     let mut input_digests = BTreeMap::new();
+    let mut transfer_digests = BTreeMap::new();
     let mut previous = Sha256Digest::for_bytes(b"hepta.circuit.genesis.v2");
     let mut expected_seq = 0_u64;
     loop {
@@ -265,10 +267,25 @@ pub(crate) async fn load(
                 activation_id,
                 input_digest,
                 ..
-            } = payload
-                && input_digests.insert(activation_id, input_digest).is_some()
+            } = &payload
+                && input_digests
+                    .insert(*activation_id, input_digest.clone())
+                    .is_some()
             {
                 return Err(corrupt("circuit computation input repeats"));
+            }
+            if let CircuitLedgerEventV2::ComputationCompletedWithTransferV1 { event, .. } = &payload
+            {
+                let completion = crate::circuit_computation_transfer::completion(event)?;
+                if !input_digests.contains_key(&completion.activation_id)
+                    || transfer_digests
+                        .insert(completion.activation_id, completion.receipt_digest.clone())
+                        .is_some()
+                {
+                    return Err(corrupt(
+                        "circuit transfer repeats or lost its original input claim",
+                    ));
+                }
             }
             previous = digest;
             run = Some(next);
@@ -295,6 +312,7 @@ pub(crate) async fn load(
         run,
         commands,
         input_digests,
+        transfer_digests,
         last_digest: previous,
     }))
 }

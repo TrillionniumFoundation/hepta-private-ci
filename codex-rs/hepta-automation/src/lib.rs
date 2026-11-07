@@ -17,6 +17,7 @@ mod automation_taskflow;
 mod circuit_admission;
 mod circuit_budget;
 mod circuit_computation_input;
+mod circuit_computation_transfer;
 mod circuit_compute;
 mod circuit_history;
 mod circuit_join;
@@ -26,6 +27,7 @@ mod circuit_progress;
 mod circuit_runtime;
 mod circuit_state;
 mod circuit_store;
+mod circuit_transfer_store;
 mod dispatch_recovery;
 mod effect_dispatch_ledger;
 mod hcsn_job;
@@ -69,6 +71,7 @@ pub use circuit_admission::CircuitComputationAdmissionV2;
 pub use circuit_admission::CircuitComputationClaimV2;
 pub use circuit_budget::CircuitBudgetV2;
 pub use circuit_computation_input::CircuitComputationInputV1;
+pub use circuit_computation_transfer::CircuitComputationTransferV1;
 pub use circuit_history::CircuitLeaseClaimV2;
 pub use circuit_join::CircuitJoinEnvelopeV2;
 pub use circuit_join::circuit_join_output_schema_v2;
@@ -209,7 +212,7 @@ pub use taskflow_step::TaskFlowStepState;
 pub use timer_lifecycle::TimerDrainStatus;
 pub use timer_lifecycle::TimerPhase;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 21;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 22;
 
 #[cfg(test)]
 #[path = "circuit_runtime_tests.rs"]

@@ -9,6 +9,8 @@ use crate::circuit_runtime_tests::start;
 
 #[path = "circuit_input_tests.rs"]
 mod retained_input;
+#[path = "circuit_transfer_tests.rs"]
+mod retained_transfer;
 use crate::*;
 
 async fn pending() -> (tempfile::TempDir, AutomationStore, CircuitCommandReceiptV2) {
