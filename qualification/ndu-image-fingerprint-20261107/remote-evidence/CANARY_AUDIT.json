@@ -1,0 +1,927 @@
+{
+  "archives": [
+    {
+      "bytes": 1079297,
+      "members": [
+        {
+          "bytes": 41,
+          "compressed_bytes": 41,
+          "path": "SOURCE_SHA.txt",
+          "sha256": "74e6938c887c5900a5c8249f7c3410740ab7c0983faf302046f6af20b86b068f"
+        },
+        {
+          "bytes": 665,
+          "compressed_bytes": 382,
+          "path": "acquisition/ACQUISITION.json",
+          "sha256": "f34d8d9f6d9eb51d2b3cccd2a2f0638aca9773d3f2e02f5b527689441eac5bd2"
+        },
+        {
+          "bytes": 893,
+          "compressed_bytes": 396,
+          "path": "acquisition/ACQUISITION_ATTEMPTS.jsonl",
+          "sha256": "0ed1ed2f6237eed75c2669f363c59b3e7fb0e35fdbf9c2c38f6c0478f99b5792"
+        },
+        {
+          "bytes": 3903,
+          "compressed_bytes": 970,
+          "path": "acquisition/sd/MANIFEST.json",
+          "sha256": "457e9e728840a5c51c3319203918a10fbaf444b4ce9817c855b587d7a3725985"
+        },
+        {
+          "bytes": 369,
+          "compressed_bytes": 215,
+          "path": "acquisition/task/INPUT_MANIFEST.json",
+          "sha256": "ceb8aaf1d9352aef2d6460df8f60baea2dcd7487ac8d4bf7c0c4f1e8022fcb5d"
+        },
+        {
+          "bytes": 4095,
+          "compressed_bytes": 982,
+          "path": "acquisition/vlm/MANIFEST.json",
+          "sha256": "432a086810f32ba90ef34dc210fcb2f0f56fe8b27595266725d1846b5dad0e6c"
+        },
+        {
+          "bytes": 2111,
+          "compressed_bytes": 707,
+          "path": "acquisition.log",
+          "sha256": "a35eba5704bfd5aa4783c53a4e57fbbbedab332768b97c8f4128775c9fa2924e"
+        },
+        {
+          "bytes": 744,
+          "compressed_bytes": 433,
+          "path": "acquisition_cost.json",
+          "sha256": "7273e360a8f9342247ecf9b674e6d4263eeb2f695c9058df1497385221e83bae"
+        },
+        {
+          "bytes": 589,
+          "compressed_bytes": 381,
+          "path": "environment.txt",
+          "sha256": "278217908b960310cf8a3a87ab73e364b2dae464c1b918fa2ff0a6324b7b90e5"
+        },
+        {
+          "bytes": 959,
+          "compressed_bytes": 522,
+          "path": "install_cost.json",
+          "sha256": "ca82636b361c8501caa6e6f968d35ba4d4c364b45f845d19b2197368c529fac2"
+        },
+        {
+          "bytes": 2831,
+          "compressed_bytes": 1431,
+          "path": "real/PLAN.json",
+          "sha256": "7359875d758b30d62abc09758cc04b84d8a832098e241d47d0d746764bcb61f6"
+        },
+        {
+          "bytes": 1782,
+          "compressed_bytes": 793,
+          "path": "real/SUMMARY.json",
+          "sha256": "3a33cb834f1ff5251f6c7ba71406096a0bf64b8624fef3ad972ffad52a478ba0"
+        },
+        {
+          "bytes": 416,
+          "compressed_bytes": 268,
+          "path": "real/image_manifest.json",
+          "sha256": "63a8d1ed3ad83aaba5d5019026084d4958411416293fd86f6a9c38225350fc31"
+        },
+        {
+          "bytes": 421,
+          "compressed_bytes": 281,
+          "path": "real/image_stage.json",
+          "sha256": "497b5faf5e208a7df4cf645d79afc462e6caaacc14adfb19d767857fa82e1277"
+        },
+        {
+          "bytes": 7786,
+          "compressed_bytes": 2178,
+          "path": "real/image_training/cost_receipt.json",
+          "sha256": "cf6750d1bfb79f2d39f116408fd79dc672c5d0423e1748acd829f256e75b6ce1"
+        },
+        {
+          "bytes": 5389,
+          "compressed_bytes": 1878,
+          "path": "real/image_training/events.jsonl",
+          "sha256": "f72dae430c1fa834b716a2b3efecb02b3afee9e932f27fd7ccd37184ef5ee46c"
+        },
+        {
+          "bytes": 8057,
+          "compressed_bytes": 2525,
+          "path": "real/image_training/report.json",
+          "sha256": "54780308afe6dc271deaca4d9e453c12b343a4698becfca04a0a130fcc6305b9"
+        },
+        {
+          "bytes": 264452,
+          "compressed_bytes": 264537,
+          "path": "real/input.png",
+          "sha256": "672f4e47b0e541cf66214e2dc41ec9c91315449b3df3dd0788523cb2a25bff71"
+        },
+        {
+          "bytes": 455,
+          "compressed_bytes": 292,
+          "path": "real/text_manifest.json",
+          "sha256": "a4fd64804ca8b7a56cf52e254b0e19fb350a12f3cea2cf53ac90ca64086dc23b"
+        },
+        {
+          "bytes": 422,
+          "compressed_bytes": 274,
+          "path": "real/text_stage.json",
+          "sha256": "861d5e612165902e1950a4a4744a6e85e343e4a45fa788d54dc9a0fd4354561c"
+        },
+        {
+          "bytes": 798320,
+          "compressed_bytes": 746288,
+          "path": "real/text_training/adapter.safetensors",
+          "sha256": "ae0f869865cd9f03adf6ce5821b057b52b0fd938b9a68ad465b3f90d9a54937a"
+        },
+        {
+          "bytes": 10215,
+          "compressed_bytes": 2558,
+          "path": "real/text_training/cost_receipt.json",
+          "sha256": "acf72e3ce2e8c6b79a30b841fd4b9de5bb6f18db842fd5d614998a170424bb16"
+        },
+        {
+          "bytes": 7189,
+          "compressed_bytes": 2240,
+          "path": "real/text_training/events.jsonl",
+          "sha256": "eefc809859ebfbd03fd923a21362b84c734006c5aeea98f4afc8af62e7c05f08"
+        },
+        {
+          "bytes": 122543,
+          "compressed_bytes": 40698,
+          "path": "real/text_training/report.json",
+          "sha256": "c21f2497d64a4d97afcc105f2897a0f72268b3736e286e474e88a22828d7c70a"
+        },
+        {
+          "bytes": 14979,
+          "compressed_bytes": 2145,
+          "path": "tests.log",
+          "sha256": "5b26ea562cd2418f53d28698505cda615d820fd5e928cd84dc1d4c70da8b5ee8"
+        },
+        {
+          "bytes": 1551,
+          "compressed_bytes": 479,
+          "path": "tests_cost.json",
+          "sha256": "ea60146fa64c3dc1ab221c5a787bd5236aa73c9b483d763b593a28954122c7bb"
+        },
+        {
+          "bytes": 2263,
+          "compressed_bytes": 964,
+          "path": "training.log",
+          "sha256": "fb3281b8953d60cea9089604c0d623c25506e1d6c8bd9d989d29a074822bba46"
+        },
+        {
+          "bytes": 913,
+          "compressed_bytes": 499,
+          "path": "training_process_cost.json",
+          "sha256": "928d71714afe96ecc412d0d99dc974570f2931d51fed4bfd77a70431cfaa27ca"
+        }
+      ],
+      "path": "original-failure-e23dfea.zip",
+      "sha256": "21ed6b0bed552909fee6738ae39e7327e3862f39a9b28cd4a1d329ee9be8eb39"
+    },
+    {
+      "bytes": 1072089,
+      "members": [
+        {
+          "bytes": 41,
+          "compressed_bytes": 41,
+          "path": "SOURCE_SHA.txt",
+          "sha256": "4bff0dba59dab290e3100446560c20795f1dfafe560e04d1ada4dad79a4c7a9a"
+        },
+        {
+          "bytes": 666,
+          "compressed_bytes": 383,
+          "path": "acquisition/ACQUISITION.json",
+          "sha256": "59d2907b53f6cbab9a2b2dfa759e3ae33f1dcc8368f29cf7c50c39a2e5486fae"
+        },
+        {
+          "bytes": 895,
+          "compressed_bytes": 397,
+          "path": "acquisition/ACQUISITION_ATTEMPTS.jsonl",
+          "sha256": "b42e313d35974c85e527d43f084e48d900ebf8a319d87446c3f6781334ea1ccc"
+        },
+        {
+          "bytes": 3903,
+          "compressed_bytes": 970,
+          "path": "acquisition/sd/MANIFEST.json",
+          "sha256": "457e9e728840a5c51c3319203918a10fbaf444b4ce9817c855b587d7a3725985"
+        },
+        {
+          "bytes": 369,
+          "compressed_bytes": 215,
+          "path": "acquisition/task/INPUT_MANIFEST.json",
+          "sha256": "ceb8aaf1d9352aef2d6460df8f60baea2dcd7487ac8d4bf7c0c4f1e8022fcb5d"
+        },
+        {
+          "bytes": 4095,
+          "compressed_bytes": 982,
+          "path": "acquisition/vlm/MANIFEST.json",
+          "sha256": "432a086810f32ba90ef34dc210fcb2f0f56fe8b27595266725d1846b5dad0e6c"
+        },
+        {
+          "bytes": 2112,
+          "compressed_bytes": 710,
+          "path": "acquisition.log",
+          "sha256": "c0f3783895dab8ac961c7261242e761093deca8d7808391ec7c9d72dab50661b"
+        },
+        {
+          "bytes": 739,
+          "compressed_bytes": 431,
+          "path": "acquisition_cost.json",
+          "sha256": "421e5cafbf288e9e7fc2a07b2015910c22bfdae5f2f952b77222c2e19043ab28"
+        },
+        {
+          "bytes": 589,
+          "compressed_bytes": 381,
+          "path": "environment.txt",
+          "sha256": "589ed6e0a1a0e8b4fd7a9b57a3743e3b1ae60bc9d30a16ac9713f2517420e859"
+        },
+        {
+          "bytes": 958,
+          "compressed_bytes": 523,
+          "path": "install_cost.json",
+          "sha256": "0e8f3ab8770645a75470f1e2e7687d33e0d18cd31b07937f67f8b7be2b9ffc4d"
+        },
+        {
+          "bytes": 2831,
+          "compressed_bytes": 1432,
+          "path": "real/PLAN.json",
+          "sha256": "1807b01ccf8142b325a733af4aed8520cfde2290a18a9dad01eaf53b538b57ee"
+        },
+        {
+          "bytes": 416,
+          "compressed_bytes": 268,
+          "path": "real/image_manifest.json",
+          "sha256": "63a8d1ed3ad83aaba5d5019026084d4958411416293fd86f6a9c38225350fc31"
+        },
+        {
+          "bytes": 50,
+          "compressed_bytes": 47,
+          "path": "real/image_stage.json",
+          "sha256": "aeeb1b507077f02687533f7fa7d9222bf3320dff9a15d686ae1c1dcee58decc9"
+        },
+        {
+          "bytes": 5017,
+          "compressed_bytes": 1730,
+          "path": "real/image_training/events.jsonl",
+          "sha256": "b9dedead7ad685f7e417d48ca1719e409a9ccb1f392118e061f1d4519d3f43be"
+        },
+        {
+          "bytes": 264452,
+          "compressed_bytes": 264537,
+          "path": "real/input.png",
+          "sha256": "672f4e47b0e541cf66214e2dc41ec9c91315449b3df3dd0788523cb2a25bff71"
+        },
+        {
+          "bytes": 455,
+          "compressed_bytes": 292,
+          "path": "real/text_manifest.json",
+          "sha256": "a4fd64804ca8b7a56cf52e254b0e19fb350a12f3cea2cf53ac90ca64086dc23b"
+        },
+        {
+          "bytes": 417,
+          "compressed_bytes": 271,
+          "path": "real/text_stage.json",
+          "sha256": "3b7ff330b1a51abadc2f1e2ac329242f2472e9d1b37f138a5a850735a554ac39"
+        },
+        {
+          "bytes": 798320,
+          "compressed_bytes": 746286,
+          "path": "real/text_training/adapter.safetensors",
+          "sha256": "f742a265a041b32d672ed558286ce1a7f31161419a0d23fc070b2af6afbd5a89"
+        },
+        {
+          "bytes": 10196,
+          "compressed_bytes": 2558,
+          "path": "real/text_training/cost_receipt.json",
+          "sha256": "f31c0bf5e9401c9baa992b60e13520191b80eb316d78cde6f24740c082f0bf47"
+        },
+        {
+          "bytes": 7170,
+          "compressed_bytes": 2236,
+          "path": "real/text_training/events.jsonl",
+          "sha256": "165a7e4604d69bda331d6d6816e95870f58b8d917717034ab28ce0064e3071af"
+        },
+        {
+          "bytes": 122543,
+          "compressed_bytes": 40696,
+          "path": "real/text_training/report.json",
+          "sha256": "92c05d6827ea475f52b61e96cf5c3658e08c83be3801867496e2ba893ecd1e51"
+        },
+        {
+          "bytes": 15738,
+          "compressed_bytes": 2263,
+          "path": "tests.log",
+          "sha256": "9e65edc7d02683778ef6bb600e4f7404a208602c3a9079a16698cba8426ae326"
+        },
+        {
+          "bytes": 1543,
+          "compressed_bytes": 478,
+          "path": "tests_cost.json",
+          "sha256": "8437efd0432a30f15bc031f68e46ed4450f6ca4ea60eb925911fa49ec5aceddc"
+        },
+        {
+          "bytes": 407,
+          "compressed_bytes": 164,
+          "path": "training.log",
+          "sha256": "b81437e27a0df403e694911a8cabee6a894d32f7e1fa25364997632e4ae508d9"
+        },
+        {
+          "bytes": 465,
+          "compressed_bytes": 304,
+          "path": "training_process_cost.json",
+          "sha256": "a14b65d47ffcbd40a84ff202b1c10be446793d34babb25ef2ee00ec87d60e311"
+        }
+      ],
+      "path": "canary-cancelled-1e869d.zip",
+      "sha256": "8f9fe6239dcaaaa646fdab09fc42c38289ccbe7fb9483f67f8d85a6dff5ed7f8"
+    }
+  ],
+  "classification": {
+    "NoUpdate_established": false,
+    "adoption_or_reward_authorized": false,
+    "canonical_learning_outcome_receipt_emitted": false,
+    "completeness": "partial",
+    "execution": "Failed",
+    "failure_cause": "GitHub Actions maximum job execution time of 30m0s exceeded",
+    "native_owner_authentication_established": false,
+    "scientific_gate": "HOLD",
+    "scientific_qualification": "Inconclusive"
+  },
+  "cost": {
+    "aggregation_rule": "Do not add inclusive text stage to nested trainer receipt, or nested training to an inclusive training-process total. No complete training-process total exists.",
+    "completed_outer_receipts": {
+      "acquisition_cost.json": {
+        "attempt_id": "08ac53b16dab4022a2ff9cfa6975cd14",
+        "child_cpu_seconds": 4.656823,
+        "child_peak_rss_bytes": 30949376,
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.acquire_models",
+          "--root",
+          "/home/runner/work/_temp/dual-models"
+        ],
+        "do_not_add_to_nested_costs": true,
+        "parent_cpu_seconds": 0.0004980769999999857,
+        "return_code": 0,
+        "scope": "inclusive_completed_child_command_and_wrapper_before_final_receipt_write",
+        "started_unix": 1794050581.2378802,
+        "status": "completed",
+        "unknown_outer_costs": [
+          "meter_process_startup",
+          "final_receipt_write",
+          "external_shell_logging"
+        ],
+        "wall_seconds": 10.731019656
+      },
+      "install_cost.json": {
+        "attempt_id": "6440ceb77b4f43f9a2c81da533e265f7",
+        "child_cpu_seconds": 42.824767,
+        "child_peak_rss_bytes": 199237632,
+        "command": [
+          "python",
+          "-m",
+          "pip",
+          "install",
+          "--no-cache-dir",
+          "--disable-pip-version-check",
+          "--extra-index-url",
+          "https://download.pytorch.org/whl/cpu",
+          "torch==2.8.0+cpu",
+          "torchvision==0.23.0+cpu",
+          "numpy==2.3.5",
+          "Pillow==13.0.0",
+          "transformers==4.57.3",
+          "diffusers==0.35.2",
+          "accelerate==1.12.0",
+          "safetensors==0.7.0",
+          "num2words==0.5.14"
+        ],
+        "do_not_add_to_nested_costs": true,
+        "parent_cpu_seconds": 0.0004959150000000134,
+        "return_code": 0,
+        "scope": "inclusive_completed_child_command_and_wrapper_before_final_receipt_write",
+        "started_unix": 1794050527.1876101,
+        "status": "completed",
+        "unknown_outer_costs": [
+          "meter_process_startup",
+          "final_receipt_write",
+          "external_shell_logging"
+        ],
+        "wall_seconds": 47.154994904999995
+      },
+      "tests_cost.json": {
+        "attempt_id": "23a44ae0e55b4fb5ae0a3ab1633cd372",
+        "child_cpu_seconds": 5.911766,
+        "child_peak_rss_bytes": 388407296,
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_exact",
+          "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_factorial",
+          "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_local_models",
+          "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_dual_runtime",
+          "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_train_adapter",
+          "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_train_image_adapter",
+          "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_adapted_models",
+          "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_run_training",
+          "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_meter",
+          "-v"
+        ],
+        "do_not_add_to_nested_costs": true,
+        "parent_cpu_seconds": 0.00046324300000000207,
+        "return_code": 0,
+        "scope": "inclusive_completed_child_command_and_wrapper_before_final_receipt_write",
+        "started_unix": 1794050575.2416449,
+        "status": "completed",
+        "unknown_outer_costs": [
+          "meter_process_startup",
+          "final_receipt_write",
+          "external_shell_logging"
+        ],
+        "wall_seconds": 5.769920873999979
+      }
+    },
+    "coverage": "partial",
+    "image_known_events_cpu_seconds": 3.205530746000022,
+    "image_known_events_wall_seconds": 2.606805054000006,
+    "total_cpu_seconds": null,
+    "total_resource_cost": null,
+    "training_outer_receipt": {
+      "attempt_id": "8695cd67ce904b9dab05a7edd10b3dc4",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.run_training",
+        "--models",
+        "/home/runner/work/_temp/dual-models",
+        "--output",
+        "/home/runner/work/_temp/training-evidence/real",
+        "--source-sha",
+        "1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+        "--threads",
+        "2"
+      ],
+      "do_not_add_to_nested_costs": true,
+      "started_unix": 1794050592.1942403,
+      "status": "started"
+    },
+    "unknown": [
+      "Uncompleted image preparation operation CPU, wall, memory and any cleanup",
+      "Terminal whole-training process receipt and child exit status",
+      "Any unrecorded work during cancellation and runner cleanup",
+      "Meter startup, final receipt writes and external shell logging per individual receipts"
+    ]
+  },
+  "dual_inference": {
+    "artifacts_available": false,
+    "completion_established": false,
+    "semantic_efficacy_established": false
+  },
+  "engineering_findings": {
+    "bounded_followup_suggestions": [
+      "Emit durable operation start/end records and bounded stack snapshots around the unreturned preparation interval",
+      "Use one preemptive total deadline with cleanup time reserved inside the existing 30-minute job limit",
+      "Handle process cancellation and reap child groups while retaining partial cost/error receipts",
+      "Pin the observed regex transitive dependency for future source-comparable environments"
+    ],
+    "budgets_expanded_by_audit": false,
+    "confirmed": [
+      "Original singleton-stride bfloat16 fingerprint error no longer occurred at initial full image base hash",
+      "Image preparation did not emit a completion receipt before job timeout",
+      "Whole-training outer cost receipt remained started"
+    ],
+    "localization_limits": [
+      "No evidence distinguishes scheduler setup, image preprocessing, VAE encoding, CLIP encoding or preparation hashes within the unmetered interval",
+      "Passing the initial image base hash does not establish an image update, image reload, full base immutability or dual inference"
+    ],
+    "training_restarted_by_audit": false
+  },
+  "environment_version_changes": {
+    "regex": [
+      "2026.9.29",
+      "2026.11.7"
+    ]
+  },
+  "image": {
+    "base_immutability_established": false,
+    "image_checkpoint_or_reload_available": false,
+    "initial_full_base_fingerprint_completed": true,
+    "missing": [
+      "real/SUMMARY.json",
+      "real/image_training/report.json",
+      "real/image_training/cost_receipt.json",
+      "real/image_training/adapter.safetensors"
+    ],
+    "recorded_events": [
+      {
+        "cpu_seconds": 0.0005383330000086062,
+        "id": 0,
+        "kind": "data_admission",
+        "wall_seconds": 0.0005383410000376898
+      },
+      {
+        "cpu_seconds": 2.5177921679999997,
+        "id": 1,
+        "kind": "load_frozen_sd",
+        "wall_seconds": 1.9190265699999713
+      },
+      {
+        "cpu_seconds": 0.6872002450000139,
+        "id": 2,
+        "kind": "full_base_parameter_hash_before",
+        "wall_seconds": 0.6872401429999968
+      }
+    ],
+    "recorded_update_completed_count": 0,
+    "recorded_update_started_count": 0,
+    "stage": {
+      "generator": "image",
+      "status": "started"
+    },
+    "stall_interval": "After completed initial full_base_parameter_hash_before, before any completed prepare_real_vae_and_clip receipt. No stack sample identifies the individual blocking operation.",
+    "terminal_completed_updates": null
+  },
+  "kind": "read_only_post_execution_artifact_audit",
+  "local_evidence_files": [
+    {
+      "bytes": 829,
+      "path": "artifact-13573457135.json",
+      "sha256": "dd7fd6d89f43d4605469d77699993f7ad598dc1326de478236e630e4ff63af7d"
+    },
+    {
+      "bytes": 4275,
+      "path": "canary-cancelled-1e869d-receipts-MANIFEST.json",
+      "sha256": "cd577c4ac2f5d04978abe0e0c8e99dfabc39d530aa4a6df3c80ab079d86f0982"
+    },
+    {
+      "bytes": 327866,
+      "path": "canary-cancelled-1e869d-receipts.zip",
+      "sha256": "30194304d89aff992a0029d7f39186b563646346388ff27eacbb36324b94d3b1"
+    },
+    {
+      "bytes": 1072089,
+      "path": "canary-cancelled-1e869d.zip",
+      "sha256": "8f9fe6239dcaaaa646fdab09fc42c38289ccbe7fb9483f67f8d85a6dff5ed7f8"
+    },
+    {
+      "bytes": 784,
+      "path": "check-run-128389640910-annotations.json",
+      "sha256": "a7a238611ee39d67b832c6fb77caa90e78ef000f4ef2513ada55af5689c04d09"
+    },
+    {
+      "bytes": 3897,
+      "path": "check-run-128389640910.json",
+      "sha256": "a61f082c0e66bbc8301a9b1b3d49261c8dbbe3a9c86dbfcfe7bb7117fac7acc8"
+    },
+    {
+      "bytes": 4358,
+      "path": "job-128389640910.json",
+      "sha256": "ecf8319c7ad2417740d6cf55c00e8d38c0ea74d898372d1530a7b1329cc0a43f"
+    },
+    {
+      "bytes": 75733,
+      "path": "job-128389640910.log",
+      "sha256": "274c4ab76e23479ebb889c8d0c3e4414e8659d4f5d24ab82332d1eca45797089"
+    },
+    {
+      "bytes": 4768,
+      "path": "original-failure-e23dfea-receipts-MANIFEST.json",
+      "sha256": "d7a03e81363b320d7c91ccdc9ee57ceaba930adc30fd8df635b953519a22ce7a"
+    },
+    {
+      "bytes": 335116,
+      "path": "original-failure-e23dfea-receipts.zip",
+      "sha256": "525eeed6f20056ff1aca9691c4724ada644c296977448b5068532ac84e5c4294"
+    },
+    {
+      "bytes": 1079297,
+      "path": "original-failure-e23dfea.zip",
+      "sha256": "21ed6b0bed552909fee6738ae39e7327e3862f39a9b28cd4a1d329ee9be8eb39"
+    },
+    {
+      "bytes": 16767,
+      "path": "run-42367863157.json",
+      "sha256": "0ec37cf77d3928f0adee5dba07bdc31e0b1c62b5c90aa7211d3b52f3fd44354a"
+    }
+  ],
+  "measured_wall_intervals": {
+    "job": {
+      "completed_at": "2026-11-07T11:52:08Z",
+      "started_at": "2026-11-07T11:21:50Z",
+      "wall_seconds": 1818.0
+    },
+    "scope": "GitHub API second-resolution timestamps; these are not child CPU or a complete resource bill.",
+    "training_step": {
+      "completed_at": "2026-11-07T11:52:03Z",
+      "started_at": "2026-11-07T11:23:11Z",
+      "wall_seconds": 1732.0
+    }
+  },
+  "plan": {
+    "declared_source_count": 1,
+    "holdout_count": 0,
+    "image_target_is_diagram": false,
+    "independent_semantic_evaluation": false,
+    "inference_actions": [
+      "perceive",
+      "text",
+      "draft",
+      "verify",
+      "stop"
+    ],
+    "joint_reward_training": false,
+    "learned_controller": false,
+    "learning_rate": 0.001,
+    "manifests": {
+      "image": "63a8d1ed3ad83aaba5d5019026084d4958411416293fd86f6a9c38225350fc31",
+      "text": "a4fd64804ca8b7a56cf52e254b0e19fb350a12f3cea2cf53ac90ca64086dc23b"
+    },
+    "prior_run_source_sha": "4e3b8c3c242d7d6d83086e7375a354a30647e040",
+    "rank": 4,
+    "role": "engineering_parameter_update_reload_and_dual_execution_only",
+    "runtime_sources": {
+      "__init__.py": "d3a4f83067b98376325c75773b0cf96a917edc33edc75849017c94e1e6ce2ac0",
+      "acquire_models.py": "ec9d7dbc943ab029e51174fbf6065be4bd29ac23fb912d1aa3f14c065ad0e1cf",
+      "adapted_models.py": "0346016c2fe77fc77070dae3400da59a678bcf6ec8970fdc484edbd4b2498737",
+      "diagnostics.py": "e9ed1bd8205f9be8518b2ba6e0792e015ab28bfa0649e707bc19b124f1810db1",
+      "dual_runtime.py": "bfe19eb73644bac3323806ded95d37a63645bbb4e63b33ec47f73dc07918fb4e",
+      "exact.py": "858cf604c55573ded56ab62b43a93d2350036bdfb1e768aa585099d06ca5df87",
+      "factorial.py": "d751492366575889e109fa55187c7bcef7a5c52b880046d59e781a2f60af985b",
+      "local_models.py": "70a119d2ac4297c31fe86b5c299b30b1f43bb128e3a72f06087a32162f3965e1",
+      "meter.py": "5224486c4a6a06a4b0ec4de0226add8c7560d9488c2f326b824caf63c977bb53",
+      "run_real.py": "85ba5b217ff55b1ee87bf8ed65ca8b83347b71ad036199da1417f3dc041e35c6",
+      "run_training.py": "3a0cbb9d109cb8d3ff88a134f451667b27440f67fe4c8c438727951a8598cbfe",
+      "test_adapted_models.py": "64e608be53c6c354f0919b66cc65b07018cbde110f145c09fcadf672f7fce86d",
+      "test_dual_runtime.py": "3cf7bf880449dd0d750680b8209d39ca87ffca54256eef1c3470fc12802624be",
+      "test_exact.py": "5588c6b47106a37a110192c4fa1ebcda81c4ea729578e929d0a3d911cc6e8a12",
+      "test_factorial.py": "b9bd13d3605a4ffa9d80bf86e2053c23885bbe9c0fbd90c07f38ca043b740ee7",
+      "test_local_models.py": "6bc693f4f93b3fc1f349ee1118da754770e8e79782cab196c63f1f679b205a25",
+      "test_meter.py": "c3b60d6984fd8a449bd5102bf7b0e76317d9cb4770c83c55160206c1e82d73c2",
+      "test_run_training.py": "90716942799d51f26d24da58b93aaafe0bae270ccd9375245fe03db7ecfc684b",
+      "test_train_adapter.py": "2086dd4b3b148f5f9a865231d6bc865e71bd02ae9981cef8d6a9cf044fe04f15",
+      "test_train_image_adapter.py": "014d6182f3dd954338555b249026523f1a5f17cf2fef3920248f9201c169a1f7",
+      "train_adapter.py": "ba76e1a7f38632f65c86d16b70ba4ecd47f98c616649b0e08fb81b2a1f911c4f",
+      "train_image_adapter.py": "446ba050e366125874cf8502f3f1a0f05fe9cac3c87a03217ec11f76ca6dbe06"
+    },
+    "seed": 17,
+    "source_sha": "1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+    "steps_per_generator": 2,
+    "threads": 2
+  },
+  "plan_changes_excluding_runtime_sources": {
+    "source_sha": [
+      "e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+      "1e869d455fe2fb53b5221b84bc0a27e190b09ab2"
+    ]
+  },
+  "provenance": {
+    "artifact_digest_verified": true,
+    "artifact_id": 13573457135,
+    "artifact_name": "ndu-training-1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+    "conclusion": "cancelled",
+    "job_id": 128389640910,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42367863157/job/128389640910",
+    "original_artifact_id": 13395755207,
+    "original_job_id": 127075010670,
+    "original_run_id": 41976044300,
+    "original_source_sha": "e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+    "pull_request": 5302,
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_id": 42367863157,
+    "run_status": "completed",
+    "source_sha": "1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+    "source_sha_consistent_across_archive_plan_job_and_artifact": true,
+    "timeout_annotations": [
+      "The job has exceeded the maximum execution time of 30m0s",
+      "The operation was canceled."
+    ],
+    "workflow": ".github/workflows/ndu-adapter-training.yml"
+  },
+  "receipt_subsets": [
+    {
+      "archive": "original-failure-e23dfea-receipts.zip",
+      "bytes": 335116,
+      "manifest": "original-failure-e23dfea-receipts-MANIFEST.json",
+      "omitted": [
+        {
+          "bytes": 798320,
+          "path": "real/text_training/adapter.safetensors",
+          "sha256": "ae0f869865cd9f03adf6ce5821b057b52b0fd938b9a68ad465b3f90d9a54937a"
+        }
+      ],
+      "retained_member_count": 27,
+      "sha256": "525eeed6f20056ff1aca9691c4724ada644c296977448b5068532ac84e5c4294"
+    },
+    {
+      "archive": "canary-cancelled-1e869d-receipts.zip",
+      "bytes": 327866,
+      "manifest": "canary-cancelled-1e869d-receipts-MANIFEST.json",
+      "omitted": [
+        {
+          "bytes": 798320,
+          "path": "real/text_training/adapter.safetensors",
+          "sha256": "f742a265a041b32d672ed558286ce1a7f31161419a0d23fc070b2af6afbd5a89"
+        }
+      ],
+      "retained_member_count": 24,
+      "sha256": "30194304d89aff992a0029d7f39186b563646346388ff27eacbb36324b94d3b1"
+    }
+  ],
+  "repository_asset_limit": {
+    "bytes": 512000,
+    "note": "Original checkpoint bytes exceed the limit even compressed. Exact original ZIP preservation needs the repository intentional-asset exception for the chosen paths; receipt-only derived ZIPs are below the limit and explicitly omit the checkpoint.",
+    "over_limit_members": [
+      {
+        "archive": "original-failure-e23dfea.zip",
+        "bytes": 798320,
+        "compressed_bytes": 746288,
+        "path": "real/text_training/adapter.safetensors"
+      },
+      {
+        "archive": "canary-cancelled-1e869d.zip",
+        "bytes": 798320,
+        "compressed_bytes": 746286,
+        "path": "real/text_training/adapter.safetensors"
+      }
+    ],
+    "policy_modified_by_audit": false
+  },
+  "runtime_source_hash_changes": {
+    "test_train_adapter.py": [
+      "ea3d942165090918c67064882513e00ad74ac9b8f8f0fbc5b4bc58816827ab99",
+      "2086dd4b3b148f5f9a865231d6bc865e71bd02ae9981cef8d6a9cf044fe04f15"
+    ],
+    "train_adapter.py": [
+      "b00fb4a9cdb36691335fcbad082082e6f998054a1c549b73e3f6cdcc667c3b51",
+      "ba76e1a7f38632f65c86d16b70ba4ecd47f98c616649b0e08fb81b2a1f911c4f"
+    ]
+  },
+  "same_material_checks": [
+    {
+      "equal_bytes": true,
+      "path": "real/input.png",
+      "sha256": "672f4e47b0e541cf66214e2dc41ec9c91315449b3df3dd0788523cb2a25bff71"
+    },
+    {
+      "equal_bytes": true,
+      "path": "real/text_manifest.json",
+      "sha256": "a4fd64804ca8b7a56cf52e254b0e19fb350a12f3cea2cf53ac90ca64086dc23b"
+    },
+    {
+      "equal_bytes": true,
+      "path": "real/image_manifest.json",
+      "sha256": "63a8d1ed3ad83aaba5d5019026084d4958411416293fd86f6a9c38225350fc31"
+    },
+    {
+      "equal_bytes": true,
+      "path": "acquisition/vlm/MANIFEST.json",
+      "sha256": "432a086810f32ba90ef34dc210fcb2f0f56fe8b27595266725d1846b5dad0e6c"
+    },
+    {
+      "equal_bytes": true,
+      "path": "acquisition/sd/MANIFEST.json",
+      "sha256": "457e9e728840a5c51c3319203918a10fbaf444b4ce9817c855b587d7a3725985"
+    },
+    {
+      "equal_bytes": true,
+      "path": "acquisition/task/INPUT_MANIFEST.json",
+      "sha256": "ceb8aaf1d9352aef2d6460df8f60baea2dcd7487ac8d4bf7c0c4f1e8022fcb5d"
+    }
+  ],
+  "schema": "hepta.canary.artifact-audit.v1",
+  "tests": {
+    "count": 68,
+    "passed": true,
+    "receipt": "tests.log",
+    "skips": 0
+  },
+  "text": {
+    "adapter_changed_parameter_values": 199424,
+    "base_tensor_bytes_present_for_independent_rehash": false,
+    "base_tensor_hash_count_after": 471,
+    "base_tensor_hash_count_before": 471,
+    "checkpoint_audit": {
+      "checkpoint_digest_matches_report": true,
+      "checkpoint_sha256": "f742a265a041b32d672ed558286ce1a7f31161419a0d23fc070b2af6afbd5a89",
+      "metadata": {
+        "base_parameter_sha256": "9695ee89223c006c55b5b423cfe8edb6f2ede2b5694e574b4af524fbc59f058b",
+        "manifest_sha256": "a4fd64804ca8b7a56cf52e254b0e19fb350a12f3cea2cf53ac90ca64086dc23b",
+        "objective": "supervised_assistant_token_cross_entropy",
+        "rank": 4,
+        "schema": "hepta.real-vlm-output-adapter.v1",
+        "seed": 17,
+        "source_sha": "1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+        "steps": 2,
+        "vocabulary": 49280,
+        "width": 576
+      },
+      "parameter_count": 199424,
+      "parameter_fingerprint_matches_report": true,
+      "parameter_tensor_count": 2,
+      "recomputed_parameter_fingerprint": "74ffa3381aac52103441f10f598ae38d2913c1388cbb3eb79e536d2f7493aee2",
+      "source_sha": "1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+      "tensor_headers": {
+        "down.weight": {
+          "data_offsets": [
+            0,
+            9216
+          ],
+          "dtype": "F32",
+          "shape": [
+            4,
+            576
+          ]
+        },
+        "up.weight": {
+          "data_offsets": [
+            9216,
+            797696
+          ],
+          "dtype": "F32",
+          "shape": [
+            49280,
+            4
+          ]
+        }
+      },
+      "tensor_sha256": {
+        "down.weight": "2eb841f8fc7d651865e1e8eea392b00ffab57784708d1ed78d01f7f1bdc9da62",
+        "up.weight": "904a2fa3bdfe23a912154c1e2335523e0d4f2bf8a71e7d7c60594e2e6bde4789"
+      }
+    },
+    "checkpoint_cross_run_comparison": {
+      "independent_repetitions": false,
+      "metadata_differences": {
+        "source_sha": [
+          "e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+          "1e869d455fe2fb53b5221b84bc0a27e190b09ab2"
+        ]
+      },
+      "reason": "Same source, seed and planned updates; repeated updates and reruns are not independent training sources.",
+      "same_tensor_data_bytes": true,
+      "same_tensor_headers": true
+    },
+    "completed_updates": 2,
+    "cost_receipt_summary": {
+      "cpu_seconds": 190.62751264599999,
+      "qualified_checkpoint": {
+        "path": "adapter.safetensors",
+        "sha256": "f742a265a041b32d672ed558286ce1a7f31161419a0d23fc070b2af6afbd5a89"
+      },
+      "scope": "exclusive_function_intervals_through_report_write_including_model_hashes",
+      "status": "completed",
+      "training_cost_is_not_inference_cost": true,
+      "unknown_outer_costs": [
+        "final_meter_journal_and_cost_receipt_write",
+        "external_process_startup"
+      ],
+      "wall_seconds": 137.625660912
+    },
+    "planned_updates": 2,
+    "recorded_base_changed_parameter_tensors": 0,
+    "recorded_base_hash_maps_equal": true,
+    "reload_probe": {
+      "after_sha256": "b77dd174691e21513b14119cff3b9aae2dc7c993c8e4f973b558619075408cd7",
+      "before_sha256": "b77dd174691e21513b14119cff3b9aae2dc7c993c8e4f973b558619075408cd7",
+      "equal": true,
+      "input_ids_sha256": "e42e19e59a4bd8d2b08d3678d792163cc0e666c1bc1e81d997827e5341fa011d",
+      "max_abs_diff": 0.0,
+      "scope": "same_training_input_teacher_forced_logits_not_new_evaluation",
+      "source_id": "public-bee-single-source-wiring"
+    },
+    "stage": {
+      "checkpoint": {
+        "path": "adapter.safetensors",
+        "sha256": "f742a265a041b32d672ed558286ce1a7f31161419a0d23fc070b2af6afbd5a89"
+      },
+      "completed_updates": 2,
+      "cost_scope": "inclusive_trainer_call_and_cleanup_before_stage_write",
+      "cpu_seconds": 190.751591618,
+      "do_not_add_to_nested_training_cost": true,
+      "error": null,
+      "generator": "text",
+      "status": "completed",
+      "wall_seconds": 137.742780141
+    },
+    "updates": [
+      {
+        "answer_tokens": 13,
+        "gradient_norm_before_clipping": 0.07435928285121918,
+        "index": 0,
+        "loss": 1.1995617151260376,
+        "prefix_tokens": 90,
+        "source_id": "public-bee-single-source-wiring"
+      },
+      {
+        "answer_tokens": 13,
+        "gradient_norm_before_clipping": 0.07486727088689804,
+        "index": 1,
+        "loss": 1.1989814043045044,
+        "prefix_tokens": 90,
+        "source_id": "public-bee-single-source-wiring"
+      }
+    ]
+  }
+}

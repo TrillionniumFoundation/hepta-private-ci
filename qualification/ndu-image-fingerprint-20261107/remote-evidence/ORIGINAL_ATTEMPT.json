@@ -1,0 +1,205 @@
+{
+  "schema": "ndu-real-canary-retained-attempt-v1",
+  "source_sha": "e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+  "run_id": 41976044300,
+  "job_id": 127075010670,
+  "artifact_id": 13395755207,
+  "artifact": "original-failure-e23dfea.zip",
+  "bytes": 1079297,
+  "sha256": "21ed6b0bed552909fee6738ae39e7327e3862f39a9b28cd4a1d329ee9be8eb39",
+  "training_result": {
+    "source_sha": "e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+    "stages": [
+      {
+        "generator": "text",
+        "status": "completed",
+        "completed_updates": 2,
+        "error": null,
+        "checkpoint": {
+          "path": "adapter.safetensors",
+          "sha256": "ae0f869865cd9f03adf6ce5821b057b52b0fd938b9a68ad465b3f90d9a54937a"
+        },
+        "cpu_seconds": 190.589470492,
+        "wall_seconds": 137.98324794299998,
+        "cost_scope": "inclusive_trainer_call_and_cleanup_before_stage_write",
+        "do_not_add_to_nested_training_cost": true
+      },
+      {
+        "generator": "image",
+        "status": "failed",
+        "completed_updates": 0,
+        "error": {
+          "type": "RuntimeError",
+          "message": "self.stride(-1) must be 1 to view BFloat16 as Byte (different element sizes), but got 320"
+        },
+        "cpu_seconds": 2.7180595480000136,
+        "wall_seconds": 2.124594545999969,
+        "cost_scope": "inclusive_trainer_call_and_cleanup_before_stage_write",
+        "do_not_add_to_nested_training_cost": true
+      }
+    ],
+    "inference": {
+      "status": "not_run_unqualified_training"
+    },
+    "completed_generators": 1,
+    "cpu_seconds": 193.311381964,
+    "wall_seconds": 140.111789741,
+    "cost_scope": "inclusive_setup_training_dual_inference_cleanup_and_stage_writes_before_summary",
+    "declared_source_count": 1,
+    "holdout_count": 0,
+    "training_design": "separate_single_generator_updates",
+    "joint_training_efficacy": false,
+    "four_arm_efficacy": false,
+    "semantic_acceptance": "not_inferred",
+    "production_qualified": false,
+    "separate_cost_receipts": [
+      "acquisition/ACQUISITION.json"
+    ],
+    "workflow_cost_source": "separate command meters and GitHub job timestamps",
+    "unknown_outer_costs": [
+      "process_startup",
+      "energy",
+      "summary_write"
+    ]
+  },
+  "separate_command_meters": {
+    "install_cost.json": {
+      "attempt_id": "fc04a986dafd48c993559a32d2b7ffd5",
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "--no-cache-dir",
+        "--disable-pip-version-check",
+        "--extra-index-url",
+        "https://download.pytorch.org/whl/cpu",
+        "torch==2.8.0+cpu",
+        "torchvision==0.23.0+cpu",
+        "numpy==2.3.5",
+        "Pillow==13.0.0",
+        "transformers==4.57.3",
+        "diffusers==0.35.2",
+        "accelerate==1.12.0",
+        "safetensors==0.7.0",
+        "num2words==0.5.14"
+      ],
+      "status": "completed",
+      "started_unix": 1793861672.6932511,
+      "do_not_add_to_nested_costs": true,
+      "return_code": 0,
+      "parent_cpu_seconds": 0.00040005799999998093,
+      "child_cpu_seconds": 40.793632,
+      "wall_seconds": 44.244573697999996,
+      "child_peak_rss_bytes": 198979584,
+      "scope": "inclusive_completed_child_command_and_wrapper_before_final_receipt_write",
+      "unknown_outer_costs": [
+        "meter_process_startup",
+        "final_receipt_write",
+        "external_shell_logging"
+      ]
+    },
+    "tests_cost.json": {
+      "attempt_id": "d041408c7ba64ea7a18ba10261f6b149",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_exact",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_factorial",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_local_models",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_dual_runtime",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_train_adapter",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_train_image_adapter",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_adapted_models",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_run_training",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_meter",
+        "-v"
+      ],
+      "status": "completed",
+      "started_unix": 1793861717.8182538,
+      "do_not_add_to_nested_costs": true,
+      "return_code": 0,
+      "parent_cpu_seconds": 0.0003771759999999791,
+      "child_cpu_seconds": 5.271806000000001,
+      "wall_seconds": 5.132280094999999,
+      "child_peak_rss_bytes": 388538368,
+      "scope": "inclusive_completed_child_command_and_wrapper_before_final_receipt_write",
+      "unknown_outer_costs": [
+        "meter_process_startup",
+        "final_receipt_write",
+        "external_shell_logging"
+      ]
+    },
+    "acquisition_cost.json": {
+      "attempt_id": "ca74cd75ad8e4b02b0cd03df37fabe0f",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.acquire_models",
+        "--root",
+        "/home/runner/work/_temp/dual-models"
+      ],
+      "status": "completed",
+      "started_unix": 1793861723.169483,
+      "do_not_add_to_nested_costs": true,
+      "return_code": 0,
+      "parent_cpu_seconds": 0.0003844980000000109,
+      "child_cpu_seconds": 5.055748,
+      "wall_seconds": 11.431200131000026,
+      "child_peak_rss_bytes": 30732288,
+      "scope": "inclusive_completed_child_command_and_wrapper_before_final_receipt_write",
+      "unknown_outer_costs": [
+        "meter_process_startup",
+        "final_receipt_write",
+        "external_shell_logging"
+      ]
+    },
+    "training_process_cost.json": {
+      "attempt_id": "541e7b069b4b4a9e8700f077e7e05e5e",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.run_training",
+        "--models",
+        "/home/runner/work/_temp/dual-models",
+        "--output",
+        "/home/runner/work/_temp/training-evidence/real",
+        "--source-sha",
+        "e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+        "--threads",
+        "2"
+      ],
+      "status": "failed",
+      "started_unix": 1793861734.8212097,
+      "do_not_add_to_nested_costs": true,
+      "return_code": 1,
+      "parent_cpu_seconds": 0.0004064389999999807,
+      "child_cpu_seconds": 195.62094299999998,
+      "wall_seconds": 142.312904318,
+      "child_peak_rss_bytes": 2021695488,
+      "scope": "inclusive_completed_child_command_and_wrapper_before_final_receipt_write",
+      "unknown_outer_costs": [
+        "meter_process_startup",
+        "final_receipt_write",
+        "external_shell_logging"
+      ]
+    }
+  },
+  "known_nonoverlapping_command_subtotal": {
+    "cpu_seconds": 246.74369717099998,
+    "wall_seconds": 203.12095824200003,
+    "scope": "Four separate command envelopes only; never add the nested training/action meters."
+  },
+  "full_study_cost": null,
+  "missing_costs": [
+    "runner setup and cleanup",
+    "command-meter startup and final writes",
+    "shell logging and artifact upload",
+    "energy",
+    "earlier study attempts not contained in this archive"
+  ]
+}

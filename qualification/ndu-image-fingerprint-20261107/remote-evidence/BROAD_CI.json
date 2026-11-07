@@ -1,0 +1,367 @@
+{
+  "schema": "ndu-hosted-ci-readback-v1",
+  "source_sha": "1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+  "run_id": 42367881449,
+  "run_conclusion": "failure",
+  "scope": "Broad repository CI; this snapshot does not change the separate real-adapter canary or native smoke result.",
+  "jobs": [
+    {
+      "id": 128389696848,
+      "name": "Select blocking CI scope",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 128389696884,
+      "name": "Blob size policy / Blob size policy",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 128389696933,
+      "name": "Codespell / Check for spelling errors",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Codespell"
+      ]
+    },
+    {
+      "id": 128390182232,
+      "name": "cargo-deny / cargo-deny",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run cargo-deny",
+        "Preserve a same-version host diagnostic after failure"
+      ]
+    },
+    {
+      "id": 128390182272,
+      "name": "repo-checks / build-test",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 128390182295,
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 128390182299,
+      "name": "rust-ci / Detect changed areas",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 128390182309,
+      "name": "sdk / python-sdk",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 128390182315,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Validate canonical contract and readiness documents"
+      ]
+    },
+    {
+      "id": 128390182334,
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 128390182341,
+      "name": "repo-checks / Native Hepta paths on windows-latest",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Checkout repository",
+        "Check for a clean worktree"
+      ]
+    },
+    {
+      "id": 128390182368,
+      "name": "sdk / sdks",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Build codex and code-mode host with Bazel"
+      ]
+    },
+    {
+      "id": 128390182410,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "Check for a clean worktree"
+      ]
+    },
+    {
+      "id": 128390182417,
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "bazel build verify-release-build targets"
+      ]
+    },
+    {
+      "id": 128390182423,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "Check for a clean worktree"
+      ]
+    },
+    {
+      "id": 128390182428,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "Check for a clean worktree"
+      ]
+    },
+    {
+      "id": 128390182429,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "Check for a clean worktree"
+      ]
+    },
+    {
+      "id": 128390182435,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "Check for a clean worktree"
+      ]
+    },
+    {
+      "id": 128390182439,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "bazel test //..."
+      ]
+    },
+    {
+      "id": 128390182441,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "bazel build verify-release-build targets"
+      ]
+    },
+    {
+      "id": 128390182463,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "Check for a clean worktree"
+      ]
+    },
+    {
+      "id": 128390182468,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "bazel test //..."
+      ]
+    },
+    {
+      "id": 128390182487,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "bazel test //..."
+      ]
+    },
+    {
+      "id": 128390182488,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "bazel build --config=clippy lint targets"
+      ]
+    },
+    {
+      "id": 128390182507,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "bazel build --config=clippy lint targets"
+      ]
+    },
+    {
+      "id": 128390182562,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "bazel test //..."
+      ]
+    },
+    {
+      "id": 128390182616,
+      "name": "NDU v6 neural rollout smoke / Unified profile and executed-policy regressions / Objective, continuation, and selected-policy invariants",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 128390182669,
+      "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 128390183367,
+      "name": "Hepta scoped native checks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "failed_steps": []
+    },
+    {
+      "id": 128390183510,
+      "name": "Lightweight prose and derived checks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "failed_steps": []
+    }
+  ],
+  "selected_original_log_excerpts": {
+    "128389696933": [
+      "2026-11-07T11:22:56.0318655Z ##[error]./experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/open_domain.py:104: cach ==> catch, cache",
+      "2026-11-07T11:22:56.0324954Z ##[error]./experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/open_text_20261030/protocol.json:112: cach ==> catch, cache",
+      "2026-11-07T11:22:56.0326364Z ##[error]./experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/open_text_frozen_20261030/protocol.json:123: cach ==> catch, cache",
+      "2026-11-07T11:22:56.0327586Z ##[error]./experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/native_generation/codec.rs:185: nd ==> and, 2nd",
+      "2026-11-07T11:22:56.0328866Z ##[error]./experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/native_generation/codec.rs:188: nd ==> and, 2nd"
+    ],
+    "128390182315": [
+      "2026-11-07T11:29:18.4323426Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-1946337c-6b1f-4f0b-b42a-7127bae06111.config",
+      "2026-11-07T11:29:18.4369481Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url",
+      "2026-11-07T11:29:18.4635623Z Removing credentials config '/home/runner/work/_temp/git-credentials-1946337c-6b1f-4f0b-b42a-7127bae06111.config'",
+      "2026-11-07T11:29:18.4646053Z ##[endgroup]",
+      "2026-11-07T11:29:18.4868614Z ##[group]Run set -euo pipefail",
+      "2026-11-07T11:29:18.4868981Z \u001b[36;1mset -euo pipefail\u001b[0m",
+      "2026-11-07T11:29:18.4869340Z \u001b[36;1mpython3 -m json.tool docs/branch-policy.json >/dev/null\u001b[0m",
+      "2026-11-07T11:29:18.4869718Z \u001b[36;1mpython3 - <<'PY'\u001b[0m",
+      "2026-11-07T11:29:18.4869953Z \u001b[36;1mimport json\u001b[0m",
+      "2026-11-07T11:29:18.4870179Z \u001b[36;1mfrom pathlib import Path\u001b[0m",
+      "2026-11-07T11:29:18.4870551Z \u001b[36;1mpolicy = json.loads(Path('docs/branch-policy.json').read_text())\u001b[0m",
+      "2026-11-07T11:29:18.4871171Z \u001b[36;1massert policy['defaultBranch'] == 'main'\u001b[0m",
+      "2026-11-07T11:29:18.4871535Z \u001b[36;1massert 'main' in policy['protectedBranches']\u001b[0m",
+      "2026-11-07T11:29:18.4871910Z \u001b[36;1mstale = tuple(policy.get('deprecatedPatterns', ()))\u001b[0m",
+      "2026-11-07T11:29:18.4872240Z \u001b[36;1moffenders = []\u001b[0m",
+      "2026-11-07T11:29:18.4872531Z \u001b[36;1mfor path in Path('.github/workflows').glob('*.y*ml'):\u001b[0m",
+      "2026-11-07T11:29:18.4872907Z \u001b[36;1m    if path.name == 'hepta-contract-gate.yml':\u001b[0m",
+      "2026-11-07T11:29:18.4873273Z \u001b[36;1m        continue\u001b[0m",
+      "2026-11-07T11:29:18.4873514Z \u001b[36;1m    text = path.read_text()\u001b[0m",
+      "2026-11-07T11:29:18.4873791Z \u001b[36;1m    for token in stale:\u001b[0m",
+      "2026-11-07T11:29:18.4874042Z \u001b[36;1m        if token in text:\u001b[0m",
+      "2026-11-07T11:29:18.4874339Z \u001b[36;1m            offenders.append(f'{path}: {token}')\u001b[0m",
+      "2026-11-07T11:29:18.4874653Z \u001b[36;1mif offenders:\u001b[0m",
+      "2026-11-07T11:29:18.4875321Z \u001b[36;1m    raise SystemExit('deprecated branch trigger(s):\\n' + '\\n'.join(offenders))\u001b[0m",
+      "2026-11-07T11:29:18.4875754Z \u001b[36;1mPY\u001b[0m",
+      "2026-11-07T11:29:18.4900038Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}",
+      "2026-11-07T11:29:18.4900417Z ##[endgroup]",
+      "2026-11-07T11:29:18.5680921Z ##[group]Run set -euo pipefail",
+      "2026-11-07T11:29:18.5681274Z \u001b[36;1mset -euo pipefail\u001b[0m",
+      "2026-11-07T11:29:18.5681578Z \u001b[36;1mtest \"$(git rev-parse HEAD)\" = \"$GITHUB_SHA\"\u001b[0m",
+      "2026-11-07T11:29:18.5681901Z \u001b[36;1mgit diff --check\u001b[0m",
+      "2026-11-07T11:29:18.5682139Z \u001b[36;1mgit diff --quiet\u001b[0m",
+      "2026-11-07T11:29:18.5682384Z \u001b[36;1mgit diff --cached --quiet\u001b[0m",
+      "2026-11-07T11:29:18.5682727Z \u001b[36;1mif [ \"$VERIFICATION_PROFILE\" = qualification ]; then\u001b[0m",
+      "2026-11-07T11:29:18.5683143Z \u001b[36;1m  python3 scripts/hepta-technical-receipts.py verify\u001b[0m",
+      "2026-11-07T11:29:18.5683573Z \u001b[36;1m  python3 scripts/hepta-implementation-dossiers.py verify\u001b[0m",
+      "2026-11-07T11:29:18.5683930Z \u001b[36;1mfi\u001b[0m",
+      "2026-11-07T11:29:18.5684237Z \u001b[36;1m# Includes module, algorithm, readiness, CNS and HNMF checks.\u001b[0m",
+      "2026-11-07T11:29:18.5684725Z \u001b[36;1m# Historical source evidence is revalidated only by qualification.\u001b[0m",
+      "2026-11-07T11:29:18.5685719Z \u001b[36;1mpython3 scripts/hepta-docs.py verify --profile \"$VERIFICATION_PROFILE\"\u001b[0m",
+      "2026-11-07T11:29:18.5686197Z \u001b[36;1mtest \"$(git rev-parse HEAD)\" = \"$GITHUB_SHA\"\u001b[0m",
+      "2026-11-07T11:29:18.5686615Z \u001b[36;1mtest -z \"$(git status --porcelain --untracked-files=no)\"\u001b[0m",
+      "2026-11-07T11:29:18.5707360Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}",
+      "2026-11-07T11:29:18.5707722Z env:",
+      "2026-11-07T11:29:18.5707931Z   VERIFICATION_PROFILE: development",
+      "2026-11-07T11:29:18.5708210Z ##[endgroup]",
+      "2026-11-07T11:29:19.3123025Z FAIL_HEPTA_DEVELOPMENT_DOCS_V8: legacy paths [('experiments/multimodal_output_portfolio/joint_hepta_20261029/development_plan_distillation_v2.json', 'versioned-development-plan'), ('experiments/multimodal_output_portfolio/joint_hepta_20261029/development_plan_v2.json', 'versioned-development-plan')]",
+      "2026-11-07T11:29:19.3208662Z ##[error]Process completed with exit code 1.",
+      "2026-11-07T11:29:19.3350192Z Post job cleanup.",
+      "2026-11-07T11:29:19.4269977Z [command]/usr/bin/git version",
+      "2026-11-07T11:29:19.4321981Z git version 2.56.0",
+      "2026-11-07T11:29:19.4364542Z Temporarily overriding HOME='/home/runner/work/_temp/563986d8-1c11-45cf-97dc-f6e9a459d988' before making global git config changes",
+      "2026-11-07T11:29:19.4366195Z Adding repository directory to the temporary git global config as a safe directory",
+      "2026-11-07T11:29:19.4371995Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci",
+      "2026-11-07T11:29:19.4410121Z Removing SSH command configuration",
+      "2026-11-07T11:29:19.4417405Z [command]/usr/bin/git config --local --name-only --get-regexp core\\.sshCommand",
+      "2026-11-07T11:29:19.4462702Z [command]/usr/bin/git submodule foreach --recursive sh -c \"git config --local --name-only --get-regexp 'core\\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\"",
+      "2026-11-07T11:29:19.4788834Z Removing HTTP extra header",
+      "2026-11-07T11:29:19.4794776Z [command]/usr/bin/git config --local --name-only --get-regexp http\\.https\\:\\/\\/github\\.com\\/\\.extraheader",
+      "2026-11-07T11:29:19.4834795Z [command]/usr/bin/git submodule foreach --recursive sh -c \"git config --local --name-only --get-regexp 'http\\.https\\:\\/\\/github\\.com\\/\\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\"",
+      "2026-11-07T11:29:19.5131741Z Removing includeIf entries pointing to credentials config files",
+      "2026-11-07T11:29:19.5140082Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\\.gitdir:",
+      "2026-11-07T11:29:19.5228194Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url",
+      "2026-11-07T11:29:19.5688220Z Cleaning up orphan processes",
+      ""
+    ],
+    "128390182341": [
+      "2026-11-07T11:24:40.9885602Z ##[error]error: unable to create file experiments/multimodal_output_portfolio/joint_hepta_20261029/evidence/v2/runs/9a0b16a620b4203093268a2a917f76bb99eb61ef/joint-v2-compact-controller-17-32-9a0b16a620b4203093268a2a917f76bb99eb61ef/original/PROCESS_RECEIPT.json.gz: Filename too long\r",
+      "2026-11-07T11:24:40.9892046Z ##[error]error: unable to create file experiments/multimodal_output_portfolio/joint_hepta_20261029/evidence/v2/runs/9a0b16a620b4203093268a2a917f76bb99eb61ef/joint-v2-compact-controller-17-32-9a0b16a620b4203093268a2a917f76bb99eb61ef/original/SOURCE_RECEIPT.json.gz: Filename too long\r",
+      "2026-11-07T11:24:40.9894001Z ##[error]error: unable to create file experiments/multimodal_output_portfolio/joint_hepta_20261029/evidence/v2/runs/9a0b16a620b4203093268a2a917f76bb99eb61ef/joint-v2-compact-controller-17-32-9a0b16a620b4203093268a2a917f76bb99eb61ef/original/environment.txt.gz: Filename too long\r",
+      "2026-11-07T11:24:40.9895787Z ##[error]fatal: cannot create directory at 'experiments/multimodal_output_portfolio/joint_hepta_20261029/evidence/v2/runs/9a0b16a620b4203093268a2a917f76bb99eb61ef/joint-v2-compact-controller-17-32-9a0b16a620b4203093268a2a917f76bb99eb61ef/original/feedback': Filename too long\r",
+      "2026-11-07T11:24:42.7532349Z ##[error]The process 'C:\\Program Files\\Git\\bin\\git.exe' failed with exit code 128\r",
+      "2026-11-07T11:24:43.0356866Z ##[error]CI job left tracked changes or untracked files in the repository worktree\r",
+      "2026-11-07T11:24:43.0400219Z ##[error]Process completed with exit code 1.\r"
+    ],
+    "128390182562": [
+      "2026-11-07T11:26:37.1013507Z test result: FAILED. 16 passed; 10 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "2026-11-07T11:26:46.1965098Z test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s",
+      "2026-11-07T11:26:56.4007894Z test result: FAILED. 112 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.02s",
+      "2026-11-07T11:27:01.9600349Z test result: FAILED. 260 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.32s",
+      "2026-11-07T11:28:24.3107065Z test result: FAILED. 1 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 97.23s",
+      "2026-11-07T11:28:30.2000688Z ##[error]ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/i18n-config-0.4.8/BUILD.bazel: no such target '//codex-rs/third_party/i18n-config-0.4.8:i18n-config-0.4.8': target 'i18n-config-0.4.8' not declared in package 'codex-rs/third_party/i18n-config-0.4.8' defined by /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/i18n-config-0.4.8/BUILD.bazel",
+      "2026-11-07T11:28:32.5812043Z test result: FAILED. 112 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.02s",
+      "2026-11-07T11:28:32.5907201Z test result: FAILED. 260 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.32s",
+      "2026-11-07T11:28:32.5937381Z test result: FAILED. 16 passed; 10 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "2026-11-07T11:28:32.5942264Z test result: FAILED. 1 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 97.23s",
+      "2026-11-07T11:28:32.5946892Z test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s",
+      "2026-11-07T11:28:32.5964611Z ##[error]Process completed with exit code 1."
+    ]
+  },
+  "cargo_deny_log_readback": "Transport closed; exact failure cause not inferred.",
+  "attribution": "The displayed spelling paths, README contract, Windows historical evidence paths and Rust/Bazel sources were not changed by this fingerprint repair. No claim of a same-environment baseline reproduction is made for these broad failures.",
+  "all_ci_pass": false
+}

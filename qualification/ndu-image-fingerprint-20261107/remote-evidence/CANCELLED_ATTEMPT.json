@@ -1,0 +1,181 @@
+{
+  "schema": "ndu-real-canary-retained-attempt-v1",
+  "source_sha": "1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+  "run_id": 42367863157,
+  "job_id": 128389640910,
+  "artifact_id": 13573457135,
+  "artifact": "canary-cancelled-1e869d.zip",
+  "bytes": 1072089,
+  "sha256": "8f9fe6239dcaaaa646fdab09fc42c38289ccbe7fb9483f67f8d85a6dff5ed7f8",
+  "engineering_result": "Failed / partial evidence after workflow deadline cancellation",
+  "scientific_result": "Inconclusive",
+  "job_conclusion": "cancelled",
+  "termination_evidence": "GitHub check-run annotation: The job has exceeded the maximum execution time of 30m0s",
+  "text_stage": {
+    "generator": "text",
+    "status": "completed",
+    "completed_updates": 2,
+    "error": null,
+    "checkpoint": {
+      "path": "adapter.safetensors",
+      "sha256": "f742a265a041b32d672ed558286ce1a7f31161419a0d23fc070b2af6afbd5a89"
+    },
+    "cpu_seconds": 190.751591618,
+    "wall_seconds": 137.742780141,
+    "cost_scope": "inclusive_trainer_call_and_cleanup_before_stage_write",
+    "do_not_add_to_nested_training_cost": true
+  },
+  "text_reload_probe": {
+    "equal": true,
+    "max_abs_diff": 0.0,
+    "before_sha256": "b77dd174691e21513b14119cff3b9aae2dc7c993c8e4f973b558619075408cd7",
+    "after_sha256": "b77dd174691e21513b14119cff3b9aae2dc7c993c8e4f973b558619075408cd7",
+    "input_ids_sha256": "e42e19e59a4bd8d2b08d3678d792163cc0e666c1bc1e81d997827e5341fa011d",
+    "source_id": "public-bee-single-source-wiring",
+    "scope": "same_training_input_teacher_forced_logits_not_new_evaluation"
+  },
+  "image_recorded_completed_updates": 0,
+  "image_completed_event_kinds": [
+    "data_admission",
+    "load_frozen_sd",
+    "full_base_parameter_hash_before"
+  ],
+  "image_initial_fingerprint_passed": true,
+  "unreturned_boundary": "After full_base_parameter_hash_before and before a completed prepare_real_vae_and_clip event. No stack sample identifies the specific operation.",
+  "missing_files": [
+    "real/image_training/report.json",
+    "real/image_training/cost_receipt.json",
+    "real/SUMMARY.json",
+    "real/inference_outer.json"
+  ],
+  "separate_command_meters": {
+    "install_cost.json": {
+      "attempt_id": "6440ceb77b4f43f9a2c81da533e265f7",
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "--no-cache-dir",
+        "--disable-pip-version-check",
+        "--extra-index-url",
+        "https://download.pytorch.org/whl/cpu",
+        "torch==2.8.0+cpu",
+        "torchvision==0.23.0+cpu",
+        "numpy==2.3.5",
+        "Pillow==13.0.0",
+        "transformers==4.57.3",
+        "diffusers==0.35.2",
+        "accelerate==1.12.0",
+        "safetensors==0.7.0",
+        "num2words==0.5.14"
+      ],
+      "status": "completed",
+      "started_unix": 1794050527.1876101,
+      "do_not_add_to_nested_costs": true,
+      "return_code": 0,
+      "parent_cpu_seconds": 0.0004959150000000134,
+      "child_cpu_seconds": 42.824767,
+      "wall_seconds": 47.154994904999995,
+      "child_peak_rss_bytes": 199237632,
+      "scope": "inclusive_completed_child_command_and_wrapper_before_final_receipt_write",
+      "unknown_outer_costs": [
+        "meter_process_startup",
+        "final_receipt_write",
+        "external_shell_logging"
+      ]
+    },
+    "tests_cost.json": {
+      "attempt_id": "23a44ae0e55b4fb5ae0a3ab1633cd372",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_exact",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_factorial",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_local_models",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_dual_runtime",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_train_adapter",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_train_image_adapter",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_adapted_models",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_run_training",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_meter",
+        "-v"
+      ],
+      "status": "completed",
+      "started_unix": 1794050575.2416449,
+      "do_not_add_to_nested_costs": true,
+      "return_code": 0,
+      "parent_cpu_seconds": 0.00046324300000000207,
+      "child_cpu_seconds": 5.911766,
+      "wall_seconds": 5.769920873999979,
+      "child_peak_rss_bytes": 388407296,
+      "scope": "inclusive_completed_child_command_and_wrapper_before_final_receipt_write",
+      "unknown_outer_costs": [
+        "meter_process_startup",
+        "final_receipt_write",
+        "external_shell_logging"
+      ]
+    },
+    "acquisition_cost.json": {
+      "attempt_id": "08ac53b16dab4022a2ff9cfa6975cd14",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.acquire_models",
+        "--root",
+        "/home/runner/work/_temp/dual-models"
+      ],
+      "status": "completed",
+      "started_unix": 1794050581.2378802,
+      "do_not_add_to_nested_costs": true,
+      "return_code": 0,
+      "parent_cpu_seconds": 0.0004980769999999857,
+      "child_cpu_seconds": 4.656823,
+      "wall_seconds": 10.731019656,
+      "child_peak_rss_bytes": 30949376,
+      "scope": "inclusive_completed_child_command_and_wrapper_before_final_receipt_write",
+      "unknown_outer_costs": [
+        "meter_process_startup",
+        "final_receipt_write",
+        "external_shell_logging"
+      ]
+    },
+    "training_process_cost.json": {
+      "attempt_id": "8695cd67ce904b9dab05a7edd10b3dc4",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.run_training",
+        "--models",
+        "/home/runner/work/_temp/dual-models",
+        "--output",
+        "/home/runner/work/_temp/training-evidence/real",
+        "--source-sha",
+        "1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+        "--threads",
+        "2"
+      ],
+      "status": "started",
+      "started_unix": 1794050592.1942403,
+      "do_not_add_to_nested_costs": true
+    }
+  },
+  "training_command_final_cpu_seconds": null,
+  "training_command_final_wall_seconds": null,
+  "known_training_lower_subtotal": {
+    "cpu_seconds": 193.957122364,
+    "wall_seconds": 140.349585195,
+    "scope": "Completed text-stage envelope plus disjoint recorded image intervals only; the unreturned operation and cancellation are unmetered, not zero."
+  },
+  "full_study_cost": null,
+  "job_elapsed_seconds": 1818,
+  "training_step_elapsed_seconds": 1732,
+  "elapsed_scope": "GitHub timestamps include orchestration/cancellation; these are not final CPU meters and must not be added to enclosed wall meters.",
+  "adoption_authorized": false,
+  "chain_submission": null,
+  "reward_eligible": false
+}
