@@ -1,0 +1,144 @@
+{
+  "packet": "linux_delegation_source_review",
+  "suggested_repository_directory": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/linux_delegation_source_review_checkpoint_20261107",
+  "snapshot_utc": "2026-11-07 00:21:02 UTC",
+  "index": {
+    "bytes": 33495,
+    "sha256": "1a1408c4074d95e8b7b51d99a86e5cc0e3027d1490f72fbec09e54d67af25655",
+    "git_blob": "95948a9be2a756ded5da1c3d050e4d5152e4a6b2"
+  },
+  "source_file_count": 99,
+  "raw_source_bytes": 6418203,
+  "archive_bytes": 6512640,
+  "compressed_bytes": 545972,
+  "restore_exit_code": 0,
+  "restore_stdout": {
+    "bytes": 436,
+    "sha256": "ac17899a327a2d222202ce534cf2fb93c81f7307023dc4f4c1fefc1afd754600",
+    "git_blob": "bfbd67a5f43765c5ddeb19e041e684db203e930f"
+  },
+  "restore_stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "all_restored_bytes_complete_roster_and_inert_modes_match": true,
+  "reader_template": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_native/restore_checkpoint_template.py",
+    "bytes": 6626,
+    "sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b",
+    "git_blob": "27e463e7b9e73a98b3a35e05d4d7414a2ed7b4a0",
+    "only_replacement": "fixed INDEX SHA-256"
+  },
+  "codespell": {
+    "version": "2.4.3",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "configuration": {
+      ".codespellrc": {
+        "bytes": 471,
+        "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+        "git_blob": "663be376c7381108af0a41eafc3dd08f27125d96"
+      },
+      ".codespellignore": {
+        "bytes": 69,
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      ".codespell-exclude-lines": {
+        "bytes": 20003,
+        "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+        "git_blob": "490e840301fdfae10d6e40c44a566ff16f82e324"
+      }
+    },
+    "new_exclusion_added": false
+  },
+  "files": [
+    {
+      "path": "INDEX.json",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/linux_delegation_source_review_checkpoint_20261107/INDEX.json",
+      "mode": "100644",
+      "bytes": 33495,
+      "sha256": "1a1408c4074d95e8b7b51d99a86e5cc0e3027d1490f72fbec09e54d67af25655",
+      "git_blob": "95948a9be2a756ded5da1c3d050e4d5152e4a6b2"
+    },
+    {
+      "path": "README.md",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/linux_delegation_source_review_checkpoint_20261107/README.md",
+      "mode": "100644",
+      "bytes": 2122,
+      "sha256": "df157f806cfac9897215daf188579b3d9e39ad3cb3c004510a4393787fe8f034",
+      "git_blob": "c78ecfc444089ef39f09a2f4ae4d811a1cd12e16"
+    },
+    {
+      "path": "native-evidence.tar.xz.part000.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/linux_delegation_source_review_checkpoint_20261107/native-evidence.tar.xz.part000.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "a0a24e6842515c781627b7cec634a7be01dd7df416888e3700befc27253ff378",
+      "git_blob": "2192e22da7cc25af6cafef0e2af3c25b742f62dc"
+    },
+    {
+      "path": "native-evidence.tar.xz.part001.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/linux_delegation_source_review_checkpoint_20261107/native-evidence.tar.xz.part001.gz",
+      "mode": "100644",
+      "bytes": 106025,
+      "sha256": "8e38a65b4d1f01be4e3a3ea4e78b30fbb061d2783a65ab67a4ab13c87c33193c",
+      "git_blob": "98ef71ddf423b3c85c96b9ef1a09889e5a6dc086"
+    },
+    {
+      "path": "restore.py",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/linux_delegation_source_review_checkpoint_20261107/restore.py",
+      "mode": "100644",
+      "bytes": 6656,
+      "sha256": "75cd277f05a04c51401def4cc5abc562438bbe29db6b3d6894b752bf8daf280d",
+      "git_blob": "5a878916520adf2053721822c9504ecf3e0e6eb6"
+    }
+  ],
+  "qualification_scope": {
+    "kind": "Read-only primary-source analysis; not a product qualification",
+    "repository_source_commit": "25a3895dd11a1cb1dde3ba42371a1d629878e25a",
+    "repository_source_tree": "9bef7c893c42bf10246fc18ce04079077037094d",
+    "kernel_source_commit": "028ef9c96e96197026887c0f092424679298aae8",
+    "kernel_source_tree": "6e2e13adb3ebf0a7a19583d58009f8372b592387",
+    "kernel_source_tag_observed": "v7.0",
+    "original_source_freeze": {
+      "bytes": 23330,
+      "sha256": "f10b5e46af4fa8a541c0b30c680819495097d6fb350de634a5403cc7d464cc2d",
+      "git_blob": "1163d1d376f733bddd0e1056d8bc67c0032c8a92"
+    },
+    "original_frozen_file_count": 95,
+    "original_frozen_source_bytes": 6365093,
+    "original_reports_modified": false,
+    "private_runtime_logs_or_artifacts_included": false,
+    "source_policy": "Only fixed repository/kernel source, source API, identity records and read-only reports; no runtime private logs.",
+    "review_conclusion": "Conditional leaf/path admission proof with explicit host-namespace assumptions; current SCM_RIGHTS helper is not a strict authorized-open primitive.",
+    "mutable_canonical_deny_root_alias_semantics": "OPEN",
+    "actual_azure_kernel_matches_reviewed_upstream": "NOT_ESTABLISHED",
+    "linux_authorized_read_product_support": "NOT_IMPLEMENTED_OR_QUALIFIED",
+    "three_restricted_skill_cases_closed": false,
+    "native_commands_or_new_syscalls_executed": false,
+    "permissions_assertions_timeouts_or_capability_flags_changed": false,
+    "ordinary_bwrap_loopback_failure_equivalent": false
+  },
+  "publication_ready": true,
+  "old_packets_modified": false
+}

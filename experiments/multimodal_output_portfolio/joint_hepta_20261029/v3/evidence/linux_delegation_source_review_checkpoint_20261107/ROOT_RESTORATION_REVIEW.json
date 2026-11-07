@@ -1,0 +1,108 @@
+{
+  "observed_at_utc": "2026-11-07T00:26:30.799942+00:00",
+  "scope": "Independent inert restoration and fresh selected source binding; conditional proof review only",
+  "publication": {
+    "bytes": 6258,
+    "sha256": "f82a7b12b9ee7bc2ac96b11a241188d3765d361e42e2960d9373cf78e7a7d081",
+    "git_blob": "a69920e0450e04c02a5b675dd36d9ebb16195412"
+  },
+  "index": {
+    "bytes": 33495,
+    "sha256": "1a1408c4074d95e8b7b51d99a86e5cc0e3027d1490f72fbec09e54d67af25655",
+    "git_blob": "95948a9be2a756ded5da1c3d050e4d5152e4a6b2"
+  },
+  "reader": {
+    "bytes": 6656,
+    "sha256": "75cd277f05a04c51401def4cc5abc562438bbe29db6b3d6894b752bf8daf280d",
+    "git_blob": "5a878916520adf2053721822c9504ecf3e0e6eb6"
+  },
+  "previous_reader": {
+    "bytes": 6656,
+    "sha256": "f00d134d04ba7e18eb169b217b7d66ee2c2883c04e9e93a806043e5a16b48d2b",
+    "git_blob": "9be2894cc9596ef556410fe1bf5227688a79f2f5"
+  },
+  "reader_only_fixed_seal_changes": 1,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_ci/linux_delegation_source_review_checkpoint_20261107/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_linux_delegation_0030"
+  ],
+  "exit_code": 0,
+  "files": 99,
+  "raw_bytes": 6418203,
+  "all_originals_and_restored_bytes_and_modes_match": true,
+  "original_95_file_freeze_unchanged_and_complete": true,
+  "fresh_selected_repository_leaves": 12,
+  "fresh_selected_kernel_leaves": 16,
+  "fresh_two_commit_tree_bindings": true,
+  "fresh_API": {
+    "bytes": 17208,
+    "sha256": "67112537869cb3a32b6729f345c2896b2174a7ebe868b1bb2714eec2cf5178b9",
+    "git_blob": "3d89904309db1e465f19f03158a22abe08c90069"
+  },
+  "bundle_before_and_after_unchanged": true,
+  "bundle_identities": {
+    "round3_ci/linux_delegation_source_review_checkpoint_20261107/INDEX.json": {
+      "bytes": 33495,
+      "sha256": "1a1408c4074d95e8b7b51d99a86e5cc0e3027d1490f72fbec09e54d67af25655",
+      "git_blob": "95948a9be2a756ded5da1c3d050e4d5152e4a6b2"
+    },
+    "round3_ci/linux_delegation_source_review_checkpoint_20261107/README.md": {
+      "bytes": 2122,
+      "sha256": "df157f806cfac9897215daf188579b3d9e39ad3cb3c004510a4393787fe8f034",
+      "git_blob": "c78ecfc444089ef39f09a2f4ae4d811a1cd12e16"
+    },
+    "round3_ci/linux_delegation_source_review_checkpoint_20261107/native-evidence.tar.xz.part000.gz": {
+      "bytes": 440153,
+      "sha256": "a0a24e6842515c781627b7cec634a7be01dd7df416888e3700befc27253ff378",
+      "git_blob": "2192e22da7cc25af6cafef0e2af3c25b742f62dc"
+    },
+    "round3_ci/linux_delegation_source_review_checkpoint_20261107/native-evidence.tar.xz.part001.gz": {
+      "bytes": 106025,
+      "sha256": "8e38a65b4d1f01be4e3a3ea4e78b30fbb061d2783a65ab67a4ab13c87c33193c",
+      "git_blob": "98ef71ddf423b3c85c96b9ef1a09889e5a6dc086"
+    },
+    "round3_ci/linux_delegation_source_review_checkpoint_20261107/restore.py": {
+      "bytes": 6656,
+      "sha256": "75cd277f05a04c51401def4cc5abc562438bbe29db6b3d6894b752bf8daf280d",
+      "git_blob": "5a878916520adf2053721822c9504ecf3e0e6eb6"
+    }
+  },
+  "restored_permissions": "0644 regular files",
+  "destination": "/workspace/scratch/3f6a885bb83c/round3_root_restore_linux_delegation_0030",
+  "archived_sources_or_native_tests_or_new_syscalls_executed": false,
+  "qualification": {
+    "kind": "Read-only primary-source analysis; not a product qualification",
+    "repository_source_commit": "25a3895dd11a1cb1dde3ba42371a1d629878e25a",
+    "repository_source_tree": "9bef7c893c42bf10246fc18ce04079077037094d",
+    "kernel_source_commit": "028ef9c96e96197026887c0f092424679298aae8",
+    "kernel_source_tree": "6e2e13adb3ebf0a7a19583d58009f8372b592387",
+    "kernel_source_tag_observed": "v7.0",
+    "original_source_freeze": {
+      "bytes": 23330,
+      "sha256": "f10b5e46af4fa8a541c0b30c680819495097d6fb350de634a5403cc7d464cc2d",
+      "git_blob": "1163d1d376f733bddd0e1056d8bc67c0032c8a92"
+    },
+    "original_frozen_file_count": 95,
+    "original_frozen_source_bytes": 6365093,
+    "original_reports_modified": false,
+    "private_runtime_logs_or_artifacts_included": false,
+    "source_policy": "Only fixed repository/kernel source, source API, identity records and read-only reports; no runtime private logs.",
+    "review_conclusion": "Conditional leaf/path admission proof with explicit host-namespace assumptions; current SCM_RIGHTS helper is not a strict authorized-open primitive.",
+    "mutable_canonical_deny_root_alias_semantics": "OPEN",
+    "actual_azure_kernel_matches_reviewed_upstream": "NOT_ESTABLISHED",
+    "linux_authorized_read_product_support": "NOT_IMPLEMENTED_OR_QUALIFIED",
+    "three_restricted_skill_cases_closed": false,
+    "native_commands_or_new_syscalls_executed": false,
+    "permissions_assertions_timeouts_or_capability_flags_changed": false,
+    "ordinary_bwrap_loopback_failure_equivalent": false
+  },
+  "limits": [
+    "Both reports were read in full; the host-path argument is conditional on unimplemented runtime invariants.",
+    "A fixed namespace ID alone is not a reachability or policy-alias lifetime proof.",
+    "The upstream kernel source is not claimed equal to the observed Azure kernel.",
+    "No Linux availability flag, fallback, product implementation or native pass is established."
+  ]
+}
