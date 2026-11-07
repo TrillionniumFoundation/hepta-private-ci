@@ -5,6 +5,7 @@ from pathlib import Path
 import secrets
 import shutil
 import sys
+import tempfile
 
 from .commands import Commands
 from .dependencies import SEED_SCHEMA
@@ -30,6 +31,7 @@ from .files import (
 )
 from .inputs import source_clean
 from .receipts import completion, junit
+from .registration import install_registration_sessions
 from .source import prepare_source
 from .synapse import start_proxy, start_synapse
 
@@ -311,7 +313,14 @@ def run(args):
         control.check_isolated(
             runtime, expected_running=True, expected_mounts=expected_runtime_mounts
         )
-        server, synapse = start_synapse(control, runtime_dir / "credentials")
+        with tempfile.TemporaryDirectory(
+            prefix="hepta-registration-", dir="/tmp"
+        ) as registration_directory:
+            private_sessions = Path(registration_directory)
+            server, synapse = start_synapse(
+                control, runtime_dir / "credentials", private_sessions
+            )
+            install_registration_sessions(control, runtime, private_sessions)
         control_binary = output / "privileged-transport-tool"
         copy_file(
             Path(commands.tools["docker"]["path"]),

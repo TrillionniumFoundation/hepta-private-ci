@@ -7,6 +7,7 @@ import time
 from .contract import PROXY, SYNAPSE_REF, SYNAPSE_VERSION
 from .docker_control import mount
 from .files import copy_file, describe, read_json, verify, write_bytes, write_json
+from .registration import register_agent_session
 
 
 CONFIGURE = """
@@ -58,7 +59,7 @@ while True:
 """
 
 
-def start_synapse(control, credentials):
+def start_synapse(control, credentials, registration_directory):
     volume, network = control.prefix + "-data", control.prefix + "-internal"
     control.commands.run(
         "docker",
@@ -138,12 +139,17 @@ def start_synapse(control, credentials):
     ):
         password = secrets.token_hex(32)
         write_bytes(credentials / capability, (password + "\n").encode())
-        control.commands.run(
-            "docker",
-            ["exec", "-i", server, "python3", "-c", REGISTER, name],
-            label="register-" + name,
-            input_bytes=(password + "\n").encode(),
-        )
+        if name == "hepta-human":
+            control.commands.run(
+                "docker",
+                ["exec", "-i", server, "python3", "-c", REGISTER, name],
+                label="register-" + name,
+                input_bytes=(password + "\n").encode(),
+            )
+        else:
+            register_agent_session(
+                control, server, name, password, registration_directory
+            )
     version = control.commands.text(
         "docker",
         [
