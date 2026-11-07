@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap28_evidence_checkpoint_v2/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap28_checkpoint_roundtrip_v2"
+  ],
+  "exit_code": 0,
+  "stdout": {
+    "bytes": 423,
+    "sha256": "ebc595920c789b2b3645e0602d876e8935d939ac4b79e9cca39170bfec0e5571",
+    "git_blob": "511839890675dd0c1a3c4f1169a0f37c5902127d"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "restored_files": 586,
+  "all_source_bytes_and_recorded_modes_preserved": true,
+  "all_restored_modes": "0644",
+  "all_original_inputs_unchanged": true,
+  "bundle_files_before_after_unchanged": {
+    "native-evidence.tar.xz.part001.gz": "1927fa683fd98cfc72e41a68dda1373ba8c46fead898b5432cafde57e8a3f335",
+    "native-evidence.tar.xz.part003.gz": "a3f9f8a41d96c9f07961bc539a13641c0a8e2bedf1abddde96fcd8885eaeb8b4",
+    "native-evidence.tar.xz.part000.gz": "2754649ebc89081fc672eeeed3a0d30c9375eb95c2d30723f49b6d3830b77e11",
+    "INDEX.json": "ed73e4263921ef02e759b0bc96134d81708a538fbef46bfd7509edeb8efea4ff",
+    "native-evidence.tar.xz.part002.gz": "3fd8a7362903f3c9c3884647e9c88fc9306da89c735b316fb33c96b69887ff15",
+    "restore.py": "3ca7a2d6b9593fd0bd799a6b6312e50e01c196f93b341ba0ba142d35018169fc",
+    "README.md": "202463019c6b8b6fee1819502837e4c5de28b53f1d640b777f1ded355294a39b"
+  },
+  "reader_only_seal_changed": true,
+  "reader_template": {
+    "bytes": 6899,
+    "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+    "git_blob": "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1"
+  },
+  "native_executed": false,
+  "negative_tests_repeated": false,
+  "reason": "Qualified reader code unchanged; only one actual restoration was necessary."
+}
