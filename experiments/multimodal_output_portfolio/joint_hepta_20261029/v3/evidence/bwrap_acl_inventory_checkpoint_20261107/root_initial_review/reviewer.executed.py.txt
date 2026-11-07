@@ -1,0 +1,216 @@
+"""Verify the complete ACL32 evidence packet with the fixed canonical reader."""
+
+import ast
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import runpy
+import stat
+import sys
+import zipfile
+
+from review_core24b2 import BASE, identity, require
+
+
+def seal(raw):
+    values = [
+        ast.literal_eval(node.value)
+        for node in ast.parse(raw).body
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == "EXPECTED_INDEX_SHA256"
+            for target in node.targets
+        )
+    ]
+    require(len(values) == 1, "one fixed reader seal")
+    return values[0]
+
+
+def main():
+    require(
+        sys.flags.optimize == 1 and sys.dont_write_bytecode,
+        "optimized no-bytecode reader",
+    )
+    publication = BASE / "round3_core_ci/BWRAP32_CHECKPOINT_PUBLICATION_MANIFEST.json"
+    package = BASE / "round3_core_ci/bwrap32_evidence_checkpoint"
+    source_api_path = BASE / "round3_bwrap32_checkpoint_canonical_api.json"
+    require(
+        identity(publication)["sha256"]
+        == "46c48fe3e5e5998118d39777368b442946ebae229fab767703ecd6de97bec342",
+        "fixed publication manifest",
+    )
+    manifest = json.loads(publication.read_bytes())
+    require(
+        len(manifest["files"]) == len({row["path"] for row in manifest["files"]}) == 14,
+        "fourteen publication files",
+    )
+    before = {}
+    for row in manifest["files"]:
+        source = Path(row["local_path"])
+        require(
+            source.parent == package
+            and not source.is_symlink()
+            and stat.S_IMODE(source.stat().st_mode) == 0o644
+            and row["mode"] == "100644",
+            "ordinary publication path and mode",
+        )
+        expected = {key: row[key] for key in ("bytes", "sha256", "git_blob")}
+        require(identity(source) == expected, "publication bytes")
+        before[str(source)] = expected
+    template = BASE / "round3_native/sdk_product_evidence_20261106/restore.py"
+    template_raw = template.read_bytes()
+    require(
+        identity(template)["sha256"]
+        == "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+        "qualified canonical reader",
+    )
+    api = json.loads(source_api_path.read_bytes())
+    require(
+        api["head"] == "c2413ec02ee1309b79e4b3ef7cf700d8f456614b"
+        and api["tree"] == "97737bf38987144812881f045c0cc6bd79f915bd"
+        and len(api["leaves"]) == 1,
+        "fresh exact parent source",
+    )
+    leaf = next(iter(api["leaves"].values()))
+    require(
+        leaf["sha"] == identity(template)["git_blob"]
+        and leaf["mode"] == "100644"
+        and leaf["size"] == len(template_raw),
+        "canonical source leaf",
+    )
+    reader = package / "restore.py"
+    raw = reader.read_bytes()
+    index_sha = "ecc104708ad0a5b295df717a1f0ab6bc1feb9b32d4bfc78e72dbd18073aa19e2"
+    require(
+        template_raw.count(seal(template_raw).encode()) == 1
+        and template_raw.replace(seal(template_raw).encode(), seal(raw).encode(), 1)
+        == raw,
+        "only fixed index seal differs",
+    )
+    require(
+        not any(isinstance(node, ast.Assert) for node in ast.walk(ast.parse(raw))),
+        "reader checks active under optimization",
+    )
+    module = runpy.run_path(str(reader), run_name="fixed_in_memory_reader")
+    index, recovered = module["read_package"](package)
+    require(
+        identity(package / "INDEX.json")["sha256"] == index_sha == seal(raw),
+        "exact sealed index",
+    )
+    rows = {row["path"]: row for row in index["files"]}
+    require(
+        len(rows) == len(index["files"]) == len(recovered) == 282
+        and set(rows) == set(recovered),
+        "all original members",
+    )
+    require(sum(map(len, recovered.values())) == 1790465, "all original byte count")
+    private = {
+        "18670d4c94a511be2b5610bcbd5bb670000e649aa2c68545684009c73c7fdb7e",
+        "31e78cbbbbbc5d24ea1922a31c8a4aa48c3ebbbca572a656d04aa45521e3c901",
+    }
+    require(
+        {row["sha256"] for row in index["excluded"]} == private,
+        "exact private console exclusions",
+    )
+    official_name = (
+        "round3_core_ci/bwrap_acl_inventory_32/native_observations/"
+        "42340339734/artifact-13561720116.zip"
+    )
+    official_sha = "8a810447b48c2972360dfc855f6f7220e4990361935b1f11019b2516d4a2be72"
+    restricted = []
+    for name, data in recovered.items():
+        source, row = BASE / name, rows[name]
+        mode = source.lstat().st_mode
+        require(
+            stat.S_ISREG(mode)
+            and not source.is_symlink()
+            and data == source.read_bytes()
+            and identity(source)
+            == {key: row[key] for key in ("bytes", "sha256", "git_blob")},
+            "every original byte and identity",
+        )
+        require(
+            format(stat.S_IMODE(mode), "04o") == row["source_permission_bits"]
+            and format(mode, "06o") == row["source_stat_mode"],
+            "every original mode",
+        )
+        require(row["sha256"] not in private, "private consoles absent")
+        if row["source_permission_bits"] == "0600":
+            restricted.append(name)
+            require(
+                name == official_name and row["sha256"] == official_sha,
+                "only exact accepted official ZIP has restricted mode",
+            )
+    require(restricted == [official_name], "single restricted official input")
+    with zipfile.ZipFile(BASE / official_name) as archive:
+        require(
+            len(archive.infolist()) == 9 and archive.testzip() is None,
+            "nine exact original ZIP members with valid CRC",
+        )
+        parent = str(Path(official_name).parent / "artifact_members")
+        for name in archive.namelist():
+            require(
+                recovered[parent + "/" + name] == archive.read(name),
+                "accepted originals equal original ZIP",
+            )
+    required = {
+        "round3_local_qualification/bwrap32_terminal_root/ROOT_REVIEW.json": "d2f0adf419b6083d9bc0443a39f9677452cd4b765fcc995b85ac0100891bc4d0",
+        "round3_local_qualification/bwrap32_terminal_root/initial_lookup_failure/FAILURE.json": "b54cdcefcdb4854ae39eebea75e9924ce43927bf2731f8eba45462041741eab3",
+    }
+    for name, digest in required.items():
+        require(
+            name in recovered and hashlib.sha256(recovered[name]).hexdigest() == digest,
+            "root native evidence and initial failure retained",
+        )
+    checks = json.loads((package / "CHECKS.json").read_bytes())
+    require(
+        checks["accepted_originals"] == checks["full_slots"] == 8
+        and checks["missing_originals"] == 0
+        and checks["diagnostic_complete"] is True
+        and checks["mechanism_qualified"] is checks["product_P0_closed"] is False,
+        "read-only observation success and open mechanism scope",
+    )
+    require(
+        checks["source_path_intersection_with_28_29_31"] == [],
+        "old checkpoint paths not repackaged",
+    )
+    require(
+        all(identity(Path(name)) == expected for name, expected in before.items()),
+        "publication inputs unchanged",
+    )
+    proof = BASE / "round3_local_qualification/bwrap32_checkpoint_root"
+    proof.mkdir(exist_ok=False)
+    result = {
+        "observed_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "scope": "Independent canonical reader and complete original bytes and modes",
+        "publication": identity(publication),
+        "index": identity(package / "INDEX.json"),
+        "canonical_source_API": identity(source_api_path),
+        "reader": identity(reader),
+        "reader_only_seal_changed": True,
+        "original_files": 282,
+        "original_bytes": 1790465,
+        "publication_files": 14,
+        "accepted_native_originals": 8,
+        "missing_native_originals": 0,
+        "official_ZIP_members": 9,
+        "all_CRC_and_original_members_verified": True,
+        "every_original_byte_and_source_mode_equal": True,
+        "root_evidence_included": required,
+        "private_console_contents_excluded": True,
+        "archived_sources_executed": False,
+        "expanded_restore_written": False,
+        "new_native_execution": False,
+        "mechanism_qualified": False,
+        "product_P0_closed": False,
+        "qualification": "Complete read-only ACL observation; prior wrong-entry failure retained. No directory mutation, parser/profile or namespace success follows from this packet.",
+        "reviewer": identity(Path(__file__)),
+    }
+    target = proof / "ROOT_REVIEW.json"
+    target.write_text(json.dumps(result, indent=2) + "\n")
+    print(json.dumps({"review": identity(target), "files": 282, "bytes": 1790465}))
+
+
+if __name__ == "__main__":
+    main()

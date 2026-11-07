@@ -1,0 +1,77 @@
+{
+  "originals": 282,
+  "original_bytes": 1790465,
+  "sealed_reader_memory_roundtrip_exact": true,
+  "on_disk_extraction_performed": false,
+  "source_permission_and_stat_modes_preserved_in_INDEX": true,
+  "source_path_intersection_with_28_29_31": [],
+  "reader_only_fixed_seal_changed": true,
+  "reader_before": {
+    "bytes": 6899,
+    "sha256": "76d4256c303331981d62d7c876368a76ecf22a1c03181cd9a570ac96b3e1f47e",
+    "git_blob": "162d49a929eead7b9683a9ce59f8332899bff072"
+  },
+  "reader_after": {
+    "bytes": 6899,
+    "sha256": "a159347855889b0412b4fac361d3c215f275500089f811f102bebbbac92c0a57",
+    "git_blob": "b971f94ceb079199bba0a1fc06646d9be7934222"
+  },
+  "bundle_before_and_after": {
+    "native-evidence.tar.xz.part000.gz": {
+      "bytes": 131587,
+      "sha256": "f955296e59380f2c2b06818736c76949a80a66c41b1f8a051d450f160babc1f4",
+      "git_blob": "22806d256aa7c0cd7e2d6477866a471ca5e28c46"
+    },
+    "INDEX.json": {
+      "bytes": 83409,
+      "sha256": "ecc104708ad0a5b295df717a1f0ab6bc1feb9b32d4bfc78e72dbd18073aa19e2",
+      "git_blob": "19bd6d6aac52e167d3a7075aa831c7d25fbc81a2"
+    },
+    "restore.py": {
+      "bytes": 6899,
+      "sha256": "a159347855889b0412b4fac361d3c215f275500089f811f102bebbbac92c0a57",
+      "git_blob": "b971f94ceb079199bba0a1fc06646d9be7934222"
+    },
+    "README.md": {
+      "bytes": 3433,
+      "sha256": "4ff2ed4370805d880b56a26f858e69fff4b208b55c86e0cd3fb9acb56c5c4ca3",
+      "git_blob": "2b117cf89209bbe113b5287347e3e957c2321a81"
+    }
+  },
+  "all_originals_and_bundle_inputs_unchanged": true,
+  "roundtrip_command": {
+    "argv": [
+      "python",
+      "-O",
+      "-B",
+      "-c",
+      "import json, pathlib, runpy, stat; package=pathlib.Path('/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap32_evidence_checkpoint'); workspace=pathlib.Path('/workspace/scratch/3f6a885bb83c'); reader=runpy.run_path(str(package/'restore.py')); index, files=reader['read_package'](package); expected={row['path']:row for row in index['files']}; \nif set(files)!=set(expected): raise RuntimeError('member set')\nfor name,data in files.items():\n p=workspace/name; row=expected[name]; value=p.lstat()\n if not stat.S_ISREG(value.st_mode) or p.is_symlink() or p.read_bytes()!=data: raise RuntimeError('original bytes')\n if f'{stat.S_IMODE(value.st_mode):04o}'!=row['source_permission_bits'] or f'{value.st_mode:o}'!=row['source_stat_mode']: raise RuntimeError('source modes')\nprint(json.dumps({'files':len(files),'bytes':sum(map(len,files.values())),'exact_members_and_bytes':True,'source_modes_match_index':True,'on_disk_extraction':False,'embedded_source_executed':False}))"
+    ],
+    "cwd": "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap32_checkpoint_checks",
+    "exit_code": 0,
+    "stdout": {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap32_checkpoint_checks/memory_roundtrip.stdout",
+      "bytes": 164,
+      "sha256": "09c095dc2892fb03eda953bdd4d3a3c4cda80be2560534bf6b253051729adf1f",
+      "git_blob": "664131ff1b467c71ef0e1dddb43fc498908f4e6c"
+    },
+    "stderr": {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap32_checkpoint_checks/memory_roundtrip.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  },
+  "official_ZIP_members": 9,
+  "official_ZIP_exact_members_and_CRC": true,
+  "accepted_originals": 8,
+  "missing_originals": 0,
+  "full_slots": 8,
+  "root_terminal_selected_files": 4,
+  "private_admin_included": false,
+  "embedded_source_executed": false,
+  "host_or_namespace_replayed": false,
+  "diagnostic_complete": true,
+  "mechanism_qualified": false,
+  "product_P0_closed": false
+}

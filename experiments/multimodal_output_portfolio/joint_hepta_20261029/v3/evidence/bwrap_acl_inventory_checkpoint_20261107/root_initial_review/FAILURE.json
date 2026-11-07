@@ -1,0 +1,11 @@
+{
+  "exit_code": 1,
+  "exception": "KeyError",
+  "field": "git_blob",
+  "cause": "Root reviewer expected a per-original Git blob field absent from the sealed INDEX schema. INDEX records byte length, SHA256 and permission/stat modes; publication manifest records Git blobs separately.",
+  "reviewer_bytes": 8723,
+  "reviewer_sha256": "e5688ab3ab20877b35d5dd16797823151094c2b5b7eda7ee06f4f81dbaf48353",
+  "originals_package_and_canonical_reader_changed": false,
+  "root_success_receipt_written": false,
+  "native_executed": false
+}
