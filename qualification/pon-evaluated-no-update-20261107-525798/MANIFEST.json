@@ -1,0 +1,1253 @@
+{
+  "schema": "hepta-evaluated-no-update-qualification-v1",
+  "repository": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+  "generated_at_utc": "2026-11-07T14:54:20.266070+00:00",
+  "publication_preflight": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "private": false,
+    "default_branch": "main",
+    "push_permission": true,
+    "base_pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5316",
+    "base_head": "b8d12ad02a2d8311581a4aa69e6cdf07d18f9758",
+    "base_ref": "research/ndu-native-nextuse-source-20261107-8ef7",
+    "base_is_draft": true,
+    "checked_at_utc": "2026-11-07T14:54:19.658915+00:00"
+  },
+  "base_source": {
+    "commit": "b8d12ad02a2d8311581a4aa69e6cdf07d18f9758",
+    "tree": "fa3ebc76de39de4335dc8f923e7d00a88c1c2901"
+  },
+  "tested_source": {
+    "commit": "e0a3bd2bde77c58a0ae7d211214f326371a72a4a",
+    "tree": "a28ed8f9dbc3569b8108e7f5fe5096b16c881792"
+  },
+  "branch": "fix/pon-evaluated-noupdate-bundle-20261107-525798",
+  "source_diff": ".../hepta-agentd/EVALUATED_NO_UPDATE_NEXT_USE.md   |  17 ++-\n .../src/neuron_generation_no_update.rs             |  11 ++\n .../neuron_generation_no_update_runtime_tests.rs   | 104 +++++++++++----\n .../neuron_generation_no_update_test_support.rs    | 146 +++++++++++++++++++++\n .../src/neuron_generation_update_selection.rs      |   8 ++\n 5 files changed, 260 insertions(+), 26 deletions(-)",
+  "invocations": [
+    {
+      "receipt": "raw/accepted-evaluated-noupdate-clippy-v1.receipt.json",
+      "receipt_sha256": "209eafebfa4c5f0632529175fe1df2c2be3e472732b747be4a550f356495a17a",
+      "category": "accepted_source",
+      "source": {
+        "head": "e0a3bd2bde77c58a0ae7d211214f326371a72a4a",
+        "tree": "a28ed8f9dbc3569b8108e7f5fe5096b16c881792",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "source_after": {
+        "head": "e0a3bd2bde77c58a0ae7d211214f326371a72a4a",
+        "tree": "a28ed8f9dbc3569b8108e7f5fe5096b16c881792",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 118.3493760060519,
+      "native_summary": null,
+      "logs": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "bytes": 2330,
+          "sha256": "b8818867fae5eb6338b56d54475a8b1437de291cc888ef46a77a7c963cb8b9fc"
+        }
+      }
+    },
+    {
+      "receipt": "raw/accepted-evaluated-noupdate-helper-v1.receipt.json",
+      "receipt_sha256": "f02082a144a6e614a7de25066418619fee6cd148ad725474e3d02733b4490944",
+      "category": "accepted_source",
+      "source": {
+        "head": "e0a3bd2bde77c58a0ae7d211214f326371a72a4a",
+        "tree": "a28ed8f9dbc3569b8108e7f5fe5096b16c881792",
+        "status": ""
+      },
+      "source_after": {
+        "head": "e0a3bd2bde77c58a0ae7d211214f326371a72a4a",
+        "tree": "a28ed8f9dbc3569b8108e7f5fe5096b16c881792",
+        "status": ""
+      },
+      "argv": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose",
+        "--message-format=json"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 55.70721674594097,
+      "native_summary": null,
+      "logs": {
+        "stdout": {
+          "bytes": 1095498,
+          "sha256": "6c72af09cf27c358c897c99ecd6f2ad62a563fbff95f999a148ccfc239b54da0"
+        },
+        "stderr": {
+          "bytes": 343,
+          "sha256": "8290aea690a5eae174d5c9a97ddf2f64dfcca77d541fd750fd14a7999540166c"
+        }
+      }
+    },
+    {
+      "receipt": "raw/accepted-evaluated-noupdate-native-v1.receipt.json",
+      "receipt_sha256": "9808e24368c62be2742d77e55b7cead879a832465677a478e2f164ca83c11ac5",
+      "category": "accepted_source",
+      "source": {
+        "head": "e0a3bd2bde77c58a0ae7d211214f326371a72a4a",
+        "tree": "a28ed8f9dbc3569b8108e7f5fe5096b16c881792",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "source_after": {
+        "head": "e0a3bd2bde77c58a0ae7d211214f326371a72a4a",
+        "tree": "a28ed8f9dbc3569b8108e7f5fe5096b16c881792",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(neuron_generation) | test(learning_iteration)",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 138.0380254238844,
+      "native_summary": {
+        "tests_run": 60,
+        "passed": 60,
+        "failed": 0,
+        "skipped": 662,
+        "test_seconds": 17.696,
+        "retry_or_flaky_markers": false
+      },
+      "logs": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "bytes": 253089,
+          "sha256": "36205963dd330dcdb66428336312c27d41f9ae0423782eefa55559fde75320b7"
+        }
+      }
+    },
+    {
+      "receipt": "raw/owner-native-baseline-helper-bound.receipt.json",
+      "receipt_sha256": "17fe02df1add3a2aa785820f4369da99403189a55adf48067382fb0d74145598",
+      "category": "baseline",
+      "source": {
+        "head": "d87f33a1817a0a308bca51205eedfc602007223b",
+        "tree": "7371b6ff1958cbce8a2b5da019d2c2a52c75d699",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "source_after": {
+        "head": "d87f33a1817a0a308bca51205eedfc602007223b",
+        "tree": "7371b6ff1958cbce8a2b5da019d2c2a52c75d699",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(neuron_generation) | test(learning_iteration)",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all"
+      ],
+      "exit_code": 100,
+      "wall_seconds": 18.124274689005688,
+      "native_summary": {
+        "tests_run": 58,
+        "passed": 53,
+        "failed": 5,
+        "skipped": 662,
+        "test_seconds": 13.225,
+        "retry_or_flaky_markers": false
+      },
+      "logs": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "bytes": 260278,
+          "sha256": "24ea6e4c9a0cde39e79f7fb6a588a13ab628356af0db512c6b25f548608b4dcc"
+        }
+      }
+    },
+    {
+      "receipt": "raw/owner-native-baseline-helper-underscore.receipt.json",
+      "receipt_sha256": "629565077acf0681e0038b37e6f8b06a2f70b1b9a33bee0fd9b05bc80ca3576c",
+      "category": "baseline",
+      "source": {
+        "head": "d87f33a1817a0a308bca51205eedfc602007223b",
+        "tree": "7371b6ff1958cbce8a2b5da019d2c2a52c75d699",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "source_after": {
+        "head": "d87f33a1817a0a308bca51205eedfc602007223b",
+        "tree": "7371b6ff1958cbce8a2b5da019d2c2a52c75d699",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(neuron_generation) | test(learning_iteration)",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 23.73500920389779,
+      "native_summary": {
+        "tests_run": 58,
+        "passed": 58,
+        "failed": 0,
+        "skipped": 662,
+        "test_seconds": 16.904,
+        "retry_or_flaky_markers": false
+      },
+      "logs": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "bytes": 252108,
+          "sha256": "371ca71f41c9002cc6c1ec47b8a0ad4e79730e8696e3e277837ee986c5a627a3"
+        }
+      }
+    },
+    {
+      "receipt": "raw/owner-native-baseline-materialized.receipt.json",
+      "receipt_sha256": "485cb954966eb0aa4ebebe417df670a1a6d795af999f024a8fc7e255809f8040",
+      "category": "baseline",
+      "source": {
+        "head": "d87f33a1817a0a308bca51205eedfc602007223b",
+        "tree": "7371b6ff1958cbce8a2b5da019d2c2a52c75d699",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "source_after": {
+        "head": "d87f33a1817a0a308bca51205eedfc602007223b",
+        "tree": "7371b6ff1958cbce8a2b5da019d2c2a52c75d699",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(neuron_generation) | test(learning_iteration)",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all"
+      ],
+      "exit_code": 100,
+      "wall_seconds": 134.71664095902815,
+      "native_summary": {
+        "tests_run": 58,
+        "passed": 53,
+        "failed": 5,
+        "skipped": 662,
+        "test_seconds": 8.012,
+        "retry_or_flaky_markers": false
+      },
+      "logs": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "bytes": 260403,
+          "sha256": "313da35b5497d58bc36500d2af5ff2bf80bd8a11f17aa615072362a58c03334c"
+        }
+      }
+    },
+    {
+      "receipt": "raw/owner-native-first-run.receipt.json",
+      "receipt_sha256": "1bc975fa870ded3609fa9225c9b323906784cab9d86995c81a9bd12b15231b32",
+      "category": "baseline",
+      "source": {
+        "head": "d87f33a1817a0a308bca51205eedfc602007223b",
+        "tree": "7371b6ff1958cbce8a2b5da019d2c2a52c75d699",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nscripts\ntools"
+      },
+      "source_after": {
+        "head": "d87f33a1817a0a308bca51205eedfc602007223b",
+        "tree": "7371b6ff1958cbce8a2b5da019d2c2a52c75d699",
+        "status": ""
+      },
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(neuron_generation) | test(learning_iteration)",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all"
+      ],
+      "exit_code": 101,
+      "wall_seconds": 1164.3284849349875,
+      "native_summary": null,
+      "logs": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "bytes": 65104,
+          "sha256": "1a573ae549cc861ec4fe21df5f6bbdd44338df007ec83a8dfe14469528ea84ba"
+        }
+      }
+    },
+    {
+      "receipt": "raw/owner-native-helper-build.receipt.json",
+      "receipt_sha256": "81a98946ae293a926bb07f70b8fbd2cdc6c8ff8151f7c83fb36cc7b0f373790b",
+      "category": "baseline",
+      "source": {
+        "head": "d87f33a1817a0a308bca51205eedfc602007223b"
+      },
+      "source_after": null,
+      "argv": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose",
+        "--message-format=json"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 576.5862606628798,
+      "native_summary": null,
+      "logs": {
+        "stdout": {
+          "bytes": 1095617,
+          "sha256": "88b08aa3a21bb7e89186a77056bd35faa446be78e96fd7f0b2c648ad645851fb"
+        },
+        "stderr": {
+          "bytes": 13254,
+          "sha256": "4cf94252b1f41e5cd1c587b336be095904ee45bf21397ed6cddf5eb291ef071a"
+        }
+      }
+    },
+    {
+      "receipt": "raw/owner-no-update-clippy-assertions.receipt.json",
+      "receipt_sha256": "496021151c25f9ea955a112c3a4d54786e1a36b3b366cee4488d6cf21ad4e0aa",
+      "category": "unselected_exploration",
+      "source": {
+        "head": "34060ab1d9544c67e20de4898ae4db112bee3067",
+        "tree": "9040b06fa0ed7c611d9ab4898ce9d2c227d3a933",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "source_after": {
+        "head": "34060ab1d9544c67e20de4898ae4db112bee3067",
+        "tree": "9040b06fa0ed7c611d9ab4898ce9d2c227d3a933",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 87.82878484507091,
+      "native_summary": null,
+      "logs": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "bytes": 2184,
+          "sha256": "af0d04038b361a6eac8d38a93811b1cc45ad01091484a4c1cb0b60fcbcee4fd7"
+        }
+      }
+    },
+    {
+      "receipt": "raw/owner-no-update-clippy-initial.receipt.json",
+      "receipt_sha256": "49513880f2a6bb088c5f8f8def99d28cd3b4084cb1ead005c9b1bbb982cc24ee",
+      "category": "unselected_exploration",
+      "source": {
+        "head": "bc76fc6c16821f9ad8d876f573f36fa8d80062ae",
+        "tree": "8457223b04656b91103de9cc304bc7bafd611fa0",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "source_after": {
+        "head": "bc76fc6c16821f9ad8d876f573f36fa8d80062ae",
+        "tree": "8457223b04656b91103de9cc304bc7bafd611fa0",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "exit_code": 101,
+      "wall_seconds": 838.8250947459601,
+      "native_summary": null,
+      "logs": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "bytes": 50804,
+          "sha256": "c58472a4173bc9ed475e0e9a84eeb14c1fdb0a9fb85893384a894e73d3151e13"
+        }
+      }
+    },
+    {
+      "receipt": "raw/owner-no-update-clippy-serialized.receipt.json",
+      "receipt_sha256": "65b36c97690398499925dcce03741378ec01ab7b5a9152ec00a964d7b3437509",
+      "category": "unselected_exploration",
+      "source": {
+        "head": "6a4c9e8cc2b0574b5ce51e3731d13f43e91a719b",
+        "tree": "508e9876a1aaf423ebaea1239b20a611804d66b3",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "source_after": {
+        "head": "6a4c9e8cc2b0574b5ce51e3731d13f43e91a719b",
+        "tree": "508e9876a1aaf423ebaea1239b20a611804d66b3",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "exit_code": 101,
+      "wall_seconds": 83.75903829792514,
+      "native_summary": null,
+      "logs": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "bytes": 4350,
+          "sha256": "f2d2c18e66114c5730ec3bebb22b1de79392d8cf67457f1fc3fda354f2914687"
+        }
+      }
+    },
+    {
+      "receipt": "raw/owner-no-update-helper-final.receipt.json",
+      "receipt_sha256": "531918c196e65b1a6b10acbaee1fe6729bdcc47199a3b7b991ca366060670a68",
+      "category": "unselected_exploration",
+      "source": {
+        "head": "34060ab1d9544c67e20de4898ae4db112bee3067",
+        "tree": "9040b06fa0ed7c611d9ab4898ce9d2c227d3a933",
+        "status": ""
+      },
+      "source_after": {
+        "head": "34060ab1d9544c67e20de4898ae4db112bee3067",
+        "tree": "9040b06fa0ed7c611d9ab4898ce9d2c227d3a933",
+        "status": ""
+      },
+      "argv": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose",
+        "--message-format=json"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 76.70702831586823,
+      "native_summary": null,
+      "logs": {
+        "stdout": {
+          "bytes": 1095498,
+          "sha256": "c4a4fae28800213aa5cc2cf68fecfcc12486a384830bcd804569427028fda58c"
+        },
+        "stderr": {
+          "bytes": 343,
+          "sha256": "9094d2c54bdd1e4a19669dc2c3d57bf93df206575ace94d04235df117a7e275e"
+        }
+      }
+    },
+    {
+      "receipt": "raw/owner-no-update-native-final.receipt.json",
+      "receipt_sha256": "163dcf6542c725713181db3531b9041bcb032784787136397440aac3e92d6743",
+      "category": "unselected_exploration",
+      "source": {
+        "head": "34060ab1d9544c67e20de4898ae4db112bee3067",
+        "tree": "9040b06fa0ed7c611d9ab4898ce9d2c227d3a933",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "source_after": {
+        "head": "34060ab1d9544c67e20de4898ae4db112bee3067",
+        "tree": "9040b06fa0ed7c611d9ab4898ce9d2c227d3a933",
+        "status": "",
+        "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+      },
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(neuron_generation) | test(learning_iteration)",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 321.4054967069533,
+      "native_summary": {
+        "tests_run": 60,
+        "passed": 60,
+        "failed": 0,
+        "skipped": 662,
+        "test_seconds": 18.686,
+        "retry_or_flaky_markers": false
+      },
+      "logs": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "bytes": 253099,
+          "sha256": "3c11be87261ed40a2bb22c244f0ccad8311db8e5d49da813270bfe6ccc999cdd"
+        }
+      }
+    }
+  ],
+  "accepted_native_counts": {
+    "tests_run": 60,
+    "passed": 60,
+    "failed": 0,
+    "skipped": 662,
+    "test_seconds": 17.696,
+    "retry_or_flaky_markers": false
+  },
+  "fixture_export": {
+    "file_count": 54,
+    "total_bytes": 146271,
+    "classification": "engineering_fixtures_not_external_demand_or_scientific_qualification"
+  },
+  "limits": {
+    "main_integration_qualified": false,
+    "production_activation_performed": false,
+    "cross_repository_qualification": false,
+    "independent_customer_funding_qualified": false,
+    "real_independent_evaluation_qualified": false,
+    "complete_real_costs_qualified": false,
+    "production_learning_checkpoint_restore_qualified": false,
+    "observation_has_drain_flag": false,
+    "runtime_test_called_actual_drain": true,
+    "historical_observation_grants_authority": false,
+    "distinct_customer_tasks_inferred_from_test_steps": false
+  },
+  "raw_files": [
+    {
+      "path": "raw/accepted-environment.json",
+      "bytes": 1190,
+      "sha256": "aad12ec8e4ebc92a7cbf79b343799731c3bce3b0fa640b61fa8182364501314c"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/current.json",
+      "bytes": 5257,
+      "sha256": "d161ea227301b95167a3b1a5b60a7d204b4b646cc7f3014ea5c387f14711cb53"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/delivered-next-task.f32le",
+      "bytes": 4,
+      "sha256": "d88c86f15bbea365d658ad95a81d45367c465f7af6f7264fb077f01747ddc77d"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/final-use-authority.claims",
+      "bytes": 40,
+      "sha256": "944d891ff381dae8bfbea23946eafe35ec26a343fec8c0c1ee556166e0d5290d"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/final-use-frontier-after-invalidation.json",
+      "bytes": 179,
+      "sha256": "b16bff3f6962e21accc6c9fb8e271d731f71f251f95270de41c0024983ffbfaf"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/final-use-frontier.json",
+      "bytes": 179,
+      "sha256": "355edc453e56fa0fc95a45b6063c6854c871fc698b983864d530a1a0b13a98eb"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/incumbent.f32le",
+      "bytes": 8,
+      "sha256": "53c0f587cb612b4908eff791773b2b8cd805eca616e5877a07b5a744c02e9c46"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-0-attestation-payload.bin",
+      "bytes": 258,
+      "sha256": "977afa8125d5b7f67ecb4bfef7af8c16efb33c4e1768a40feda18c71770501e3"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-0-payload.bin",
+      "bytes": 228,
+      "sha256": "f87b200144ae5efd28a253c4471ceb9329d8d11e0f46174f4b7de216eef7516a"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-0-signature.bin",
+      "bytes": 64,
+      "sha256": "9340f39d1ab7d0d2d100ff2f50256e3e63a666fac5183c6066d5661c3c765787"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-1-attestation-payload.bin",
+      "bytes": 258,
+      "sha256": "448d04bf69bd03911677a9ef58adc4c9766b7c7f484178d3bdb6823eeafa64c6"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-1-payload.bin",
+      "bytes": 272,
+      "sha256": "96e6f61ca371d17e46e5ccd5b5bcc3102d5400d361f11dfc5405141a6b9e7203"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-1-signature.bin",
+      "bytes": 64,
+      "sha256": "5da721864f69f7ec4bc59c9a4175a4bd7729945a26cd3afc7a8a437b20291220"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-2-attestation-payload.bin",
+      "bytes": 259,
+      "sha256": "dc6e43efa9afb21f909f37fc146adc9ad7a45ad4534dac4f0e9ceb776b16093c"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-2-payload.bin",
+      "bytes": 220,
+      "sha256": "36120f8189161739f33083a923731df669ee60055f6531901b93860c60a1073d"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-2-signature.bin",
+      "bytes": 64,
+      "sha256": "dd0f744f942f99a4607802e49361bc9f505c9caaee380994e0eb13613014b42b"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-3-attestation-payload.bin",
+      "bytes": 259,
+      "sha256": "21211978c3bce06a57fca2839e4430f2e9daf2c3377e3247e8ffb78910cbbd45"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-3-payload.bin",
+      "bytes": 229,
+      "sha256": "aa34d288213a23e9a48753800f538cf3b3a86be110c0601ee43f2641d8370e87"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-3-signature.bin",
+      "bytes": 64,
+      "sha256": "6244250a681beb3a82139eced262ed000c4c9a0258939eaa8c7708e9cecee2e2"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/learning-snapshot.debug.txt",
+      "bytes": 13080,
+      "sha256": "5e3b7d88172cac5e854a75ea6961912c2a1af81b99fb5375cf0b178b817548ca"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/live-invalidation-result.json",
+      "bytes": 182,
+      "sha256": "c5ca74de1891add6c465fb5eb59f0a031fe36c8151be2a6c5523d950c07dae79"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/old-journal",
+      "bytes": 3602,
+      "sha256": "c012453165ba666eadc79cb204e36a8d842fd2a368e0e56de4585d95cf4a245a"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/old-witness",
+      "bytes": 560,
+      "sha256": "e214ded9001dda5b9f86c43bc3e6c7a49d176b8b33e06a2d3727892472b9e82b"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/original-model-result.json",
+      "bytes": 1376,
+      "sha256": "50f273e4651f82a62106ad7e0e93b26f233678ade8e54745fbb359aab576a784"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/readback.json",
+      "bytes": 40808,
+      "sha256": "0537eefe60d4de360b174dddcefa1631b52e0041f9d8057d5f695fefb6779370"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/selected-canonical-manifest.json",
+      "bytes": 1621,
+      "sha256": "e16918fd19fc4bd6dd6e1e7fe85dbc0f9d7d62894a0e2c0d134d424960f523e7"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/target-journal",
+      "bytes": 3338,
+      "sha256": "0dfc41faa89565993f8e9f0ed831e95f5796b89907cfc71460c583da441bca63"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update/target-witness",
+      "bytes": 672,
+      "sha256": "c21607c881a9de8da7978ce87435a8abad8c7dcc639eb545bcef60ecfe1233f5"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/current.json",
+      "bytes": 5257,
+      "sha256": "d161ea227301b95167a3b1a5b60a7d204b4b646cc7f3014ea5c387f14711cb53"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/delivered-next-task.f32le",
+      "bytes": 4,
+      "sha256": "d88c86f15bbea365d658ad95a81d45367c465f7af6f7264fb077f01747ddc77d"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/final-use-authority.claims",
+      "bytes": 40,
+      "sha256": "944d891ff381dae8bfbea23946eafe35ec26a343fec8c0c1ee556166e0d5290d"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/final-use-frontier-after-invalidation.json",
+      "bytes": 179,
+      "sha256": "355edc453e56fa0fc95a45b6063c6854c871fc698b983864d530a1a0b13a98eb"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/final-use-frontier.json",
+      "bytes": 179,
+      "sha256": "355edc453e56fa0fc95a45b6063c6854c871fc698b983864d530a1a0b13a98eb"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/incumbent.f32le",
+      "bytes": 8,
+      "sha256": "53c0f587cb612b4908eff791773b2b8cd805eca616e5877a07b5a744c02e9c46"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-0-attestation-payload.bin",
+      "bytes": 258,
+      "sha256": "977afa8125d5b7f67ecb4bfef7af8c16efb33c4e1768a40feda18c71770501e3"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-0-payload.bin",
+      "bytes": 228,
+      "sha256": "f87b200144ae5efd28a253c4471ceb9329d8d11e0f46174f4b7de216eef7516a"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-0-signature.bin",
+      "bytes": 64,
+      "sha256": "9340f39d1ab7d0d2d100ff2f50256e3e63a666fac5183c6066d5661c3c765787"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-1-attestation-payload.bin",
+      "bytes": 258,
+      "sha256": "448d04bf69bd03911677a9ef58adc4c9766b7c7f484178d3bdb6823eeafa64c6"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-1-payload.bin",
+      "bytes": 272,
+      "sha256": "96e6f61ca371d17e46e5ccd5b5bcc3102d5400d361f11dfc5405141a6b9e7203"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-1-signature.bin",
+      "bytes": 64,
+      "sha256": "5da721864f69f7ec4bc59c9a4175a4bd7729945a26cd3afc7a8a437b20291220"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-2-attestation-payload.bin",
+      "bytes": 259,
+      "sha256": "dc6e43efa9afb21f909f37fc146adc9ad7a45ad4534dac4f0e9ceb776b16093c"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-2-payload.bin",
+      "bytes": 220,
+      "sha256": "36120f8189161739f33083a923731df669ee60055f6531901b93860c60a1073d"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-2-signature.bin",
+      "bytes": 64,
+      "sha256": "dd0f744f942f99a4607802e49361bc9f505c9caaee380994e0eb13613014b42b"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-3-attestation-payload.bin",
+      "bytes": 259,
+      "sha256": "21211978c3bce06a57fca2839e4430f2e9daf2c3377e3247e8ffb78910cbbd45"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-3-payload.bin",
+      "bytes": 229,
+      "sha256": "aa34d288213a23e9a48753800f538cf3b3a86be110c0601ee43f2641d8370e87"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-3-signature.bin",
+      "bytes": 64,
+      "sha256": "6244250a681beb3a82139eced262ed000c4c9a0258939eaa8c7708e9cecee2e2"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/learning-snapshot.debug.txt",
+      "bytes": 13080,
+      "sha256": "5e3b7d88172cac5e854a75ea6961912c2a1af81b99fb5375cf0b178b817548ca"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/live-invalidation-result.json",
+      "bytes": 190,
+      "sha256": "f580db4414ab6d029c321eec35173849a6b0e95acbb54ca901df678b34bcef17"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/old-journal",
+      "bytes": 3602,
+      "sha256": "c012453165ba666eadc79cb204e36a8d842fd2a368e0e56de4585d95cf4a245a"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/old-witness",
+      "bytes": 560,
+      "sha256": "e214ded9001dda5b9f86c43bc3e6c7a49d176b8b33e06a2d3727892472b9e82b"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/original-model-result.json",
+      "bytes": 1376,
+      "sha256": "cdeb69dc0fa10828d3f25cff2b1d2802abcbb59909c9c52fea2ba8d45ecc643a"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/readback.json",
+      "bytes": 40781,
+      "sha256": "806fcbe6c8a07c030ad832bbe59a00488719629f7b13b8acbbe170a5605121f4"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/selected-canonical-manifest.json",
+      "bytes": 1621,
+      "sha256": "e16918fd19fc4bd6dd6e1e7fe85dbc0f9d7d62894a0e2c0d134d424960f523e7"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/target-journal",
+      "bytes": 3338,
+      "sha256": "1fa2b49e9e65d14fa082b32edbee5c9c9aaa450f8c5b9cc30778888f2236a6e7"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-artifacts-v1/evaluated-no-update-current/target-witness",
+      "bytes": 672,
+      "sha256": "b85b50e6d411d5de0ddbf7bb6fad1cd95a60e27e2b7e33378d99ecbcf02bd544"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-clippy-v1.receipt.json",
+      "bytes": 1375,
+      "sha256": "209eafebfa4c5f0632529175fe1df2c2be3e472732b747be4a550f356495a17a"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-clippy-v1.start.json",
+      "bytes": 611,
+      "sha256": "de0a557a8187f59a01bb1677dd8ae17ceb3258760b6d5a5774f519c71fc1b25c"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-clippy-v1.stderr.log",
+      "bytes": 2330,
+      "sha256": "b8818867fae5eb6338b56d54475a8b1437de291cc888ef46a77a7c963cb8b9fc"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-clippy-v1.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-helper-v1.receipt.json",
+      "bytes": 1407,
+      "sha256": "f02082a144a6e614a7de25066418619fee6cd148ad725474e3d02733b4490944"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-helper-v1.stderr.log",
+      "bytes": 343,
+      "sha256": "8290aea690a5eae174d5c9a97ddf2f64dfcca77d541fd750fd14a7999540166c"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-helper-v1.stdout.log",
+      "bytes": 1095498,
+      "sha256": "6c72af09cf27c358c897c99ecd6f2ad62a563fbff95f999a148ccfc239b54da0"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-native-v1.receipt.json",
+      "bytes": 15475,
+      "sha256": "9808e24368c62be2742d77e55b7cead879a832465677a478e2f164ca83c11ac5"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-native-v1.start.json",
+      "bytes": 2602,
+      "sha256": "91aaedc170d01b8e8dc1ae53811fa61616f2dee54afb243233052b739fa2571a"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-native-v1.stderr.log",
+      "bytes": 253089,
+      "sha256": "36205963dd330dcdb66428336312c27d41f9ae0423782eefa55559fde75320b7"
+    },
+    {
+      "path": "raw/accepted-evaluated-noupdate-native-v1.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/accepted-noupdate-bundle-source-v1.json",
+      "bytes": 1418,
+      "sha256": "c86e2e88aa7f5f9adf4b75885b9c25a1eb3c1b1e6f896fba341da276286a487e"
+    },
+    {
+      "path": "raw/accepted-reproduce-clippy.sh",
+      "bytes": 2478,
+      "sha256": "baeb3dd4941ee2e3a6a4e9d0f0c69b7f10a806785979b07685a63c4983fd02e0"
+    },
+    {
+      "path": "raw/accepted-reproduce-helper.sh",
+      "bytes": 2455,
+      "sha256": "d35d24258a3ecc8b8bf6f41df9260ea94a81b17a4b91b1a8c0cd4933413d76d8"
+    },
+    {
+      "path": "raw/accepted-reproduce-native.sh",
+      "bytes": 3866,
+      "sha256": "143f73f38439d371cff48f04805d2c32f8d873930bef9fd2702236b5fc2db416"
+    },
+    {
+      "path": "raw/development-candidate-34060ab.json",
+      "bytes": 1044,
+      "sha256": "500476803d2a5cc4703b76430c7a162e24b7922122ae4dd2f31af40067f85c56"
+    },
+    {
+      "path": "raw/development-candidate-34060ab.patch",
+      "bytes": 37038,
+      "sha256": "d0961254703b0c9958bdf49aba6041206fe9b50e7df1d7435c157c63f776d93e"
+    },
+    {
+      "path": "raw/environment.json",
+      "bytes": 1803,
+      "sha256": "569b5bb44f22e22de13bbbbe8ec77c877703009e769312e92b7d2dce70b4d504"
+    },
+    {
+      "path": "raw/internal-source-review.json",
+      "bytes": 1410,
+      "sha256": "ff4333fd4466e40cf78cfc3f5e6fa0682fff6faa427f0835ba909aa22477c0c6"
+    },
+    {
+      "path": "raw/no-update-source.after-assertions.json",
+      "bytes": 111,
+      "sha256": "da9ce6c5537e0fdf79e8cad8c5bd616b30305fb64e175fe22ed17265ce88d683"
+    },
+    {
+      "path": "raw/no-update-source.after-serializer.json",
+      "bytes": 111,
+      "sha256": "a74dc2803b64bf2b77b2e2943e94ce3d85ba3289f0333b8412611267b341c03e"
+    },
+    {
+      "path": "raw/owner-native-baseline-helper-bound.receipt.json",
+      "bytes": 2490,
+      "sha256": "17fe02df1add3a2aa785820f4369da99403189a55adf48067382fb0d74145598"
+    },
+    {
+      "path": "raw/owner-native-baseline-helper-bound.start.json",
+      "bytes": 1745,
+      "sha256": "a3db4e85365909d2d543e056c853fe59a144a5de400c746efe264fd0668a7b20"
+    },
+    {
+      "path": "raw/owner-native-baseline-helper-bound.stderr.log",
+      "bytes": 260278,
+      "sha256": "24ea6e4c9a0cde39e79f7fb6a588a13ab628356af0db512c6b25f548608b4dcc"
+    },
+    {
+      "path": "raw/owner-native-baseline-helper-bound.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/owner-native-baseline-helper-underscore.receipt.json",
+      "bytes": 2534,
+      "sha256": "629565077acf0681e0038b37e6f8b06a2f70b1b9a33bee0fd9b05bc80ca3576c"
+    },
+    {
+      "path": "raw/owner-native-baseline-helper-underscore.start.json",
+      "bytes": 1802,
+      "sha256": "07fb12ba539bca2e4a762bf294ffc3dcd80b95a6a11a759549aad64ef35173b4"
+    },
+    {
+      "path": "raw/owner-native-baseline-helper-underscore.stderr.log",
+      "bytes": 252108,
+      "sha256": "371ca71f41c9002cc6c1ec47b8a0ad4e79730e8696e3e277837ee986c5a627a3"
+    },
+    {
+      "path": "raw/owner-native-baseline-helper-underscore.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/owner-native-baseline-materialized.receipt.json",
+      "bytes": 1606,
+      "sha256": "485cb954966eb0aa4ebebe417df670a1a6d795af999f024a8fc7e255809f8040"
+    },
+    {
+      "path": "raw/owner-native-baseline-materialized.start.json",
+      "bytes": 860,
+      "sha256": "9501ed1b40f29121f59d160260b5eedf63bba58b5fbee2ebd51425d2b566de64"
+    },
+    {
+      "path": "raw/owner-native-baseline-materialized.stderr.log",
+      "bytes": 260403,
+      "sha256": "313da35b5497d58bc36500d2af5ff2bf80bd8a11f17aa615072362a58c03334c"
+    },
+    {
+      "path": "raw/owner-native-baseline-materialized.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/owner-native-first-run.receipt.json",
+      "bytes": 1493,
+      "sha256": "1bc975fa870ded3609fa9225c9b323906784cab9d86995c81a9bd12b15231b32"
+    },
+    {
+      "path": "raw/owner-native-first-run.start.json",
+      "bytes": 841,
+      "sha256": "794980dc0905b3f1b6fa64da2a8f1b5a9d4293c3ac0f5060e4e928fd1d41c616"
+    },
+    {
+      "path": "raw/owner-native-first-run.stderr.log",
+      "bytes": 65104,
+      "sha256": "1a573ae549cc861ec4fe21df5f6bbdd44338df007ec83a8dfe14469528ea84ba"
+    },
+    {
+      "path": "raw/owner-native-first-run.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/owner-native-helper-build.receipt.json",
+      "bytes": 818,
+      "sha256": "81a98946ae293a926bb07f70b8fbd2cdc6c8ff8151f7c83fb36cc7b0f373790b"
+    },
+    {
+      "path": "raw/owner-native-helper-build.stderr.log",
+      "bytes": 13254,
+      "sha256": "4cf94252b1f41e5cd1c587b336be095904ee45bf21397ed6cddf5eb291ef071a"
+    },
+    {
+      "path": "raw/owner-native-helper-build.stdout.log",
+      "bytes": 1095617,
+      "sha256": "88b08aa3a21bb7e89186a77056bd35faa446be78e96fd7f0b2c648ad645851fb"
+    },
+    {
+      "path": "raw/owner-no-update-clippy-assertions.receipt.json",
+      "bytes": 1443,
+      "sha256": "496021151c25f9ea955a112c3a4d54786e1a36b3b366cee4488d6cf21ad4e0aa"
+    },
+    {
+      "path": "raw/owner-no-update-clippy-assertions.start.json",
+      "bytes": 712,
+      "sha256": "94bcf40852a2619f3a53ebdc283b2fbe93a84aaf76df518968423b338ded948f"
+    },
+    {
+      "path": "raw/owner-no-update-clippy-assertions.stderr.log",
+      "bytes": 2184,
+      "sha256": "af0d04038b361a6eac8d38a93811b1cc45ad01091484a4c1cb0b60fcbcee4fd7"
+    },
+    {
+      "path": "raw/owner-no-update-clippy-assertions.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/owner-no-update-clippy-initial.receipt.json",
+      "bytes": 1448,
+      "sha256": "49513880f2a6bb088c5f8f8def99d28cd3b4084cb1ead005c9b1bbb982cc24ee"
+    },
+    {
+      "path": "raw/owner-no-update-clippy-initial.start.json",
+      "bytes": 712,
+      "sha256": "828c71113b52aff7dc436af61f9eeaec193f882847394e42de1c6a9d202bdad5"
+    },
+    {
+      "path": "raw/owner-no-update-clippy-initial.stderr.log",
+      "bytes": 50804,
+      "sha256": "c58472a4173bc9ed475e0e9a84eeb14c1fdb0a9fb85893384a894e73d3151e13"
+    },
+    {
+      "path": "raw/owner-no-update-clippy-initial.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/owner-no-update-clippy-serialized.receipt.json",
+      "bytes": 1454,
+      "sha256": "65b36c97690398499925dcce03741378ec01ab7b5a9152ec00a964d7b3437509"
+    },
+    {
+      "path": "raw/owner-no-update-clippy-serialized.start.json",
+      "bytes": 712,
+      "sha256": "21f7b2a2dcda136d2a91d68f3928077e0cd67dbff18188eb26a2757055372d87"
+    },
+    {
+      "path": "raw/owner-no-update-clippy-serialized.stderr.log",
+      "bytes": 4350,
+      "sha256": "f2d2c18e66114c5730ec3bebb22b1de79392d8cf67457f1fc3fda354f2914687"
+    },
+    {
+      "path": "raw/owner-no-update-clippy-serialized.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/owner-no-update-helper-final.receipt.json",
+      "bytes": 1417,
+      "sha256": "531918c196e65b1a6b10acbaee1fe6729bdcc47199a3b7b991ca366060670a68"
+    },
+    {
+      "path": "raw/owner-no-update-helper-final.stderr.log",
+      "bytes": 343,
+      "sha256": "9094d2c54bdd1e4a19669dc2c3d57bf93df206575ace94d04235df117a7e275e"
+    },
+    {
+      "path": "raw/owner-no-update-helper-final.stdout.log",
+      "bytes": 1095498,
+      "sha256": "c4a4fae28800213aa5cc2cf68fecfcc12486a384830bcd804569427028fda58c"
+    },
+    {
+      "path": "raw/owner-no-update-native-final.receipt.json",
+      "bytes": 3236,
+      "sha256": "163dcf6542c725713181db3531b9041bcb032784787136397440aac3e92d6743"
+    },
+    {
+      "path": "raw/owner-no-update-native-final.start.json",
+      "bytes": 2435,
+      "sha256": "e49e879fa324dec55b6e413072d6f942a07d6ab0d593c7bc8e0c7580c6af573d"
+    },
+    {
+      "path": "raw/owner-no-update-native-final.stderr.log",
+      "bytes": 253099,
+      "sha256": "3c11be87261ed40a2bb22c244f0ccad8311db8e5d49da813270bfe6ccc999cdd"
+    },
+    {
+      "path": "raw/owner-no-update-native-final.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/preparation-checkout-timeout.json",
+      "bytes": 1259,
+      "sha256": "072d1fe1dabb4c70b04e5051677d260543fb8846d29c57860b10cede12bb4e7f"
+    },
+    {
+      "path": "raw/preparation-checkout-timeout.stderr.log",
+      "bytes": 221,
+      "sha256": "8dacb03f55d785fd3a195b52f4c458ba0e64a2d11545a24cd3cd80e96a0102c1"
+    },
+    {
+      "path": "raw/preparation-checkout-timeout.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/preparation-freeze-eof.json",
+      "bytes": 1575,
+      "sha256": "23047fc7c635456ef1765568b27c72fdd8e1a285a7f6db2df5dfb0e1c16db9d2"
+    },
+    {
+      "path": "raw/preparation-freeze-eof.stderr.log",
+      "bytes": 288,
+      "sha256": "2634574a2a9c8381d819fb4afd0db6a1859372bc677c0eb7b6dfc1a6c2462d29"
+    },
+    {
+      "path": "raw/preparation-freeze-eof.stdout.log",
+      "bytes": 81,
+      "sha256": "fb03c1c9313af5921df1847312125d3934a3b547c7a0f846a38c7dce2d4e5bdd"
+    },
+    {
+      "path": "raw/publication-base-preflight.json",
+      "bytes": 438,
+      "sha256": "8f870be49438aa23678e7417a5c9254637a87ab9d5df3f1e338c3754e4d1b6ef"
+    },
+    {
+      "path": "raw/publication-raw-whitespace-check.json",
+      "bytes": 424,
+      "sha256": "dc93c43969a80dfa09deb6d7d1563fa057cc04886796fcd7167e2c9e14569a3e"
+    },
+    {
+      "path": "raw/publication-raw-whitespace-check.stderr.log",
+      "bytes": 300,
+      "sha256": "24f716e46e9e48ae818c85900b99b194ef7ec8b9af7ff9d30b6b2aa3a465cc2e"
+    },
+    {
+      "path": "raw/publication-raw-whitespace-check.stdout.log",
+      "bytes": 1340,
+      "sha256": "e4baa21327800123f104f448cf61144644fe8229618b5da7dff1f165727153d6"
+    },
+    {
+      "path": "raw/unselected-bundle-verification.json",
+      "bytes": 526,
+      "sha256": "7db264c7b63abd32ecb47a74505201724fabb232c1a3d069ebe884aeb0c54e19"
+    },
+    {
+      "path": "raw/unselected-development-34060ab-bundle.json",
+      "bytes": 561,
+      "sha256": "4158bcee9169afef8e7961b32b196368b6be77fcb8d26153994d76595d9e6a01"
+    },
+    {
+      "path": "raw/unselected-development-34060ab.bundle",
+      "bytes": 14575,
+      "sha256": "4ef5cb72c37b2f1c419ecfc1df79dbec2286c02d418574656fe632ff04492c0a"
+    },
+    {
+      "path": "raw/unselected-development-final-decision.json",
+      "bytes": 662,
+      "sha256": "01a6b8f4429242a4e2d76573fcd66624a283a3219aed90e6f4d569dfe90ee9f9"
+    }
+  ],
+  "readme": {
+    "path": "README.md",
+    "bytes": 11079,
+    "sha256": "b1e43000ef94f9f077cc002ab3b905d5f915b9c84992ff88afd385cf002e97f3"
+  },
+  "self_digest": "anchored by enclosing Git commit; this manifest is excluded from its own file inventory",
+  "whitespace_validation": {
+    "source_formatter_passed_before_qualification": true,
+    "full_raw_inclusive_diff_check_exit_code": 2,
+    "raw_bytes_preserved": true,
+    "authored_report_and_manifest_checked_separately": true,
+    "diagnostic": "raw/publication-raw-whitespace-check.json"
+  }
+}

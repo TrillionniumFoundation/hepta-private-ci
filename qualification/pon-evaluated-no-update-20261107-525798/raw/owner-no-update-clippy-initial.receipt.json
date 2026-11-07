@@ -1,0 +1,42 @@
+{
+  "schema": "hepta-native-acceptance-invocation-v1",
+  "source": {
+    "head": "bc76fc6c16821f9ad8d876f573f36fa8d80062ae",
+    "tree": "8457223b04656b91103de9cc304bc7bafd611fa0",
+    "status": "",
+    "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+  },
+  "argv": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-agentd"
+  ],
+  "cwd": "/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107/codex-rs",
+  "build_jobs": "2",
+  "target_dir": "/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107-build",
+  "started_utc": "2026-11-07T13:53:23.999982+00:00",
+  "scope": "native clippy fixer; source changes if any retained; no execution acceptance claim",
+  "exit_code": 101,
+  "wall_seconds": 838.8250947459601,
+  "child_user_seconds": 995.572043,
+  "child_system_seconds": 165.36075,
+  "maximum_child_rss_kib": 1974492,
+  "finished_utc": "2026-11-07T14:07:22.826147+00:00",
+  "source_after": {
+    "head": "bc76fc6c16821f9ad8d876f573f36fa8d80062ae",
+    "tree": "8457223b04656b91103de9cc304bc7bafd611fa0",
+    "status": "",
+    "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+  },
+  "logs": {
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "bytes": 50804,
+      "sha256": "c58472a4173bc9ed475e0e9a84eeb14c1fdb0a9fb85893384a894e73d3151e13"
+    }
+  }
+}

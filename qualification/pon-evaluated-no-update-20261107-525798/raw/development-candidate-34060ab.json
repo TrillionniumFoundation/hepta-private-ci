@@ -1,0 +1,19 @@
+{
+  "base": "d87f33a1817a0a308bca51205eedfc602007223b",
+  "base_tree": "7371b6ff1958cbce8a2b5da019d2c2a52c75d699",
+  "head": "34060ab1d9544c67e20de4898ae4db112bee3067",
+  "tree": "9040b06fa0ed7c611d9ab4898ce9d2c227d3a933",
+  "diff": {
+    "file": "development-candidate-34060ab.patch",
+    "bytes": 37038,
+    "sha256": "d0961254703b0c9958bdf49aba6041206fe9b50e7df1d7435c157c63f776d93e"
+  },
+  "commits": [
+    "34060ab1d9544c67e20de4898ae4db112bee3067 fix(agentd): disambiguate the NoUpdate owner fixture assertion",
+    "6a4c9e8cc2b0574b5ce51e3731d13f43e91a719b fix(agentd): encode NoUpdate observation digests without widening Digest32",
+    "bc76fc6c16821f9ad8d876f573f36fa8d80062ae test(agentd): reject another NoUpdate head during original-task recovery",
+    "3a790c2f76558b1b6e6d0c3918149b13836ecc6c feat(agentd): bind native NoUpdate to an unchanged-model next task"
+  ],
+  "selected_for_publication": false,
+  "scope": "Qualified development candidate; pending reuse review against PR5315/PR5316; no cross-repository qualification"
+}

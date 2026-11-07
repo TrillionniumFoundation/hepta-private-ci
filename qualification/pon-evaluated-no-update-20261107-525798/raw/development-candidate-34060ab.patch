@@ -1,0 +1,897 @@
+diff --git a/codex-rs/hepta-agentd/NO_UPDATE_NEXT_TASK.md b/codex-rs/hepta-agentd/NO_UPDATE_NEXT_TASK.md
+new file mode 100644
+index 0000000..93e1738
+--- /dev/null
++++ b/codex-rs/hepta-agentd/NO_UPDATE_NEXT_TASK.md
+@@ -0,0 +1,58 @@
++# Native NoUpdate and unchanged-model next task
++
++This development bridge implements the existing no-change path in
++[`SELF_ITERATION_EXECUTION.md`](../../docs/readiness/SELF_ITERATION_EXECUTION.md)
++and preserves the owner separation in
++[`END_TO_END_LEARNING_SEQUENCE.md`](../../docs/lane-e/END_TO_END_LEARNING_SEQUENCE.md).
++It is not a second execution plan or production activation instruction.
++
++`LearningIterationHandleV1::submit_no_update` returns an opaque terminal owner
++result. The original learning snapshot remains `NoUpdate`; the bridge never
++creates a candidate `NextUse` receipt or a model improvement. The result has no
++deserializer or public constructor. The learning host still owns authenticated
++checkpoint restore and durable checkpoint commits through its existing ports.
++
++The next task requires the actual old generation journal, a freshly verified
++CURRENT selection and the existing Control / FinalUse same-model owner. The
++following mappings must already exist; an absent or different mapping rejects
++before the native prepare operation:
++
++| Learning owner material | Native generation owner material |
++| --- | --- |
++| Complete selected compatibility bundle digest | Selected manifest bundle digest |
++| Selected artifact digest | CURRENT-verified canonical manifest payload digest |
++| Completed task receipt | Atomic old generation observation digest |
++| Agent, cell and source run | Old guarded journal scope |
++| Terminal learning journal head | Deterministic signed next-task operation identity |
++
++The target retains the complete native manifest and principal while advancing
++the generation / writer epoch to a fresh task and run. The original same-model
++owner still enforces old output acknowledgement and drain, current selection,
++fresh purpose-bound FinalUse, durable claim and publication, and recovery from
++the original operation. A different CURRENT payload cannot authorize old work.
++
++`LearningNoUpdateSameModelTaskV1::into_runtime` consumes the real sealed Ready
++owner and captures its actual handle. `LearningNoUpdateSameModelRuntimeV1::step`
++delegates the exact task step and then obtains the live atomic owner observation.
++Only a committed Advanced / Stopped step with a matching snapshot and no pending
++request produces `LearningNoUpdateSameModelUseV1`. Native uncertainty propagates
++as an error. Its stable use ID binds the learning head, signed native intent and
++step receipt, so acknowledgement, drain and restart cannot count the same step
++again. A task can contain several successful steps. Count tasks by the native
++target binding and task identity, not by counting distinct step use IDs. Neither
++count proves new external business demand. The receipt grants `DENY_ALL` authority.
++
++The serialized record is an audit observation, not a standalone cryptographic
++proof. An external adapter must verify the original terminal learning owner,
++Control / CURRENT / FinalUse records and generation journal. A use ID or a
++signed-grant digest alone cannot authorize payment, installation or adoption.
++
++The native composition tests use real Fleet/config/service paths, signed
++selection and FinalUse owners, file journals, output fsync, acknowledgement,
++drain and runtime shutdown/reopen while retaining the authority owners. Their
++trainer, in-memory learning checkpoint port and proposal
++worker are explicitly synthetic. They verify owner composition and rejection
++boundaries; they do not establish independent customers or evaluators, external
++funding, a production model installation, a complete cost measurement or net
++learning benefit. Those gates remain open until their actual owners provide
++auditable material and a prospective, frozen evaluation completes.
+diff --git a/codex-rs/hepta-agentd/src/learning_iteration.rs b/codex-rs/hepta-agentd/src/learning_iteration.rs
+index f63d59e..36e7ba0 100644
+--- a/codex-rs/hepta-agentd/src/learning_iteration.rs
++++ b/codex-rs/hepta-agentd/src/learning_iteration.rs
+@@ -66,6 +66,15 @@ pub struct LearningIterationHandleV1 {
+ }
+ 
+ impl LearningIterationHandleV1 {
++    /// Preserve NoUpdate as a terminal result while allowing a separately
++    /// authorized unchanged-model task to bind that exact owner checkpoint.
++    pub async fn submit_no_update(
++        &self,
++        request: LearningIterationRequestV1,
++    ) -> Result<crate::CompletedLearningNoUpdateV1, LearningIterationRuntimeErrorV1> {
++        crate::CompletedLearningNoUpdateV1::from_owner(self.submit(request).await?)
++    }
++
+     pub async fn submit(
+         &self,
+         request: LearningIterationRequestV1,
+diff --git a/codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs b/codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs
+index a433b97..d61aece 100644
+--- a/codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs
++++ b/codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs
+@@ -32,6 +32,10 @@ use crate::learning_iteration_channel_v1;
+ 
+ use super::*;
+ 
++#[cfg(unix)]
++#[path = "learning_no_update_test_support.rs"]
++pub(crate) mod no_update;
++
+ fn ok<T, E: Debug>(result: Result<T, E>) -> T {
+     match result {
+         Ok(value) => value,
+diff --git a/codex-rs/hepta-agentd/src/learning_no_update.rs b/codex-rs/hepta-agentd/src/learning_no_update.rs
+new file mode 100644
+index 0000000..e74cd6c
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/learning_no_update.rs
+@@ -0,0 +1,33 @@
++//! A terminal learning result returned by the authenticated learning owner.
++
++use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
++use codex_hepta_learning_artifacts::LearningIterationDispositionV1;
++use codex_hepta_learning_artifacts::LearningIterationError;
++use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
++
++use crate::LearningIterationRuntimeErrorV1;
++
++/// An in-process owner result, not a deserializable assertion or use grant.
++/// The unchanged model still needs current selection and a fresh FinalUse.
++#[derive(Clone, Debug)]
++pub struct CompletedLearningNoUpdateV1 {
++    snapshot: LearningIterationSnapshotV1,
++}
++
++impl CompletedLearningNoUpdateV1 {
++    pub(crate) fn from_owner(
++        snapshot: LearningIterationSnapshotV1,
++    ) -> Result<Self, LearningIterationRuntimeErrorV1> {
++        let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
++        if restored.disposition() != LearningIterationDispositionV1::NoUpdate {
++            return Err(LearningIterationError::WrongStage.into());
++        }
++        Ok(Self {
++            snapshot: restored.snapshot().clone(),
++        })
++    }
++
++    pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
++        &self.snapshot
++    }
++}
+diff --git a/codex-rs/hepta-agentd/src/learning_no_update_same_model.rs b/codex-rs/hepta-agentd/src/learning_no_update_same_model.rs
+new file mode 100644
+index 0000000..e055111
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/learning_no_update_same_model.rs
+@@ -0,0 +1,337 @@
++//! Bind a native NoUpdate result to the existing same-model task owner.
++//! NoUpdate and candidate NextUse keep their original meanings. This profile
++//! requires an exact source observation, complete bundle and CURRENT payload.
++//! It neither fills absent mappings nor grants model adoption or improvement.
++
++use std::sync::Arc;
++
++use codex_hepta_neuron::AnchorWitnessStore;
++use codex_hepta_neuron::CellGenerationControlPortV2;
++use codex_hepta_neuron::CellGenerationDispositionV2;
++use codex_hepta_neuron::CellGenerationErrorV2;
++use codex_hepta_neuron::CellGenerationJournalV2;
++use codex_hepta_neuron::CellGenerationObservationV1;
++use codex_hepta_neuron::CellGenerationOwnerBindingV1;
++use codex_hepta_neuron::CellGenerationReceiptV2;
++use codex_hepta_neuron::CellGenerationRequestV2;
++use codex_hepta_types::AuthorityPosture;
++use codex_hepta_types::Digest32;
++use serde::Serialize;
++
++use crate::AgentdConfig;
++use crate::AgentdError;
++use crate::AgentdGenerationUpdateAuthoritiesV1;
++use crate::AgentdGenerationUpdateRecoveryV1;
++use crate::AgentdGenerationUpdateRequestV1;
++use crate::AgentdGenerationUpdateRuntimeOptionsV1;
++use crate::AgentdGenerationUpdateRuntimeV1;
++use crate::AgentdGenerationUpdateTargetV1;
++use crate::AgentdSelectedGenerationV1;
++use crate::CompletedLearningNoUpdateV1;
++use crate::NeuronGenerationRuntimeHandleV2;
++use crate::PreparedAgentdGenerationUpdateV1;
++use crate::ReadyAgentdGenerationUpdateV1;
++use crate::neuron_generation_current::NeuronGenerationCurrentOwnerV1;
++use crate::neuron_generation_current::NeuronGenerationPredecessorCompletionV1;
++use crate::prepare_agentd_generation_same_model_task_v1;
++use crate::recover_agentd_generation_update_v1;
++
++/// A binding to one original Control operation, with no writer or signer.
++pub struct LearningNoUpdateSameModelTaskV1 {
++    terminal: CompletedLearningNoUpdateV1,
++    operation_id: String,
++    target: CellGenerationOwnerBindingV1,
++    intent: Digest32,
++}
++
++/// Captures the handle from the actual guarded Ready owner before returning
++/// its ordinary host config. Callers cannot substitute another runtime handle.
++pub struct LearningNoUpdateSameModelRuntimeV1 {
++    task: LearningNoUpdateSameModelTaskV1,
++    handle: NeuronGenerationRuntimeHandleV2,
++    signed_grant: Digest32,
++}
++
++/// Observed native use, not delivery, evaluation quality or an improvement.
++/// Private fields and no deserializer exclude caller-assembled success rows.
++#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
++pub struct LearningNoUpdateSameModelUseV1 {
++    use_id: [u8; 32],
++    terminal_head: [u8; 32],
++    selected_bundle: [u8; 32],
++    selected_payload: [u8; 32],
++    target: CellGenerationOwnerBindingV1,
++    intent: [u8; 32],
++    signed_grant: [u8; 32],
++    step: CellGenerationReceiptV2,
++    observation: CellGenerationObservationV1,
++}
++
++impl LearningNoUpdateSameModelUseV1 {
++    /// Stable across ACK, drain and recovery; one use must not be counted again.
++    pub fn use_id(&self) -> Digest32 {
++        Digest32::from_array(self.use_id)
++    }
++
++    /// One task may have several successful steps; aggregate tasks by this
++    /// native binding, not by counting distinct step use IDs.
++    pub fn target(&self) -> &CellGenerationOwnerBindingV1 {
++        &self.target
++    }
++
++    pub fn step(&self) -> &CellGenerationReceiptV2 {
++        &self.step
++    }
++
++    pub fn observation(&self) -> &CellGenerationObservationV1 {
++        &self.observation
++    }
++
++    pub fn authority(&self) -> AuthorityPosture {
++        AuthorityPosture::DENY_ALL
++    }
++}
++
++impl LearningNoUpdateSameModelTaskV1 {
++    fn bind<W: AnchorWitnessStore>(
++        terminal: CompletedLearningNoUpdateV1,
++        selected: &AgentdSelectedGenerationV1,
++        target: &AgentdGenerationUpdateTargetV1<W>,
++    ) -> Result<Self, AgentdError> {
++        let snapshot = terminal.snapshot();
++        let request = &snapshot.request;
++        let bundle = request.selected_bundle.digest().map_err(invalid)?;
++        let scope = &target.config.initial.scope;
++        if bundle.as_array() != &selected.manifest().bundle_digest
++            || request.selected_artifact_digest != selected.observation().payload_digest()
++            || selected.manifest() != &target.config.manifest
++            || request.agent_id.as_str() != scope.agent_id
++            || request.cell_id.as_str() != scope.cell_id
++            || request.source_run_id.as_str() == scope.run_id
++        {
++            return Err(invalid(
++                "NoUpdate has no exact unchanged-model task mapping",
++            ));
++        }
++        let target = CellGenerationOwnerBindingV1::new(&target.config, target.max_records)
++            .map_err(invalid)?;
++        let operation = Digest32::of_parts(&[
++            b"hepta.learning.no-update-same-model-task.v1\0",
++            snapshot.head_digest.as_array(),
++            bundle.as_array(),
++            request.selected_artifact_digest.as_array(),
++            request.completed_task_receipt.as_array(),
++            &target.digest().map_err(invalid)?,
++            selected.observation().digest().as_array(),
++        ]);
++        Ok(Self {
++            terminal,
++            operation_id: format!("learning-no-update:{operation}"),
++            target,
++            intent: Digest32::ZERO,
++        })
++    }
++
++    fn require_predecessor(
++        &self,
++        previous: &CellGenerationOwnerBindingV1,
++        observation: Digest32,
++    ) -> Result<(), AgentdError> {
++        let request = &self.terminal.snapshot().request;
++        if observation != request.completed_task_receipt
++            || previous.scope().agent_id != request.agent_id.as_str()
++            || previous.scope().cell_id != request.cell_id.as_str()
++            || previous.scope().run_id != request.source_run_id.as_str()
++            || previous.scope().principal_digest != self.target.scope().principal_digest
++            || previous.manifest_digest() != self.target.manifest_digest()
++            || previous.task_digest() == self.target.task_digest()
++        {
++            return Err(invalid("NoUpdate source is not this completed native task"));
++        }
++        Ok(())
++    }
++
++    pub fn operation_id(&self) -> &str {
++        &self.operation_id
++    }
++
++    pub fn into_runtime<W, P, C>(
++        self,
++        ready: ReadyAgentdGenerationUpdateV1<W>,
++        config: AgentdConfig,
++        control: P,
++        clock: C,
++        options: AgentdGenerationUpdateRuntimeOptionsV1,
++    ) -> Result<
++        (
++            AgentdGenerationUpdateRuntimeV1,
++            LearningNoUpdateSameModelRuntimeV1,
++        ),
++        AgentdError,
++    >
++    where
++        W: AnchorWitnessStore + Send + 'static,
++        P: CellGenerationControlPortV2 + Send + 'static,
++        C: FnMut() -> u64 + Send + 'static,
++    {
++        let runtime = ready.into_runtime(config, control, clock, options)?;
++        if runtime.publication.intent_digest() != self.intent
++            || runtime.publication.target() != &self.target
++            || runtime.publication.completion()
++                != NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel
++        {
++            return Err(invalid(
++                "NoUpdate next use differs from its published owner",
++            ));
++        }
++        let bound = LearningNoUpdateSameModelRuntimeV1 {
++            task: self,
++            handle: runtime.handle.clone(),
++            signed_grant: runtime.publication.signed_grant_digest(),
++        };
++        Ok((runtime, bound))
++    }
++}
++
++impl LearningNoUpdateSameModelRuntimeV1 {
++    /// Delegate one exact task step to the ordinary owner, then read its cut.
++    /// A failed, stale or indeterminate result never becomes a use receipt.
++    pub async fn step(
++        &self,
++        request: CellGenerationRequestV2,
++    ) -> Result<LearningNoUpdateSameModelUseV1, CellGenerationErrorV2> {
++        let task = &self.task;
++        if request.task_digest != task.target.task_digest()
++            || &request.predecessor.scope != task.target.scope()
++            || request.predecessor.generation != task.target.generation()
++            || request.predecessor.writer_epoch != task.target.writer_epoch()
++            || request.predecessor.manifest_digest != task.target.manifest_digest()
++        {
++            return Err(CellGenerationErrorV2::InvalidBinding);
++        }
++        let step = self.handle.step(request).await?;
++        if !matches!(
++            step.disposition,
++            CellGenerationDispositionV2::Advanced | CellGenerationDispositionV2::Stopped
++        ) {
++            return Err(CellGenerationErrorV2::InvalidBinding);
++        }
++        let observation = self.handle.observe_generation().await?;
++        if observation.task_digest() != task.target.task_digest()
++            || observation.snapshot().digest()? != step.checkpoint_after
++            || observation.pending_request_digest().is_some()
++        {
++            return Err(CellGenerationErrorV2::InvalidBinding);
++        }
++        let snapshot = task.terminal.snapshot();
++        let use_id = Digest32::of_parts(&[
++            b"hepta.learning.no-update-same-model-use.v1\0",
++            snapshot.head_digest.as_array(),
++            task.intent.as_array(),
++            &serde_json::to_vec(&step).map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
++        ]);
++        Ok(LearningNoUpdateSameModelUseV1 {
++            use_id: use_id.into_array(),
++            terminal_head: snapshot.head_digest.into_array(),
++            selected_bundle: snapshot
++                .request
++                .selected_bundle
++                .digest()
++                .map_err(|_| CellGenerationErrorV2::InvalidBinding)?
++                .into_array(),
++            selected_payload: snapshot.request.selected_artifact_digest.into_array(),
++            target: task.target.clone(),
++            intent: task.intent.into_array(),
++            signed_grant: self.signed_grant.into_array(),
++            step,
++            observation,
++        })
++    }
++}
++
++/// Existing drain/ACK, CURRENT, complete manifest and fresh FinalUse apply.
++/// The terminal learning head enters the original signed operation identity.
++pub fn prepare_learning_no_update_same_model_task_v1<Old, New>(
++    terminal: CompletedLearningNoUpdateV1,
++    current: Arc<NeuronGenerationCurrentOwnerV1>,
++    authorities: AgentdGenerationUpdateAuthoritiesV1,
++    old: CellGenerationJournalV2<Old>,
++    selected: AgentdSelectedGenerationV1,
++    target: AgentdGenerationUpdateTargetV1<New>,
++) -> Result<
++    (
++        PreparedAgentdGenerationUpdateV1<Old, New>,
++        LearningNoUpdateSameModelTaskV1,
++    ),
++    AgentdError,
++>
++where
++    Old: AnchorWitnessStore,
++    New: AnchorWitnessStore,
++{
++    let mut task = LearningNoUpdateSameModelTaskV1::bind(terminal, &selected, &target)?;
++    task.require_predecessor(
++        old.owner_binding()
++            .ok_or_else(|| invalid("NoUpdate requires a guarded owner"))?,
++        Digest32::from_array(
++            old.observe_generation()
++                .map_err(invalid)?
++                .digest()
++                .map_err(invalid)?,
++        ),
++    )?;
++    let prepared = prepare_agentd_generation_same_model_task_v1(
++        current,
++        authorities,
++        old,
++        selected,
++        target,
++        AgentdGenerationUpdateRequestV1 {
++            operation_id: task.operation_id.clone(),
++        },
++    )?;
++    task.intent = prepared.intent_digest();
++    Ok((prepared, task))
++}
++
++/// Reconcile the same published operation; never mint a new claim after a crash.
++pub fn recover_learning_no_update_same_model_task_v1<W: AnchorWitnessStore>(
++    terminal: CompletedLearningNoUpdateV1,
++    current: Arc<NeuronGenerationCurrentOwnerV1>,
++    authorities: AgentdGenerationUpdateAuthoritiesV1,
++    selected: AgentdSelectedGenerationV1,
++    target: AgentdGenerationUpdateTargetV1<W>,
++    intent: Digest32,
++) -> Result<
++    (
++        ReadyAgentdGenerationUpdateV1<W>,
++        LearningNoUpdateSameModelTaskV1,
++    ),
++    AgentdError,
++> {
++    let mut task = LearningNoUpdateSameModelTaskV1::bind(terminal, &selected, &target)?;
++    let prepared = current.recover_operation(&task.operation_id, intent)?;
++    task.require_predecessor(
++        prepared.predecessor(),
++        prepared.predecessor_observation_digest(),
++    )?;
++    if prepared.completion() != NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel {
++        return Err(invalid("NoUpdate recovery is not a same-model operation"));
++    }
++    let ready = recover_agentd_generation_update_v1(
++        current,
++        authorities,
++        selected,
++        target,
++        AgentdGenerationUpdateRecoveryV1 {
++            operation_id: task.operation_id.clone(),
++            intent_digest: intent,
++        },
++    )?;
++    task.intent = intent;
++    Ok((ready, task))
++}
++
++fn invalid(error: impl std::fmt::Display) -> AgentdError {
++    AgentdError::Invalid(error.to_string())
++}
+diff --git a/codex-rs/hepta-agentd/src/learning_no_update_same_model_tests.rs b/codex-rs/hepta-agentd/src/learning_no_update_same_model_tests.rs
+new file mode 100644
+index 0000000..dd9b976
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/learning_no_update_same_model_tests.rs
+@@ -0,0 +1,254 @@
++//! Native learning/Control/CURRENT composition. The trainer and worker are
++//! synthetic. Files, signatures, output ACK, fences and recovery are native.
++
++use std::fs::File;
++use std::io::Write;
++use std::sync::atomic::Ordering;
++
++use codex_hepta_neuron::CellTaskCostV2;
++use codex_hepta_types::AuthorityPosture;
++use codex_hepta_types::Digest32;
++use pretty_assertions::assert_eq;
++
++use super::super::support as host;
++use super::support;
++use crate::AgentdGenerationUpdateRuntimeOptionsV1;
++use crate::neuron_generation_current::test_support::Fixture;
++use crate::plasticity_runtime::lifetime_tests::learning_iteration_tests::no_update as learning;
++use crate::prepare_learning_no_update_same_model_task_v1;
++use crate::recover_learning_no_update_same_model_task_v1;
++
++#[tokio::test]
++async fn no_update_native_next_task_recovers_one_use_and_obeys_current_revocation()
++-> anyhow::Result<()> {
++    let mut host = host::Fixture::new().await;
++    let bundle = learning::bundle();
++    host.config.manifest.bundle_digest = bundle.digest()?.into_array();
++    host.config.initial.manifest_digest = host.config.manifest.digest()?;
++    let mut next = host.config.clone();
++    next.initial.scope.run_id.push_str("-no-update");
++    next.initial.generation += 1;
++    next.initial.writer_epoch += 1;
++    next.task_digest = Digest32::of_bytes(b"new task after native NoUpdate").into_array();
++    let f = Fixture::new_with_target(host.config.clone(), next)?;
++    let old = f.stopped_old()?;
++    let selected = f.selection()?;
++    let request = learning::request(
++        &old.observe_generation()?,
++        selected.observation().payload_digest(),
++        bundle,
++    )?;
++    let mut different_request = request.clone();
++    different_request.operation_id = codex_hepta_types::StableId::new("another-learning-operation")
++        .map_err(anyhow::Error::msg)?;
++    let different_terminal = learning::complete(host.state(), different_request).await?;
++    let terminal = learning::complete(host.state(), request).await?;
++    assert_ne!(
++        terminal.snapshot().head_digest,
++        different_terminal.snapshot().head_digest
++    );
++    let before = terminal.snapshot().clone();
++    let old_bytes = (f.bytes("old-journal")?, f.bytes("old-witness")?);
++    let (prepared, next_task) = prepare_learning_no_update_same_model_task_v1(
++        terminal.clone(),
++        f.reopen_current()?,
++        f.authorities()?,
++        old,
++        selected,
++        f.target_create()?,
++    )?;
++    assert_eq!(
++        prepared.final_use_binding().destination_id,
++        "agentd.cell-generation.next-task-same-model"
++    );
++    let intent = prepared.intent_digest();
++    let grant = f.sign(prepared.final_use_binding())?;
++    let ready = prepared.publish(&grant)?;
++    let control = support::Control::default();
++    let (mut runtime, bound) = next_task.into_runtime(
++        ready,
++        support::next_config(&mut host, /*running_generation*/ 2).await?,
++        control.clone(),
++        host.clock(),
++        AgentdGenerationUpdateRuntimeOptionsV1::default(),
++    )?;
++    let (mut tasks, _lifetime) = support::start(&mut runtime, &host)?;
++    assert!(
++        bound
++            .step(support::request(
++                &f.old_config,
++                f.old_config.initial.clone()
++            ))
++            .await
++            .is_err()
++    );
++    assert_eq!(control.executions.load(Ordering::SeqCst), 0);
++    let mut step_request = support::request(&f.target_config, runtime.handle.snapshot().await?);
++    step_request.input = vec![23, 24, 25];
++    let used = bound.step(step_request.clone()).await?;
++    assert_eq!(used.authority(), AuthorityPosture::DENY_ALL);
++    assert_eq!(used.observation().snapshot().state, step_request.input);
++    assert_eq!(
++        bound.step(step_request.clone()).await?.use_id(),
++        used.use_id()
++    );
++    assert_eq!(control.executions.load(Ordering::SeqCst), 1);
++    assert_eq!(terminal.snapshot(), &before);
++    let chunk = used
++        .observation()
++        .pending_output()
++        .cloned()
++        .ok_or_else(|| anyhow::anyhow!("missing native output"))?;
++    let path = host.directory.path().join("no-update-delivery");
++    let mut delivery = File::create(&path)?;
++    delivery.write_all(&chunk.bytes)?;
++    delivery.sync_all()?;
++    File::open(host.directory.path())?.sync_all()?;
++    runtime
++        .handle
++        .acknowledge(
++            chunk.clone(),
++            Digest32::of_parts(&[b"no-update-delivery", &chunk.bytes]).into_array(),
++            CellTaskCostV2::new(used.observation().cost().identity())?,
++        )
++        .await?;
++    assert!(runtime.handle.drain().await?);
++    let retained = (
++        f.bytes("target-journal")?,
++        f.bytes("target-witness")?,
++        f.bytes("final-use/authority.claims")?,
++    );
++    tasks.shutdown().await;
++    drop(bound);
++    drop(runtime);
++    drop(tasks);
++    // Identical model/source mappings cannot substitute another learning head
++    // into the already signed original next-task operation.
++    assert!(
++        recover_learning_no_update_same_model_task_v1(
++            different_terminal,
++            f.reopen_current()?,
++            f.authorities()?,
++            f.selection()?,
++            f.target_reopen()?,
++            intent,
++        )
++        .is_err()
++    );
++    assert_eq!(
++        (
++            f.bytes("target-journal")?,
++            f.bytes("target-witness")?,
++            f.bytes("final-use/authority.claims")?
++        ),
++        retained
++    );
++    assert_eq!(f.authority.capacity()?.used_nonces, 1);
++    let (ready, next_task) = recover_learning_no_update_same_model_task_v1(
++        terminal,
++        f.reopen_current()?,
++        f.authorities()?,
++        f.selection()?,
++        f.target_reopen()?,
++        intent,
++    )?;
++    let (mut runtime, bound) = next_task.into_runtime(
++        ready,
++        support::next_config(&mut host, /*running_generation*/ 6).await?,
++        control.clone(),
++        host.clock(),
++        AgentdGenerationUpdateRuntimeOptionsV1::default(),
++    )?;
++    let (mut tasks, _lifetime) = support::start(&mut runtime, &host)?;
++    let replay = bound.step(step_request.clone()).await?;
++    assert_eq!(replay.use_id(), used.use_id());
++    assert_eq!(replay.step(), used.step());
++    assert_eq!(control.executions.load(Ordering::SeqCst), 1);
++    assert_eq!(control.reads.load(Ordering::SeqCst), 0);
++    assert_eq!(std::fs::read(path)?, chunk.bytes);
++    assert_eq!(
++        (f.bytes("old-journal")?, f.bytes("old-witness")?),
++        old_bytes
++    );
++    assert_eq!(
++        (
++            f.bytes("target-journal")?,
++            f.bytes("target-witness")?,
++            f.bytes("final-use/authority.claims")?
++        ),
++        retained
++    );
++    assert_eq!(f.authority.capacity()?.used_nonces, 1);
++    f.advance_artifact_current()?;
++    assert!(bound.step(step_request).await.is_err());
++    assert_eq!(control.executions.load(Ordering::SeqCst), 1);
++    tasks.shutdown().await;
++    Ok(())
++}
++
++#[tokio::test]
++async fn no_update_rejects_unmapped_bundle_payload_and_source_before_control_mutation()
++-> anyhow::Result<()> {
++    for mismatch in ["bundle", "payload", "source", "run", "cell"] {
++        let mut host = host::Fixture::new().await;
++        let bundle = learning::bundle();
++        host.config.manifest.bundle_digest = bundle.digest()?.into_array();
++        host.config.initial.manifest_digest = host.config.manifest.digest()?;
++        let mut next = host.config.clone();
++        next.initial.scope.run_id.push_str("-negative");
++        next.initial.generation += 1;
++        next.initial.writer_epoch += 1;
++        next.task_digest = [89; 32];
++        let f = Fixture::new_with_target(host.config.clone(), next)?;
++        let old = f.stopped_old()?;
++        let selected = f.selection()?;
++        let mut request = learning::request(
++            &old.observe_generation()?,
++            selected.observation().payload_digest(),
++            bundle,
++        )?;
++        match mismatch {
++            "bundle" => {
++                request.selected_bundle.components.heads = Digest32::of_bytes(b"other heads")
++            }
++            "payload" => request.selected_artifact_digest = Digest32::of_bytes(b"other payload"),
++            "source" => request.completed_task_receipt = Digest32::of_bytes(b"other task receipt"),
++            "run" => {
++                request.source_run_id =
++                    codex_hepta_types::StableId::new("another-run").map_err(anyhow::Error::msg)?
++            }
++            "cell" => {
++                request.cell_id =
++                    codex_hepta_types::StableId::new("another-cell").map_err(anyhow::Error::msg)?
++            }
++            _ => anyhow::bail!("unknown negative fixture"),
++        }
++        let terminal = learning::complete(host.state(), request).await?;
++        let before = (
++            f.bytes("current.json")?,
++            f.bytes("old-journal")?,
++            f.bytes("old-witness")?,
++        );
++        assert!(
++            prepare_learning_no_update_same_model_task_v1(
++                terminal,
++                f.reopen_current()?,
++                f.authorities()?,
++                old,
++                selected,
++                f.target_create()?,
++            )
++            .is_err()
++        );
++        assert_eq!(
++            (
++                f.bytes("current.json")?,
++                f.bytes("old-journal")?,
++                f.bytes("old-witness")?
++            ),
++            before
++        );
++        assert_eq!(f.authority.capacity()?.used_nonces, 0);
++    }
++    Ok(())
++}
+diff --git a/codex-rs/hepta-agentd/src/learning_no_update_test_support.rs b/codex-rs/hepta-agentd/src/learning_no_update_test_support.rs
+new file mode 100644
+index 0000000..14c00e1
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/learning_no_update_test_support.rs
+@@ -0,0 +1,59 @@
++//! Existing signed native learning fixtures. Training and the learning
++//! checkpoint port are synthetic; the generation journals remain real files.
++
++use codex_hepta_neuron::CellGenerationObservationV1;
++use pretty_assertions::assert_eq;
++
++use super::*;
++use crate::CompletedLearningNoUpdateV1;
++
++pub(crate) fn bundle() -> CellCompatibilityBundleV1 {
++    iteration_request(&AgentdFixture::new()).selected_bundle
++}
++
++pub(crate) fn request(
++    source: &CellGenerationObservationV1,
++    payload: Digest32,
++    bundle: CellCompatibilityBundleV1,
++) -> anyhow::Result<LearningIterationRequestV1> {
++    let mut request = iteration_request(&AgentdFixture::new());
++    request.agent_id = id(&source.snapshot().scope.agent_id);
++    request.cell_id = id(&source.snapshot().scope.cell_id);
++    request.source_run_id = id(&source.snapshot().scope.run_id);
++    request.completed_task_receipt = Digest32::from_array(source.digest()?);
++    request.selected_artifact_digest = payload;
++    request.selected_bundle = bundle;
++    Ok(request)
++}
++
++pub(crate) async fn complete(
++    state: &Arc<AgentdState>,
++    request: LearningIterationRequestV1,
++) -> anyhow::Result<CompletedLearningNoUpdateV1> {
++    let ports = Arc::new(IterationPorts::new(
++        None,
++        LearningEvaluationDispositionV1::NoUpdate,
++    ));
++    let (handle, owner) = learning_iteration_channel_v1(
++        state.identity().agent_id.clone(),
++        state.identity().spawn_generation,
++        ports.owners(),
++        ports.clone(),
++        ports.verifier.clone(),
++        /*capacity*/ 2,
++    )?;
++    let initial = LearningIterationCoordinatorV1::new(request.clone(), ports.owners())?;
++    assert!(CompletedLearningNoUpdateV1::from_owner(initial.snapshot().clone()).is_err());
++    let terminal = owner.process(state, request.clone(), || Ok(50)).await?;
++    // The public channel must recover an expired terminal operation without
++    // running any stage again. The fixture checkpoint itself remains in memory.
++    let cancellation = CancellationToken::new();
++    let worker = tokio::spawn(owner.run(Arc::clone(state), cancellation.clone()));
++    let recovered = handle.submit_no_update(request).await;
++    cancellation.cancel();
++    worker.await??;
++    let recovered = recovered?;
++    assert_eq!(recovered.snapshot(), &terminal);
++    assert_eq!(ok(ports.executed.lock()).len(), 4);
++    Ok(recovered)
++}
+diff --git a/codex-rs/hepta-agentd/src/lib.rs b/codex-rs/hepta-agentd/src/lib.rs
+index a16f493..fb3118b 100644
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -304,6 +304,9 @@ mod learning_iteration;
+ mod learning_iteration_auth;
+ mod learning_iteration_ports;
+ mod learning_iteration_proposal;
++mod learning_no_update;
++#[cfg(unix)]
++mod learning_no_update_same_model;
+ mod neuron_cell_evaluation;
+ mod neuron_generation;
+ #[cfg(unix)]
+@@ -651,6 +654,17 @@ pub use learning_iteration_ports::LearningIterationOwnerFutureV1;
+ pub use learning_iteration_ports::LearningIterationOwnerPortsV1;
+ pub use learning_iteration_ports::LearningIterationProposalPayloadV1;
+ pub use learning_iteration_ports::PreparedLearningIterationProposalV1;
++pub use learning_no_update::CompletedLearningNoUpdateV1;
++#[cfg(unix)]
++pub use learning_no_update_same_model::LearningNoUpdateSameModelRuntimeV1;
++#[cfg(unix)]
++pub use learning_no_update_same_model::LearningNoUpdateSameModelTaskV1;
++#[cfg(unix)]
++pub use learning_no_update_same_model::LearningNoUpdateSameModelUseV1;
++#[cfg(unix)]
++pub use learning_no_update_same_model::prepare_learning_no_update_same_model_task_v1;
++#[cfg(unix)]
++pub use learning_no_update_same_model::recover_learning_no_update_same_model_task_v1;
+ pub use neuron_cell_evaluation::CellComparisonContractV1;
+ pub use neuron_cell_evaluation::CellCostCoverageV1;
+ pub use neuron_cell_evaluation::CellEvaluationArmRecordV1;
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_current_types.rs b/codex-rs/hepta-agentd/src/neuron_generation_current_types.rs
+index c8651a3..87911fe 100644
+--- a/codex-rs/hepta-agentd/src/neuron_generation_current_types.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_current_types.rs
+@@ -116,6 +116,15 @@ pub struct PreparedNeuronGenerationUpdateV1 {
+ }
+ 
+ impl PreparedNeuronGenerationUpdateV1 {
++    /// Exact predecessor retained by the original Control operation.
++    pub fn predecessor(&self) -> &CellGenerationOwnerBindingV1 {
++        &self.intent.previous
++    }
++
++    pub fn predecessor_observation_digest(&self) -> Digest32 {
++        Digest32::from_array(self.intent.previous_observation)
++    }
++
+     pub fn completion(&self) -> NeuronGenerationPredecessorCompletionV1 {
+         self.intent.completion
+     }
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_update_runtime_tests.rs b/codex-rs/hepta-agentd/src/neuron_generation_update_runtime_tests.rs
+index 9a30da8..4584a36 100644
+--- a/codex-rs/hepta-agentd/src/neuron_generation_update_runtime_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_update_runtime_tests.rs
+@@ -20,6 +20,8 @@ use crate::neuron_generation_current::test_support::Fixture;
+ use crate::prepare_agentd_generation_update_v1;
+ use crate::recover_agentd_generation_update_v1;
+ 
++#[path = "learning_no_update_same_model_tests.rs"]
++mod no_update;
+ #[path = "neuron_generation_same_model_runtime_tests.rs"]
+ mod same_model;
+ #[path = "neuron_generation_update_successive_tests.rs"]
+diff --git a/codex-rs/hepta-agentd/src/plasticity_runtime.rs b/codex-rs/hepta-agentd/src/plasticity_runtime.rs
+index bb1a0f2..f05662f 100644
+--- a/codex-rs/hepta-agentd/src/plasticity_runtime.rs
++++ b/codex-rs/hepta-agentd/src/plasticity_runtime.rs
+@@ -340,7 +340,7 @@ impl PlasticityRuntimeOwnerV1 {
+ 
+ #[cfg(test)]
+ #[path = "plasticity_runtime_lifetime_tests.rs"]
+-mod lifetime_tests;
++pub(crate) mod lifetime_tests;
+ 
+ #[cfg(test)]
+ mod tests {
+diff --git a/codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs b/codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs
+index 012dc11..931a02c 100644
+--- a/codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs
++++ b/codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs
+@@ -92,7 +92,7 @@ use crate::resolve_agentd_plasticity_admission_v1;
+ use crate::resolve_agentd_topology_admission_v1;
+ 
+ #[path = "learning_iteration_runtime_tests.rs"]
+-mod learning_iteration_tests;
++pub(crate) mod learning_iteration_tests;
+ #[path = "terminal_learning_tests.rs"]
+ mod terminal_learning_tests;
+ 

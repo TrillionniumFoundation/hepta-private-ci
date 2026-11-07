@@ -1,0 +1,343 @@
+LearningIterationSnapshotV1 {
+    request: LearningIterationRequestV1 {
+        operation_id: StableId(
+            BoundedText(
+                "proposal:agentd-lifetime",
+            ),
+        ),
+        principal_id: StableId(
+            BoundedText(
+                "principal:task-owner",
+            ),
+        ),
+        agent_id: StableId(
+            BoundedText(
+                "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
+            ),
+        ),
+        cell_id: StableId(
+            BoundedText(
+                "cell",
+            ),
+        ),
+        source_run_id: StableId(
+            BoundedText(
+                "generation-task",
+            ),
+        ),
+        completed_task_receipt: Digest32(
+            "d3c3a41c341428c5932c4d58f2a5710fd92e12bf9d2c089e04c849e5cc39ebb7",
+        ),
+        selected_artifact_digest: Digest32(
+            "e16918fd19fc4bd6dd6e1e7fe85dbc0f9d7d62894a0e2c0d134d424960f523e7",
+        ),
+        selected_bundle: CellCompatibilityBundleV1 {
+            artifact_id: StableId(
+                BoundedText(
+                    "artifact:baseline",
+                ),
+            ),
+            generation: Generation(
+                1,
+            ),
+            components: CellBundleComponentsV1 {
+                base: Digest32(
+                    "3dfe8fe2e342730d497896a8e773061ff1c9caafc34a23e5af5fc7cb5848dac9",
+                ),
+                organ_adapter: None,
+                cell_adapter: None,
+                heads: Digest32(
+                    "5c0bc2423c1af18cd0172a4d1f84c01af25a3ee3c5ccd217e8e8a48924fe414e",
+                ),
+                composition: Digest32(
+                    "730d725c8a59d3a7303def2bed041a577edb4255aabd4889ce12918311d952f0",
+                ),
+                encoder: Digest32(
+                    "9ff94c3eb0c1d350b76101c553e6e70c1178b96fc7fd738182e39e2a3f1b9ebe",
+                ),
+                tokenizer: Digest32(
+                    "5f97e3774c51edd1d63706c2ec3826c564a067794770cdab0f8c4797971cacf9",
+                ),
+                normalizer: Digest32(
+                    "fbbb4f94f188a1e1297291eb895014ac5a70ecbfc792c2ee3fc881da1de488bd",
+                ),
+                calibration: Digest32(
+                    "e152337e4e85aa3e81482f0ce329aec7bfad531413fe53fef84f1f0d4165caee",
+                ),
+                numeric_profile: Digest32(
+                    "15f450a59134f37ab2bf2282e48351984b39a1a2c8da32f74883c57f8de06ed7",
+                ),
+                output_schema: Digest32(
+                    "e0ee8bb50685e05fa0f47ed04203ae953fdfd055f5bd2892ea186504254f8c3a",
+                ),
+                state_schema: Digest32(
+                    "4ba69735ca53765ed6a709edb56c6ea236b7193a3b29a6b390c346f0f4340e4e",
+                ),
+                state_semantics: Digest32(
+                    "904b1fdcdeee067da93713d79673fe7cd3884165842e6eb3fb1855b0f4a4d1a9",
+                ),
+            },
+            training_lineage: None,
+            rollback_predecessor: None,
+        },
+        envelope: IterationEnvelopeV1 {
+            envelope_id: StableId(
+                BoundedText(
+                    "window:lifetime",
+                ),
+            ),
+            base_commit: Digest32(
+                "9505cacb7c710ed17125fcc6cb3669e8ddca6c8cd8af6a31f6b3cd64604c3098",
+            ),
+            base_tree: Digest32(
+                "dc9c5edb8b2d479e697b4b0b8ab874f32b325138598ce9e7b759eb8292110622",
+            ),
+            objective_digest: Digest32(
+                "7d89a35d5f643251e9a5ac0f3e47fe29be5d90ba67eabcf3cb11b92bde24a8be",
+            ),
+            grammar_digest: Digest32(
+                "68d9876353ff3c08066bc53597ccd171772a58ab2a8f9c8c778a369dd6e3dc68",
+            ),
+            maximum_files: 1,
+            maximum_diff_bytes: 128,
+            maximum_candidates: 1,
+            maximum_parallel_sandboxes: 1,
+            expiry_unix_seconds: 90,
+        },
+        budget: LearningIterationBudgetV1 {
+            maximum_dataset_rows: 16,
+            maximum_dataset_bytes: 1024,
+            maximum_training_steps: 2,
+            maximum_training_milliseconds: 1000,
+            maximum_artifact_bytes: 128,
+        },
+    },
+    owners: LearningIterationOwnersV1 {
+        evidence_trust_digest: Digest32(
+            "ef2ba31143a10f70ea62a6b34f0271b145fb20485f321b5f1785c67b7e452619",
+        ),
+        experience: StableId(
+            BoundedText(
+                "plasticity-signer-1",
+            ),
+        ),
+        dataset: StableId(
+            BoundedText(
+                "plasticity-signer-1",
+            ),
+        ),
+        trainer: StableId(
+            BoundedText(
+                "plasticity-signer-0",
+            ),
+        ),
+        evaluator: StableId(
+            BoundedText(
+                "plasticity-signer-2",
+            ),
+        ),
+        proposal: StableId(
+            BoundedText(
+                "owner:anchored-proposal",
+            ),
+        ),
+        selector: StableId(
+            BoundedText(
+                "owner:external-selector",
+            ),
+        ),
+        next_use_observer: StableId(
+            BoundedText(
+                "plasticity-signer-1",
+            ),
+        ),
+    },
+    receipts: [
+        LearningIterationReceiptV1 {
+            operation_id: StableId(
+                BoundedText(
+                    "proposal:agentd-lifetime",
+                ),
+            ),
+            predecessor: Digest32(
+                "18e2c129bad05bda024e8b3198351b26b118ce10ec7fa0acbfce490a28b87219",
+            ),
+            actor_id: StableId(
+                BoundedText(
+                    "plasticity-signer-1",
+                ),
+            ),
+            evidence_digest: Digest32(
+                "39a83caec27336c7ff21006089f2abbefe78816d38228ff0810a208754c4539f",
+            ),
+            observed_unix_seconds: 50,
+            observation: Experience {
+                episode_digest: Digest32(
+                    "7adfaff5a853d477a6f70a69a843d9dd4713006e17387cf760356088a72e363c",
+                ),
+                completed_task_receipt: Digest32(
+                    "d3c3a41c341428c5932c4d58f2a5710fd92e12bf9d2c089e04c849e5cc39ebb7",
+                ),
+            },
+        },
+        LearningIterationReceiptV1 {
+            operation_id: StableId(
+                BoundedText(
+                    "proposal:agentd-lifetime",
+                ),
+            ),
+            predecessor: Digest32(
+                "f87b200144ae5efd28a253c4471ceb9329d8d11e0f46174f4b7de216eef7516a",
+            ),
+            actor_id: StableId(
+                BoundedText(
+                    "plasticity-signer-1",
+                ),
+            ),
+            evidence_digest: Digest32(
+                "47efab09d98e30454818a3843759dc208b0a0feaf8dddf16f1bed1d3e50fa6bb",
+            ),
+            observed_unix_seconds: 50,
+            observation: Dataset {
+                snapshot_digest: Digest32(
+                    "edfb572b8ede5fd296d6e316286a5d1eade23c35f68f10e796b0a672e14119d1",
+                ),
+                episode_digest: Digest32(
+                    "7adfaff5a853d477a6f70a69a843d9dd4713006e17387cf760356088a72e363c",
+                ),
+                withdrawal_frontier: Digest32(
+                    "b81bfa2c496fb85e6b2f50ce82998eae780c053c2816e24b9af0a41f300e8fdb",
+                ),
+                rows: 1,
+                bytes: 64,
+            },
+        },
+        LearningIterationReceiptV1 {
+            operation_id: StableId(
+                BoundedText(
+                    "proposal:agentd-lifetime",
+                ),
+            ),
+            predecessor: Digest32(
+                "96e6f61ca371d17e46e5ccd5b5bcc3102d5400d361f11dfc5405141a6b9e7203",
+            ),
+            actor_id: StableId(
+                BoundedText(
+                    "plasticity-signer-0",
+                ),
+            ),
+            evidence_digest: Digest32(
+                "6dc386941b3109e6a19aea866f6ece9861c9f0d4bfd647ca8c28b6fd70c32e96",
+            ),
+            observed_unix_seconds: 50,
+            observation: Training {
+                candidate: CellCompatibilityBundleV1 {
+                    artifact_id: StableId(
+                        BoundedText(
+                            "artifact:trained-test",
+                        ),
+                    ),
+                    generation: Generation(
+                        2,
+                    ),
+                    components: CellBundleComponentsV1 {
+                        base: Digest32(
+                            "3dfe8fe2e342730d497896a8e773061ff1c9caafc34a23e5af5fc7cb5848dac9",
+                        ),
+                        organ_adapter: None,
+                        cell_adapter: Some(
+                            Digest32(
+                                "185a8919643bb7493bf616a20cb908782fe15e7a7de635fd464ea3ed5bcf5298",
+                            ),
+                        ),
+                        heads: Digest32(
+                            "5c0bc2423c1af18cd0172a4d1f84c01af25a3ee3c5ccd217e8e8a48924fe414e",
+                        ),
+                        composition: Digest32(
+                            "730d725c8a59d3a7303def2bed041a577edb4255aabd4889ce12918311d952f0",
+                        ),
+                        encoder: Digest32(
+                            "9ff94c3eb0c1d350b76101c553e6e70c1178b96fc7fd738182e39e2a3f1b9ebe",
+                        ),
+                        tokenizer: Digest32(
+                            "5f97e3774c51edd1d63706c2ec3826c564a067794770cdab0f8c4797971cacf9",
+                        ),
+                        normalizer: Digest32(
+                            "fbbb4f94f188a1e1297291eb895014ac5a70ecbfc792c2ee3fc881da1de488bd",
+                        ),
+                        calibration: Digest32(
+                            "e152337e4e85aa3e81482f0ce329aec7bfad531413fe53fef84f1f0d4165caee",
+                        ),
+                        numeric_profile: Digest32(
+                            "15f450a59134f37ab2bf2282e48351984b39a1a2c8da32f74883c57f8de06ed7",
+                        ),
+                        output_schema: Digest32(
+                            "e0ee8bb50685e05fa0f47ed04203ae953fdfd055f5bd2892ea186504254f8c3a",
+                        ),
+                        state_schema: Digest32(
+                            "4ba69735ca53765ed6a709edb56c6ea236b7193a3b29a6b390c346f0f4340e4e",
+                        ),
+                        state_semantics: Digest32(
+                            "904b1fdcdeee067da93713d79673fe7cd3884165842e6eb3fb1855b0f4a4d1a9",
+                        ),
+                    },
+                    training_lineage: Some(
+                        CellTrainingLineageV1 {
+                            source_bundle: Digest32(
+                                "3ee339bfb19285002e4b275deb4104cf78bbfd58d272a5ac8bc77a67b327aa91",
+                            ),
+                            dataset: Digest32(
+                                "edfb572b8ede5fd296d6e316286a5d1eade23c35f68f10e796b0a672e14119d1",
+                            ),
+                            update_rule: Digest32(
+                                "aad9600cfb29640977dc1e28b94dbf8c59970cd1b92425505a8c2c5cdd1097a8",
+                            ),
+                            evaluation_profile: Digest32(
+                                "01d826619ee892638128bab3fae3bfbe6fe2a214d437385453491d3d910ff5e7",
+                            ),
+                        },
+                    ),
+                    rollback_predecessor: Some(
+                        Digest32(
+                            "3ee339bfb19285002e4b275deb4104cf78bbfd58d272a5ac8bc77a67b327aa91",
+                        ),
+                    ),
+                },
+                steps: 1,
+                milliseconds: 1,
+                artifact_bytes: 64,
+            },
+        },
+        LearningIterationReceiptV1 {
+            operation_id: StableId(
+                BoundedText(
+                    "proposal:agentd-lifetime",
+                ),
+            ),
+            predecessor: Digest32(
+                "36120f8189161739f33083a923731df669ee60055f6531901b93860c60a1073d",
+            ),
+            actor_id: StableId(
+                BoundedText(
+                    "plasticity-signer-2",
+                ),
+            ),
+            evidence_digest: Digest32(
+                "91f884efdcce1cead9f1392ee50636596a8d75ce890072c29df84a68fb058b54",
+            ),
+            observed_unix_seconds: 50,
+            observation: Evaluation {
+                candidate_bundle: Digest32(
+                    "ba6e08fa7ea22471f0d5f53aba196ac3883804e30607c25f66d253e1c7b3eb68",
+                ),
+                evaluation_profile: Digest32(
+                    "01d826619ee892638128bab3fae3bfbe6fe2a214d437385453491d3d910ff5e7",
+                ),
+                disposition: NoUpdate,
+            },
+        },
+    ],
+    head_digest: Digest32(
+        "aa34d288213a23e9a48753800f538cf3b3a86be110c0601ee43f2641d8370e87",
+    ),
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "hepta-native-environment-v1",
+  "observed_utc": "2026-11-07T13:58:38.072247+00:00",
+  "system": "Linux",
+  "machine": "x86_64",
+  "kernel": "7.0.0-38-generic",
+  "source_head": "bc76fc6c16821f9ad8d876f573f36fa8d80062ae",
+  "build_jobs": 2,
+  "compute_provider": "authorized HeptaRuntime desktop native CPU",
+  "commands": [
+    {
+      "argv": [
+        "rustc",
+        "--version",
+        "--verbose"
+      ],
+      "exit_code": 0,
+      "stdout": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "cargo 1.96.0 (30a34c682 2026-05-25)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "cargo-nextest 0.9.137 (75ddba7e9 2026-05-26)\nrelease: 0.9.137\ncommit-hash: 75ddba7e911b44c5c0700dac0415d824403de9bd\ncommit-date: 2026-05-26\nhost: x86_64-unknown-linux-gnu\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "just",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "just 1.51.0\n",
+      "stderr": ""
+    }
+  ],
+  "source_material": {
+    "AGENTS.md": {
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 417315,
+      "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c"
+    }
+  }
+}

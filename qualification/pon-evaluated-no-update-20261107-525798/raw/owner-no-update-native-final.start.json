@@ -1,0 +1,73 @@
+{
+  "helper_env_key": "CARGO_BIN_EXE_hepta_joint_propose",
+  "helper": {
+    "schema": "hepta-native-helper-build-v2",
+    "source": {
+      "head": "34060ab1d9544c67e20de4898ae4db112bee3067",
+      "tree": "9040b06fa0ed7c611d9ab4898ce9d2c227d3a933",
+      "status": ""
+    },
+    "argv": [
+      "cargo",
+      "build",
+      "--locked",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "--bin",
+      "hepta-joint-propose",
+      "--message-format=json"
+    ],
+    "started_utc": "2026-11-07T14:17:12.250152+00:00",
+    "build_jobs": "2",
+    "target_dir": "/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107-build",
+    "exit_code": 0,
+    "wall_seconds": 76.70702831586823,
+    "child_user_seconds": 83.197127,
+    "child_system_seconds": 6.1254040000000005,
+    "maximum_child_rss_kib": 2475940,
+    "source_after": {
+      "head": "34060ab1d9544c67e20de4898ae4db112bee3067",
+      "tree": "9040b06fa0ed7c611d9ab4898ce9d2c227d3a933",
+      "status": ""
+    },
+    "finished_utc": "2026-11-07T14:18:29.002059+00:00",
+    "source_integrity_pass": true,
+    "logs": {
+      "stdout": {
+        "bytes": 1095498,
+        "sha256": "c4a4fae28800213aa5cc2cf68fecfcc12486a384830bcd804569427028fda58c"
+      },
+      "stderr": {
+        "bytes": 343,
+        "sha256": "9094d2c54bdd1e4a19669dc2c3d57bf93df206575ace94d04235df117a7e275e"
+      }
+    },
+    "executable": "/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107-build/debug/hepta-joint-propose",
+    "executable_sha256": "63c46cd5945d191bf882884a218da576cf2dfdeeb10334894cb795f25fc1eff3"
+  },
+  "schema": "hepta-native-acceptance-invocation-v1",
+  "source": {
+    "head": "34060ab1d9544c67e20de4898ae4db112bee3067",
+    "tree": "9040b06fa0ed7c611d9ab4898ce9d2c227d3a933",
+    "status": "",
+    "sparse": ".github\ncodex-rs\ndocs\nqualification/neuron-v13-generation\nscripts\ntools"
+  },
+  "argv": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(neuron_generation) | test(learning_iteration)",
+    "--status-level",
+    "all",
+    "--final-status-level",
+    "all"
+  ],
+  "cwd": "/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107/codex-rs",
+  "build_jobs": "2",
+  "target_dir": "/home/qian-qi/workspace/pon-hepta-acceptance-525798-20261107-build",
+  "started_utc": "2026-11-07T14:18:29.318786+00:00",
+  "scope": "native owner tests; synthetic worker; no production or external-demand claim"
+}
