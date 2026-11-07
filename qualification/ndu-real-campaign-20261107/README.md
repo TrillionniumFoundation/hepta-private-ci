@@ -170,3 +170,24 @@ Fresh hosted checks are required on the published repair head. The old-head
 Rust/Clippy failures and 25 cargo-deny advisory errors remain open. Their affected
 Rust tree and dependency configuration are byte-identical to the PR base; they
 are not waived or represented as passing.
+
+## Complete root Prettier check
+
+The later repo-checks job on head d42eb9e passed Python formatting, then failed
+Prettier. The unchanged root lock selects Prettier 3.5.3. Its complete 134-target
+check was reproduced from verified Git blobs, with all 144 target/config files
+materialized. The patch removes two final blank lines from the existing workflow
+and formats 31 JavaScript files inherited byte-for-byte from the PR base.
+
+[PRETTIER_VALIDATION.json](PRETTIER_VALIDATION.json) records the full passing check,
+every before/after hash, semantic JavaScript AST equality, exact ordered comment
+values, and exact YAML scalar/structure equality. JavaScript lexical metadata is
+explicitly excluded from that comparison; raw AST equality is not claimed.
+No ignore, lock, privilege policy, test selection, or resource guard was changed.
+No additional local semantic tests were run for these mechanical changes.
+
+The prior d42eb9e PR's prospective merge 7e33710 passed the NDU job: 183 reference
+regressions plus 49 and 83 unittest executions. The latter two suites reported
+zero skips; the reference summary did not expose a skip count. This is engineering
+CI evidence for that exact prior candidate, not independent training or formal
+confirmation data. Final-head hosted results must be read separately.
