@@ -56,6 +56,11 @@ def policy_value_gradient(policy):
     def visit(state):
         entries = []
         for action, pi in policy(state).items():
+            # The forward certainty equivalent drops zero-mass branches. Use
+            # the same support here; saturated softmax probabilities are not
+            # replaced with a probability floor.
+            if pi == 0:
+                continue
             index = policy.actions.index(action)
             if action == "stop":
                 entries.append((pi, env.terminal_value(state), None, 0.0, index))
@@ -63,7 +68,10 @@ def policy_value_gradient(policy):
                 cost, duration = env.cost_duration(action)
                 discount = env.config.discount ** duration
                 for probability, successor in env.transitions(state, action):
-                    entries.append((pi * probability, -env.config.cost_weight * cost +
+                    joint_probability = pi * probability
+                    if joint_probability == 0:
+                        continue
+                    entries.append((joint_probability, -env.config.cost_weight * cost +
                                     discount * visit(successor), successor, discount, index))
         probabilities = np.array([entry[0] for entry in entries])
         returns = np.array([entry[1] for entry in entries])
@@ -71,8 +79,13 @@ def policy_value_gradient(policy):
         if env.config.risk == 0:
             tilted = probabilities
         else:
-            unnormalized = probabilities * np.exp(-env.config.risk * (returns - returns.min()))
-            tilted = unnormalized / unnormalized.sum()
+            # Log normalization keeps rare supported branches representable
+            # until the relative weights are formed. A zero-mass low return
+            # must never supply the exponential shift.
+            log_weights = np.log(probabilities) - env.config.risk * (returns - returns.min())
+            log_weights -= log_weights.max()
+            tilted = np.exp(log_weights)
+            tilted /= tilted.sum()
         rows[state] = (entries, tilted, value)
         return value
 
@@ -101,8 +114,10 @@ def policy_value_gradient(policy):
             mean_delta = sum(e[0] * d for e, d in zip(entries, deltas))
             for action, pi in pis.items():
                 index = policy.actions.index(action)
-                conditional_delta = sum(e[0] / pi * d for e, d in zip(entries, deltas) if e[4] == index)
-                gradient[policy.rows[state], index] += multiplier * pi * (mean_delta - conditional_delta) / (env.config.risk * (1 + mean_delta))
+                action_delta_mass = sum(e[0] * d for e, d in zip(entries, deltas) if e[4] == index)
+                # Algebraically cancel division by pi before evaluating; pi
+                # can be exactly zero after softmax underflow.
+                gradient[policy.rows[state], index] += multiplier * (pi * mean_delta - action_delta_mass) / (env.config.risk * (1 + mean_delta))
         else:
             # dlog softmax(a)/dz_b = 1[a=b] - pi(b).
             total = coefficients.sum()
