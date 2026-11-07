@@ -1,0 +1,122 @@
+name: Official Ubuntu Bubblewrap profile mechanism
+
+on:
+  pull_request:
+    branches: [research/ndu-bwrap-profile-checks-20261106]
+    paths:
+      - .github/scripts/hepta_bwrap_profile_contract.py
+      - .github/scripts/apparmor-profiles_4.0.1really4.0.1-0ubuntu0.24.04.9_all.deb
+      - .github/scripts/hepta-bwrap-profile-dependencies.json
+      - .github/scripts/hepta_bwrap_profile_checks.py
+      - .github/scripts/hepta_bwrap_profile.py
+      - .github/scripts/hepta_bwrap_profile_evidence.py
+      - .github/workflows/hepta-bwrap-profile-probe.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  bwrap-profile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out the exact diagnostic proposal
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+          fetch-depth: 4
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.10"
+
+      - name: Bind the unchanged parent source and native host
+        id: preflight
+        env:
+          PROBE_RUNNER_CLASS: ${{ runner.environment }}
+          PROBE_RUNNER_OS: ${{ runner.os }}
+          PROBE_RUNNER_ARCH: ${{ runner.arch }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python -B .github/scripts/hepta_bwrap_profile.py preflight
+
+      - name: Install the original Linux sandbox prerequisites
+        id: prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v apt-get >/dev/null 2>&1; then
+            sudo apt-get update -y
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev bubblewrap
+          fi
+          command -v bwrap
+          bwrap --version
+          pkg-config --modversion libcap
+          dpkg-query -W -f='${binary:Package}\t${Version}\n' build-essential pkg-config libcap-dev bubblewrap
+
+      - name: Check the original scanner after setup
+        id: ready
+        env:
+          PROBE_RUNNER_CLASS: ${{ runner.environment }}
+          PROBE_RUNNER_OS: ${{ runner.os }}
+          PROBE_RUNNER_ARCH: ${{ runner.arch }}
+          PROBE_PRIVATE_DIR: ${{ steps.preflight.outputs.private_dir }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python -B .github/scripts/hepta_bwrap_profile.py ready
+
+      - name: Verify official profile setup between two fixed namespace probes
+        id: probe
+        env:
+          PROBE_RUNNER_CLASS: ${{ runner.environment }}
+          PROBE_RUNNER_OS: ${{ runner.os }}
+          PROBE_RUNNER_ARCH: ${{ runner.arch }}
+          PROBE_PRIVATE_DIR: ${{ steps.preflight.outputs.private_dir }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python -B .github/scripts/hepta_bwrap_profile.py probe
+
+      - name: Gate the exact captured originals with the unchanged scanner
+        id: collect
+        if: always() && steps.preflight.outcome == 'success'
+        env:
+          PROBE_RUNNER_CLASS: ${{ runner.environment }}
+          PROBE_RUNNER_OS: ${{ runner.os }}
+          PROBE_RUNNER_ARCH: ${{ runner.arch }}
+          PROBE_PRIVATE_DIR: ${{ steps.preflight.outputs.private_dir }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python -B .github/scripts/hepta_bwrap_profile.py collect
+
+      - name: Upload only original bytes accepted by the scanner
+        id: upload
+        if: always() && steps.collect.outcome == 'success' && steps.collect.outputs.safe_for_upload == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: bwrap-profile-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.collect.outputs.public_dir }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Require complete mechanism evidence, without qualifying Core
+        if: always()
+        env:
+          PREFLIGHT_RESULT: ${{ steps.preflight.outcome }}
+          PREREQUISITES_RESULT: ${{ steps.prerequisites.outcome }}
+          READINESS_RESULT: ${{ steps.ready.outcome }}
+          PROBE_RESULT: ${{ steps.probe.outcome }}
+          COLLECTION_RESULT: ${{ steps.collect.outcome }}
+          UPLOAD_RESULT: ${{ steps.upload.outcome }}
+          EVIDENCE_RESULT: ${{ steps.collect.outputs.mechanism_evidence_complete }}
+        run: |
+          test "$PREFLIGHT_RESULT" = success
+          test "$PREREQUISITES_RESULT" = success
+          test "$READINESS_RESULT" = success
+          test "$PROBE_RESULT" = success
+          test "$COLLECTION_RESULT" = success
+          test "$UPLOAD_RESULT" = success
+          test "$EVIDENCE_RESULT" = true
