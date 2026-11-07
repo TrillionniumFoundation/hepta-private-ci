@@ -52,6 +52,23 @@ impl Fixture {
         evaluator_controller_collision_with: Option<usize>,
         publication_namespace: Digest32,
     ) -> Self {
+        let fixture = Self::with_minimum_improvement(
+            evaluator_controller_collision_with,
+            publication_namespace,
+            FixedQ32::ZERO,
+        );
+        assert_eq!(
+            fixture.qualification.decision.decision.disposition,
+            IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+        );
+        fixture
+    }
+
+    fn with_minimum_improvement(
+        evaluator_controller_collision_with: Option<usize>,
+        publication_namespace: Digest32,
+        minimum_improvement: FixedQ32,
+    ) -> Self {
         let keys = [
             SigningKey::from_bytes(&[11; 32]),
             SigningKey::from_bytes(&[22; 32]),
@@ -168,7 +185,7 @@ impl Fixture {
         let roles = vec![MetricRoleContractV2 {
             metric_id: id("plasticity-metric"),
             role: MetricRoleV2::PrimarySuperiority {
-                minimum_improvement: FixedQ32::ZERO,
+                minimum_improvement,
             },
         }];
         let (runner, temporal) = qualification_support::evaluate(
@@ -259,10 +276,6 @@ impl Fixture {
                 &mut qualification_support::Sink(publication_namespace),
             )
             .expect("sealed qualification");
-        assert_eq!(
-            qualification.decision.decision.disposition,
-            IndependentEvaluationDispositionV1::EligibleForIndependentSelection
-        );
         Self {
             keys,
             principals,
@@ -384,6 +397,9 @@ impl Fixture {
         }
     }
 }
+
+#[path = "learning_decision_tests.rs"]
+mod learning_decision_tests;
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 struct AnchorCommitter {
