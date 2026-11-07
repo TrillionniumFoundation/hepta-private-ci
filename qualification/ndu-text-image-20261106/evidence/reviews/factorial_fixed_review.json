@@ -1,0 +1,96 @@
+{
+  "probes": {
+    "3600_seconds_claimed_as_one": {
+      "budget_violations": [
+        {
+          "limit": 10,
+          "metric": "timestamp_span_seconds",
+          "observed": 3600.0,
+          "run_id": "test/retention/19/29/joint/mpc",
+          "scope": "episode"
+        }
+      ],
+      "conditional_gates": {
+        "frozen_control": "HOLD",
+        "hepta_increment": "HOLD",
+        "joint_training": "HOLD"
+      },
+      "cost_total": 2304.0,
+      "episodes": 2560,
+      "integrity_violations": [
+        {
+          "absolute_difference_seconds": 3599.0,
+          "code": "latency_timestamp_mismatch",
+          "declared_latency_seconds": 1.0,
+          "kind": "timing",
+          "run_id": "test/retention/19/29/joint/mpc",
+          "scope": "episode",
+          "timestamp_span_seconds": 3600.0,
+          "tolerance_seconds": 0.001
+        }
+      ],
+      "scientific_gates": {
+        "frozen_control": "HOLD",
+        "hepta_increment": "HOLD",
+        "joint_training": "HOLD"
+      }
+    },
+    "over_budget_failed_episode": {
+      "attempts": 2560,
+      "conditional_gates": {
+        "frozen_control": "HOLD",
+        "hepta_increment": "HOLD",
+        "joint_training": "HOLD"
+      },
+      "cost_total": 2404.9,
+      "episodes": 2560,
+      "failed_episodes": 1,
+      "scientific_gates": {
+        "frozen_control": "HOLD",
+        "hepta_increment": "HOLD",
+        "joint_training": "HOLD"
+      },
+      "violations": [
+        {
+          "limit": 100,
+          "metric": "episode_cost",
+          "observed": 101.80000000000001,
+          "observed_is_lower_bound": false,
+          "run_id": "test/retention/19/29/joint/mpc",
+          "scope": "episode"
+        }
+      ]
+    },
+    "self_reported_real": {
+      "conditional_gates": {
+        "frozen_control": "NOT_ESTABLISHED",
+        "hepta_increment": "PASS",
+        "joint_training": "PASS"
+      },
+      "native_receipt_verification": {
+        "reason": "A self-reported real flag and matching JSON hashes do not verify native evidence.",
+        "required_for_scientific_admission": true,
+        "status": "NOT_IMPLEMENTED",
+        "verified": false
+      },
+      "scientific_gates": {
+        "frozen_control": "HOLD",
+        "hepta_increment": "HOLD",
+        "joint_training": "HOLD"
+      }
+    }
+  },
+  "real_model_executions": 0,
+  "research_training_started": false,
+  "schema": "hepta.factorial.independent-correction-review.v1",
+  "source_sha256_after": "740169ab85c62eed3fafd6eb562f7f21358a1bae146cbddf3b5a4b38362404cc",
+  "source_sha256_before": "740169ab85c62eed3fafd6eb562f7f21358a1bae146cbddf3b5a4b38362404cc",
+  "source_unchanged": true,
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 35,
+    "skipped": 0
+  },
+  "wall_seconds_including_probes": 6.051096079998388
+}

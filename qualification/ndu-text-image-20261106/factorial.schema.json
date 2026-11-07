@@ -1,0 +1,1002 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NDU factorial evidence v1",
+  "description": "Select #/$defs/protocol, #/$defs/episodes, or #/$defs/comparatorLock. Runtime checks cross-document constraints. Synthetic examples never establish efficacy.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/protocol"
+    },
+    {
+      "$ref": "#/$defs/episodes"
+    },
+    {
+      "$ref": "#/$defs/comparatorLock"
+    }
+  ],
+  "$defs": {
+    "task": {
+      "type": "object",
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "split": {
+          "enum": [
+            "train",
+            "validation",
+            "test"
+          ]
+        },
+        "cohort": {
+          "enum": [
+            "new",
+            "retention"
+          ]
+        },
+        "cluster_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_group": {
+          "type": "string",
+          "minLength": 1
+        },
+        "family": {
+          "enum": [
+            "text_sufficient",
+            "complementary",
+            "asymmetric",
+            "prepare_then_gain",
+            "stop_worthwhile"
+          ]
+        }
+      },
+      "required": [
+        "task_id",
+        "split",
+        "cohort",
+        "cluster_id",
+        "source_group",
+        "family"
+      ],
+      "additionalProperties": true
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "train_compute": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "train_examples": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "search_trials": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "episode_cost": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "wall_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "peak_bytes": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "train_compute",
+        "train_examples",
+        "search_trials",
+        "episode_cost",
+        "wall_seconds",
+        "peak_bytes"
+      ],
+      "additionalProperties": true
+    },
+    "trainingActual": {
+      "type": "object",
+      "properties": {
+        "train_compute": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "train_examples": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "search_trials": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "train_compute",
+        "train_examples",
+        "search_trials"
+      ],
+      "additionalProperties": true
+    },
+    "costs": {
+      "type": "object",
+      "properties": {
+        "encoder": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "shared": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "decoder": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "critic": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "planning": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "codec": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "failure": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "retry": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "sync": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "encoder",
+        "shared",
+        "decoder",
+        "critic",
+        "planning",
+        "codec",
+        "failure",
+        "retry",
+        "sync"
+      ],
+      "additionalProperties": false
+    },
+    "researchCosts": {
+      "type": "object",
+      "properties": {
+        "training": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "search": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "evaluation": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "training",
+        "search",
+        "evaluation"
+      ],
+      "additionalProperties": false
+    },
+    "profile": {
+      "type": "object",
+      "properties": {
+        "data_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "initial_content_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "model_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "policy_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "objective_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "risk_profile_id": {
+          "enum": [
+            "nested-entropic-portfolio-v1",
+            "population-entropic-v3"
+          ]
+        },
+        "deployable": {
+          "const": true
+        },
+        "active_parameters": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "core": {
+          "enum": [
+            "ordinary",
+            "hepta"
+          ]
+        },
+        "controller": {
+          "enum": [
+            "light",
+            "ndu",
+            "initial",
+            "tuned_fixed",
+            "voi",
+            "mpc"
+          ]
+        },
+        "budget": {
+          "$ref": "#/$defs/budget"
+        },
+        "training_actual": {
+          "$ref": "#/$defs/trainingActual"
+        },
+        "research_costs": {
+          "$ref": "#/$defs/researchCosts"
+        }
+      },
+      "required": [
+        "data_digest",
+        "initial_content_digest",
+        "model_digest",
+        "policy_digest",
+        "objective_digest",
+        "risk_profile_id",
+        "deployable",
+        "active_parameters",
+        "core",
+        "controller",
+        "budget",
+        "training_actual",
+        "research_costs"
+      ],
+      "additionalProperties": true
+    },
+    "profiles": {
+      "type": "object",
+      "properties": {
+        "frozen:A": {
+          "$ref": "#/$defs/profile"
+        },
+        "frozen:B": {
+          "$ref": "#/$defs/profile"
+        },
+        "frozen:C": {
+          "$ref": "#/$defs/profile"
+        },
+        "frozen:D": {
+          "$ref": "#/$defs/profile"
+        },
+        "frozen:initial": {
+          "$ref": "#/$defs/profile"
+        },
+        "frozen:tuned_fixed": {
+          "$ref": "#/$defs/profile"
+        },
+        "frozen:voi": {
+          "$ref": "#/$defs/profile"
+        },
+        "frozen:mpc": {
+          "$ref": "#/$defs/profile"
+        },
+        "joint:A": {
+          "$ref": "#/$defs/profile"
+        },
+        "joint:B": {
+          "$ref": "#/$defs/profile"
+        },
+        "joint:C": {
+          "$ref": "#/$defs/profile"
+        },
+        "joint:D": {
+          "$ref": "#/$defs/profile"
+        },
+        "joint:initial": {
+          "$ref": "#/$defs/profile"
+        },
+        "joint:tuned_fixed": {
+          "$ref": "#/$defs/profile"
+        },
+        "joint:voi": {
+          "$ref": "#/$defs/profile"
+        },
+        "joint:mpc": {
+          "$ref": "#/$defs/profile"
+        }
+      },
+      "required": [
+        "frozen:A",
+        "frozen:B",
+        "frozen:C",
+        "frozen:D",
+        "frozen:initial",
+        "frozen:tuned_fixed",
+        "frozen:voi",
+        "frozen:mpc",
+        "joint:A",
+        "joint:B",
+        "joint:C",
+        "joint:D",
+        "joint:initial",
+        "joint:tuned_fixed",
+        "joint:voi",
+        "joint:mpc"
+      ],
+      "additionalProperties": false
+    },
+    "protocol": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "ndu-factorial-v1"
+        },
+        "evidence_kind": {
+          "enum": [
+            "real",
+            "synthetic"
+          ]
+        },
+        "registered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "weighting": {
+          "const": "equal_cluster"
+        },
+        "risk_profile_id": {
+          "enum": [
+            "nested-entropic-portfolio-v1",
+            "population-entropic-v3"
+          ]
+        },
+        "dataset_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "objective_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "evaluator_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "measurement_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "cost_unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cost_weight": {
+          "type": "number",
+          "minimum": 0
+        },
+        "net_margin": {
+          "type": "number",
+          "minimum": 0
+        },
+        "retention_margin": {
+          "type": "number",
+          "minimum": 0
+        },
+        "alpha": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 0.5
+        },
+        "min_clusters": {
+          "type": "integer",
+          "minimum": 20
+        },
+        "bootstrap_samples": {
+          "type": "integer",
+          "minimum": 10000
+        },
+        "bootstrap_seed": {
+          "type": "integer"
+        },
+        "failure_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "seeds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer"
+          }
+        },
+        "deployment_counts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "arms": {
+          "const": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "initial",
+            "tuned_fixed",
+            "voi",
+            "mpc"
+          ]
+        },
+        "tasks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/task"
+          }
+        },
+        "profiles": {
+          "$ref": "#/$defs/profiles"
+        }
+      },
+      "required": [
+        "schema",
+        "evidence_kind",
+        "registered_at",
+        "weighting",
+        "risk_profile_id",
+        "dataset_digest",
+        "objective_digest",
+        "evaluator_digest",
+        "measurement_digest",
+        "cost_unit",
+        "cost_weight",
+        "net_margin",
+        "retention_margin",
+        "alpha",
+        "min_clusters",
+        "bootstrap_samples",
+        "bootstrap_seed",
+        "failure_score",
+        "seeds",
+        "deployment_counts",
+        "arms",
+        "tasks",
+        "profiles"
+      ],
+      "additionalProperties": true
+    },
+    "episode": {
+      "type": "object",
+      "properties": {
+        "row_type": {
+          "const": "episode_terminal"
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "split": {
+          "enum": [
+            "validation",
+            "test"
+          ]
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "regime": {
+          "enum": [
+            "frozen",
+            "joint"
+          ]
+        },
+        "arm": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "initial",
+            "tuned_fixed",
+            "voi",
+            "mpc"
+          ]
+        },
+        "cluster_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "success",
+            "failed",
+            "unresolved"
+          ]
+        },
+        "external_score": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "attempt_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "failed_attempts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "costs": {
+          "$ref": "#/$defs/costs"
+        },
+        "latency_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "peak_bytes": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "finished_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "model_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "policy_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "evaluator_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "measurement_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "objective_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "output_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "risk_profile_id": {
+          "enum": [
+            "nested-entropic-portfolio-v1",
+            "population-entropic-v3"
+          ]
+        }
+      },
+      "required": [
+        "row_type",
+        "run_id",
+        "task_id",
+        "split",
+        "seed",
+        "regime",
+        "arm",
+        "cluster_id",
+        "status",
+        "external_score",
+        "attempt_ids",
+        "failed_attempts",
+        "costs",
+        "latency_seconds",
+        "peak_bytes",
+        "started_at",
+        "finished_at",
+        "model_digest",
+        "policy_digest",
+        "evaluator_digest",
+        "measurement_digest",
+        "objective_digest",
+        "output_digest",
+        "risk_profile_id"
+      ],
+      "additionalProperties": true
+    },
+    "episodes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/episode"
+      }
+    },
+    "comparatorLock": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "ndu-comparator-lock-v1"
+        },
+        "protocol_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "validation_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "locked_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "choices": {
+          "type": "object",
+          "properties": {
+            "frozen": {
+              "type": "object",
+              "properties": {
+                "ordinary": {
+                  "enum": [
+                    "A",
+                    "initial",
+                    "tuned_fixed",
+                    "voi",
+                    "mpc"
+                  ]
+                },
+                "complete": {
+                  "enum": [
+                    "A",
+                    "B",
+                    "C",
+                    "initial",
+                    "tuned_fixed",
+                    "voi",
+                    "mpc"
+                  ]
+                }
+              },
+              "required": [
+                "ordinary",
+                "complete"
+              ],
+              "additionalProperties": true
+            },
+            "joint": {
+              "type": "object",
+              "properties": {
+                "ordinary": {
+                  "enum": [
+                    "A",
+                    "initial",
+                    "tuned_fixed",
+                    "voi",
+                    "mpc"
+                  ]
+                },
+                "complete": {
+                  "enum": [
+                    "A",
+                    "B",
+                    "C",
+                    "initial",
+                    "tuned_fixed",
+                    "voi",
+                    "mpc"
+                  ]
+                }
+              },
+              "required": [
+                "ordinary",
+                "complete"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "frozen",
+            "joint"
+          ],
+          "additionalProperties": true
+        },
+        "validation_net_scores": {
+          "type": "object",
+          "properties": {
+            "frozen": {
+              "type": "object",
+              "properties": {
+                "A": {
+                  "type": "number"
+                },
+                "B": {
+                  "type": "number"
+                },
+                "C": {
+                  "type": "number"
+                },
+                "initial": {
+                  "type": "number"
+                },
+                "tuned_fixed": {
+                  "type": "number"
+                },
+                "voi": {
+                  "type": "number"
+                },
+                "mpc": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "A",
+                "B",
+                "C",
+                "initial",
+                "tuned_fixed",
+                "voi",
+                "mpc"
+              ],
+              "additionalProperties": true
+            },
+            "joint": {
+              "type": "object",
+              "properties": {
+                "A": {
+                  "type": "number"
+                },
+                "B": {
+                  "type": "number"
+                },
+                "C": {
+                  "type": "number"
+                },
+                "initial": {
+                  "type": "number"
+                },
+                "tuned_fixed": {
+                  "type": "number"
+                },
+                "voi": {
+                  "type": "number"
+                },
+                "mpc": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "A",
+                "B",
+                "C",
+                "initial",
+                "tuned_fixed",
+                "voi",
+                "mpc"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "frozen",
+            "joint"
+          ],
+          "additionalProperties": true
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "pre_evaluation_receipts": {
+          "type": "object",
+          "properties": {
+            "frozen:A": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "frozen:B": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "frozen:C": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "frozen:D": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "frozen:initial": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "frozen:tuned_fixed": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "frozen:voi": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "frozen:mpc": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "joint:A": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "joint:B": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "joint:C": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "joint:D": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "joint:initial": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "joint:tuned_fixed": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "joint:voi": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            },
+            "joint:mpc": {
+              "$ref": "#/$defs/preEvaluationReceipt"
+            }
+          },
+          "required": [
+            "frozen:A",
+            "frozen:B",
+            "frozen:C",
+            "frozen:D",
+            "frozen:initial",
+            "frozen:tuned_fixed",
+            "frozen:voi",
+            "frozen:mpc",
+            "joint:A",
+            "joint:B",
+            "joint:C",
+            "joint:D",
+            "joint:initial",
+            "joint:tuned_fixed",
+            "joint:voi",
+            "joint:mpc"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema",
+        "protocol_digest",
+        "validation_digest",
+        "locked_at",
+        "choices",
+        "validation_net_scores",
+        "digest",
+        "pre_evaluation_receipts"
+      ],
+      "additionalProperties": true
+    },
+    "preEvaluationReceipt": {
+      "type": "object",
+      "properties": {
+        "training_actual": {
+          "$ref": "#/$defs/trainingActual"
+        },
+        "research_costs": {
+          "type": "object",
+          "properties": {
+            "training": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "search": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            }
+          },
+          "required": [
+            "training",
+            "search"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "training_actual",
+        "research_costs"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

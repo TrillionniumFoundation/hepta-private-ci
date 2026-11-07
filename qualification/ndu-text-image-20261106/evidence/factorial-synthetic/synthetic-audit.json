@@ -1,0 +1,1956 @@
+{
+  "D_minus_strongest_amortized_at_deployments": {
+    "frozen": {
+      "100": 0.1,
+      "1000": 0.1,
+      "10000": 0.1
+    },
+    "joint": {
+      "100": 0.18999999999999995,
+      "1000": 0.18999999999999995,
+      "10000": 0.18999999999999995
+    }
+  },
+  "D_minus_strongest_amortized_ci_at_deployments": {
+    "frozen": {
+      "100": [
+        0.1,
+        0.1
+      ],
+      "1000": [
+        0.1,
+        0.1
+      ],
+      "10000": [
+        0.1,
+        0.1
+      ]
+    },
+    "joint": {
+      "100": [
+        0.18999999999999995,
+        0.18999999999999995
+      ],
+      "1000": [
+        0.18999999999999995,
+        0.18999999999999995
+      ],
+      "10000": [
+        0.18999999999999995,
+        0.18999999999999995
+      ]
+    }
+  },
+  "adoption_authorized": false,
+  "budget_violations": [],
+  "comparators": {
+    "frozen": {
+      "complete": "mpc",
+      "ordinary": "mpc"
+    },
+    "joint": {
+      "complete": "mpc",
+      "ordinary": "mpc"
+    }
+  },
+  "conditional_gates_on_verified_receipts": {
+    "frozen_control": "HOLD",
+    "hepta_increment": "HOLD",
+    "joint_training": "HOLD"
+  },
+  "contrasts": {
+    "frozen:B-A": {
+      "ci": [
+        0.1,
+        0.1
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.1,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "frozen:B-strongest": {
+      "ci": [
+        -0.1,
+        -0.1
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": -0.1,
+      "gate": "HOLD",
+      "statistical_gate": "NOT_ESTABLISHED",
+      "threshold": 0.01
+    },
+    "frozen:D-B": {
+      "ci": [
+        0.2,
+        0.2
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.2,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "frozen:D-C": {
+      "ci": [
+        0.24999999999999994,
+        0.24999999999999994
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.24999999999999994,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "frozen:D-strongest": {
+      "ci": [
+        0.1,
+        0.1
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.1,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "frozen:interaction": {
+      "ci": [
+        0.14999999999999997,
+        0.14999999999999997
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.14999999999999997,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "joint-frozen:A": {
+      "ci": [
+        0.010000000000000009,
+        0.010000000000000009
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.010000000000000009,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "joint-frozen:B": {
+      "ci": [
+        0.010000000000000009,
+        0.010000000000000009
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.010000000000000009,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "joint-frozen:C": {
+      "ci": [
+        0.010000000000000009,
+        0.010000000000000009
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.010000000000000009,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "joint-frozen:D": {
+      "ci": [
+        0.1,
+        0.1
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.1,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "joint:B-A": {
+      "ci": [
+        0.1,
+        0.1
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.1,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "joint:B-strongest": {
+      "ci": [
+        -0.1,
+        -0.1
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": -0.1,
+      "gate": "HOLD",
+      "statistical_gate": "NOT_ESTABLISHED",
+      "threshold": 0.01
+    },
+    "joint:D-B": {
+      "ci": [
+        0.2899999999999999,
+        0.2899999999999999
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.2899999999999999,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "joint:D-C": {
+      "ci": [
+        0.3399999999999999,
+        0.3399999999999999
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.3399999999999999,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "joint:D-strongest": {
+      "ci": [
+        0.18999999999999995,
+        0.18999999999999995
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.18999999999999995,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "joint:interaction": {
+      "ci": [
+        0.24,
+        0.24
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.24,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": 0.01
+    },
+    "retention:A": {
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.0,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": -0.02
+    },
+    "retention:B": {
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.0,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": -0.02
+    },
+    "retention:C": {
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.0,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": -0.02
+    },
+    "retention:D": {
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "clusters": 20,
+      "conditional_gate_on_verified_receipts": "HOLD",
+      "estimate": 0.0,
+      "gate": "HOLD",
+      "statistical_gate": "PASS",
+      "threshold": -0.02
+    }
+  },
+  "episode_count": 2560,
+  "episodes_digest": "e675f90d5d903affe7fd60223c6d219add565af83590715165d07c7e87458fe6",
+  "evidence_kind": "synthetic",
+  "failed_attempts": 0,
+  "failed_episodes": 0,
+  "inference_cost_ledger": {
+    "all_observed_episodes": {
+      "attempts": 2560,
+      "components": {
+        "codec": {
+          "total": 256.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 256.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 256.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 256.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 256.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 256.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 256.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 256.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 256.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 2560,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 2304.0
+    },
+    "test:frozen:A": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:frozen:B": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:frozen:C": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:frozen:D": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:frozen:initial": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:frozen:mpc": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:frozen:tuned_fixed": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:frozen:voi": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:joint:A": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:joint:B": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:joint:C": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:joint:D": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:joint:initial": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:joint:mpc": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:joint:tuned_fixed": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "test:joint:voi": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:frozen:A": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:frozen:B": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:frozen:C": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:frozen:D": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:frozen:initial": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:frozen:mpc": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:frozen:tuned_fixed": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:frozen:voi": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:joint:A": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:joint:B": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:joint:C": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:joint:D": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:joint:initial": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:joint:mpc": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:joint:tuned_fixed": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    },
+    "validation:joint:voi": {
+      "attempts": 80,
+      "components": {
+        "codec": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "critic": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "decoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "encoder": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "failure": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "planning": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "retry": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "shared": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        },
+        "sync": {
+          "total": 8.0,
+          "unknown_episodes": 0
+        }
+      },
+      "episodes": 80,
+      "failed_attempts": 0,
+      "failed_episodes": 0,
+      "total": 72.0
+    }
+  },
+  "integrity_violations": [],
+  "matrix_complete": true,
+  "multiplicity": {
+    "alpha": 0.05,
+    "family_size": 20,
+    "method": "Bonferroni cluster percentile bootstrap",
+    "tail": 0.00125
+  },
+  "native_receipt_verification": {
+    "reason": "A self-reported real flag and matching JSON hashes do not verify native evidence.",
+    "required_for_scientific_admission": true,
+    "status": "NOT_IMPLEMENTED",
+    "verified": false
+  },
+  "observed_protocol_digest": "38bc73914313a9bbe23f04cf61fb67f1757c6c8ea2c66486edef61be102d90d6",
+  "protocol_digest": "d2b06f53dc7abc26a2d238a1db0e3a0889639a5a29f144b4e210b1133126d28a",
+  "research_costs": {
+    "frozen:A": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "frozen:B": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "frozen:C": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "frozen:D": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "frozen:initial": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "frozen:mpc": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "frozen:tuned_fixed": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "frozen:voi": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "joint:A": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "joint:B": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "joint:C": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "joint:D": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "joint:initial": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "joint:mpc": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "joint:tuned_fixed": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    },
+    "joint:voi": {
+      "components": {
+        "evaluation": 10,
+        "search": 30,
+        "training": 80
+      },
+      "total": 120
+    }
+  },
+  "schema": "ndu-factorial-audit-v1",
+  "scientific_gates": {
+    "frozen_control": "HOLD",
+    "hepta_increment": "HOLD",
+    "joint_training": "HOLD"
+  },
+  "scope": "Receipt structure and arithmetic only; independent provenance/authenticity and native-owner verification remain caller obligations.",
+  "selection_digest": "f1d0ec3ff417ca8ce7911e1aaa54588fe168a7310f4bcb2aeeee278d8daee788",
+  "study_research_total": 1920,
+  "timing_check": {
+    "absolute_tolerance_seconds": 0.001,
+    "relative_tolerance": 0,
+    "scope": "end-to-end episode including failures, retries and synchronization"
+  },
+  "unknowns": []
+}

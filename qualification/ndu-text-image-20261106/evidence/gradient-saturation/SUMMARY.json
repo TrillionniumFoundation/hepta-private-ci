@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.ndu-portfolio.gradient-saturation-fix.v1",
+  "baseline_commit": "0ea61fb707fbcc399ea2318238652efe411c6535",
+  "result": "PASS_SCOPED_NUMERICAL_REGRESSION",
+  "fixed_bugs": [
+    "small-positive-risk division by zero for an underflowed softmax action",
+    "nonfinite risk-tilted derivative when a zero-mass return supplies the exponential shift"
+  ],
+  "source_before": {
+    "__init__.py": "497c712d16f89190f41c7807e8af92bf273afcc3e33250053214bff8251f6e4f",
+    "core.py": "606824c95a8226d2345e88eebaf799a530a3fbc933fd8ed757b4961b7975b570",
+    "gradients.py": "0ece13964f4dbb57c0d60e22fdb11683ed8530b23c5d17cfd68068098d612e29",
+    "test_core.py": "1db02427d4a893e9a96c0110de7b672f4df1c4ec36d01d68c4bce76018b98f4c",
+    "test_gradient_saturation.py": "3cd0407d0c2fa0d0351a1b2bc536b967875c5095247e65d36c151ecb34867496"
+  },
+  "source_after": {
+    "__init__.py": "497c712d16f89190f41c7807e8af92bf273afcc3e33250053214bff8251f6e4f",
+    "core.py": "606824c95a8226d2345e88eebaf799a530a3fbc933fd8ed757b4961b7975b570",
+    "gradients.py": "58133b8bce17b95bbcb560baf140f546989514001098b2a940b2fc3029879736",
+    "test_core.py": "1db02427d4a893e9a96c0110de7b672f4df1c4ec36d01d68c4bce76018b98f4c",
+    "test_gradient_saturation.py": "3cd0407d0c2fa0d0351a1b2bc536b967875c5095247e65d36c151ecb34867496"
+  },
+  "same_test_bytes_before_and_after": true,
+  "before": {
+    "exit_code": 1,
+    "test_methods": 16,
+    "error_subtests": 4,
+    "original_core_tests_passed": 11,
+    "receipt": "failed-before/receipt.json",
+    "log": "failed-before/stderr.log"
+  },
+  "after": {
+    "exit_code": 0,
+    "test_methods_passed": 16,
+    "error_subtests": 0,
+    "original_core_tests_passed": 11,
+    "new_saturation_tests_passed": 5,
+    "receipt": "passed-after/receipt.json",
+    "log": "passed-after/stderr.log"
+  },
+  "implementation": "Use positive joint support for the value and derivative, normalize risk weights in log space, and cancel pi division algebraically in the small-risk derivative.",
+  "probability_floor_added": false,
+  "core_py_modified": false,
+  "formal_training_started": false,
+  "scope": "Finite-control numerical behavior only. Does not qualify real multimodal content, NDU net benefit, Hepta independent contribution, production use, or whole-repository CI."
+}

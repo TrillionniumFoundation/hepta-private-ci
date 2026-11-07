@@ -1,0 +1,60 @@
+{
+  "schema": "ndu-text-image-verification-v1",
+  "scientific_status": "NO_GO_FOR_LARGE_SCALE_TRAINING",
+  "local": {
+    "status": "PASS_CONTRACTS_TORCH_NOT_EXECUTED",
+    "tests_run": 139,
+    "failures": 0,
+    "errors": 0,
+    "skipped": [
+      {
+        "reason": "Torch unavailable; autograd execution remains unqualified",
+        "test": "ndu_semantic_state.test_torch_adapter.TorchFeatureTests.test_frozen_content_and_extra_target_rejection"
+      },
+      {
+        "reason": "Torch unavailable; autograd execution remains unqualified",
+        "test": "ndu_semantic_state.test_torch_adapter.TorchFeatureTests.test_independent_centered_difference_matches_content_gradient"
+      },
+      {
+        "reason": "Torch unavailable; autograd execution remains unqualified",
+        "test": "ndu_semantic_state.test_torch_adapter.TorchFeatureTests.test_task_loss_reaches_public_outputs_encoders_and_shared_content"
+      }
+    ],
+    "source_unchanged": true,
+    "versions": {
+      "Pillow": "13.0.0",
+      "numpy": "2.3.5",
+      "python": "3.12.14",
+      "torch": null,
+      "transformers": null
+    }
+  },
+  "final_remote_torch": {
+    "status": "PASS_CONTRACTS",
+    "tests_run": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": [],
+    "source_unchanged": true,
+    "versions": {
+      "Pillow": "13.0.0",
+      "numpy": "2.3.5",
+      "python": "3.12.16",
+      "torch": "2.8.0+cpu",
+      "transformers": "4.57.3"
+    }
+  },
+  "unique_contract_tests": 139,
+  "contract_tests_passed_across_two_environments": 139,
+  "real_model_probe_scope": "Original executed-source snapshot; one disclosed image; one SGD update each for ordinary/dual",
+  "final_source_equals_executed_real_model_source": false,
+  "native_owner_executed": false,
+  "full_real_factorial_executed": false,
+  "complete_deployment_cost_measured": false,
+  "full_repository_ci": "Not executed locally; inspect remote head checks",
+  "formatting": {
+    "git_diff_check": "PASS",
+    "just_fmt": "NOT_EXECUTED: partial checkout has no codex-rs directory",
+    "rust_changes": false
+  }
+}
