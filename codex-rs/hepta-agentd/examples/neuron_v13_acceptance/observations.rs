@@ -19,20 +19,56 @@ use tokio::time::timeout;
 pub(super) async fn original_result(
     handle: &NeuronGenerationRuntimeHandleV2,
     request: &CellGenerationRequestV2,
+    clock: &dyn Fn() -> u64,
     mut result: Result<CellGenerationReceiptV2, CellGenerationErrorV2>,
 ) -> Result<CellGenerationReceiptV2> {
-    Ok(timeout(Duration::from_secs(120), async {
+    if let Ok(receipt) = result {
+        return Ok(receipt);
+    }
+    let started = clock();
+    ensure!(started > 0, "host clock is unavailable");
+    let remaining = request
+        .deadline_micros
+        .checked_sub(started)
+        .filter(|remaining| *remaining > 0)
+        .context("original V13 request deadline elapsed before readback")?;
+    let digest = request.digest()?;
+    timeout(Duration::from_micros(remaining), async {
         loop {
             match result {
                 Ok(receipt) => return Ok(receipt),
-                Err(CellGenerationErrorV2::Pending) => sleep(Duration::from_millis(5)).await,
-                Err(error) => return Err(error),
+                Err(CellGenerationErrorV2::Pending) => {}
+                Err(CellGenerationErrorV2::CommitUncertain) => {
+                    // Control RPC timeout can leave a healthy original owner
+                    // pending. A poisoned journal/witness fails this read and
+                    // still requires guarded owner recovery; never redispatch.
+                    ensure!(
+                        handle.pending_request().await?.as_ref() == Some(request),
+                        "uncertain original operation is no longer pending in the healthy owner"
+                    );
+                    eprintln!(
+                        "{}",
+                        serde_json::json!({
+                            "schema": "hepta.v13.original-readback-observation.v1",
+                            "operation_id": request.operation_id,
+                            "request_digest": digest,
+                            "observation": "healthy_original_pending_after_uncertain_response",
+                        })
+                    );
+                }
+                Err(error) => return Err(error.into()),
             }
-            result = handle.reconcile(request.digest()?).await;
+            sleep(Duration::from_millis(5)).await;
+            let now = clock();
+            ensure!(
+                now >= started && now < request.deadline_micros,
+                "host clock left the original V13 request readback interval"
+            );
+            result = handle.reconcile(digest).await;
         }
     })
     .await
-    .context("original V13 request remained pending")??)
+    .context("original V13 request remained unresolved at its original deadline")?
 }
 
 pub(super) async fn deliver(
@@ -110,9 +146,13 @@ pub(super) async fn cancellation(
                 "pending operation changed before cancellation"
             );
             handle.cancel(request.digest()?).await?;
-            let receipt =
-                original_result(handle, &request, handle.reconcile(request.digest()?).await)
-                    .await?;
+            let receipt = original_result(
+                handle,
+                &request,
+                clock,
+                handle.reconcile(request.digest()?).await,
+            )
+            .await?;
             ensure!(
                 receipt.disposition == CellGenerationDispositionV2::Cancelled,
                 "persisted cancellation did not settle as cancelled"

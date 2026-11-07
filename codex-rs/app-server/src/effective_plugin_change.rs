@@ -1,6 +1,7 @@
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
+use codex_analytics::AnalyticsEventsClient;
 use codex_app_server_protocol::ConfigBatchWriteParams;
 use codex_app_server_protocol::ConfigEdit;
 use codex_app_server_protocol::MergeStrategy;
@@ -14,6 +15,7 @@ use serde_json::json;
 use tracing::warn;
 
 use crate::config_manager::ConfigManager;
+use crate::outgoing_message::OutgoingMessageSender;
 use crate::request_processors::ConfigRequestProcessor;
 use crate::request_serialization::RequestSerializationAccess;
 use crate::request_serialization::RequestSerializationQueueKey;
@@ -24,15 +26,25 @@ pub(crate) fn effective_plugins_changed_callback(
     auth_manager: Arc<AuthManager>,
     thread_manager: Arc<ThreadManager>,
     config_manager: ConfigManager,
-    config_processor: ConfigRequestProcessor,
+    outgoing: Arc<OutgoingMessageSender>,
+    analytics_events_client: AnalyticsEventsClient,
     request_serialization_queues: RequestSerializationQueues,
 ) -> Arc<dyn Fn(EffectivePluginsChange) + Send + Sync> {
+    // Marketplace workers may outlive their original App Server. A completion
+    // callback must not retain its thread extensions or their durable owners.
+    let thread_manager = Arc::downgrade(&thread_manager);
     Arc::new(move |change| {
+        let Some(thread_manager) = thread_manager.upgrade() else {
+            return;
+        };
         thread_manager.plugins_manager().clear_cache();
         thread_manager.skills_service().clear_cache();
 
-        let refresh_thread_manager = Arc::clone(&thread_manager);
+        let refresh_thread_manager = Arc::downgrade(&thread_manager);
         tokio::spawn(async move {
+            let Some(refresh_thread_manager) = refresh_thread_manager.upgrade() else {
+                return;
+            };
             refresh_thread_manager.invalidate_mcp_runtimes().await;
             refresh_thread_manager.refresh_hook_runtimes().await;
         });
@@ -42,9 +54,10 @@ pub(crate) fn effective_plugins_changed_callback(
         }
 
         let trust_auth_manager = Arc::clone(&auth_manager);
-        let trust_thread_manager = Arc::clone(&thread_manager);
+        let trust_thread_manager = Arc::downgrade(&thread_manager);
         let trust_config_manager = config_manager.clone();
-        let trust_config_processor = config_processor.clone();
+        let trust_outgoing = Arc::clone(&outgoing);
+        let trust_analytics = analytics_events_client.clone();
         let trust_request_serialization_queues = request_serialization_queues.clone();
         tokio::spawn(async move {
             trust_request_serialization_queues
@@ -52,6 +65,15 @@ pub(crate) fn effective_plugins_changed_callback(
                     RequestSerializationQueueKey::Global("config"),
                     RequestSerializationAccess::Exclusive,
                     async move {
+                        let Some(trust_thread_manager) = trust_thread_manager.upgrade() else {
+                            return;
+                        };
+                        let trust_config_processor = ConfigRequestProcessor::new(
+                            trust_outgoing,
+                            trust_config_manager.clone(),
+                            Arc::clone(&trust_thread_manager),
+                            trust_analytics,
+                        );
                         if let Err(err) = trust_materialized_plugin_hooks(
                             change.materialized_remote_plugins,
                             &trust_auth_manager,

@@ -438,7 +438,8 @@ impl MessageProcessor {
                 auth_manager.clone(),
                 Arc::clone(&thread_manager),
                 config_manager.clone(),
-                config_processor.clone(),
+                outgoing.clone(),
+                analytics_events_client.clone(),
                 request_serialization_queues.clone(),
             );
         let account_processor = AccountRequestProcessor::new(
