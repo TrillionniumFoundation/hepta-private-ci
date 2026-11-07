@@ -1,0 +1,719 @@
+{
+  "format": "native-blocker-evidence-v1",
+  "created_at_utc": "2026-11-07T08:02:16.253675+00:00",
+  "archive_bytes": 1105920,
+  "archive_sha256": "f425fc284202a121e210da00c8d17c4c495b7e73f1df00eb27f6e2977cfe9aae",
+  "compressed_bytes": 159144,
+  "compressed_sha256": "55697ff5f88a3248bfbc18c0804cf226fc4d97be0b2eef0b12692b30a12a6f70",
+  "parts": [
+    {
+      "name": "native-evidence.tar.xz.part000.gz",
+      "bytes": 159212,
+      "sha256": "d2acd723751ec7e1b7b256e79099500d29f53fbbd1e24e243743c60398cfcba0",
+      "segment_bytes": 159144,
+      "segment_sha256": "55697ff5f88a3248bfbc18c0804cf226fc4d97be0b2eef0b12692b30a12a6f70"
+    }
+  ],
+  "files": [
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/FROZEN_ANALYSIS_INPUTS.json",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/FROZEN_ANALYSIS_INPUTS.json",
+      "bytes": 30468,
+      "sha256": "ffda08f910a4b5936f9ffae57be3e51ff07c0fcef9ee970e41496668105c0968",
+      "git_blob_sha": "c3c21d64e273d701fa578a510fd68a32ffa694dc",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Approved frozen input identities, not private input contents"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/NATIVE_FAILURE_ANALYSIS.json",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/NATIVE_FAILURE_ANALYSIS.json",
+      "bytes": 40358,
+      "sha256": "3df3ac6b3794e6a7f0c8d3935b3a9ce7be91ac33a90cfc0ea703716ffe39ca7e",
+      "git_blob_sha": "00933e9dbea4f7abd8d58542230bcfb02139f839",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Previously reviewed fixed analysis, inert audit source or local failure history"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/ANALYZER_FINAL_QA.json",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/ANALYZER_FINAL_QA.json",
+      "bytes": 517,
+      "sha256": "e7fb9587f8192ddd3c429183d2dea4628050f43002d4077d35e98c843e9b2ee8",
+      "git_blob_sha": "7548a170c334b3b747103aeb989a9453b142f550",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Previously reviewed fixed analysis, inert audit source or local failure history"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/ORIGINAL_LOG_IDENTITY.json",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/ORIGINAL_LOG_IDENTITY.json",
+      "bytes": 564,
+      "sha256": "335c34bf43d4c3f6c45b8c19c46d748fff831381e479ffd8e09b4f1b90fcf0c7",
+      "git_blob_sha": "b7d56bf9e87916268dcdfaa0d835a70ff9f5f962",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Previously reviewed fixed analysis, inert audit source or local failure history"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/analysis_initial_literal_failure/NOTE.json",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/analysis_initial_literal_failure/NOTE.json",
+      "bytes": 493,
+      "sha256": "7af95d90f1fe21653f9544119fc6f863963eed047c3967d413e4fcb543ba8e62",
+      "git_blob_sha": "2efb1224e7df961394f2d54e978b70a3b952331d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Previously reviewed fixed analysis, inert audit source or local failure history"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/analysis_initial_literal_failure/analyze_native_failure.py.txt",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/analysis_initial_literal_failure/analyze_native_failure.py.txt",
+      "bytes": 15014,
+      "sha256": "7b460f65902547f56d4555fe5c9a159a8a7e060a003b00a87825ec20ba15bf05",
+      "git_blob_sha": "2a13883110001f99754b3e6a16b81bec3b7adf23",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Previously reviewed fixed analysis, inert audit source or local failure history"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/analyze_native_failure.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/analyze_native_failure.py",
+      "bytes": 15717,
+      "sha256": "f77dd895b49335f6786aa82fb79006efceb8e1d3a5366acbe6ff342ed54546f5",
+      "git_blob_sha": "00625f53ba338e8745973f282c3e00aec8f9625c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Previously reviewed fixed analysis, inert audit source or local failure history"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_auth_root/ROOT_REVIEW.json",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_auth_root/ROOT_REVIEW.json",
+      "bytes": 16162,
+      "sha256": "d20aa76c9ca8e2d90056869ce38037df627a6d514fe81f9f258642aa94bad964",
+      "git_blob_sha": "c7ae5118474275f112be89f9a9df67a24a3d2b14",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Pinned root auth review, source API binding, audit source or safe static execution receipt"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_auth_checks/ROOT_CHECKS.json",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_auth_checks/ROOT_CHECKS.json",
+      "bytes": 4393,
+      "sha256": "125ab7f68cdba6e0e0a956f3ca302f42ad6a085562ee3689619224cc6a922b28",
+      "git_blob_sha": "6ca57d119950c8df993feba7cc3022f14fa5143a",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Pinned root auth review, source API binding, audit source or safe static execution receipt"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/review_arm5248_auth.py",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/review_arm5248_auth.py",
+      "bytes": 20270,
+      "sha256": "08ca1eb531a1c5540f61e9a4af6435843f0a9b791538145685e650b680171fd9",
+      "git_blob_sha": "c5860f8fe3c5aba358ef9411db58e0cd5b6b389b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Pinned root auth review, source API binding, audit source or safe static execution receipt"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_fresh_primary_api.json",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_fresh_primary_api.json",
+      "bytes": 236671,
+      "sha256": "9b241e9daa5869d6271382aeb7e71ddc88dda7637861ea3138924fe3fec314c8",
+      "git_blob_sha": "69a0ac85602d99034bef2c51d0a44af048535d73",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Pinned root auth review, source API binding, audit source or safe static execution receipt"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_primary_api_initial_rejection.json",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_primary_api_initial_rejection.json",
+      "bytes": 544,
+      "sha256": "cec4919b17517901e41bfcd3369302c3523a3c01401ecb38c1d635e72081cc9e",
+      "git_blob_sha": "b9b93ad94c88892b49c5ee39a51535199f658461",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Pinned root auth review, source API binding, audit source or safe static execution receipt"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_auth_execution/EXECUTION.json",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_auth_execution/EXECUTION.json",
+      "bytes": 490,
+      "sha256": "f26b6a522bf9431dace77219077e29ab0c11201df0b29c06f7ae28a9f6771f8e",
+      "git_blob_sha": "de30552b19dbc15c8378cc3503974173481a2021",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Pinned root auth review, source API binding, audit source or safe static execution receipt"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_auth_execution/stdout",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_auth_execution/stdout",
+      "bytes": 222,
+      "sha256": "34a1fc6d3a78eb1ae1c955df9ac82ab5d11735bcd24e0e5e0bad178fb619c8ce",
+      "git_blob_sha": "8e3b151353a8fece019bd8928300aa42d4150145",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Pinned root auth review, source API binding, audit source or safe static execution receipt"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_auth_execution/stderr",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_auth_execution/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Pinned root auth review, source API binding, audit source or safe static execution receipt"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_auth_checks/0.stdout.log",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_auth_checks/0.stdout.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "git_blob_sha": "1f5f344d054fae10f39140fb7199c99321d9190a",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Only explicitly fixed static QA output; no native log"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_auth_checks/0.stderr.log",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_auth_checks/0.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Only explicitly fixed static QA output; no native log"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_auth_checks/1.stdout.log",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_auth_checks/1.stdout.log",
+      "bytes": 25,
+      "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50",
+      "git_blob_sha": "5e122f397b6d5d61b45621051851165eadce6a78",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Only explicitly fixed static QA output; no native log"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_auth_checks/1.stderr.log",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_auth_checks/1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Only explicitly fixed static QA output; no native log"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_auth_checks/2.stdout.log",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_auth_checks/2.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Only explicitly fixed static QA output; no native log"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/root/arm5248_auth_checks/2.stderr.log",
+      "source_local_path": "/dev/shm/ndu_root_continuation_20261107/arm5248_auth_checks/2.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Only explicitly fixed static QA output; no native log"
+    },
+    {
+      "path": "round3_local_qualification/arm5248_terminal_root/ROOT_REVIEW.json",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5248_terminal_root/ROOT_REVIEW.json",
+      "bytes": 2565,
+      "sha256": "c2a0a8b72509df0f2700c39f37b55b4806e75a6459dc3c280c4fd7d66ed86e6a",
+      "git_blob_sha": "d8461b31e6a4e1d5d81ec10ddb76e52528cbab95",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Earlier terminal review; auth-specific interpretation belongs to the later root auth review"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/source/BUILD.bazel",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/source/BUILD.bazel",
+      "bytes": 433,
+      "sha256": "239259f6f7d3065f9574bade319df087c1c1974274bb1917f4e58678bea32dd3",
+      "git_blob_sha": "024641567482c68985e36bee13c92eb9b39f53c9",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/source/commands.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/source/commands.py",
+      "bytes": 6017,
+      "sha256": "767861ca550c04651045e8d4ec002bb78d5735f28e67fbab91e22f85a814fc30",
+      "git_blob_sha": "246d55c04fed15779935823ebe3bbc23120d4672",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/source/contract.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/source/contract.py",
+      "bytes": 9528,
+      "sha256": "d2d911941e7e741f1ec839ba8509af07d941b2ba0b1feea0c8ac0c3cd0c944f7",
+      "git_blob_sha": "fc41502a6835e2a0481cd7567ae787403c9cb929",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/source/docker_control.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/source/docker_control.py",
+      "bytes": 14977,
+      "sha256": "bb61b739f312cb48e3bca0e44d4c9ef0c34778128310464e071235e336ac37bb",
+      "git_blob_sha": "0e191ae37399418fc781b247453f27e166b32b64",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/source/files.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/source/files.py",
+      "bytes": 6432,
+      "sha256": "3226c9d7981fbaac7722e378e6290b231b678a39cb6172678f7af695aea3bf50",
+      "git_blob_sha": "132d2a2018a9d838887e62312ed54b666aaf5654",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/source/linux_qualification_host.rs",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/source/linux_qualification_host.rs",
+      "bytes": 8425,
+      "sha256": "b6a736b9e9f326849bb694a7752615b526a84f3d736ce218f153aa8c6325864b",
+      "git_blob_sha": "d618725dfc98bf1f7ee445c4b46d34f1befad2bc",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/source/linux_qualification_mod.rs",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/source/linux_qualification_mod.rs",
+      "bytes": 10985,
+      "sha256": "78eefe9fda48ae368733711d21180c78645c4751002f1e76ebcba185bfbf383b",
+      "git_blob_sha": "71dc656cfb31383dbf8d5ae6056819d4997fe139",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/source/orchestrate.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/source/orchestrate.py",
+      "bytes": 17119,
+      "sha256": "c6200f6a04db45092bd30705089e3c05fb2859428ec64bb27486035de7d53776",
+      "git_blob_sha": "c7075944b80858311e7d84e2a13e53edc79fbc27",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/source/real_synapse_e2e.rs",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/source/real_synapse_e2e.rs",
+      "bytes": 238818,
+      "sha256": "9f681737bfc685c270b002b2fc56b9474cdf6db3c1abdd61f97f01e16b4988bf",
+      "git_blob_sha": "6bd635cdbed055bf67540aaa1991039913bc0f27",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/source/sdk.rs",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/source/sdk.rs",
+      "bytes": 29341,
+      "sha256": "9462a09f15bf7130413669dba1c29cd737c9421740c7307d2218782fd5d68848",
+      "git_blob_sha": "82c7e2a7151dfbc9590502feb780511727d73f7d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/source/synapse.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/source/synapse.py",
+      "bytes": 10072,
+      "sha256": "a3d1aa145852bf11d39ff1472109eb95a3f96e52f05eabfbda18d7d0e6a8d844",
+      "git_blob_sha": "172c82e55457e7953b29e56c28334ce01e545721",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/upstream/admin_users.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/upstream/admin_users.py",
+      "bytes": 59489,
+      "sha256": "61b4f673035ecb5cbfaec3255fd2c4de1ea3cb6d232dbfab9e97543c6b56237d",
+      "git_blob_sha": "ddb44837894a848177a829600ec11c001d7dfe70",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/upstream/api_ratelimiting.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/upstream/api_ratelimiting.py",
+      "bytes": 20505,
+      "sha256": "b4fd75240012c3a6c432aa99f2dac40cdbe9adb8a72d335be1281b46bb88830c",
+      "git_blob_sha": "b17fcd1ef3381b1acea891ebe80f15a5142b9ba6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/upstream/client_login.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/upstream/client_login.py",
+      "bytes": 28951,
+      "sha256": "737765b9548865e824e6af6727fd743a2d89eb5b11eabb35e8d61b4512b43706",
+      "git_blob_sha": "87730fc51244b5a9cc09760fe01885c2d08d026e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/upstream/client_register.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/upstream/client_register.py",
+      "bytes": 42428,
+      "sha256": "e8e6ee04ec4f3787b6134bbc36058eae8019a6afc9e38ed887c523a4a5bbb703",
+      "git_blob_sha": "8355d0c5718b4360705e054f85a82611b8067b27",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/upstream/config_ratelimiting.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/upstream/config_ratelimiting.py",
+      "bytes": 8822,
+      "sha256": "6eeecd7ea7835f87eec1a6257020cf06013c3920c1d6e45306be14e775447b49",
+      "git_blob_sha": "13c9c4dba036871b01fca58d22347966a8efa68e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/upstream/docker_homeserver.yaml",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/upstream/docker_homeserver.yaml",
+      "bytes": 4809,
+      "sha256": "a461407cfdae21309573550bca54767fedc3fb257998fded2e006dc69dec6f59",
+      "git_blob_sha": "e2e1338673d9e4bf3d1634a6cc2d56f365b9953a",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/upstream/docker_start.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/upstream/docker_start.py",
+      "bytes": 10681,
+      "sha256": "2817be31155069859c569a80535ce025c8afe8c6a61128b63cd87dc07306890e",
+      "git_blob_sha": "19f1ab50759bf1d2489a1a0cf39ca62353bf859c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/upstream/register_new_matrix_user.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/upstream/register_new_matrix_user.py",
+      "bytes": 11610,
+      "sha256": "a6f4bc7546705d387f64846ee586086ea82cc58de1b82482a59fd63a60c7ddb3",
+      "git_blob_sha": "ff6e4e297b0af3bbe7f0f5c3b22c34bb74588d6c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/upstream/sdk_error.rs",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/upstream/sdk_error.rs",
+      "bytes": 25184,
+      "sha256": "f0a7753d580a56a2209adb6a03db850ef3df8bb0b124937cc7eeac1e5f4b7d94",
+      "git_blob_sha": "5722d063af1f0b6d6e7789b2d1fa25675d07b99b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/upstream/sdk_http_native.rs",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/upstream/sdk_http_native.rs",
+      "bytes": 13062,
+      "sha256": "270633b06caff429f108302be6a29df5fb1637ab211f8c1cc6f0370333ab8bdc",
+      "git_blob_sha": "b64f05794dcacb12d28ba4bb63e73103922693c4",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/upstream/sdk_login_builder.rs",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/upstream/sdk_login_builder.rs",
+      "bytes": 12597,
+      "sha256": "4e6835172ec3da44148321d4ff3e2ad189ec08fbbc9e13e6fe6b58da7476ce6e",
+      "git_blob_sha": "a5a8c062501c21195233fe2d5c05b63d3f4a7a1c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/arm5248/upstream/sdk_request.rs",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/upstream/sdk_request.rs",
+      "bytes": 7333,
+      "sha256": "19054666cf1fa3d5a0110acb632331417150ee1fa240dde4f63a04444102acaa",
+      "git_blob_sha": "4df4b2143ab3e905add3ce43cdd6fda141d96f65",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Exact root-bound primary source; inert archive copy, no execution"
+    },
+    {
+      "path": "round3_native/access_terminal_checkpoint_inputs/reviewed_restore.py",
+      "source_local_path": "/workspace/scratch/3f6a885bb83c/round3_native/access_terminal_checkpoint_inputs/reviewed_restore.py",
+      "bytes": 6899,
+      "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+      "git_blob_sha": "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "Previously approved canonical reader, preserved for whole-file inverse comparison"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/RUN_STATUS.json",
+      "source_local_path": "/dev/shm/ndu_arm5248_auth_checkpoint_20261107/inputs/RUN_STATUS.json",
+      "bytes": 3148,
+      "sha256": "b15412ca95983b7cd40b42e4c1417c1b0e06fad2c5924779a20f4731e5811bf1",
+      "git_blob_sha": "18bc31241c7b972fb537dc603771be9d9e833f7b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "New reviewable checkpoint control; exact bytes bound by INDEX"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/HISTORY.md",
+      "source_local_path": "/dev/shm/ndu_arm5248_auth_checkpoint_20261107/inputs/HISTORY.md",
+      "bytes": 2884,
+      "sha256": "87c83eb9f3f56157601ff8b9a429da58e7c1a7e76be98adae2057742629c3a64",
+      "git_blob_sha": "ae59b809fd658b18dd147bd525744813cefbd87a",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "New reviewable checkpoint control; exact bytes bound by INDEX"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/INCLUSION_EXCLUSION.json",
+      "source_local_path": "/dev/shm/ndu_arm5248_auth_checkpoint_20261107/inputs/INCLUSION_EXCLUSION.json",
+      "bytes": 35989,
+      "sha256": "83f1ed4c2ad90d78c57199884e5d296a4b5a269e2ff192acd4636975dc35eb57",
+      "git_blob_sha": "6bc758489b44af6617e49a7e5c833aaeda5895a7",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "New reviewable checkpoint control; exact bytes bound by INDEX"
+    },
+    {
+      "path": "round3_ci/arm5248_auth_checkpoint_inputs/build_checkpoint.py",
+      "source_local_path": "/dev/shm/ndu_arm5248_auth_checkpoint_20261107/build_checkpoint.py",
+      "bytes": 27918,
+      "sha256": "538ba8ff7866db716f3fa453ca4018b0ca826cc3392913c9a86d77870a8142c6",
+      "git_blob_sha": "3acc92a4f8466ff4d0bcc0f4ab7251a912ebf1e9",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644",
+      "inclusion_reason": "New reviewable checkpoint control; exact bytes bound by INDEX"
+    }
+  ],
+  "scope": "ARM5248 fixed auth observations and sources only; business and later native qualification remain open",
+  "excluded": {
+    "frozen_inputs_not_selected": [
+      {
+        "bytes": 3606,
+        "mode": "0644",
+        "sha256": "c208e645f60a2bde24ec71c04dfb2755511d2f29a24a5bafd120201ebe90e79b",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/HEAD_API.json",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 27421,
+        "mode": "0644",
+        "sha256": "f97bf5b2095543e50e3ea74407a3457e3054a87d9417e8e2067c903dba78dfa4",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/PROJECTION_PAYLOAD_VALIDATION.json",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 25964,
+        "mode": "0644",
+        "sha256": "a9d284e46a04b10c13ab172b0af78575e7769219d1ac0e74fc5548efa59f3afc",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/TERMINAL_ARTIFACTS_API.json",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 85723,
+        "mode": "0644",
+        "sha256": "ba34dee401d2bc7d4dc5f0d2598d6a99905027ef1e009a526f0385c27889ded0",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/TERMINAL_JOBS_API.json",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 32383,
+        "mode": "0644",
+        "sha256": "ac687ee234d400b59f4a81e4c341ff5de1737d8c651cb6d48d8b2de002a7fa3a",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/TERMINAL_RUN_API.json",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 6504,
+        "mode": "0644",
+        "sha256": "6f26215824fb1a757549bd993d57f868654950c19cfce2d5553cb917559592ca",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/WORKFLOW_MERGE_API.json",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 1989,
+        "mode": "0644",
+        "sha256": "5ca5e3aab4cca85363ba39f2a0d71a53ec0abfc576df7d71b9fb4cf979b69157",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/artifact-13561664904.WRAPPER.json",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 955689,
+        "mode": "0600",
+        "sha256": "748e7d560f5b6013f779f5090b9847871c7a170a586b6fbecb5cbcf10e8f552a",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/artifact-13561664904.zip.gz",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 1591,
+        "mode": "0644",
+        "sha256": "c045d2b17988dd8e495f34d58877172b352d5b53b1cdf35b07265e5862e70237",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/artifact-13562417625.WRAPPER.json",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 10449687,
+        "mode": "0600",
+        "sha256": "e84fee4402166ce47f6af442c09f737a574cd597556fe5190784e39c2ac7d146",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/artifact-13562417625.zip.gz",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 158816,
+        "mode": "0600",
+        "sha256": "1c51cc74e3c72a265d698dd66857da00261b2586f80835476f0a8cd1a24efbfb",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/reviewed-diagnostics/qualification/build/BUILD_RESULT.json",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 102284,
+        "mode": "0600",
+        "sha256": "c1efa8f8a7ccee64bb4bdd6e8389cb6cec9040ff4ddca520b60b24892c142d78",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/reviewed-diagnostics/qualification/controller-commands/078-container-final-log.stderr",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 5342,
+        "mode": "0600",
+        "sha256": "9655efb81fb7621e05c12b5dc7ebfaf6cf92a92fcf7322953ea462325bb44cde",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/reviewed-diagnostics/qualification/plan/SOURCE_SEAL.json",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 2942,
+        "mode": "0600",
+        "sha256": "f32e6c2fcf3cadb74dacd612937dbb05f49e7f7b9dff0264091dafb51d326c10",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/reviewed-diagnostics/qualification/runtime/commands/025-END.json",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 11183,
+        "mode": "0600",
+        "sha256": "48fd8603a378314fb845be17235db9b137adeb2823509a75b4a9b806d4275cbe",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/reviewed-diagnostics/qualification/runtime/commands/025-actual-just-test.stderr",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "bytes": 17273,
+        "mode": "0600",
+        "sha256": "1444a050d87508e5da5bdbe5029ef82afcf5582cf20d8bbf4a64e00bd77495cb",
+        "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/reviewed-diagnostics/qualification/runtime/nextest-store/linux-synapse/junit.xml",
+        "reason": "Not selected: private native payload or unnecessary extra metadata; identity only"
+      },
+      {
+        "identity_receipt": {
+          "bytes": 564,
+          "mode": "0644",
+          "sha256": "335c34bf43d4c3f6c45b8c19c46d748fff831381e479ffd8e09b4f1b90fcf0c7",
+          "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port_diagnosis/arm5248/ORIGINAL_LOG_IDENTITY.json"
+        },
+        "included_in_publication": false,
+        "retained_locally": true,
+        "reason": "Private original console; identity only"
+      }
+    ],
+    "raw_members_from_root_review_not_included": {
+      "qualification/runtime/commands/025-END.json": {
+        "bytes": 2942,
+        "sha256": "f32e6c2fcf3cadb74dacd612937dbb05f49e7f7b9dff0264091dafb51d326c10"
+      },
+      "qualification/runtime/commands/025-actual-just-test.stderr": {
+        "bytes": 11183,
+        "sha256": "48fd8603a378314fb845be17235db9b137adeb2823509a75b4a9b806d4275cbe"
+      },
+      "qualification/runtime/nextest-store/linux-synapse/junit.xml": {
+        "bytes": 17273,
+        "sha256": "1444a050d87508e5da5bdbe5029ef82afcf5582cf20d8bbf4a64e00bd77495cb"
+      },
+      "qualification/controller-commands/078-container-final-log.stderr": {
+        "bytes": 102284,
+        "sha256": "c1efa8f8a7ccee64bb4bdd6e8389cb6cec9040ff4ddca520b60b24892c142d78"
+      },
+      "qualification/plan/SOURCE_SEAL.json": {
+        "bytes": 5342,
+        "sha256": "9655efb81fb7621e05c12b5dc7ebfaf6cf92a92fcf7322953ea462325bb44cde"
+      },
+      "qualification/build/BUILD_RESULT.json": {
+        "bytes": 158816,
+        "sha256": "1c51cc74e3c72a265d698dd66857da00261b2586f80835476f0a8cd1a24efbfb"
+      }
+    },
+    "compiler_streams_not_included": {
+      "qualification/build/commands/024-cold-test-build.stdout": {
+        "bytes": 1168159,
+        "sha256": "2661301f8200ccfa8e9ce768f3b35fd6f26a3c582acdd415a50b031d0755f75c"
+      },
+      "qualification/build/commands/028-cold-product-agentd.stdout": {
+        "bytes": 1078606,
+        "sha256": "027551817e3d1342861f83dc5f5a064f62854eb69dfa2baed7279eacfc0d4d47"
+      },
+      "qualification/build/commands/029-cold-product-matrixd.stdout": {
+        "bytes": 1161512,
+        "sha256": "00a8c743ac66af3ec0a3a37e3fbd80cbde7f15da98c5de334fd64ef09ee395f0"
+      }
+    },
+    "private_wrapper_and_zip_identities_only": {
+      "13561664904": {
+        "wrapper": {
+          "bytes": 955689,
+          "sha256": "748e7d560f5b6013f779f5090b9847871c7a170a586b6fbecb5cbcf10e8f552a"
+        },
+        "original_ZIP": {
+          "bytes": 21236187,
+          "sha256": "cc1060dc8e6b7edfc38f06a0a9905304c6ffa9d404cca5614879031243bfbb8a"
+        }
+      },
+      "13562417625": {
+        "wrapper": {
+          "bytes": 10449687,
+          "sha256": "e84fee4402166ce47f6af442c09f737a574cd597556fe5190784e39c2ac7d146"
+        },
+        "original_ZIP": {
+          "bytes": 69519506,
+          "sha256": "b6e07c3390c55baebffc71a8810d66b8eab8af4a71ba62372e0c45eb127122c9"
+        }
+      }
+    },
+    "classes": [
+      "All raw native consoles, stderr, JUnit, command environment and runtime output",
+      "All private original ZIPs, gzip wrappers, tar parts and full large artifacts",
+      "All unselected source-directory payloads, caches and arbitrary runtime credentials",
+      "All signed transfer URLs and any new ARM42 run contents"
+    ],
+    "native_sanitizer_policy_acceptance_inferred": false,
+    "excluded_contents_read_or_reconstructed_for_packaging": false
+  },
+  "source_restore": "Inert 0644 regular files; source modes are evidence only",
+  "lossless_boundary": "Explicit selected members only; excluded original payloads cannot be reconstructed"
+}

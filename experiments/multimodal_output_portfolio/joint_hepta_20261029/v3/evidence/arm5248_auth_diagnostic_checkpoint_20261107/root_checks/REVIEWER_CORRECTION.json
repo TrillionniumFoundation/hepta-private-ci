@@ -1,0 +1,23 @@
+{
+  "reason": "Ruff E713 requires not in spelling; no predicate acceptance change, original lint failed before any reader execution.",
+  "initial_source": {
+    "path": "/dev/shm/ndu_root_continuation_20261107/terminal_packet_root_checks/reviewer.initial.py",
+    "bytes": 16960,
+    "sha256": "8f087167cff8e580fda3839636703c335c109a571445c499d830bcdf2653618d"
+  },
+  "corrected_source": {
+    "path": "/dev/shm/ndu_root_continuation_20261107/review_terminal_packets.py",
+    "bytes": 16960,
+    "sha256": "76e5ff49b2f8b3a86e07da44f5c4797bbfb510fe67e9db33a155c7668fe3e04c"
+  },
+  "initial_checks": {
+    "path": "/dev/shm/ndu_root_continuation_20261107/terminal_packet_root_checks/ROOT_CHECKS.json",
+    "bytes": 1830,
+    "sha256": "5bf57625bb54a7d351452ad14575c0f92b003a87398c1002a8e25a7c15216bea"
+  },
+  "patch": {
+    "path": "/dev/shm/ndu_root_continuation_20261107/terminal_packet_root_checks_v2/from_initial.patch",
+    "bytes": 365,
+    "sha256": "83c924907dafef4ac27db99a08c0e0e3cb72d18f8d1a5e573958a9514cd2c62b"
+  }
+}

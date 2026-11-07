@@ -1,0 +1,45 @@
+{
+  "canonical_template": {
+    "path": "/workspace/scratch/3f6a885bb83c/round3_native/access_terminal_checkpoint_inputs/reviewed_restore.py",
+    "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d"
+  },
+  "reader_only_index_literal_changed": true,
+  "builder": {
+    "bytes": 27918,
+    "sha256": "538ba8ff7866db716f3fa453ca4018b0ca826cc3392913c9a86d77870a8142c6",
+    "git_blob_sha": "3acc92a4f8466ff4d0bcc0f4ab7251a912ebf1e9"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_arm5248_auth_checkpoint_20261107/build_checkpoint.py",
+        "/dev/shm/ndu_arm5248_auth_checkpoint_20261107/packet/restore.py"
+      ],
+      "cwd": "/dev/shm/ndu_arm5248_auth_checkpoint_20261107",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_arm5248_auth_checkpoint_20261107/build_checkpoint.py",
+        "/dev/shm/ndu_arm5248_auth_checkpoint_20261107/packet/restore.py"
+      ],
+      "cwd": "/dev/shm/ndu_arm5248_auth_checkpoint_20261107",
+      "exit_code": 0,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    }
+  ],
+  "HOME_inherited": true,
+  "native_execution": false
+}
