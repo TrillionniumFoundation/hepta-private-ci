@@ -71,6 +71,13 @@ FILE_GROUPS = {
     },
 }
 
+# This fixture must exercise the Bazel-owned evidence unit-test target; a
+# Cargo-only scoped run does not establish the required product dependency path.
+BAZEL_SENSITIVE_TESTS = frozenset(
+    {"codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"}
+)
+
+
 CANONICAL_DOC_GROUPS = {
     "docs/modules/MODULES.json": {"lifecycle"},
     "docs/architecture/ARCHITECTURE.json": set(GROUPS),
@@ -133,6 +140,11 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
 
         if path in FILE_GROUPS:
             selected.update(FILE_GROUPS[path])
+            continue
+
+        if path in BAZEL_SENSITIVE_TESTS:
+            selected.update(GROUPS)
+            full_repo = True
             continue
 
         if len(parts) > 2 and parts[0] == "codex-rs":
