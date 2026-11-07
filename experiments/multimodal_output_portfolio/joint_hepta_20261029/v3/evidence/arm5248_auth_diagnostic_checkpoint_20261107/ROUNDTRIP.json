@@ -1,0 +1,22 @@
+{
+  "ordinary_reader_complete_membership_and_bytes_equal": true,
+  "optimized_verification": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-O",
+      "/dev/shm/ndu_arm5248_auth_checkpoint_20261107/build_checkpoint.py",
+      "--verify-only",
+      "/dev/shm/ndu_arm5248_auth_checkpoint_20261107/packet"
+    ],
+    "exit_code": 0,
+    "stdout": "{\"members\": 50, \"bytes\": 1058948, \"optimized_python\": true, \"index_sha256\": \"862f4e4d75c75cd19013d036cdc5db60c42c5fc527a63d5669dee8bf25752c4e\", \"all_member_bytes_and_source_modes_equal\": true, \"expanded_restore_created\": false, \"archived_source_executed\": false, \"private_native_payload_read\": false, \"native_execution\": false}\n",
+    "stderr": ""
+  },
+  "members": 50,
+  "index_sha256": "862f4e4d75c75cd19013d036cdc5db60c42c5fc527a63d5669dee8bf25752c4e",
+  "expanded_restore_created": false,
+  "physical_restored_modes_retested": false,
+  "new_refusal_tests": "NOT_RUN; canonical reader unchanged except index seal",
+  "native_execution": false
+}

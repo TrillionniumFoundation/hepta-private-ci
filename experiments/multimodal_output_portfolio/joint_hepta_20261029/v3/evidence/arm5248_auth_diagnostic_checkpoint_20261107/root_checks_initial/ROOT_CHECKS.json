@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_root_continuation_20261107/review_terminal_packets.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.020356851993710734,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/terminal_packet_root_checks/00.stdout",
+        "bytes": 19,
+        "sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/terminal_packet_root_checks/00.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_root_continuation_20261107/review_terminal_packets.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 1,
+      "wall_seconds": 0.016559792988118716,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/terminal_packet_root_checks/01.stdout",
+        "bytes": 523,
+        "sha256": "0ca62df6657aafa90f0345f7ee83194f62891e23fbf0546ecec6cff8978a85f9"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/terminal_packet_root_checks/01.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "HOME_inherited": true,
+  "native_execution": false
+}
