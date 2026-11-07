@@ -23,23 +23,29 @@ pub(super) async fn authenticate_iteration_receipt_v1(
 ) -> Result<(), LearningIterationRuntimeErrorV1> {
     let snapshot = coordinator.snapshot();
     let current = verify_receipt(ports, verifier, snapshot, receipt, now).await?;
-    let independent_stages: &[usize] = match receipt.observation.stage() {
-        LearningIterationStageV1::Evaluation => &[2],
-        LearningIterationStageV1::Selection => &[2, 3],
-        LearningIterationStageV1::NextUse => &[2, 5],
+    let independent_stages: &[LearningIterationStageV1] = match receipt.observation.stage() {
+        LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training],
+        LearningIterationStageV1::Selection => &[
+            LearningIterationStageV1::Training,
+            LearningIterationStageV1::Evaluation,
+        ],
+        LearningIterationStageV1::NextUse => &[
+            LearningIterationStageV1::Training,
+            LearningIterationStageV1::Selection,
+        ],
         LearningIterationStageV1::Experience
         | LearningIterationStageV1::Dataset
         | LearningIterationStageV1::Training
         | LearningIterationStageV1::Proposal => &[],
     };
-    for index in independent_stages {
-        let earlier =
-            snapshot
-                .receipts
-                .get(*index)
-                .ok_or(LearningIterationRuntimeErrorV1::Evidence(
-                    SignedEvidenceError::ContextMismatch,
-                ))?;
+    for stage in independent_stages {
+        let earlier = snapshot
+            .receipts
+            .iter()
+            .find(|earlier| earlier.observation.stage() == *stage)
+            .ok_or(LearningIterationRuntimeErrorV1::Evidence(
+                SignedEvidenceError::ContextMismatch,
+            ))?;
         let prior = verify_receipt(ports, verifier, snapshot, earlier, now).await?;
         verify_signed_actor_separation(&prior, &current, now)
             .map_err(LearningIterationRuntimeErrorV1::Evidence)?;

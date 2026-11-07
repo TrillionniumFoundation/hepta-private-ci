@@ -131,32 +131,101 @@ impl LearningIterationCoordinatorV1 {
     }
 
     pub fn disposition(&self) -> LearningIterationDispositionV1 {
+        if matches!(
+            self.snapshot
+                .receipts
+                .last()
+                .map(|receipt| &receipt.observation),
+            Some(LearningIterationObservationV1::NextUse { .. })
+        ) {
+            return LearningIterationDispositionV1::UsedByNextTask;
+        }
+        if self.snapshot.receipts.iter().any(|receipt| {
+            matches!(
+                receipt.observation,
+                LearningIterationObservationV1::Evaluation {
+                    disposition: LearningEvaluationDispositionV1::NoUpdate,
+                    ..
+                } | LearningIterationObservationV1::Proposal {
+                    disposition: LearningProposalDispositionV1::NoAdmissibleUpdate,
+                    ..
+                }
+            )
+        }) {
+            LearningIterationDispositionV1::NoUpdate
+        } else {
+            LearningIterationDispositionV1::InProgress
+        }
+    }
+
+    /// A no-update decision still requires independent selection and actual
+    /// next-task use. A rejected trained candidate is never submitted as a
+    /// generator's distinct NoAdmissibleUpdate proposal.
+    pub fn next_stage(&self) -> Option<LearningIterationStageV1> {
         match self
             .snapshot
             .receipts
             .last()
             .map(|receipt| &receipt.observation)
         {
+            None => Some(LearningIterationStageV1::Experience),
+            Some(LearningIterationObservationV1::Experience { .. }) => {
+                Some(LearningIterationStageV1::Dataset)
+            }
+            Some(LearningIterationObservationV1::Dataset { .. }) => {
+                Some(LearningIterationStageV1::Training)
+            }
+            Some(LearningIterationObservationV1::Training { .. }) => {
+                Some(LearningIterationStageV1::Evaluation)
+            }
+            Some(LearningIterationObservationV1::Evaluation {
+                disposition: LearningEvaluationDispositionV1::Qualified,
+                ..
+            }) => Some(LearningIterationStageV1::Proposal),
             Some(LearningIterationObservationV1::Evaluation {
                 disposition: LearningEvaluationDispositionV1::NoUpdate,
                 ..
             })
-            | Some(LearningIterationObservationV1::Proposal {
-                disposition: LearningProposalDispositionV1::NoAdmissibleUpdate,
-                ..
-            }) => LearningIterationDispositionV1::NoUpdate,
-            Some(LearningIterationObservationV1::NextUse { .. }) => {
-                LearningIterationDispositionV1::UsedByNextTask
+            | Some(LearningIterationObservationV1::Proposal { .. }) => {
+                Some(LearningIterationStageV1::Selection)
             }
-            Some(_) | None => LearningIterationDispositionV1::InProgress,
+            Some(LearningIterationObservationV1::Selection { .. }) => {
+                Some(LearningIterationStageV1::NextUse)
+            }
+            Some(LearningIterationObservationV1::NextUse { .. }) => None,
         }
     }
 
-    pub fn next_stage(&self) -> Option<LearningIterationStageV1> {
-        if self.disposition() != LearningIterationDispositionV1::InProgress {
-            return None;
-        }
-        STAGES.get(self.snapshot.receipts.len()).copied()
+    /// The evaluated decision's bundle, not an adoption grant. NoUpdate keeps
+    /// the exact deployed bundle; an update requires the anchored proposal.
+    pub fn next_task_bundle(&self) -> Option<&CellCompatibilityBundleV1> {
+        self.snapshot
+            .receipts
+            .iter()
+            .rev()
+            .find_map(|receipt| match &receipt.observation {
+                LearningIterationObservationV1::Evaluation {
+                    disposition: LearningEvaluationDispositionV1::NoUpdate,
+                    ..
+                }
+                | LearningIterationObservationV1::Proposal {
+                    disposition: LearningProposalDispositionV1::NoAdmissibleUpdate,
+                    ..
+                } => Some(&self.snapshot.request.selected_bundle),
+                LearningIterationObservationV1::Proposal {
+                    disposition: LearningProposalDispositionV1::UpdateCandidates,
+                    ..
+                } => self.candidate(),
+                LearningIterationObservationV1::Experience { .. }
+                | LearningIterationObservationV1::Dataset { .. }
+                | LearningIterationObservationV1::Training { .. }
+                | LearningIterationObservationV1::Evaluation {
+                    disposition: LearningEvaluationDispositionV1::Qualified,
+                    ..
+                }
+                | LearningIterationObservationV1::Selection { .. }
+                | LearningIterationObservationV1::NextUse { .. } => None,
+            })
     }
 
     pub fn candidate(&self) -> Option<&CellCompatibilityBundleV1> {
@@ -229,6 +298,10 @@ impl LearningIterationCoordinatorV1 {
         let b = &request.budget;
         let candidate_digest = self
             .candidate()
+            .map(CellCompatibilityBundleV1::digest)
+            .transpose()?;
+        let next_task_bundle = self
+            .next_task_bundle()
             .map(CellCompatibilityBundleV1::digest)
             .transpose()?;
         let valid = match observation {
@@ -305,7 +378,7 @@ impl LearningIterationCoordinatorV1 {
             LearningIterationObservationV1::Selection {
                 candidate_bundle,
                 selection_digest,
-            } => candidate_digest == Some(*candidate_bundle) && !selection_digest.is_zero(),
+            } => next_task_bundle == Some(*candidate_bundle) && !selection_digest.is_zero(),
             LearningIterationObservationV1::NextUse {
                 candidate_bundle,
                 state_partition,
@@ -314,13 +387,13 @@ impl LearningIterationCoordinatorV1 {
                 committed_step_receipt,
                 state_cutover_receipt,
             } => {
-                candidate_digest == Some(*candidate_bundle)
+                next_task_bundle == Some(*candidate_bundle)
                     && state_partition.principal_id == request.principal_id
                     && state_partition.agent_id == request.agent_id
                     && state_partition.cell_id == request.cell_id
                     && state_partition.run_id != request.source_run_id
                     && !checkpoint_digest.is_zero()
-                    && matches!(self.snapshot.receipts.get(5).map(|receipt| &receipt.observation),
+                    && matches!(self.snapshot.receipts.last().map(|receipt| &receipt.observation),
                         Some(LearningIterationObservationV1::Selection { selection_digest: expected, .. }) if selection_digest == expected)
                     && !committed_step_receipt.is_zero()
                     && !state_cutover_receipt.is_zero()

@@ -101,6 +101,7 @@ pub enum LearningIterationObservationV1 {
         disposition: LearningProposalDispositionV1,
     },
     /// A read-only observation of an independently authorized selection.
+    /// After NoUpdate, candidate_bundle is the unchanged deployed bundle.
     Selection {
         candidate_bundle: Digest32,
         selection_digest: Digest32,
@@ -138,7 +139,10 @@ pub struct LearningIterationSnapshotV1 {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LearningIterationDispositionV1 {
     InProgress,
+    /// The evaluated decision retains the deployed bundle. Selection and
+    /// next-task use remain outstanding until next_stage returns None.
     NoUpdate,
+    /// Only a committed NextUse observation completes either decision path.
     UsedByNextTask,
 }
 

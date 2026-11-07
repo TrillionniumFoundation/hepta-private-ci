@@ -43,6 +43,8 @@ pub struct PreparedLearningIterationProposalV1 {
 /// watchdog, rather than resubmitting under a fresh identity.
 ///
 /// Selection and next-use are read-only observations of their existing owners.
+/// A NoUpdate decision still needs a current baseline selection and committed
+/// use by a distinct task; it does not authorize installing the rejected bundle.
 /// Checkpoint restore authenticates the current head in an independent rollback
 /// domain; checkpoint CAS must flush and anchor before acknowledgement. Any
 /// ambiguous commit returns CommitUncertain. These are mandatory host duties,

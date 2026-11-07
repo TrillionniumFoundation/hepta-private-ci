@@ -128,11 +128,19 @@ pub(crate) fn receipt(coordinator: &LearningIterationCoordinatorV1) -> LearningI
             disposition: LearningProposalDispositionV1::UpdateCandidates,
         },
         LearningIterationStageV1::Selection => LearningIterationObservationV1::Selection {
-            candidate_bundle,
+            candidate_bundle: coordinator
+                .next_task_bundle()
+                .fixture("decision")
+                .digest()
+                .fixture("bundle"),
             selection_digest: digest("selection"),
         },
         LearningIterationStageV1::NextUse => LearningIterationObservationV1::NextUse {
-            candidate_bundle,
+            candidate_bundle: coordinator
+                .next_task_bundle()
+                .fixture("decision")
+                .digest()
+                .fixture("bundle"),
             state_partition: CellStatePartitionV1 {
                 principal_id: snapshot.request.principal_id.clone(),
                 agent_id: snapshot.request.agent_id.clone(),

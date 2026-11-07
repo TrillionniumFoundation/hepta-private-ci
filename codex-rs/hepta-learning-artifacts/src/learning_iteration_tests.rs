@@ -96,7 +96,7 @@ fn over_budget_dataset_and_cross_dataset_training_are_rejected() {
 }
 
 #[test]
-fn rejected_evaluation_and_anchored_no_update_are_terminal() {
+fn no_update_keeps_baseline_and_replays_selection_and_actual_next_use() {
     for stage_count in [3, 4] {
         let mut coordinator =
             LearningIterationCoordinatorV1::new(request(), owners()).fixture("coordinator");
@@ -105,8 +105,8 @@ fn rejected_evaluation_and_anchored_no_update_are_terminal() {
                 .record(receipt(&coordinator), 20)
                 .fixture("stage");
         }
-        let mut terminal = receipt(&coordinator);
-        match &mut terminal.observation {
+        let mut decision = receipt(&coordinator);
+        match &mut decision.observation {
             LearningIterationObservationV1::Evaluation { disposition, .. } => {
                 *disposition = LearningEvaluationDispositionV1::NoUpdate
             }
@@ -115,19 +115,114 @@ fn rejected_evaluation_and_anchored_no_update_are_terminal() {
             }
             _ => panic!("wrong test stage"),
         }
-        coordinator.record(terminal, 20).fixture("no update");
+        coordinator.record(decision, 20).fixture("no update");
         assert_eq!(
             coordinator.disposition(),
             LearningIterationDispositionV1::NoUpdate
         );
+        let original_bundle = coordinator.snapshot().request.selected_bundle.clone();
+        assert_eq!(coordinator.next_task_bundle(), Some(&original_bundle));
+        let rejected = coordinator
+            .candidate()
+            .fixture("candidate")
+            .digest()
+            .fixture("digest");
+        for stage in [
+            LearningIterationStageV1::Selection,
+            LearningIterationStageV1::NextUse,
+        ] {
+            coordinator =
+                LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())
+                    .fixture("reopen pending no update");
+            assert_eq!(coordinator.next_stage(), Some(stage));
+            assert_eq!(
+                coordinator.disposition(),
+                LearningIterationDispositionV1::NoUpdate
+            );
+            let before = coordinator.snapshot().clone();
+            let actual = receipt(&coordinator);
+            let mut wrong = actual.clone();
+            match &mut wrong.observation {
+                LearningIterationObservationV1::Selection {
+                    candidate_bundle, ..
+                }
+                | LearningIterationObservationV1::NextUse {
+                    candidate_bundle, ..
+                } => {
+                    *candidate_bundle = rejected;
+                }
+                _ => panic!("wrong test stage"),
+            }
+            assert_eq!(
+                coordinator.record(wrong, 20),
+                Err(LearningIterationError::ContextMismatch)
+            );
+            assert_eq!(coordinator.snapshot(), &before);
+            coordinator
+                .record(actual.clone(), 20)
+                .fixture("retained baseline");
+            let committed = coordinator.snapshot().clone();
+            assert_eq!(coordinator.record(actual, 200), Ok(committed.head_digest));
+            coordinator = LearningIterationCoordinatorV1::from_snapshot(committed.clone())
+                .fixture("reopen committed");
+            assert_eq!(coordinator.snapshot(), &committed);
+        }
         assert_eq!(coordinator.next_stage(), None);
         assert_eq!(
-            LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())
-                .fixture("reopen")
-                .disposition(),
-            LearningIterationDispositionV1::NoUpdate
+            coordinator.disposition(),
+            LearningIterationDispositionV1::UsedByNextTask
         );
+        assert_eq!(coordinator.next_task_bundle(), Some(&original_bundle));
     }
+}
+
+#[test]
+fn no_update_cannot_skip_selection_or_substitute_a_no_admissible_proposal() {
+    let mut coordinator =
+        LearningIterationCoordinatorV1::new(request(), owners()).fixture("coordinator");
+    for _ in 0..3 {
+        coordinator
+            .record(receipt(&coordinator), 20)
+            .fixture("stage");
+    }
+    let mut decision = receipt(&coordinator);
+    if let LearningIterationObservationV1::Evaluation { disposition, .. } =
+        &mut decision.observation
+    {
+        *disposition = LearningEvaluationDispositionV1::NoUpdate;
+    }
+    coordinator
+        .record(decision, 20)
+        .fixture("rejected evaluation");
+    let before = coordinator.snapshot().clone();
+    let mut wrong = receipt(&coordinator);
+    wrong.actor_id = before.owners.proposal.clone();
+    wrong.observation = LearningIterationObservationV1::Proposal {
+        candidate_bundle: coordinator
+            .candidate()
+            .fixture("candidate")
+            .digest()
+            .fixture("digest"),
+        proposal_id: before.request.operation_id.clone(),
+        composition_digest: digest("invented generator result"),
+        disposition: LearningProposalDispositionV1::NoAdmissibleUpdate,
+    };
+    assert_eq!(
+        coordinator.record(wrong, 20),
+        Err(LearningIterationError::WrongStage)
+    );
+    assert_eq!(coordinator.snapshot(), &before);
+    coordinator
+        .record(receipt(&coordinator), 20)
+        .fixture("selection");
+    let next_use = receipt(&coordinator);
+    let mut restored =
+        LearningIterationCoordinatorV1::from_snapshot(before.clone()).fixture("old cut");
+    assert_eq!(
+        restored.record(next_use, 20),
+        Err(LearningIterationError::WrongStage)
+    );
+    assert_eq!(restored.snapshot(), &before);
 }
 
 #[test]

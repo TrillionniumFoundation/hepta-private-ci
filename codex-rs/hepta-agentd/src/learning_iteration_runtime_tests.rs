@@ -7,6 +7,7 @@ use std::sync::atomic::Ordering;
 
 use codex_hepta_learning_artifacts::CellBundleComponentsV1;
 use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
+use codex_hepta_learning_artifacts::CellStatePartitionV1;
 use codex_hepta_learning_artifacts::CellTrainingLineageV1;
 use codex_hepta_learning_artifacts::IterationEnvelopeV1;
 use codex_hepta_learning_artifacts::LearningEvaluationDispositionV1;
@@ -58,8 +59,8 @@ impl IterationPorts {
             trainer: self.signing.principals[0].principal_id.clone(),
             evaluator: self.signing.principals[2].principal_id.clone(),
             proposal: id("owner:anchored-proposal"),
-            selector: id("owner:external-selector"),
-            next_use_observer: self.signing.principals[1].principal_id.clone(),
+            selector: self.signing.principals[1].principal_id.clone(),
+            next_use_observer: self.signing.principals[2].principal_id.clone(),
         }
     }
     fn new(
@@ -220,6 +221,8 @@ impl LearningIterationOwnerPortsV1 for IterationPorts {
             let (signer, role) = match receipt.observation.stage() {
                 LearningIterationStageV1::Training => (0, LearningEvidenceRoleV1::Generator),
                 LearningIterationStageV1::Evaluation => (2, LearningEvidenceRoleV1::Evaluator),
+                LearningIterationStageV1::Selection => (1, LearningEvidenceRoleV1::Selector),
+                LearningIterationStageV1::NextUse => (2, LearningEvidenceRoleV1::Observer),
                 _ => (1, LearningEvidenceRoleV1::Observer),
             };
             let mut signed = self.signing.sign(
@@ -365,10 +368,27 @@ async fn coordinator_uses_native_proposal_owner_and_reconciles_lost_ack() {
         iteration.process(&state, request.clone(), || Ok(50)).await,
         Err(LearningIterationRuntimeErrorV1::CommitUncertain)
     ));
-    let finished = ok(iteration.process(&state, request, || Ok(50)).await);
+    assert!(matches!(
+        iteration.process(&state, request, || Ok(50)).await,
+        Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+            "unexpected downstream stage"
+        ))
+    ));
+    let finished = ok(ports.checkpoint.lock())
+        .clone()
+        .expect("anchored decision");
     assert_eq!(
-        ok(LearningIterationCoordinatorV1::from_snapshot(finished)).disposition(),
-        LearningIterationDispositionV1::NoUpdate
+        (
+            ok(LearningIterationCoordinatorV1::from_snapshot(
+                finished.clone()
+            ))
+            .disposition(),
+            ok(LearningIterationCoordinatorV1::from_snapshot(finished)).next_stage()
+        ),
+        (
+            LearningIterationDispositionV1::NoUpdate,
+            Some(LearningIterationStageV1::Selection)
+        )
     );
     assert_eq!(
         ok(ports.executed.lock()).clone(),
@@ -376,7 +396,8 @@ async fn coordinator_uses_native_proposal_owner_and_reconciles_lost_ack() {
             LearningIterationStageV1::Experience,
             LearningIterationStageV1::Dataset,
             LearningIterationStageV1::Training,
-            LearningIterationStageV1::Evaluation
+            LearningIterationStageV1::Evaluation,
+            LearningIterationStageV1::Selection
         ]
     );
     let replay = ok(state.submit_parameter_plasticity_v1(proposal, 50).await);
@@ -424,7 +445,7 @@ async fn invalid_signature_prevents_dataset_training_and_checkpoint_progress() {
 }
 
 #[tokio::test]
-async fn terminal_rejection_replays_after_expiry_without_retraining() {
+async fn evaluated_no_update_waits_for_selection_and_cannot_resume_after_expiry() {
     let daemon = AgentdFixture::new();
     let state = daemon.state();
     let ports = Arc::new(IterationPorts::new(
@@ -440,10 +461,39 @@ async fn terminal_rejection_replays_after_expiry_without_retraining() {
         2,
     ));
     let request = iteration_request(&daemon);
-    let first = ok(owner.process(&state, request.clone(), || Ok(50)).await);
-    let replay = ok(owner.process(&state, request, || Ok(100)).await);
-    assert_eq!(replay, first);
-    assert_eq!(ok(ports.executed.lock()).len(), 4);
+    assert!(matches!(
+        owner.process(&state, request.clone(), || Ok(50)).await,
+        Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+            "unexpected downstream stage"
+        ))
+    ));
+    let first = ok(ports.checkpoint.lock())
+        .clone()
+        .expect("evaluated decision");
+    assert_eq!(first.receipts.len(), 4);
+    assert!(matches!(
+        owner.process(&state, request.clone(), || Ok(100)).await,
+        Err(LearningIterationRuntimeErrorV1::DeadlineExceeded)
+    ));
+    assert_eq!(ok(ports.checkpoint.lock()).as_ref(), Some(&first));
+    assert!(matches!(
+        owner.process(&state, request, || Ok(50)).await,
+        Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+            "unexpected downstream stage"
+        ))
+    ));
+    assert_eq!(
+        ok(ports.executed.lock()).clone(),
+        vec![
+            LearningIterationStageV1::Experience,
+            LearningIterationStageV1::Dataset,
+            LearningIterationStageV1::Training,
+            LearningIterationStageV1::Evaluation,
+            LearningIterationStageV1::Selection,
+            LearningIterationStageV1::Selection,
+        ]
+    );
+    assert_eq!(ok(ports.checkpoint.lock()).as_ref(), Some(&first));
 }
 
 #[tokio::test]
@@ -535,4 +585,114 @@ async fn separate_keys_under_one_controller_cannot_self_evaluate() {
             .map(|snapshot| snapshot.receipts.len()),
         Some(3)
     );
+}
+
+#[tokio::test]
+async fn no_update_next_use_checks_actual_selection_stage_and_controller() {
+    // Signature/ordering test only: no fixture receipt is production use evidence.
+    for colliding_controller in [false, true] {
+        let daemon = AgentdFixture::new();
+        let mut ports = IterationPorts::new(None, LearningEvaluationDispositionV1::NoUpdate);
+        ports.verifier = ok(LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+            scope_digest: digest("plasticity-scope"),
+            objective_digest: digest("plasticity-objective"),
+            authority_epoch: 7,
+            signers: ports
+                .signing
+                .principals
+                .iter()
+                .zip(&ports.signing.keys)
+                .enumerate()
+                .map(|(index, (principal, key))| TrustedLearningSignerV1 {
+                    principal: principal.clone(),
+                    controller_id: id(&format!(
+                        "controller-{}",
+                        if colliding_controller && index == 2 {
+                            1
+                        } else {
+                            index
+                        }
+                    )),
+                    verifying_key: key.verifying_key().to_bytes(),
+                    roles: match index {
+                        0 => vec![LearningEvidenceRoleV1::Generator],
+                        1 => vec![
+                            LearningEvidenceRoleV1::Observer,
+                            LearningEvidenceRoleV1::Selector,
+                        ],
+                        _ => vec![
+                            LearningEvidenceRoleV1::Evaluator,
+                            LearningEvidenceRoleV1::Observer,
+                        ],
+                    },
+                    revoked_at: None,
+                })
+                .collect(),
+        }));
+        let mut coordinator = ok(LearningIterationCoordinatorV1::new(
+            iteration_request(&daemon),
+            ports.owners(),
+        ));
+        for stage in [
+            LearningIterationStageV1::Experience,
+            LearningIterationStageV1::Dataset,
+            LearningIterationStageV1::Training,
+            LearningIterationStageV1::Evaluation,
+        ] {
+            let observed = ok(ports.execute_stage(coordinator.snapshot(), stage).await);
+            ok(coordinator.record(observed, 50));
+        }
+        let bundle = ok(coordinator.snapshot().request.selected_bundle.digest());
+        let selection = LearningIterationReceiptV1 {
+            operation_id: coordinator.snapshot().request.operation_id.clone(),
+            predecessor: coordinator.snapshot().head_digest,
+            actor_id: ports.owners().selector,
+            evidence_digest: digest("fixture-selection"),
+            observed_unix_seconds: 50,
+            observation: LearningIterationObservationV1::Selection {
+                candidate_bundle: bundle,
+                selection_digest: digest("fixture-selection"),
+            },
+        };
+        ok(coordinator.record(selection, 50));
+        let request = &coordinator.snapshot().request;
+        let next_use = LearningIterationReceiptV1 {
+            operation_id: request.operation_id.clone(),
+            predecessor: coordinator.snapshot().head_digest,
+            actor_id: ports.owners().next_use_observer,
+            evidence_digest: digest("fixture-next-use"),
+            observed_unix_seconds: 50,
+            observation: LearningIterationObservationV1::NextUse {
+                candidate_bundle: bundle,
+                state_partition: CellStatePartitionV1 {
+                    principal_id: request.principal_id.clone(),
+                    agent_id: request.agent_id.clone(),
+                    cell_id: request.cell_id.clone(),
+                    run_id: id("run:next"),
+                },
+                checkpoint_digest: digest("fixture-checkpoint"),
+                selection_digest: digest("fixture-selection"),
+                committed_step_receipt: digest("fixture-step"),
+                state_cutover_receipt: digest("fixture-cutover"),
+            },
+        };
+        let verified = crate::learning_iteration_auth::authenticate_iteration_receipt_v1(
+            &ports,
+            &ports.verifier,
+            &coordinator,
+            &next_use,
+            50,
+        )
+        .await;
+        if colliding_controller {
+            assert!(matches!(
+                verified,
+                Err(LearningIterationRuntimeErrorV1::Evidence(
+                    SignedEvidenceError::ControllerCollision
+                ))
+            ));
+        } else {
+            ok(verified);
+        }
+    }
 }
