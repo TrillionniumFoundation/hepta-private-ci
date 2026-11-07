@@ -1,0 +1,127 @@
+{
+  "observed_at_utc": "2026-11-07T07:26:04.619449+00:00",
+  "commands": [
+    {
+      "name": "ruff_check",
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/review_bwrap34_packet.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap34_packet_checks/ruff_check.stdout",
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap34_packet_checks/ruff_check.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "ruff_format",
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/review_bwrap34_packet.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap34_packet_checks/ruff_format.stdout",
+        "bytes": 25,
+        "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap34_packet_checks/ruff_format.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "codespell",
+      "argv": [
+        "python",
+        "-B",
+        "-m",
+        "codespell_lib",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/review_bwrap34_packet.py",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap34_checkpoint_root/ROOT_REVIEW.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap34_packet_initial_preparation.json",
+        "/workspace/scratch/3f6a885bb83c/round3_core_ci/BWRAP34_CHECKPOINT_PUBLICATION_MANIFEST.json"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap34_packet_checks/codespell.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap34_packet_checks/codespell.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "inputs_before": [
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/review_bwrap34_packet.py",
+      "bytes": 9487,
+      "sha256": "763255cca0cc71fe529f3ddd06b0b2082840911b1c9cd69f37697dbac98e2766"
+    },
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap34_checkpoint_root/ROOT_REVIEW.json",
+      "bytes": 2194,
+      "sha256": "15922d6df98ef5ad9f2ec08732e841b7e6ae11b47619239ddebf349f23ff0857"
+    },
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap34_packet_initial_preparation.json",
+      "bytes": 510,
+      "sha256": "7724190595683d43eef815180808f7d7d5a37d8d29b980e3519901d3118bf337"
+    },
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/BWRAP34_CHECKPOINT_PUBLICATION_MANIFEST.json",
+      "bytes": 7412,
+      "sha256": "f7039fea427115a0105540aa1751fc1da3be19ce9cf31646e825f692f610b4fa"
+    }
+  ],
+  "inputs_after": [
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/review_bwrap34_packet.py",
+      "bytes": 9487,
+      "sha256": "763255cca0cc71fe529f3ddd06b0b2082840911b1c9cd69f37697dbac98e2766"
+    },
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap34_checkpoint_root/ROOT_REVIEW.json",
+      "bytes": 2194,
+      "sha256": "15922d6df98ef5ad9f2ec08732e841b7e6ae11b47619239ddebf349f23ff0857"
+    },
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/bwrap34_packet_initial_preparation.json",
+      "bytes": 510,
+      "sha256": "7724190595683d43eef815180808f7d7d5a37d8d29b980e3519901d3118bf337"
+    },
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/BWRAP34_CHECKPOINT_PUBLICATION_MANIFEST.json",
+      "bytes": 7412,
+      "sha256": "f7039fea427115a0105540aa1751fc1da3be19ce9cf31646e825f692f610b4fa"
+    }
+  ],
+  "all_actual_exits_zero": true,
+  "bytes_unchanged": true,
+  "HOME_inherited": true,
+  "new_native_execution": false
+}
