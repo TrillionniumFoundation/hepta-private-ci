@@ -434,13 +434,13 @@ forbidden = ["impl Default for HttpProviderEffectAdapter"]
 path = "codex-rs/hepta-contracts/src/final_use.rs"
 # Source digests record the reviewed bytes and require independent verification;
 # this baseline caller checker enforces markers, not source_sha256 values.
-source_sha256 = "70bc8625b6624bc20fe0a768c281c6f66fb9421e1dec07f43691f958e676e0c0"
+source_sha256 = "dc190d99d51887ab80b53926acb32cbfcdad3c0c329eda02c01ef4833c2bf815"
 required = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub fn open_state_dir_with_issuer_keys(", "FinalUseIssuerTrustKey", "pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn deliver_final_use_with_witness", "pub fn dispatch_final_use", "pub fn dispatch_final_use_with_witness", "pub fn claim(", "pub fn with_verified_use", "pub fn with_dispatch_boundary", "FinalUseFrontier", "VerifiedUseTokenWitnessV1", "authority_authentication::PinnedAuthorityKey", "self.grant_signing_input(signed, expected)?", "candidate.key.verify(&input, &signed.signature)", "validate_live"]
 forbidden = ["impl Default for FinalUseAuthority", "pub fn permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use_control.rs"
-source_sha256 = "4bc589b9295c128f2eb677b9cba879a75436783a97e1f94ebddaf1d70d9ba3c2"
+source_sha256 = "1ff07198512077ab135529b903593aff5f562d7e39235c4ba029dd4d7c988054"
 required = ["pub struct FinalUseApprovalVerifier", "pub struct FinalUseRevocationFeedVerifier", "pub struct FinalUseRevocationConvergenceVerifier", "pub struct FinalUseTrustKey", "pub fn new_with_keys(", "RevocationFeedStale", "authority_authentication::PinnedAuthorityKey", "verify_key_ring(", "candidate.key.verify(input, signature)", "update_revocations", "missing_nodes"]
 forbidden = ["impl Default for FinalUseApprovalVerifier", "impl Default for FinalUseRevocationFeedVerifier", "permit_all"]
 
@@ -2305,13 +2305,13 @@ forbidden = ["pub fn permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use_live_owner.rs"
-source_sha256 = "2aafe9a918c8ecc2d5c99fba3befbcf8b3b78db980f30f37d5a7780a57343b9c"
+source_sha256 = "f0fd6d4b91fb88171cf71b6df116ae9799961145461a49e574f11a081be56502"
 required = ["pub(super) fn ensure_live_state", "pub(super) fn ensure_current_effect_state", "self.ensure_live_state(state)?", "frontier_store.load(&self.signer_id)", "state.failed = true", "FinalUseError::AntiRollbackViolation"]
 forbidden = ["impl Default for Inner", "pub fn permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use_store.rs"
-source_sha256 = "1ce76b4189d1a1fb41998072e4a71d9a6080db5e252d69321ac6447ec43d9ff6"
+source_sha256 = "cbee79d2925bb65cc285bdab6d72d70b3dd53d1469da423b90305f436f3a7c99"
 required = ["PqIssuerKeyRing", "pub(super) fn open_pq_key_ring_exact", "STATE_SCHEMA_PQ_V4", "pub(super) fn append_claim", "file.sync_all()", "self.root.sync_all()"]
 forbidden = ["impl Default for Store", "pub fn permit_all"]
 

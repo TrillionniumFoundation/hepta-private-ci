@@ -56,16 +56,19 @@ CI 结果完整与大 artifact 全量下载是两个不同状态。必须保存�
 | 优先级 | 完成条件 | 当前缺口 |
 | --- | --- | --- |
 | P1 Memory 采用 | 新真实任务有预先规定的收益；旧能力满足预设保持条件；完整成本可比；正式采用后冷启动并用于下一真实任务 | 当前候选上的正向采用、保持条件、完整成本及冷启动/下一任务回执未闭合 |
-| P2 Cell 运行体系 | 多种表示 profile、真实 worker、有界反馈 Circuit、取消、跨 owner 恢复在普通入口共同运行 | 普通 CLI 仅接 Joint；V13 与 Q24 Circuit 普通启动尚有实现缺口，之后还需完整普通入口 native |
+| P2 Cell 运行体系 | 多种表示 profile、真实 worker、有界反馈 Circuit、取消、跨 owner 恢复在普通入口共同运行 | 普通 CLI 已接 Joint 和 V13；有界 Circuit 与 generation 的普通入口组合、跨 owner 恢复和完整 native 仍待闭合 |
 | P3 分化价值 | 同初态、同可见信息、同容量、同累计训练预算、同选择性更新，胜过固定专家与未分裂两个强对照 | 历史 10 计划 / 6 有效 / 4 失败；未建立正向优势，失败 payload 与完整成本缺口保留 |
 | P4 递归改进 | 后代实际接手改进，在同初始系统、隐藏任务和总预算下胜过前代改进器 | 缺真实后代改进器的匹配对照；lineage/rollback 协议测试不够 |
 | P5 长期服务 | 同一候选、同一服务窗口同时衡量质量、尾延迟、有效吞吐、资源、故障恢复、状态增长与总成本 | 缺联合长期服务证据；局部 latency/history 探针不够 |
 
 Joint OneShot 与 Resident 是同一表示契约的两个执行模式，不能据此计为多种
-表示 profile。V13 的 typed bootstrap/example 以及 Q24 Circuit 的 explicit
-owner 仍未连接普通启动。HCSN 的独立 TaskFlow/effect 也不是
-`CellGenerationWorkerV2`。P2 必须先补齐这些入口组合，再由同一候选的真实
-原生执行验证完整闭环；当前不能把缺口缩减为等待一次测试。
+表示 profile。V13 现已通过原普通 CLI descriptor 入口接线，继续校验原始字节、
+精确 profile、24 项资产、实际文件描述符与 owner 身份。专门的真实 MiniLM
+验证固定了新任务、输出确认和冷启动原回执恢复；只有实际成功的 native 回执
+才能关闭这部分验证。Q24 Circuit 的 explicit owner 仍未连接普通启动，
+Circuit 与 generation 之间还缺持久的 intent/payload/输出确认组合。HCSN 的
+独立 TaskFlow/effect 也不是 `CellGenerationWorkerV2`。P2 仍须由同一候选
+的真实原生执行验证完整闭环；当前不能把缺口缩减为等待一次测试。
 
 P3 原记录在 `qualification/cell-differentiation/strong-control-evidence/`。
 其 readback 保留 3456 / 5760 个有效/计划测试预测与全部失败分母，缺失数据不补

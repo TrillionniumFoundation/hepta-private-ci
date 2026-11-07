@@ -78,7 +78,7 @@
     "publication_receipt": "PUBLICATION.json"
   },
   "original_ci": {
-    "status": "PENDING_NEW_CANDIDATE_RESULTS",
+    "status": "PENDING_UPDATED_CANDIDATE_RESULTS",
     "workflow_changes_require_full_repo": true,
     "blocking_workflow": ".github/workflows/blocking-ci.yml",
     "blocking_required_job": "required",
@@ -156,15 +156,22 @@
         "All parts exercised together on this candidate"
       ],
       "current_entry_facts": {
-        "ordinary_cli_representation": "Joint",
+        "ordinary_cli_representation": "Joint and V13",
         "joint_execution_modes": [
           "OneShot",
           "Resident"
         ],
         "execution_modes_are_distinct_representations": false,
-        "v13_typed_bootstrap_and_example_connected_to_ordinary_startup": false,
+        "v13_typed_bootstrap_and_example_connected_to_ordinary_startup": true,
         "q24_circuit_explicit_owner_connected_to_ordinary_startup": false,
-        "hcsn_taskflow_effect_is_cell_generation_worker_v2": false
+        "hcsn_taskflow_effect_is_cell_generation_worker_v2": false,
+        "ordinary_cli_representations": [
+          "Joint",
+          "V13"
+        ],
+        "ordinary_entry_real_worker_qualification": "IMPLEMENTED_NATIVE_RESULT_REQUIRED",
+        "circuit_generation_ordinary_bridge_connected": false,
+        "generation_original_intent_lookup": "Implemented read-only Receipt/Pending/Missing lookup; no Circuit bridge or native qualification implied"
       },
       "source_review": [
         {
@@ -187,9 +194,10 @@
           "component": "V13",
           "paths": [
             "codex-rs/hepta-neuron/src/cell_v13_generation.rs",
-            "codex-rs/hepta-agentd/src/neuron_v13_generation_bootstrap.rs"
+            "codex-rs/hepta-agentd/src/neuron_v13_generation_bootstrap.rs",
+            "codex-rs/hepta-agentd/src/neuron_v13_generation_process_bootstrap.rs"
           ],
-          "finding": "Typed bootstrap and acceptance example exist; ordinary CLI selection remains unchanged"
+          "finding": "Exact V13 descriptor/profile is now wired through ordinary startup with the original strict pin/owner preflight; native positive and cold-reopen qualification is explicitly selected and still requires a successful source-bound execution."
         },
         {
           "component": "HCSN",
@@ -201,10 +209,10 @@
         }
       ],
       "missing": [
-        "Implement multiple representation profiles through ordinary startup; Joint OneShot and Resident share one representation contract",
-        "Connect V13 typed bootstrap and Q24 Circuit explicit owner to ordinary startup",
-        "Compose real worker, bounded feedback, cancellation and cross-owner recovery through the ordinary entry",
-        "Candidate-bound ordinary-entry native execution and complete receipts after those implementation gaps close"
+        "Candidate-bound ordinary-entry native evidence for Joint and V13 representation profiles",
+        "Connect bounded Circuit admission, durable payload/intent transfer and generation output acknowledgement through ordinary startup",
+        "Compose the real worker, bounded feedback, cancellation and cross-owner recovery in one ordinary-entry run",
+        "Complete original applicable CI on the final candidate; mechanism and fixture tests alone do not close P2"
       ],
       "mechanism_tests_alone_sufficient": false
     },
