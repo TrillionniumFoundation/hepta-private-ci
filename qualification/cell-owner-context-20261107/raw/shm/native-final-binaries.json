@@ -1,0 +1,18 @@
+{
+  "time": "2026-11-07T12:37:36.355192+00:00",
+  "reason": "retain final successful native binaries outside all Cargo output paths before lint/format and cache reclamation",
+  "files": [
+    {
+      "original": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/codex_hepta_agentd-b66e2c39edb8dad2",
+      "retained_path": "/workspace/scratch/93ddee66e1b3/hepta-cell-native-binaries/agentd-current-final",
+      "sha256": "6aa853008169fdcff0c5b4f1995fc29d8b7021af69cc0d92e8657adad3b9a0e2",
+      "bytes": 158377736
+    },
+    {
+      "original": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/codex_hepta_neuron-5ecd943f17b5cda1",
+      "retained_path": "/workspace/scratch/93ddee66e1b3/hepta-cell-native-binaries/neuron-final",
+      "sha256": "e65174c80ef7f5bef254b1eacf86ff1fce4a890d84a2ab2500cb24ebcd18e03c",
+      "bytes": 6667360
+    }
+  ]
+}

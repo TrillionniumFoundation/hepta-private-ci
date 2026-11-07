@@ -1,0 +1,73 @@
+"""Reclaim only this task's completed, superseded incremental-profile archives."""
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+
+base = Path('/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small')
+old_profile = 1984971100953647914
+new_profile = 14479390511893239866
+records = [(p, json.loads(p.read_text())) for p in
+           (base / '.fingerprint').glob('codex-*/lib-*.json')]
+fields = ('target', 'path', 'features', 'declared_features', 'rustflags', 'config', 'compile_kind')
+def key(data):
+    return json.dumps({name: data.get(name) for name in fields}, sort_keys=True)
+completed = {key(data) for _, data in records if data['profile'] == new_profile}
+active = []
+for process in Path('/proc').iterdir():
+    if not process.name.isdigit():
+        continue
+    try:
+        active.append((process / 'cmdline').read_bytes().decode(errors='replace'))
+        for fd in (process / 'fd').iterdir():
+            try:
+                active.append(os.readlink(fd))
+            except OSError:
+                pass
+    except OSError:
+        pass
+candidates = []
+for fingerprint, data in records:
+    if data['profile'] != old_profile or key(data) not in completed:
+        continue
+    crate = fingerprint.stem.removeprefix('lib-')
+    suffix = fingerprint.parent.name.rsplit('-', 1)[1]
+    for extension in ('.rlib', '.rmeta'):
+        path = base / 'deps' / f'lib{crate}-{suffix}{extension}'
+        if not path.exists():
+            continue
+        resolved = path.resolve()
+        if any(str(path) in item or str(resolved) in item for item in active):
+            continue
+        if path.is_symlink():
+            assert resolved.is_relative_to('/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps')
+        else:
+            assert resolved.is_relative_to(base / 'deps')
+        digest = hashlib.sha256()
+        with path.open('rb') as source:
+            for block in iter(lambda: source.read(4 * 1024 * 1024), b''):
+                digest.update(block)
+        candidates.append({'path': str(path), 'resolved': str(resolved),
+                           'sha256': digest.hexdigest(), 'bytes': path.stat().st_size,
+                           'fingerprint': str(fingerprint), 'old_profile': old_profile,
+                           'replacement_profile': new_profile})
+manifest = Path(__file__).parent / f'owned-superseded-incremental-artifacts-{sys.argv[1]}.json'
+assert not manifest.exists()
+receipt = {'time': datetime.datetime.now(datetime.UTC).isoformat(),
+           'reason': 'only completed own-target cache with matching completed no-incremental replacement and no active reference',
+           'files': candidates, 'bytes': sum(item['bytes'] for item in candidates)}
+manifest.write_text(json.dumps(receipt, indent=2) + '\n')
+for item in candidates:
+    path = Path(item['path'])
+    linked = path.is_symlink()
+    path.unlink()
+    if linked:
+        Path(item['resolved']).unlink()
+receipt['completed_at'] = datetime.datetime.now(datetime.UTC).isoformat()
+receipt['after_free'] = {path: os.statvfs(path).f_bfree * os.statvfs(path).f_frsize
+                         for path in ('/workspace', '/dev/shm')}
+manifest.write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps({'files': len(candidates), 'bytes': receipt['bytes'],
+                  'after_free': receipt['after_free']}))

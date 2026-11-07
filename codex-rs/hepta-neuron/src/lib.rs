@@ -79,6 +79,7 @@ pub use cell_generation_current::CellGenerationCurrentV1;
 pub use cell_generation_current::CellGenerationOpenModeV1;
 pub use cell_generation_current::CellGenerationOwnerBindingV1;
 pub use cell_generation_current::CellGenerationPreparedCheckpointV1;
+pub use cell_generation_journal::CellGenerationExpectedContextV1;
 pub use cell_generation_journal::CellGenerationJournalV2;
 pub use cell_generation_observation::CellGenerationObservationV1;
 pub use cell_generation_state::CellGenerationConfigV2;
