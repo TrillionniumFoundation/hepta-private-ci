@@ -1,0 +1,103 @@
+name: Source-bound Linux AArch64 SHA-256 backend lock proposal
+
+on:
+  pull_request:
+    branches: [research/ndu-sha256-asm-configured-guards-20261107]
+    paths:
+      - .github/workflows/hepta-sha256-asm-lock-proposal.yml
+      - .github/scripts/propose_sha256_asm_locks.py
+      - .github/scripts/sha256_asm_proposal_evidence.py
+      - .github/scripts/sha256-asm-proposal-spec.json
+      - .github/scripts/sha256_asm_lock_guards.py
+      - .github/scripts/sha256-asm-source.patch
+      - .github/scripts/sha256-asm-metadata-shape.json
+      - .github/scripts/sha256_asm_platform_guards.py
+      - .github/scripts/sha256_asm_source_guard.py
+      - .github/scripts/sha256_asm_worktree_guard.py
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  lock-proposal:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout exact proposal source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind the fixed parent and all original product leaves
+        id: preflight
+        run: python3 .github/scripts/propose_sha256_asm_locks.py preflight
+
+      - name: Prepare original Bazel environment
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: sha256-asm-lock-proposal
+
+      - name: Install original Rust toolchain
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+
+      - name: Install original cargo-deny
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: cargo-deny@0.19.0
+
+      - name: Require original scanner readiness before generation
+        id: ready
+        env:
+          PRIVATE_EVIDENCE_DIR: ${{ steps.preflight.outputs.private_dir }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/propose_sha256_asm_locks.py ready
+
+      - name: Generate and check the proposal without committing it
+        id: generate
+        env:
+          PRIVATE_EVIDENCE_DIR: ${{ steps.preflight.outputs.private_dir }}
+        run: python3 .github/scripts/propose_sha256_asm_locks.py generate
+
+      - name: Check original logs and proposal before upload
+        id: collect
+        if: always() && steps.preflight.outcome == 'success'
+        env:
+          PRIVATE_EVIDENCE_DIR: ${{ steps.preflight.outputs.private_dir }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/propose_sha256_asm_locks.py collect
+
+      - name: Upload the review artifact
+        id: upload
+        if: always() && steps.collect.outcome == 'success' && steps.collect.outputs.safe_for_upload == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sha256-asm-lock-proposal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.collect.outputs.public_dir }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Require actual generation and complete retained evidence
+        if: always()
+        env:
+          READINESS: ${{ steps.ready.outcome }}
+          GENERATION: ${{ steps.generate.outcome }}
+          COLLECTION: ${{ steps.collect.outcome }}
+          UPLOAD: ${{ steps.upload.outcome }}
+          VALIDATED: ${{ steps.collect.outputs.proposal_validated }}
+        run: |
+          test "$READINESS" = success
+          test "$GENERATION" = success
+          test "$COLLECTION" = success
+          test "$UPLOAD" = success
+          test "$VALIDATED" = true
