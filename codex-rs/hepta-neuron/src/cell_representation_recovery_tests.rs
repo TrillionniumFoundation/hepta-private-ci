@@ -3,6 +3,7 @@ use std::fs::OpenOptions;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+use pretty_assertions::assert_eq;
 
 use super::*;
 
@@ -104,7 +105,14 @@ fn cold_restore_binds_original_pending_and_committed_identity_after_endpoint_cha
     let mut control = RecordedControl::new();
     control.failure = Some(NeuronModelError::Indeterminate);
     assert!(matches!(
-        infer_cell(prepared, &mut owner, &mut control, /*now_micros*/ 11),
+        backend.infer_representation(
+            &mut owner,
+            &projected,
+            prepared,
+            &CurrentRepresentationOwners(&current),
+            &mut control,
+            || 11
+        ),
         Err(CellExecutionError::Backend(NeuronModelError::Indeterminate))
     ));
     let pending = checked(owner.pending_inference(&input.scope));

@@ -102,6 +102,18 @@ fn current(
     }
 }
 
+struct CurrentRepresentationOwners<'a>(&'a CellRepresentationUseV1);
+
+impl CellRepresentationResolverV1 for CurrentRepresentationOwners<'_> {
+    fn current_use(
+        &self,
+        scope: &CellScopeV1,
+    ) -> Result<CellRepresentationUseV1, CellExecutionError> {
+        assert_eq!(scope, &self.0.scope);
+        Ok(self.0.clone())
+    }
+}
+
 fn native_backend(width: usize) -> RegisteredCellBackendV1 {
     let mut definition = definition();
     definition.runtime.input_feature_dimension = width;
@@ -807,11 +819,13 @@ fn full_768_source_and_projection_identity_reach_the_existing_owner_pipeline() {
         vec![1 << 24, 1 << 23]
     );
     let mut control = RecordedControl::new();
-    let inferred = checked(infer_cell(
-        prepared,
+    let inferred = checked(backend.infer_representation(
         &mut owner,
+        &representation,
+        prepared,
+        &CurrentRepresentationOwners(&current),
         &mut control,
-        /*now_micros*/ 11,
+        || 11,
     ));
     let receipt = checked(commit_cell_step(
         &mut owner,
@@ -889,7 +903,14 @@ fn changed_quality_evidence_cannot_reinterpret_an_existing_operation() {
     let mut control = RecordedControl::new();
     control.failure = Some(NeuronModelError::Indeterminate);
     assert!(matches!(
-        infer_cell(prepared, &mut owner, &mut control, /*now_micros*/ 11),
+        backend.infer_representation(
+            &mut owner,
+            &old,
+            prepared,
+            &CurrentRepresentationOwners(&old_current),
+            &mut control,
+            || 11
+        ),
         Err(CellExecutionError::Backend(NeuronModelError::Indeterminate))
     ));
     let (producer, mut consumer, target, mut component) =
@@ -1198,3 +1219,6 @@ fn projection_obeys_producer_output_and_native_observation_budgets() {
 
 #[path = "cell_representation_recovery_tests.rs"]
 mod recovery;
+
+#[path = "cell_representation_dispatch_tests.rs"]
+mod dispatch;
