@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 
 from check_windows_private_state_acquisition import CREATION
 from check_windows_private_state_acquisition import SUBSTITUTION
@@ -34,6 +35,16 @@ def fixture(lane):
 
 
 class AcquisitionOracleTests(unittest.TestCase):
+    def test_windows_checkout_enables_git_longpaths_before_checkout(self):
+        workflow = (
+            Path(__file__).resolve().parents[1]
+            / "workflows"
+            / "hepta-windows-private-state-native.yml"
+        ).read_text(encoding="utf-8")
+        enable = workflow.index("git config --global core.longpaths true")
+        checkout = workflow.index("uses: actions/checkout@")
+        self.assertLess(enable, checkout)
+
     def test_accepts_exact_fixed_outcomes(self):
         for lane in ("positive", "unchecked-create", "path-check-open"):
             with self.subTest(lane=lane):
