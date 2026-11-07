@@ -50,9 +50,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
             ("kernel.operations", entry["summary"])
             for entry in self.operations_capability_map["entries"]
         )
-        mapped.append(
-            ("kernel.operations", verify.REFERENCE_OPERATIONS_SUMMARY)
-        )
+        mapped.append(("kernel.operations", verify.REFERENCE_OPERATIONS_SUMMARY))
         self.assertEqual(len(declared), len(set(declared)))
         self.assertEqual(len(mapped), len(set(mapped)))
         self.assertCountEqual(mapped, declared)
@@ -179,13 +177,39 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         store = (ROOT / "codex-rs/hepta-operations/src/durable_store.rs").read_text(
             encoding="utf-8"
         )
+        dispatch = (
+            ROOT / "codex-rs/hepta-operations/src/durable_dispatch.rs"
+        ).read_text(encoding="utf-8")
         tests = (
             ROOT / "codex-rs/hepta-operations/src/durable_store_tests.rs"
         ).read_text(encoding="utf-8")
         self.assertIn('begin_with("BEGIN IMMEDIATE")', store)
         self.assertIn("recover_expired_leases_tx", store)
         self.assertIn("authority.claim(signed, &binding)?", store)
-        self.assertIn(".with_verified_use(token, &self.binding", store)
+        self.assertIn(
+            "self.execute_authorized_in_transaction(authorized, effect)", store
+        )
+        self.assertIn(
+            "Arc::ptr_eq(&self.dispatch_owner, &authorized.dispatch_owner)", dispatch
+        )
+        ordered = (
+            'begin_with("BEGIN IMMEDIATE")',
+            "require_current_lease(&mut tx, &claim, now_millis()?).await?",
+            "operation.intent != claim.intent || operation.writer_fence != claim.fence",
+            "operation.state != DurableOperationState::Dispatching",
+            "let token = authorized",
+            "let authority: &FinalUseAuthority = &authorized.authority;",
+            ".with_dispatch_boundary(token, &authorized.binding, || {",
+            "validate_claim_snapshot(&status, &claim, admitted_at)?",
+            "Ok((admitted_at, effect(&operation.intent)))",
+            "let (admitted_at, observation) = match entry",
+            "tx.commit().await.map_err(sqlx_error)?",
+        )
+        cursor = 0
+        for marker in ordered:
+            found = dispatch.find(marker, cursor)
+            self.assertGreaterEqual(found, 0, marker)
+            cursor = found + len(marker)
         self.assertIn(
             "crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable",
             tests,
