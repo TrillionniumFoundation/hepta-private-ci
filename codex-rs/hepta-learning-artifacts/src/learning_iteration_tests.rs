@@ -151,6 +151,11 @@ fn no_update_keeps_baseline_and_replays_selection_and_actual_next_use() {
                 } => {
                     *candidate_bundle = rejected;
                 }
+                LearningIterationObservationV1::RetainedModelNextUse {
+                    retained_bundle, ..
+                } => {
+                    *retained_bundle = rejected;
+                }
                 _ => panic!("wrong test stage"),
             }
             assert_eq!(

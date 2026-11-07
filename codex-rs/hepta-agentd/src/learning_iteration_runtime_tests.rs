@@ -374,9 +374,9 @@ async fn coordinator_uses_native_proposal_owner_and_reconciles_lost_ack() {
             "unexpected downstream stage"
         ))
     ));
-    let finished = ok(ports.checkpoint.lock())
-        .clone()
-        .expect("anchored decision");
+    let Some(finished) = ok(ports.checkpoint.lock()).clone() else {
+        panic!("anchored decision missing");
+    };
     assert_eq!(
         (
             ok(LearningIterationCoordinatorV1::from_snapshot(
@@ -467,9 +467,9 @@ async fn evaluated_no_update_waits_for_selection_and_cannot_resume_after_expiry(
             "unexpected downstream stage"
         ))
     ));
-    let first = ok(ports.checkpoint.lock())
-        .clone()
-        .expect("evaluated decision");
+    let Some(first) = ok(ports.checkpoint.lock()).clone() else {
+        panic!("evaluated decision missing");
+    };
     assert_eq!(first.receipts.len(), 4);
     assert!(matches!(
         owner.process(&state, request.clone(), || Ok(100)).await,
@@ -662,8 +662,8 @@ async fn no_update_next_use_checks_actual_selection_stage_and_controller() {
             actor_id: ports.owners().next_use_observer,
             evidence_digest: digest("fixture-next-use"),
             observed_unix_seconds: 50,
-            observation: LearningIterationObservationV1::NextUse {
-                candidate_bundle: bundle,
+            observation: LearningIterationObservationV1::RetainedModelNextUse {
+                retained_bundle: bundle,
                 state_partition: CellStatePartitionV1 {
                     principal_id: request.principal_id.clone(),
                     agent_id: request.agent_id.clone(),
@@ -673,7 +673,7 @@ async fn no_update_next_use_checks_actual_selection_stage_and_controller() {
                 checkpoint_digest: digest("fixture-checkpoint"),
                 selection_digest: digest("fixture-selection"),
                 committed_step_receipt: digest("fixture-step"),
-                state_cutover_receipt: digest("fixture-cutover"),
+                task_owner_publication: digest("fixture-task-publication"),
             },
         };
         let verified = crate::learning_iteration_auth::authenticate_iteration_receipt_v1(

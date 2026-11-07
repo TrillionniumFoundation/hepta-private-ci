@@ -136,7 +136,10 @@ impl LearningIterationCoordinatorV1 {
                 .receipts
                 .last()
                 .map(|receipt| &receipt.observation),
-            Some(LearningIterationObservationV1::NextUse { .. })
+            Some(
+                LearningIterationObservationV1::NextUse { .. }
+                    | LearningIterationObservationV1::RetainedModelNextUse { .. }
+            )
         ) {
             return LearningIterationDispositionV1::UsedByNextTask;
         }
@@ -192,7 +195,10 @@ impl LearningIterationCoordinatorV1 {
             Some(LearningIterationObservationV1::Selection { .. }) => {
                 Some(LearningIterationStageV1::NextUse)
             }
-            Some(LearningIterationObservationV1::NextUse { .. }) => None,
+            Some(
+                LearningIterationObservationV1::NextUse { .. }
+                | LearningIterationObservationV1::RetainedModelNextUse { .. },
+            ) => None,
         }
     }
 
@@ -224,7 +230,8 @@ impl LearningIterationCoordinatorV1 {
                     ..
                 }
                 | LearningIterationObservationV1::Selection { .. }
-                | LearningIterationObservationV1::NextUse { .. } => None,
+                | LearningIterationObservationV1::NextUse { .. }
+                | LearningIterationObservationV1::RetainedModelNextUse { .. } => None,
             })
     }
 
@@ -388,6 +395,7 @@ impl LearningIterationCoordinatorV1 {
                 state_cutover_receipt,
             } => {
                 next_task_bundle == Some(*candidate_bundle)
+                    && candidate_digest == Some(*candidate_bundle)
                     && state_partition.principal_id == request.principal_id
                     && state_partition.agent_id == request.agent_id
                     && state_partition.cell_id == request.cell_id
@@ -397,6 +405,26 @@ impl LearningIterationCoordinatorV1 {
                         Some(LearningIterationObservationV1::Selection { selection_digest: expected, .. }) if selection_digest == expected)
                     && !committed_step_receipt.is_zero()
                     && !state_cutover_receipt.is_zero()
+            }
+            LearningIterationObservationV1::RetainedModelNextUse {
+                retained_bundle,
+                state_partition,
+                checkpoint_digest,
+                selection_digest,
+                committed_step_receipt,
+                task_owner_publication,
+            } => {
+                next_task_bundle == Some(*retained_bundle)
+                    && *retained_bundle == request.selected_bundle.digest()?
+                    && state_partition.principal_id == request.principal_id
+                    && state_partition.agent_id == request.agent_id
+                    && state_partition.cell_id == request.cell_id
+                    && state_partition.run_id != request.source_run_id
+                    && !checkpoint_digest.is_zero()
+                    && matches!(self.snapshot.receipts.last().map(|receipt| &receipt.observation),
+                        Some(LearningIterationObservationV1::Selection { selection_digest: expected, .. }) if selection_digest == expected)
+                    && !committed_step_receipt.is_zero()
+                    && !task_owner_publication.is_zero()
             }
         };
         if !valid {
@@ -409,3 +437,7 @@ impl LearningIterationCoordinatorV1 {
 #[cfg(test)]
 #[path = "learning_iteration_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "learning_iteration_retained_tests.rs"]
+mod retained_tests;

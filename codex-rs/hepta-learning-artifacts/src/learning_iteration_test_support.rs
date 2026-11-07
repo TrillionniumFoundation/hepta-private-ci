@@ -135,6 +135,27 @@ pub(crate) fn receipt(coordinator: &LearningIterationCoordinatorV1) -> LearningI
                 .fixture("bundle"),
             selection_digest: digest("selection"),
         },
+        LearningIterationStageV1::NextUse
+            if coordinator.next_task_bundle() == Some(&snapshot.request.selected_bundle) =>
+        {
+            LearningIterationObservationV1::RetainedModelNextUse {
+                retained_bundle: snapshot
+                    .request
+                    .selected_bundle
+                    .digest()
+                    .fixture("baseline"),
+                state_partition: CellStatePartitionV1 {
+                    principal_id: snapshot.request.principal_id.clone(),
+                    agent_id: snapshot.request.agent_id.clone(),
+                    cell_id: snapshot.request.cell_id.clone(),
+                    run_id: id("run:next"),
+                },
+                checkpoint_digest: digest("checkpoint"),
+                selection_digest: digest("selection"),
+                committed_step_receipt: digest("step"),
+                task_owner_publication: digest("published-same-model-task"),
+            }
+        }
         LearningIterationStageV1::NextUse => LearningIterationObservationV1::NextUse {
             candidate_bundle: coordinator
                 .next_task_bundle()

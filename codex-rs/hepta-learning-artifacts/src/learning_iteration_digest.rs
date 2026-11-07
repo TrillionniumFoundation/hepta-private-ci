@@ -161,6 +161,23 @@ pub fn learning_iteration_receipt_signing_bytes_v1(
             bytes.extend_from_slice(committed_step_receipt.as_array());
             bytes.extend_from_slice(state_cutover_receipt.as_array());
         }
+        LearningIterationObservationV1::RetainedModelNextUse {
+            retained_bundle,
+            state_partition,
+            checkpoint_digest,
+            selection_digest,
+            committed_step_receipt,
+            task_owner_publication,
+        } => {
+            // Existing observation tags 0..=6 and their signed bytes are unchanged.
+            bytes.push(7);
+            bytes.extend_from_slice(retained_bundle.as_array());
+            bytes.extend_from_slice(state_partition.digest().as_array());
+            bytes.extend_from_slice(checkpoint_digest.as_array());
+            bytes.extend_from_slice(selection_digest.as_array());
+            bytes.extend_from_slice(committed_step_receipt.as_array());
+            bytes.extend_from_slice(task_owner_publication.as_array());
+        }
     }
     Ok(bytes)
 }

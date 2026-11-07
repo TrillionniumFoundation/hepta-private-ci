@@ -115,6 +115,16 @@ pub enum LearningIterationObservationV1 {
         committed_step_receipt: Digest32,
         state_cutover_receipt: Digest32,
     },
+    /// A distinct task used the unchanged bundle after an evaluated no-update
+    /// decision. The published task owner is not a model-bundle cutover.
+    RetainedModelNextUse {
+        retained_bundle: Digest32,
+        state_partition: CellStatePartitionV1,
+        checkpoint_digest: Digest32,
+        selection_digest: Digest32,
+        committed_step_receipt: Digest32,
+        task_owner_publication: Digest32,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -155,7 +165,9 @@ impl LearningIterationObservationV1 {
             Self::Evaluation { .. } => LearningIterationStageV1::Evaluation,
             Self::Proposal { .. } => LearningIterationStageV1::Proposal,
             Self::Selection { .. } => LearningIterationStageV1::Selection,
-            Self::NextUse { .. } => LearningIterationStageV1::NextUse,
+            Self::NextUse { .. } | Self::RetainedModelNextUse { .. } => {
+                LearningIterationStageV1::NextUse
+            }
         }
     }
 }
