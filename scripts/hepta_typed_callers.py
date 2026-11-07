@@ -79,9 +79,7 @@ def authority_fields(source_index: dict[str, str], target: str) -> AuthorityFiel
     reachable = {target}
     while True:
         owners = {
-            owner
-            for (owner, _), types in declarations.items()
-            if types & reachable
+            owner for (owner, _), types in declarations.items() if types & reachable
         }
         if owners <= reachable:
             break
@@ -513,7 +511,11 @@ def _bindings(
     bindings = _parameter_types(_function_parameters(original), target)
     spans = _closure_spans(scope)
     events = [
-        (closing, "parameters", _parameter_types(original[opening + 1 : closing], target))
+        (
+            closing,
+            "parameters",
+            _parameter_types(original[opening + 1 : closing], target),
+        )
         for opening, closing in spans.items()
         if _closure_is_live(scope, closing, spans)
     ]

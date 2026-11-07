@@ -107,7 +107,9 @@ class TypedAuthorityCallTests(unittest.TestCase):
         )
 
     def test_transitive_field_origin_in_split_impl_keeps_local_aliases(self):
-        parent = "struct Service { lease: Option<Pinned> } struct Pinned { verifier: Gate }"
+        parent = (
+            "struct Service { lease: Option<Pinned> } struct Pinned { verifier: Gate }"
+        )
         child = (
             "impl Service { fn f(&self) { let held = self.lease.as_ref()"
             ".ok_or(missing())?; let renamed = &held.verifier; renamed.enter(); } }"
@@ -180,7 +182,10 @@ class TypedAuthorityCallTests(unittest.TestCase):
                     )
 
     def test_closed_block_cannot_replace_the_live_outer_parameter(self):
-        for outer, inner, expected in (("Gate", "Other", True), ("Other", "Gate", False)):
+        for outer, inner, expected in (
+            ("Gate", "Other", True),
+            ("Other", "Gate", False),
+        ):
             with self.subTest(outer=outer, inner=inner):
                 self.assertEqual(
                     self.match(
@@ -200,7 +205,10 @@ class TypedAuthorityCallTests(unittest.TestCase):
         )
 
     def test_open_block_applies_its_current_local_shadow(self):
-        for outer, inner, expected in (("Gate", "Other", False), ("Other", "Gate", True)):
+        for outer, inner, expected in (
+            ("Gate", "Other", False),
+            ("Other", "Gate", True),
+        ):
             with self.subTest(outer=outer, inner=inner):
                 self.assertEqual(
                     self.match(
@@ -211,7 +219,10 @@ class TypedAuthorityCallTests(unittest.TestCase):
                 )
 
     def test_closed_nested_function_parameter_cannot_retype_the_outer_receiver(self):
-        for outer, inner, expected in (("Gate", "Other", True), ("Other", "Gate", False)):
+        for outer, inner, expected in (
+            ("Gate", "Other", True),
+            ("Other", "Gate", False),
+        ):
             with self.subTest(outer=outer, inner=inner):
                 self.assertEqual(
                     self.match(
@@ -223,7 +234,10 @@ class TypedAuthorityCallTests(unittest.TestCase):
                 )
 
     def test_nested_function_uses_its_own_parameter_type(self):
-        for outer, inner, expected in (("Gate", "Other", False), ("Other", "Gate", True)):
+        for outer, inner, expected in (
+            ("Gate", "Other", False),
+            ("Other", "Gate", True),
+        ):
             with self.subTest(outer=outer, inner=inner):
                 self.assertEqual(
                     self.match(
@@ -234,7 +248,10 @@ class TypedAuthorityCallTests(unittest.TestCase):
                 )
 
     def test_closed_closure_annotations_cannot_retype_the_outer_receiver(self):
-        for outer, inner, expected in (("Gate", "Other", True), ("Other", "Gate", False)):
+        for outer, inner, expected in (
+            ("Gate", "Other", True),
+            ("Other", "Gate", False),
+        ):
             for body in ("original.other()", "{ original.other() }"):
                 with self.subTest(outer=outer, inner=inner, body=body):
                     self.assertEqual(
@@ -269,8 +286,15 @@ class TypedAuthorityCallTests(unittest.TestCase):
                 )
 
     def test_untyped_closure_patterns_cannot_inherit_an_unrelated_outer_type(self):
-        for pattern in ("original", "(original, _)", "(Some(original) | Other(original))"):
-            with self.subTest(pattern=pattern), self.assertRaises(UnresolvedTypedReceiver):
+        for pattern in (
+            "original",
+            "(original, _)",
+            "(Some(original) | Other(original))",
+        ):
+            with (
+                self.subTest(pattern=pattern),
+                self.assertRaises(UnresolvedTypedReceiver),
+            ):
                 self.match(
                     "fn f(original: &Other, known: &Gate) { "
                     f"let pending = |{pattern}| original.enter(); }}"
@@ -466,7 +490,9 @@ class TypedAuthorityCallTests(unittest.TestCase):
         )
 
     def test_error_adapter_closure_semicolons_keep_the_complete_field_chain(self):
-        parent = "struct Service { lease: Option<Pinned> } struct Pinned { verifier: Gate }"
+        parent = (
+            "struct Service { lease: Option<Pinned> } struct Pinned { verifier: Gate }"
+        )
         child = (
             "fn f(service: &Service) { let held = service.lease.as_ref()"
             ".ok_or_else(|| { record_failure(); denied() })?.verifier; held.enter(); }"
@@ -495,14 +521,18 @@ class TypedAuthorityCallTests(unittest.TestCase):
             "struct Service { lease: Option<Pinned>, other: Other }"
             "struct Pinned { verifier: Gate }"
         )
-        child = (
-            "fn f(service: &Service) { let unrelated = &service.other; unrelated.enter(); }"
-        )
+        child = "fn f(service: &Service) { let unrelated = &service.other; unrelated.enter(); }"
         self.assertFalse(self.match(child, {"parent": parent, "child": child}))
 
     def test_opaque_transform_in_transitive_field_chain_refuses_closed(self):
-        parent = "struct Service { lease: Option<Pinned> } struct Pinned { verifier: Gate }"
-        for transform in ("map(|pin| opaque(pin))", "or_else(|| opaque())", "factory()"):
+        parent = (
+            "struct Service { lease: Option<Pinned> } struct Pinned { verifier: Gate }"
+        )
+        for transform in (
+            "map(|pin| opaque(pin))",
+            "or_else(|| opaque())",
+            "factory()",
+        ):
             with self.subTest(transform=transform):
                 child = (
                     "fn f(service: &Service) { let held = service.lease.as_ref()."
@@ -513,7 +543,9 @@ class TypedAuthorityCallTests(unittest.TestCase):
                     self.match(child, {"parent": parent, "child": child})
 
     def test_opaque_factory_cannot_hide_a_transitive_authority_owner(self):
-        parent = "struct Service { lease: Option<Pinned> } struct Pinned { verifier: Gate }"
+        parent = (
+            "struct Service { lease: Option<Pinned> } struct Pinned { verifier: Gate }"
+        )
         child = "fn f(service: &Service) { let held = opaque_factory(service); held.enter(); }"
         with self.assertRaises(UnresolvedTypedReceiver):
             self.match(child, {"parent": parent, "child": child})
