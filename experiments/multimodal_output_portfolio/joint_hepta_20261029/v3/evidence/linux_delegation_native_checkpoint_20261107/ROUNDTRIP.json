@@ -1,0 +1,33 @@
+{
+  "ordinary_reader_bytes_equal": true,
+  "optimized_verification": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-O",
+      "/workspace/scratch/3f6a885bb83c/round3_native/build_safe_41_42_checkpoint.py",
+      "--verify-only",
+      "/workspace/scratch/3f6a885bb83c/round3_native/linux41_native_evidence_20261107"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "files": 138,
+      "bytes": 2374166,
+      "index_sha256": "25f190681d4f9ffea22e18ed232da9c77344eb05c61ba1e358ccaeec3bebdfde",
+      "all_selected_bytes_and_membership_equal": true,
+      "all_source_mode_records_equal": true,
+      "optimized_python": true,
+      "disk_extraction_performed": false,
+      "restored_file_modes_physically_tested": false,
+      "archived_source_executed": false,
+      "native_execution": false
+    },
+    "stderr": ""
+  },
+  "files": 138,
+  "bytes": 2374166,
+  "index_sha256": "25f190681d4f9ffea22e18ed232da9c77344eb05c61ba1e358ccaeec3bebdfde",
+  "no_extraction_copy_created": true,
+  "new_refusal_tests": "NOT_RUN; unchanged canonical reader",
+  "native_execution": false
+}

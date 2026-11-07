@@ -1,0 +1,45 @@
+{
+  "observed_at_utc": "2026-11-07T06:29:57.953034+00:00",
+  "scope": "Canonical reader and complete selected original bytes and source modes, in memory only",
+  "publication": {
+    "bytes": 4078,
+    "sha256": "514e1760eb8df8fa79c1657da9ad2bd1f35e625f4ee32ca662196dff96f707a9",
+    "git_blob": "3202910100ee5633d67c95f19cd31539ad0b0785"
+  },
+  "index": {
+    "bytes": 40066,
+    "sha256": "25f190681d4f9ffea22e18ed232da9c77344eb05c61ba1e358ccaeec3bebdfde",
+    "git_blob": "844b36bf98fd4f94edab64cf4fa55379d87f46a3"
+  },
+  "canonical_source_API": {
+    "bytes": 556,
+    "sha256": "cea745f7e310bf843a3cd608dcde6b16c5ed920f7a45b76aab4a5724c3e26dfc",
+    "git_blob": "4724c484fce5957290f45f38cf4f2baedf7b89e1"
+  },
+  "reader": {
+    "bytes": 6899,
+    "sha256": "be1011c118d90278550c63e4960aeb47e9bb46af4899d5ac8bc9dfc74f6e4361",
+    "git_blob": "8e399abd72e86b9eb0c1578444eb6fee86919a70"
+  },
+  "reader_only_seal_changed": true,
+  "original_files": 138,
+  "original_bytes": 2374166,
+  "publication_files": 7,
+  "every_selected_original_byte_and_source_mode_equal": true,
+  "root_evidence_included": {
+    "round3_local_qualification/linux41_native_root/ROOT_REVIEW.json": "df1a80792210af6f827a7eee76e2ed9e9f55c6cd8ba2d3bd876b96c52fb8b3cf",
+    "round3_ci/independent_reviews/linux_delegation41_native/REVIEW.json": "44605d2a1f363f760e01c2d7bcb46226977511430b0769813f30d965862df4ed"
+  },
+  "private_console_and_execution_ZIP_contents_excluded": true,
+  "private_originals_reconstructable_from_this_packet": false,
+  "archived_source_executed": false,
+  "expanded_restore_written": false,
+  "new_native_execution": false,
+  "product_P0_closed": false,
+  "qualification": "Two job labels report the same noncached RBE target binary/action pass; both whole jobs failed. Direct case and scenario outcomes remain unknown, with production P0 open.",
+  "reviewer": {
+    "bytes": 11665,
+    "sha256": "d2ca8ee9fa32c80283bca567b3a5e3cd587920c5aca63f547b65e2ee60a4b8ea",
+    "git_blob": "4477702798485a8589accff1c829bb3c23d05d4f"
+  }
+}
