@@ -108,7 +108,7 @@ For delta=.05:
 | 20 | .053006 | .045319961 | 8.972717715 | .032553357 | No |
 | 50 | .000361 | .032721258 | 9.344752575 | .001651364 | No |
 
-`KL obstruction` means nD < kl(1-delta,delta), a sufficient certificate that no
+`KL obstruction` means n · D < kl(1-delta,delta), a sufficient certificate that no
 uniformly delta-correct policy can meet the cap in this single-query model.
 Its absence is **not sufficient** for feasibility: at cap 8 the inequality
 passes, but even the optimal full-eight-observation rule has error .126036.

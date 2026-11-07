@@ -3,7 +3,10 @@ name: blocking-ci
 on:
   pull_request: {}
   push:
-    branches: [main]
+    branches:
+      - main
+      # Exercise the complete blocking fan-in on this isolated research branch.
+      - research/ndu-independent-runtime-review-20261106
 
 concurrency:
   group: blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}

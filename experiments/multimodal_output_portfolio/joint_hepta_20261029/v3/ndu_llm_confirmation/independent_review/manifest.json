@@ -1,0 +1,35 @@
+{
+  "files_sha256": {
+    "CHECKLIST.md": "7768fea43756e748118dfec302e6ac8a25465c7efea14b5bd36a1331f604036d",
+    "REVIEW.md": "f36561cd7071f177b25161f2c6f2ad849f1bfb0a2af49e03d3a4c8e014f9c0f1",
+    "preparation.json": "1db8f939cd0c19a8d64f02be41e99dc622a6d235a38c9b31fa468640a0967512",
+    "review_gate.py": "3ebc63954ccaa69a9a12c4c5abdb9effb0f9128f853e2ba111997745f71b14e8",
+    "review_gate_v2_clock_fixed.json": "8653c9e899cb550e94c9cefc86d14a776cff5088c4b61b3c660177e81464c4bf",
+    "review_gate_v2_initial.json": "166f8b69d3732c48307d54f48051ef9f7fbdb97630c8f09cb659c8227ad70ce5",
+    "review_runtime.py": "1f82c3db858ce9fa26334d46f36505cda53e5fa7ab1980bf3d06fbdc8ec0457e",
+    "review_runtime_v2_clock_fixed.json": "51c56364a4a78a86ad7a97e660f78889a00654ff9523035f06ca7cd1a755cd16"
+  },
+  "gate_checks": 121,
+  "independent_positive_control": "PASS_SYNTHETIC_ONLY",
+  "runtime_checks": 23,
+  "schema": "ndu.independent.review.manifest.v1",
+  "scientific_confirmation": "NOT_ESTABLISHED",
+  "source_stable": true,
+  "status": "LOCAL_ENGINEERING_REVIEW_PASS",
+  "target_source_sha256": {
+    "confirmation.py": "caf50c4e45f8542a0ba89b6f079863b68311bda84d235dbc4f4e988cfce178b5",
+    "contracts.py": "78e6281a3f100f79cf62ff9aa1d6b2606d374235190c1a1ff8847abd248a3a62",
+    "evidence/qualification-original.json": "d9af64b97a57b483a76ebc37f15148eea9465186321400d1049be6df18d2a661",
+    "ledger.py": "d6402f54c210e3521fe296369272f5a3d9fbed44873f90dddc57bfd9af6d425f",
+    "policy.py": "1856ac2671cae4e1891b0056ae5eee7895088dc74aca0c6996c1c8b6e2e33c20",
+    "schema.json": "bb12f95c5a5ce743a3be67f2bc194bc3b2a0af14a9c9fbcb18ce18a42ebfe2cf",
+    "tasks.py": "88206ed5df40f53b645d9bca6e0195a8d41bfa51874ec4d001bc8a503d287338",
+    "test_confirmation.py": "adc64fcd14cb7406117f543697242943f802e4473bcf8fa2870cd875c535a422",
+    "test_gate_contracts.py": "919f98fd471c4f277fecf168f07b1346d76b15a04cd26a4808117d12f892b2f4",
+    "test_ledger.py": "5b0fefb9a88ac8bb38089ba04ff454320225398e50789bcb60402923b7c79a24",
+    "test_policy.py": "e2e18677a461173075e91ef2cc21dcc85fd7823e88b264db09b8de6ecca4ac36",
+    "test_tasks.py": "52b6ce1575453bae6d879cff13cf0cbd375dec7c78995ebc7c5d8711bb8e43cb",
+    "test_transport.py": "654404b0b9f3cdda4acb0324ae5807992a9c82c3a80afeba05fd8c2771561686",
+    "transport.py": "183ef2b7137bcb55a3d6fafb8e6587e92cd97c0b4ba51ba5a80c10de2c848584"
+  }
+}

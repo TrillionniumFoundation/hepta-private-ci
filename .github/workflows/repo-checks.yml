@@ -6,6 +6,12 @@ on:
 permissions:
   contents: read
 
+env:
+  # Evidence paths exceed MAX_PATH on Windows; enable Git's native long-path handling before checkout.
+  GIT_CONFIG_COUNT: "1"
+  GIT_CONFIG_KEY_0: core.longpaths
+  GIT_CONFIG_VALUE_0: "true"
+
 jobs:
   build-test:
     runs-on: ubuntu-latest

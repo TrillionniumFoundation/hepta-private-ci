@@ -101,7 +101,7 @@ def public_documentation_cases():
          "How large can the cache become with maxsize=None, and what property must arguments have?",
          "With maxsize=None the cache can grow without bound, and the arguments must be hashable.",
          (r"without\s+(?:a\s+)?(?:bound|limit)|unbound\w*|unlimit\w*|indefinite", r"\bhashable\b"),
-         (r"unhashable|need\s+not\s+be\s+hashable|not\s+(?:need|require).*hashable", r"cach(?:e|ing)\s+is\s+disabled")),
+         (r"unhashable|need\s+not\s+be\s+hashable|not\s+(?:need|require).*hashable", r"(?:cache|caching)\s+is\s+disabled")),
         ("gzip.open", gzip.open, "development_evaluation",
          "Which file format does open handle, and is its default mode text or binary?",
          "It opens gzip-compressed files and defaults to binary read mode, rb.",

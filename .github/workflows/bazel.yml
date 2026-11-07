@@ -10,6 +10,12 @@ on:
 permissions:
   contents: read
 
+env:
+  # Evidence paths exceed MAX_PATH on Windows; enable Git's native long-path handling before checkout.
+  GIT_CONFIG_COUNT: "1"
+  GIT_CONFIG_KEY_0: core.longpaths
+  GIT_CONFIG_VALUE_0: "true"
+
 concurrency:
   # Cancel previous actions from the same PR or branch except 'main' branch.
   # See https://docs.github.com/en/actions/using-jobs/using-concurrency and https://docs.github.com/en/actions/learn-github-actions/contexts for more info.
