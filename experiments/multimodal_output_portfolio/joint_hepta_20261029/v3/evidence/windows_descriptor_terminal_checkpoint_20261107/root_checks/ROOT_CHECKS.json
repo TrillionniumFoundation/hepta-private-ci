@@ -1,0 +1,124 @@
+{
+  "observed_at_utc": "2026-11-07T06:30:45.710636+00:00",
+  "before": [
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/review_native41_42_packets.py",
+      "bytes": 11665,
+      "sha256": "d2ca8ee9fa32c80283bca567b3a5e3cd587920c5aca63f547b65e2ee60a4b8ea"
+    },
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows42_checkpoint_root/ROOT_REVIEW.json",
+      "bytes": 2024,
+      "sha256": "836363e03c69e96ac17f0a45db69ed7a3fc8f8e9f4df159b0853a9308cffdce0"
+    },
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/linux41_checkpoint_root/ROOT_REVIEW.json",
+      "bytes": 2027,
+      "sha256": "0e4709493a2a0b050211abb190e446bd815fefc9427416c9959fe455ab124727"
+    },
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_win42_linux41_checkpoint_canonical_api.json",
+      "bytes": 556,
+      "sha256": "cea745f7e310bf843a3cd608dcde6b16c5ed920f7a45b76aab4a5724c3e26dfc"
+    }
+  ],
+  "after": [
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/review_native41_42_packets.py",
+      "bytes": 11665,
+      "sha256": "d2ca8ee9fa32c80283bca567b3a5e3cd587920c5aca63f547b65e2ee60a4b8ea"
+    },
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows42_checkpoint_root/ROOT_REVIEW.json",
+      "bytes": 2024,
+      "sha256": "836363e03c69e96ac17f0a45db69ed7a3fc8f8e9f4df159b0853a9308cffdce0"
+    },
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/linux41_checkpoint_root/ROOT_REVIEW.json",
+      "bytes": 2027,
+      "sha256": "0e4709493a2a0b050211abb190e446bd815fefc9427416c9959fe455ab124727"
+    },
+    {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_win42_linux41_checkpoint_canonical_api.json",
+      "bytes": 556,
+      "sha256": "cea745f7e310bf843a3cd608dcde6b16c5ed920f7a45b76aab4a5724c3e26dfc"
+    }
+  ],
+  "bytes_unchanged": true,
+  "commands": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/review_native41_42_packets.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/native41_42_packet_checks/0.stdout.log",
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/native41_42_packet_checks/0.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/review_native41_42_packets.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/native41_42_packet_checks/1.stdout.log",
+        "bytes": 25,
+        "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/native41_42_packet_checks/1.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "-m",
+        "codespell_lib",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/review_native41_42_packets.py",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows42_checkpoint_root/ROOT_REVIEW.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/linux41_checkpoint_root/ROOT_REVIEW.json",
+        "/workspace/scratch/3f6a885bb83c/round3_win42_linux41_checkpoint_canonical_api.json"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/native41_42_packet_checks/2.stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/native41_42_packet_checks/2.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "all_exit_zero": true,
+  "HOME_inherited": true,
+  "new_ignores": false
+}

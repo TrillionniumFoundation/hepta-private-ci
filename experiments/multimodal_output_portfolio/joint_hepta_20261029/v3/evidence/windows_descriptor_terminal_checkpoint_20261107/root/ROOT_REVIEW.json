@@ -1,0 +1,45 @@
+{
+  "observed_at_utc": "2026-11-07T06:29:57.890598+00:00",
+  "scope": "Canonical reader and complete selected original bytes and source modes, in memory only",
+  "publication": {
+    "bytes": 4140,
+    "sha256": "2dc680db07d922d4f4c60b346dd9c384a59cf4419dafdb1866f616365a9ca231",
+    "git_blob": "cc4988964bc12efa847cf685ea23716fb1022458"
+  },
+  "index": {
+    "bytes": 39823,
+    "sha256": "ea80e9b69e99a2b1e6f6a1c6463cb00a50995f3a5f71f64d16ccda114e2b87b2",
+    "git_blob": "1741a966ff46279d76cb22ff184f2ed8d7c880bb"
+  },
+  "canonical_source_API": {
+    "bytes": 556,
+    "sha256": "cea745f7e310bf843a3cd608dcde6b16c5ed920f7a45b76aab4a5724c3e26dfc",
+    "git_blob": "4724c484fce5957290f45f38cf4f2baedf7b89e1"
+  },
+  "reader": {
+    "bytes": 6899,
+    "sha256": "06e021e6335d017dee2a9c0efda93afa949aa9f9181ce887a7c43041537f84a0",
+    "git_blob": "0b691c07781e1085937411e0365cdd39d7b6814c"
+  },
+  "reader_only_seal_changed": true,
+  "original_files": 135,
+  "original_bytes": 1980796,
+  "publication_files": 7,
+  "every_selected_original_byte_and_source_mode_equal": true,
+  "root_evidence_included": {
+    "round3_local_qualification/windows42_terminal_root/ROOT_REVIEW.json": "04c18914ea329ef8f416e53f005b3ed76ac8d9de2fee5ddb7f510e4eaa6cf7c7",
+    "round3_local_qualification/bwrap32_packet_windows42_checks/ROOT_CHECKS.json": "9ffc26c3e8944222038ca381313f08396251476f9b10d438f49df971a231bc39"
+  },
+  "private_console_and_execution_ZIP_contents_excluded": true,
+  "private_originals_reconstructable_from_this_packet": false,
+  "archived_source_executed": false,
+  "expanded_restore_written": false,
+  "new_native_execution": false,
+  "product_P0_closed": false,
+  "qualification": "Original owning target and all three cases failed; one complete 318-record block and its repeated 168-record suffix are preserved. Product P0 remains open.",
+  "reviewer": {
+    "bytes": 11665,
+    "sha256": "d2ca8ee9fa32c80283bca567b3a5e3cd587920c5aca63f547b65e2ee60a4b8ea",
+    "git_blob": "4477702798485a8589accff1c829bb3c23d05d4f"
+  }
+}
