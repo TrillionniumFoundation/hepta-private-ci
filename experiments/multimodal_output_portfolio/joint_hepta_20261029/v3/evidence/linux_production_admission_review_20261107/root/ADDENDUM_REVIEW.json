@@ -1,0 +1,47 @@
+{
+  "schema": "e17-root-additive-argument-review-v1",
+  "owner_report": {
+    "path": "/dev/shm/ndu_e17_production_review_20261107/PRODUCTION_ADMISSION_REVIEW.md",
+    "bytes": 16731,
+    "sha256": "f6d8bebc8ad4368d129e1405a3b3789104a9ed0cb4778b3f2e9c0fddb5bce4f8",
+    "mode": "0644"
+  },
+  "independent_addendum": {
+    "path": "/dev/shm/ndu_e17_independent_review_20261107/DYNAMIC_POLICY_INPUT_ADDENDUM.md",
+    "bytes": 11965,
+    "sha256": "992391bb59e7aee4fa4096fc2d043b4c8a0b0a207646eb5b13b9d7e1acb5c1f7",
+    "mode": "0644"
+  },
+  "independent_review": {
+    "path": "/dev/shm/ndu_e17_independent_review_20261107/REVIEW.json",
+    "bytes": 3885,
+    "sha256": "1396705f2ea17b5246dafe9efcc3ba283ba63caa1ef049863d8c2898d1e089da",
+    "mode": "0644"
+  },
+  "root_current_source_review": {
+    "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_review/ROOT_REVIEW.json",
+    "bytes": 8487,
+    "sha256": "021a016d48af01430a23c62828c6203e95f0c40cbb5d13eb7446c131012eb3ed",
+    "mode": "0644"
+  },
+  "root_read_complete_original_and_independent_reports": true,
+  "source_branches_independently_read": [
+    "resolve_access_with_cwd",
+    "materialize_project_roots_with_workspace_roots",
+    "resolved_entries_with_cwd",
+    "resolve_file_system_special_path::Tmpdir",
+    "resolve_file_system_special_path::SlashTmp"
+  ],
+  "conditional_argument_accepted_with_explicit_scope": [
+    "A remaining Tmpdir special entry consults process TMPDIR at predicate evaluation.",
+    "Project-root materialization retains non-project special entries.",
+    "The interleaving requires an environment-mutating actor; filesystem mutation alone is insufficient.",
+    "The fixture literal has no explicit Tmpdir; actual historical materialized request remains unknown.",
+    "The argument adds a constructor premise; it does not attribute the original failure or prove all alternatives impossible."
+  ],
+  "candidate_or_predicate_or_interleaving_executed": false,
+  "process_environment_or_product_source_changed": false,
+  "private_or_rejected_input_read": false,
+  "E17": "OPEN",
+  "runtime_authority_producer": "NOT_ESTABLISHED"
+}
