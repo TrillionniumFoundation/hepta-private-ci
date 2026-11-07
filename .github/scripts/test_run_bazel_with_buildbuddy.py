@@ -135,7 +135,6 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
         args = [
             "build",
             "--config=ci-windows",
-            "--host_platform=//:local_windows_msvc",
             "--platforms=//:windows_x86_64_msvc",
             "--",
             "//codex-rs/cli:codex",
@@ -145,12 +144,30 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
             args, {"RUNNER_OS": "Windows"}
         )
 
+        self.assertIn("--host_platform=//:local_windows_msvc", result)
         self.assertIn(
             "--extra_execution_platforms=//:windows_x86_64_msvc", result
         )
         self.assertIn(
             "--extra_toolchains=//:local_windows_msvc_cc_toolchain", result
         )
+
+    def test_native_windows_msvc_preserves_explicit_host_platform(self) -> None:
+        args = [
+            "build",
+            "--config=ci-windows",
+            "--host_platform=//:caller_host",
+            "--platforms=//:windows_x86_64_msvc",
+            "--",
+            "//codex-rs/cli:codex",
+        ]
+
+        result = run_bazel_with_buildbuddy.bazel_args_without_remote_execution(
+            args, {"RUNNER_OS": "Windows"}
+        )
+
+        self.assertIn("--host_platform=//:caller_host", result)
+        self.assertNotIn("--host_platform=//:local_windows_msvc", result)
 
     def test_native_windows_gnullvm_does_not_force_msvc_exec_platform(self) -> None:
         args = [
@@ -169,6 +186,7 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
         self.assertNotIn(
             "--extra_execution_platforms=//:windows_x86_64_msvc", result
         )
+        self.assertNotIn("--host_platform=//:local_windows_msvc", result)
 
     def test_query_remote_configuration_is_inserted_before_expression(self) -> None:
         expression = 'kind("rust_library rule", //codex-rs/...)'
