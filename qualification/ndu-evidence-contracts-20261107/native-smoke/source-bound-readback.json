@@ -1,0 +1,254 @@
+{
+  "schema": "hepta.ndu.native-ci-readback.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 5302,
+  "run_id": 42367881449,
+  "job_id": 128390182669,
+  "artifact": {
+    "id": 13573450979,
+    "name": "ndu-v6-smoke-42367881449-1",
+    "size_in_bytes": 24623356,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13573450979",
+    "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13573450979/zip",
+    "expired": false,
+    "created_at": "2026-11-07T11:43:15Z",
+    "expires_at": "2026-11-21T11:43:13Z",
+    "updated_at": "2026-11-07T11:43:15Z",
+    "digest": "sha256:38553e5d20df40515e6931fb38927bc5c4abd5804862386885f5c8025bd760c1",
+    "workflow_run": {
+      "id": 42367881449,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "fix/ndu-image-fingerprint-20261107-8ef7",
+      "head_sha": "1e869d455fe2fb53b5221b84bc0a27e190b09ab2"
+    }
+  },
+  "sourceCommit": {
+    "sha": "1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+    "node_id": "C_kwDOTrgxoNoAKDFlODY5ZDQ1NWZlMmZiNTNiNTIyMWI4NGJjMGEyN2UxOTBiMDlhYjI",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+    "author": {
+      "name": "Tomasrgbsf",
+      "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+      "date": "2026-11-07T11:21:42Z"
+    },
+    "committer": {
+      "name": "Tomasrgbsf",
+      "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+      "date": "2026-11-07T11:21:42Z"
+    },
+    "tree": {
+      "sha": "34d4cff5f537c83eb3a4d15cdb0acece6f3f35a8",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/34d4cff5f537c83eb3a4d15cdb0acece6f3f35a8"
+    },
+    "message": "fix(ndu): normalize singleton tensor bytes before image training fingerprints\n\nReproduce the #4839 BFloat16 stride failure, preserve exact dtype/shape bytes, and retain all local failures plus the 68-test clean run. Trigger the unchanged bounded development canary on this branch; all scientific gates remain HOLD.",
+    "parents": [
+      {
+        "sha": "e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e23dfea486025e09d7e11dd17ea0852d6e3e89d0"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "testedMerge": {
+    "sha": "a805b3e4a419b861a8b1ef1c669678ab208dbfc2",
+    "node_id": "C_kwDOTrgxoNoAKGE4MDViM2U0YTQxOWI4NjFhOGIxZWYxYzY2OTY3OGFiMjA4ZGJmYzI",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/a805b3e4a419b861a8b1ef1c669678ab208dbfc2",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/a805b3e4a419b861a8b1ef1c669678ab208dbfc2",
+    "author": {
+      "name": "Tomasrgbsf",
+      "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+      "date": "2026-11-07T11:21:59Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-11-07T11:21:59Z"
+    },
+    "tree": {
+      "sha": "34d4cff5f537c83eb3a4d15cdb0acece6f3f35a8",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/34d4cff5f537c83eb3a4d15cdb0acece6f3f35a8"
+    },
+    "message": "Merge 1e869d455fe2fb53b5221b84bc0a27e190b09ab2 into e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+    "parents": [
+      {
+        "sha": "e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e23dfea486025e09d7e11dd17ea0852d6e3e89d0"
+      },
+      {
+        "sha": "1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/1e869d455fe2fb53b5221b84bc0a27e190b09ab2"
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq7wnXCRC1aQ7uu5UhlAAAwOgQAD0lgU1naPL6+/e7jLNfKlqb\ngmAJKabYq3Kiknb+7UW7CjGqcdHe+l1Ih4kvGI451rJceM/8bwE483WYGF22A8tl\nwqKQEx0ljNoU6nwobDUzTQxce4G+Cv0O+8bFVA3F1sVln4Ql4mi5bY3RgjW/fuYE\nKMJIddHcWQ92lFeS234G+5Mm8o8RC7WR4sR3OYt/BYZBj+nhmeDZhLws1c/XYVL5\n7Ri6Z68GZTnEdKljD+By8VWMHAwO29H00np5RXncNw2KXuBrBJ2FIj8bxh2H6NOF\ngLLOMy4gD1JSSLtPdcDFz59YGm3fuLelnjZ1yAwvmgOta0+xTCgtUIgKA/hs9UQa\nvEANEBOX549ugByLz3TDXgXneP3GHXCbkBw8RkoWw9wY1mPL1TCYYaTmw/Bvt2L5\nw11DeHfIxbLbBPKbgLAzcFkXkQnCT8nFKyp0gkla46cPHLxJ/wbirS6oZCJgJUF4\nrN8p4LTDz5bFwy8tsSNuudXza941f667+g9Jp7lcPJ0tZbYNFRtjfd6I9jrrwT6r\nvT6yoIn6JHo/EQnoKzLUsLGUMUo+emBSxhXI5bxied+1edniGmaC9qJhAY7JinDI\nFIi8N5tZiVBfePGpo/p+wSb+PPn0wnAgpkgNstHBHBxrT6ET/Ic33BTBFOTKIR3K\nqXLLkpuhGY9b2rDuNbt3\n=08Ku\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 34d4cff5f537c83eb3a4d15cdb0acece6f3f35a8\nparent e23dfea486025e09d7e11dd17ea0852d6e3e89d0\nparent 1e869d455fe2fb53b5221b84bc0a27e190b09ab2\nauthor Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com> 1794050519 -0500\ncommitter GitHub <noreply@github.com> 1794050519 -0500\n\nMerge 1e869d455fe2fb53b5221b84bc0a27e190b09ab2 into e23dfea486025e09d7e11dd17ea0852d6e3e89d0\n",
+      "verified_at": "2026-11-07T11:22:00Z"
+    }
+  },
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1
+    },
+    {
+      "name": "Initialize evidence custody before setup",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2
+    },
+    {
+      "name": "Check out the exact prospective merge or pushed source",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3
+    },
+    {
+      "name": "Install pinned Python",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4
+    },
+    {
+      "name": "Install the repository Rust toolchain",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5
+    },
+    {
+      "name": "Install pinned native test tools",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6
+    },
+    {
+      "name": "Install pinned CPU dependencies and retain resolved environment",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7
+    },
+    {
+      "name": "Run every v6 Python test module once",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8
+    },
+    {
+      "name": "Compare finite control with an independent numerical oracle",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9
+    },
+    {
+      "name": "Verify the Cargo lockfile and run native owner tests",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10
+    },
+    {
+      "name": "Build and preserve the actual native evaluator",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11
+    },
+    {
+      "name": "Test bounded generation contracts and the registered worker driver",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 12
+    },
+    {
+      "name": "Execute the real model through durable inference owner lifecycle",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 13
+    },
+    {
+      "name": "Compile the opt-in calibration and plasticity-prerequisite integrations",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 14
+    },
+    {
+      "name": "Execute real text and image generation with native receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 15
+    },
+    {
+      "name": "Require complete output and actual native evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 16
+    },
+    {
+      "name": "Replay this completed run's trained checkpoint through inference owners",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 17
+    },
+    {
+      "name": "Fit and recover terminal cells from this completed generation run",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 18
+    },
+    {
+      "name": "Evaluate this completed run through the fenced paired owner",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 19
+    },
+    {
+      "name": "Preserve the tested source unchanged",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 20
+    },
+    {
+      "name": "Retain workflow status even after failure",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 21
+    },
+    {
+      "name": "Retain complete evidence, including partial failures",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 22
+    },
+    {
+      "name": "Post Install pinned Python",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 43
+    },
+    {
+      "name": "Post Check out the exact prospective merge or pushed source",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 44
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 45
+    }
+  ],
+  "source_tree_equals_tested_tree": true
+}

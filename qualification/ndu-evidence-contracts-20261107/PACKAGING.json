@@ -1,0 +1,101 @@
+{
+  "schema": "ndu-byte-preserving-evidence-repack-v1",
+  "reason": "Keep every log, receipt and synthetic input payload within the existing 512000-byte Git blob limit. Unnest the compressed input container and use standard ZIP LZMA compression.",
+  "original_outer_sha256": "2aa911178fd77d191526eaedcbf20d14b14be7ac7e44b515993b6b7c67e4d0d7",
+  "original_outer_bytes": 630952,
+  "archive": "execution-evidence.zip",
+  "archive_bytes": 196352,
+  "archive_sha256": "0b42bba26aeb83b3829911093da4d7b03e72a8231a7ba6be99d917fe3ad9e141",
+  "payload_bytes_unchanged": true,
+  "container_bytes_changed": true,
+  "unpacked_containers": [
+    {
+      "original_path": "replication-evidence-first/synthetic-inputs.zip",
+      "original_container_bytes": 672643,
+      "original_container_sha256": "b04aef9b8b5af96d3b8c350e3f2b450c41bddb2b9fdb0d1b308e7b6615a7efe5",
+      "members": [
+        {
+          "original_member": "bundle.json",
+          "packaged_path": "replication-evidence-first/synthetic-inputs/bundle.json",
+          "bytes": 12531647,
+          "sha256": "f72a4b92108e3b5ea41dcf9508712b6f0ef9f547212c3ed09cf92c30e7c6bf10"
+        },
+        {
+          "original_member": "selection.json",
+          "packaged_path": "replication-evidence-first/synthetic-inputs/selection.json",
+          "bytes": 14998,
+          "sha256": "b7485a17febe8eac06f6b4493cbfce76b138a3a0061bd394976d426af4aa0b93"
+        },
+        {
+          "original_member": "synthetic-audit.json",
+          "packaged_path": "replication-evidence-first/synthetic-inputs/synthetic-audit.json",
+          "bytes": 32458,
+          "sha256": "f3869480fe7d2b09f0ba16fb9ccd050fcb6fae631bf832ac40f769abf4e1ac0f"
+        }
+      ]
+    }
+  ],
+  "payloads": {
+    "baseline-contracts/receipt.json": {
+      "bytes": 8971,
+      "sha256": "0e90ef9263fb26353410211dd93b22c6363021ee2e30d8861a62865cd5cf47c3"
+    },
+    "baseline-contracts/tests.log": {
+      "bytes": 23581,
+      "sha256": "07e30a246e365fbf674720a8d7cbfecf67479195bfe0d359c6bb16a895eb8c4c"
+    },
+    "integrated-contracts-final/receipt.json": {
+      "bytes": 9276,
+      "sha256": "444b77964251d7fdaab9ab722b6ea1cf3a16ba6201530e0ac7b60dd38498ec66"
+    },
+    "integrated-contracts-final/tests.log": {
+      "bytes": 30026,
+      "sha256": "ae5f12186d605d39f60305ba48d2698eb3349fa7d431f2c35795c27f38389e28"
+    },
+    "integrated-contracts-first/receipt.json": {
+      "bytes": 9271,
+      "sha256": "4ec0e166672e1bc549635728474b37de3e6fac11c0996f47ba10601fc8637f75"
+    },
+    "integrated-contracts-first/tests.log": {
+      "bytes": 28834,
+      "sha256": "b60212aa97058a0d49ceced70b1dbf042a33653f2112594950b2ccd828ed0535"
+    },
+    "learning-evidence-final/VERIFICATION.json": {
+      "bytes": 2119,
+      "sha256": "19825b118b2ad60b66199c6a54ea13461dee5b6b0ebc0add4ec3d84339ec9682"
+    },
+    "learning-evidence-final/synthetic-examples.json": {
+      "bytes": 35958,
+      "sha256": "40354947b4f2e12abaf97fe8295201a08a20e4702886ea373498e58f25c340dd"
+    },
+    "learning-evidence-final/tests.log": {
+      "bytes": 3973,
+      "sha256": "4ccbdcc1b62f7d970bd370f4de4cba42b6613287380f4ab5d18860e08d75303c"
+    },
+    "replication-evidence-first/VERIFICATION.json": {
+      "bytes": 2393,
+      "sha256": "2789bf736bd9ef738b4b96e2d50c6f1423643c6328f94e54c994366cd02cd2dc"
+    },
+    "replication-evidence-first/synthetic-audit.json": {
+      "bytes": 50973,
+      "sha256": "34b85de4b39118e5e2dc2756f2a8037643011cfed94be437bd9ed332da894928"
+    },
+    "replication-evidence-first/synthetic-inputs/bundle.json": {
+      "bytes": 12531647,
+      "sha256": "f72a4b92108e3b5ea41dcf9508712b6f0ef9f547212c3ed09cf92c30e7c6bf10"
+    },
+    "replication-evidence-first/synthetic-inputs/selection.json": {
+      "bytes": 14998,
+      "sha256": "b7485a17febe8eac06f6b4493cbfce76b138a3a0061bd394976d426af4aa0b93"
+    },
+    "replication-evidence-first/synthetic-inputs/synthetic-audit.json": {
+      "bytes": 32458,
+      "sha256": "f3869480fe7d2b09f0ba16fb9ccd050fcb6fae631bf832ac40f769abf4e1ac0f"
+    },
+    "replication-evidence-first/tests.log": {
+      "bytes": 7685,
+      "sha256": "9420432573fc5ab5cca9faf14533dee24521a7704eab03fbc9fe56624d2e854c"
+    }
+  },
+  "receipt_interpretation": "Original verification receipts remain unmodified and bind the original input-container SHA. This manifest maps every original input member to its byte-identical new path; no test or experiment was rerun or reclassified."
+}

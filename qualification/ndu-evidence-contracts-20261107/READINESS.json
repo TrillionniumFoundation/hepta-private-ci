@@ -42,6 +42,43 @@
       "outer_wall_seconds": 140.111789741,
       "source_count": 1,
       "holdout_sources": 0
+    },
+    "current_native_smoke": {
+      "pr": 5302,
+      "source_sha": "1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+      "tested_merge": "a805b3e4a419b861a8b1ef1c669678ab208dbfc2",
+      "tree": "34d4cff5f537c83eb3a4d15cdb0acece6f3f35a8",
+      "run_id": 42367881449,
+      "job_id": 128390182669,
+      "artifact_id": 13573450979,
+      "artifact_sha256": "38553e5d20df40515e6931fb38927bc5c4abd5804862386885f5c8025bd760c1",
+      "audit": "native-smoke/AUDIT.md",
+      "original_receipt_payloads_retained": 203,
+      "large_runtime_payloads_omitted_and_hash_pinned": 15,
+      "original_rows": 56,
+      "independent_training_seeds": 1,
+      "paired_sources": 2,
+      "paired_rows": 4,
+      "new_scientific_samples_from_replay": 0,
+      "paired_thresholds_pass": false,
+      "production_authenticated": false,
+      "external_observer_authenticated": false,
+      "formal_noupdate_to_actual_next_use": false
+    },
+    "corrected_real_training": {
+      "pr": 5302,
+      "source_sha": "1e869d455fe2fb53b5221b84bc0a27e190b09ab2",
+      "run_id": 42367863157,
+      "job_id": 128389640910,
+      "artifact_id": 13573457135,
+      "artifact_sha256": "8f9fe6239dcaaaa646fdab09fc42c38289ccbe7fb9483f67f8d85a6dff5ed7f8",
+      "engineering_result": "Failed / partial after 30-minute workflow deadline cancellation",
+      "text_completed_updates": 2,
+      "image_recorded_completed_updates": 0,
+      "image_initial_fingerprint_passed": true,
+      "final_training_cpu_seconds": null,
+      "final_training_wall_seconds": null,
+      "inference_result_produced": false
     }
   },
   "requirements": {
@@ -49,9 +86,9 @@
     "retention_panel": "MISSING_IN_CHECKED_PACKET",
     "independent_locked_evaluator": "MISSING_IN_CHECKED_PACKET",
     "real_light_ndu_fixed_voi_mpc": "NOT_EXECUTED_IN_CHECKED_PACKET",
-    "authenticated_episode_receipts": "MISSING_IN_CHECKED_PACKET",
+    "authenticated_episode_receipts": "MISSING_FOR_REGISTERED_FIVE_FAMILY_CONFIRMATION",
     "native_owner_api": "SOURCE_AVAILABLE_SEPARATE_BRANCH",
-    "native_owner_tests": "HISTORICAL_EXACT_SOURCE_PASS_NOT_REAL_EPISODE_RECEIPTS",
+    "native_owner_tests": "CURRENT_SOURCE_SMOKE_WITH_RETAINED_TEST_AUTHORITY_RECEIPTS",
     "full_physical_costs": "INCOMPLETE",
     "independent_training_replication": "NO_REAL_FITS_SUPPLIED",
     "real_gradient_probe": "HISTORICAL_SINGLE_DEVELOPMENT_IMAGE_ONLY",
@@ -67,6 +104,7 @@
     "Source snapshots and historical tests must not be relabelled as execution of a newer head.",
     "One disclosed image and synthetic repetitions cannot create independent source groups.",
     "A declared real flag, hashes or distinct evaluator names cannot authenticate native execution or independence.",
-    "The sibling image fingerprint repair has separate source and execution evidence; it cannot qualify this factorial experiment."
+    "The sibling image fingerprint repair has separate source and execution evidence; it cannot qualify this factorial experiment.",
+    "A new native smoke retains original generation/terminal/paired owner receipts; this updates the historical-only inventory without authenticating an external observer or qualifying the #5198 factorial."
   ]
 }

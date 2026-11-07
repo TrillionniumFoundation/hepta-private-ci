@@ -1,0 +1,405 @@
+{
+  "checks": {
+    "accepted_rows": true,
+    "accepted_protocol_canonical": true,
+    "accepted_summary_canonical": true,
+    "native_binary": true,
+    "terminal_fixture": true,
+    "paired_fixture": true,
+    "terminal_source_pins": {
+      "audit-observer.pt": true,
+      "outputs/seed-17-supervised-future-0900-b64-allocation_only/caption.txt": true,
+      "outputs/seed-17-supervised-future-0900-b64-allocation_only/image.png": true,
+      "outputs/seed-17-supervised-future-0900-b64-fixed/caption.txt": true,
+      "outputs/seed-17-supervised-future-0900-b64-fixed/image.png": true,
+      "outputs/seed-17-supervised-future-0900-b64-fixed_dev_tuned/caption.txt": true,
+      "outputs/seed-17-supervised-future-0900-b64-fixed_dev_tuned/image.png": true,
+      "outputs/seed-17-supervised-future-0900-b64-greedy/caption.txt": true,
+      "outputs/seed-17-supervised-future-0900-b64-greedy/image.png": true,
+      "outputs/seed-17-supervised-future-0900-b64-learned_router/caption.txt": true,
+      "outputs/seed-17-supervised-future-0900-b64-learned_router/image.png": true,
+      "outputs/seed-17-supervised-future-0900-b64-risk_aware_recursive/caption.txt": true,
+      "outputs/seed-17-supervised-future-0900-b64-risk_aware_recursive/image.png": true,
+      "outputs/seed-17-supervised-future-0900-b64-risk_neutral_mpc/caption.txt": true,
+      "outputs/seed-17-supervised-future-0900-b64-risk_neutral_mpc/image.png": true,
+      "protocol.json": true,
+      "rows.jsonl": true,
+      "seed-17-supervised-forecast.pt": true,
+      "seed-17-supervised.pt": true,
+      "status.json": true,
+      "summary.json": true
+    },
+    "paired_publication": true,
+    "paired_source_pins": {
+      "audit-observer.pt": true,
+      "outputs/seed-17-terminal_entropic_ndu-future-0900-b64-fixed_dev_tuned/caption.txt": true,
+      "outputs/seed-17-terminal_entropic_ndu-future-0900-b64-fixed_dev_tuned/image.png": true,
+      "outputs/seed-17-terminal_entropic_ndu-future-0900-b64-risk_aware_recursive/caption.txt": true,
+      "outputs/seed-17-terminal_entropic_ndu-future-0900-b64-risk_aware_recursive/image.png": true,
+      "outputs/seed-17-terminal_entropic_ndu-future-0901-b64-fixed_dev_tuned/caption.txt": true,
+      "outputs/seed-17-terminal_entropic_ndu-future-0901-b64-fixed_dev_tuned/image.png": true,
+      "outputs/seed-17-terminal_entropic_ndu-future-0901-b64-risk_aware_recursive/caption.txt": true,
+      "outputs/seed-17-terminal_entropic_ndu-future-0901-b64-risk_aware_recursive/image.png": true,
+      "protocol.json": true,
+      "reward-observer.pt": true,
+      "rows.jsonl": true,
+      "seed-17-terminal_entropic_ndu-forecast.pt": true,
+      "seed-17-terminal_entropic_ndu.pt": true,
+      "status.json": true,
+      "summary.json": true
+    },
+    "paired_cache_pins": {
+      "t10k-images-idx3-ubyte.gz": true,
+      "t10k-labels-idx1-ubyte.gz": true,
+      "train-images-idx3-ubyte.gz": true,
+      "train-labels-idx1-ubyte.gz": true
+    },
+    "trained_execution_file": true,
+    "trained_model_file": true,
+    "trained_original_row_membership": true,
+    "trained_raw_png_sha": true,
+    "trained_raw_text_sha": true,
+    "trained_request_binding": true,
+    "all_native_receipt_binary_pins": true
+  },
+  "commands": [
+    {
+      "path": "commands/cargo-lock.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 0.4181961299999841
+    },
+    {
+      "path": "commands/dependencies.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 30.211245411999982
+    },
+    {
+      "path": "commands/evidence-check.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 2.4964471389998835
+    },
+    {
+      "path": "commands/finite-oracle.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 0.8202383029999964
+    },
+    {
+      "path": "commands/generation-contracts.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 70,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 535.621560306
+    },
+    {
+      "path": "commands/generation-owner.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 5,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 38.62776908000001
+    },
+    {
+      "path": "commands/native-build.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 0.9017513969999982
+    },
+    {
+      "path": "commands/native-tests.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 236,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 32.394804514000015
+    },
+    {
+      "path": "commands/neuron-calibration-compile.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 231.6546164670001
+    },
+    {
+      "path": "commands/owner-fixture.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 2.4110680120001007
+    },
+    {
+      "path": "commands/paired-fixture.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 0.7627007460000641
+    },
+    {
+      "path": "commands/paired-owner.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 1,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 4.381715472999986
+    },
+    {
+      "path": "commands/pip.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 2.4242039819999945
+    },
+    {
+      "path": "commands/python-tests.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 99,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 11.733317122999978
+    },
+    {
+      "path": "commands/rollout.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 11.741294797999899
+    },
+    {
+      "path": "commands/rust-toolchain.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 10.551300566000009
+    },
+    {
+      "path": "commands/terminal-fixture.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 0.30850925700019616
+    },
+    {
+      "path": "commands/terminal-owner.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 5,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 29.647755754999935
+    },
+    {
+      "path": "commands/trained-generation-owner.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 1,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 11.546196593000104
+    },
+    {
+      "path": "commands/trained-owner-byte-comparison.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 0.3133921470000587
+    },
+    {
+      "path": "commands/trained-owner-fixture.json",
+      "checks": {
+        "log_exists": true,
+        "log_hash_matches": true,
+        "log_bytes_matches": true,
+        "before_after_same": true,
+        "tested_commit_matches": true,
+        "tree_matches": true,
+        "source_commit_matches": true
+      },
+      "passed_tests": 0,
+      "failed_tests": 0,
+      "status": "passed",
+      "elapsed_seconds": 3.119955425999933
+    }
+  ],
+  "issues": [],
+  "all_checks_pass": true
+}

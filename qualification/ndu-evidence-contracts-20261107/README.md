@@ -11,6 +11,13 @@ earlier local attempts and five synthetic outcome examples are retained in
 records the implementation issues found and fixed during parallel review.
 These assistant code reviews are not independent real-task evaluations.
 
+The initial 630,952-byte evidence ZIP exceeded the existing 512,000-byte blob
+limit. [PACKAGING.json](PACKAGING.json) records the repair: unnest the synthetic
+input container and apply ZIP LZMA compression. All 15 input/log/receipt payloads
+were compared byte-for-byte before and after; original receipts and original
+container hashes are retained. The resulting archive is 196,352 bytes. This
+packaging change does not rerun or reclassify the scientific evidence.
+
 The first published head `7f33cc33aed948779a2725bf9a56f805063abb57`
 also passed the remote NDU job: **140 portfolio tests plus 33 semantic/material
 tests, zero skips**. The actual tested merge and head have the same tree, and
@@ -122,6 +129,33 @@ The source anchors are #5198 `006e744f`, #5192 `09db432b`, and #4944 reviewed
 `25fa6d6d` / executed `61921427`. Existing native learning NoUpdate ends before
 Selection/NextUse; the authentic learning-to-incumbent-next-use chain is still
 open. This package deliberately does not alter that production state machine.
+
+### Newly retained native execution evidence
+
+The later [native-smoke audit](native-smoke/AUDIT.md) updates the initial
+historical-only inventory. The #5302 hosted run actually executed generation,
+trained-checkpoint replay, terminal and paired owners at source `1e869d455fe2fb53b5221b84bc0a27e190b09ab2`.
+Its tested merge has the same tree. The two compact packages preserve all 203
+receipt/log/output payloads byte-for-byte, including failed and timeout cases;
+15 model/dataset/runtime files are explicitly omitted and individually hashed.
+All 21 command-log bindings, terminal/paired source pins and replay output bytes
+were independently checked. This is a receipt subset, not a standalone runtime.
+
+Original inference journals, terminal ledger/candidate/registry bytes, and the
+paired holdout/decision witness are now retained. This closes a real custody
+gap for that smoke. It does not qualify the #5198 experiment: the constructed
+MNIST run has one training seed and 56 rows, and the paired check reuses four
+rows from two sources without creating new scientific samples. Its thresholds
+did not pass. Local fixture signatures do not authenticate an external observer;
+production authority remains denied. Trained checkpoint replay uses a fixed
+policy and explicitly reports `online_native_control=false`.
+
+The separate corrected adapter canary hit the 30-minute workflow limit: text
+completed two updates, image hashing passed, but image preparation did not
+produce its completion event and no image update start was recorded. Its final aggregate
+cost receipt is missing. That execution is Failed/partial; the full #5198
+scientific packet remains Inconclusive. Neither run supplies a formal NoUpdate
+learning decision followed by authenticated incumbent NextUse.
 
 ## Reproduce and integrate
 
