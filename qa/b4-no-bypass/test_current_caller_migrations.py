@@ -153,6 +153,20 @@ class CurrentCallerMigrationTests(unittest.TestCase):
                 with self.subTest(path=name, guard=original):
                     self.rejects(AGENT + name, original, "unchecked(")
 
+    def test_registration_check_cannot_be_borrowed_from_effect_helper(self):
+        self.rejects(
+            AGENT + "deployment_issuer_dependencies.rs",
+            "if actual_writer != writer {\n"
+            "                        return Err(io::Error::new(\n"
+            "                            io::ErrorKind::PermissionDenied,\n"
+            '                            "registered writer lease changed",\n'
+            "                        ));\n"
+            "                    }",
+            "",
+            occurrence=1,
+            count=2,
+        )
+
     def test_effect_signature_expiry_keeps_parent_writer_and_effect_caps(self):
         for name, original in (
             ("deployment_notes.rs", ".min(actual_issuer.expires_at_unix_ms)"),
