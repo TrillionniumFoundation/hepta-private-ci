@@ -1,5 +1,8 @@
 //! Prepared, owned-fixture experiment. No production token factory is replaced.
 
+#[path = "token_access_request_tests.rs"]
+mod access_requests;
+
 use super::*;
 use anyhow::Context;
 use std::path::Path;
@@ -676,6 +679,7 @@ fn observe(case: u8, root: &Path) -> Result<Observation> {
     let (inside, outside_read, contents_match, refused, permissions, protected_git) = {
         // SAFETY: the token stays owned until after this guard reverts the thread.
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
+        access_requests::observe(case, &allowed[0], &git)?;
         let inside = allowed.each_ref().map(|path| {
             [
                 operation(std::fs::write(path.join("created.txt"), "allowed")),
