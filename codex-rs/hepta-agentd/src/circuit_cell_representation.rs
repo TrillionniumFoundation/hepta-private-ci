@@ -3,22 +3,16 @@
 //! readback does not require the old producer to remain the selected version.
 
 use codex_hepta_neuron::CellNativeRepresentationInputV1;
-use codex_hepta_neuron::CellRepresentationUseV1;
-use codex_hepta_neuron::CellScopeV1;
+use codex_hepta_neuron::CellDefinitionV1;
+use codex_hepta_neuron::CellEncodedInputV1;
+use codex_hepta_neuron::CellEncodingRequestV1;
+use codex_hepta_neuron::InferredCellStepV1;
+use codex_hepta_neuron::PreparedCellStepV1;
 use codex_hepta_neuron::RegisteredCellBackendV1;
 
-use super::*;
+pub use codex_hepta_neuron::CellRepresentationResolverV1 as CircuitCellRepresentationResolverV1;
 
-/// Resolve the existing source and consumer owners' current observations.
-/// Implementations must authenticate those owners and their selected contracts;
-/// copying pins out of the negotiated input is not a current observation.
-/// This read-only callback must return promptly and grants no effect authority.
-pub trait CircuitCellRepresentationResolverV1 {
-    fn current_use(
-        &self,
-        scope: &CellScopeV1,
-    ) -> Result<CellRepresentationUseV1, CellExecutionError>;
-}
+use super::*;
 
 /// Per-activation data plus the original owner resolver. The long-lived Cell
 /// owner and shared worker are reused; this is not a new agent turn or writer.
@@ -55,18 +49,58 @@ where
         {
             return Err(CircuitCellErrorV1::InputMismatch);
         }
-        let scope = input.scope.clone();
         CircuitCellExecutionOwnersV1 {
             registry: &self.registry,
             state_owner: &mut self.state_owner,
             inference_control: &mut self.inference_control,
-            encoder: representation.input,
+            encoder: &representation,
         }
-        .execute(admission, input, clock, || {
-            representation.input.validate_current_use(
-                representation.backend,
-                &representation.resolver.current_use(&scope)?,
-            )
-        })
+        .execute(admission, input, clock)
+    }
+}
+
+impl<R> CellInputEncoderV1 for CircuitCellRepresentationUseV1<'_, R> {
+    fn encode(
+        &self,
+        request: &CellEncodingRequestV1<'_>,
+    ) -> Result<CellEncodedInputV1, CellExecutionError> {
+        self.input.encode(request)
+    }
+}
+
+impl<R: CircuitCellRepresentationResolverV1> CircuitCellPipelineV1
+    for CircuitCellRepresentationUseV1<'_, R>
+{
+    fn enter(
+        &self,
+        definition: &CellDefinitionV1,
+        owner: &impl CellStateOwnerV1,
+        input: CellStepInputV1,
+        now_micros: u64,
+    ) -> Result<CellStepEntryV1, CellExecutionError> {
+        if definition != &self.backend.registration().definition {
+            return Err(CellExecutionError::IncompatibleBundle);
+        }
+        let current = self.resolver.current_use(&input.scope)?;
+        self.backend
+            .enter_representation(owner, self.input, &current, input, now_micros)
+    }
+
+    fn infer(
+        &self,
+        prepared: PreparedCellStepV1,
+        owner: &mut impl CellStateOwnerV1,
+        control: &mut impl NeuronInferenceControlPort,
+        _now_micros: u64,
+        clock_micros: impl FnMut() -> u64,
+    ) -> Result<InferredCellStepV1, CellExecutionError> {
+        self.backend.infer_representation(
+            owner,
+            self.input,
+            prepared,
+            self.resolver,
+            control,
+            clock_micros,
+        )
     }
 }

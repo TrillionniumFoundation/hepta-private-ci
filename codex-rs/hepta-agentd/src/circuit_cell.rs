@@ -4,6 +4,7 @@
 
 use std::error::Error;
 use std::fmt;
+use std::cell::RefCell;
 
 use codex_hepta_automation::CircuitCompletionV2;
 use codex_hepta_automation::CircuitComputationAdmissionV2;
@@ -20,16 +21,18 @@ use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::canonical_cell_step_request_digest_v1;
 use codex_hepta_neuron::commit_cell_step;
 use codex_hepta_neuron::decide_cell;
-use codex_hepta_neuron::enter_cell_step;
-use codex_hepta_neuron::infer_cell;
 use codex_hepta_neuron::recover_cell_inference;
 use codex_hepta_types::AuthorityPosture;
 
 use crate::CircuitCellBindingV1;
 use crate::CircuitCellRegistryV1;
 use crate::circuit_cell_dispatch::GuardedCellDispatchV1;
+use crate::circuit_cell_dispatch::MonotonicCircuitCellClockV1;
 use crate::circuit_cell_output::encode_output;
 use crate::circuit_cell_output::encode_receipt;
+
+use self::pipeline::CircuitCellPipelineV1;
+use self::pipeline::NativeCellPipelineV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CircuitCellErrorV1 {
@@ -132,9 +135,9 @@ where
             registry: &self.registry,
             state_owner: &mut self.state_owner,
             inference_control: &mut self.inference_control,
-            encoder: &self.encoder,
+            encoder: &NativeCellPipelineV1(&self.encoder),
         }
-        .execute(admission, input, clock, || Ok(()))
+        .execute(admission, input, clock)
     }
 }
 
@@ -149,14 +152,13 @@ impl<O, P, E> CircuitCellExecutionOwnersV1<'_, O, P, E>
 where
     O: CellStateOwnerV1,
     P: NeuronInferenceControlPort + CellInferenceReadbackPortV1,
-    E: CellInputEncoderV1,
+    E: CircuitCellPipelineV1,
 {
     fn execute(
         self,
         admission: CircuitComputationAdmissionV2,
         input: CellStepInputV1,
         mut clock: impl FnMut() -> CircuitCellTimeV1,
-        mut validate_new_use: impl FnMut() -> Result<(), CellExecutionError>,
     ) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1> {
         let dispatch = admission.dispatch();
         let binding = self.registry.bind_input(dispatch, &input)?;
@@ -205,11 +207,9 @@ where
                 if read_only {
                     return Err(CircuitCellErrorV1::ReconciliationRequired);
                 }
-                validate_new_use()?;
-                match enter_cell_step(
+                match self.encoder.enter(
                     &binding.cell,
                     self.state_owner,
-                    self.encoder,
                     input.clone(),
                     time.cell_micros,
                 )? {
@@ -221,19 +221,27 @@ where
                         {
                             return Err(CircuitCellErrorV1::ReconciliationRequired);
                         }
+                        // The Cell and Circuit final checks read the same live
+                        // clock sequentially. No borrow spans resolver/model
+                        // contact, and the legacy path adds no clock samples.
+                        let shared_clock = RefCell::new(MonotonicCircuitCellClockV1::new(
+                            &mut clock,
+                            before_infer,
+                        ));
+                        let mut contact_clock = || shared_clock.borrow_mut().sample();
                         let mut guarded = GuardedCellDispatchV1::new(
                             self.inference_control,
-                            &mut clock,
+                            &mut contact_clock,
                             before_infer,
                             admission_deadline,
                             input.deadline_micros,
-                            &mut validate_new_use,
                         );
-                        let inferred = infer_cell(
+                        let inferred = self.encoder.infer(
                             *prepared,
                             self.state_owner,
                             &mut guarded,
                             before_infer.cell_micros,
+                            || shared_clock.borrow_mut().sample().cell_micros,
                         )?;
                         last_time = guarded
                             .observed_at()
@@ -345,6 +353,9 @@ fn finish(
 mod representation;
 pub use representation::CircuitCellRepresentationResolverV1;
 pub use representation::CircuitCellRepresentationUseV1;
+
+#[path = "circuit_cell_pipeline.rs"]
+mod pipeline;
 
 #[cfg(test)]
 #[path = "circuit_cell_tests.rs"]
