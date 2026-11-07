@@ -178,6 +178,7 @@ def execute(
         "semantic_acceptance": "pending_independent_evaluation",
         "claim_status": "HOLD",
         "hard_deadline_guarantee": False,
+        "synchronization_scope": "explicit_backend_barriers; implicit waits remain in their calling component",
     }
     _write(output / "episode.json", report)
     plan, version, text, picture, critique, history = (
@@ -216,6 +217,14 @@ def execute(
     def within_budget():
         if total_cost > cost_budget or time.perf_counter() - begin[1] > wall_budget:
             raise TimeoutError("registered episode opportunity exhausted")
+
+    def synchronize():
+        try:
+            backend.synchronize()
+        except (Exception, KeyboardInterrupt) as error:
+            event("synchronization", "failed", {"type": type(error).__name__})
+            raise
+        event("synchronization", "completed")
 
     def keep(kind, path):
         item = {
@@ -260,8 +269,6 @@ def execute(
                     if encoded
                     else (0.0,) * controller.model.config["encoding_width"]
                 )
-                if encoded:
-                    backend.synchronize()
                 encoding_digest = encoder.contract_digest() if encoded else None
                 if (
                     encoded
@@ -275,6 +282,8 @@ def execute(
                     "encoder",
                     "completed" if encoded else "not_required_for_fixed_policy",
                 )
+                if encoded:
+                    synchronize()
                 within_budget()
                 observation = Observation(
                     encoding,
@@ -383,7 +392,6 @@ def execute(
                 for v in (text, plan, critique)
             ):
                 raise ValueError("generator returned invalid or unbounded text")
-            backend.synchronize()
             category = (
                 "critic"
                 if action == "verify"
@@ -392,6 +400,7 @@ def execute(
                 else "decoder"
             )
             event(category, "completed")
+            synchronize()
             history.append(action)
             within_budget()
             if action == "stop":

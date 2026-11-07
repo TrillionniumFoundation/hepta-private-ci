@@ -5,6 +5,7 @@ import json
 import hashlib
 from pathlib import Path
 import tempfile
+import time
 import unittest
 
 import numpy as np
@@ -125,6 +126,14 @@ class ExecutionContracts(unittest.TestCase):
             )
             self.assertGreater(report["total_cost"], 0)
             self.assertEqual(
+                [
+                    r["status"]
+                    for r in report["events"]
+                    if r["category"] == "synchronization"
+                ],
+                ["completed", "completed", "completed"],
+            )
+            self.assertEqual(
                 json.loads((Path(folder) / "episode/episode.json").read_text()), report
             )
 
@@ -206,6 +215,31 @@ class ExecutionContracts(unittest.TestCase):
             self.assertEqual(report["status"], "timeout")
             self.assertEqual(report["selected"], [])
             self.assertGreater(report["total_cost"], 1e-12)
+
+    def test_failed_barrier_is_metered_and_revokes_delivery(self):
+        class FailedBarrier(ArtifactFixture):
+            def synchronize(self):
+                time.sleep(0.002)
+                raise RuntimeError("explicit fixture barrier failure")
+
+        with tempfile.TemporaryDirectory() as folder:
+            report = self.run_episode(
+                folder,
+                self.actor(("text", "stop")),
+                FailedBarrier(),
+                required_modalities=("text",),
+            )
+            self.assertEqual(report["status"], "failed")
+            self.assertEqual(report["selected"], [])
+            barriers = [
+                r for r in report["events"] if r["category"] == "synchronization"
+            ]
+            self.assertEqual(len(barriers), 1)
+            self.assertEqual(barriers[0]["status"], "failed")
+            self.assertGreaterEqual(barriers[0]["wall_seconds"], 0.002)
+            self.assertAlmostEqual(
+                report["total_cost"], sum(r["cost"] for r in report["events"])
+            )
 
     def test_hidden_reference_in_material_input_is_rejected(self):
         self.public["reference"] = "private answer"

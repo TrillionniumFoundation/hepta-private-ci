@@ -94,7 +94,9 @@ def gpu_check(output, dtype):
         write(output, result)
 
 
-def transfer_images(pool, output):
+def transfer_images(
+    pool, output, *, prior_transfer_receipt, prior_transfer_receipt_sha256
+):
     from ndu_semantic_state.acquire_vizwiz import (
         CAP,
         DownloadBudget,
@@ -135,8 +137,58 @@ def transfer_images(pool, output):
             or prior["cumulative_body_byte_cap"] != CAP
         ):
             raise ValueError("Prior shared acquisition budget differs")
-        download.bytes_read = prior["cumulative_body_bytes_read"]
-        report.update(prior_body_bytes=download.bytes_read, shared_cap_bytes=CAP)
+        carry_path = Path(prior_transfer_receipt)
+        if carry_path.is_symlink() or carry_path.stat().st_size > 131072:
+            raise ValueError("Invalid cumulative transfer receipt file")
+        carry_bytes = carry_path.read_bytes()
+        if hashlib.sha256(carry_bytes).hexdigest() != prior_transfer_receipt_sha256:
+            raise ValueError("Cumulative transfer receipt hash differs")
+        carry = json.loads(carry_bytes)
+        counts = tuple(
+            carry.get(k)
+            for k in (
+                "prior_body_bytes",
+                "new_body_bytes",
+                "cumulative_body_bytes",
+                "shared_cap_bytes",
+            )
+        )
+        if (
+            any(type(value) is not int for value in counts)
+            or counts[0] < prior["cumulative_body_bytes_read"]
+            or counts[1] < 0
+            or counts[0] + counts[1] != counts[2]
+            or not 17669796 <= counts[2] <= CAP
+            or counts[3] != CAP
+            or carry.get("kind") != report["kind"]
+            or carry.get("status") not in ("completed", "failed")
+        ):
+            raise ValueError("Cumulative shared material budget differs")
+        admission = carry.get("admission", carry.get("source_pins", {}))
+        if (
+            admission.get("manifest_sha256") != MANIFEST_SHA
+            or admission.get("history_sha256") != HISTORY_SHA
+        ):
+            raise ValueError("Cumulative receipt source identity differs")
+        ids = [row["id"] for row in carry.get("images", [])]
+        if len(set(ids)) != len(ids) or set(ids) - set(CASE_IDS):
+            raise ValueError("Cumulative receipt image roster differs")
+        if carry["status"] == "completed" and tuple(ids) != CASE_IDS:
+            raise ValueError("Completed cumulative receipt image roster differs")
+        # The floor is the already-spent, published CPU transfer, not a new allowance.
+        # The dispatcher must serialize consumers and pin the latest receipt.
+        download.bytes_read = carry["cumulative_body_bytes"]
+        (output / "PRIOR_TRANSFER.json").write_bytes(carry_bytes)
+        report.update(
+            prior_body_bytes=download.bytes_read,
+            shared_cap_bytes=CAP,
+            prior_transfer_receipt_sha256=prior_transfer_receipt_sha256,
+            source_pins={
+                "manifest_sha256": MANIFEST_SHA,
+                "history_sha256": HISTORY_SHA,
+            },
+            budget_scope="serialized_material_body_bytes_including_prior_attempts",
+        )
         with zipfile.ZipFile(RangeArchive(download, IMAGES)) as archive:
             files = [info for info in archive.infolist() if not info.is_dir()]
             members = {PurePosixPath(info.filename).name: info for info in files}
@@ -321,6 +373,10 @@ def run(args):
                 str(pool),
                 "--output",
                 str(evidence / "transfer"),
+                "--prior-transfer-receipt",
+                args.prior_transfer_receipt,
+                "--prior-transfer-receipt-sha256",
+                args.prior_transfer_receipt_sha256,
             ],
         )
         plan = evidence / "PLAN.json"
@@ -454,6 +510,8 @@ def main():
         "workspace",
         "output",
         "request-id",
+        "prior-transfer-receipt",
+        "prior-transfer-receipt-sha256",
     ):
         execute.add_argument("--" + field, required=True)
     execute.add_argument("--budget-seconds", type=float, default=1740)
@@ -465,13 +523,20 @@ def main():
     transfer = sub.add_parser("transfer-images")
     transfer.add_argument("--pool", required=True)
     transfer.add_argument("--output", required=True)
+    transfer.add_argument("--prior-transfer-receipt", required=True)
+    transfer.add_argument("--prior-transfer-receipt-sha256", required=True)
     args = parser.parse_args()
     if args.command == "run":
         return run(args)
     if args.command == "gpu-check":
         gpu_check(args.output, args.dtype)
     else:
-        transfer_images(args.pool, args.output)
+        transfer_images(
+            args.pool,
+            args.output,
+            prior_transfer_receipt=args.prior_transfer_receipt,
+            prior_transfer_receipt_sha256=args.prior_transfer_receipt_sha256,
+        )
     return 0
 
 

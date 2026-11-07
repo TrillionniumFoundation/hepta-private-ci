@@ -31,6 +31,7 @@ from .real_controllers import Controller, check_equal_opportunity
 from .real_encoding import FrozenSmolEncoder
 from .real_execution import _sha, _write, execute, load_predictor
 from .real_predictor import Opportunity, PredictiveModel, digest, fit_predictive
+from .real_setup import warm_backend as backend_for
 
 
 @contextmanager
@@ -108,44 +109,6 @@ def inputs(path, sha, plan, phase_name, *, require_complete=True):
     return report
 
 
-def backend_for(plan, args):
-    from experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.local_models import (
-        LocalModels,
-    )
-
-    profile = plan["profile"]
-    backend = LocalModels(
-        Path(args.models) / "vlm",
-        Path(args.models) / "sd",
-        threads=profile["threads"],
-        device=profile["device"],
-        dtype=profile["dtype"],
-    )
-    backend._placement()  # Actual CUDA/dtype preflight before model setup; no CPU fallback.
-    if profile["device"].startswith("cuda"):
-        if (
-            not args.device_smoke
-            or not args.device_smoke_sha256
-            or _sha(args.device_smoke) != args.device_smoke_sha256
-        ):
-            raise ValueError("CUDA pilot needs a separately pinned actual device smoke")
-        smoke = json.loads(Path(args.device_smoke).read_text())
-        actual = backend.identity()
-        if (
-            smoke["status"] != "completed"
-            or smoke["gpu_execution_verified"] is not True
-            or smoke["source_sha"] != plan["source_sha"]
-            or any(
-                smoke["backend"][key] != actual[key]
-                for key in ("device", "dtype", "reviewed_model_pins", "versions")
-            )
-        ):
-            raise ValueError(
-                "Actual device smoke does not qualify this exact runtime profile"
-            )
-    return backend
-
-
 def actor(plan, model, strategy, schedule):
     return Controller(
         model,
@@ -206,6 +169,7 @@ def collect(plan, args):
     with phase(plan, args.output, "collect", roster) as (report, start):
         cases, report["candidate_admission"] = load_pool(args.pool)
         backend = backend_for(plan, args)
+        report["shared_setup_sha256"] = _sha(Path(args.output) / "SHARED_SETUP.json")
         for row in report["entries"]:
             if not before_task(
                 plan, start, row, plan["profile"]["episode_wall_seconds"]
@@ -392,6 +356,7 @@ def evaluate(plan, args):
         cases, report["candidate_admission"] = load_pool(args.pool)
         report["input_sha256"] = args.input_sha256
         backend = backend_for(plan, args)
+        report["shared_setup_sha256"] = _sha(Path(args.output) / "SHARED_SETUP.json")
         schedule = SCHEDULES[fits["fixed_selection"]["selected_index"]]
         for row in report["entries"]:
             if not before_task(
