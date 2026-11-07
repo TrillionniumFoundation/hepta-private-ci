@@ -1,0 +1,264 @@
+{
+  "observed_at": "2026-11-07T11:40:56.510319+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr_number": 5310,
+  "head_sha": "2049567ce7dd6ca81758431b8797938e017a070b",
+  "head_tree": "c1882ff953f70ebd386f16dc0a83aa4ae2aee700",
+  "base_sha": "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+  "github_prospective_merge_sha": "5fac10eea33ac70ff854bb663af266061cce5e90",
+  "ndu_reference": {
+    "run_id": 42368951986,
+    "job_id": 128392877911,
+    "conclusion": "success",
+    "package_tests_passed": 118,
+    "semantic_material_tests_passed": 33,
+    "total_tests_passed": 151,
+    "skipped": 0,
+    "torch_adapter_tests_executed": false,
+    "torch_adapter_tests_excluded": 3,
+    "scope": "CI ran 118 ndu_portfolio tests and 33 state/material tests; 3 Torch adapter tests were not invoked, not skipped. Learning-outcome tests are not present in this PR head."
+  },
+  "architecture": {
+    "run_id": 42368951956,
+    "conclusion": "failure",
+    "failure": "unittest discovery imports unrelated ndu_semantic_state package; numpy unavailable",
+    "attribution": "Inherited base defect, confirmed by base source-head job 128238554599 and identical relevant blobs; no new replication code on failure import path.",
+    "source_bound_records": {
+      "128392877605": [
+        {
+          "after": {
+            "commit": "2049567ce7dd6ca81758431b8797938e017a070b",
+            "dirty": false,
+            "parents": [
+              "006e744fbb10a6ee393166eed2e5d1e91f2fab1f"
+            ],
+            "tree": "c1882ff953f70ebd386f16dc0a83aa4ae2aee700"
+          },
+          "base_sha": "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+          "before": {
+            "commit": "2049567ce7dd6ca81758431b8797938e017a070b",
+            "dirty": false,
+            "parents": [
+              "006e744fbb10a6ee393166eed2e5d1e91f2fab1f"
+            ],
+            "tree": "c1882ff953f70ebd386f16dc0a83aa4ae2aee700"
+          },
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-v",
+            "-s",
+            "scripts",
+            "-p",
+            "test_hepta_ci_exec*.py"
+          ],
+          "command_exit_code": 1,
+          "elapsed_seconds": 8.232619336000027,
+          "error": "required tests were not observed passing",
+          "exit_code": 1,
+          "finished_at": "2026-11-07T11:37:47.092560+00:00",
+          "job": "qualification",
+          "lane": "source-head",
+          "log_bytes": 8145,
+          "log_file": "runner-tests.json.6c7681366ba24abf86e6b9d15cb91ed9.log",
+          "log_sha256": "42571108c6aee6a3f80dec7119f4e1b6fa7548be276013efe5c51f8e9030c47f",
+          "minimum_tests": 0,
+          "observed_failed_tests": 1,
+          "observed_passed_tests": 45,
+          "output_limit_exceeded": false,
+          "returncode": 1,
+          "run_attempt": "1",
+          "run_id": "42368951956",
+          "schema_version": 1,
+          "source_sha": "2049567ce7dd6ca81758431b8797938e017a070b",
+          "started_at": "2026-11-07T11:37:38.859234+00:00",
+          "status": "failed",
+          "tested_sha": "2049567ce7dd6ca81758431b8797938e017a070b",
+          "timed_out": false,
+          "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+        }
+      ],
+      "128392877507": [
+        {
+          "after": {
+            "commit": "6a66e11de7d16901371722a685f31fb8e53063e7",
+            "dirty": false,
+            "parents": [
+              "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+              "2049567ce7dd6ca81758431b8797938e017a070b"
+            ],
+            "tree": "c1882ff953f70ebd386f16dc0a83aa4ae2aee700"
+          },
+          "base_sha": "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+          "before": {
+            "commit": "6a66e11de7d16901371722a685f31fb8e53063e7",
+            "dirty": false,
+            "parents": [
+              "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+              "2049567ce7dd6ca81758431b8797938e017a070b"
+            ],
+            "tree": "c1882ff953f70ebd386f16dc0a83aa4ae2aee700"
+          },
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-v",
+            "-s",
+            "scripts",
+            "-p",
+            "test_hepta_ci_exec*.py"
+          ],
+          "command_exit_code": 1,
+          "elapsed_seconds": 8.378877586000016,
+          "error": "required tests were not observed passing",
+          "exit_code": 1,
+          "finished_at": "2026-11-07T11:37:49.954918+00:00",
+          "job": "qualification",
+          "lane": "base-merge",
+          "log_bytes": 8145,
+          "log_file": "runner-tests.json.86454f4539374aaf9c0cdcd294210fa4.log",
+          "log_sha256": "642aeccdb62027d16d2d5e22066a4e22d4f42e6a047b8ad8405d7c429c3377f7",
+          "minimum_tests": 0,
+          "observed_failed_tests": 1,
+          "observed_passed_tests": 45,
+          "output_limit_exceeded": false,
+          "recomputed_merge_tree": "c1882ff953f70ebd386f16dc0a83aa4ae2aee700",
+          "returncode": 1,
+          "run_attempt": "1",
+          "run_id": "42368951956",
+          "schema_version": 1,
+          "source_sha": "2049567ce7dd6ca81758431b8797938e017a070b",
+          "started_at": "2026-11-07T11:37:41.575173+00:00",
+          "status": "failed",
+          "tested_sha": "6a66e11de7d16901371722a685f31fb8e53063e7",
+          "timed_out": false,
+          "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+        }
+      ],
+      "128238554599": [
+        {
+          "after": {
+            "commit": "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+            "dirty": false,
+            "parents": [
+              "5dca2e1809d5a6ceb4a5f9f73e9db127158e14c8"
+            ],
+            "tree": "b28cb22f1c5d6b339886306e904372b971f6eace"
+          },
+          "base_sha": "0ea61fb707fbcc399ea2318238652efe411c6535",
+          "before": {
+            "commit": "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+            "dirty": false,
+            "parents": [
+              "5dca2e1809d5a6ceb4a5f9f73e9db127158e14c8"
+            ],
+            "tree": "b28cb22f1c5d6b339886306e904372b971f6eace"
+          },
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-v",
+            "-s",
+            "scripts",
+            "-p",
+            "test_hepta_ci_exec*.py"
+          ],
+          "command_exit_code": 1,
+          "elapsed_seconds": 8.482979205999982,
+          "error": "required tests were not observed passing",
+          "exit_code": 1,
+          "finished_at": "2026-11-07T00:35:32.957684+00:00",
+          "job": "qualification",
+          "lane": "source-head",
+          "log_bytes": 8145,
+          "log_file": "runner-tests.json.adc45f1d28b54b479c6b579d40fae724.log",
+          "log_sha256": "8a435160598fdaa0ebc358fe085593c3b04a61f787c9b952ecd48d25f455945b",
+          "minimum_tests": 0,
+          "observed_failed_tests": 1,
+          "observed_passed_tests": 45,
+          "output_limit_exceeded": false,
+          "returncode": 1,
+          "run_attempt": "1",
+          "run_id": "42318965227",
+          "schema_version": 1,
+          "source_sha": "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+          "started_at": "2026-11-07T00:35:24.473888+00:00",
+          "status": "failed",
+          "tested_sha": "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+          "timed_out": false,
+          "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+        }
+      ]
+    },
+    "unchanged_files": {
+      ".github/workflows/hepta-architecture-convergence.yml": {
+        "006e744fbb10a6ee393166eed2e5d1e91f2fab1f": "df330bc1b23af7fbdd9b92de7e1565f2a260393a",
+        "2049567ce7dd6ca81758431b8797938e017a070b": "df330bc1b23af7fbdd9b92de7e1565f2a260393a"
+      },
+      "scripts/hepta_ci_exec.py": {
+        "006e744fbb10a6ee393166eed2e5d1e91f2fab1f": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "2049567ce7dd6ca81758431b8797938e017a070b": "c9434b3a4afb31f80e323d543936386a2fa738de"
+      },
+      "scripts/ndu_semantic_state/__init__.py": {
+        "006e744fbb10a6ee393166eed2e5d1e91f2fab1f": "17749f34c8a134c065e2a85d9b666b6888fd8280",
+        "2049567ce7dd6ca81758431b8797938e017a070b": "17749f34c8a134c065e2a85d9b666b6888fd8280"
+      },
+      "scripts/ndu_semantic_state/state.py": {
+        "006e744fbb10a6ee393166eed2e5d1e91f2fab1f": "dd64ffe6e974421f302ab7bd5b03f5bda60d1e5a",
+        "2049567ce7dd6ca81758431b8797938e017a070b": "dd64ffe6e974421f302ab7bd5b03f5bda60d1e5a"
+      },
+      "scripts/test_hepta_ci_exec.py": {
+        "006e744fbb10a6ee393166eed2e5d1e91f2fab1f": "8989e05a8466fb661394fd3501f5d7bb776d107d",
+        "2049567ce7dd6ca81758431b8797938e017a070b": "8989e05a8466fb661394fd3501f5d7bb776d107d"
+      },
+      "scripts/test_hepta_ci_exec_deadline.py": {
+        "006e744fbb10a6ee393166eed2e5d1e91f2fab1f": "46a921675313f43a3720f69334d49599695fb27d",
+        "2049567ce7dd6ca81758431b8797938e017a070b": "46a921675313f43a3720f69334d49599695fb27d"
+      },
+      "scripts/test_hepta_ci_exec_output.py": {
+        "006e744fbb10a6ee393166eed2e5d1e91f2fab1f": "f92628ad9b15cdad591dbc30b6c90e2074a501aa",
+        "2049567ce7dd6ca81758431b8797938e017a070b": "f92628ad9b15cdad591dbc30b6c90e2074a501aa"
+      }
+    }
+  },
+  "proposed_fix": {
+    "path": "recommended-workflow-fix.patch",
+    "modules": [
+      "scripts.test_hepta_ci_exec",
+      "scripts.test_hepta_ci_exec_deadline",
+      "scripts.test_hepta_ci_exec_output"
+    ],
+    "validation": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=scripts python3 -S -m unittest -v scripts/test_hepta_ci_exec.py scripts/test_hepta_ci_exec_deadline.py scripts/test_hepta_ci_exec_output.py",
+      "tests": 45,
+      "passed": 45,
+      "skipped": 0,
+      "errors": 0,
+      "failures": 0,
+      "elapsed_seconds": 9.497
+    },
+    "shared_checkout_modified": false
+  },
+  "remaining_at_observation": "v8-canary succeeded; blocking-ci overall still queued/in_progress although NDU reference and codespell passed. This is not an all-CI pass.",
+  "fix_applied": {
+    "path": ".github/workflows/hepta-architecture-convergence.yml",
+    "sha256": "be964625d244c3cf2606b4f1038ef01481f63c3d392844e07f2cd1f8dce31e1c",
+    "description": "Enumerate the same root execution-record test glob under an explicit scripts import path; require at least one passing test; avoid recursive imports of unrelated packages."
+  },
+  "additional_local_preflight": {
+    "path": "fixed-entrypoint/runner-tests.json",
+    "status": "rejected_before_command",
+    "reason": "SOURCE_SHA environment identity was absent; no tests executed. The normal GitHub workflow supplies its immutable identity. This preflight rejection is retained."
+  },
+  "original_evidence_archive": {
+    "path": "ci-readback.zip",
+    "sha256": "610887dbaa48629e503dbe006ee326f3ac2fef81d514949ef11e91c30b048500",
+    "bytes": 48861
+  }
+}

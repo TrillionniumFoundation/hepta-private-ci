@@ -11,6 +11,18 @@ earlier local attempts and five synthetic outcome examples are retained in
 records the implementation issues found and fixed during parallel review.
 These assistant code reviews are not independent real-task evaluations.
 
+The first published head `7f33cc33aed948779a2725bf9a56f805063abb57`
+also passed the remote NDU job: **140 portfolio tests plus 33 semantic/material
+tests, zero skips**. The actual tested merge and head have the same tree, and
+the downloaded artifact matches GitHub's SHA-256. That workflow excludes the
+three Torch adapter checks; the separate local 176-test receipt includes them.
+[CI_READBACK.json](CI_READBACK.json) and [ci-readback.zip](ci-readback.zip)
+preserve those exact identities and the original artifact/logs, including the
+inherited architecture discovery failure. The dependent #5310 workflow repair
+is merged here without changing the learning or replication Python modules.
+This is not a claim that every CI job passed or that a newer head was already
+executed by the older run.
+
 [RESEARCH_WORK.json](RESEARCH_WORK.json) separates measured software-check
 envelopes from unknown installation/review/energy costs. No full-cost claim is
 made. [FORMAT_EQUIVALENCE.json](FORMAT_EQUIVALENCE.json) records unchanged Python
