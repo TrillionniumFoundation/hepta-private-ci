@@ -1,0 +1,537 @@
+{
+  "audited_source_commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+  "authority_granted": false,
+  "authorization_interpretation": {
+    "broad_continuation_and_additional_research_already_authorized": true,
+    "new_prospective_protocol": "May be prepared under the existing broad authorization; must inherit the cumulative ledger, prior failures and task exposure, preserve retention conditions and source authority, and carry unresolved evidence as unknown. A new directory or experiment ID cannot reset them.",
+    "zero_balance_meaning": "The existing frozen protocol has no unused candidate attempt; this is not a claim that the user withheld additional research authorization."
+  },
+  "cost": {
+    "aggregation_rule": "Keep source-bound nonoverlapping scopes, shared-cost attribution and every failed search. Do not add nested envelopes twice or treat these records as a complete historical ledger. The 0.063814-second profiled V13 fit is a different checkpoint from this parent.",
+    "complete_lifecycle_cost_known": false,
+    "grand_total_claimed": false,
+    "original_loop": {
+      "cpu_seconds": 7.7308959999999995,
+      "failed_real_worker_attempts": 0,
+      "failed_training_attempts": 0,
+      "parent_cpu_seconds": 0.2735539999999999,
+      "peak_rss_bytes": 212811776,
+      "scope": "Linux wait4 covers both full driver lifetimes and their waited descendants, including startup, preparation, all ten lifecycle workers and finalization",
+      "wall_seconds_sum_of_two_invocations": 7.792046205002407
+    },
+    "original_plus_replay": {
+      "cpu_seconds": 10.830403,
+      "physical_candidate_training_attempts_still": 1,
+      "physical_optimizer_updates_still": 16,
+      "sum_invocation_wall_seconds": 10.932860110002366
+    },
+    "original_shared_feature_preparation": {
+      "cpu_seconds": 2.375312928,
+      "stats": {
+        "calls": 17,
+        "encode_seconds": 1.9511335769784637,
+        "encoded_tokens": 6286,
+        "examples": 420,
+        "input_tokens": 6286,
+        "load_seconds": 0.29982085899973754,
+        "padded_tokens": 8088,
+        "truncated_examples": 0
+      },
+      "wall_seconds": 2.2946990359923802
+    },
+    "original_v13_provenance_five_phases": {
+      "cpu_seconds": 0.670666507,
+      "exact_parent_fit_wall_seconds": 0.07970184599980712,
+      "exact_parent_training_presentations": 4800,
+      "includes_later_rejected_candidates": true,
+      "optimizer_updates": 1200,
+      "wall_seconds": 0.6928170920000412
+    },
+    "post_run_replay": {
+      "cpu_seconds": 3.099507,
+      "peak_rss_bytes": 213028864,
+      "scope": "whole driver plus waited descendants, including startup and finalization",
+      "wall_seconds": 3.140813904999959
+    },
+    "refs": [
+      "loop_results",
+      "replay_results",
+      "original_v13_provenance_results",
+      "original_v13_cost_audit"
+    ],
+    "unknown_or_excluded": {
+      "billed_usd": null,
+      "energy_joules": null,
+      "full_retained_byte_seconds": null,
+      "historical_acquisition": null,
+      "host_network_bytes": null,
+      "human_and_agent_development_and_review": null,
+      "p99_seconds": null,
+      "posthoc_delivery_reporting": null
+    },
+    "unrecoverable_unknown_rule": "If original measurements or external bills cannot be recovered, keep the historical fields unknown. Fresh measurement, zero price and a new experiment directory do not reconstruct past cost."
+  },
+  "executed_during_this_audit": {
+    "desktop_cuda_operations": 0,
+    "model_forwards": 0,
+    "optimizer_updates": 0,
+    "owner_bytes_unchanged": true,
+    "publication_mutations": 0,
+    "source_mutations": 0,
+    "training_attempts": 0
+  },
+  "existing_protocol_budget": {
+    "candidate_step": 256,
+    "child_deadline_seconds": 60,
+    "maximum_training_attempts": 1,
+    "parent_step": 240,
+    "physical_optimizer_updates": 16,
+    "refs": [
+      "loop_protocol",
+      "training_started",
+      "loop_results",
+      "replay_results"
+    ],
+    "replay_optimizer_updates": 0,
+    "schedule": {
+      "batch_size": 20,
+      "lr": 0.01,
+      "steps": 16
+    },
+    "scope": "One archived engineering run. The per-child deadline is not an additional training budget; model step is not total historical search expenditure.",
+    "training_attempts_consumed": 1,
+    "training_attempts_remaining": 0,
+    "training_presentations": 288,
+    "unique_training_rows": 124
+  },
+  "formal_future_source": {
+    "audited_commit_contains_memory_cell_v15": false,
+    "donor_commit_recorded_in_original_protocol": "0abc3f5132c944d517e6a75d6d5362819fd285ec",
+    "donor_lookup": {
+      "error_code": "NOT_FOUND",
+      "path": "qualification/memory-cell-v15/README.md",
+      "ref": "0abc3f5132c944d517e6a75d6d5362819fd285ec",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "response": {
+        "documentation_url": "https://docs.github.com/v3/repos/contents/",
+        "message": "No commit found for the ref 0abc3f5132c944d517e6a75d6d5362819fd285ec",
+        "status": "404"
+      }
+    },
+    "exact_gate_source_binding": null,
+    "exposure": "Historical 72 cases, original calibration and authored Cedar results are already exposed. They remain valid historical/development records, not new independent future observations.",
+    "formal_gate_invoked": false,
+    "frozen_formal_thresholds": null,
+    "natural_future_source_groups": 0,
+    "other_v15": {
+      "commit": "f18d8299c8d445d68576e1c81368ecb981817e30",
+      "observed_class": "MatchedEvaluator",
+      "reason": "No verified source map connects this reference to the named gate or a fixed nine-arm registration.",
+      "substitutes_for_missing_formal_gate": false
+    },
+    "referenced_gate_name": "V15 FutureAdoptionGate",
+    "refs": [
+      "loop_protocol",
+      "loop_inventory",
+      "gate_audit",
+      "other_v15_admission",
+      "other_v15_cohort"
+    ],
+    "registered_comparison_and_look_balance": null,
+    "registered_future_cohort": null,
+    "registered_nine_arm_roster": null,
+    "search_scope": "rg --files /workspace/scratch; excluded target, node_modules, venv, site-packages, toolchains and git-cache. Path-name search is not proof of absence on every host or unpublished branch.",
+    "workspace_gate_path_matches": []
+  },
+  "gates": {
+    "later_72_case_no_loss_replay": {
+      "candidate_correct": 55,
+      "complete_cost": "HOLD_COMPLETE_COST_UNKNOWN",
+      "formal_authority": "HOLD_NO_REGISTERED_NINE_ARM_ROUND",
+      "frozen_at_utc": "2026-11-06T07:59:38.043344+00:00",
+      "gains": 1,
+      "historical_total": 72,
+      "interpretation": "Additional post-run eligibility veto, not the original pre-training dynamic gate. Do not substitute it for the original calibration condition or lower either declared condition for a successor.",
+      "parent_correct": 59,
+      "post_run_replay": true,
+      "prior_results_known": true,
+      "prospective_claim": false,
+      "quality_eligible": false,
+      "quality_rule": "corrected-task strict improvement AND no aggregate historical loss",
+      "refs": [
+        "replay_protocol",
+        "replay_results"
+      ],
+      "regressions": 5
+    },
+    "original_48_case_calibration": {
+      "cedar_loop_executed_this_gate": false,
+      "cedar_loop_has_calibration_inputs": false,
+      "held_outputs_used_by_original_publication_validator": false,
+      "initial_correct": 41,
+      "initial_floor": 39,
+      "initial_floor_formula": "ceil(0.8 * 48)",
+      "original_phase_observations": [
+        {
+          "candidate_artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+          "fit_wall_seconds": 0.07970184599980712,
+          "frontier": 0,
+          "profile_correct": 0,
+          "profile_total": 0,
+          "publication": "published",
+          "skill_correct": 41,
+          "skill_floor": 39,
+          "training_presentations": 4800,
+          "training_updates": 240
+        },
+        {
+          "candidate_artifact": "d75aca803f6a46c6715d7a2eee46a9c293f93972a61149a05c05b11cd6238cf9",
+          "fit_wall_seconds": 0.08719999800086953,
+          "frontier": 3,
+          "profile_correct": 6,
+          "profile_total": 6,
+          "publication": "published",
+          "skill_correct": 42,
+          "skill_floor": 40,
+          "training_presentations": 4732,
+          "training_updates": 240
+        },
+        {
+          "candidate_artifact": "4bcc743b3cea08fa18b05a689dac535c2e9f610e0f901769a0b2b4c017cda815",
+          "fit_wall_seconds": 0.09706078299495857,
+          "frontier": 4,
+          "profile_correct": 6,
+          "profile_total": 6,
+          "publication": "published",
+          "skill_correct": 41,
+          "skill_floor": 40,
+          "training_presentations": 4732,
+          "training_updates": 240
+        },
+        {
+          "candidate_artifact": "4bb8a3898d0afffc1bf59a5065b1c7cbe9a3cb702f8ca58be755e2ee93e19ae7",
+          "fit_wall_seconds": 0.10747705199173652,
+          "frontier": 5,
+          "profile_correct": 6,
+          "profile_total": 6,
+          "publication": "candidate_retained_not_published",
+          "skill_correct": 39,
+          "skill_floor": 40,
+          "training_presentations": 4732,
+          "training_updates": 240
+        },
+        {
+          "candidate_artifact": "dfb9437f8cf2bc623ee514fbf02a390e08f22d9bd3fe75478a21ef809a79e079",
+          "fit_wall_seconds": 0.06893698399653658,
+          "frontier": 6,
+          "profile_correct": 6,
+          "profile_total": 6,
+          "publication": "candidate_retained_not_published",
+          "skill_correct": 38,
+          "skill_floor": 40,
+          "training_presentations": 4732,
+          "training_updates": 240
+        }
+      ],
+      "original_profile_condition": "When original project profile sources are present, all 6 executed calibration outputs must be correct.",
+      "refs": [
+        "original_v13_provenance_source",
+        "original_v13_provenance_results"
+      ],
+      "successor_floor": 40,
+      "successor_floor_formula": "max(ceil(0.8 * 48), initial_correct - 1)",
+      "total": 48
+    },
+    "original_cedar_publication": {
+      "always_false_callback_frozen_in_advance": true,
+      "causal_refusal_reasons": [
+        "independent_nine_arm_future_round_not_registered",
+        "complete_lifecycle_cost_unknown"
+      ],
+      "positive_new_candidate_adoption_exercised": false,
+      "refs": [
+        "loop_protocol",
+        "gate_audit",
+        "frozen_worker"
+      ],
+      "retention_delta_was_dynamic_gate_trigger": false
+    }
+  },
+  "observed_at_utc": "2026-11-07T00:30:04.471927+00:00",
+  "owner": {
+    "active_cold_next_model": "unchanged parent before skills revision 2",
+    "candidate_adopted": false,
+    "candidate_cold_next_mode": "unpublished shadow checkpoint",
+    "candidate_dependencies": [
+      {
+        "body_sha256": "eef2680dd603595b04e578fcf4f84eafc58dda73f26d0431e4057b97cb1b8963",
+        "revision": 2,
+        "source_id": "cedar-intake"
+      },
+      {
+        "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+        "revision": 1,
+        "source_id": "skills"
+      }
+    ],
+    "candidate_live_source_fresh": false,
+    "cell": "semantic-memory",
+    "continuation_requirement": "Use the actual current source owner and source cut; do not recreate revision 1 or relabel old weights as newly fitted to revision 2.",
+    "database_sha256": "878aca2ad555ee8fe41b26ed1824751cb9c6e0e9b5f09c2b93f9c1e8064f45fb",
+    "latest_sources": {
+      "cedar-intake": {
+        "active": true,
+        "body_sha256": "eef2680dd603595b04e578fcf4f84eafc58dda73f26d0431e4057b97cb1b8963",
+        "revision": 2
+      },
+      "skills": {
+        "active": true,
+        "body_sha256": "59d3baeddbf957c2114cc9b270ccaf0ccb6ca3f0ff3116b23508c895fcbbe511",
+        "revision": 2
+      }
+    },
+    "next_real_task_after_formal_candidate_adoption_observed": false,
+    "parent_dependencies": [
+      {
+        "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+        "revision": 1,
+        "source_id": "skills"
+      }
+    ],
+    "parent_live_source_fresh": false,
+    "read_mode": "mode=ro&immutable=1; no WAL or SHM created",
+    "refs": [
+      "owner_database",
+      "parent_manifest",
+      "candidate_manifest",
+      "loop_results"
+    ],
+    "release_artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+    "release_epoch": 1,
+    "scope": "v13-provenance-independent-run"
+  },
+  "references": {
+    "candidate_manifest": {
+      "bytes": 811,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "43eba7a9e852ddcfcb2255012d5c95878c711d10",
+      "repository_path": "qualification/cell-learning-loop-v1/evidence/run-20261106-001/owner/artifacts/c1d0f24ef0cda82ee93e59ccd250be4373d4a6c3c23e609d284eb0c5a5741137/manifest.json",
+      "sha256": "c1d0f24ef0cda82ee93e59ccd250be4373d4a6c3c23e609d284eb0c5a5741137",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/cell-learning-loop-v1/evidence/run-20261106-001/owner/artifacts/c1d0f24ef0cda82ee93e59ccd250be4373d4a6c3c23e609d284eb0c5a5741137/manifest.json"
+    },
+    "frozen_prepare": {
+      "bytes": 7427,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "a774b5bf605821ff327f29541d6c8589153ad43a",
+      "repository_path": "qualification/cell-learning-loop-v1/evidence/run-20261106-001/EXECUTED_SOURCE/prepare_run.py",
+      "sha256": "7a6c86dd351b3d08acb55bf7d7bb4af40d8389eadd76e8079359ab5062ca4fe4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/cell-learning-loop-v1/evidence/run-20261106-001/EXECUTED_SOURCE/prepare_run.py"
+    },
+    "frozen_worker": {
+      "bytes": 16204,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "b7da915567c16ca14b5ba843bdc564e0e5878940",
+      "repository_path": "qualification/cell-learning-loop-v1/evidence/run-20261106-001/EXECUTED_SOURCE/loop_worker.py",
+      "sha256": "4a1139c7fa29f18bd576d64b5ec1ef2aa50578357985796e13c76e032c4ff926",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/cell-learning-loop-v1/evidence/run-20261106-001/EXECUTED_SOURCE/loop_worker.py"
+    },
+    "gate_audit": {
+      "bytes": 1534,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "e3575cd18e63bfefb9cd0a90ff0ef9fd4bd6f73a",
+      "repository_path": "qualification/cell-learning-loop-v1/GATE_AUDIT.json",
+      "sha256": "8a5f0cec13a729bbcd663634a744a9d52939a1e6f275ff6be19ec791bc9ab7f1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/cell-learning-loop-v1/GATE_AUDIT.json"
+    },
+    "loop_inventory": {
+      "bytes": 8482,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "34f6328b782efda740fed7f510b2ad88cb93f6fe",
+      "repository_path": "qualification/cell-learning-loop-v1/evidence/run-20261106-001/INVENTORY.json",
+      "sha256": "d914d2e5af5b7780a22b8d72390722eb5180affa57337e110a8c606e04e26f65",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/cell-learning-loop-v1/evidence/run-20261106-001/INVENTORY.json"
+    },
+    "loop_protocol": {
+      "bytes": 2288,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "b2cde2d7d1f9c91275174dae1af8766350fd8411",
+      "repository_path": "qualification/cell-learning-loop-v1/evidence/run-20261106-001/PROTOCOL.json",
+      "sha256": "84bd11616fe532ad4539837a2ccd4bf53e8c5b0659d2fe910241a847be7c939a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/cell-learning-loop-v1/evidence/run-20261106-001/PROTOCOL.json"
+    },
+    "loop_results": {
+      "bytes": 7757,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "d53102f1a6344e7b3917aada28d6a246c28bc87f",
+      "repository_path": "qualification/cell-learning-loop-v1/RESULTS.json",
+      "sha256": "bc3bc5800d57b367ee4d0eed3486290f53f36dc23d71f5c0ba7fd0d8bf04d8e2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/cell-learning-loop-v1/RESULTS.json"
+    },
+    "original_v13_cost_audit": {
+      "bytes": 7542,
+      "commit": "aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1",
+      "git_blob": "d16a82c7b5fd6c902e5fbab8e8c2246d719d4db6",
+      "path": "qualification/memory-cell-v13/evidence/AUDIT_COST.md",
+      "sha256": "a6b9252281ad63eb021256a7599bcb4eef48b2d1d4b721cfee811adea6e176d2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1/qualification/memory-cell-v13/evidence/AUDIT_COST.md"
+    },
+    "original_v13_provenance_results": {
+      "bytes": 19768,
+      "commit": "aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1",
+      "git_blob": "b56ec728045b985eb713470a1bc8438799250ee6",
+      "path": "qualification/memory-cell-v13/evidence/provenance/RESULTS.json",
+      "sha256": "c0bcd961c6af7e16f455d1db8a74f9b39fe0da68b3adc7d258a06471758f3fc2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1/qualification/memory-cell-v13/evidence/provenance/RESULTS.json"
+    },
+    "original_v13_provenance_source": {
+      "bytes": 14402,
+      "commit": "aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1",
+      "git_blob": "ae785067360e0ae4dbef087bd9c64143a5bce17f",
+      "path": "qualification/memory-cell-v13/provenance_run.py",
+      "sha256": "7345a8a567d29836e3def7037fc6b97d034efcedfd28af877c2d65632eeb428b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1/qualification/memory-cell-v13/provenance_run.py"
+    },
+    "other_v15_admission": {
+      "bytes": 16845,
+      "commit": "f18d8299c8d445d68576e1c81368ecb981817e30",
+      "git_blob": "1651c10c92dd09ce7926f03e6f78c2305dc1f696",
+      "path": "qualification/memory-cell-v15/admission.py",
+      "sha256": "68c5f46179c712bf2321e3e12ec4b9fda1f05341960d45e215d03fd2e0e15ebe",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f18d8299c8d445d68576e1c81368ecb981817e30/qualification/memory-cell-v15/admission.py"
+    },
+    "other_v15_cohort": {
+      "bytes": 5030,
+      "commit": "f18d8299c8d445d68576e1c81368ecb981817e30",
+      "git_blob": "a97615a752e9aa25e7480a1d48eab5f021d70c34",
+      "path": "qualification/memory-cell-v15/cohort.py",
+      "sha256": "c14e4ecc87e926894da1ba2838df02b420b6fd660c9ec28039567840f85b1bfe",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f18d8299c8d445d68576e1c81368ecb981817e30/qualification/memory-cell-v15/cohort.py"
+    },
+    "owner_database": {
+      "bytes": 122880,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "4892ac9b6cda3845aabba6c50a8d5c4c70540d7b",
+      "repository_path": "qualification/cell-learning-loop-v1/evidence/run-20261106-001/owner/sources.sqlite",
+      "sha256": "878aca2ad555ee8fe41b26ed1824751cb9c6e0e9b5f09c2b93f9c1e8064f45fb",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/cell-learning-loop-v1/evidence/run-20261106-001/owner/sources.sqlite"
+    },
+    "parent_manifest": {
+      "bytes": 626,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "33dd3e7c18b7f09c27dd0e46d0758b62ef58b4c8",
+      "repository_path": "qualification/cell-learning-loop-v1/evidence/run-20261106-001/inputs/parent/manifest.json",
+      "sha256": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/cell-learning-loop-v1/evidence/run-20261106-001/inputs/parent/manifest.json"
+    },
+    "reference_adapter": {
+      "bytes": 10822,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "c366077f96bc59f70cb79b8a0c784e46726df66c",
+      "repository_path": "qualification/neuron-learning-closure-v13/reference/adapter.py.source",
+      "sha256": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/neuron-learning-closure-v13/reference/adapter.py.source"
+    },
+    "reference_provenance": {
+      "bytes": 3254,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "65fb6cf1cca1a65a92fd5fccb659d3cf45578599",
+      "repository_path": "qualification/neuron-learning-closure-v13/PROVENANCE.json",
+      "sha256": "243f653290d76778ffeab9f2d44534a5a11e22f386d7d20b1f6f024e66eb341a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/neuron-learning-closure-v13/PROVENANCE.json"
+    },
+    "replay_protocol": {
+      "bytes": 2172,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "f3d0cccef7b0e72813924be50ec92b8f1c06738a",
+      "repository_path": "qualification/cell-learning-loop-v1/decision_replay/evidence/replay-20261106-001/PROTOCOL.json",
+      "sha256": "a4fc8e5ed65816b7f12d8cc679f02cd90b0f5fc8b4e1b2e66955179e5d4125b5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/cell-learning-loop-v1/decision_replay/evidence/replay-20261106-001/PROTOCOL.json"
+    },
+    "replay_results": {
+      "bytes": 6561,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "d76a3607ee525c61bdfce4cd991af2824ad952da",
+      "repository_path": "qualification/cell-learning-loop-v1/decision_replay/RESULTS.json",
+      "sha256": "af1fb87c5fe9f8bd54deb5249764c66375dcf376272676fa3bdfe328a056cfda",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/cell-learning-loop-v1/decision_replay/RESULTS.json"
+    },
+    "training_started": {
+      "bytes": 349,
+      "commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+      "git_blob": "1990624fadfe5ce18c1558cc9d3d69365e9e0242",
+      "repository_path": "qualification/cell-learning-loop-v1/evidence/run-20261106-001/TRAINING_STARTED.json",
+      "sha256": "54581daf3d0fdc705df739890d98b2f05d5ca69ff701fa9e794d27db06988a36",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55/qualification/cell-learning-loop-v1/evidence/run-20261106-001/TRAINING_STARTED.json"
+    }
+  },
+  "research_continuation": {
+    "evidence_still_required": [
+      "exact formal gate source and roster",
+      "registered independent natural future observations with trusted chronology",
+      "complete comparable lifecycle cost",
+      "successful owner publication",
+      "cold read of the adopted release on the next real task"
+    ],
+    "new_prospective_protocol_must_inherit": [
+      "all historical attempts and failures",
+      "cumulative physical and economic costs including unknowns",
+      "prior task and label exposure",
+      "original retention conditions and the separately declared no-loss condition",
+      "current source owner frontier and publication authority"
+    ],
+    "new_training_policy_requires_new_verified_source_and_full_state_binding": true,
+    "reference_update_parameters": [
+      "A",
+      "B",
+      "W",
+      "b"
+    ],
+    "refs": [
+      "reference_adapter",
+      "reference_provenance",
+      "loop_protocol"
+    ],
+    "selective_update_or_anti_forgetting_implemented_in_reference": false
+  },
+  "runtime": {
+    "encoder_sha256": "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+    "local_path_observations": [
+      {
+        "exists": false,
+        "path": "/workspace/scratch/40d04650905b/v13-work/minilm"
+      },
+      {
+        "exists": false,
+        "path": "/workspace/scratch/40d04650905b/v13-work/venv/bin/python"
+      },
+      {
+        "exists": false,
+        "path": "/workspace/scratch/050e013c53db/hepta-learning"
+      }
+    ],
+    "onnx_weights_bytes": 90405214,
+    "onnx_weights_sha256": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452",
+    "other_host_assets_verified": false,
+    "recorded_runtime": {
+      "blas_threads": 1,
+      "executable": "/workspace/scratch/40d04650905b/v13-work/venv/bin/python",
+      "onnx_inter_op_threads": 1,
+      "onnx_intra_op_threads": 1,
+      "packages": {
+        "numpy": "2.3.5",
+        "onnxruntime": "1.23.2",
+        "tokenizers": "0.21.4"
+      },
+      "python": "3.12.14"
+    },
+    "refs": [
+      "loop_protocol",
+      "reference_provenance"
+    ],
+    "restoration_cost_must_be_recorded": true,
+    "weights_in_archived_loop_package": false
+  },
+  "schema": "hepta.memory.formal-gate-source-audit.v1",
+  "scope": "Read-only examination of archived evidence and pinned sources; two new audit files only.",
+  "status": "HOLD_FORMAL_P1"
+}
