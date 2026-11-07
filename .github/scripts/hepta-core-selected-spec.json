@@ -1,28 +1,8 @@
 {
   "repository": "TrillionniumFoundation/hepta-private-ci",
-  "base_head": "0a98b8ca2c68e6d75db9c6fd0f392ce6181b7e16",
-  "base_tree": "66ae67e8c148cce2baec88cb3c23c3f8aef822c3",
-  "base_ref": "research/ndu-single-guardian-failure-context-20261106",
-  "inputs_ref": "research/ndu-core-selected-inputs-v5-20261106",
-  "proposal_ref": "research/ndu-core-selected-proposal-v5-20261106",
-  "inputs_head": "d401ff585f2860a8b3c748262213a072fcf8cea2",
-  "inputs_tree": "9b936e3e663f4b44f7ed620d4d5c23fd563e6bd8",
-  "added_paths": [
-    ".github/scripts/hepta_core_selected_guard.py",
-    ".github/scripts/hepta_core_selected_evidence.py",
-    ".github/scripts/hepta_core_selected_contract.py",
-    ".github/scripts/hepta-core-selected-spec.json",
-    ".github/scripts/hepta_core_selected.py",
-    ".github/workflows/hepta-core-selected-proposal.yml",
-    ".github/scripts/hepta-core-selected-report.toml"
-  ],
-  "inputs_paths": [
-    ".github/scripts/hepta_core_selected_guard.py",
-    ".github/scripts/hepta_core_selected_evidence.py",
-    ".github/scripts/hepta_core_selected_contract.py",
-    ".github/scripts/hepta-core-selected-spec.json",
-    ".github/scripts/hepta-core-selected-report.toml"
-  ],
+  "base_head": "41de48b07af5941e3a647ff7b47d78fc21d11c3d",
+  "base_tree": "ebbd7de87f7e3fdff26f220fbf5feae7ba7083cb",
+  "base_ref": "research/ndu-bwrap-names-probe-20261107",
   "baseline_blobs": {
     "AGENTS.md": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
     "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
@@ -60,5 +40,6 @@
     "slow_timeout": "30s",
     "terminate_after": 2,
     "test_threads": "repository default; no CLI override"
-  }
+  },
+  "source_contract": ".github/scripts/hepta_bwrap_profile_contract.py"
 }
