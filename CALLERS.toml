@@ -234,7 +234,7 @@ symbol = "FinalUseAuthority::update_revocations"
 call_pattern = "authority\\s*\\.\\s*update_revocations\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn update_revocations", "StaleRevocationHead", "store.persist"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-contracts/src/final_use_control_pq.rs"]
+product_callers = ["codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-contracts/src/final_use_control_pq.rs"]
 caller_markers = ["update_revocations"]
 
 [[boundary]]

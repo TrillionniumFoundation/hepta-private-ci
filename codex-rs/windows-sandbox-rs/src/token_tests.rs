@@ -1,9 +1,9 @@
 use super::*;
 use crate::acl::add_deny_write_ace;
-use crate::acl::ensure_filesystem_mutation_deny;
 use crate::acl::ensure_allow_mask_aces;
 use crate::acl::ensure_allow_mask_aces_with_inheritance;
 use crate::acl::ensure_allow_write_aces;
+use crate::acl::ensure_filesystem_mutation_deny;
 use crate::acl::fetch_dacl_handle;
 use pretty_assertions::assert_eq;
 use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
