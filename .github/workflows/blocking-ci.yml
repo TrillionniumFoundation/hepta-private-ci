@@ -222,10 +222,10 @@ jobs:
           if [[ "$LANE" == "prospective-merge" ]]; then
             git merge-base --is-ancestor "$SOURCE_SHA" "$TESTED_SHA"
           fi
-          expected_files="$(printf '%s\\n' ".github/workflows/blocking-ci.yml" "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs")"
+          expected_files="$(printf '%s\n' ".github/workflows/blocking-ci.yml" "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs")"
           actual_files="$(git diff --name-only "$PARENT_SHA" "$SOURCE_SHA")"
           test "$actual_files" = "$expected_files"
-          printf 'Cell cost %s SHA: %s\\n' "$LANE" "$TESTED_SHA"
+          printf 'Cell cost %s SHA: %s\n' "$LANE" "$TESTED_SHA"
 
       - name: Record exact Cell source and lock identity
         shell: bash
@@ -245,8 +245,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          just test --locked -p codex-hepta-neuron -p codex-hepta-plasticity \\
-            2>&1 | tee "$RUNNER_TEMP/cell-cost-evidence/tests.log"
+          just test --locked -p codex-hepta-neuron -p codex-hepta-plasticity 2>&1 | tee "$RUNNER_TEMP/cell-cost-evidence/tests.log"
 
       - name: Upload exact Cell test evidence
         if: always()
