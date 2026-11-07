@@ -168,6 +168,9 @@ pub(crate) fn run(
         return Err(CellGenerationErrorV2::InvalidBinding);
     }
     let mut last_clock = (request.clock)();
+    if last_clock == 0 {
+        return Err(CellGenerationErrorV2::Unavailable);
+    }
     if request.cancellation.load(Ordering::Acquire) || last_clock >= request.deadline_micros {
         return Ok(ProcessObservation {
             status: if request.cancellation.load(Ordering::Acquire) {

@@ -19,6 +19,15 @@ mod population;
 mod support;
 #[path = "neuron_generation_runtime_cost_tests.rs"]
 mod task_cost;
+
+#[path = "neuron_generation_control_tests.rs"]
+mod control;
+#[path = "neuron_generation_episode_tests.rs"]
+mod episode;
+#[path = "neuron_generation_no_contact_tests.rs"]
+mod no_contact;
+#[path = "neuron_generation_observation_tests.rs"]
+mod observation;
 use support::Fixture;
 use support::checked;
 use support::cost;

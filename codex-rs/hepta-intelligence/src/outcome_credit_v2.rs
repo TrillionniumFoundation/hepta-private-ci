@@ -182,7 +182,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), OutcomeCreditClo
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
     use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
     use codex_hepta_learning_ledger::AppendDisposition;
@@ -215,11 +215,11 @@ mod tests {
     use std::fs::OpenOptions;
     use std::path::PathBuf;
 
-    fn id(value: &str) -> StableId {
+    pub(crate) fn id(value: &str) -> StableId {
         StableId::new(value.to_owned()).expect("fixture id")
     }
 
-    fn digest(value: &str) -> Digest32 {
+    pub(crate) fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
     }
 
@@ -275,7 +275,7 @@ mod tests {
         }
     }
 
-    fn principal(name: &str) -> AuthenticatedPrincipalV1 {
+    pub(crate) fn principal(name: &str) -> AuthenticatedPrincipalV1 {
         trust()
             .signers
             .into_iter()
@@ -321,7 +321,7 @@ mod tests {
         }
     }
 
-    fn sign(
+    pub(crate) fn sign(
         verifier: &LearningEvidenceVerifierV1,
         name: &str,
         role: LearningEvidenceRoleV1,
@@ -346,14 +346,14 @@ mod tests {
         evidence
     }
 
-    struct Fixture {
+    pub(crate) struct Fixture {
         _temp: tempfile::TempDir,
         ledger_path: PathBuf,
         witness_path: PathBuf,
     }
 
     impl Fixture {
-        fn new() -> Self {
+        pub(crate) fn new() -> Self {
             let temp = tempfile::tempdir().expect("tempdir");
             let ledger_path = temp.path().join("ledger");
             let witness_path = temp.path().join("witness");
@@ -395,7 +395,7 @@ mod tests {
             }
         }
 
-        fn writer(&self) -> LedgerWriter {
+        pub(crate) fn writer(&self) -> LedgerWriter {
             let binding = digest("production-ledger-binding");
             let ledger =
                 DurableLedger::create(Self::open(&self.ledger_path), binding, 32).expect("ledger");
@@ -414,7 +414,7 @@ mod tests {
         }
     }
 
-    fn decision() -> ProductionDecisionV2 {
+    pub(crate) fn decision() -> ProductionDecisionV2 {
         let candidates = vec![id("action"), id("abstain")];
         ProductionDecisionV2 {
             record_id: id("run-v2"),
@@ -457,7 +457,7 @@ mod tests {
             .expect("decision")
     }
 
-    fn outcome(
+    pub(crate) fn outcome(
         record_id: &str,
         outcome_id: &str,
         predecessor: Option<&str>,
@@ -483,7 +483,7 @@ mod tests {
         }
     }
 
-    fn observed_request(
+    pub(crate) fn observed_request(
         writer: &LedgerWriter,
         expected: Digest32,
         value: AuthenticatedOutcomeV1,

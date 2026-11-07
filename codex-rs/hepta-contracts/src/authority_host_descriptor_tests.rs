@@ -80,24 +80,24 @@ fn malformed_truncated_extra_or_unfinished_transfer_closes_every_received_right(
             offered.push(one);
             peers.push(peer);
         }
-        let descriptors = offered.iter().map(AsFd::as_fd).collect::<Vec<_>>();
-        let mut space = [MaybeUninit::uninit(); rustix::cmsg_space!(ScmRights(9))];
-        let mut control = SendAncillaryBuffer::new(&mut space);
-        if count != 0 {
-            assert!(control.push(SendAncillaryMessage::ScmRights(&descriptors)));
+        {
+            let descriptors = offered.iter().map(AsFd::as_fd).collect::<Vec<_>>();
+            let mut space = [MaybeUninit::uninit(); rustix::cmsg_space!(ScmRights(9))];
+            let mut control = SendAncillaryBuffer::new(&mut space);
+            if count != 0 {
+                assert!(control.push(SendAncillaryMessage::ScmRights(&descriptors)));
+            }
+            assert_eq!(
+                rustix::net::sendmsg(
+                    &right,
+                    &[IoSlice::new(&bytes)],
+                    &mut control,
+                    SendFlags::NOSIGNAL
+                )
+                .unwrap(),
+                bytes.len()
+            );
         }
-        assert_eq!(
-            rustix::net::sendmsg(
-                &right,
-                &[IoSlice::new(&bytes)],
-                &mut control,
-                SendFlags::NOSIGNAL
-            )
-            .unwrap(),
-            bytes.len()
-        );
-        drop(control);
-        drop(descriptors);
         drop(offered);
         if close_sender {
             right.shutdown(Shutdown::Write).unwrap();

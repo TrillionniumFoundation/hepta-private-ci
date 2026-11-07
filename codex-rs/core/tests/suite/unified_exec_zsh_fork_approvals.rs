@@ -25,6 +25,7 @@ use codex_protocol::protocol::Op;
 use codex_protocol::protocol::ReviewDecision;
 use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::user_input::UserInput;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses::ResponseMock;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
@@ -70,7 +71,8 @@ async fn unified_exec_zsh_fork_parent_approval_preserves_denied_reads() -> Resul
     );
 
     let approval_policy = AskForApproval::OnRequest;
-    let command = format!("cat {denied_path:?}");
+    let cat = fs::canonicalize("/bin/cat")?;
+    let command = format!("{cat:?} {denied_path:?}");
     let Some((server, test)) = build_unified_exec_zsh_fork_test_or_skip(
         "unified-exec zsh-fork denied-read approval test",
         approval_policy,
@@ -98,7 +100,44 @@ async fn unified_exec_zsh_fork_parent_approval_preserves_denied_reads() -> Resul
         ApprovalsReviewer::User,
     )
     .await?;
-    approve_expected_exec(&test, &command).await?;
+    let parent = expect_exec_approval(&test, &command).await;
+    let parent_approval_id = parent.effective_approval_id();
+    approve_exec(&test, parent_approval_id.clone()).await?;
+
+    // The original RequireEscalated request still prompts at authoritative
+    // execve interception. Approving that child must also preserve denied reads.
+    let child = wait_for_event_with_timeout(
+        &test.codex,
+        |event| {
+            matches!(
+                event,
+                EventMsg::ExecApprovalRequest(_) | EventMsg::TurnComplete(_)
+            )
+        },
+        Duration::from_secs(10),
+    )
+    .await;
+    let EventMsg::ExecApprovalRequest(child) = child else {
+        panic!("expected intercepted cat approval before completion");
+    };
+    assert_eq!(child.call_id, call_id);
+    assert_eq!(
+        child.environment_id.as_deref(),
+        Some(codex_exec_server::LOCAL_ENVIRONMENT_ID)
+    );
+    assert_eq!(
+        child.command,
+        vec![
+            cat.to_string_lossy().into_owned(),
+            denied_path.to_string_lossy().into_owned()
+        ]
+    );
+    let child_approval_id = child
+        .approval_id
+        .as_ref()
+        .context("intercepted cat must have its own approval id")?;
+    assert_ne!(child_approval_id, &parent_approval_id);
+    approve_exec(&test, child.effective_approval_id()).await?;
     wait_for_completion_without_approval(&test).await;
 
     let result = command_result(&results, call_id);
@@ -666,8 +705,10 @@ fn permission_profile_from_toml(profile: &str) -> Result<PermissionProfile> {
                 ":project_roots" => FileSystemPath::Special {
                     value: FileSystemSpecialPath::project_roots(/*subpath*/ None),
                 },
-                _ if *access == FileSystemAccessMode::Deny => FileSystemPath::GlobPattern {
-                    pattern: path.clone(),
+                // This fixture denies one exact file. GlobPattern requires a
+                // real wildcard and invokes a different, bounded scan contract.
+                _ if *access == FileSystemAccessMode::Deny => FileSystemPath::Path {
+                    path: AbsolutePathBuf::from_absolute_path(path)?.into(),
                 },
                 _ => anyhow::bail!("unexpected filesystem entry in test profile: {path}"),
             };

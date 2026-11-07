@@ -1,5 +1,6 @@
 //! Pure replay reducer for the versioned state backend of the Cell owner.
 
+use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -51,11 +52,13 @@ pub(crate) enum GenerationEvent {
 #[serde(deny_unknown_fields)]
 pub(crate) struct GenerationState {
     pub(crate) snapshot: CellRuntimeSnapshotV2,
+    pub(crate) first_advance_input_digest: Option<[u8; 32]>,
     pub(crate) pending: Option<CellGenerationRequestV2>,
     pub(crate) cancelled: bool,
     pub(crate) draining: bool,
     pub(crate) outbox: Option<CellOutputChunkV2>,
     pub(crate) receipts: Vec<CellGenerationReceiptV2>,
+    pub(crate) intents: Vec<CellGenerationIntentV2>,
     pub(crate) acknowledgements: Vec<[u8; 32]>,
     pub(crate) cost: CellTaskCostV2,
     pub(crate) last_observed_micros: u64,
@@ -82,11 +85,13 @@ impl GenerationState {
         .map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
         Ok(Self {
             snapshot: config.initial.clone(),
+            first_advance_input_digest: None,
             pending: None,
             cancelled: false,
             draining: false,
             outbox: None,
             receipts: Vec::new(),
+            intents: Vec::new(),
             acknowledgements: Vec::new(),
             cost,
             last_observed_micros: 0,
@@ -325,6 +330,8 @@ impl GenerationState {
                     bytes: proposal.output_delta.clone(),
                 });
             }
+            self.first_advance_input_digest
+                .get_or_insert_with(|| Digest32::of_bytes(&request.input).into_array());
             self.snapshot.state = proposal.successor_state.clone();
             self.snapshot
                 .prefix
@@ -332,6 +339,7 @@ impl GenerationState {
             self.snapshot.stopped = disposition == CellGenerationDispositionV2::Stopped;
         }
         self.snapshot.revision += 1;
+        self.intents.push(request.intent()?);
         self.receipts.push(CellGenerationReceiptV2 {
             operation_id: request.operation_id,
             request_digest: proposal.request_digest,

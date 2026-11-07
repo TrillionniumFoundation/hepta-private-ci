@@ -231,7 +231,17 @@ async fn stateless_responses_preserve_durable_item_turn_metadata_across_turns() 
         ],
     )
     .await;
-    let test = test_codex().build(&server).await.unwrap();
+    let test = test_codex()
+        .with_config(|config| config.model_provider.mock_internal_chat_metadata = None)
+        .build(&server)
+        .await
+        .unwrap();
+    assert!(
+        !test
+            .config
+            .model_provider
+            .accepts_internal_chat_message_metadata_for_request(&format!("{}/v1", server.uri()),)
+    );
 
     test.submit_turn("turn one").await.unwrap();
     let first_history = persisted_response_items(&test).await.unwrap();
@@ -403,9 +413,16 @@ async fn sends_audio_urls_to_responses() {
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })
+        .with_config(|config| config.model_provider.mock_internal_chat_metadata = None)
         .build(&server)
         .await
         .unwrap();
+    assert!(
+        !test
+            .config
+            .model_provider
+            .accepts_internal_chat_message_metadata_for_request(&format!("{}/v1", server.uri()),)
+    );
     let audio_url = "data:audio/wav;base64,AAAA";
 
     test.codex
@@ -464,8 +481,15 @@ async fn sends_local_audio_to_responses() -> anyhow::Result<()> {
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })
+        .with_config(|config| config.model_provider.mock_internal_chat_metadata = None)
         .build(&server)
         .await?;
+    assert!(
+        !test
+            .config
+            .model_provider
+            .accepts_internal_chat_message_metadata_for_request(&format!("{}/v1", server.uri()),)
+    );
     let temp_dir = tempfile::tempdir()?;
     let audio_path = temp_dir.path().join("recording.wav");
     std::fs::write(&audio_path, b"audio")?;

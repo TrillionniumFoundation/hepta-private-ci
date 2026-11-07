@@ -27,6 +27,7 @@ use crate::FencedHoldoutError;
 use crate::FinalHoldoutCasStoreV1;
 use crate::FinalHoldoutJournalReceiptV1;
 use crate::HeldOutTarget;
+use crate::HoldoutUseDispositionV1;
 use crate::IndependentEvaluationBundleV1;
 use crate::IndependentEvaluationDispositionV1;
 use crate::LongitudinalTimeEvidenceV1;
@@ -387,6 +388,16 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         }
 
         let holdout = self.holdout.consume(&product_plan.frozen_plan)?;
+        // Replaying the durable consumption is not permission to release the
+        // holdout again, including after an indeterminate provider response.
+        match holdout.disposition {
+            HoldoutUseDispositionV1::Recorded => {}
+            HoldoutUseDispositionV1::IdempotentReplay => {
+                return Err(ProductEvaluationError::Binding(
+                    "final holdout already consumed",
+                ));
+            }
+        }
         let mut inputs = provider.release_after_consumption(&holdout)?;
         validate_released_inputs(&product_plan.frozen_plan, &inputs)?;
         validate_comparable_observations(

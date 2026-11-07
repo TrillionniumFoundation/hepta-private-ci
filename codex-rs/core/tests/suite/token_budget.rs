@@ -166,7 +166,7 @@ async fn assert_context_compaction_item_lifecycle(codex: &std::sync::Arc<codex_c
     let mut saw_compaction_started = false;
     let mut saw_compaction_completed = false;
 
-    loop {
+    let turn_id = loop {
         let event = codex.next_event().await.expect("next event");
         match event.msg {
             EventMsg::ItemStarted(ItemStartedEvent {
@@ -177,13 +177,20 @@ async fn assert_context_compaction_item_lifecycle(codex: &std::sync::Arc<codex_c
                 item: TurnItem::ContextCompaction(_),
                 ..
             }) => saw_compaction_completed = true,
-            EventMsg::TurnComplete(_) => break,
+            EventMsg::TurnComplete(event) => break event.turn_id,
             _ => {}
         }
-    }
+    };
 
     assert!(saw_compaction_started, "compaction item should start");
     assert!(saw_compaction_completed, "compaction item should complete");
+    // The item lifecycle and TurnComplete precede this exact compact task's
+    // finish-owner cleanup. Observe that owner before submitting the next turn.
+    if let Some(completion) = codex.pending_normal_turn_finish_completion(&turn_id) {
+        tokio::time::timeout(Duration::from_secs(10), completion)
+            .await
+            .expect("compaction finish owner did not complete within 10 seconds");
+    }
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

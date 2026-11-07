@@ -26,10 +26,10 @@ use crate::neuron_generation_service::spawn_neuron_generation_service;
 
 #[path = "neuron_generation_joint_cancel_tests.rs"]
 mod cancellation;
-#[path = "../../hepta-neuron/tests/support/joint_synthetic.rs"]
-mod synthetic;
 #[path = "../../hepta-neuron/tests/support/joint_trained.rs"]
 mod trained;
+
+use crate::neuron_generation_test_support::synthetic;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 type Clock = Arc<dyn Fn() -> u64 + Send + Sync>;

@@ -13,6 +13,7 @@ use codex_hepta_types::Digest32;
 
 use crate::AnchorWitnessStore;
 use crate::JournalAnchor;
+use crate::cell_generation_observation::CellGenerationObservationV1;
 use crate::cell_generation_state::CellGenerationConfigV2;
 use crate::cell_generation_state::GenerationEvent;
 use crate::cell_generation_state::GenerationState;
@@ -228,6 +229,16 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         )
     }
 
+    /// Capture state, cost, unresolved work and delivery at one healthy owner
+    /// cut. This read adds no events and cannot dispatch or settle work.
+    pub fn observe_generation(&self) -> Result<CellGenerationObservationV1, CellGenerationErrorV2> {
+        CellGenerationObservationV1::capture(
+            &self.config,
+            &self.state,
+            self.continuity_checkpoint()?,
+        )
+    }
+
     /// Identify the exact healthy journal cut without adding persistent bytes.
     /// The header binds the frozen config and limits; the head binds every
     /// retained event, including cost, cancellation, drain and delivery ACKs.
@@ -258,6 +269,7 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         Ok(self.state.outbox.as_ref())
     }
 
+    /// Recorded cost only; use `observe_generation` for episode completeness.
     pub fn task_cost(&self) -> Result<&CellTaskCostV2, CellGenerationErrorV2> {
         self.require_healthy()?;
         Ok(&self.state.cost)
@@ -269,6 +281,48 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
     ) -> Result<Option<CellGenerationReceiptV2>, CellGenerationErrorV2> {
         self.require_healthy()?;
         self.state.lookup(request)
+    }
+
+    /// Read an already committed receipt after checking its complete intent.
+    /// Absence is not proof that a computation was never admitted or dispatched.
+    /// The bounded intent is derived from original events during replay; this
+    /// lookup does not introduce another writer or grant fresh dispatch.
+    pub fn receipt_for_intent(
+        &self,
+        intent: &CellGenerationIntentV2,
+    ) -> Result<Option<CellGenerationReceiptV2>, CellGenerationErrorV2> {
+        self.require_healthy()?;
+        let original = self
+            .state
+            .intents
+            .iter()
+            .find(|original| original.operation_id == intent.operation_id);
+        let receipt = self
+            .state
+            .receipts
+            .iter()
+            .find(|receipt| receipt.operation_id == intent.operation_id);
+        match (original, receipt) {
+            (None, None) => Ok(None),
+            (Some(original), Some(receipt)) if original == intent => Ok(Some(receipt.clone())),
+            (Some(_), Some(_)) => Err(CellGenerationErrorV2::Conflict),
+            (None, Some(_)) | (Some(_), None) => Err(CellGenerationErrorV2::Corrupt),
+        }
+    }
+
+    /// Read the terminal result for the exact original request after a lost
+    /// reconcile response. This never admits or executes missing work.
+    pub fn receipt_by_request_digest(
+        &self,
+        request_digest: [u8; 32],
+    ) -> Result<Option<CellGenerationReceiptV2>, CellGenerationErrorV2> {
+        self.require_healthy()?;
+        Ok(self
+            .state
+            .receipts
+            .iter()
+            .find(|receipt| receipt.request_digest == request_digest)
+            .cloned())
     }
 
     /// Some(receipt) is an exact committed replay and MUST NOT dispatch. None

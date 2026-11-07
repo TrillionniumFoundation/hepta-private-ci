@@ -2049,7 +2049,7 @@ async fn code_mode_exec_surfaces_handler_errors_as_exceptions() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
     let server = responses::start_mock_server().await;
-    let (_test, second_mock) = run_code_mode_turn(
+    let (test, second_mock) = run_code_mode_turn_with_config(
         &server,
         "surface nested tool handler failures as script exceptions",
         r#"
@@ -2060,8 +2060,15 @@ try {
   text(`caught:${error?.message ?? String(error)}`);
 }
 "#,
+        |config| config.model_provider.mock_internal_chat_metadata = None,
     )
     .await?;
+    assert!(
+        !test
+            .config
+            .model_provider
+            .accepts_internal_chat_message_metadata_for_request(&format!("{}/v1", server.uri()),)
+    );
 
     let request = second_mock.single_request();
     // Attempted-tool metadata is prompt-local, not durable rollout state. Its

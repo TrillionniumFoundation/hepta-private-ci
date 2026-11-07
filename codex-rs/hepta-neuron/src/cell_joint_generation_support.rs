@@ -1,8 +1,5 @@
-//! Bounded immutable asset reads and measured input rejection.
+//! Measured input rejection shared by one-shot and resident workers.
 
-use std::fs::File;
-use std::io::Read;
-use std::path::Path;
 use std::time::Instant;
 
 use codex_hepta_types::Digest32;
@@ -20,25 +17,6 @@ use crate::CellGenerationRequestV2;
 use crate::CellTaskCostIdentityV2;
 use crate::CellTaskCostV2;
 use crate::cell_joint_process;
-
-pub(super) fn read_bounded(path: &Path, maximum: usize) -> Result<Vec<u8>, CellGenerationErrorV2> {
-    let file = File::open(path).map_err(|_| CellGenerationErrorV2::Unavailable)?;
-    if !file
-        .metadata()
-        .map_err(|_| CellGenerationErrorV2::Unavailable)?
-        .is_file()
-    {
-        return Err(CellGenerationErrorV2::InvalidBinding);
-    }
-    let mut bytes = Vec::new();
-    file.take(maximum as u64 + 1)
-        .read_to_end(&mut bytes)
-        .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-    if bytes.is_empty() || bytes.len() > maximum {
-        return Err(CellGenerationErrorV2::Capacity);
-    }
-    Ok(bytes)
-}
 
 pub(super) fn rejected_input(
     manifest: &CellBackendManifestV2,

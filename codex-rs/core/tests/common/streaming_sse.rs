@@ -17,6 +17,15 @@ pub struct StreamingSseChunk {
     pub body: String,
 }
 
+/// A response can withhold HTTP headers as well as its individual SSE chunks.
+/// Request recording always precedes this gate, so a fixture can prove physical
+/// dispatch without allowing header-derived provider events into the client.
+#[derive(Debug)]
+pub struct StreamingSseResponse {
+    pub header_gate: Option<oneshot::Receiver<()>>,
+    pub chunks: Vec<StreamingSseChunk>,
+}
+
 /// Minimal streaming SSE server for tests that need gated per-chunk delivery.
 pub struct StreamingSseServer {
     uri: String,
@@ -58,6 +67,23 @@ impl StreamingSseServer {
 /// response stream finishes sending its final chunk.
 pub async fn start_streaming_sse_server(
     responses: Vec<Vec<StreamingSseChunk>>,
+) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
+    start_streaming_sse_server_with_response_gates(
+        responses
+            .into_iter()
+            .map(|chunks| StreamingSseResponse {
+                header_gate: None,
+                chunks,
+            })
+            .collect(),
+    )
+    .await
+}
+
+/// Starts the same real HTTP fixture with explicit per-response header gates.
+/// The original per-chunk API continues to send headers immediately.
+pub async fn start_streaming_sse_server_with_response_gates(
+    responses: Vec<StreamingSseResponse>,
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
     let listener = TcpListener::bind("127.0.0.1:0")
         .await
@@ -128,16 +154,20 @@ pub async fn start_streaming_sse_server(
                             };
                             requests.lock().await.push(body);
                             request_notify.notify_one();
-                            let Some((chunks, completion)) = take_next_stream(&state).await else {
+                            let Some((response, completion)) = take_next_stream(&state).await else {
                                 let _ = write_http_response(&mut stream, /*status*/ 500, "no responses queued", "text/plain").await;
                                 return;
                             };
 
+                            if let Some(gate) = response.header_gate
+                                && gate.await.is_err() {
+                                    return;
+                                }
                             if write_sse_headers(&mut stream).await.is_err() {
                                 return;
                             }
 
-                            for chunk in chunks {
+                            for chunk in response.chunks {
                                 if let Some(gate) = chunk.gate
                                     && gate.await.is_err() {
                                         return;
@@ -173,13 +203,13 @@ pub async fn start_streaming_sse_server(
 }
 
 struct StreamingSseState {
-    responses: VecDeque<Vec<StreamingSseChunk>>,
+    responses: VecDeque<StreamingSseResponse>,
     completions: VecDeque<oneshot::Sender<i64>>,
 }
 
 async fn take_next_stream(
     state: &TokioMutex<StreamingSseState>,
-) -> Option<(Vec<StreamingSseChunk>, oneshot::Sender<i64>)> {
+) -> Option<(StreamingSseResponse, oneshot::Sender<i64>)> {
     let mut guard = state.lock().await;
     let chunks = guard.responses.pop_front()?;
     let completion = guard.completions.pop_front()?;
@@ -677,27 +707,33 @@ data: {"type":"response.completed","response":{"id":"resp-1"}}
         let (second_tx, second_rx) = oneshot::channel();
         let state = TokioMutex::new(StreamingSseState {
             responses: VecDeque::from(vec![
-                vec![StreamingSseChunk {
-                    gate: None,
-                    body: "first".to_string(),
-                }],
-                vec![StreamingSseChunk {
-                    gate: None,
-                    body: "second".to_string(),
-                }],
+                StreamingSseResponse {
+                    header_gate: None,
+                    chunks: vec![StreamingSseChunk {
+                        gate: None,
+                        body: "first".to_string(),
+                    }],
+                },
+                StreamingSseResponse {
+                    header_gate: None,
+                    chunks: vec![StreamingSseChunk {
+                        gate: None,
+                        body: "second".to_string(),
+                    }],
+                },
             ]),
             completions: VecDeque::from(vec![first_tx, second_tx]),
         });
 
         let (first_chunks, first_completion) =
             take_next_stream(&state).await.expect("first stream");
-        assert_eq!(first_chunks[0].body, "first");
+        assert_eq!(first_chunks.chunks[0].body, "first");
         let _ = first_completion.send(11);
         assert_eq!(first_rx.await.expect("first completion"), 11);
 
         let (second_chunks, second_completion) =
             take_next_stream(&state).await.expect("second stream");
-        assert_eq!(second_chunks[0].body, "second");
+        assert_eq!(second_chunks.chunks[0].body, "second");
         let _ = second_completion.send(22);
         assert_eq!(second_rx.await.expect("second completion"), 22);
 

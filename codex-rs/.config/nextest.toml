@@ -12,6 +12,11 @@ path = "junit.xml"
 # Nextest 0.9.103 inherits custom profiles from default implicitly.
 # The optional inherits key requires Nextest 0.9.115 or newer.
 
+[profile.local.junit]
+# Declare the output on the profile selected by `just test` explicitly, also
+# for CI's pinned Nextest 0.9.103. Missing reports must fail the collection gate.
+path = "junit.xml"
+
 [test-groups.app_server_protocol_codegen]
 max-threads = 1
 

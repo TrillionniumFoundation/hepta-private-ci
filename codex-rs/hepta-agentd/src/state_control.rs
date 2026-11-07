@@ -84,6 +84,9 @@ impl AgentdState {
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
         let payload = match method {
+            crate::AgentdMethod::Generation { request } => {
+                AgentdPayload::Generation(self.generation_control(request).await?)
+            }
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![
                     crate::AgentdCapability::new(
@@ -93,6 +96,16 @@ impl AgentdState {
                     )
                     .map_err(AgentdError::Protocol)?,
                 ];
+                if self.generation_control_enabled()? {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::AGENTD_GENERATION_CONTROL_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
                 if self.automation_effect_host().is_some() {
                     capabilities.push(
                         crate::AgentdCapability::new(

@@ -92,30 +92,36 @@ fn pinned_issuer_deadline_revision_and_unknown_identity_refuse_at_entry() {
     let token = f.token(&f.old);
     f.clock.0.store(1_500, Ordering::SeqCst);
     assert_eq!(
-        f.registry.verifier().with_pinned_issuer_dispatch_boundary::<()>(
-            (&parent.lease_id, 1),
-            token,
-            &f.old.binding,
-            |_, _, _| panic!("expired parent entered")
-        ),
+        f.registry
+            .verifier()
+            .with_pinned_issuer_dispatch_boundary::<()>(
+                (&parent.lease_id, 1),
+                token,
+                &f.old.binding,
+                |_, _, _| panic!("expired parent entered")
+            ),
         Err(AuthorityLeaseError::Expired)
     );
     assert_eq!(
-        f.registry.verifier().with_pinned_issuer_dispatch_boundary::<()>(
-            (&parent.lease_id, 2),
-            f.token(&f.old),
-            &f.old.binding,
-            |_, _, _| panic!("wrong parent revision entered")
-        ),
+        f.registry
+            .verifier()
+            .with_pinned_issuer_dispatch_boundary::<()>(
+                (&parent.lease_id, 2),
+                f.token(&f.old),
+                &f.old.binding,
+                |_, _, _| panic!("wrong parent revision entered")
+            ),
         Err(AuthorityLeaseError::RevisionMismatch)
     );
     assert_eq!(
-        f.registry.verifier().with_pinned_issuer_dispatch_boundary::<()>(
-            ("unknown-parent", 1),
-            f.token(&f.old),
-            &f.old.binding,
-            |_, _, _| panic!("missing parent entered")
-        ),
+        f.registry
+            .verifier()
+            .with_pinned_issuer_dispatch_boundary::<()>(
+                ("unknown-parent", 1),
+                f.token(&f.old),
+                &f.old.binding,
+                |_, _, _| panic!("missing parent entered")
+            ),
         Err(AuthorityLeaseError::LeaseNotFound)
     );
 }
@@ -133,7 +139,9 @@ fn pinned_issuer_joint_fence_blocks_parent_revocation_until_local_signature_retu
         let parent_id = &parent.lease_id;
         let revoke = scope.spawn(move || {
             started_rx.recv_timeout(Duration::from_secs(2)).unwrap();
-            done_tx.send(registry.revoke(parent_id, 1, [8; 32])).unwrap();
+            done_tx
+                .send(registry.revoke(parent_id, 1, [8; 32]))
+                .unwrap();
         });
         f.registry
             .verifier()
@@ -219,13 +227,29 @@ fn revoked_issuer_remains_vetoed_after_expiry_prune_and_original_disk_reopen() {
     // Only the expired unrevoked predecessor is pruned. The issuer tombstone
     // and its actual revoked record remain in the same persisted owner state.
     assert_eq!(f.registry.prune_expired_leases(2).unwrap(), 1);
-    assert!(f.registry.read_revocation(&parent.lease_id).unwrap().is_some());
+    assert!(
+        f.registry
+            .read_revocation(&parent.lease_id)
+            .unwrap()
+            .is_some()
+    );
     assert_eq!(
-        f.registry.read_lease(&parent.lease_id).unwrap().unwrap().lease.revision,
+        f.registry
+            .read_lease(&parent.lease_id)
+            .unwrap()
+            .unwrap()
+            .lease
+            .revision,
         2
     );
     let floor = f.registry.frontier().unwrap();
-    let Fixture { _root, registry, clock, old, new } = f;
+    let Fixture {
+        _root,
+        registry,
+        clock,
+        old,
+        new,
+    } = f;
     drop(registry);
     let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
         &_root.path().join("original-registry"),
@@ -235,9 +259,16 @@ fn revoked_issuer_remains_vetoed_after_expiry_prune_and_original_disk_reopen() {
     )
     .unwrap();
     assert_eq!(registry.frontier().unwrap(), floor);
-    assert!(registry.read_revocation(&parent.lease_id).unwrap().is_some());
+    assert!(
+        registry
+            .read_revocation(&parent.lease_id)
+            .unwrap()
+            .is_some()
+    );
     let verifier = registry.verifier();
-    let token = verifier.verify_use(&new.lease_id, new.revision, &new.binding).unwrap();
+    let token = verifier
+        .verify_use(&new.lease_id, new.revision, &new.binding)
+        .unwrap();
     assert_eq!(
         verifier.with_retired_predecessor_for_pinned_issuer_boundary::<()>(
             (&parent.lease_id, 1),
@@ -261,7 +292,7 @@ fn administrative_recovery_rejects_future_issuer_with_live_successor() {
             operation_class: "root_issuer".into(),
             ..f.old.binding.clone()
         },
-        ..f.old.clone()
+        ..f.old
     };
     // The original registry intentionally permits advance registration.
     f.registry.put_lease(parent.clone(), 0).unwrap();

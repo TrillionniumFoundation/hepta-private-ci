@@ -30,6 +30,9 @@ use crate::neuron_generation_runtime::OutputAcknowledgement;
 use crate::neuron_generation_runtime::Response;
 use crate::state::neuron_generation::NeuronGenerationProjection;
 
+#[path = "neuron_generation_control.rs"]
+mod control;
+
 pub(crate) const NEURON_GENERATION_SERVICE: &str = "neuron-generation";
 
 /// Private type erasure keeps AgentdConfig concrete while accepting only an
@@ -89,6 +92,10 @@ where
             GenerationOwnerBoundary::Settlement => require_recovery(state),
         };
         match command {
+            GenerationCommand::Control { request, response } => {
+                let result = self.control(*request, state);
+                respond(state, response, result)
+            }
             GenerationCommand::Step { request, response } => {
                 let result = self.owner.step_checked(*request, &mut self.clock, check);
                 respond(state, response, result)
@@ -104,6 +111,54 @@ where
                     &mut self.clock,
                     check,
                 );
+                respond(state, response, result)
+            }
+            GenerationCommand::StepPlanned {
+                expected_owner_checkpoint,
+                planning_cost,
+                request,
+                response,
+            } => {
+                let result = (|| {
+                    let journal = self.owner.journal();
+                    let committed = match journal.lookup(&request) {
+                        Ok(receipt) => receipt.is_some(),
+                        Err(CellGenerationErrorV2::Conflict) => {
+                            require_recovery(state)?;
+                            self.owner.journal_mut().record_cost(*planning_cost)?;
+                            return Err(CellGenerationErrorV2::Conflict);
+                        }
+                        Err(error) => return Err(error),
+                    };
+                    let existing = committed
+                        || journal
+                            .pending_request()?
+                            .is_some_and(|pending| pending == request.as_ref());
+                    if existing {
+                        if !journal
+                            .task_cost()?
+                            .entries()
+                            .contains(planning_cost.as_ref())
+                        {
+                            require_recovery(state)?;
+                            self.owner.journal_mut().record_cost(*planning_cost)?;
+                            return Err(CellGenerationErrorV2::Conflict);
+                        }
+                    } else {
+                        let stale = journal.continuity_checkpoint()? != expected_owner_checkpoint;
+                        require_recovery(state)?;
+                        self.owner.journal_mut().record_cost(*planning_cost)?;
+                        if stale {
+                            return Err(CellGenerationErrorV2::Conflict);
+                        }
+                    }
+                    self.owner
+                        .step_checked(*request, &mut self.clock, |boundary| match boundary {
+                            GenerationOwnerBoundary::Admission
+                            | GenerationOwnerBoundary::Dispatch => require_admission(state),
+                            GenerationOwnerBoundary::Settlement => require_recovery(state),
+                        })
+                })();
                 respond(state, response, result)
             }
             GenerationCommand::Reconcile { expected, response } => {
@@ -122,6 +177,9 @@ where
             }
             GenerationCommand::Snapshot(response) => {
                 respond(state, response, self.owner.journal().snapshot().cloned())
+            }
+            GenerationCommand::ObserveGeneration(response) => {
+                respond(state, response, self.owner.journal().observe_generation())
             }
             GenerationCommand::PendingRequest(response) => respond(
                 state,
