@@ -2,7 +2,10 @@
 //! host supplies its admitted control port, exclusive journal and witness.
 //! Construction does not register a default daemon provider or publish output.
 
+use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
 use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::CellCapabilityContractV1;
+use codex_hepta_neuron::CellFunctionalRoleV1;
 use codex_hepta_neuron::CellGenerationControlPortV2;
 use codex_hepta_neuron::CellGenerationDispositionV2;
 use codex_hepta_neuron::CellGenerationErrorV2;
@@ -10,12 +13,22 @@ use codex_hepta_neuron::CellGenerationJournalV2;
 use codex_hepta_neuron::CellGenerationProposalV2;
 use codex_hepta_neuron::CellGenerationReceiptV2;
 use codex_hepta_neuron::CellGenerationRequestV2;
+use codex_hepta_neuron::CellOwnerPopulationErrorV2;
+use codex_hepta_neuron::CellOwnerPopulationObservationV2;
+use codex_hepta_neuron::CellPopulationLimitsV1;
 use codex_hepta_neuron::CellTaskCostIdentityV2;
 use codex_hepta_neuron::CellTaskCostV2;
+use codex_hepta_types::StableId;
+
+#[path = "neuron_generation_population.rs"]
+mod population;
+use population::GenerationPopulationPolicy;
+pub(crate) use population::generation_error as population_generation_error;
 
 pub struct AgentdNeuronGenerationOwnerV2<W: AnchorWitnessStore, P: CellGenerationControlPortV2> {
     journal: CellGenerationJournalV2<W>,
     inference_control: P,
+    population: Option<GenerationPopulationPolicy>,
 }
 
 pub(crate) enum GenerationOwnerBoundary {
@@ -29,7 +42,40 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
         Self {
             journal,
             inference_control,
+            population: None,
         }
+    }
+
+    /// Bind this owner's task role and local capacity to a resolved artifact.
+    /// Existing callers may omit this until their artifact owner supplies exact
+    /// declarations. Multi-owner schedulers use `step_with_population` with all
+    /// current observations under their existing scheduler exclusion.
+    pub fn bind_population(
+        &mut self,
+        owner_id: StableId,
+        capability: CellCapabilityContractV1,
+        artifact: &CellCompatibilityBundleV1,
+        task_role: CellFunctionalRoleV1,
+        limits: CellPopulationLimitsV1,
+    ) -> Result<(), CellOwnerPopulationErrorV2> {
+        self.population = Some(GenerationPopulationPolicy::from_artifact(
+            &self.journal,
+            owner_id,
+            capability,
+            artifact,
+            task_role,
+            limits,
+        )?);
+        Ok(())
+    }
+
+    pub fn population_observation(
+        &self,
+    ) -> Result<Option<CellOwnerPopulationObservationV2>, CellOwnerPopulationErrorV2> {
+        self.population
+            .as_ref()
+            .map(|policy| policy.observe(&self.journal))
+            .transpose()
     }
 
     pub fn journal(&self) -> &CellGenerationJournalV2<W> {
@@ -51,11 +97,45 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
         self.step_checked(request, clock, |_| Ok(()))
     }
 
+    /// Admit against other current owners while the caller holds its existing
+    /// scheduler exclusion. Unknown peers continue to consume active capacity.
+    pub fn step_with_population(
+        &mut self,
+        request: CellGenerationRequestV2,
+        other_owners: &[CellOwnerPopulationObservationV2],
+        clock: impl FnMut() -> u64,
+    ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
+        self.step_with_population_checked(request, other_owners, clock, |_| Ok(()))
+    }
+
+    pub(crate) fn step_with_population_checked(
+        &mut self,
+        request: CellGenerationRequestV2,
+        other_owners: &[CellOwnerPopulationObservationV2],
+        clock: impl FnMut() -> u64,
+        check: impl FnMut(GenerationOwnerBoundary) -> Result<(), CellGenerationErrorV2>,
+    ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
+        if self.population.is_none() {
+            return Err(CellGenerationErrorV2::InvalidBinding);
+        }
+        self.step_checked_population(request, clock, check, other_owners)
+    }
+
     pub(crate) fn step_checked(
+        &mut self,
+        request: CellGenerationRequestV2,
+        clock: impl FnMut() -> u64,
+        check: impl FnMut(GenerationOwnerBoundary) -> Result<(), CellGenerationErrorV2>,
+    ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
+        self.step_checked_population(request, clock, check, &[])
+    }
+
+    fn step_checked_population(
         &mut self,
         request: CellGenerationRequestV2,
         mut clock: impl FnMut() -> u64,
         mut check: impl FnMut(GenerationOwnerBoundary) -> Result<(), CellGenerationErrorV2>,
+        other_owners: &[CellOwnerPopulationObservationV2],
     ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
         if let Some(receipt) = self.journal.lookup(&request)? {
             return Ok(receipt);
@@ -68,7 +148,13 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
         }
         let admitted = clock();
         check(GenerationOwnerBoundary::Admission)?;
-        if let Some(receipt) = self.journal.admit(request.clone(), admitted)? {
+        let receipt = match &self.population {
+            Some(policy) => {
+                policy.admit(&mut self.journal, other_owners, request.clone(), admitted)?
+            }
+            None => self.journal.admit(request.clone(), admitted)?,
+        };
+        if let Some(receipt) = receipt {
             return Ok(receipt);
         }
         let before_contact = clock();

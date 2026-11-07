@@ -7,6 +7,7 @@ use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
+use std::time::Instant;
 
 use codex_hepta_types::Digest32;
 
@@ -20,6 +21,18 @@ use crate::cell_task_cost::CellCostEntryV2;
 use crate::cell_task_cost::CellCostRecordV2;
 use crate::cell_task_cost::CellTaskCostV2;
 use crate::journal_lock::LockedFile;
+
+#[path = "cell_generation_lifecycle.rs"]
+mod lifecycle;
+#[path = "cell_generation_migration.rs"]
+mod migration;
+
+pub use lifecycle::CellGenerationCheckpointReceiptV2;
+pub use lifecycle::CellGenerationJournalMetricsV2;
+pub use migration::CellGenerationMigratedStateV2;
+pub use migration::CellGenerationMigrationContextV2;
+pub use migration::CellGenerationMigrationReceiptV2;
+pub use migration::CellGenerationMigrationVerifierV2;
 
 const MAGIC: &[u8; 8] = b"HPTACG02";
 const HEADER_BYTES: usize = 40;
@@ -37,6 +50,9 @@ pub struct CellGenerationJournalV2<W: AnchorWitnessStore> {
     head: Option<JournalAnchor>,
     length: u64,
     max_records: u64,
+    base_sequence: u64,
+    replay_records: u64,
+    replay_elapsed_micros: u64,
     healthy: bool,
 }
 
@@ -51,11 +67,7 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
             return Err(CellGenerationErrorV2::Capacity);
         }
         let state = GenerationState::new(&config)?;
-        let mut header = MAGIC.to_vec();
-        header.extend_from_slice(&digest(
-            b"hepta.cell.generation-owner.v2\0",
-            &(&config, max_records),
-        )?);
+        let header = owner_header(&config, max_records)?;
         let mut file = LockedFile::acquire(file).map_err(|_| CellGenerationErrorV2::Unavailable)?;
         if file
             .metadata()
@@ -86,6 +98,9 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
             head: None,
             length: 0,
             max_records,
+            base_sequence: 0,
+            replay_records: 0,
+            replay_elapsed_micros: 0,
             healthy: false,
         };
         owner.recover()?;
@@ -97,6 +112,7 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
     /// before truncation; recovery never calls a model or transport.
     pub fn recover(&mut self) -> Result<(), CellGenerationErrorV2> {
         self.healthy = false;
+        let started = Instant::now();
         let expected = self
             .witness
             .current()
@@ -116,13 +132,14 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         self.file
             .read_exact(&mut bytes)
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        if bytes[..HEADER_BYTES] != self.header {
-            return Err(CellGenerationErrorV2::InvalidBinding);
-        }
-        let mut state = GenerationState::new(&self.config)?;
-        let mut offset = HEADER_BYTES;
-        let mut head = None;
-        let mut witnessed = expected.is_none();
+        let (mut state, mut offset, mut head) =
+            lifecycle::recover_checkpoint(&bytes, &self.header, &self.config)?;
+        let base_sequence = head.map_or(0, |anchor| anchor.sequence);
+        let mut witnessed = if head.is_some() {
+            expected == head
+        } else {
+            expected.is_none()
+        };
         while bytes.len() - offset >= 4 {
             let size = u32::from_be_bytes(
                 bytes[offset..offset + 4]
@@ -138,7 +155,7 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
             }
             let payload = &bytes[offset + 4..end - 32];
             let next = next_anchor(&self.header, head, payload)?;
-            if next.sequence > self.max_records
+            if next.sequence - base_sequence > self.max_records
                 || next.checkpoint_digest.as_array() != &bytes[end - 32..end]
             {
                 return Err(CellGenerationErrorV2::Corrupt);
@@ -174,12 +191,22 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         self.state = state;
         self.head = head;
         self.length = offset as u64;
+        self.base_sequence = base_sequence;
+        self.replay_records = head.map_or(0, |anchor| anchor.sequence) - base_sequence;
+        self.replay_elapsed_micros = u64::try_from(started.elapsed().as_micros())
+            .map_err(|_| CellGenerationErrorV2::Capacity)?;
         self.healthy = true;
         Ok(())
     }
 
     pub fn manifest(&self) -> &CellBackendManifestV2 {
         &self.config.manifest
+    }
+
+    /// The source frontier bound to this owner configuration. Observation alone
+    /// does not establish that the source remains authorized at a later use.
+    pub fn source_frontier(&self) -> [u8; 32] {
+        self.config.source_frontier
     }
 
     pub fn snapshot(&self) -> Result<&CellRuntimeSnapshotV2, CellGenerationErrorV2> {
@@ -412,7 +439,7 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         let next = next_anchor(&self.header, self.head, &payload)?;
         let reserved = next_state.reserved_records();
         if payload.len() > MAX_FRAME
-            || next.sequence + reserved > self.max_records
+            || next.sequence - self.base_sequence + reserved > self.max_records
             || self.length + payload.len() as u64 + 36 + reserved * (MAX_FRAME as u64 + 36)
                 > MAX_BYTES
         {
@@ -452,6 +479,18 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
     }
 }
 
+fn owner_header(
+    config: &CellGenerationConfigV2,
+    max_records: u64,
+) -> Result<Vec<u8>, CellGenerationErrorV2> {
+    let mut header = MAGIC.to_vec();
+    header.extend_from_slice(&digest(
+        b"hepta.cell.generation-owner.v2\0",
+        &(config, max_records),
+    )?);
+    Ok(header)
+}
+
 fn next_anchor(
     header: &[u8],
     previous: Option<JournalAnchor>,
@@ -473,6 +512,10 @@ fn next_anchor(
         ]),
     })
 }
+
+#[cfg(test)]
+#[path = "cell_generation_test_support.rs"]
+mod support;
 
 #[cfg(test)]
 #[path = "cell_generation_tests.rs"]

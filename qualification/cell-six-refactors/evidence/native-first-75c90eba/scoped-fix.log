@@ -1,0 +1,554 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking codex-utils-absolute-path v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/absolute-path)
+    Checking codex-utils-rustls-provider v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/rustls-provider)
+    Checking codex-http-client v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/http-client)
+    Checking codex-utils-home-dir v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/home-dir)
+    Checking codex-utils-cache v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/cache)
+    Checking codex-execpolicy v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/execpolicy)
+    Checking codex-network-proxy v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/network-proxy)
+    Checking codex-utils-image v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/image)
+    Checking codex-utils-path-uri v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/path-uri)
+    Checking codex-extension-items v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/items)
+    Checking codex-utils-redacted-string v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/redacted-string)
+    Checking codex-utils-string v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/string)
+    Checking codex-async-utils v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/async-utils)
+    Checking codex-utils-pty v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/pty)
+    Checking codex-websocket-client v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/websocket-client)
+    Checking codex-client v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/codex-client)
+    Checking codex-hepta-contracts v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-contracts)
+    Checking codex-protocol v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/protocol)
+    Checking codex-utils-path v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/path-utils)
+   Compiling i18n-config v0.4.8 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/third_party/i18n-config-0.4.8)
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo clippy --fix --lib -p i18n-config -- --no-deps` to apply 2 suggestions)
+   Compiling i18n-embed-impl v0.8.4
+    Checking secret-service v6.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/third_party/secret-service-6.0.0)
+   Compiling codex-windows-sandbox v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/windows-sandbox-rs)
+    Checking zbus-secret-service-keyring-store v1.0.1 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1)
+   Compiling i18n-embed v0.15.4
+   Compiling i18n-embed-fl v0.9.4
+    Checking keyring v4.2.0
+    Checking age v0.11.5
+    Checking codex-keyring-store v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/keyring-store)
+    Checking codex-utils-template v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/template)
+    Checking codex-workload-identity v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/workload-identity)
+    Checking codex-terminal-detection v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/terminal-detection)
+    Checking codex-hepta-types v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-types)
+    Checking codex-install-context v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/install-context)
+    Checking aws-config v1.12.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/third_party/aws-config-1.12.0)
+   Compiling codex-code-mode-protocol v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/code-mode-protocol)
+    Checking codex-collaboration-mode-templates v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/collaboration-mode-templates)
+    Checking codex-aws-auth v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/aws-auth)
+    Checking codex-diagnostics v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/diagnostics)
+    Checking codex-file-search v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/file-search)
+    Checking codex-utils-cargo-bin v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/cargo-bin)
+   Compiling codex-experimental-api-macros v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/codex-experimental-api-macros)
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/app-server-protocol-noop-macros)
+   Compiling codex-skills v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/skills)
+    Checking codex-utils-stream-parser v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/stream-parser)
+    Checking codex-hepta-cognitive-types v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-cognitive-types)
+    Checking codex-file-system v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/file-system)
+    Checking codex-api v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/codex-api)
+    Checking codex-git-utils v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/git-utils)
+    Checking codex-shell-command v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/shell-command)
+    Checking codex-exec-server-protocol v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/exec-server-protocol)
+    Checking codex-otel v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/otel)
+    Checking codex-model-provider-info v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/model-provider-info)
+    Checking codex-secrets v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/secrets)
+    Checking codex-history v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/history)
+    Checking codex-state v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/state)
+    Checking codex-features v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/features)
+    Checking codex-config v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/config)
+    Checking codex-sandboxing v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/sandboxing)
+    Checking codex-agent-identity v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/agent-identity)
+    Checking codex-utils-output-truncation v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/output-truncation)
+    Checking codex-response-debug-context v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/response-debug-context)
+    Checking codex-code-mode v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/code-mode)
+    Checking codex-exec-server v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/exec-server)
+    Checking codex-login v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/login)
+    Checking codex-models-manager v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/models-manager)
+    Checking codex-feedback v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/feedback)
+    Checking codex-model-provider v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/model-provider)
+    Checking codex-context-fragments v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/context-fragments)
+    Checking codex-rollout v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/rollout)
+    Checking codex-utils-plugins v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/plugins)
+    Checking codex-exec-server-test-support v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/exec-server/tests/support)
+    Checking codex-plugin v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/plugin)
+    Checking codex-rmcp-client v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/rmcp-client)
+    Checking codex-connectors v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/connectors)
+    Checking codex-tools v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/tools)
+    Checking codex-app-server-protocol v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/app-server-protocol)
+    Checking codex-mcp v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/codex-mcp)
+    Checking codex-extension-api v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/extension-api)
+    Checking codex-hooks v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hooks)
+    Checking codex-apply-patch v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/apply-patch)
+    Checking codex-shell-escalation v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/shell-escalation)
+    Checking codex-prompts v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/prompts)
+    Checking codex-rollout-trace v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/rollout-trace)
+    Checking codex-agent-graph-store v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/agent-graph-store)
+    Checking codex-memories-read v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/memories/read)
+    Checking codex-utils-audio v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/audio)
+    Checking codex-hepta-memory-retrieval v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-memory-retrieval)
+    Checking codex-hepta-prompt-registry v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-prompt-registry)
+    Checking codex-hepta-paths v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-paths)
+    Checking codex-hepta-kg v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-kg)
+    Checking codex-hepta-operations v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-operations)
+    Checking codex-hepta-cognitive-read v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-cognitive-read)
+    Checking codex-backend-openapi-models v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/codex-backend-openapi-models)
+   Compiling codex-linux-sandbox v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/linux-sandbox)
+    Checking codex-backend-client v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/backend-client)
+    Checking codex-hepta-memory-federation v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-memory-federation)
+    Checking codex-process-hardening v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/process-hardening)
+    Checking codex-hepta-memory v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-memory)
+    Checking codex-analytics v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/analytics)
+    Checking codex-core-plugins v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/core-plugins)
+    Checking codex-skills-extension v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/skills)
+    Checking codex-thread-store v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/thread-store)
+    Checking codex-hepta-intuition v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-intuition)
+    Checking codex-arg0 v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/arg0)
+    Checking codex-hepta-learning-ledger v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-learning-ledger)
+    Checking codex-home v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/codex-home)
+    Checking codex-hepta-authbus v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-authbus)
+    Checking codex-uds v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/uds)
+    Checking codex-hepta-evidence v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-evidence)
+    Checking codex-core v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/core)
+    Checking codex-connectors-extension v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/connectors)
+    Checking codex-utils-cli v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/cli)
+    Checking codex-hepta-governance v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/hepta-governance)
+    Checking codex-hepta-memory-extension v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/hepta-memory)
+    Checking codex-file-watcher v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/file-watcher)
+    Checking codex-git-attribution v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/git-attribution)
+    Checking codex-hepta-prompt-extension v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/hepta-prompt)
+    Checking codex-hepta-infer-core v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-infer-core)
+    Checking codex-hepta-wire v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-wire)
+    Checking codex-hepta-ndu v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-ndu)
+    Checking codex-utils-json-to-toml v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/utils/json-to-toml)
+    Checking codex-hepta-intelligence-eval v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-intelligence-eval)
+    Checking codex-hepta-automation v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-automation)
+    Checking codex-hepta-fleet v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-fleet)
+    Checking codex-hepta-agent-protocol v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-agent-protocol)
+    Checking codex-hepta-control-plane v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-control-plane)
+    Checking codex-hepta-context-compiler v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-context-compiler)
+    Checking codex-hepta-neuron v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-neuron)
+    Checking codex-hepta-prompt-optimizer v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-prompt-optimizer)
+    Checking codex-hepta-plasticity v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-plasticity)
+    Checking codex-hepta-objective v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-objective)
+    Checking codex-hepta-learning-artifacts v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-learning-artifacts)
+    Checking codex-hepta-matrix-protocol v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-matrix-protocol)
+    Checking codex-hepta-supervisor v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-supervisor)
+    Checking codex-hepta-intelligence v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-intelligence)
+    Checking codex-hepta-bellman-operator v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-bellman-operator)
+    Checking codex-hepta-cognitive-store v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-cognitive-store)
+    Checking codex-memories-write v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/memories/write)
+    Checking codex-external-agent-migration v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/external-agent-migration)
+    Checking codex-history-notes-extension v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/history-notes)
+    Checking codex-agent-extension v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/agent)
+    Checking codex-chatgpt v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/chatgpt)
+    Checking codex-web-search-extension v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/web-search)
+    Checking codex-guardian-v2 v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/guardian-v2)
+    Checking codex-mcp-extension v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/mcp)
+    Checking codex-memories-extension v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/memories)
+    Checking codex-image-generation-extension v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/image-generation)
+    Checking codex-queue-extension v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/queue)
+    Checking codex-goal-extension v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/ext/goal)
+    Checking codex-app-server-transport v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/app-server-transport)
+    Checking codex-cloud-config v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/cloud-config)
+    Checking core_test_support v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/core/tests/common)
+    Checking app_test_support v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/app-server/tests/common)
+    Checking codex-app-server v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/app-server)
+    Checking codex-app-server-client v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/app-server-client)
+    Checking codex-hepta-codex-adapter v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-codex-adapter)
+    Checking codex-hepta-agentd v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-agentd)
+    Checking codex-hepta-infer-worker-host v0.0.0 (/home/qq/work/hepta-cell-six-371753-20261106/source/codex-rs/hepta-infer-worker-host)
+warning: file is loaded as a module multiple times: `hepta-infer-worker-host/src/bin/../joint_generation/proposal_test_support.rs`
+  |
+  = help: replace all but one `mod` item with `use` items
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+  = note: `#[warn(clippy::duplicate_mod)]` on by default
+
+warning: function `raw_frame` is never used
+  --> hepta-infer-worker-host/src/bin/../joint_generation/proposal_test_support.rs:86:15
+   |
+86 | pub(super) fn raw_frame(modality: u8, start: u32, units: u32, payload: &[u8]) -> Vec<u8> {
+   |               ^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codex-hepta-infer-worker-host` (bin "hepta-joint-propose" test) generated 2 warnings
+error[E0659]: `assert_eq` is ambiguous
+  --> hepta-agentd/src/neuron_generation_population_tests.rs:74:5
+   |
+74 |     assert_eq!(
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+   |
+ 5 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> hepta-agentd/src/neuron_generation_population_tests.rs:83:5
+   |
+83 |     assert_eq!(
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+   |
+ 5 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> hepta-agentd/src/neuron_generation_population_tests.rs:92:5
+   |
+92 |     assert_eq!(checked(owner.population_observation()), None);
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+   |
+ 5 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> hepta-agentd/src/neuron_generation_population_tests.rs:93:5
+   |
+93 |     assert_eq!(checked(owner.journal().pending_request()), None);
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+   |
+ 5 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+  --> hepta-agentd/src/neuron_generation_population_tests.rs:94:5
+   |
+94 |     assert_eq!(model.calls.load(Ordering::SeqCst), 0);
+   |     ^^^^^^^^^ ambiguous name
+   |
+   = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+  --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+   |
+ 5 | use super::*;
+   |     ^^^^^^^^
+   = help: consider adding an explicit import of `assert_eq` to disambiguate
+   = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+  --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:104:5
+    |
+104 |     assert_eq!(
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:115:5
+    |
+115 |     assert_eq!(checked(owner.journal().pending_request()), None);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:133:5
+    |
+133 |     assert_eq!(
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:137:5
+    |
+137 |     assert_eq!(checked(fs::read(fixture.0.join("journal"))), before);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:138:5
+    |
+138 |     assert_eq!(model.calls.load(Ordering::SeqCst), 0);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:157:5
+    |
+157 |     assert_eq!(
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:161:5
+    |
+161 |     assert_eq!(
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:166:5
+    |
+166 |     assert_eq!(
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:184:5
+    |
+184 |     assert_eq!(checked(owner.step(req, || 21)), receipt);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:185:5
+    |
+185 |     assert_eq!(model.calls.load(Ordering::SeqCst), 1);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:211:5
+    |
+211 |     assert_eq!(
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:230:5
+    |
+230 |     assert_eq!(
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:234:5
+    |
+234 |     assert_eq!(checked(fs::read(second_fixture.0.join("journal"))), before);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:235:5
+    |
+235 |     assert_eq!(checked(second.journal().pending_request()), None);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:236:5
+    |
+236 |     assert_eq!(model.calls.load(Ordering::SeqCst), 0);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/neuron_generation_population_tests.rs:5:5
+    |
+  5 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to a macro from prelude
+   --> /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/prelude/mod.rs:162:12
+
+For more information about this error, try `rustc --explain E0659`.
+error: could not compile `codex-hepta-agentd` (lib test) due to 20 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: Recipe `fix` failed on line 58 with exit code 101

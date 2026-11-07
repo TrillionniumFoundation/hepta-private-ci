@@ -12,9 +12,11 @@ use tokio::time::sleep;
 use tokio::time::timeout;
 
 use super::Clock;
+use super::ExpectedIpc;
 use super::Fixture;
 use super::ModelFixture;
 use super::TestResult;
+use super::Transport;
 use super::evidence_directory;
 use super::execute;
 use super::install_model;
@@ -33,8 +35,13 @@ async fn historical_trained_joint_admission_cancel_retains_predecessor_cost_and_
         &mut fixture,
         Arc::clone(&clock),
         ModelFixture::HistoricalTrained,
+        Transport::OneShot,
     )?;
     let public_digest = Digest32::of_bytes(&assets.public).into_array();
+    let ipc = ExpectedIpc {
+        transport: Transport::OneShot,
+        asset_bytes: assets.weights.len() + assets.public.len(),
+    };
     let (handle, mut tasks) =
         start_service(&fixture, Arc::clone(&worker), Arc::clone(&clock)).await?;
     let (_, initialized) = execute(
@@ -46,6 +53,7 @@ async fn historical_trained_joint_admission_cancel_retains_predecessor_cost_and_
             seed: 17,
             sampler: JointGenerationSamplerV1::Mean,
         },
+        &ipc,
     )
     .await?;
     assert_eq!(

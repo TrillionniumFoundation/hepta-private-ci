@@ -1,0 +1,90 @@
+{
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "v13_tests": 20,
+  "v13_source_commit": "75c90ebaee64f95ae03644d0b250f118ad676b0c",
+  "same_v13_code_at": "cb6f0a4a180677213988f6a4cc25c8431dfe5805",
+  "trained_model_qualification": false,
+  "joint_learning_qualification": false,
+  "production_adoption": false,
+  "commands": [
+    {
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/neuron-learning-closure-v13",
+        "-p",
+        "*_tests.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "v13-tests-final.log"
+    },
+    {
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-neuron",
+        "--offline",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "log": "local-fix.log"
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--tests",
+        "-p",
+        "codex-hepta-neuron",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "local-strict.log"
+    },
+    {
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "log": "format.log"
+    },
+    {
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "log": "format-native-fix.log"
+    },
+    {
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "log": "format-test-fix.log",
+      "source_change": "a8dd9d46 Rust test and gate evidence correction"
+    },
+    {
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "log": "format-async-ports.log",
+      "source_change": "cb6f0a4a async population and single-entry cost ports"
+    }
+  ],
+  "same_v13_code_check": "git diff --name-only between v13_source_commit and same_v13_code_at, restricted to qualification/neuron-learning-closure-v13 excluding README.md, returned empty"
+}

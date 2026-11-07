@@ -1,8 +1,10 @@
 # V13 学习状态内容闭包 → CellLearningBindingV2
 
-这个适配模块读取固定 V13 checkpoint，验证实际内容后生成现有
+内容验证入口读取固定 V13 checkpoint，验证实际内容后生成现有
 `CellLearningBindingV2::Resumable` 的五个成员摘要。它复用 V13 的原始
-`Adapter.load`；不运行训练、预测、encoder、下载、发布或采用操作。
+`Adapter.load`；验证入口不运行训练、预测、encoder、下载、发布或采用操作。
+独立的 `selected_use.py` 入口还可通过原 SourceOwner 读取已经选择的 release，
+在新进程中加载并执行下一任务的预测；它不替调用方评价、选择或发布模型。
 
 所有结果都标记 `authority: "DENY_ALL"`。内容一致性不能证明来源仍处于有效前沿、
 模型质量达标或模型已被产品采用。V13 是冻结 MiniLM embedding 上的残差分类器；
@@ -17,13 +19,14 @@
 
 | 原文件 | 用途 | 原始 SHA-256 |
 | --- | --- | --- |
-| `adapter.py` | 唯一被执行的参考源：原初始化、保存、读取和 state hash | `f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9` |
+| `adapter.py` | 原初始化、保存、读取和 state hash；selected-use 还调用原 predict | `f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9` |
 | `backend.py` | encoder manifest 与哈希格式的只读来源 | `47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53` |
-| `lifecycle.py` | SourceOwner cut、release、发布边界的只读来源 | `0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb` |
+| `lifecycle.py` | 验证器的只读格式来源；selected-use 复用原 SourceOwner 的 transaction/snapshot/cut | `0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb` |
 | `download_model.py` | 以 AST literal 读取原 MiniLM revision 和八个文件 pin，不执行下载 | `fd0a7e1ba831c4f2929ee8d29d22495c61ecfdbf7ceee3daec9f5110ff09c0f7` |
 
 每次进程首次加载参考源都会核对其完整库存、SHA-256、Git blob、长度和 pin。
-只有通过这些检查的 `adapter.py` 原字节才会被编译执行。其余三份来源不会被导入。
+内容验证器只编译执行通过检查的 `adapter.py` 原字节。selected-use 还核验并执行
+`lifecycle.py` 原字节，复用同一个 SourceOwner 数据库。其余两份来源不会被导入。
 验证器依赖 Python 3.10+ 和已有 NumPy；本次运行环境 NumPy 为 `2.3.5`，与 V13 要求一致。
 不新增包依赖，不导入 ONNX Runtime 或 tokenizers。
 
@@ -147,11 +150,42 @@ ZIP 封装字节与逻辑成员状态分别记录；不能用两者之一替代�
 这不是通用 NPZ 阅读器：不支持 pickle、object dtype、多磁盘 ZIP、ZIP64 central directory、
 NPY v3 或任意 metadata 扩展。原 NumPy save 的 ZIP64 local header 可用。
 
+## 已选版本的新进程使用
+
+`selected_use.py request.json` 接受以下字段，未知字段会被拒绝：
+
+| 字段 | 要求 |
+| --- | --- |
+| `backend_profile` | 必须是 `v13-residual-adapter`，不能填 Joint profile |
+| `owner_root` | 已存在的原 SourceOwner，内含 `sources.sqlite` 和实际 artifacts |
+| `scope` / `cell` / `epoch` / `artifact` | 必须与原 owner 当前选择精确匹配，epoch 为正整数 |
+| `encoder_manifest` / `encoder_root` | 内容验证所需的实际 encoder 文件及 manifest |
+| `training_dataset` / `data_id` | checkpoint sampler 绑定的原训练输入与身份 |
+| `task_features` / `task_id` | 下一任务的 NPZ（只有有限二维 `X`）及独立任务身份 |
+| `mode` | 默认真实 profile 使用 `reference`；测试夹具显式用 `synthetic-fixture` |
+
+入口先读取原 owner 的当前选择及当前 source cut，执行完整 checkpoint 内容验证，保留
+从同一份已验证 bounded bytes 加载的模型。随后进入原 `SourceOwner.transaction`，
+在任何预测之前重查精确 epoch/artifact 和 live source cut，并在该事务内执行原
+`Adapter.predict`。验证期间发生换版或撤回会在预测前拒绝；不会重新通过原有无界文件
+loader 打开 checkpoint，也不会先运行新选择再因为返回版本不符而拒绝。
+调用方必须把完整 JSON 成功输出作为一次结果；退出 `2` 时 stdout 为空。
+
+预测按最多 256 行的连续 float64 特征分批，并根据实际 input/rank/class 维度进一步收紧。
+上限同时估计 feature、rank、logits、exp 和归一化临时张量，避免小输入对应数 GiB 的
+类别矩阵；预算默认 64 MiB。它是数值计算工作区预算，不是整个 Python/BLAS 进程 RSS 保证。
+所有批次保持在同一个原 owner 的选择/来源事务内；成本记录整个调用而非重复累计批次包络。
+
+成功 receipt 记录本次进程 PID、下一任务 feature 摘要、五个学习状态成员、完整内容 receipt
+摘要、原选择及 validator 记录摘要、实际预测和部分实测成本。它不声明 validator 的质量标准，
+不授予 native runtime 采用权限，不测量 interpreter startup、训练、模型取得或能量。
+原 owner 负责权限和选择；这个入口不会把目录路径或非零 digest 当成独立授权。
+
 ## 当前实际验证范围
 
-本目录测试用固定原 `Adapter` 初始化并 `save` 一个明确 synthetic 的完整 checkpoint，
-手动填写 synthetic Adam/cursor/permutation 值。未调用 train、predict、features、loss，
-测试还将这些方法替换成失败钩子，防止保存/读取路径误执行计算。
+原有 11 项内容验证测试用固定原 `Adapter` 初始化并 `save` 一个明确 synthetic 的完整
+checkpoint，手动填写 synthetic Adam/cursor/permutation 值。其内容验证路径不调用
+train、predict、features、loss，并将这些方法替换成失败钩子，防止保存/读取路径误执行计算。
 synthetic encoder 有独立身份，并要求显式 `mode="synthetic-fixture"`；默认 reference 拒绝它。
 
 ```bash
@@ -159,10 +193,17 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
   -s qualification/neuron-learning-closure-v13 -p '*_tests.py' -v
 ```
 
-11 组行为测试覆盖原 save/load/state hash、五个成员分别变化、dtype/shape/finite/v/permutation、
+原有 11 组行为测试覆盖原 save/load/state hash、五个成员分别变化、dtype/shape/finite/v/permutation、
 cursor/epoch/RNG/config/optimizer/缺字段、危险 NPY 在 NumPy 前被拒绝、ZIP/原始及展开边界、
 source/encoder/data 内容漂移、release 内容绑定、cut/release 中 bool/float 对整数 revision 的
 类型别名拒绝，以及 CLI 成功/失败输出。
-这些是本目录的 Python 内容验证结果，不是 V13 实际训练复跑、真实 MiniLM artifact 验证、
+新增 9 项 selected-use 测试使用原 SourceOwner stage/publish、独立的可执行结构 validator 和
+另一个 CLI 进程，验证当前选择的新进程加载及实际下一任务预测，并拒绝错误后端、scope、
+epoch、artifact、撤回来源、损坏 checkpoint 和非有限输入。另覆盖验证后换版/撤回时
+预测调用为零、验证后的 checkpoint 被替换时仍使用固定模型、极宽类别张量的逐批内存
+边界，以及真实分批预测与原模型结果一致。该 validator 只评价预测形状和有限值，
+测试没有把它冒充未来任务质量评价。
+
+这些是本目录的 Python 内容及使用路径验证结果，不是 V13 实际训练复跑、真实 MiniLM artifact 验证、
 Joint 模型资格、Rust gate 或产品采用结果。现有真实 V13 checkpoint/encoder/data 提供后，
 可用默认 reference 模式验证其具体字节；没有这些输入时不会生成真实模型 receipt。

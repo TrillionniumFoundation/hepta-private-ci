@@ -32,6 +32,21 @@ impl Fixture {
         Self(path)
     }
     fn owner(&self, model: Model) -> AgentdNeuronGenerationOwnerV2<FileAnchorWitnessStore, Model> {
+        self.owner_with_bundle(model, None)
+    }
+    fn owner_with_bundle(
+        &self,
+        model: Model,
+        artifact: Option<&codex_hepta_learning_artifacts::CellCompatibilityBundleV1>,
+    ) -> AgentdNeuronGenerationOwnerV2<FileAnchorWitnessStore, Model> {
+        self.owner_with_cell(model, artifact, "cell")
+    }
+    fn owner_with_cell(
+        &self,
+        model: Model,
+        artifact: Option<&codex_hepta_learning_artifacts::CellCompatibilityBundleV1>,
+        cell: &str,
+    ) -> AgentdNeuronGenerationOwnerV2<FileAnchorWitnessStore, Model> {
         let file = |name: &str| {
             checked(
                 OpenOptions::new()
@@ -51,7 +66,7 @@ impl Fixture {
             checked(Generation::new(1)),
             /*max_records*/ 64,
         ));
-        let manifest = CellBackendManifestV2 {
+        let mut manifest = CellBackendManifestV2 {
             profile: "host-generation-fixture".to_string(),
             source_digest: [1; 32],
             bundle_digest: [2; 32],
@@ -79,11 +94,14 @@ impl Fixture {
             max_step_cost_entries: 32,
             max_ack_cost_entries: 16,
         };
+        if let Some(artifact) = artifact {
+            manifest.bundle_digest = checked(artifact.digest()).into_array();
+        }
         let initial = CellRuntimeSnapshotV2 {
             scope: CellGenerationScopeV2 {
                 principal_digest: [15; 32],
                 agent_id: "agent".to_string(),
-                cell_id: "cell".to_string(),
+                cell_id: cell.to_string(),
                 run_id: "run".to_string(),
             },
             manifest_digest: checked(manifest.digest()),
@@ -332,3 +350,6 @@ fn lost_response_retains_precontact_clock_floor_across_host_reopen() {
     );
     assert_eq!(model.calls.load(Ordering::SeqCst), 1);
 }
+
+#[path = "neuron_generation_population_tests.rs"]
+mod population;

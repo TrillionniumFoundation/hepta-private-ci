@@ -13,8 +13,12 @@ use crate::neuron_generation_service::spawn_neuron_generation_service;
 #[cfg(target_os = "linux")]
 #[path = "neuron_generation_joint_tests.rs"]
 mod joint;
+#[path = "neuron_generation_runtime_population_tests.rs"]
+mod population;
 #[path = "neuron_generation_runtime_test_support.rs"]
 mod support;
+#[path = "neuron_generation_runtime_cost_tests.rs"]
+mod task_cost;
 use support::Fixture;
 use support::checked;
 use support::cost;

@@ -3,7 +3,6 @@
 
 use std::collections::BTreeMap;
 use std::fs::File;
-use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -34,6 +33,14 @@ use crate::cell_joint_protocol::JointGenerationInputV1;
 use crate::cell_joint_protocol::MAX_PUBLIC_BYTES;
 use crate::cell_joint_protocol::MAX_WEIGHTS_BYTES;
 
+#[path = "cell_joint_resident.rs"]
+mod resident;
+#[path = "cell_joint_generation_support.rs"]
+mod support;
+
+use support::read_bounded;
+use support::rejected_input;
+
 /// These paths are supplied by the admitted host, never by a generation input.
 /// The source digest is the host's artifact/source binding; executable, weights,
 /// public bytes and observed device profile are also checked independently here.
@@ -58,9 +65,12 @@ pub struct JointGenerationProcessWorkerV1 {
     public_digest: [u8; 32],
     device_digest: [u8; 32],
     clock: Arc<dyn Fn() -> u64 + Send + Sync>,
+    resident: Option<resident::ResidentTransport>,
 }
 
 impl JointGenerationProcessWorkerV1 {
+    pub const RESIDENT_PROFILE: &'static str = "joint-generator-resident-linux-v1";
+
     pub const PROFILE: &'static str = "joint-generator-proposal-linux-v1";
 
     pub fn input_schema_digest() -> [u8; 32] {
@@ -188,7 +198,29 @@ impl JointGenerationProcessWorkerV1 {
             public_digest: config.public_digest,
             device_digest: config.device_digest,
             clock,
+            resident: None,
         })
+    }
+
+    /// Share one immutable loaded model/public input under this worker. Each
+    /// request still carries its complete Cell state and unpublished prefix.
+    /// Exchanges serialize; a failed or uncertain session is never respawned or
+    /// replayed automatically. The owner must explicitly open a replacement.
+    pub fn open_resident(
+        config: JointGenerationProcessConfigV1,
+        clock: Arc<dyn Fn() -> u64 + Send + Sync>,
+    ) -> Result<Self, CellGenerationErrorV2> {
+        let mut worker = Self::open(config, clock)?;
+        worker.resident = Some(resident::ResidentTransport::default());
+        Ok(worker)
+    }
+
+    pub fn profile(&self) -> &'static str {
+        if self.resident.is_some() {
+            Self::RESIDENT_PROFILE
+        } else {
+            Self::PROFILE
+        }
     }
 
     fn validate_manifest(
@@ -196,7 +228,7 @@ impl JointGenerationProcessWorkerV1 {
         manifest: &CellBackendManifestV2,
     ) -> Result<(), CellGenerationErrorV2> {
         manifest.digest()?;
-        if manifest.profile != Self::PROFILE
+        if manifest.profile != self.profile()
             || manifest.source_digest != self.source_digest
             || manifest.runtime_digest != self.executable_digest
             || manifest.device_digest != self.device_digest
@@ -251,8 +283,16 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
         }
         let payload = match cell_joint_protocol::request_bytes(
             request_digest,
-            &self.weights,
-            &self.public,
+            if self.resident.is_some() {
+                &[]
+            } else {
+                &self.weights
+            },
+            if self.resident.is_some() {
+                &[]
+            } else {
+                &self.public
+            },
             &request.predecessor.state,
             &request.predecessor.prefix,
             &input.command,
@@ -260,14 +300,33 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
             Ok(value) => value,
             Err(_) => return rejected_input(manifest, request, started),
         };
-        let observation = cell_joint_process::run(ProcessRequest {
+        let process_request = ProcessRequest {
             executable: &self.executable,
             executable_digest: self.executable_digest,
             payload,
             cancellation,
             deadline_micros: request.deadline_micros,
             clock: self.clock.as_ref(),
-        })?;
+        };
+        let observation = if let Some(resident) = &self.resident {
+            resident.run(
+                process_request,
+                || {
+                    cell_joint_protocol::request_bytes(
+                        request_digest,
+                        &self.weights,
+                        &self.public,
+                        &request.predecessor.state,
+                        &request.predecessor.prefix,
+                        &input.command,
+                    )
+                },
+                request_digest,
+                manifest.max_prefix_bytes as usize - request.predecessor.prefix.len(),
+            )?
+        } else {
+            cell_joint_process::run(process_request)?
+        };
         let mut phase_micros = [0; 4];
         let (successor_state, output_delta, disposition) = match observation.status {
             ProcessStatus::Succeeded => {
@@ -303,8 +362,8 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
                         },
                     )
                 } else {
-                    // The process and all pipes terminated, but its response was
-                    // invalid. Retain measured work as Failed, with no adopted
+                    // The one-shot process terminated, or the resident transport
+                    // rejected and terminated its invalid response. Retain measured work as Failed, with no adopted
                     // state/output and no invented child-phase observations.
                     (
                         request.predecessor.state.clone(),
@@ -425,62 +484,6 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
             cost,
         })
     }
-}
-
-fn read_bounded(path: &Path, maximum: usize) -> Result<Vec<u8>, CellGenerationErrorV2> {
-    let file = File::open(path).map_err(|_| CellGenerationErrorV2::Unavailable)?;
-    if !file
-        .metadata()
-        .map_err(|_| CellGenerationErrorV2::Unavailable)?
-        .is_file()
-    {
-        return Err(CellGenerationErrorV2::InvalidBinding);
-    }
-    let mut bytes = Vec::new();
-    file.take(maximum as u64 + 1)
-        .read_to_end(&mut bytes)
-        .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-    if bytes.is_empty() || bytes.len() > maximum {
-        return Err(CellGenerationErrorV2::Capacity);
-    }
-    Ok(bytes)
-}
-
-fn rejected_input(
-    manifest: &CellBackendManifestV2,
-    request: &CellGenerationRequestV2,
-    started: Instant,
-) -> Result<CellGenerationProposalV2, CellGenerationErrorV2> {
-    let request_digest = request.digest()?;
-    let identity = CellTaskCostIdentityV2 {
-        task_digest: request.task_digest,
-        source_digest: manifest.source_digest,
-    };
-    let mut cost =
-        CellTaskCostV2::new(identity).map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
-    cost.record(CellCostEntryV2 {
-        event_id: Digest32::of_parts(&[b"hepta.joint.rejected-input.v1\0", &request_digest])
-            .into_array(),
-        identity,
-        stage: CellCostStageV2::Codec,
-        outcome: CellCostOutcomeV2::Rejected,
-        accounting: CellCostAccountingV2::Exclusive,
-        metrics: CellCostMetricsV2 {
-            wall_micros: Some(cell_joint_process::elapsed_micros(started)?),
-            ..CellCostMetricsV2::default()
-        },
-    })
-    .map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
-    Ok(CellGenerationProposalV2 {
-        request_digest,
-        bundle_digest: manifest.bundle_digest,
-        runtime_digest: manifest.runtime_digest,
-        device_digest: manifest.device_digest,
-        successor_state: request.predecessor.state.clone(),
-        output_delta: Vec::new(),
-        disposition: CellGenerationDispositionV2::Rejected,
-        cost,
-    })
 }
 
 #[cfg(test)]

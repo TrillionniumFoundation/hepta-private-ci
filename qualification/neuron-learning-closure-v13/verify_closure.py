@@ -182,7 +182,7 @@ def _release(path, artifact, state_hash, sources, encoder, limits):
     }
 
 
-def verify_checkpoint(
+def _verified_checkpoint(
     npz_path,
     *,
     source_snapshot,
@@ -194,7 +194,7 @@ def verify_checkpoint(
     limits=None,
     release_manifest_path=None,
 ):
-    """Return verified content identities only. SourceOwner retains adoption/CAS.
+    """Return content identities and the model loaded from the same bounded bytes.
 
     Inputs are bounded files, plus a SourceOwner ``{cut, records}`` snapshot.
     Synthetic fixtures require explicit mode and a synthetic encoder identity.
@@ -281,7 +281,7 @@ def verify_checkpoint(
             "kind": "resumable",
             **{key: list(bytes.fromhex(value)) for key, value in members.items()},
         }
-        return {
+        receipt = {
             "schema": "hepta.cell-learning.v13.content-binding.v1",
             "authority": "DENY_ALL",
             "verification_mode": mode,
@@ -310,6 +310,7 @@ def verify_checkpoint(
             "live_source_frontier_checked": False,
             "executable_quality_evaluation_performed": False,
         }
+        return receipt, model
     except ClosureError:
         raise
     except (
@@ -322,6 +323,33 @@ def verify_checkpoint(
         RecursionError,
     ) as error:
         raise ClosureError("Invalid V13 learning closure") from error
+
+
+def verify_checkpoint(
+    npz_path,
+    *,
+    source_snapshot,
+    encoder_manifest_path,
+    encoder_root,
+    dataset_npz_path,
+    expected_data_id,
+    mode="reference",
+    limits=None,
+    release_manifest_path=None,
+):
+    """Return identities only; this does not execute or adopt a model."""
+    receipt, _ = _verified_checkpoint(
+        npz_path,
+        source_snapshot=source_snapshot,
+        encoder_manifest_path=encoder_manifest_path,
+        encoder_root=encoder_root,
+        dataset_npz_path=dataset_npz_path,
+        expected_data_id=expected_data_id,
+        mode=mode,
+        limits=limits,
+        release_manifest_path=release_manifest_path,
+    )
+    return receipt
 
 
 def main():

@@ -160,9 +160,10 @@ def main():
                 )
             for binary in binaries:
                 for name in sorted({binary, binary.replace("-", "_")}):
-                    environment[f"CARGO_BIN_EXE_{name}"] = manifest["artifacts"][
-                        binary
-                    ]["executable"]
+                    for prefix in ("CARGO_BIN_EXE", "NEXTEST_BIN_EXE"):
+                        environment[f"{prefix}_{name}"] = manifest["artifacts"][binary][
+                            "executable"
+                        ]
             build["complete"] = True
             checkpoint()
         manifest["source_sha_after"] = git("rev-parse", "HEAD")

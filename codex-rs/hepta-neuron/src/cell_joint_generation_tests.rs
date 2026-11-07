@@ -66,10 +66,9 @@ impl Harness {
         // The qualification helper manifest and Bazel runfiles launcher both
         // supply this exact compiler-reported binary. Never guess target paths.
         let binary = PathBuf::from(
-            std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose")
-                // `just test` crosses a POSIX shell, which can remove names
-                // containing hyphens. The helper manifest emits both aliases
-                // from the same compiler artifact; no target path is inferred.
+            std::env::var_os("NEXTEST_BIN_EXE_hepta-joint-propose")
+                .or_else(|| std::env::var_os("NEXTEST_BIN_EXE_hepta_joint_propose"))
+                .or_else(|| std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose"))
                 .or_else(|| std::env::var_os("CARGO_BIN_EXE_hepta_joint_propose"))
                 .ok_or_else(|| {
                     std::io::Error::other("missing actual hepta-joint-propose helper metadata")
@@ -538,3 +537,6 @@ fn response_parser_binds_exact_digest_checksum_lengths_and_tail() -> TestResult 
     assert!(cell_joint_protocol::read_proposal(&valid, [10; 32]).is_err());
     Ok(())
 }
+
+#[path = "cell_joint_resident_tests.rs"]
+mod resident_tests;
