@@ -17,31 +17,41 @@ from hepta_bwrap_readonly_contract import PROBE, journal_argv
 from hepta_core_selected_evidence import identity, read_regular, require
 
 ROOT = Path(__file__).resolve().parents[2]
-PARENT = "7ba5c856a4e9cf580b95b069045f61ab88d16140"
-PARENT_TREE = "adbe754820b2c78722a306681907133812ff18e0"
-INPUTS_HEAD = "1fb4eb3fc60614496a5932e2aebecd12d3563702"
-INPUTS_TREE = "f8ed4c078018ed659014def23e67d594e1a24c91"
-CHECKS_HEAD = "a446aefd825b428aaf29bb224e9d5c305fb5d5c8"
-CHECKS_TREE = "b20e8b660311ead4f739a6a8adf6a84a3a09f27e"
+PARENT = "25d940b9b768b9117a020fe350fd134198a2efcf"
+PARENT_TREE = "26277e2bebd9e9f5a7cd04869c955dfd2fa7ddd2"
+INPUTS_HEAD = None
+INPUTS_TREE = None
+CHECKS_HEAD = None
+CHECKS_TREE = None
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
-INPUTS_REF = "research/ndu-bwrap-profile-inputs-20261106"
-CHECKS_REF = "research/ndu-bwrap-profile-checks-20261106"
-PROPOSAL_REF = "research/ndu-bwrap-profile-probe-20261106"
+INPUTS_REF = "research/ndu-bwrap-share-inputs-20261107"
+CHECKS_REF = "research/ndu-bwrap-share-checks-20261107"
+PROPOSAL_REF = "research/ndu-bwrap-share-probe-20261107"
 CONTRACT = ".github/scripts/hepta_bwrap_profile_contract.py"
 PROFILE_PACKAGE = (
     ".github/scripts/apparmor-profiles_4.0.1really4.0.1-0ubuntu0.24.04.9_all.deb"
 )
 DEPENDENCIES = ".github/scripts/hepta-bwrap-profile-dependencies.json"
-INPUT_PATHS = {CONTRACT, PROFILE_PACKAGE, DEPENDENCIES}
+SHARE_HELPER = ".github/scripts/hepta_bwrap_share_mode.py"
+SHARE_HELPER_SHA = "3ebf6137161889300b3173efc43a8acbd2fbdcbdee80d4903532d486d0c4333d"
+SHARE_PYTHON = "/usr/bin/python3.12"
+BASELINE_BLOBS = {
+    ".github/scripts/hepta-bwrap-profile-dependencies.json": "5937fe0631024016c746b46f4a71f54ec124b48b",
+    ".github/scripts/hepta_bwrap_profile.py": "5c42f13ba4bd91b0000a81d9716c5975e02dad16",
+    ".github/scripts/hepta_bwrap_profile_contract.py": "947d24e58a849b8f6ab9103fd8ed94b37d1b33f6",
+    ".github/scripts/hepta_bwrap_profile_evidence.py": "8e7174fda44ba76180168162ccd98988d1c344da",
+    ".github/workflows/hepta-bwrap-profile-probe.yml": "f1faac01495487c2f253021db2cb3815331c82fd",
+}
+INPUT_PATHS = {CONTRACT, DEPENDENCIES, SHARE_HELPER}
 CHECK_PATHS = {
-    ".github/scripts/hepta_bwrap_profile_checks.py",
+    ".github/scripts/hepta_bwrap_share_checks.py",
     ".github/scripts/hepta_bwrap_profile_evidence.py",
 }
 EXECUTOR_PATHS = {
     ".github/scripts/hepta_bwrap_profile.py",
     ".github/workflows/hepta-bwrap-profile-probe.yml",
 }
-ADDED = INPUT_PATHS | CHECK_PATHS | EXECUTOR_PATHS
+DECLARED_PATHS = INPUT_PATHS | CHECK_PATHS | EXECUTOR_PATHS
 SCANNER_PATH = ".github/scripts/hepta_core_selected_evidence.py"
 SCANNER_BLOB = "f18f5d0ce06cead0817513814da96f129523cf8c"
 LIMIT = 4 * 1024 * 1024
@@ -123,6 +133,7 @@ COMMAND_IDS = (
     | {f"loaded.{name}" for name in ("loaded_profiles", "apparmor_status")}
     | {"baseline", "post", "baseline_journal", "post_journal"}
     | set(PARSER_COMMANDS)
+    | {"share_mode"}
 )
 READ_SLOTS = {f"reads/{phase}.{name}.raw" for phase in PHASES for name in READS}
 SLOTS = (
@@ -132,6 +143,8 @@ SLOTS = (
         "readiness.json",
         "result.json",
         "profile.raw",
+        "share-runtime.before.json",
+        "share-runtime.after.json",
     }
     | {f"{phase}.provenance.json" for phase in PHASES}
     | READ_SLOTS
@@ -211,6 +224,18 @@ def profile_bytes():
 
 
 def expected_argv(name, commands):
+    if name == "share_mode":
+        source = read_regular(ROOT / SHARE_HELPER)
+        require(identity(source)["sha256"] == SHARE_HELPER_SHA, "SHARE_HELPER_CHANGED")
+        return [
+            "/usr/bin/sudo",
+            "-n",
+            SHARE_PYTHON,
+            "-I",
+            "-S",
+            "-c",
+            source.decode("utf-8"),
+        ]
     if name in {"baseline", "post"}:
         return PROBE
     if name.endswith("_journal"):
@@ -313,7 +338,9 @@ def source_guard():
         (INPUTS_HEAD, CHECKS_HEAD, CHECK_PATHS),
         (CHECKS_HEAD, head, EXECUTOR_PATHS),
     ):
-        expected = {"A\t" + name for name in added}
+        expected = {
+            ("M\t" if name in BASELINE_BLOBS else "A\t") + name for name in added
+        }
         if previous != PARENT:
             expected.add("M\t" + CONTRACT)
         require(
@@ -363,15 +390,22 @@ def source_guard():
         old_mode, mode, old_blob, blob, status = rows[offset].decode().split()
         name = rows[offset + 1].decode()
         require(
-            old_mode == ":000000"
-            and mode == "100644"
-            and old_blob == "0" * 40
-            and status == "A",
+            mode == "100644"
+            and (
+                name in BASELINE_BLOBS
+                and old_mode == ":100644"
+                and old_blob == BASELINE_BLOBS[name]
+                and status == "M"
+                or name not in BASELINE_BLOBS
+                and old_mode == ":000000"
+                and old_blob == "0" * 40
+                and status == "A"
+            ),
             "PRODUCT_CHANGE",
         )
         require(name not in additions, "DUPLICATE_PATH")
         additions[name] = blob
-    require(set(additions) == ADDED, "ADDITIONS_MISMATCH")
+    require(set(additions) == DECLARED_PATHS, "DECLARED_SCOPE_MISMATCH")
     count = 0
     for row in git("ls-files", "--stage", "-z").split(b"\0"):
         if not row:
@@ -435,7 +469,7 @@ def source_guard():
         "inputs_tree": INPUTS_TREE,
         "checks_head": CHECKS_HEAD,
         "checks_tree": CHECKS_TREE,
-        "only_additions": additions,
+        "declared_source_changes": additions,
         "all_tracked_worktree_blobs_verified": count,
         "scanner_blob": SCANNER_BLOB,
         "profile_sha256": PROFILE_SHA,

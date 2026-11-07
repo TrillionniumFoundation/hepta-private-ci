@@ -28,9 +28,9 @@
     }
   },
   "included_directories": {
-    "/etc/apparmor.d/tunables/home.d": ["site.local"],
+    "/etc/apparmor.d/tunables/home.d": ["site.local", "ubuntu"],
     "/etc/apparmor.d/tunables/multiarch.d": ["site.local"],
-    "/etc/apparmor.d/tunables/xdg-user-dirs.d": []
+    "/etc/apparmor.d/tunables/xdg-user-dirs.d": ["site.local"]
   },
   "regular_files": {
     "/etc/apparmor.d/abi/4.0": {
@@ -73,6 +73,13 @@
       "gid": 0,
       "mode": "0o644",
       "sha256": "f6f9d209f8015196f2e391ea02debcebecbf8022ececfee3a08e3973c3bb06d4",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/home.d/ubuntu": {
+      "bytes": 337,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "e1b3a24d2ffdcf2b02f8726941f3c6c32dee3c9222553959a335147494d74a2d",
       "uid": 0
     },
     "/etc/apparmor.d/tunables/kernelvars": {
@@ -129,6 +136,13 @@
       "gid": 0,
       "mode": "0o644",
       "sha256": "1d92b108e04a4067333224c4dbfd19df8ca0f0deef7a28b153995e22fe8cedb7",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/xdg-user-dirs.d/site.local": {
+      "bytes": 730,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "d9705b1ab368e32f4cce94f2242c6947b8624985b9c6de2ab4ee01b398dc4703",
       "uid": 0
     },
     "/etc/apparmor/parser.conf": {
