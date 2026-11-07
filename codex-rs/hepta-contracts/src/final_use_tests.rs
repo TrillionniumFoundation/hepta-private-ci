@@ -1179,3 +1179,98 @@ fn external_frontier_change_fences_existing_claim_and_shared_owner() {
         FinalUseError::Unavailable
     );
 }
+
+
+#[test]
+fn issuer_key_ring_existing_reopen_uses_classical_profile_and_preserves_claims() {
+    let issuer = SigningKey::from_bytes(&[63; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> =
+        Arc::new(MemoryFinalUseFrontier(Mutex::new(
+            FinalUseFrontier::for_initial_head(&head).unwrap(),
+        )));
+    let issuer_keys = || {
+        vec![FinalUseIssuerTrustKey {
+            key_id: "classical-reopen".into(),
+            verifying_key: issuer.verifying_key().to_bytes(),
+            not_before_authority_epoch: 1,
+            not_after_authority_epoch: 20,
+        }]
+    };
+
+    let fresh = FinalUseAuthority::initialize_fresh_state_dir_with_issuer_keys(
+        directory.path(),
+        "existing-owner".into(),
+        issuer_keys(),
+        head.clone(),
+        Arc::new(FixedClock(2_000)),
+        Arc::clone(&frontier_store),
+    )
+    .unwrap();
+    drop(fresh);
+
+    let reopened = FinalUseAuthority::open_existing_state_dir_with_issuer_keys(
+        directory.path(),
+        "existing-owner".into(),
+        issuer_keys(),
+        head.clone(),
+        Arc::new(FixedClock(2_000)),
+        Arc::clone(&frontier_store),
+    )
+    .unwrap();
+    let binding = FinalUseBinding {
+        subject_id: "agent-one".into(),
+        destination_id: "provider:heptabao".into(),
+        request_sha256: [31; 32],
+        scope_sha256: [32; 32],
+        payload_sha256: [33; 32],
+    };
+    let make_grant = |schema_version, grant_id: &str, nonce| {
+        let grant = FinalUseGrant {
+            schema_version,
+            signer_id: "existing-owner".into(),
+            authority_epoch: 9,
+            grant_id: grant_id.into(),
+            nonce,
+            binding: binding.clone(),
+            not_before_unix_ms: 1_000,
+            expires_at_unix_ms: 3_000,
+        };
+        SignedFinalUseGrant {
+            signature: issuer
+                .sign(&grant.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            grant,
+        }
+    };
+    let wrong_profile = make_grant(2, "wrong-profile", [34; 32]);
+    assert_eq!(
+        reopened.claim(&wrong_profile, &binding).unwrap_err(),
+        FinalUseError::InvalidGrant
+    );
+
+    let classical = make_grant(1, "reopen-classical", [35; 32]);
+    reopened.claim(&classical, &binding).unwrap();
+    drop(reopened);
+
+    let reopened_again = FinalUseAuthority::open_existing_state_dir_with_issuer_keys(
+        directory.path(),
+        "existing-owner".into(),
+        issuer_keys(),
+        head,
+        Arc::new(FixedClock(2_000)),
+        frontier_store,
+    )
+    .unwrap();
+    assert_eq!(
+        reopened_again.claim(&classical, &binding).unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
+}
