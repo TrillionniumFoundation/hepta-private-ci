@@ -1,0 +1,471 @@
+{
+  "schema_version": 1,
+  "as_of_utc": "2026-11-07T01:14:11.171784+00:00",
+  "additive_snapshot": true,
+  "source_checkpoint": {
+    "commit": "4f47ad2b179e71f1df45d429ee14dd99099fb589",
+    "tree": "2a0f0e93172abc259fc573760e3bd5cf03ec0539",
+    "branch": "research/ndu-apparmor-precondition-evidence-20261107",
+    "pr": 5206,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5206"
+  },
+  "previous_published_status": "ndu_status_20261106_2256",
+  "research": {
+    "target_semantics": "INTERNALLY_CORRECTED_UNDER_EXPLICIT_ASSUMPTIONS",
+    "same_data_finite_empirical_dp_gap": "RESOLVED_WITHIN_AUDITED_FINITE_MODEL",
+    "strong_baseline": {
+      "status": "FAILED_CURRENT_CANDIDATE",
+      "comparator": "same-data myopic VOI",
+      "true_utility_wins_ties_losses": [
+        0,
+        143,
+        1
+      ],
+      "primary_lifecycle_deployments": 1000,
+      "primary_positive_cells": 0,
+      "primary_total_cells": 144,
+      "primary_absolute_lower_bounds_negative": 144,
+      "global_research_acquisition_score_units": 88866.778,
+      "resource_prices": "DECLARED_SYNTHETIC_UNITS_NOT_PROVIDER_MONEY",
+      "hardware_and_engineering_monetary_cost": "UNPRICED"
+    },
+    "pure_information_mechanism": {
+      "status": "EXACT_MECHANISM_ESTABLISHED_IN_DECLARED_MODEL",
+      "correctness_reward_depends_on_internal_state": false,
+      "proposed_rule_vs_same_structure_mle_dp": "PATHWISE_EQUIVALENT",
+      "superiority_comparison": "NEGATIVE_BEFORE_SAMPLING",
+      "contract_law_pairs": 36,
+      "feasible_count_triples": 968,
+      "new_random_confirmation_performed": false
+    },
+    "finite_catalog": {
+      "status": "RESTRICTED_CLASSICAL_POINTWISE_ASYMPTOTIC_RESULT",
+      "candidate_laws_provided": true,
+      "unknown_true_catalog_member": true,
+      "calibration_regenerative_and_paid": true,
+      "deterministic_verifier_checks": 45,
+      "kl_deadline_condition_sufficient": false,
+      "new_learned_stateful_algorithm_near_bound": "NOT_ESTABLISHED"
+    },
+    "frozen_local_models": {
+      "status": "ACTUAL_DEVELOPMENT_EXECUTION_WITH_NEGATIVE_TASK_OUTCOMES",
+      "procedures": 3,
+      "responses_including_qualification": 54,
+      "task_episodes_across_reused_procedures": 48,
+      "distinct_disclosed_tasks": 8,
+      "source_clusters": 2,
+      "untouched_independent_confirmation": false,
+      "external_paid_model_api_calls": 0,
+      "host_monetary_cost": "UNKNOWN",
+      "per_procedure": [
+        {
+          "name": "SmolLM2-135M strict JSON",
+          "responses": 17,
+          "task_episodes": 16,
+          "tool_dispatches": 0,
+          "delivered_task_answers": 0,
+          "correct_delivered_task_answers": 0
+        },
+        {
+          "name": "Qwen2.5-0.5B strict JSON",
+          "responses": 17,
+          "task_episodes": 16,
+          "tool_dispatches": 0,
+          "delivered_task_answers": 0,
+          "correct_delivered_task_answers": 0
+        },
+        {
+          "name": "Same frozen Qwen with prospectively fixed JSON transport",
+          "responses": 20,
+          "task_episodes": 16,
+          "tool_dispatches": 4,
+          "sql_observations": 3,
+          "sql_worker_failures": 1,
+          "direct_delivered_answers": 4,
+          "direct_exactly_correct_answers": 0,
+          "tool_assisted_delivered_answers": 0,
+          "tool_assisted_final_verifier_calls": 0
+        }
+      ]
+    },
+    "external_scientific_review": "NOT_OBTAINED",
+    "new_rl_originality": "NOT_ESTABLISHED",
+    "independent_net_benefit": "NOT_ESTABLISHED"
+  },
+  "decision": "NO_GO_FOR_LARGE_SCALE_TRAINING",
+  "decision_rule": "Keep the current candidate negative. A new candidate needs prospective differences from qualified strong baselines, complete costs and real deadlines, untouched task clusters, positive baseline and lifecycle gates, and separate novelty assessment.",
+  "all_scientific_blockers_closed": false,
+  "current_candidate_positive_gate_failed": true,
+  "research_source_preservation_receipt": "SOURCES.json",
+  "new_research_sampling_or_model_execution_since_prior_status": false,
+  "external_paid_model_api_calls": 0,
+  "engineering": {
+    "full_repository_ci_green": false,
+    "gates": [
+      {
+        "id": "E01",
+        "scope": "Native vodozemac lock generation",
+        "status": "QUALIFIED_AT_RECORDED_SOURCE",
+        "source": [
+          5108,
+          5115
+        ],
+        "evidence": "Native two-lock generation, exact integration and full-feature dependency checks are retained.",
+        "remaining": "This recorded dependency qualification does not establish current whole-workspace runtime behavior."
+      },
+      {
+        "id": "E02",
+        "scope": "Integrated SDK and v7.6 producer",
+        "status": "QUALIFIED_PRODUCER_AT_5136",
+        "source": [
+          5134,
+          5136,
+          5161
+        ],
+        "evidence": {
+          "run": 42291370279,
+          "job": 128145353053,
+          "commands": 21,
+          "test_group_counts": [
+            107,
+            32,
+            16
+          ],
+          "archive_members": 358,
+          "source_files": 324
+        },
+        "remaining": "The three rejected private #5129 metadata files remain unavailable; the integrated public-producer comparison is a separate observation."
+      },
+      {
+        "id": "E03",
+        "scope": "SDK durable publication",
+        "status": "ORDINARY_NATIVE_TESTS_OBSERVED_STRONG_DURABILITY_OPEN",
+        "source": [
+          5134,
+          5136
+        ],
+        "evidence": "Four ordinary required targets have recorded noncached Windows passes across their own jobs; Linux and musl observations retain their individual cache status.",
+        "remaining": "Power-failure durability and atomicity are not established by ordinary tests or broad API documentation."
+      },
+      {
+        "id": "E04",
+        "scope": "ARM nextest store and bounded diagnostic projection",
+        "status": "BUILD_STORE_AND_DECLARED_VIEW_QUALIFIED_AT_5188",
+        "source": [
+          5141,
+          5160,
+          5188
+        ],
+        "evidence": {
+          "run": 42312327246,
+          "job": 128217534470,
+          "selected_files": 1447,
+          "selected_bytes": 68383939,
+          "catalogue_entries": 84421,
+          "nextest_lists_exit": 0,
+          "source_clean": true,
+          "seed_unchanged": true
+        },
+        "remaining": "The full 1.79 GB artifact has API identity only. The verified selected view does not establish business success."
+      },
+      {
+        "id": "E05",
+        "scope": "ARM secret writer and business qualification",
+        "status": "NATIVE_TIMEOUT_LOCALIZED_BEFORE_SYNC_A",
+        "source": [
+          5160,
+          5188
+        ],
+        "evidence": {
+          "run": 42312327246,
+          "job": 128217534470,
+          "test_seconds": 1200.073,
+          "just_exit": 100,
+          "native_passes": 0,
+          "completed_read_validation_spans": 36,
+          "span_seconds": 692.469,
+          "span_bytes": 10544121936,
+          "actual_arm_sha2_features": [
+            "default",
+            "std"
+          ]
+        },
+        "remaining": "Recorded spans include file reads and validation, not isolated hashing. The current run did not reach post-ready sync A. A Linux AArch64 asm feature proposal is being prepared; hardware availability, generated lock integration and resulting native performance are unqualified."
+      },
+      {
+        "id": "E06",
+        "scope": "Starlark file selection",
+        "status": "NATIVE_FORMAT_GATE_CLOSED_AT_5147",
+        "source": [
+          5147,
+          5169
+        ],
+        "evidence": {
+          "run": 42297439333,
+          "job": 128167251691,
+          "original_just_fmt_check": "success",
+          "clean_worktree": "success",
+          "local_scope_tests": 35
+        },
+        "remaining": "The 239-to-237 argument count is from local replay; the native log does not individually enumerate those inputs."
+      },
+      {
+        "id": "E07",
+        "scope": "Canonical repository workflow references",
+        "status": "NATIVE_DEVELOPMENT_PROFILE_CLOSED_AT_5154",
+        "source": [
+          5150,
+          5154,
+          5169
+        ],
+        "evidence": {
+          "run": 42300934695,
+          "job": 128179754152,
+          "status": "PASS_HEPTA_DEVELOPMENT_DOCS_V8",
+          "historicalEvidenceRevalidated": false,
+          "cnsReferenceGaps": 22,
+          "hnmfReferenceGaps": 18,
+          "readinessDocumentationGaps": 54
+        },
+        "remaining": "Qualification profile, historical revalidation, lease activation and external signer attestation are not established."
+      },
+      {
+        "id": "E08",
+        "scope": "Windows Clippy selection",
+        "status": "NATIVE_GATE_CLOSED_AT_5165",
+        "source": [
+          5165
+        ],
+        "evidence": {
+          "run": 42304403498,
+          "job": 128191497898,
+          "selection_targets": 437,
+          "lint_targets": 1322,
+          "actions": 6768,
+          "remote_cache_hits": 2935,
+          "internal_actions": 3306,
+          "local_actions": 527,
+          "clean_worktree": "success"
+        },
+        "remaining": "The native console does not retain the full selected-label list or query-file bytes. Cache hits, warnings and unrelated runtime failures remain explicit."
+      },
+      {
+        "id": "E09",
+        "scope": "Core7 selected native cases",
+        "status": "FIVE_CORE_PASSES_TWO_FAILURES_HOST_PROFILE_PRECONDITION_FAILED",
+        "source": [
+          5158,
+          5184,
+          5199,
+          5200,
+          5201
+        ],
+        "evidence": {
+          "original_core_run": 42302625315,
+          "direct_core_passes_once": 5,
+          "failed_core_cases": [
+            "C01",
+            "C02"
+          ],
+          "readonly_bwrap_exit": 1,
+          "profile_run": 42319745250,
+          "profile_job": 128241131839,
+          "accepted_originals": 91,
+          "missing_originals": 43,
+          "first_rejection": "CUSTOM_INCLUDE_DIRECTORY",
+          "profile_add": "NOT_STARTED"
+        },
+        "remaining": "Extra include contents were not captured; a later parent check also rejects /usr/share mode 0777. Baseline, parser compilation, load and post probe were not reached. No Core or namespace success follows. The first C01 child cause and complete original evidence gate remain open."
+      },
+      {
+        "id": "E10",
+        "scope": "Core23 websocket and git-enrichment fixtures",
+        "status": "TWO_DIRECT_ORIGINAL_CASE_PASSES_AT_5166",
+        "source": [
+          5154,
+          5166
+        ],
+        "evidence": {
+          "run": 42304936497,
+          "job": 128191780350,
+          "direct_one_attempt_passes": [
+            "R01",
+            "R04"
+          ],
+          "accepted_originals": 18,
+          "required_originals": 19
+        },
+        "remaining": "The same run fails two other compact cases and its complete evidence gate."
+      },
+      {
+        "id": "E11",
+        "scope": "Remote compact context and cold-resume fixture",
+        "status": "FOUR_ORIGINAL_CASES_PASS_ONCE_FULL_EVIDENCE_GATE_OPEN",
+        "source": [
+          5172,
+          5173,
+          5178,
+          5180,
+          5193
+        ],
+        "evidence": {
+          "run": 42310377714,
+          "job": 128210028160,
+          "original_just_exit": 0,
+          "direct_original_case_passes": [
+            "R01",
+            "R02",
+            "R03",
+            "R04"
+          ],
+          "observed_macro_skips": 0,
+          "accepted_originals": 18,
+          "required_originals": 19
+        },
+        "remaining": "The required original list stderr was rejected for a URI fragment. All four direct case passes retain their own source and do not make the complete evidence gate or whole repository green."
+      },
+      {
+        "id": "E12",
+        "scope": "AppServer five-case deadline selection",
+        "status": "FIVE_JUNIT_PASSES_PARTIAL_CUSTODY",
+        "source": [
+          5146,
+          5149
+        ],
+        "evidence": {
+          "run": 42298734318,
+          "job": 128170658312,
+          "original_just_exit": 0,
+          "junit_passes_once": 5,
+          "accepted_originals": 16,
+          "required_originals": 19
+        },
+        "remaining": "Rejected list stdout and list/run stderr prevent independent full-selection and in-test-skip replay. Historical full-CI concurrency/deadline cause is not established."
+      },
+      {
+        "id": "E13",
+        "scope": "GNU and musl full repository tests",
+        "status": "FULL_GNU_MUSL_FAILURES_RETAINED_TWO_COMPACT_CASES_LATER_PASS",
+        "source": [
+          5165,
+          5180
+        ],
+        "evidence": {
+          "original_full_run": 42304403498,
+          "distinct_printed_failures": 5,
+          "later_selected_compact_passes": 2,
+          "remaining_restricted_skill_reads": 3
+        },
+        "remaining": "Later exact-source selected passes do not retroactively qualify the older full runs. The three restricted-executor skill-read failures still lack a qualified Linux implementation."
+      },
+      {
+        "id": "E14",
+        "scope": "Windows legacy outside deletion and protected git boundary",
+        "status": "P0_OPEN_MIC_COUNTEREXAMPLE_AND_SEPARATE_READ_ROLE_PROPOSAL",
+        "source": [
+          5170,
+          5185,
+          5194,
+          5203
+        ],
+        "evidence": {
+          "MIC_run": 42311820019,
+          "MIC_job": 128215755181,
+          "MIC_hypothesis": "FAILED_CASE_2",
+          "case_2_outside_denials": 4,
+          "case_2_inside_successes": 6,
+          "case_2_protected_delete": "SUCCEEDED",
+          "ordinary_cleanup_cases": 5,
+          "legacy_backend_regression": "ok_once",
+          "new_read_role_PR": 5203
+        },
+        "remaining": "MIC S2 did not protect .git deletion despite preserving ordinary inside operations. Separate full-restriction read-role F0-F4 predictions are pending native results on #5203. Its four-stub metadata check and original just fmt are not owning compilation or P0 qualification."
+      },
+      {
+        "id": "E15",
+        "scope": "Windows credential rotation",
+        "status": "BLOCKED_BY_ORIGINAL_SCANNER_READINESS",
+        "source": [
+          5111
+        ],
+        "evidence": {
+          "run": 42273092737,
+          "job": 128082418775,
+          "account_entry": "NOT_REACHED",
+          "cleanup": "NOT_REACHED"
+        },
+        "remaining": "Original complete-environment readiness rejects the run. No offending environment value is disclosed, removed or substituted, and no blind rerun is counted."
+      },
+      {
+        "id": "E16",
+        "scope": "Windows same-object ACL authorization",
+        "status": "SOURCE_REPAIR_UNQUALIFIED_NATIVE_BOUNDARY_OPEN",
+        "source": [
+          5077
+        ],
+        "evidence": "The source uses the same opened object and complete nondegenerate file identity; historical native qualification remains separate.",
+        "remaining": "Native authorization, lifetime through spawn, concurrent ACL changes and full functional replacement require further evidence."
+      },
+      {
+        "id": "E17",
+        "scope": "Linux restricted-read namespace and link-count contract",
+        "status": "CONDITIONAL_DELEGATION_ARGUMENT_NO_QUALIFIED_IMPLEMENTATION",
+        "source": [
+          5165,
+          5196
+        ],
+        "evidence": "An uninterrupted read delegation plus strict authorized open, shared live inode, stable trusted full host root and a final no-break F_GETDELEG can support a time-point argument in the reviewed kernel model. Existing helper authority and mutable canonical deny aliases do not meet that full contract.",
+        "remaining": "No native Linux repair, race qualification or three-case pass is established. Ordinary leases, namespace startup alone, foreign f_path access, and mutable independent canonical views do not discharge the required conditions."
+      },
+      {
+        "id": "E18",
+        "scope": "V8 cross-platform qualification",
+        "status": "WINDOWS_AND_DARWIN_ARM_UNQUALIFIED",
+        "source": [
+          5054,
+          5160
+        ],
+        "evidence": "Six recorded Linux/Darwin x86 smoke results remain source-specific. Earlier cancellation is not a pass; the later canary ran metadata while skipping both build jobs.",
+        "remaining": "Actual required Windows and Darwin ARM execution is still missing."
+      },
+      {
+        "id": "E19",
+        "scope": "rmcp timeout diagnosis",
+        "status": "LATER_TARGET_PASS_OBSERVED_HISTORICAL_CAUSE_OPEN",
+        "source": [
+          5136
+        ],
+        "evidence": {
+          "run": 42291370384,
+          "job": 128146648216,
+          "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+          "noncached_target_summary": "PASSED",
+          "reported_seconds": 38.8
+        },
+        "remaining": "The later target pass is distinct from identifying the historical 300-second timeout case and cause. Individual testcase custody was not revalidated by the target summary."
+      },
+      {
+        "id": "E20",
+        "scope": "Complete repository qualification",
+        "status": "OPEN",
+        "source": [],
+        "evidence": "Several exact-source individual gates now pass, but current full native runs still fail and multiple required outcomes remain pending or unknown.",
+        "remaining": "Source review, restoration, cached results, skipped jobs and bounded status summaries do not substitute for complete native qualification."
+      }
+    ],
+    "no_assertion_timeout_retry_concurrency_scanner_or_source_guard_relaxation": true,
+    "merges_performed": 0,
+    "research_result_changed_by_engineering_success": false
+  },
+  "all_blockers_closed": false,
+  "current_source_experiments": {
+    "Windows_read_authority": {
+      "PR": 5203,
+      "head": "a7b8ba921c9e34e13eac6c59658dc7088c4bad3d",
+      "tree": "df3e4bf57f98b1dd33f4b748513d6ef8142a0d16",
+      "results": "See the separately timestamped native observation; no pending result promoted here."
+    },
+    "ARM_asm": "Preparation only at this snapshot; no native fix qualification claimed.",
+    "AppArmor_profile": "Attempt 1 at #5201 failed before mutation; no blind retry."
+  }
+}
