@@ -1,0 +1,109 @@
+{
+  "candidate_selection_reads_historical_scores": false,
+  "canonical_schedule_fields": [
+    "schema",
+    "deadline",
+    "initial_budget",
+    "target_tick",
+    "duration",
+    "drive",
+    "reliability",
+    "read_price",
+    "read_delay",
+    "prior_distance",
+    "latency_price",
+    "repair_price",
+    "failure_probability"
+  ],
+  "content_nonoverlap_is_not_statistical_independence": true,
+  "exposed_value_edit_files": {
+    "execution_r1/run/worlds/test_11_iid.json.gz": {
+      "bytes": 1420,
+      "sha256": "7f061559eb7361d865004189cce859e3b15454d6a7be67d063ed868a44692b9f"
+    },
+    "execution_r1/run/worlds/test_11_ood.json.gz": {
+      "bytes": 1538,
+      "sha256": "85b037092fb338a0d1f1fee55cee60bb18f3390fc6b3e4f0a750ba426c121a9a"
+    },
+    "execution_r1/run/worlds/test_23_iid.json.gz": {
+      "bytes": 1429,
+      "sha256": "9da6638a5e19ccc74eafea20fb1e07d90ef693ea6240779362257e1ac34a0f6f"
+    },
+    "execution_r1/run/worlds/test_23_ood.json.gz": {
+      "bytes": 1539,
+      "sha256": "4e850c5260411535372aa84bec8b2d037bd6b0cb0eab3983ceeffb2c2e784d20"
+    },
+    "execution_r1/run/worlds/test_37_iid.json.gz": {
+      "bytes": 1469,
+      "sha256": "8b5ed030c163f9657521b33b5a57a835d254e69bac676d4faefcffaec252b779"
+    },
+    "execution_r1/run/worlds/test_37_ood.json.gz": {
+      "bytes": 1510,
+      "sha256": "92378fe98da32ba76c47b0660b468f58f990b0e2873099c4c21cca1eedb34a8e"
+    },
+    "execution_r1/run/worlds/test_53_iid.json.gz": {
+      "bytes": 1434,
+      "sha256": "0f344c43819b2f2f608ce314d6e0570875a3bdc7a9a027bac15d676382613ed1"
+    },
+    "execution_r1/run/worlds/test_53_ood.json.gz": {
+      "bytes": 1530,
+      "sha256": "02d753c9f35b5e5de4bc9a863198cf0c0981ce606f67268127062471f884dd91"
+    },
+    "execution_r1/run/worlds/test_71_iid.json.gz": {
+      "bytes": 1422,
+      "sha256": "4f38cecc05b744bc7bfc96889c84915b5982ea3238799cc2fcd812a485cce9b2"
+    },
+    "execution_r1/run/worlds/test_71_ood.json.gz": {
+      "bytes": 1509,
+      "sha256": "5a0823d7f27e9fb531a2fdceb696758dababecaffce44f5f0c05881a2c57c062"
+    },
+    "execution_r1/run/worlds/validation_11_iid.json.gz": {
+      "bytes": 988,
+      "sha256": "56198ac1789c87e0ebc5a1588c314668cba6dc10e13347a8f8cb7a7ae2b1b546"
+    },
+    "execution_r1/run/worlds/validation_11_ood.json.gz": {
+      "bytes": 1023,
+      "sha256": "6f2c354e540f3d0b69225bcdfe8637a02473db418c95821256313b89789de1ab"
+    },
+    "execution_r1/run/worlds/validation_23_iid.json.gz": {
+      "bytes": 1005,
+      "sha256": "683751aaedef0b81aed83ca210d2356a345153e8f58a482db8f55bbf26b09484"
+    },
+    "execution_r1/run/worlds/validation_23_ood.json.gz": {
+      "bytes": 1022,
+      "sha256": "1f28c677804f6d4dc491efde68019c38fbc66f2d410ac648c27022ad6f6397bf"
+    },
+    "execution_r1/run/worlds/validation_37_iid.json.gz": {
+      "bytes": 1009,
+      "sha256": "06ddfb365733f494407c9117864b66583f77fbb6443ce74a7c4a0a3806a77b9e"
+    },
+    "execution_r1/run/worlds/validation_37_ood.json.gz": {
+      "bytes": 998,
+      "sha256": "ea36f37b6642cae5f1a83cc0474a670016c1a43fb2c17f5e15498884a37ff40e"
+    },
+    "execution_r1/run/worlds/validation_53_iid.json.gz": {
+      "bytes": 986,
+      "sha256": "6a84f00060544fefcc82d718587a680dc7072754d9981bfd001faab23b187675"
+    },
+    "execution_r1/run/worlds/validation_53_ood.json.gz": {
+      "bytes": 1030,
+      "sha256": "08f3129aacf259366a0720f59cab53e8465a8a610dad3208ea4c00aa25871b3e"
+    },
+    "execution_r1/run/worlds/validation_71_iid.json.gz": {
+      "bytes": 984,
+      "sha256": "1ef720ca48f50e5e125d356c3cf3e5498dd2b2cc8ba4b31a7f5166a46252e7af"
+    },
+    "execution_r1/run/worlds/validation_71_ood.json.gz": {
+      "bytes": 1044,
+      "sha256": "85ef511f8689fd9497fd8bc60755c297aa24e04b3b672d89691c6c469b642595"
+    }
+  },
+  "external_history_unknown": true,
+  "hashes_sha256": "4bb7fc2b4bb6b69ecfd307b2b9e06013f82bda763ba605fba25ec666a1496ea8",
+  "historical_not_covered": "Original formal-confirmation content is not present in the available public training archive; arbitrary external or unknown earlier content is not covered. Seed definitions alone do not prove content uniqueness.",
+  "historical_unmeasured_compute_cost": "unknown",
+  "includes_exposed_value_edit_validation_and_test": true,
+  "known_unique_schedules": 2896,
+  "old_unique_schedules": 1936,
+  "prior_followup_unique_schedules": 480
+}

@@ -1,0 +1,14 @@
+{
+  "test_command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 -m unittest discover -s tools/hcsn/wsp_confirmation_20261107 -p 'test_*.py' -v",
+  "tests_passed": 13,
+  "tests_failed": 0,
+  "existing_original_TRAIN_used": true,
+  "new_confirmation_generated": false,
+  "cpu_seconds": null,
+  "cost_scope": "exec command tool result recorded pass; whole-child CPU not metered, remains unknown",
+  "git_clone_attempt": {
+    "status": "failed before checkout",
+    "reason": "local promisor repository incomplete objects; isolated git worktree created successfully",
+    "CPU_seconds": null
+  }
+}

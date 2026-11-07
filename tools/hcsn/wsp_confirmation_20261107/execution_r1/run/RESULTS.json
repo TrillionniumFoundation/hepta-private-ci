@@ -1,0 +1,425 @@
+{
+  "cohort_sha256": "97fccfbd97b3d6ec0d3d6b94f62ac9e3355e8c8b2c23ef348669fb4251e61fd8",
+  "costs": {
+    "agent_input_tokens": null,
+    "agent_output_tokens": null,
+    "energy_joules": null,
+    "physical_total_source": "outer PROCESS_RECEIPT.json; nested component times must not be added again",
+    "worker_internal_cpu_before_final_writes": 205.35111389099998,
+    "worker_internal_wall_before_final_writes": 208.77414606000093
+  },
+  "historical_TEST_used_for_search": false,
+  "ledger_counts": {
+    "COMPLETE": 2880
+  },
+  "live_market_gain_qualified": false,
+  "new_training_fits": 0,
+  "new_worlds": 320,
+  "primary_contrasts": [
+    {
+      "contrast": "E-C iid",
+      "delta": 0.003753596475664772,
+      "familywise_interval": [
+        -0.03392889812663114,
+        0.04143609107796068
+      ],
+      "n_fits": 5
+    },
+    {
+      "contrast": "E-C ood",
+      "delta": 0.0041999451205657675,
+      "familywise_interval": [
+        -0.03120644147255968,
+        0.03960633171369122
+      ],
+      "n_fits": 5
+    }
+  ],
+  "production_eligible": false,
+  "protocol_sha256": "137829758d6bdb8e51fe3383ee881e6b15e6c4ed8c6ddfd17ed331b56c36cd03",
+  "quality_gate": {
+    "complete_quality_pass": false,
+    "contrast_contract_valid": true,
+    "full_cost_qualified": false,
+    "production_eligible": false,
+    "task_benefit_pass": false,
+    "unmeasured_costs": [
+      "agent_input_tokens",
+      "agent_output_tokens",
+      "agent_service_cpu",
+      "energy_joules",
+      "unknown_prior_search",
+      "production_publication_and_recovery"
+    ]
+  },
+  "reused_fits": 5,
+  "scope": "fresh finite-task confirmation only; no live Trader gain, new training fits, independent authority or complete-network-training comparison",
+  "source_unchanged": true,
+  "summary": {
+    "iid": {
+      "A": {
+        "cold_policy_cpu_mean": 0.005339684606248429,
+        "cold_policy_cpu_p95": 0.013438293199993715,
+        "delta_C": 0.0029839685418595386,
+        "descriptive_interval": [
+          -0.026857787176538465,
+          0.032825724260257545
+        ],
+        "full_evaluator_and_preservation_cpu": 1.8734420959998772,
+        "mean": 0.25069335118407426,
+        "mean_posterior_probability_mse": 0.0005923519673043607,
+        "per_fit": [
+          0.2567030046647354,
+          0.23771381381678114,
+          0.25622127836647846,
+          0.2549332755161142,
+          0.2478953835562623
+        ],
+        "world_utility_p05_descriptive": 0.026799084198306736
+      },
+      "C": {
+        "cold_policy_cpu_mean": 0.00675841756874993,
+        "cold_policy_cpu_p95": 0.01600021655000745,
+        "delta_C": 0.0,
+        "descriptive_interval": [
+          0.0,
+          0.0
+        ],
+        "full_evaluator_and_preservation_cpu": 12.21236567999999,
+        "mean": 0.24770938264221476,
+        "mean_posterior_probability_mse": 0.0006053026709703886,
+        "per_fit": [
+          0.24487125019943554,
+          0.24504760597453973,
+          0.25622127836647846,
+          0.28217929760522753,
+          0.21022748106539257
+        ],
+        "world_utility_p05_descriptive": 0.01285982701767499
+      },
+      "E": {
+        "cold_policy_cpu_mean": 0.005399620037500963,
+        "cold_policy_cpu_p95": 0.014088743850016527,
+        "delta_C": 0.003753596475664772,
+        "descriptive_interval": [
+          -0.026178085197389272,
+          0.033685278148718814
+        ],
+        "full_evaluator_and_preservation_cpu": 1.892094882000336,
+        "mean": 0.2514629791178795,
+        "mean_posterior_probability_mse": 0.0005960378014986379,
+        "per_fit": [
+          0.25509469645219773,
+          0.25615273192740495,
+          0.2500060477255679,
+          0.25143581439644774,
+          0.24462560508777936
+        ],
+        "world_utility_p05_descriptive": 0.01285982701767499
+      },
+      "EG": {
+        "cold_policy_cpu_mean": 0.005236763175000281,
+        "cold_policy_cpu_p95": 0.015528483650014371,
+        "delta_C": 0.0010843901015790858,
+        "descriptive_interval": [
+          -0.039411867113219035,
+          0.0415806473163772
+        ],
+        "full_evaluator_and_preservation_cpu": 1.8717507399999391,
+        "mean": 0.24879377274379383,
+        "mean_posterior_probability_mse": 0.0005878657592829385,
+        "per_fit": [
+          0.25859126859528525,
+          0.24304738050272,
+          0.2521454582296394,
+          0.2360717168191956,
+          0.254113039572129
+        ],
+        "world_utility_p05_descriptive": 0.022964769307315305
+      },
+      "G": {
+        "cold_policy_cpu_mean": 0.005408574168749602,
+        "cold_policy_cpu_p95": 0.015966324049997378,
+        "delta_C": 0.003753596475664772,
+        "descriptive_interval": [
+          -0.026178085197389272,
+          0.033685278148718814
+        ],
+        "full_evaluator_and_preservation_cpu": 1.9787271150000123,
+        "mean": 0.2514629791178795,
+        "mean_posterior_probability_mse": 0.0005960378014986379,
+        "per_fit": [
+          0.25509469645219773,
+          0.25615273192740495,
+          0.2500060477255679,
+          0.25143581439644774,
+          0.24462560508777936
+        ],
+        "world_utility_p05_descriptive": 0.01285982701767499
+      },
+      "J": {
+        "cold_policy_cpu_mean": 0.14263435371874972,
+        "cold_policy_cpu_p95": 0.2663744016500189,
+        "delta_C": 0.12150423229085291,
+        "descriptive_interval": [
+          0.09411685745500456,
+          0.14889160712670127
+        ],
+        "full_evaluator_and_preservation_cpu": 24.47280110700001,
+        "mean": 0.3692136149330677,
+        "mean_posterior_probability_mse": 0.0001103143624442286,
+        "per_fit": [
+          0.38885329094273524,
+          0.37545092237901995,
+          0.3482535251107699,
+          0.38705966890830845,
+          0.34645066732450497
+        ],
+        "world_utility_p05_descriptive": 0.13657263690232752
+      },
+      "L": {
+        "cold_policy_cpu_mean": 0.005645864531249867,
+        "cold_policy_cpu_p95": 0.014512368299985208,
+        "delta_C": 0.0,
+        "descriptive_interval": [
+          0.0,
+          0.0
+        ],
+        "full_evaluator_and_preservation_cpu": 1.5472415490000344,
+        "mean": 0.24770938264221476,
+        "mean_posterior_probability_mse": 0.0006053026709703886,
+        "per_fit": [
+          0.24487125019943554,
+          0.24504760597453973,
+          0.25622127836647846,
+          0.28217929760522753,
+          0.21022748106539257
+        ],
+        "world_utility_p05_descriptive": 0.01285982701767499
+      },
+      "MYOPIC": {
+        "cold_policy_cpu_mean": 0.0005839900624994065,
+        "cold_policy_cpu_p95": 0.003506625350001964,
+        "delta_C": -0.13112922318067538,
+        "descriptive_interval": [
+          -0.1684336896317241,
+          -0.09382475672962667
+        ],
+        "full_evaluator_and_preservation_cpu": 2.1665204120001107,
+        "mean": 0.1165801594615394,
+        "mean_posterior_probability_mse": 0.00012450139353649257,
+        "per_fit": [
+          0.1172617836747271,
+          0.13051599886648976,
+          0.1043649458420631,
+          0.11332283483742178,
+          0.11743523408699534
+        ],
+        "world_utility_p05_descriptive": 0.018706223441039525
+      },
+      "R": {
+        "cold_policy_cpu_mean": 0.010160138800000506,
+        "cold_policy_cpu_p95": 0.02763981024997974,
+        "delta_C": -0.08063341972702444,
+        "descriptive_interval": [
+          -0.1481343760782897,
+          -0.013132463375759185
+        ],
+        "full_evaluator_and_preservation_cpu": 3.458694923000067,
+        "mean": 0.16707596291519033,
+        "mean_posterior_probability_mse": 0.0005519185797061737,
+        "per_fit": [
+          0.10452571105613867,
+          0.17088689078560088,
+          0.1784057732130242,
+          0.16787141205258652,
+          0.21369002746860138
+        ],
+        "world_utility_p05_descriptive": -0.025551355902285064
+      }
+    },
+    "ood": {
+      "A": {
+        "cold_policy_cpu_mean": 0.0028626452812495983,
+        "cold_policy_cpu_p95": 0.011212651149998008,
+        "delta_C": -0.006636520154990983,
+        "descriptive_interval": [
+          -0.029393489933617758,
+          0.016120449623635794
+        ],
+        "full_evaluator_and_preservation_cpu": 0.9072475859999543,
+        "mean": 0.10511851469967422,
+        "mean_posterior_probability_mse": 0.005124670332224684,
+        "per_fit": [
+          0.14323466368676452,
+          0.08995477989787744,
+          0.01793517283990691,
+          0.10936906342513572,
+          0.1650988936486865
+        ],
+        "world_utility_p05_descriptive": -0.2862213894115926
+      },
+      "C": {
+        "cold_policy_cpu_mean": 0.003798758000000557,
+        "cold_policy_cpu_p95": 0.012020627899993737,
+        "delta_C": 0.0,
+        "descriptive_interval": [
+          0.0,
+          0.0
+        ],
+        "full_evaluator_and_preservation_cpu": 11.100551387999985,
+        "mean": 0.1117550348546652,
+        "mean_posterior_probability_mse": 0.005146997081966429,
+        "per_fit": [
+          0.12744034192442666,
+          0.12478386756937172,
+          0.01793517283990691,
+          0.11565447335987825,
+          0.17296131857974245
+        ],
+        "world_utility_p05_descriptive": -0.2632516664169532
+      },
+      "E": {
+        "cold_policy_cpu_mean": 0.0027570374249999753,
+        "cold_policy_cpu_p95": 0.011990461700024468,
+        "delta_C": 0.0041999451205657675,
+        "descriptive_interval": [
+          -0.02392379519661455,
+          0.03232368543774609
+        ],
+        "full_evaluator_and_preservation_cpu": 0.9178331940001101,
+        "mean": 0.11595497997523099,
+        "mean_posterior_probability_mse": 0.0052243905766232255,
+        "per_fit": [
+          0.14998109311857336,
+          0.13210421942382872,
+          0.04678374453525347,
+          0.09259462865463172,
+          0.15831121414386756
+        ],
+        "world_utility_p05_descriptive": -0.26175835331218067
+      },
+      "EG": {
+        "cold_policy_cpu_mean": 0.0025054997562510726,
+        "cold_policy_cpu_p95": 0.011487703500001344,
+        "delta_C": 0.001263476171563177,
+        "descriptive_interval": [
+          -0.024054195921669012,
+          0.026581148264795365
+        ],
+        "full_evaluator_and_preservation_cpu": 0.9254665980000851,
+        "mean": 0.11301851102622837,
+        "mean_posterior_probability_mse": 0.005219345713040184,
+        "per_fit": [
+          0.14957853362121443,
+          0.11980126655167192,
+          0.04082491899169162,
+          0.09316220796512915,
+          0.16172562800143475
+        ],
+        "world_utility_p05_descriptive": -0.27905710227944713
+      },
+      "G": {
+        "cold_policy_cpu_mean": 0.0027142089625001196,
+        "cold_policy_cpu_p95": 0.01119113230000223,
+        "delta_C": 0.0041999451205657675,
+        "descriptive_interval": [
+          -0.02392379519661455,
+          0.03232368543774609
+        ],
+        "full_evaluator_and_preservation_cpu": 0.8952144150000834,
+        "mean": 0.11595497997523099,
+        "mean_posterior_probability_mse": 0.0052243905766232255,
+        "per_fit": [
+          0.14998109311857336,
+          0.13210421942382872,
+          0.04678374453525347,
+          0.09259462865463172,
+          0.15831121414386756
+        ],
+        "world_utility_p05_descriptive": -0.26175835331218067
+      },
+      "J": {
+        "cold_policy_cpu_mean": 0.13756521462499888,
+        "cold_policy_cpu_p95": 0.23291029969999494,
+        "delta_C": 0.20775905824704982,
+        "descriptive_interval": [
+          0.16550123179948778,
+          0.25001688469461186
+        ],
+        "full_evaluator_and_preservation_cpu": 23.054726653999907,
+        "mean": 0.319514093101715,
+        "mean_posterior_probability_mse": 0.0003138691620137434,
+        "per_fit": [
+          0.31852661246241554,
+          0.3476632502662491,
+          0.2633907093390361,
+          0.33737443955131174,
+          0.33061545388956276
+        ],
+        "world_utility_p05_descriptive": 0.054451780027609774
+      },
+      "L": {
+        "cold_policy_cpu_mean": 0.0030155510249995745,
+        "cold_policy_cpu_p95": 0.011999717550025935,
+        "delta_C": 0.0,
+        "descriptive_interval": [
+          0.0,
+          0.0
+        ],
+        "full_evaluator_and_preservation_cpu": 0.8300918809999871,
+        "mean": 0.1117550348546652,
+        "mean_posterior_probability_mse": 0.005146997081966429,
+        "per_fit": [
+          0.12744034192442666,
+          0.12478386756937172,
+          0.01793517283990691,
+          0.11565447335987825,
+          0.17296131857974245
+        ],
+        "world_utility_p05_descriptive": -0.2632516664169532
+      },
+      "MYOPIC": {
+        "cold_policy_cpu_mean": 0.0002852290187505879,
+        "cold_policy_cpu_p95": 0.001231222599997749,
+        "delta_C": 0.05071438530098915,
+        "descriptive_interval": [
+          -0.030361479305945516,
+          0.13179024990792382
+        ],
+        "full_evaluator_and_preservation_cpu": 1.2337156570000616,
+        "mean": 0.1624694201556543,
+        "mean_posterior_probability_mse": 0.0003215594606676752,
+        "per_fit": [
+          0.16332767799464562,
+          0.14837154898837207,
+          0.17368071511889974,
+          0.17405846329741542,
+          0.15290869537893884
+        ],
+        "world_utility_p05_descriptive": 0.009144597124290433
+      },
+      "R": {
+        "cold_policy_cpu_mean": 0.005034012168750568,
+        "cold_policy_cpu_p95": 0.023999898050021784,
+        "delta_C": -0.026756061838123513,
+        "descriptive_interval": [
+          -0.05946439933653215,
+          0.005952275660285125
+        ],
+        "full_evaluator_and_preservation_cpu": 1.683326600999962,
+        "mean": 0.08499897301654169,
+        "mean_posterior_probability_mse": 0.005014474604580684,
+        "per_fit": [
+          0.11589827078234269,
+          0.0682930716149178,
+          0.010557118573993319,
+          0.06124328261365582,
+          0.1690031214977988
+        ],
+        "world_utility_p05_descriptive": -0.2989514015935771
+      }
+    }
+  },
+  "verification_pending": true
+}

@@ -1,0 +1,72 @@
+{
+  "all_checks_pass": true,
+  "confirmation_replay": {
+    "cpu_seconds": 66.04051611,
+    "exact_nodes": true,
+    "fixed_tolerance": 2e-13,
+    "maximum_absolute_metric_difference": 0.0,
+    "raw_metrics": [
+      "utility",
+      "fees",
+      "reads_requested",
+      "reads_completed",
+      "repairs",
+      "elapsed",
+      "correct",
+      "submitted"
+    ],
+    "world_arm_pairs": 2880
+  },
+  "cpu_seconds": 89.06021733899999,
+  "energy_joules": null,
+  "event_chain_entries": 4,
+  "historical_unique_schedules": 2896,
+  "independent_data_authority_verified": false,
+  "independent_t4_primary_critical_value": 3.495405932516438,
+  "ledger_snapshot_sha256": "ae9f22f2f2024a0694fa05f2634add9bbf687120708d86f125baf5076dfcd2b6",
+  "local_event_chain_is_not_external_timestamp_proof": true,
+  "new_unique_schedules": 320,
+  "new_worker_evaluator_or_candidates_imported": false,
+  "original_frozen_verification_source_sha256": "58442041c416d68466805f650045c83247440561706a646ece6dc5c251e2e6f1",
+  "production_eligible": false,
+  "protocol_sha256": "137829758d6bdb8e51fe3383ee881e6b15e6c4ed8c6ddfd17ed331b56c36cd03",
+  "raw_records_and_statistics_verified": true,
+  "schema": "hepta-wsp-confirmation-independent-verification-v1",
+  "shared_upstream": [
+    "artifact_io.py",
+    "verify_records.py",
+    "vendor/planning.py",
+    "vendor/frozen_joint"
+  ],
+  "source_and_raw_records_unchanged": true,
+  "stored_finite_path_candidates_verified": 100,
+  "train_replay": {
+    "maximum_absolute_utility_difference": 0.0,
+    "node_counts_not_compared": "TRAIN producer memoizes DAG states; replay visits the recursive tree",
+    "world_path_pairs": 6400
+  },
+  "unmeasured_costs": [
+    "agent_input_tokens",
+    "agent_output_tokens",
+    "agent_service_cpu",
+    "energy_joules",
+    "unknown_prior_search",
+    "production_publication_and_recovery"
+  ],
+  "verification_source_sha256": "42a91d3ddaeb105461f04a5e5b3b631c9488003bf7084740659ea03b650601f3",
+  "verifier_cost_is_additional_to_worker": true,
+  "verifier_revision": {
+    "kind": "post_execution_schema_compatibility_v1",
+    "numeric_gates_or_thresholds_changed": false,
+    "original_frozen_source_map_still_verified": true,
+    "reason": "Original TrainWorld reports contain world_id, not schedule_sha256",
+    "replacement_checks": [
+      "frozen complete TRAIN input file hash",
+      "ordered world_id binding",
+      "canonical TRAIN schedule membership in the reconstructed known history",
+      "mandatory full 6400 TRAIN world/path recursive utility replay"
+    ],
+    "worker_or_records_modified": false
+  },
+  "wall_seconds": 89.6793626610015
+}

@@ -1,0 +1,22 @@
+{
+  "all_checks_pass": false,
+  "cpu_seconds": 0.040344383,
+  "energy_joules": null,
+  "error": "database disk image is malformed",
+  "error_type": "DatabaseError",
+  "independent_data_authority_verified": false,
+  "local_event_chain_is_not_external_timestamp_proof": true,
+  "new_worker_evaluator_or_candidates_imported": false,
+  "protocol_sha256": "137829758d6bdb8e51fe3383ee881e6b15e6c4ed8c6ddfd17ed331b56c36cd03",
+  "schema": "hepta-wsp-confirmation-independent-verification-v1",
+  "shared_upstream": [
+    "artifact_io.py",
+    "verify_records.py",
+    "vendor/planning.py",
+    "vendor/frozen_joint"
+  ],
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/4047d6061a9e/research-next/tools/hcsn/wsp_confirmation_20261107/verification.py\", line 476, in main\n    ledger_before = ledger_snapshot(args.ledger)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/4047d6061a9e/research-next/tools/hcsn/wsp_confirmation_20261107/verification.py\", line 271, in ledger_snapshot\n    return {table: list(db.execute(f\"SELECT * FROM {table} ORDER BY {order}\")) for table, order in\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsqlite3.DatabaseError: database disk image is malformed\n",
+  "verification_source_sha256": "58442041c416d68466805f650045c83247440561706a646ece6dc5c251e2e6f1",
+  "verifier_cost_is_additional_to_worker": true,
+  "wall_seconds": 0.04371274799996172
+}

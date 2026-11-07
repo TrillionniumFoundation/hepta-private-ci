@@ -1,0 +1,32 @@
+{
+  "child_peak_rss_bytes": 42094592,
+  "child_system_cpu_seconds": 0.026629,
+  "child_total_cpu_seconds": 0.27516399999999996,
+  "child_user_cpu_seconds": 0.24853499999999998,
+  "command": [
+    "python3",
+    "tools/hcsn/wsp_confirmation_20261107/verification.py",
+    "--protocol",
+    "tools/hcsn/wsp_confirmation_20261107/PROTOCOL_FROZEN.json",
+    "--run",
+    "tools/hcsn/wsp_confirmation_20261107/execution_r1/run",
+    "--ledger",
+    "tools/hcsn/wsp_confirmation_20261107/ledger_recovery_r1/CHECKPOINT_SNAPSHOT.sqlite",
+    "--output",
+    "tools/hcsn/wsp_confirmation_20261107/verification_r2/VERIFIED.json",
+    "--replay-train"
+  ],
+  "controller_cpu_seconds": 0.0008706779999999997,
+  "controller_source": {
+    "bytes": 2862,
+    "sha256": "64e85e07ab6695409dccab89187f06fbff984f27184104eb5e3b4a8770d2903a"
+  },
+  "controller_timeout": false,
+  "elapsed_wall_seconds": 0.2819104740010516,
+  "ended_utc": "2026-11-07T05:49:53.447465+00:00",
+  "exit_code": 1,
+  "schema": "hepta-value-edit-complete-process-receipt-v1",
+  "scope": "worker startup/imports/final writes included; controller CPU measures only main body after imports and before final receipt write, so controller startup/final-write cost is not measured; scientific caps belong to worker",
+  "started_utc": "2026-11-07T05:49:53.165585+00:00",
+  "threads_per_numeric_library": 1
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "wsp-next-acceptance-v1",
+  "recorded_utc": "2026-11-07T05:55:13.377800+00:00",
+  "frozen_protocol": {
+    "bytes": 35852,
+    "sha256": "137829758d6bdb8e51fe3383ee881e6b15e6c4ed8c6ddfd17ed331b56c36cd03"
+  },
+  "executed_worker_source_commit": "8db5c6ed370dca8cba6a63b37d52714d4220a6c1",
+  "protocol_commit": "29a79d2",
+  "worker_results": {
+    "bytes": 14130,
+    "sha256": "46eab21a3f3993724e127692630feb2d1b84910054c99b5064b5c619f6835ea4"
+  },
+  "verification": {
+    "bytes": 2621,
+    "sha256": "0f9498c5e14540081da075ac78e5436473748f432f42c2064202dcf9eeff9f07"
+  },
+  "scientific_replay_pass": true,
+  "primary_effectiveness_pass": false,
+  "primary_contrasts": [
+    {
+      "contrast": "E-C iid",
+      "delta": 0.003753596475664772,
+      "familywise_interval": [
+        -0.03392889812663114,
+        0.04143609107796068
+      ],
+      "n_fits": 5
+    },
+    {
+      "contrast": "E-C ood",
+      "delta": 0.0041999451205657675,
+      "familywise_interval": [
+        -0.03120644147255968,
+        0.03960633171369122
+      ],
+      "n_fits": 5
+    }
+  ],
+  "new_worlds": 320,
+  "new_base_fits": 0,
+  "reused_fits": 5,
+  "complete_confirmation_evaluations": 2880,
+  "complete_TRAIN_path_replays": 6400,
+  "maximum_replay_metric_difference": 0.0,
+  "candidate_action": "retain incumbent; no new production weight adoption",
+  "production_eligible": false,
+  "live_market_efficacy_qualified": false,
+  "ledger_recovery": {
+    "online_WAL_reopen_pass": false,
+    "byte_identical_main_checkpoint_replay_pass": true,
+    "original_failed_verifier_attempts_retained": true,
+    "root_cause_not_attributed_to_filesystem_or_sqlite_library": true
+  },
+  "publication": {
+    "status": "BLOCKED_BY_AUTOMATIC_APPROVAL_REVIEW",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "branch": "codex/wsp-confirmation-20261107",
+    "remote_branch_readback": "absent",
+    "reason": "destination not established as trusted organization-owned; explicit approval of this upload required",
+    "workaround_attempted": false
+  }
+}

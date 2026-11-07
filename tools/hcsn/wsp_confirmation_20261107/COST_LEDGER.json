@@ -1,0 +1,148 @@
+{
+  "schema": "wsp-next-complete-cost-record-v1",
+  "measured_complete_child_processes": {
+    "execution_r1/PROCESS_RECEIPT.json": {
+      "child_peak_rss_bytes": 251543552,
+      "child_system_cpu_seconds": 1.018073,
+      "child_total_cpu_seconds": 206.04476899999997,
+      "child_user_cpu_seconds": 205.026696,
+      "command": [
+        "python3",
+        "tools/hcsn/wsp_confirmation_20261107/run.py",
+        "--protocol",
+        "tools/hcsn/wsp_confirmation_20261107/PROTOCOL_FROZEN.json",
+        "--output",
+        "tools/hcsn/wsp_confirmation_20261107/execution_r1/run",
+        "--ledger",
+        "tools/hcsn/wsp_confirmation_20261107/COHORT_LEDGER.sqlite"
+      ],
+      "controller_cpu_seconds": 0.0009550420000000032,
+      "controller_source": {
+        "bytes": 2862,
+        "sha256": "64e85e07ab6695409dccab89187f06fbff984f27184104eb5e3b4a8770d2903a"
+      },
+      "controller_timeout": false,
+      "elapsed_wall_seconds": 209.46955660799722,
+      "ended_utc": "2026-11-07T05:48:13.292884+00:00",
+      "exit_code": 0,
+      "schema": "hepta-value-edit-complete-process-receipt-v1",
+      "scope": "worker startup/imports/final writes included; controller CPU measures only main body after imports and before final receipt write, so controller startup/final-write cost is not measured; scientific caps belong to worker",
+      "started_utc": "2026-11-07T05:44:43.823377+00:00",
+      "threads_per_numeric_library": 1
+    },
+    "verification_r1/PROCESS_RECEIPT.json": {
+      "child_peak_rss_bytes": 29528064,
+      "child_system_cpu_seconds": 0.024027999999999997,
+      "child_total_cpu_seconds": 0.133092,
+      "child_user_cpu_seconds": 0.109064,
+      "command": [
+        "python3",
+        "tools/hcsn/wsp_confirmation_20261107/verification.py",
+        "--protocol",
+        "tools/hcsn/wsp_confirmation_20261107/PROTOCOL_FROZEN.json",
+        "--run",
+        "tools/hcsn/wsp_confirmation_20261107/execution_r1/run",
+        "--ledger",
+        "tools/hcsn/wsp_confirmation_20261107/COHORT_LEDGER.sqlite",
+        "--output",
+        "tools/hcsn/wsp_confirmation_20261107/verification_r1/VERIFIED.json",
+        "--replay-train"
+      ],
+      "controller_cpu_seconds": 0.0008340819999999999,
+      "controller_source": {
+        "bytes": 2862,
+        "sha256": "64e85e07ab6695409dccab89187f06fbff984f27184104eb5e3b4a8770d2903a"
+      },
+      "controller_timeout": false,
+      "elapsed_wall_seconds": 0.13640958500036504,
+      "ended_utc": "2026-11-07T05:48:30.513446+00:00",
+      "exit_code": 1,
+      "schema": "hepta-value-edit-complete-process-receipt-v1",
+      "scope": "worker startup/imports/final writes included; controller CPU measures only main body after imports and before final receipt write, so controller startup/final-write cost is not measured; scientific caps belong to worker",
+      "started_utc": "2026-11-07T05:48:30.377166+00:00",
+      "threads_per_numeric_library": 1
+    },
+    "verification_r2/PROCESS_RECEIPT.json": {
+      "child_peak_rss_bytes": 42094592,
+      "child_system_cpu_seconds": 0.026629,
+      "child_total_cpu_seconds": 0.27516399999999996,
+      "child_user_cpu_seconds": 0.24853499999999998,
+      "command": [
+        "python3",
+        "tools/hcsn/wsp_confirmation_20261107/verification.py",
+        "--protocol",
+        "tools/hcsn/wsp_confirmation_20261107/PROTOCOL_FROZEN.json",
+        "--run",
+        "tools/hcsn/wsp_confirmation_20261107/execution_r1/run",
+        "--ledger",
+        "tools/hcsn/wsp_confirmation_20261107/ledger_recovery_r1/CHECKPOINT_SNAPSHOT.sqlite",
+        "--output",
+        "tools/hcsn/wsp_confirmation_20261107/verification_r2/VERIFIED.json",
+        "--replay-train"
+      ],
+      "controller_cpu_seconds": 0.0008706779999999997,
+      "controller_source": {
+        "bytes": 2862,
+        "sha256": "64e85e07ab6695409dccab89187f06fbff984f27184104eb5e3b4a8770d2903a"
+      },
+      "controller_timeout": false,
+      "elapsed_wall_seconds": 0.2819104740010516,
+      "ended_utc": "2026-11-07T05:49:53.447465+00:00",
+      "exit_code": 1,
+      "schema": "hepta-value-edit-complete-process-receipt-v1",
+      "scope": "worker startup/imports/final writes included; controller CPU measures only main body after imports and before final receipt write, so controller startup/final-write cost is not measured; scientific caps belong to worker",
+      "started_utc": "2026-11-07T05:49:53.165585+00:00",
+      "threads_per_numeric_library": 1
+    },
+    "verification_replay_r3/PROCESS_RECEIPT.json": {
+      "child_peak_rss_bytes": 99549184,
+      "child_system_cpu_seconds": 0.18021099999999998,
+      "child_total_cpu_seconds": 89.189256,
+      "child_user_cpu_seconds": 89.009045,
+      "command": [
+        "python3",
+        "tools/hcsn/wsp_confirmation_20261107/verification_r3/verification.py",
+        "--protocol",
+        "tools/hcsn/wsp_confirmation_20261107/PROTOCOL_FROZEN.json",
+        "--run",
+        "tools/hcsn/wsp_confirmation_20261107/execution_r1/run",
+        "--ledger",
+        "tools/hcsn/wsp_confirmation_20261107/ledger_recovery_r1/CHECKPOINT_SNAPSHOT.sqlite",
+        "--output",
+        "tools/hcsn/wsp_confirmation_20261107/verification_replay_r3/VERIFIED.json",
+        "--replay-train"
+      ],
+      "controller_cpu_seconds": 0.000848373999999999,
+      "controller_source": {
+        "bytes": 2862,
+        "sha256": "64e85e07ab6695409dccab89187f06fbff984f27184104eb5e3b4a8770d2903a"
+      },
+      "controller_timeout": false,
+      "elapsed_wall_seconds": 89.80800956600069,
+      "ended_utc": "2026-11-07T05:54:01.232530+00:00",
+      "exit_code": 0,
+      "schema": "hepta-value-edit-complete-process-receipt-v1",
+      "scope": "worker startup/imports/final writes included; controller CPU measures only main body after imports and before final receipt write, so controller startup/final-write cost is not measured; scientific caps belong to worker",
+      "started_utc": "2026-11-07T05:52:31.424551+00:00",
+      "threads_per_numeric_library": 1
+    }
+  },
+  "complete_child_cpu_seconds_sum": 295.64228099999997,
+  "child_elapsed_wall_seconds_sum_not_task_latency": 299.6958862329993,
+  "separate_verifier_record_preflight_internal_cpu_seconds": 5.218701801,
+  "failed_verifier_attempts": 2,
+  "failed_verifier_cpu_seconds_sum": 0.40825599999999995,
+  "energy_joules": null,
+  "agent_input_tokens": null,
+  "agent_output_tokens": null,
+  "unmeasured": [
+    "Agent service cost",
+    "code construction and review",
+    "SQLite diagnosis/recovery command CPU",
+    "preparation test process CPU",
+    "all prior trials",
+    "production publish/recovery"
+  ],
+  "no_unmeasured_cost_imputed_as_zero": true,
+  "no_full_NDU_economic_superiority_claim": true
+}
