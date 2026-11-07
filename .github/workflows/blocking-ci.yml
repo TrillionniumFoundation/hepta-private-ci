@@ -233,6 +233,7 @@ jobs:
           set -euo pipefail
           "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m unittest -v \
             ndu_semantic_state.test_state ndu_semantic_state.test_materials \
+            ndu_semantic_state.test_execution_gate \
             2>&1 | tee "$RUNNER_TEMP/ndu-reference-evidence/semantic-contracts.log"
           git diff --check
           git diff --exit-code
