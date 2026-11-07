@@ -78,7 +78,27 @@ pub use objective_run::ObjectiveRunError;
 pub use objective_run::PublishedObjectiveRunV1;
 pub use objective_run::compile_and_publish_objective_run_v1;
 
+mod learning_decision;
+mod learning_decision_types;
 mod plasticity_product;
+
+pub use learning_decision::complete_authenticated_learning_decision_v1;
+pub use learning_decision::learning_decision_inventory_v1;
+pub use learning_decision::learning_decision_plan_digest_v1;
+pub use learning_decision::learning_decision_signing_payload_v1;
+pub use learning_decision_types::LearningAttemptPhaseV1;
+pub use learning_decision_types::LearningAttemptStatusV1;
+pub use learning_decision_types::LearningAttemptV1;
+pub use learning_decision_types::LearningCandidateResultV1;
+pub use learning_decision_types::LearningCycleDispositionV1;
+pub use learning_decision_types::LearningDecisionAttestationsV1;
+pub use learning_decision_types::LearningDecisionErrorV1;
+pub use learning_decision_types::LearningDecisionInputV1;
+pub use learning_decision_types::LearningDecisionPinsV1;
+pub use learning_decision_types::LearningDecisionPlanV1;
+pub use learning_decision_types::LearningDecisionReceiptV1;
+pub use learning_decision_types::LearningDecisionSummaryV1;
+pub use learning_decision_types::LearningStopV1;
 
 pub use plasticity_product::AnchoredPlasticityWriterErrorV1;
 pub use plasticity_product::AnchoredPlasticityWriterV1;
