@@ -41,6 +41,7 @@ class Controller:
         discount=1.0,
         ndu_depth=3,
         allow_unfitted=False,
+        allowed_actions=ACTIONS,
     ):
         if (
             strategy not in STRATEGIES
@@ -55,6 +56,24 @@ class Controller:
             opportunity,
         )
         if (
+            not isinstance(allowed_actions, (tuple, list))
+            or len(set(allowed_actions)) != len(allowed_actions)
+            or "stop" not in allowed_actions
+            or set(allowed_actions) - set(ACTIONS)
+            or set(fixed) - set(allowed_actions)
+        ):
+            raise ValueError("registered action support differs")
+        self.allowed_actions = tuple(allowed_actions)
+        if strategy not in ("initial", "tuned_fixed") and model.fit_receipt is not None:
+            if (
+                set(allowed_actions)
+                - {"stop"}
+                - set(model.fit_receipt.get("supported_actions", ()))
+            ):
+                raise ValueError(
+                    "predictive policy requests actions absent from its training transitions"
+                )
+        if (
             strategy not in ("initial", "tuned_fixed")
             and model.fit_receipt is None
             and not allow_unfitted
@@ -68,6 +87,10 @@ class Controller:
             _number(cost_weight, "cost weight"),
         )
         self.discount = _number(discount, "discount", positive=True)
+        if self.gamma != model.config["gamma"]:
+            raise ValueError(
+                "deployment risk differs from the fitted conditional-moment critic"
+            )
         self.failure_score = _number(failure_score, "failure score")
         if type(ndu_depth) is not int or not 1 <= ndu_depth <= 8:
             raise ValueError("declare an NDU prediction depth in [1,8]")
@@ -94,6 +117,7 @@ class Controller:
             "core_role": "public_content_state_for_control",
             "encoding_digest": self.model.config["encoding_digest"],
             "fixed": self.fixed,
+            "allowed_actions": self.allowed_actions,
             "risk_profile": "nested_entropic_learned_prediction_law",
             "gamma": self.gamma,
             "cost_weight": self.cost_weight,
@@ -157,7 +181,7 @@ class Controller:
         def visit(state, depth, cursor):
             if state.remaining_steps == 0:
                 return stop(state), "stop"
-            legal = state.legal()
+            legal = tuple(a for a in state.legal() if a in self.allowed_actions)
             choices = (
                 legal
                 if depth > 0
@@ -223,7 +247,9 @@ class Controller:
                 if depth == -1:
                     # Light considers each immediate action followed by stopping.
                     values = [(stop(observation), "stop")]
-                    for action in observation.legal():
+                    for action in (
+                        a for a in observation.legal() if a in self.allowed_actions
+                    ):
                         if action == "stop":
                             continue
                         reserve()
@@ -268,6 +294,7 @@ def check_equal_opportunity(controllers):
         "fixed",
         "fit_data_digest",
         "encoding_digest",
+        "allowed_actions",
     )
     for controller in controllers:
         if any(controller.identity[name] != reference[name] for name in fields):

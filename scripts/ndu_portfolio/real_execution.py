@@ -65,6 +65,12 @@ def load_predictor(path, expected_sha256):
         raise ValueError(
             "fit status or measured opportunity cannot qualify this checkpoint"
         )
+    if receipt.get("critic_target") != (
+        "conditional_exponential_moment"
+        if checkpoint["config"]["gamma"]
+        else "conditional_mean"
+    ):
+        raise ValueError("critic fitting objective is not bound to this risk profile")
     model = PredictiveModel(**checkpoint["config"])
     model.load_state_dict(checkpoint["state_dict"], strict=True)
     if parameter_digest(model) != receipt["model_digest"]:
@@ -120,6 +126,10 @@ def execute(
         raise ValueError(
             "initial-delivery comparator needs registered actual initial delivery work"
         )
+    if controller.decisions or set(initial_actions) - set(controller.allowed_actions):
+        raise ValueError(
+            "use a fresh per-episode controller and registered initial actions"
+        )
     if type(collect_transition_features) is not bool:
         raise ValueError("feature collection role must be explicit")
     required_binding = {
@@ -133,6 +143,7 @@ def execute(
     owner_optional = {
         "incumbent_manifest_digest",
         "incumbent_payload_digest",
+        "source_owner_checkpoint_digest",
         "source_run_id",
         "agent_id",
         "cell_id",
@@ -244,6 +255,13 @@ def execute(
                     "initial",
                     "tuned_fixed",
                 )
+                encoding = (
+                    encoder(public, current)
+                    if encoded
+                    else (0.0,) * controller.model.config["encoding_width"]
+                )
+                if encoded:
+                    backend.synchronize()
                 encoding_digest = encoder.contract_digest() if encoded else None
                 if (
                     encoded
@@ -253,13 +271,6 @@ def execute(
                     raise ValueError(
                         "runtime encoder differs from the frozen predictor training contract"
                     )
-                encoding = (
-                    encoder(public, current)
-                    if encoded
-                    else (0.0,) * controller.model.config["encoding_width"]
-                )
-                if encoded:
-                    backend.synchronize()
                 event(
                     "encoder",
                     "completed" if encoded else "not_required_for_fixed_policy",
@@ -276,6 +287,7 @@ def execute(
                 report["observations"].append(
                     {
                         "step": step,
+                        "event_cursor": len(report["events"]),
                         "public": asdict(observation),
                         "suitable_for_predictive_fitting": encoded,
                         "encoding_digest": encoding_digest,
@@ -479,7 +491,11 @@ def main():
         **profile["controller"],
     )
     backend = LocalModels(
-        Path(args.models) / "vlm", Path(args.models) / "sd", threads=profile["threads"]
+        Path(args.models) / "vlm",
+        Path(args.models) / "sd",
+        threads=profile["threads"],
+        device=profile.get("device", "cpu"),
+        dtype=profile.get("dtype", "bfloat16"),
     )
     result = execute(
         public,

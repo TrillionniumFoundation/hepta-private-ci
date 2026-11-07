@@ -9,6 +9,7 @@ import unittest
 import torch
 
 from .real_controllers import (
+    ACTIONS,
     Controller,
     Observation,
     Opportunity,
@@ -152,6 +153,7 @@ class ControllerContracts(unittest.TestCase):
             model.fit_receipt = {
                 "input_digest": digest(["engineering-fixture", index]),
                 "status": "completed",
+                "supported_actions": list(ACTIONS[:-1]),
             }
         actors = [controller(model) for model in models]
         with self.assertRaises(ValueError):
@@ -159,6 +161,20 @@ class ControllerContracts(unittest.TestCase):
         models[0].fit_receipt["input_digest"] = digest("changed")
         with self.assertRaisesRegex(ValueError, "provenance changed"):
             actors[0].choose(observed())
+
+    def test_unobserved_actions_cannot_be_extrapolated_into_deployment(self):
+        model = PredictiveModel(4, width=4)
+        model.fit_receipt = {
+            "input_digest": digest("fixture"),
+            "status": "completed",
+            "supported_actions": ["text"],
+        }
+        with self.assertRaisesRegex(ValueError, "absent"):
+            controller(model, "mpc")
+
+    def test_deployment_risk_cannot_change_fitted_critic_target(self):
+        with self.assertRaisesRegex(ValueError, "risk"):
+            controller(PredictiveModel(4, width=4, gamma=0.0))
 
 
 if __name__ == "__main__":

@@ -42,6 +42,7 @@ class FrozenSmolEncoder:
                 "model": backend["reviewed_model_pins"]["vlm"],
                 "preprocessing": backend["image_preprocessing"],
                 "dtype": backend["dtype"],
+                "device": backend["device"],
                 "versions": backend["versions"],
             }
         )

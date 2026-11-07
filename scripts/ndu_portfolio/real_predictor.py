@@ -141,9 +141,24 @@ class Opportunity:
             raise ValueError("opportunity exceeds this bounded implementation")
 
 
+def conditional_stop_loss(predicted_ce, observed_utility, gamma):
+    """Proper conditional exponential moment, not regression of log outcomes."""
+    if gamma == 0:
+        return F.mse_loss(predicted_ce, observed_utility)
+    prediction = -gamma * predicted_ce
+    target = torch.exp(-gamma * observed_utility.detach())
+    return (prediction.exp() - target * prediction).mean()
+
+
 class PredictiveModel(nn.Module):
     def __init__(
-        self, encoding_width, width=16, members=2, core="ordinary", encoding_digest=None
+        self,
+        encoding_width,
+        width=16,
+        members=2,
+        core="ordinary",
+        encoding_digest=None,
+        gamma=2.0,
     ):
         super().__init__()
         if (
@@ -171,6 +186,7 @@ class PredictiveModel(nn.Module):
             members=members,
             core=core,
             encoding_digest=encoding_digest,
+            gamma=_number(gamma, "critic risk"),
         )
         self.fit_receipt = None
         self.encoder = nn.Linear(encoding_width + 5, width)
@@ -381,10 +397,11 @@ def fit_predictive(model, rows, opportunity, *, allowed_sources, regime, seed, o
                     prediction[:, :-2], nxt[sample, : model.config["encoding_width"]]
                 )
                 loss = loss + F.mse_loss(F.softplus(prediction[:, -2:]), y[sample, 2:])
-                loss = (
-                    loss
-                    + F.mse_loss(value, y[sample, 0])
-                    + F.mse_loss(next_value, y[sample, 1])
+                loss = loss + conditional_stop_loss(
+                    value, y[sample, 0], model.config["gamma"]
+                )
+                loss = loss + conditional_stop_loss(
+                    next_value, y[sample, 1], model.config["gamma"]
                 )
             if not torch.isfinite(loss):
                 raise ValueError("nonfinite predictive fitting objective")
@@ -399,6 +416,10 @@ def fit_predictive(model, rows, opportunity, *, allowed_sources, regime, seed, o
             model_digest=parameter_digest(model),
             source_groups=sorted(source_groups),
             training_rows=len(rows),
+            supported_actions=sorted({row["action"] for row in rows}),
+            critic_target="conditional_exponential_moment"
+            if model.config["gamma"]
+            else "conditional_mean",
             parameters=sum(p.numel() for p in model.parameters()),
             trainable_parameters=sum(
                 p.numel() for p in model.parameters() if p.requires_grad

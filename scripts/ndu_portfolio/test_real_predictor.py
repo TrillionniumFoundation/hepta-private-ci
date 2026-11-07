@@ -15,6 +15,7 @@ from .real_predictor import (
     digest,
     fit_predictive,
     parameter_digest,
+    conditional_stop_loss,
 )
 
 
@@ -77,6 +78,20 @@ class PredictiveContracts(unittest.TestCase):
             ),
             0,
         )
+
+    def test_stop_critic_targets_conditional_ce_not_mean_log_outcomes(self):
+        outcomes = torch.tensor([0.0, 1.0], dtype=torch.float64)
+        gamma = 2.0
+        optimum = -torch.log(torch.exp(-gamma * outcomes).mean()) / gamma
+        prediction = optimum.clone().requires_grad_()
+        conditional_stop_loss(
+            prediction.expand_as(outcomes), outcomes, gamma
+        ).backward()
+        self.assertLess(abs(prediction.grad.item()), 1e-12)
+        mean = outcomes.mean().requires_grad_()
+        conditional_stop_loss(mean.expand_as(outcomes), outcomes, gamma).backward()
+        self.assertGreater(mean.grad.item(), 0.1)
+        self.assertLess(optimum.item(), outcomes.mean().item())
 
     def test_fitting_preserves_frozen_core_and_updates_joint_core(self):
         for regime in ("frozen", "joint"):
