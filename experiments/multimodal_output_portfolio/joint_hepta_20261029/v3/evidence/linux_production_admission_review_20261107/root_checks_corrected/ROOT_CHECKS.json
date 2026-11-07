@@ -1,0 +1,53 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "codespell_lib",
+    "--ignore-words",
+    ".codespellignore",
+    "--skip",
+    "./.git",
+    "/dev/shm/ndu_root_continuation_20261107/review_e17_sources.py",
+    "/dev/shm/ndu_root_continuation_20261107/e17_root_review/ROOT_REVIEW.json",
+    "/dev/shm/ndu_e17_production_review_20261107/PRODUCTION_ADMISSION_REVIEW.md"
+  ],
+  "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+  "audit_only_PYTHONPATH": "/workspace/scratch/3f6a885bb83c/tooling/codespell-2.4.3",
+  "HOME_inherited": true,
+  "exit_code": 0,
+  "wall_seconds": 0.0969231769995531,
+  "stdout": {
+    "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_spelling_corrected/stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_spelling_corrected/stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "inputs": [
+    {
+      "path": "/dev/shm/ndu_root_continuation_20261107/review_e17_sources.py",
+      "bytes": 6757,
+      "sha256": "a91f8b9e59c1bb9ceac556b2611ba8a7a90d164344e8b8915b49747e4948e554"
+    },
+    {
+      "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_review/ROOT_REVIEW.json",
+      "bytes": 8487,
+      "sha256": "021a016d48af01430a23c62828c6203e95f0c40cbb5d13eb7446c131012eb3ed"
+    },
+    {
+      "path": "/dev/shm/ndu_e17_production_review_20261107/PRODUCTION_ADMISSION_REVIEW.md",
+      "bytes": 16731,
+      "sha256": "f6d8bebc8ad4368d129e1405a3b3789104a9ed0cb4778b3f2e9c0fddb5bce4f8"
+    }
+  ],
+  "first_attempt": {
+    "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_checks/ROOT_CHECKS.json",
+    "bytes": 4483,
+    "sha256": "e1cd4c0727fcc8d0e4b69dec04cb24994f6a0e789c002731fe4a8feb33fe3a35"
+  },
+  "correction": "Select the already present audit-only Codespell module through its established PYTHONPATH; no source, ignore list or assertion change; no replay of root byte audit."
+}

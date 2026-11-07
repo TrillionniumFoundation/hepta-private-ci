@@ -1,0 +1,86 @@
+{
+  "schema": "e17-independent-production-review-addendum-v1",
+  "observed_at_utc": "2026-11-07T08:38:12.155564+00:00",
+  "decision": "E17_OPEN_NO_CAPABILITY_ACTIVATION",
+  "appendix": {
+    "path": "/dev/shm/ndu_e17_independent_review_20261107/DYNAMIC_POLICY_INPUT_ADDENDUM.md",
+    "bytes": 11965,
+    "sha256": "992391bb59e7aee4fa4096fc2d043b4c8a0b0a207646eb5b13b9d7e1acb5c1f7",
+    "mode": "0644"
+  },
+  "source_checks": {
+    "path": "/dev/shm/ndu_e17_independent_review_20261107/SOURCE_CHECKS.json",
+    "bytes": 11934,
+    "sha256": "635ead6fc242601fe4093cbb0a88301d185f06e1a4503bfd354d3aa3d2561816",
+    "mode": "0644"
+  },
+  "original_report_preserved": {
+    "path": "/dev/shm/ndu_e17_production_review_20261107/PRODUCTION_ADMISSION_REVIEW.md",
+    "bytes": 16731,
+    "sha256": "f6d8bebc8ad4368d129e1405a3b3789104a9ed0cb4778b3f2e9c0fddb5bce4f8",
+    "mode": "0644"
+  },
+  "original_manifest_preserved": {
+    "path": "/dev/shm/ndu_e17_production_review_20261107/MANIFEST.json",
+    "bytes": 5624,
+    "sha256": "a5588bb6c2026fd0408560d5be6320c5406fda97c6fb6c2767cd340d2a8ce7d6",
+    "mode": "0644"
+  },
+  "current_main_source_continuation": {
+    "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_review/ROOT_REVIEW.json",
+    "bytes": 8487,
+    "sha256": "021a016d48af01430a23c62828c6203e95f0c40cbb5d13eb7446c131012eb3ed",
+    "mode": "0644"
+  },
+  "independent_finding": {
+    "id": "E17-DYNAMIC-POLICY-INPUT-001",
+    "kind": "CONDITIONAL_CONSTRUCTOR_PREMISE_GAP",
+    "source_fact": "A remaining Tmpdir entry reads process TMPDIR during the original can_read_path_with_cwd evaluation; cloning and project-roots materialization do not freeze it.",
+    "counterexample": "A coherent path observation combined later with a changed dynamic allow root can accept an inode that was never at an allowed current path during the stated schedule.",
+    "required_extra_condition": "The schedule requires an actor able to change the process environment. Filesystem mutation authority alone is insufficient.",
+    "actual_original_fixture_uses_tmpdir": "UNKNOWN",
+    "fixture_literal_has_explicit_tmpdir": false,
+    "historical_failure_attribution": false,
+    "observed_exploit": false,
+    "executed_counterexample": false,
+    "current_linux_method_remains_unsupported": true,
+    "resolution": "A future constructor must establish immutable retained policy-resolution inputs, reject an unsupported policy class, or propose an explicit separately reviewed semantic materialization boundary."
+  },
+  "original_report_conclusion_supported": true,
+  "missing_inputs": [
+    "An actual trusted executor-owned resolver/root and topology producer with a stated lifetime and deployment scope.",
+    "An admission boundary covering every retained dynamic policy input and exact deny-alias dependence.",
+    "Actual delegation support, caller eligibility, ownership, LSM and filesystem conditions for the admitted file.",
+    "An integrated same-inode/common-instant bounded-read implementation preserving the original positive and negative oracles."
+  ],
+  "linux41_metadata_limits": {
+    "job_ids_in_order": [
+      128298273965,
+      128298273981
+    ],
+    "test_runner_cache_hit": [
+      false,
+      false
+    ],
+    "xml_generation_cache_hit": [
+      false,
+      true
+    ],
+    "same_binary_and_action": true,
+    "direct_three_subcase_records": "UNAVAILABLE",
+    "independent_gnu_musl_abi_proved": false
+  },
+  "execution_scope": {
+    "read_only_source_and_identity_checks": true,
+    "original_inputs_unchanged": true,
+    "status_v2_modified": false,
+    "candidate_imported": false,
+    "predicate_or_model_executed": false,
+    "process_environment_modified": false,
+    "syscall_or_native_run": false,
+    "private_console_or_zip_read": false,
+    "rejected_bytes_read": false,
+    "research_execution": false,
+    "production_or_remote_write": false
+  }
+}
