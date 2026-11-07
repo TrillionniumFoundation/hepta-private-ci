@@ -9,6 +9,23 @@ contrasts. See [VERIFICATION.json](VERIFICATION.json) and the complete
 [execution-evidence.zip](execution-evidence.zip). These are software fixtures;
 zero real training fits or confirmation tasks ran in this package.
 
+The first published head `2049567ce7dd6ca81758431b8797938e017a070b`
+passed the remote NDU reference job: **151 tests, zero skips**. That workflow
+does not invoke the three Torch adapter tests, which passed in the separate
+local full-scope run; these counts are not interchangeable.
+[CI_READBACK.json](CI_READBACK.json) and [ci-readback.zip](ci-readback.zip)
+retain the exact source/merge records and original logs.
+
+The same remote run reproduced an older architecture-workflow failure already
+present on the #5198 base: recursive unittest discovery imported an unrelated
+NumPy-dependent package after all 45 intended execution-record tests passed.
+The workflow now enumerates the same root test-file glob explicitly, preserves
+the source-bound runner and requires at least one passing test. All 45 intended
+tests passed with site-packages disabled (`python -S`). A separate local wrapper
+preflight rejected a missing source-identity environment before running tests;
+that rejection is retained too. A newer remote workflow result must be read
+under its own source identity; this record does not claim all CI passed.
+
 This extension is stacked on #5198 at
 `006e744fbb10a6ee393166eed2e5d1e91f2fab1f`. It leaves the v1 protocol,
 single-fit auditor and historical evidence intact. No real training replication
