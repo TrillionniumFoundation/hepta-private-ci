@@ -13,9 +13,15 @@ import sys
 HERE = Path(__file__).resolve().parent
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(HERE.parent))
+from receipt_verifier import read_capture
 from loop_common import canonical, frozen, identity, read, runtime, sha, write
 from quality import assess, publication_decision, require
 from phase_process import complete_cpu_total, run_phase
+
+
+def historical_identity(path):
+    raw = read_capture(path)
+    return {"bytes": len(raw), "sha256": sha(raw)}
 
 
 def prepare(origin, output):
@@ -48,6 +54,7 @@ def prepare(origin, output):
     code.mkdir()
     for source in HERE.glob("*.py"):
         shutil.copyfile(source, code / source.name)
+    shutil.copyfile(HERE.parent / "receipt_verifier.py", code / "receipt_verifier.py")
     for name in ("loop_common.py", "tasks.py"):
         shutil.copyfile(origin / "EXECUTED_SOURCE" / name, code / name)
     shutil.copytree(origin / "EXECUTED_SOURCE/validator", code / "validator")
@@ -201,7 +208,7 @@ def main(args):
     if (output / "inputs/original-inventory.json").exists():
         try:
             expected = read(output / "inputs/original-inventory.json")["files"]
-            original_unchanged = all(identity(origin.parent.parent / name) == value for name, value in expected.items())
+            original_unchanged = all(historical_identity(origin.parent.parent / name) == value for name, value in expected.items())
             require(identity(origin.parent.parent / "DELIVERY_INVENTORY.json")
                     == identity(output / "inputs/original-inventory.json"), "original delivery inventory changed")
         except (OSError, ValueError) as error:

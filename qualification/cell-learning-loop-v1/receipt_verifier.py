@@ -4,11 +4,14 @@ These are local consistency checks, not an authenticated writer or an adoption
 gate. A failed or unverifiable attempt never becomes permission to run it again.
 """
 
+import gzip
 import hashlib
+import io
 import json
 import math
 from pathlib import Path
 import re
+import zlib
 
 from loop_common import canonical, identity
 
@@ -44,14 +47,32 @@ def decode_receipt(raw):
 
 
 def read_capture(path):
+    limit = MAX_RECEIPT_BYTES
     path = Path(path)
-    if path.is_symlink() or not path.is_file():
-        raise ValueError("missing or linked receipt/capture: " + path.name)
-    with path.open("rb") as stream:
-        raw = stream.read(MAX_RECEIPT_BYTES + 1)
-    if len(raw) > MAX_RECEIPT_BYTES:
+    archive = path.with_name(path.name + ".gz")
+    if path.is_symlink() or archive.is_symlink():
+        raise ValueError("linked receipt/capture storage: " + path.name)
+    if path.exists() and archive.exists():
+        raise ValueError("ambiguous plain and compressed receipt/capture: " + path.name)
+    compressed = not path.exists()
+    source = archive if compressed else path
+    if not source.is_file():
+        raise ValueError("missing receipt/capture: " + path.name)
+    with source.open("rb") as stream:
+        stored = stream.read(limit + 1)
+    if len(stored) > limit:
+        raise ValueError("receipt/capture storage exceeds the repository blob bound: " + path.name)
+    raw = stored
+    if compressed:
+        try:
+            with gzip.GzipFile(fileobj=io.BytesIO(stored), mode="rb") as stream:
+                raw = stream.read(limit + 1)
+        except (OSError, EOFError, zlib.error) as error:
+            raise ValueError("invalid compressed receipt/capture: " + path.name) from error
+    if len(raw) > limit:
         raise ValueError("receipt/capture exceeds the repository blob bound: " + path.name)
     return raw
+
 
 
 def nonnegative_number(value):
