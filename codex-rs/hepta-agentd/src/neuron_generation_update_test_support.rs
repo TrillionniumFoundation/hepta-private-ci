@@ -65,6 +65,7 @@ pub(crate) struct Fixture {
     issuer: SigningKey,
 }
 
+#[cfg(test)]
 impl Fixture {
     pub(crate) fn new(old_config: CellGenerationConfigV2) -> anyhow::Result<Self> {
         let mut target_config = old_config.clone();
