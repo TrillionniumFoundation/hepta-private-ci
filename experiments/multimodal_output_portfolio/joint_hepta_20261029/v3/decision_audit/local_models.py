@@ -43,7 +43,7 @@ class LocalModels:
                 raise ValueError("CUDA device index is unavailable")
             target = torch.device("cuda", index)
             with torch.cuda.device(target):
-                if self.dtype == "bfloat16" and not torch.cuda.is_bf16_supported():
+                if self.dtype == "bfloat16" and not torch.cuda.is_bf16_supported(including_emulation=False):
                     raise RuntimeError("Declared CUDA bfloat16 profile is unsupported")
                 runtime.update(device_name=torch.cuda.get_device_name(target),
                                capability=list(torch.cuda.get_device_capability(target)))

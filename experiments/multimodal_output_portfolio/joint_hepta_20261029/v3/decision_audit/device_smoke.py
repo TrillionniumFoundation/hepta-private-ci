@@ -42,13 +42,15 @@ def execute(models, image, output, source_sha, *, device="cpu", dtype="bfloat16"
         begin = time.process_time(), time.perf_counter()
         image_result = backend.draw("A simple illustration of an object on a plain background.", output / "image.png", 17, steps=2)
         backend.synchronize()
-        placements = {name: str(next(module.parameters()).device) for name, module in
+        placements = {name: {"device": str(next(module.parameters()).device), "dtype": str(next(module.parameters()).dtype)} for name, module in
                       (("unet", backend.pipeline.unet), ("vae", backend.pipeline.vae), ("text_encoder", backend.pipeline.text_encoder))}
-        if (set(placements.values()) != {backend.device} or image_result["generator_device"] != backend.device
+        if ({value["device"] for value in placements.values()} != {backend.device}
+                or {value["dtype"] for value in placements.values()} != {"torch." + dtype}
+                or image_result["generator_device"] != backend.device
                 or not 1 <= image_result["actual_steps"] <= 4):
             raise ValueError("Diffusion placement or observed denoising step count differs")
         report["stages"].append({"name": "actual_diffusion_forward", "status": "completed",
-            "module_devices": placements, "generator_device": image_result["generator_device"], "result": image_result,
+            "module_placements": placements, "generator_device": image_result["generator_device"], "result": image_result,
             "cpu_seconds": time.process_time() - begin[0], "wall_seconds": time.perf_counter() - begin[1]})
         report.update(status="completed", gpu_execution_verified=backend.device.startswith("cuda"))
     except (Exception, KeyboardInterrupt) as error:

@@ -1,6 +1,7 @@
 """Small file/metadata fixtures only; none is model execution evidence."""
 
 import hashlib
+from contextlib import nullcontext
 import json
 from pathlib import Path
 import tempfile
@@ -74,6 +75,14 @@ class LocalModelTests(unittest.TestCase):
         with patch("torch.cuda.synchronize") as barrier:
             backend.synchronize()
         barrier.assert_called_once_with("cuda:1")
+
+    def test_cuda_bf16_emulation_does_not_qualify_the_declared_profile(self):
+        backend = LocalModels(self.root, self.root, device="cuda:0", dtype="bfloat16")
+        with (patch("torch.cuda.is_available", return_value=True), patch("torch.cuda.device_count", return_value=1),
+              patch("torch.cuda.device", return_value=nullcontext()), patch("torch.cuda.is_bf16_supported", return_value=False) as supports):
+            with self.assertRaisesRegex(RuntimeError, "unsupported"):
+                backend._placement()
+        supports.assert_called_once_with(including_emulation=False)
 
     def test_incomplete_or_missing_weight_manifest_rejected(self):
         backend = LocalModels(self.root, self.root)
