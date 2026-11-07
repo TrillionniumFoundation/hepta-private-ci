@@ -622,9 +622,13 @@ async fn real_agentd_local_memory_review_is_read_only_and_replayable() -> Result
     )?;
     assert_memory_source(&first_request, &memory_id, &source_id)?;
 
+    let retained_recovery = fleet
+        .retain_live_recovery_frontier(&agent, /*expected_provider_invocation_rows*/ 2)
+        .await?;
     product.shutdown().await?;
     fleet.supervisor.kill(&agent.agent_id)?;
     wait_inactive(&mut fleet, &agent.agent_id).await?;
+    retained_recovery.publish()?;
     let previous_generation = agent_generation(&fleet, &agent.agent_id)?;
     fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
     let (restarted_control, restarted_health) =
@@ -818,10 +822,14 @@ async fn real_agentd_local_memory_review_hides_host_tombstone_after_reopen() -> 
     product.run_turn(&thread, QUERY).await?;
     assert_physical_request_count_stable(&after, 1, "post-tombstone memory-review").await?;
     assert_no_cognitive_reference(&after.single_request())?;
+    let retained_recovery = fleet
+        .retain_live_recovery_frontier(&agent, /*expected_provider_invocation_rows*/ 4)
+        .await?;
     product.shutdown().await?;
 
     fleet.supervisor.kill(&agent.agent_id)?;
     wait_inactive(&mut fleet, &agent.agent_id).await?;
+    retained_recovery.publish()?;
     let previous_generation = agent_generation(&fleet, &agent.agent_id)?;
     fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
     let (restarted_control, _) = fleet.wait_new_spawn(&agent, previous_generation).await?;

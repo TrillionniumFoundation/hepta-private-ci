@@ -16,6 +16,7 @@ from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import hepta_smollm_three_rounds_v2 as rounds
+import hepta_smollm_runtime_roles_v1 as runtime_roles
 
 
 def save(path, value):
@@ -25,9 +26,8 @@ def save(path, value):
 def run(args):
     config_raw = args.native_input.read_bytes()
     config = json.loads(config_raw)
-    rounds.require(
-        config["schema"] == "hepta-smollm-neural-native-check-v2",
-        "original cold native configuration required",
+    historical_chain, source_roles = runtime_roles.native_roles(
+        config, getattr(args, "historical_chain", None), rounds.CHAIN_COMMIT
     )
     for name in ("chain", "materials", "parent"):
         rounds.require(
@@ -65,6 +65,9 @@ def run(args):
         independent_future_quality=False,
         status="running",
     )
+    if source_roles is not None:
+        campaign["schema"] = "hepta-controlled-six-arm-descendant-material-bridge-v1"
+        campaign["source_roles"] = source_roles
     report = args.output / "campaign.json"
     save(report, campaign)
     try:
@@ -81,7 +84,7 @@ def run(args):
                 )
             result = rounds.run(
                 SimpleNamespace(
-                    chain=Path(config["chain"]),
+                    chain=historical_chain,
                     materials=Path(config["materials"]),
                     parent=incumbent,
                     parent_sha256=config["parent_sha256"],
@@ -135,9 +138,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("native-input", "ordinary-readback", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--historical-chain", type=Path)
     args = parser.parse_args()
     rounds.require(
-        all(value.is_absolute() for value in vars(args).values()),
+        all(value.is_absolute() for value in vars(args).values() if value is not None),
         "absolute paths required",
     )
     run(args)

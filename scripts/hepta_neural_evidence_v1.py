@@ -21,6 +21,8 @@ import sys
 
 import hepta_ci_exec as ci
 
+import hepta_neural_runtime_evidence_v1 as runtime_evidence
+
 REQUIRED = (
     "REQUIRED_CLI",
     "NAMESPACE",
@@ -230,7 +232,7 @@ def collect_source(repository, expected):
     }
 
 
-def source(output):
+def source(output, current_runtime=None):
     root = Path(ci.git("rev-parse", "--show-toplevel")).resolve()
     record = {
         "schema": "hepta-neural-complete-source-v1",
@@ -251,7 +253,12 @@ def source(output):
             )
         except (ValueError, OSError, ci.subprocess.SubprocessError) as error:
             record["errors"].append({"repository": name, "error": str(error)})
-    record["valid"] = not record["errors"] and len(record["repositories"]) == 4
+    runtime_evidence.append_runtime(record, root, collect_source, current_runtime)
+    record["valid"] = not record["errors"] and set(
+        record["repositories"]
+    ) == runtime_evidence.names(
+        {"hepta", "chain", "chain-answer-eos", "chain-observed"}, record
+    )
     save(output, record)
     return 0 if record["valid"] else 1
 
@@ -588,6 +595,9 @@ class Evidence:
                     and self.pin(phase_input["parent"]) == actual["parent"],
                     "original forward configuration chain required",
                 )
+                runtime_evidence.verify_forward(
+                    config, phase_input, worker_input, actual, self.pin
+                )
                 self.supervisor(self.pin(phase["supervisor"]), 600, 8 * 1024**3)
                 require(
                     actual["model"] == phase["model"] == model
@@ -826,12 +836,22 @@ def assess(root):
             and before["valid"] is True
             and before["run"] == run_identity()
             and set(before["repositories"])
-            == {"hepta", "chain", "chain-answer-eos", "chain-observed"},
+            == runtime_evidence.names(
+                {"hepta", "chain", "chain-answer-eos", "chain-observed"}, before
+            ),
             "all current-run source bytes must remain unchanged",
         )
         require(
             regular(evidence.root / "final-source-diff.patch")["bytes"] == 0,
             "post-test source edit",
+        )
+        runtime_evidence.validate_sources(
+            before,
+            "hepta-neural-complete-source-v1",
+            {"hepta", "chain", "chain-answer-eos", "chain-observed"},
+            read(evidence.root / "native-input.json")
+            if runtime_evidence.bridged(before)
+            else {},
         )
         return {
             name: value["identity"] for name, value in before["repositories"].items()
@@ -968,14 +988,16 @@ def main():
     os.umask(0o077)
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("source").add_argument("--output", type=Path, required=True)
+    source_parser = commands.add_parser("source")
+    source_parser.add_argument("--output", type=Path, required=True)
+    source_parser.add_argument("--current-runtime", type=Path)
     commands.add_parser("assess").add_argument("--root", type=Path, required=True)
     archiver = commands.add_parser("archive")
     archiver.add_argument("--root", type=Path, required=True)
     archiver.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.command == "source":
-        return source(args.output)
+        return source(args.output, args.current_runtime)
     if args.command == "assess":
         return assess(args.root)
     return archive(args.root, args.output)

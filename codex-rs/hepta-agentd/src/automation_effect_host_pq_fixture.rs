@@ -48,7 +48,9 @@ impl PqFixture {
                     PqTrustOperationV2::FrontierLoad { .. }
                     | PqTrustOperationV2::FrontierCompareAndSet { .. }
                     | PqTrustOperationV2::LearningFrontierLoad { .. }
-                    | PqTrustOperationV2::LearningFrontierCompareAndSet { .. } => {
+                    | PqTrustOperationV2::LearningFrontierCompareAndSet { .. }
+                    | PqTrustOperationV2::ReleaseFrontierLoad { .. }
+                    | PqTrustOperationV2::ReleaseFrontierCompareAndSet { .. } => {
                         PqTrustOutcomeV2::Unavailable
                     }
                 })
@@ -153,6 +155,15 @@ impl PqFixture {
         intent: &AuthorizedEffectIntent,
         expires: u64,
     ) -> anyhow::Result<SignedFinalUseGrant> {
+        self.grant_at(intent, NOW - 1000, expires)
+    }
+
+    pub(super) fn grant_at(
+        &self,
+        intent: &AuthorizedEffectIntent,
+        not_before: u64,
+        expires: u64,
+    ) -> anyhow::Result<SignedFinalUseGrant> {
         let grant = FinalUseGrant {
             schema_version: 2,
             signer_id: "pq-issuer".to_string(),
@@ -160,7 +171,7 @@ impl PqFixture {
             grant_id: "pq-http-grant".to_string(),
             nonce: [92; 32],
             binding: intent.final_use_binding()?,
-            not_before_unix_ms: NOW - 1000,
+            not_before_unix_ms: not_before,
             expires_at_unix_ms: expires,
         };
         let signature = self

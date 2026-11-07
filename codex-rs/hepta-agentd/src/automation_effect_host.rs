@@ -33,6 +33,7 @@ use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_automation::TaskFlowStepReceipt;
 use codex_hepta_contracts::FinalUseAuthority;
+#[cfg(test)]
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::ProviderEffectAck;
 use codex_hepta_contracts::ProviderEffectAckSource;
@@ -60,8 +61,11 @@ use sha2::Sha256;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 
+#[path = "automation_effect_host_packet.rs"]
+mod packet;
 #[path = "automation_effect_host_pq.rs"]
 mod pq;
+use packet::EffectWire;
 
 #[path = "automation_effect_host_pon_task_acceptance.rs"]
 mod pon_task_acceptance;
@@ -70,6 +74,8 @@ mod pon_task_acceptance;
 mod pon_executable;
 #[path = "automation_effect_host_pon_process.rs"]
 mod pon_process;
+#[path = "automation_effect_host_pon_profile.rs"]
+mod pon_profile;
 
 #[cfg(all(test, unix))]
 #[path = "automation_effect_host_pon_tests.rs"]
@@ -79,6 +85,7 @@ mod pon_lifecycle_tests;
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 #[cfg(test)]
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
+#[cfg(test)]
 const MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES: u64 = 4 * 1024 * 1024;
 const MAX_PROVIDER_HEADERS: usize = 64;
 #[cfg(test)]
@@ -206,11 +213,7 @@ struct PonLocalProviderEffectAdapter {
     binary: PathBuf,
     binary_sha256: Sha256Digest,
     store: PathBuf,
-    state_backend: String,
-    genesis_time: u64,
-    evaluation_policy: String,
-    task_profile: String,
-    model_profile: String,
+    profile: pon_profile::Profile,
     workers: u64,
     min_confirmation_depth: u64,
     min_confirmation_work_depth_hex: String,
@@ -224,11 +227,7 @@ impl std::fmt::Debug for PonLocalProviderEffectAdapter {
             .field("binary", &self.binary)
             .field("binary_sha256", &self.binary_sha256)
             .field("store", &self.store)
-            .field("state_backend", &self.state_backend)
-            .field("genesis_time", &self.genesis_time)
-            .field("evaluation_policy", &self.evaluation_policy)
-            .field("task_profile", &self.task_profile)
-            .field("model_profile", &self.model_profile)
+            .field("profile", &self.profile)
             .field("workers", &self.workers)
             .field("min_confirmation_depth", &self.min_confirmation_depth)
             .field(
@@ -266,17 +265,9 @@ impl PonLocalProviderEffectAdapter {
             .arg(operation)
             .arg("--development")
             .arg("--store")
-            .arg(&self.store)
-            .arg("--state-backend")
-            .arg(&self.state_backend)
-            .arg("--genesis-time")
-            .arg(self.genesis_time.to_string())
-            .arg("--evaluation-policy")
-            .arg(&self.evaluation_policy)
-            .arg("--task-profile")
-            .arg(&self.task_profile)
-            .arg("--model-profile")
-            .arg(&self.model_profile)
+            .arg(&self.store);
+        self.profile.append_arguments(&mut command);
+        command
             .arg("--workers")
             .arg(self.workers.to_string())
             .arg("--packet-stdin")
@@ -290,36 +281,7 @@ impl PonLocalProviderEffectAdapter {
         let Some(deadline) = Instant::now().checked_add(self.timeout) else {
             return PonInvocation::BeforeStart;
         };
-        if wire_payload.len() > 1024 * 1024 || self.validate_paths().is_err() {
-            return PonInvocation::BeforeStart;
-        }
-        let Ok(executable) = pon_executable::PinnedExecutable::prepare(
-            &self.binary,
-            self.binary_sha256.as_str(),
-            deadline,
-        ) else {
-            return PonInvocation::BeforeStart;
-        };
-        let Ok(runtime) = tokio::runtime::Handle::try_current() else {
-            return PonInvocation::BeforeStart;
-        };
-        // Provider methods enter here via their existing spawn_blocking scope.
-        // Hash/path verification is not preemptible, but no child may start if
-        // it consumed the original deadline. The entire pipe exchange uses the
-        // same deadline; stdout and stderr limits are equally authoritative.
-        match runtime.block_on(pon_process::run(
-            self.command(operation, executable.path()),
-            wire_payload,
-            deadline,
-            MAX_PON_PROCESS_OUTPUT_BYTES,
-        )) {
-            pon_process::Outcome::BeforeStart => PonInvocation::BeforeStart,
-            pon_process::Outcome::Unknown => PonInvocation::Unknown,
-            pon_process::Outcome::Complete(stdout) => match serde_json::from_slice(&stdout) {
-                Ok(value) => PonInvocation::Value(value),
-                Err(_) => PonInvocation::Unknown,
-            },
-        }
+        self.invoke_until(operation, wire_payload, deadline, /*execution*/ None)
     }
 
     fn block_digest(value: &Value) -> Option<Sha256Digest> {
@@ -346,7 +308,14 @@ impl PonLocalProviderEffectAdapter {
                 reason_code: "pon_packet_payload_binding_invalid".to_string(),
             };
         }
-        match self.invoke("submit", &wire_payload) {
+        Self::dispatch_outcome(intent, self.invoke("submit", &wire_payload))
+    }
+
+    fn dispatch_outcome(
+        intent: ProviderEffectIntent,
+        outcome: PonInvocation,
+    ) -> ProviderEffectDispatch {
+        match outcome {
             PonInvocation::BeforeStart => ProviderEffectDispatch::NotDispatched {
                 reason_code: "pon_local_owner_unavailable_before_start".to_string(),
             },
@@ -587,8 +556,18 @@ fn parse_pon_chain_observation(
         value => Some(value.as_u64()?),
     };
     let owner_generation = result.get("generation")?.as_u64()?;
+    // Native generation zero is the initial genesis head, with zero height
+    // and work. Only its explicit absent-packet shape is observable here;
+    // it cannot acknowledge a send or establish global absence.
     if owner_generation == 0
-        || active_membership_sql_budget != 1024
+        && (stored_exact
+            || active_tip_height != 0
+            || active_tip_chainwork_hex.bytes().any(|byte| byte != b'0')
+            || result.get("accepted_task") != Some(&Value::Null))
+    {
+        return None;
+    }
+    if active_membership_sql_budget != 1024
         || (!stored_exact
             && (block_height.is_some()
                 || block_chainwork_hex.is_some()
@@ -1095,11 +1074,13 @@ impl AgentdAutomationEffectHost {
             binary: config.chain_binary,
             binary_sha256: binary_digest,
             store: config.chain_store,
-            state_backend: config.chain_state_backend,
-            genesis_time: config.chain_genesis_time,
-            evaluation_policy: config.chain_evaluation_policy,
-            task_profile: config.chain_task_profile,
-            model_profile: config.chain_model_profile,
+            profile: crate::automation_effect_host::pon_profile::Profile::Development {
+                state_backend: config.chain_state_backend,
+                genesis_time: config.chain_genesis_time,
+                evaluation_policy: config.chain_evaluation_policy,
+                task_profile: config.chain_task_profile,
+                model_profile: config.chain_model_profile,
+            },
             workers: config.chain_workers,
             min_confirmation_depth: config.chain_min_confirmation_depth,
             min_confirmation_work_depth_hex: config.chain_min_confirmation_work_depth_hex,
@@ -1127,12 +1108,52 @@ impl AgentdAutomationEffectHost {
         command_id: &str,
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AgentdError> {
+        self.execute_wire(
+            store,
+            intent,
+            EffectWire::Inline(wire_payload),
+            signed_grant,
+            command_id,
+            now_ms,
+        )
+        .await
+    }
+
+    async fn execute_wire(
+        &self,
+        store: &AutomationStore,
+        intent: &AuthorizedEffectIntent,
+        wire: EffectWire<'_>,
+        signed_grant: &SignedFinalUseGrant,
+        command_id: &str,
+        now_ms: u64,
+    ) -> Result<TaskFlowStepReceipt, AgentdError> {
         if store.owner_agent_id() != &self.agent_id {
             return Err(AgentdError::GenerationFenced(
                 "automation effect store is owned by a different Agent".to_string(),
             ));
         }
-        self.validate_intent(intent, wire_payload)?;
+        let (wire_payload, packet_retention, packet_execution) = match wire {
+            EffectWire::Inline(bytes) => {
+                self.validate_intent(intent, bytes)?;
+                (bytes, None, None)
+            }
+            EffectWire::Packet(packet) => {
+                if !self.supports_packet_v1() {
+                    return Err(AgentdError::Invalid(
+                        "packet v1 requires a PQ PoN effect host".to_string(),
+                    ));
+                }
+                packet.execution().check().map_err(AgentdError::Protocol)?;
+                let bytes = packet.wire_payload();
+                self.validate_intent_binding(intent, bytes)?;
+                (
+                    bytes,
+                    Some(packet.retention()),
+                    Some(packet.execution().clone()),
+                )
+            }
+        };
         // Exact terminal readback mints no authority and must remain usable
         // after a grant expires or its issuer is revoked.
         if let Some(receipt) = store
@@ -1179,6 +1200,8 @@ impl AgentdAutomationEffectHost {
             lease,
             provider_scope: self.provider_scope.clone(),
             destination_id: self.destination_id.clone(),
+            packet_retention,
+            packet_execution,
         };
         store
             .execute_authorized_taskflow_effect(
@@ -1393,6 +1416,14 @@ impl AgentdAutomationEffectHost {
                 "automation effect wire payload is empty or too large".to_string(),
             ));
         }
+        self.validate_intent_binding(intent, wire_payload)
+    }
+
+    fn validate_intent_binding(
+        &self,
+        intent: &AuthorizedEffectIntent,
+        wire_payload: &[u8],
+    ) -> Result<(), AgentdError> {
         if intent.subject_id != self.agent_id.as_str()
             || intent.destination_id != self.destination_id
             || intent.final_use_scope_digest != self.final_use_scope_digest
@@ -1505,6 +1536,10 @@ struct AgentdAuthorizedEffectDriver {
     lease: pq::EffectDispatchLease,
     provider_scope: String,
     destination_id: String,
+    // Packet admission remains retained until the actual provider thread exits,
+    // even if the calling control connection no longer observes its result.
+    packet_retention: Option<Arc<tokio::sync::OwnedSemaphorePermit>>,
+    packet_execution: Option<crate::NeuralCognitiveExecutionV1>,
 }
 
 impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
@@ -1533,6 +1568,13 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
             return Err(AuthorizedEffectDriverError::BeforeProviderContact);
         }
         self.lease.check()?;
+        if self
+            .packet_execution
+            .as_ref()
+            .is_some_and(|execution| execution.check().is_err())
+        {
+            return Err(AuthorizedEffectDriverError::BeforeProviderContact);
+        }
         let expected = self.recovery_key(request.owner_agent_id, request.intent)?;
         let legacy = ProviderEffectKey::for_operation(
             &self.provider_scope,
@@ -1551,9 +1593,12 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
         let wire_payload = request.wire_payload.to_vec();
         let thread_intent = provider_intent.clone();
         let lease = self.lease.clone();
+        let packet_retention = self.packet_retention.clone();
+        let packet_execution = self.packet_execution.clone();
         let spawn = thread::Builder::new()
             .name("hepta-automation-provider-effect".to_string())
             .spawn(move || {
+                let _packet_retention = packet_retention;
                 let runtime = match tokio::runtime::Builder::new_current_thread()
                     .enable_all()
                     .build()
@@ -1561,12 +1606,26 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
                     Ok(runtime) => runtime,
                     Err(_) => return ProviderThreadOutcome::BeforeContact,
                 };
-                if lease.check().is_err() {
+                if lease.check().is_err()
+                    || packet_execution
+                        .as_ref()
+                        .is_some_and(|execution| execution.check().is_err())
+                {
                     return ProviderThreadOutcome::BeforeContact;
                 }
-                ProviderThreadOutcome::Dispatch(
-                    runtime.block_on(adapter.dispatch_with_payload(&thread_intent, &wire_payload)),
-                )
+                let dispatch = if let Some(execution) = packet_execution {
+                    let AgentdProviderEffectAdapter::Pon(adapter) = adapter else {
+                        return ProviderThreadOutcome::BeforeContact;
+                    };
+                    runtime.block_on(adapter.dispatch_packet(
+                        thread_intent,
+                        wire_payload,
+                        execution,
+                    ))
+                } else {
+                    runtime.block_on(adapter.dispatch_with_payload(&thread_intent, &wire_payload))
+                };
+                ProviderThreadOutcome::Dispatch(dispatch)
             })
             .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
         match spawn.join() {
@@ -1664,12 +1723,20 @@ fn read_revocations_file(path: &Path) -> Result<FinalUseRevocations, AgentdError
     Ok(serde_json::from_slice(&bytes)?)
 }
 
+#[cfg(any(unix, not(test)))]
 fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u8>, AgentdError> {
+    crate::protected_file::read(path, max_bytes)
+        .map_err(|error| AgentdError::Invalid(format!("{label}: {error}")))
+}
+
+// Retain the old non-Unix compatibility fixtures only in unit-test builds.
+// Ordinary PQ hosts on those platforms still fail closed in protected_file.
+#[cfg(all(test, not(unix)))]
+fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u8>, AgentdError> {
+    use std::io::Read;
     if !path.is_absolute() {
         return Err(AgentdError::Invalid(format!("{label} must be absolute")));
     }
-    // Reject special files before open as well as checking the opened file.
-    // All content and permission checks below refer to that same descriptor.
     let initial = fs::symlink_metadata(path)?;
     if !initial.is_file() || initial.file_type().is_symlink() {
         return Err(AgentdError::Invalid(format!(
@@ -1678,9 +1745,7 @@ fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u
     }
     let mut file = fs::File::open(path)?;
     let metadata = file.metadata()?;
-    let named = fs::symlink_metadata(path)?;
     if !metadata.is_file()
-        || named.file_type().is_symlink()
         || path.canonicalize()?.as_os_str() != path.as_os_str()
         || metadata.len() == 0
         || metadata.len() > max_bytes
@@ -1688,25 +1753,6 @@ fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u
         return Err(AgentdError::Invalid(format!(
             "{label} must be a bounded canonical regular file"
         )));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::MetadataExt;
-        let parent = fs::metadata(
-            path.parent()
-                .ok_or_else(|| AgentdError::Invalid(format!("{label} has no parent")))?,
-        )?;
-        if metadata.mode() & 0o077 != 0
-            || metadata.nlink() != 1
-            || metadata.dev() != named.dev()
-            || metadata.ino() != named.ino()
-            || metadata.uid() != parent.uid()
-            || parent.mode() & 0o022 != 0
-        {
-            return Err(AgentdError::Invalid(format!(
-                "{label} file identity or private ownership is unsafe"
-            )));
-        }
     }
     let mut bytes = Vec::new();
     file.by_ref().take(max_bytes + 1).read_to_end(&mut bytes)?;

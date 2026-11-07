@@ -32,6 +32,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         record: &AgentRecord,
         process_recovery: ProcessRecoveryStatus,
     ) -> Result<(), SupervisorError> {
+        if !self.registry.is_release_qualification() {
+            return self.recover_current_signed_intent(agent_id, slot, record, process_recovery);
+        }
         let intent = read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let Some(intent) = intent else {
@@ -73,6 +76,12 @@ impl<D: ProcessDriver> Supervisor<D> {
             // journal. Only a subsequently verified signed recovery decision
             // may close its transaction-before-intent crash cut.
             let terminal_status = if kind_matches
+                && (intent.pq_authority.is_none()
+                    || crate::signed_intent_policy::terminal_owner_matches(
+                        &intent,
+                        &transaction,
+                        record,
+                    ))
                 && (intent.status != SignedIntentStatus::Aborted
                     || transaction.recovery_decision_sha256.is_some())
                 && transaction.grant_sha256.as_ref() == Some(&intent.grant_sha256)

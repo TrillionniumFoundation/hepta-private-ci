@@ -98,7 +98,11 @@ tokio = { workspace = true, features = [
 ] }
 tokio-util = { workspace = true }
 
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs", "process"] }
+
 [dev-dependencies]
+codex-hepta-fleet = { workspace = true, features = ["qualification"] }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }

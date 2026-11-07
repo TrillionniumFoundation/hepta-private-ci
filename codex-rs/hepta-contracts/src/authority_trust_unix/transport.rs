@@ -1,8 +1,8 @@
 //! One bounded connection, with OS peer identity and absolute-deadline I/O.
-#[cfg(target_os = "linux")]
-pub(super) use linux::exchange;
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+pub(super) use supported::exchange;
 
-#[cfg(not(target_os = "linux"))]
+#[cfg(not(any(target_os = "linux", target_os = "macos")))]
 pub(super) fn exchange(
     _config: &super::UnixPqTrustEndpointConfig,
     _request: &[u8],
@@ -11,8 +11,8 @@ pub(super) fn exchange(
     Err(crate::AuthorityTrustError::Unavailable)
 }
 
-#[cfg(target_os = "linux")]
-mod linux {
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+mod supported {
     use super::super::MAX_RESPONSE_BYTES;
     use super::super::UnixPqTrustEndpointConfig;
     use crate::AuthorityTrustError;
@@ -22,6 +22,7 @@ mod linux {
     use rustix::event::poll;
     use rustix::net::AddressFamily;
     use rustix::net::SocketAddrUnix;
+    #[cfg(target_os = "linux")]
     use rustix::net::SocketFlags;
     use rustix::net::SocketType;
     use rustix::net::{self};
@@ -53,13 +54,7 @@ mod linux {
         {
             return Err(AuthorityTrustError::Invalid);
         }
-        let fd = net::socket_with(
-            AddressFamily::UNIX,
-            SocketType::STREAM,
-            SocketFlags::CLOEXEC | SocketFlags::NONBLOCK,
-            /*protocol*/ None,
-        )
-        .map_err(|_| AuthorityTrustError::Unavailable)?;
+        let fd = open_socket().map_err(|_| AuthorityTrustError::Unavailable)?;
         let address =
             SocketAddrUnix::new(&config.socket_path).map_err(|_| AuthorityTrustError::Invalid)?;
         match net::connect(&fd, &address) {
@@ -70,12 +65,17 @@ mod linux {
         net::sockopt::socket_error(&fd)
             .map_err(|_| AuthorityTrustError::Unavailable)?
             .map_err(|_| AuthorityTrustError::Unavailable)?;
-        if net::sockopt::socket_peercred(&fd)
+        #[cfg(target_os = "linux")]
+        let peer_uid = net::sockopt::socket_peercred(&fd)
             .map_err(|_| AuthorityTrustError::Unavailable)?
             .uid
-            .as_raw()
-            != config.peer_uid
-        {
+            .as_raw();
+        #[cfg(target_os = "macos")]
+        let peer_uid = nix::unistd::getpeereid(&fd)
+            .map_err(|_| AuthorityTrustError::Unavailable)?
+            .0
+            .as_raw();
+        if peer_uid != config.peer_uid {
             return Err(AuthorityTrustError::Invalid);
         }
         let mut stream = UnixStream::from(fd);
@@ -105,6 +105,34 @@ mod linux {
         read(&mut stream, &mut response, deadline)?;
         Ok(response)
     }
+    // Set descriptor ownership flags before the first connect. macOS does not
+    // expose Linux SOCK_CLOEXEC/SOCK_NONBLOCK, and blocking connect would bypass
+    // the absolute deadline enforced by the common poll/read/write path.
+    pub(super) fn open_socket() -> rustix::io::Result<std::os::fd::OwnedFd> {
+        #[cfg(target_os = "linux")]
+        {
+            net::socket_with(
+                AddressFamily::UNIX,
+                SocketType::STREAM,
+                SocketFlags::CLOEXEC | SocketFlags::NONBLOCK,
+                /*protocol*/ None,
+            )
+        }
+        #[cfg(target_os = "macos")]
+        {
+            let fd = net::socket(
+                AddressFamily::UNIX,
+                SocketType::STREAM,
+                /*protocol*/ None,
+            )?;
+            let descriptor_flags = rustix::io::fcntl_getfd(&fd)?;
+            rustix::io::fcntl_setfd(&fd, descriptor_flags | rustix::io::FdFlags::CLOEXEC)?;
+            let status_flags = rustix::fs::fcntl_getfl(&fd)?;
+            rustix::fs::fcntl_setfl(&fd, status_flags | rustix::fs::OFlags::NONBLOCK)?;
+            Ok(fd)
+        }
+    }
+
     fn wait(
         fd: &impl std::os::fd::AsFd,
         events: PollFlags,
@@ -155,3 +183,7 @@ mod linux {
         Ok(())
     }
 }
+
+#[cfg(all(test, any(target_os = "linux", target_os = "macos")))]
+#[path = "transport_tests.rs"]
+mod tests;

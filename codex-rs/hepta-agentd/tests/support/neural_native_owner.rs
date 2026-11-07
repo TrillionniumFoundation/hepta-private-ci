@@ -123,6 +123,7 @@ pub fn model(
         run_directory: input.output.join(format!("original-{name}-model-session")),
         source_pins,
         runtime_snapshot,
+        material_runtime_bridge: None,
         target_contract,
         wrapped_adapter,
         contract_digest: parent["contract"]

@@ -157,8 +157,12 @@ production Laya service. Selected model state and effect authority are unchanged
 
 ### PoN executable and bounded exchange boundary
 
-The explicit `trillionnium-pon-local-v1` provider still uses the existing
-TaskFlow effect owner and FinalUseAuthority. Before dispatch, its compiled
+The ordinary production PoN selector is `trillionnium-pon-local-npq6-v1`,
+under the protected schema-4 effect-host configuration with explicit
+`ml_dsa65_v2` authentication. The former `trillionnium-pon-local-v1` selector
+is available only to historical `cfg(test)` fixtures; the normal library
+rejects it. The NPQ6 provider uses the existing TaskFlow effect owner and
+FinalUseAuthority. Before dispatch, its compiled
 adapter copies bounded native executable bytes into one operation-local
 sealed object, seals before hashing, and compares the immutable bytes with
 the signed provider-contract binary digest. Invocation executes that held
@@ -185,6 +189,44 @@ exchange indefinitely, but this adapter does not supervise arbitrary
 descendants. Exact durable effect/payload identity and the separately
 validated height/work observation remain required. Chain generations and
 local final-use generations are different namespaces, not equal integers.
+
+The NPQ6 provider uses a protected, hash-pinned application configuration;
+it does not select settings from the receiver database or from a peer.
+Its signed provider contract contains all of the following fields:
+
+| Object | Required fields |
+| --- | --- |
+| `provider` | `provider_kind`, `chain_binary`, `chain_binary_sha256`, `chain_store`, `chain_application`, `chain_workers`, `chain_min_confirmation_depth`, `chain_min_confirmation_work_depth_hex`, `timeout_ms` |
+| `provider.chain_application` | `configuration`, `configuration_sha256`, `application_profile`, `network`, `parameters`, `genesis`, `network_policy`, `owner` |
+| `provider.chain_application.owner` | `profile: "network_v2"`, or `profile: "witness_v4"` together with `writer_key` |
+
+The application profile is exactly `pon-native-pq-application-v6`. The
+configuration file uses `native-pq-application-local-config-v1`; its raw SHA-256,
+network, parameters, genesis, network policy and owner profile must match the
+signed provider fields. The Chain entry reconstructs the original NPQ6
+Settings and current role roots and opens an already initialized matching
+owner. It refuses missing or incompatible stores without creating, migrating
+or reseeding them. Original packet bytes are submitted unchanged.
+
+The outer schema-4 envelope additionally requires `provider_scope`,
+`destination_id`, `final_use_scope_sha256`, `contract_id`, `contract_sha256`,
+`contract_authority_epoch`, `contract_signature`, `contract_key` and `final_use`.
+The contract statement uses the `hepta.agentd.pon-provider-contract.pq.npq6.v1`
+domain followed by a NUL byte and the exact typed provider/context JSON.
+Use the actual [provider DTO](../../../codex-rs/hepta-agentd/src/automation_effect_host_pq.rs)
+and [application binding](../../../codex-rs/hepta-agentd/src/automation_effect_host_pon_profile.rs)
+when constructing this envelope. This field reference is not a runnable,
+independently authorized deployment configuration: actual signatures, keys,
+current authority state and the complete existing `final_use` configuration
+must come from their admitted owners. Controlled test signers do not supply
+that deployment authority.
+
+After the child starts, absent, duplicate, unknown or mismatched readback
+context remains Unknown. An acknowledgement requires the pinned application
+context, SHA-256 of the original packet bytes and consistent block identity
+alongside the original height/work checks. The readback is an observation of
+the pinned local executable, not an independently signed authorization token.
+The native controls and independent deployment qualifications remain separate.
 
 Native ELF fixture tests run through the real invoke/dispatch methods for
 blocked stdin, EOF, independent output limits, descendant-held pipes,

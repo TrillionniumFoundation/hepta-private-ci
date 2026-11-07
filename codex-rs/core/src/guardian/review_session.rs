@@ -644,6 +644,12 @@ impl GuardianReviewSessionManager {
         if keep_review_session && matches!(outcome, GuardianReviewSessionOutcome::Completed(_)) {
             trunk.refresh_last_committed_fork_snapshot().await;
         }
+        if !keep_review_session {
+            // Invalidate this exact trunk before releasing its permit. Removing
+            // the cached Arc awaits a lock and can be cancelled; neither that
+            // window nor an already-cloned Arc may make a failed owner reusable.
+            trunk.review_lock.close();
+        }
         drop(trunk_guard);
 
         if keep_review_session {
@@ -1304,9 +1310,41 @@ async fn wait_for_guardian_review(
                 .is_ok();
                 return (GuardianReviewSessionOutcome::Aborted, keep_review_session, false);
             }
-            event = review_session.io.next_event() => {
+            delivery = review_session.io.next_event_with_completion() => {
+                let event = match delivery {
+                    Ok(delivery) => {
+                        if !event_matches_turn(&delivery.event, expected_turn_id) {
+                            continue;
+                        }
+                        if matches!(&delivery.event.msg, EventMsg::TurnComplete(_) | EventMsg::TurnAborted(_)) {
+                            if !delivery.terminalization.is_owner_bound() {
+                                return (
+                                    GuardianReviewSessionOutcome::SessionFailed {
+                                        error: anyhow!("guardian terminal event is missing its owner completion"),
+                                        error_info: None,
+                                    },
+                                    false,
+                                    false,
+                                );
+                            }
+                            // Receiving the terminal event precedes its owner's final
+                            // persistence, recovery and idle publication. Keep the exact
+                            // delivered witness until that owner has retired its fence.
+                            if let Err(outcome) = run_before_review_deadline(
+                                deadline,
+                                external_cancel,
+                                delivery.terminalization.wait(),
+                            ).await {
+                                // This terminal event has already been consumed. Do not
+                                // drain for a second event or reuse its unfinished owner.
+                                return (outcome, false, false);
+                            }
+                        }
+                        Ok(delivery.event)
+                    }
+                    Err(error) => Err(error),
+                };
                 match event {
-                    Ok(event) if !event_matches_turn(&event, expected_turn_id) => {}
                     Ok(event) if matches!(&event.msg, EventMsg::ItemCompleted(_)) => {
                         review_session.admit_node_repl_evidence(&event).await;
                     }
@@ -1501,7 +1539,8 @@ async fn interrupt_and_drain_turn(
 
     tokio::time::timeout(GUARDIAN_INTERRUPT_DRAIN_TIMEOUT, async {
         loop {
-            let event = review_session.io.next_event().await?;
+            let delivery = review_session.io.next_event_with_completion().await?;
+            let event = delivery.event;
             if !event_matches_turn(&event, expected_turn_id) {
                 continue;
             }
@@ -1510,6 +1549,14 @@ async fn interrupt_and_drain_turn(
                 event.msg,
                 EventMsg::TurnAborted(_) | EventMsg::TurnComplete(_)
             ) {
+                if !delivery.terminalization.is_owner_bound() {
+                    return Err(anyhow!(
+                        "guardian terminal event is missing its owner completion"
+                    ));
+                }
+                // The existing drain timeout includes the exact owner's completion;
+                // an observed terminal notification alone never permits reuse.
+                delivery.terminalization.wait().await;
                 return Ok::<(), anyhow::Error>(());
             }
         }
@@ -1531,7 +1578,7 @@ mod tests {
     use codex_protocol::protocol::TurnAbortedEvent;
     use codex_protocol::protocol::TurnCompleteEvent;
 
-    async fn test_review_session() -> (
+    pub(super) async fn test_review_session() -> (
         GuardianReviewSession,
         crate::event_delivery::EventSender,
         async_channel::Receiver<Submission>,
@@ -1572,12 +1619,12 @@ mod tests {
         )
     }
 
-    fn turn_complete_event(
+    pub(super) fn turn_complete_event(
         turn_id: &str,
         last_agent_message: Option<&str>,
         time_to_first_token_ms: Option<i64>,
-    ) -> Event {
-        Event {
+    ) -> crate::EventDelivery {
+        completed_terminal_event(Event {
             id: turn_id.to_string(),
             msg: EventMsg::TurnComplete(TurnCompleteEvent {
                 turn_id: turn_id.to_string(),
@@ -1588,11 +1635,11 @@ mod tests {
                 duration_ms: None,
                 time_to_first_token_ms,
             }),
-        }
+        })
     }
 
-    fn turn_aborted_event(turn_id: &str) -> Event {
-        Event {
+    pub(super) fn turn_aborted_event(turn_id: &str) -> crate::EventDelivery {
+        completed_terminal_event(Event {
             id: turn_id.to_string(),
             msg: EventMsg::TurnAborted(TurnAbortedEvent {
                 turn_id: Some(turn_id.to_string()),
@@ -1601,10 +1648,19 @@ mod tests {
                 completed_at: None,
                 duration_ms: None,
             }),
+        })
+    }
+
+    fn completed_terminal_event(event: Event) -> crate::EventDelivery {
+        let completion = crate::state::StartTransitionCompletion::new();
+        completion.complete();
+        crate::EventDelivery {
+            event,
+            terminalization: crate::event_delivery::TerminalEventCompletion::owned(completion),
         }
     }
 
-    async fn test_review_params() -> GuardianReviewSessionParams {
+    pub(super) async fn test_review_params() -> GuardianReviewSessionParams {
         let (session, turn) = crate::session::tests::make_session_and_context().await;
         let model = turn.model_info.slug.clone();
         let reasoning_effort = turn.reasoning_effort.clone();
@@ -2210,11 +2266,11 @@ mod tests {
             }))
             .expect("reply to guardian submission");
         tx_event
-            .send(turn_complete_event("prior-turn", Some("stale"), Some(9)))
+            .send_delivery(turn_complete_event("prior-turn", Some("stale"), Some(9)))
             .await
             .expect("queue prior turn completion");
         tx_event
-            .send(turn_complete_event(id.as_str(), Some("fresh"), Some(42)))
+            .send_delivery(turn_complete_event(id.as_str(), Some("fresh"), Some(42)))
             .await
             .expect("queue submitted turn completion");
 
@@ -2274,11 +2330,11 @@ mod tests {
     async fn wait_for_guardian_review_ignores_prior_turn_completion() {
         let (review_session, tx_event, _rx_sub) = test_review_session().await;
         tx_event
-            .send(turn_complete_event("prior-turn", Some("stale"), Some(9)))
+            .send_delivery(turn_complete_event("prior-turn", Some("stale"), Some(9)))
             .await
             .expect("queue prior turn completion");
         tx_event
-            .send(turn_complete_event("current-turn", Some("fresh"), Some(42)))
+            .send_delivery(turn_complete_event("current-turn", Some("fresh"), Some(42)))
             .await
             .expect("queue current turn completion");
 
@@ -2315,7 +2371,7 @@ mod tests {
             .await
             .expect("queue prior turn error");
         tx_event
-            .send(turn_complete_event(
+            .send_delivery(turn_complete_event(
                 "current-turn",
                 /*last_agent_message*/ None,
                 Some(42),
@@ -2356,7 +2412,7 @@ mod tests {
             .await
             .expect("queue guardian error");
         tx_event
-            .send(turn_complete_event(
+            .send_delivery(turn_complete_event(
                 "current-turn",
                 /*last_agent_message*/ None,
                 Some(42),
@@ -2387,11 +2443,11 @@ mod tests {
     async fn wait_for_guardian_review_ignores_prior_turn_aborts() {
         let (review_session, tx_event, _rx_sub) = test_review_session().await;
         tx_event
-            .send(turn_aborted_event("prior-turn"))
+            .send_delivery(turn_aborted_event("prior-turn"))
             .await
             .expect("queue prior turn abort");
         tx_event
-            .send(turn_complete_event("current-turn", Some("fresh"), Some(42)))
+            .send_delivery(turn_complete_event("current-turn", Some("fresh"), Some(42)))
             .await
             .expect("queue current turn completion");
 
@@ -2418,7 +2474,7 @@ mod tests {
     async fn wait_for_guardian_review_timeout_drains_expected_turn_after_stale_terminal_event() {
         let (review_session, tx_event, rx_sub) = test_review_session().await;
         tx_event
-            .send(turn_complete_event("prior-turn", Some("stale"), Some(9)))
+            .send_delivery(turn_complete_event("prior-turn", Some("stale"), Some(9)))
             .await
             .expect("queue prior turn completion");
         let tx_interrupt_event = tx_event.clone();
@@ -2426,7 +2482,7 @@ mod tests {
             let submission = rx_sub.recv().await.expect("interrupt submission");
             assert!(matches!(submission.op, Op::Interrupt));
             tx_interrupt_event
-                .send(turn_aborted_event("current-turn"))
+                .send_delivery(turn_aborted_event("current-turn"))
                 .await
                 .expect("queue current turn abort");
         });
@@ -2453,7 +2509,7 @@ mod tests {
     async fn wait_for_guardian_review_cancel_drains_expected_turn_after_stale_terminal_event() {
         let (review_session, tx_event, rx_sub) = test_review_session().await;
         tx_event
-            .send(turn_complete_event("prior-turn", Some("stale"), Some(9)))
+            .send_delivery(turn_complete_event("prior-turn", Some("stale"), Some(9)))
             .await
             .expect("queue prior turn completion");
         let tx_interrupt_event = tx_event.clone();
@@ -2461,7 +2517,7 @@ mod tests {
             let submission = rx_sub.recv().await.expect("interrupt submission");
             assert!(matches!(submission.op, Op::Interrupt));
             tx_interrupt_event
-                .send(turn_aborted_event("current-turn"))
+                .send_delivery(turn_aborted_event("current-turn"))
                 .await
                 .expect("queue current turn abort");
         });
@@ -2490,11 +2546,11 @@ mod tests {
     async fn interrupt_and_drain_turn_ignores_prior_turn_completion() {
         let (review_session, tx_event, _rx_sub) = test_review_session().await;
         tx_event
-            .send(turn_complete_event("prior-turn", Some("stale"), Some(9)))
+            .send_delivery(turn_complete_event("prior-turn", Some("stale"), Some(9)))
             .await
             .expect("queue prior turn completion");
         tx_event
-            .send(turn_aborted_event("current-turn"))
+            .send_delivery(turn_aborted_event("current-turn"))
             .await
             .expect("queue current turn abort");
 
@@ -2505,3 +2561,11 @@ mod tests {
         assert!(review_session.io.rx_event.try_recv().is_err());
     }
 }
+
+#[cfg(test)]
+#[path = "review_session_terminalization_tests.rs"]
+mod terminalization_tests;
+
+#[cfg(test)]
+#[path = "review_session_trunk_tests.rs"]
+mod trunk_tests;

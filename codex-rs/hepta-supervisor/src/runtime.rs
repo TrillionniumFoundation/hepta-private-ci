@@ -163,6 +163,9 @@ pub(crate) struct AgentSlot<P> {
     /// Durable witness for the one externally-authorized release mutation
     /// currently being processed, if any.
     pub signed_intent: Option<SignedSupervisorIntent>,
+    /// Local bytes alone cannot clear an unconfirmed external publication.
+    /// This fence never changes the retained signed intent or its history.
+    pub intent_publication_fenced: bool,
 }
 
 impl<P> AgentSlot<P> {
@@ -184,6 +187,7 @@ impl<P> AgentSlot<P> {
             logs: BoundedQueue::new(config.log_capacity),
             release_transaction: None,
             signed_intent: None,
+            intent_publication_fenced: false,
         }
     }
 

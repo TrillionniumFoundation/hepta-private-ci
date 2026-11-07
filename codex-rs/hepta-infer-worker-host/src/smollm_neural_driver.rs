@@ -57,8 +57,8 @@ pub use measurement::SmolLmMeasuredForwardV1;
 pub use measurement::SmolLmMeasuredLoadV1;
 use profile::NoAuthority;
 use profile::PROFILE;
-use profile::Ready;
 use profile::SCHEMA;
+pub use profile::SmolLmMaterialRuntimeBridgeV1;
 pub use profile::SmolLmNeuralReadConfigV1;
 use session::Session;
 use session::write_private;
@@ -191,6 +191,9 @@ impl SmolLmDriver {
             &config.runtime_snapshot,
         )?;
         write_private(&root.join("source-pins.json"), &source_pins)?;
+        if let Some(plan) = config.bridge_material_plan() {
+            write_private(&root.join("material-plan.json"), plan)?;
+        }
         let log = OpenOptions::new()
             .write(true)
             .create_new(true)
@@ -217,10 +220,16 @@ impl SmolLmDriver {
             "pycache_prefix={}",
             root.join("unused-python-bytecode").display()
         ));
+        command.arg(&config.script).arg(config.serve_command());
+        if let Some(plan) = config.bridge_material_plan() {
+            command
+                .arg("--material-plan")
+                .arg(root.join("material-plan.json"))
+                .arg("--material-plan-sha256")
+                .arg(Digest32::of_bytes(plan).to_string());
+        }
         session.spawn(
             command
-                .arg(&config.script)
-                .arg("serve")
                 .arg("--source-pins")
                 .arg(root.join("source-pins.json"))
                 .arg("--source-pins-sha256")
@@ -258,12 +267,12 @@ impl SmolLmDriver {
             .as_mut()
             .ok_or("neural session missing")?
             .wait_ready(&startup_execution)?;
-        let ready: Ready = serde_json::from_slice(&raw_ready).map_err(|error| error.to_string())?;
+        let ready = config.decode_ready(&raw_ready)?;
         let mut sources = config.source_identities()?;
         let worker_source = sources
             .remove("llm_neural_read_worker.py")
             .ok_or("worker source pin")?;
-        if ready.schema != SCHEMA
+        if ready.schema != config.ready_schema()
             || ready.actual_loaded_parent != config.adapter_digest.to_string()
             || ready.file_sha256 != self.pin.payload_digest.to_string()
             || ready.contract != config.contract_digest.to_string()

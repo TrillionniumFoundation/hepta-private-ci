@@ -44,7 +44,11 @@ fn external_learning_floor_is_typed_exact_and_retains_rotation_after_client_rest
                 }
                 PqTrustOperationV2::ClockNow
                 | PqTrustOperationV2::FrontierLoad { .. }
-                | PqTrustOperationV2::FrontierCompareAndSet { .. } => PqTrustOutcomeV2::Unavailable,
+                | PqTrustOperationV2::FrontierCompareAndSet { .. }
+                | PqTrustOperationV2::ReleaseFrontierLoad { .. }
+                | PqTrustOperationV2::ReleaseFrontierCompareAndSet { .. } => {
+                    PqTrustOutcomeV2::Unavailable
+                }
             };
             signed(request, outcome, key)
         },

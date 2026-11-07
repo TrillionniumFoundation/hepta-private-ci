@@ -19,6 +19,17 @@ use crate::runtime::ReleaseChange;
 use crate::runtime::ReleaseChangePhase;
 
 impl<D: ProcessDriver> Supervisor<D> {
+    fn is_unregistered_qualification_release(&self, release: &AgentRelease) -> bool {
+        self.registry.is_release_qualification()
+            && std::fs::symlink_metadata(
+                self.registry
+                    .layout()
+                    .releases_root()
+                    .join(release.release_id().as_str()),
+            )
+            .is_err_and(|error| error.kind() == std::io::ErrorKind::NotFound)
+    }
+
     /// Re-admit a release at the final-use boundary. Product/catalog releases
     /// must still exist, remain allowed, and not be revoked. Direct in-process
     /// qualification fixtures historically use unregistered AgentRelease
@@ -28,12 +39,19 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         release: &AgentRelease,
     ) -> Result<AgentRelease, SupervisorError> {
+        if self.is_unregistered_qualification_release(release) {
+            return Ok(release.clone());
+        }
         match self
             .registry
             .resolve_release(agent_id, release.release_id())
         {
             Ok(current) => AgentRelease::try_from(current),
-            Err(FleetRegistryError::UnknownRelease(_)) => Ok(release.clone()),
+            Err(FleetRegistryError::UnknownRelease(_))
+                if self.registry.is_release_qualification() =>
+            {
+                Ok(release.clone())
+            }
             Err(error) => Err(error.into()),
         }
     }
@@ -43,12 +61,47 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         release: &AgentRelease,
     ) -> Result<Option<codex_hepta_fleet::ReleaseBinding>, SupervisorError> {
+        if self.is_unregistered_qualification_release(release) {
+            return Ok(None);
+        }
         match self
             .registry
             .resolve_release_binding(agent_id, release.release_id())
         {
             Ok(binding) => Ok(Some(binding)),
-            Err(FleetRegistryError::UnknownRelease(_)) => Ok(None),
+            Err(FleetRegistryError::UnknownRelease(_))
+                if self.registry.is_release_qualification() =>
+            {
+                Ok(None)
+            }
+            Err(error) => Err(error.into()),
+        }
+    }
+
+    pub(crate) fn admit_release_for_process(
+        &self,
+        agent_id: &AgentId,
+        release: &AgentRelease,
+    ) -> Result<
+        (
+            AgentRelease,
+            Option<codex_hepta_fleet::CurrentReleaseAdmission>,
+        ),
+        SupervisorError,
+    > {
+        if self.is_unregistered_qualification_release(release) {
+            return Ok((release.clone(), None));
+        }
+        match self.registry.admit_release(agent_id, release.release_id()) {
+            Ok(admission) => {
+                let current = AgentRelease::try_from(admission.release().clone())?;
+                Ok((current, Some(admission)))
+            }
+            Err(FleetRegistryError::UnknownRelease(_))
+                if self.registry.is_release_qualification() =>
+            {
+                Ok((release.clone(), None))
+            }
             Err(error) => Err(error.into()),
         }
     }
@@ -395,7 +448,21 @@ impl<D: ProcessDriver> Supervisor<D> {
         {
             return Ok(());
         }
-        let actual = self.record(agent_id)?.release_state;
+        let record = self.record(agent_id)?;
+        let actual = record.release_state.clone();
+        let release_admission = slot
+            .active_release
+            .as_ref()
+            .map(|release| self.admit_release_for_process(agent_id, release))
+            .transpose()?;
+        crate::signed_intent_policy::revalidate_process_admission(
+            release_admission
+                .as_ref()
+                .and_then(|(_, guard)| guard.as_ref()),
+            slot.signed_intent.as_ref(),
+            &record,
+            self.registry.is_release_qualification(),
+        )?;
         slot.release_state_generation = actual.generation;
         if actual.current == current && actual.previous == previous {
             return Ok(());

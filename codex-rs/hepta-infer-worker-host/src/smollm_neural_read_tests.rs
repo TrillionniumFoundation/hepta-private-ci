@@ -365,6 +365,7 @@ fn controlled_start_inputs(
         source_pins,
         runtime_snapshot: b"explicit unexecuted runtime snapshot fixture; not model evidence"
             .to_vec(),
+        material_runtime_bridge: None,
         target_contract: b"controlled sidecar fixture".to_vec(),
         wrapped_adapter: b"controlled wrapper fixture".to_vec(),
         contract_digest: Digest32::of_bytes(b"contract"),
@@ -690,6 +691,7 @@ fn passive_failure_snapshot_survives_closed_admission_but_refuses_busy_and_poiso
         run_directory: PathBuf::new(),
         source_pins: BTreeMap::new(),
         runtime_snapshot: Vec::new(),
+        material_runtime_bridge: None,
         target_contract: vec![],
         wrapped_adapter: vec![],
         contract_digest: digest,

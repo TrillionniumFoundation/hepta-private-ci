@@ -1,4 +1,3 @@
-use std::io::ErrorKind;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
@@ -13,6 +12,7 @@ use codex_hepta_matrix_protocol::MatrixBindingV1;
 use codex_hepta_matrix_protocol::matrix_binding_digest;
 
 use crate::Adoption;
+use crate::AgentRelease;
 use crate::ManagedProcess;
 use crate::MatrixAdoptSpec;
 use crate::MatrixSpawnSpec;
@@ -54,14 +54,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             reset_matrix_restart_budget(slot);
             return;
         };
-        let Some(command) = release.matrixd_command().cloned() else {
+        if release.matrixd_command().is_none() {
             slot.matrix.configured = false;
             slot.matrix.degraded = false;
             slot.matrix.last_error = None;
             reset_matrix_restart_budget(slot);
             let _ = self.persist_restart_budget(agent_id, slot);
             return;
-        };
+        }
         slot.matrix.configured = true;
         if slot.matrix.runtime.is_some() || slot.matrix.restart_exhausted {
             return;
@@ -91,6 +91,25 @@ impl<D: ProcessDriver> Supervisor<D> {
                 return;
             }
         };
+        if !self.registry.is_release_qualification()
+            && (record.release_state.current.as_ref() != Some(release.release_id())
+                || self.registry.is_release_intent_reconciliation()
+                || slot.intent_publication_fenced
+                || slot
+                    .signed_intent
+                    .as_ref()
+                    .is_some_and(crate::SignedSupervisorIntent::requires_recovery))
+        {
+            self.degrade_matrix(
+                agent_id,
+                slot,
+                attached_agent_generation,
+                "Matrix requires the exact committed current release and a resolved signed intent"
+                    .to_string(),
+                now,
+            );
+            return;
+        }
         let binding = match load_binding(&record, agent_id) {
             Ok(Some(binding)) => binding,
             Ok(None) => {
@@ -164,6 +183,30 @@ impl<D: ProcessDriver> Supervisor<D> {
                 return;
             }
         }
+        let (release, release_admission) = match self.admit_release_for_process(agent_id, &release)
+        {
+            Ok(current) => current,
+            Err(error) => {
+                self.degrade_matrix(
+                    agent_id,
+                    slot,
+                    attached_agent_generation,
+                    error.to_string(),
+                    now,
+                );
+                return;
+            }
+        };
+        let Some(command) = release.matrixd_command().cloned() else {
+            self.degrade_matrix(
+                agent_id,
+                slot,
+                attached_agent_generation,
+                "current publisher release has no Matrix companion".to_string(),
+                now,
+            );
+            return;
+        };
         let spec = MatrixSpawnSpec {
             agent_id: agent_id.clone(),
             agent_generation: attached_agent_generation,
@@ -180,6 +223,21 @@ impl<D: ProcessDriver> Supervisor<D> {
             logs_root: record.layout.logs_root().to_path_buf(),
             command,
         };
+        if let Err(error) = crate::signed_intent_policy::revalidate_process_admission(
+            release_admission.as_ref(),
+            slot.signed_intent.as_ref(),
+            &record,
+            self.registry.is_release_qualification(),
+        ) {
+            self.degrade_matrix(
+                agent_id,
+                slot,
+                attached_agent_generation,
+                error.to_string(),
+                now,
+            );
+            return;
+        }
         let mut spawned = match self.driver.spawn_matrixd(&spec) {
             Ok(spawned) => spawned,
             Err(error) => {
@@ -285,16 +343,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "Matrix lease binding digest is stale".to_string(),
             ));
         }
-        let Some(release) = slot.active_release.as_ref() else {
-            return Err(SupervisorError::CorruptLease(
-                "Matrix lease exists without an active release".to_string(),
-            ));
-        };
-        if release.release_id() != &lease.release_id || release.matrixd_command().is_none() {
-            return Err(SupervisorError::CorruptLease(
-                "Matrix lease release is not the active companion bundle".to_string(),
-            ));
-        }
         let agent_is_exact = slot.runtime.as_ref().is_some_and(|runtime| {
             !runtime.fenced
                 && runtime.spawn_generation == lease.attached_agent_generation
@@ -312,12 +360,55 @@ impl<D: ProcessDriver> Supervisor<D> {
             control_socket: record.layout.matrixd_control_socket().to_path_buf(),
             identity: lease.identity.clone(),
         };
+        // Publisher/restore failure may have cleared the cached release. Still
+        // discover the companion's exact durable identity and contain it below.
+        let release_admission = match slot.active_release.as_ref() {
+            Some(release) if release.release_id() == &lease.release_id => {
+                self.admit_release_for_process(agent_id, release)
+            }
+            Some(_) => Err(SupervisorError::CorruptLease(
+                "Matrix lease release is not the active companion bundle".to_string(),
+            )),
+            None => self
+                .registry
+                .admit_release(agent_id, &lease.release_id)
+                .map_err(SupervisorError::from)
+                .and_then(|guard| {
+                    Ok((
+                        AgentRelease::try_from(guard.release().clone())?,
+                        Some(guard),
+                    ))
+                }),
+        }
+        .and_then(|(current, guard)| {
+            if !self.registry.is_release_qualification()
+                && record.release_state.current.as_ref() != Some(current.release_id())
+            {
+                return Err(SupervisorError::CorruptLease(
+                    "Matrix release lacks the exact committed current selection".to_string(),
+                ));
+            }
+            if current.matrixd_command().is_none() {
+                return Err(SupervisorError::CorruptLease(
+                    "current publisher release has no Matrix companion".to_string(),
+                ));
+            }
+            let intent = crate::signed_intent::read_intent(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            crate::signed_intent_policy::revalidate_process_admission(
+                guard.as_ref(),
+                intent.as_ref(),
+                record,
+                self.registry.is_release_qualification(),
+            )?;
+            Ok(guard)
+        });
         match self
             .driver
             .adopt_matrixd(&spec)
             .map_err(|error| driver_error(agent_id, error))?
         {
-            Adoption::Adopted(process) if agent_is_exact => {
+            Adoption::Adopted(process) if agent_is_exact && release_admission.is_ok() => {
                 slot.matrix.configured = true;
                 slot.matrix.runtime = Some(MatrixRuntime {
                     process,
@@ -369,7 +460,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                     agent_id,
                     slot,
                     record.lifecycle.generation,
-                    "Matrix orphan was attached to a non-running agent generation".to_string(),
+                    release_admission.as_ref().err().map_or_else(
+                        || {
+                            "Matrix orphan was attached to a non-running agent generation"
+                                .to_string()
+                        },
+                        |error| format!("Matrix current publication rejected: {error}"),
+                    ),
                     now,
                 );
                 slot.event(
@@ -770,21 +867,24 @@ fn load_binding(
     agent_id: &AgentId,
 ) -> Result<Option<MatrixBindingV1>, SupervisorError> {
     let path = record.layout.matrix_public_binding();
-    let metadata = match std::fs::symlink_metadata(path) {
-        Ok(metadata) => metadata,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
+    let bytes = crate::bounded_regular_file::read_optional(path, MAX_MATRIX_BINDING_BYTES)
+        .map_err(|error| {
+            let invalid = error.kind() == std::io::ErrorKind::InvalidData;
+            #[cfg(unix)]
+            let invalid = invalid || error.raw_os_error() == Some(libc::ELOOP);
+            if invalid {
+                SupervisorError::Invalid(format!(
+                    "Matrix public binding is not a bounded regular file: {}",
+                    path.display()
+                ))
+            } else {
+                error.into()
+            }
+        })?;
+    let Some(bytes) = bytes else {
+        return Ok(None);
     };
-    if !metadata.file_type().is_file()
-        || metadata.file_type().is_symlink()
-        || metadata.len() > MAX_MATRIX_BINDING_BYTES
-    {
-        return Err(SupervisorError::Invalid(format!(
-            "Matrix public binding is not a bounded regular file: {}",
-            path.display()
-        )));
-    }
-    let binding: MatrixBindingV1 = serde_json::from_slice(&std::fs::read(path)?)
+    let binding: MatrixBindingV1 = serde_json::from_slice(&bytes)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     binding
         .validate()

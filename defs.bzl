@@ -199,6 +199,7 @@ def codex_rust_crate(
         integration_compile_data_extra = [],
         integration_test_args = [],
         integration_test_dependency_replacements = {},
+        integration_tests_exclude = [],
         unit_test_args = [],
         unit_test_runfile_env = {},
         unit_test_dependency_replacements = {},
@@ -252,6 +253,8 @@ def codex_rust_crate(
         integration_test_dependency_replacements: Test-only workspace dependency
             variants keyed by the exact integration test file stem. These affect
             only that test harness, never the product library or spawned binaries.
+        integration_tests_exclude: Test source paths handled by explicit rules,
+            such as a dedicated test-only Cargo feature and binary closure.
         unit_test_args: Optional args for the unit test binary.
         unit_test_runfile_env: Binary runfiles exported to the unit-test launcher.
         binary_test_target_compatible_with: Platform constraints for binary unit tests.
@@ -530,7 +533,7 @@ def codex_rust_crate(
     if integration_test_timeout:
         integration_test_kwargs["timeout"] = integration_test_timeout
 
-    integration_tests = native.glob(["tests/*.rs"], allow_empty = True)
+    integration_tests = native.glob(["tests/*.rs"], exclude = integration_tests_exclude, allow_empty = True)
     for test_file_stem in integration_test_dependency_replacements:
         if "tests/" + test_file_stem + ".rs" not in integration_tests:
             fail("Unknown integration test dependency replacement: " + test_file_stem)
@@ -542,10 +545,20 @@ def codex_rust_crate(
         if not test_name.endswith("-test"):
             test_name += "-test"
         windows_cross_test_binary = test_name + "-windows-cross-bin"
+        integration_replacements = integration_test_dependency_replacements.get(test_file_stem, {})
+        normalized_replacements = {Label(original): replacement for original, replacement in integration_replacements.items()}
+        self_library = Label("//{}:{}".format(native.package_name(), name))
+
+        # The injected owner library must use the same physical test dependency
+        # types as the harness. Preserve build scripts and other local deps.
+        integration_maybe_deps = [
+            normalized_replacements.get(self_library, dependency) if dependency == name else dependency
+            for dependency in maybe_deps
+        ]
         integration_deps = rust_test_dependencies(
-            integration_test_dependency_replacements.get(test_file_stem, {}),
+            integration_replacements,
             normal_dev = True,
-        ) + maybe_deps + deps_extra
+        ) + integration_maybe_deps + deps_extra
 
         test_kwargs = {}
         test_kwargs.update(integration_test_kwargs)

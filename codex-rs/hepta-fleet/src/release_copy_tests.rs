@@ -11,7 +11,7 @@ fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
     std::fs::write(&source, content)?;
     set_mode(&source, /*mode*/ 0o555)?;
     let root = HeptaFleetRoot::parse(temporary.path().join("fleet"))?;
-    let registry = FleetRegistry::initialize(root.clone())?;
+    let registry = FleetRegistry::initialize_for_qualification(root.clone())?;
     let release_id = ReleaseId::parse("readonly-source")?;
     let installed = registry.install_release_bundle(
         release_id.clone(),
@@ -23,9 +23,12 @@ fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
     let matrixd = installed.matrixd.as_ref().ok_or("missing matrixd")?;
     for path in [&source, &installed.program, &matrixd.program] {
         assert_eq!(std::fs::read(path)?, content);
-        validate_immutable_regular_file(path, /*executable*/ true)?;
+        assert_eq!(
+            catalog_io::read(path, content.len() as u64, catalog_io::FileRule::Executable)?,
+            content
+        );
     }
-    let reopened = FleetRegistry::open_existing(root)?;
+    let reopened = FleetRegistry::open_existing_for_qualification(root)?;
     assert!(matches!(
         reopened.install_release(release_id, &source, Vec::new()),
         Err(FleetRegistryError::Invalid(_))
@@ -54,7 +57,7 @@ fn unsealed_final_name_never_grants_admission_even_after_reopen()
     let source = temporary.path().join("source-program");
     std::fs::write(&source, b"sealed program bytes")?;
     let root = HeptaFleetRoot::parse(temporary.path().join("fleet"))?;
-    let registry = FleetRegistry::initialize(root.clone())?;
+    let registry = FleetRegistry::initialize_for_qualification(root.clone())?;
     let workspace = temporary.path().join("workspace");
     std::fs::create_dir(&workspace)?;
     let workspace = workspace.canonicalize()?;
@@ -76,8 +79,15 @@ fn unsealed_final_name_never_grants_admission_even_after_reopen()
     // Model the post-rename/pre-seal residue without granting a repair API.
     // Even a pre-existing allow marker cannot make this name admissible.
     set_mode(&final_root, /*mode*/ 0o755)?;
-    validate_immutable_regular_file(&installed.program, /*executable*/ true)?;
-    let reopened = FleetRegistry::open_existing(root)?;
+    assert_eq!(
+        catalog_io::read(
+            &installed.program,
+            b"sealed program bytes".len() as u64,
+            catalog_io::FileRule::Executable
+        )?,
+        b"sealed program bytes"
+    );
+    let reopened = FleetRegistry::open_existing_for_qualification(root)?;
     for owner in [&registry, &reopened] {
         assert!(matches!(
             resolve_catalog_release(owner.layout().releases_root(), &release_id),

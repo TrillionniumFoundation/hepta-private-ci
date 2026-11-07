@@ -191,7 +191,9 @@ pub(crate) fn frontier_service_with_lifetime(
                 PqTrustOperationV2::FrontierCompareAndSet { .. } => PqTrustOutcomeV2::Conflict,
                 PqTrustOperationV2::ClockNow
                 | PqTrustOperationV2::LearningFrontierLoad { .. }
-                | PqTrustOperationV2::LearningFrontierCompareAndSet { .. } => {
+                | PqTrustOperationV2::LearningFrontierCompareAndSet { .. }
+                | PqTrustOperationV2::ReleaseFrontierLoad { .. }
+                | PqTrustOperationV2::ReleaseFrontierCompareAndSet { .. } => {
                     PqTrustOutcomeV2::Unavailable
                 }
             };

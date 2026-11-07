@@ -1,4 +1,18 @@
 #[cfg(unix)]
+#[path = "daemon_production.rs"]
+mod production;
+#[cfg(unix)]
+use production::RecoveryResponseFormat;
+#[cfg(unix)]
+use production::handle_recovery_resolution;
+#[cfg(unix)]
+use production::handle_recovery_resolution_with_format;
+#[cfg(unix)]
+use production::handle_signed_mutation;
+#[cfg(unix)]
+use production::mutation_page_locked;
+
+#[cfg(unix)]
 use std::fs::File;
 #[cfg(unix)]
 use std::fs::OpenOptions;
@@ -156,9 +170,10 @@ struct DaemonState<D: ProcessDriver> {
 /// non-Unix hosts, where no concrete process driver is implemented.
 pub async fn run_supervisord(
     fleet_root: HeptaFleetRoot,
+    release_trust: codex_hepta_fleet::FleetReleaseTrustConfig,
     cancellation: CancellationToken,
 ) -> Result<(), SupervisorError> {
-    run_supervisord_inner(fleet_root, cancellation, None).await
+    run_supervisord_inner(fleet_root, release_trust, cancellation, None).await
 }
 
 /// Production entry point for a daemon whose trust root was pinned by an
@@ -169,22 +184,75 @@ pub async fn run_supervisord(
 /// error before accessing fleet state.
 pub async fn run_supervisord_with_grant_verifier(
     fleet_root: HeptaFleetRoot,
+    release_trust: codex_hepta_fleet::FleetReleaseTrustConfig,
     cancellation: CancellationToken,
     verifier: H7H89ProductionGrantVerifier,
 ) -> Result<(), SupervisorError> {
     if !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
         return Err(SupervisorError::ProductionAuthorityFeatureDisabled);
     }
-    run_supervisord_inner(fleet_root, cancellation, Some(verifier)).await
+    run_supervisord_inner(fleet_root, release_trust, cancellation, Some(verifier)).await
+}
+
+/// Explicit recovery-only entry for an uncertain intent publication. This
+/// never falls back from ordinary open and never becomes a launch authority.
+/// A successfully reconciled owner must be reopened through the ordinary API.
+pub async fn run_supervisord_intent_reconciliation(
+    fleet_root: HeptaFleetRoot,
+    release_trust: codex_hepta_fleet::FleetReleaseTrustConfig,
+    cancellation: CancellationToken,
+    verifier: H7H89ProductionGrantVerifier,
+) -> Result<(), SupervisorError> {
+    if !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
+        return Err(SupervisorError::ProductionAuthorityFeatureDisabled);
+    }
+    if verifier.policy_sha256().is_none() {
+        return Err(SupervisorError::ProductionAuthority(
+            "intent reconciliation requires an explicit current PQ policy".to_string(),
+        ));
+    }
+    #[cfg(unix)]
+    {
+        let registry =
+            FleetRegistry::open_existing_for_release_intent_recovery(fleet_root, release_trust)?;
+        run_supervisord_registry(registry, cancellation, Some(verifier)).await
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = (fleet_root, release_trust, cancellation, verifier);
+        Err(std::io::Error::new(
+            ErrorKind::Unsupported,
+            "supervisord process hosting is supported only on Unix hosts",
+        )
+        .into())
+    }
 }
 
 #[cfg(unix)]
 async fn run_supervisord_inner(
     fleet_root: HeptaFleetRoot,
+    release_trust: codex_hepta_fleet::FleetReleaseTrustConfig,
     cancellation: CancellationToken,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
 ) -> Result<(), SupervisorError> {
-    let registry = FleetRegistry::open_existing(fleet_root)?;
+    if production_grant_verifier
+        .as_ref()
+        .is_some_and(|verifier| verifier.policy_sha256().is_none())
+    {
+        return Err(SupervisorError::ProductionAuthority(
+            "ordinary daemon requires an explicit three-role PQ policy".to_string(),
+        ));
+    }
+    let registry = FleetRegistry::open_existing_with_release_authority(fleet_root, release_trust)?;
+    run_supervisord_registry(registry, cancellation, production_grant_verifier).await
+}
+
+#[cfg(unix)]
+async fn run_supervisord_registry(
+    registry: FleetRegistry,
+    cancellation: CancellationToken,
+    production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
+) -> Result<(), SupervisorError> {
     let snapshot = registry.load()?;
     if snapshot.agents.len() > usize::from(MAX_SUPERVISORD_ROSTER) {
         return Err(SupervisorError::Invalid(format!(
@@ -239,6 +307,7 @@ async fn run_supervisord_inner(
 #[cfg(not(unix))]
 async fn run_supervisord_inner(
     _fleet_root: HeptaFleetRoot,
+    _release_trust: codex_hepta_fleet::FleetReleaseTrustConfig,
     _cancellation: CancellationToken,
     _production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
 ) -> Result<(), SupervisorError> {
@@ -384,6 +453,25 @@ async fn handle_request<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     method: SupervisordMethod,
 ) -> SupervisordPayload {
+    if state.registry.is_release_intent_reconciliation()
+        && !matches!(
+            &method,
+            SupervisordMethod::Health
+                | SupervisordMethod::Roster { .. }
+                | SupervisordMethod::Snapshot { .. }
+                | SupervisordMethod::ReleaseSelection { .. }
+                | SupervisordMethod::ProductionMutationStatus { .. }
+                | SupervisordMethod::ProductionMutationStatusPageV1 { .. }
+                | SupervisordMethod::ResolveProductionRecovery { .. }
+                | SupervisordMethod::ResolveProductionRecoveryPageV1 { .. }
+        )
+    {
+        return error_payload(
+            "release_intent_reconciliation_only",
+            "this explicit recovery mode permits status and current signed Unknown reconciliation; reopen normally after completion",
+            None,
+        );
+    }
     match method {
         SupervisordMethod::Health => {
             let registered_agents = match state.registry.load() {
@@ -478,6 +566,15 @@ async fn handle_request<D: ProcessDriver>(
             let supervisor = state.supervisor.lock().await;
             match supervisor.production_mutation_state(&agent_id) {
                 Ok(state) => SupervisordPayload::ProductionMutationStatus { state },
+                Err(error) => {
+                    safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
+                }
+            }
+        }
+        SupervisordMethod::ProductionMutationStatusPageV1 { agent_id, cursor } => {
+            let supervisor = state.supervisor.lock().await;
+            match mutation_page_locked(&state, &supervisor, &agent_id, cursor.as_ref()) {
+                Ok(page) => SupervisordPayload::ProductionMutationStatusPageV1 { page },
                 Err(error) => {
                     safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
                 }
@@ -591,168 +688,16 @@ async fn handle_request<D: ProcessDriver>(
         SupervisordMethod::ResolveProductionRecovery { fence, decision } => {
             handle_recovery_resolution(state, fence, decision).await
         }
-    }
-}
-
-#[cfg(unix)]
-async fn handle_recovery_resolution<D: ProcessDriver>(
-    state: Arc<DaemonState<D>>,
-    fence: SupervisordControlFence,
-    decision: ProductionRecoveryDecision,
-) -> SupervisordPayload {
-    if !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
-        return error_payload(
-            "production_authority_unavailable",
-            "signed production recovery is disabled in this build",
-            /*actual*/ None,
-        );
-    }
-    let Some(verifier) = state.production_grant_verifier.clone() else {
-        return error_payload(
-            "production_authority_unavailable",
-            "signed production recovery requires an externally pinned verifier",
-            /*actual*/ None,
-        );
-    };
-    let agent_id = fence.agent_id.clone();
-    let mut supervisor = state.supervisor.lock().await;
-    let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
-        Ok(actual) => actual,
-        Err(error) => {
-            return safe_rejection(error, /*actual*/ None, /*mutation_started*/ false);
-        }
-    };
-    if !control_fence_matches(&fence, &actual.control_fence) {
-        return error_payload(
-            "stale_control_fence",
-            "selected Agent changed; refresh before recovery",
-            Some(actual),
-        );
-    }
-    let authority_epoch = authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str());
-    if let Err(error) = supervisor.resolve_production_recovery(
-        &agent_id,
-        &decision,
-        &verifier,
-        authority_epoch,
-        unix_seconds_now(),
-    ) {
-        let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
-        return safe_rejection(
-            error,
-            post.or(Some(actual)),
-            /*mutation_started*/ false,
-        );
-    }
-    match supervisor.production_mutation_state(&agent_id) {
-        Ok(state) => SupervisordPayload::ProductionMutationStatus { state },
-        Err(error) => safe_rejection(error, Some(actual), /*mutation_started*/ true),
-    }
-}
-
-#[cfg(unix)]
-async fn handle_signed_mutation<D: ProcessDriver>(
-    state: Arc<DaemonState<D>>,
-    transition: H7H89ProductionTransition,
-    fence: SupervisordControlFence,
-    grant: H7H89ProductionGrant,
-    h7_envelope: codex_hepta_memory::H7SignedArtifactEnvelope,
-) -> SupervisordPayload {
-    if !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
-        return error_payload(
-            "production_authority_unavailable",
-            "signed production mutations are disabled in this build",
-            /*actual*/ None,
-        );
-    }
-    let Some(verifier) = state.production_grant_verifier.clone() else {
-        return error_payload(
-            "production_authority_unavailable",
-            "signed production mutations require an externally pinned verifier",
-            /*actual*/ None,
-        );
-    };
-    if grant.transition != transition {
-        return error_payload(
-            "production_authority_rejected",
-            "signed operation transition does not match the requested RPC method",
-            /*actual*/ None,
-        );
-    }
-    let agent_id = fence.agent_id.clone();
-    let accepted_state_digest = fence.state_digest.clone();
-    let mut supervisor = state.supervisor.lock().await;
-    let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
-        Ok(actual) => actual,
-        Err(error) => {
-            return safe_rejection(error, /*actual*/ None, /*mutation_started*/ false);
-        }
-    };
-    if !control_fence_matches(&fence, &actual.control_fence) {
-        return error_payload(
-            "stale_control_fence",
-            "selected Agent changed; refresh before retry",
-            Some(actual),
-        );
-    }
-    match supervisor.production_recovery_required(&agent_id) {
-        Ok(true) => {
-            return error_payload(
-                "signed_intent_recovery_required",
-                "resolve the quarantined production mutation before admitting another signed transition",
-                Some(actual),
-            );
-        }
-        Ok(false) => {}
-        Err(error) => {
-            return safe_rejection(error, Some(actual), /*mutation_started*/ false);
+        SupervisordMethod::ResolveProductionRecoveryPageV1 { fence, decision } => {
+            handle_recovery_resolution_with_format(
+                state,
+                fence,
+                decision,
+                RecoveryResponseFormat::PagedV1,
+            )
+            .await
         }
     }
-    let authority_epoch = authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str());
-    let receipt = match supervisor.apply_production_grant(
-        &agent_id,
-        &grant,
-        &h7_envelope,
-        &verifier,
-        authority_epoch,
-        unix_seconds_now(),
-        Instant::now(),
-    ) {
-        Ok(receipt) => receipt,
-        Err(error) => {
-            let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
-            return safe_rejection(
-                error,
-                post.or(Some(actual)),
-                /*mutation_started*/ false,
-            );
-        }
-    };
-    let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
-    let Some(agent) = post else {
-        return error_payload(
-            "operation_indeterminate",
-            "signed operation outcome is indeterminate; refresh before retry",
-            /*actual*/ None,
-        );
-    };
-    SupervisordPayload::MutationAccepted {
-        operation: match transition {
-            H7H89ProductionTransition::Upgrade => SupervisordMutation::Upgrade,
-            H7H89ProductionTransition::Rollback => SupervisordMutation::Rollback,
-        },
-        accepted_state_digest,
-        agent,
-        production_receipt: Some(receipt),
-    }
-}
-
-#[cfg(unix)]
-fn unix_seconds_now() -> u64 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|duration| duration.as_secs())
-        .unwrap_or(0)
 }
 
 #[cfg(unix)]
@@ -1502,7 +1447,8 @@ mod tests {
         let temp = tempfile::tempdir().expect("create temporary fleet");
         let fleet_root =
             HeptaFleetRoot::parse(temp.path().join("fleet")).expect("parse temporary fleet root");
-        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize registry");
+        let registry = FleetRegistry::initialize_for_qualification(fleet_root.clone())
+            .expect("initialize registry");
         let workspace = temp.path().join("workspace");
         std::fs::create_dir(&workspace).expect("create workspace");
         let agent_id = AgentId::parse(AGENT_ID).expect("fixed AgentId");
@@ -1646,7 +1592,8 @@ mod tests {
     async fn unresolved_signed_intent_keeps_daemon_reachable_but_not_ready() {
         let temp = tempfile::tempdir().expect("create temporary fleet");
         let fleet_root = HeptaFleetRoot::parse(temp.path().join("fleet")).expect("fleet root");
-        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize registry");
+        let registry = FleetRegistry::initialize_for_qualification(fleet_root.clone())
+            .expect("initialize registry");
         let workspace = temp.path().join("workspace");
         std::fs::create_dir(&workspace).expect("create workspace");
         let agent_id = AgentId::parse(AGENT_ID).expect("fixed AgentId");
@@ -1693,8 +1640,8 @@ mod tests {
             .expect("persist signed intent");
 
         let cancellation = CancellationToken::new();
-        let daemon = tokio::spawn(run_supervisord_inner(
-            fleet_root.clone(),
+        let daemon = tokio::spawn(run_supervisord_registry(
+            registry.clone(),
             cancellation.clone(),
             None,
         ));

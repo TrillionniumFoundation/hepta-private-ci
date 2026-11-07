@@ -4,7 +4,16 @@
 use std::process::Command;
 
 pub(super) fn configure_python_environment(command: &mut Command) -> Result<(), String> {
-    if std::env::vars_os()
+    configure_python_environment_from_ambient(command, std::env::vars_os())
+}
+
+// Keep the real ambient environment at the production entry point while tests
+// provide an explicit input without mutating their process-wide environment.
+fn configure_python_environment_from_ambient(
+    command: &mut Command,
+    mut ambient: impl Iterator<Item = (std::ffi::OsString, std::ffi::OsString)>,
+) -> Result<(), String> {
+    if ambient
         .any(|(name, _)| name.to_string_lossy().starts_with("LD_") || name == "GLIBC_TUNABLES")
         || command.get_envs().any(|(name, value)| {
             value.is_some()

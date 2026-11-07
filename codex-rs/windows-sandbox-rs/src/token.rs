@@ -11,6 +11,7 @@ use anyhow::Result;
 use anyhow::anyhow;
 pub use full_restriction::UnqualifiedFullRestrictionToken;
 pub(crate) use prepared_filesystem::PreparedFilesystemToken;
+pub(crate) use prepared_filesystem::create_full_filesystem_token_from;
 use std::ffi::c_void;
 pub(crate) use token_query::TokenBytes;
 use windows_sys::Win32::Foundation::CloseHandle;

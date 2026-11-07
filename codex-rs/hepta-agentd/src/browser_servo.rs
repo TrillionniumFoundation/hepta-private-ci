@@ -122,8 +122,24 @@ pub trait BrowserServoTransport: Send {
 }
 
 pub struct BrowserServoPort<T: BrowserServoTransport> {
-    authority: FinalUseAuthority,
+    authority: BrowserAuthority,
     state: Mutex<PortState<T>>,
+}
+
+enum BrowserAuthority {
+    Pq(crate::browser_servo_pq::BrowserPqAuthority),
+    #[cfg(test)]
+    Qualification(FinalUseAuthority),
+}
+
+impl BrowserAuthority {
+    fn owner(&self) -> &FinalUseAuthority {
+        match self {
+            Self::Pq(authority) => &authority.owner,
+            #[cfg(test)]
+            Self::Qualification(authority) => authority,
+        }
+    }
 }
 
 struct PortState<T> {
@@ -136,14 +152,28 @@ struct PortState<T> {
 impl<T: BrowserServoTransport> fmt::Debug for BrowserServoPort<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("BrowserServoPort")
-            .field("authority", &self.authority)
+            .field("authority", self.authority.owner())
             .field("transport", &"[PRIVATE CHILD CHANNEL]")
             .finish()
     }
 }
 
 impl<T: BrowserServoTransport> BrowserServoPort<T> {
-    pub fn new(authority: FinalUseAuthority, transport: T) -> Self {
+    pub(crate) fn new_pq(
+        authority: crate::browser_servo_pq::BrowserPqAuthority,
+        transport: T,
+    ) -> Self {
+        Self::from_authority(BrowserAuthority::Pq(authority), transport)
+    }
+
+    // Compatibility fixtures explicitly select this test-only constructor.
+    // It is absent from the ordinary library and product binary.
+    #[cfg(test)]
+    fn new_for_qualification(authority: FinalUseAuthority, transport: T) -> Self {
+        Self::from_authority(BrowserAuthority::Qualification(authority), transport)
+    }
+
+    fn from_authority(authority: BrowserAuthority, transport: T) -> Self {
         Self {
             authority,
             state: Mutex::new(PortState {
@@ -231,11 +261,26 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
             ));
         }
 
+        let lease = match &self.authority {
+            BrowserAuthority::Pq(authority) => Some(
+                authority
+                    .gate
+                    .authenticate(
+                        &authority.owner,
+                        &authority.feed_path,
+                        &invocation.signed_grant,
+                    )
+                    .map_err(crate::browser_servo_pq::invalid)?,
+            ),
+            #[cfg(test)]
+            BrowserAuthority::Qualification(_) => None,
+        };
         let token = claim_final_use(
-            &self.authority,
+            self.authority.owner(),
             &invocation.signed_grant,
             &invocation.binding,
         )?;
+        let lease = lease.map(|lease| lease.check_claim(&token)).transpose()?;
         let witness_digest = browser_witness_digest(
             &request_digest,
             &invocation.signed_grant.grant.grant_id,
@@ -244,7 +289,12 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
         );
         let witness_text = hex_lower(&witness_digest);
 
-        dispatch_final_use(&self.authority, token, &invocation.binding, || {
+        dispatch_final_use(self.authority.owner(), token, &invocation.binding, || {
+            // dispatch_final_use has just verified current == the real token's
+            // exact claimed head while holding the original owner mutex.
+            if let Some(lease) = &lease {
+                lease.check()?;
+            }
             send_frame(
                 state,
                 "authority_enter",
@@ -562,7 +612,7 @@ fn stable_id(value: &str, name: &str) -> Result<(), BrowserServoError> {
     Ok(())
 }
 
-fn parse_hex_32(value: &str, name: &str) -> Result<[u8; 32], BrowserServoError> {
+pub(crate) fn parse_hex_32(value: &str, name: &str) -> Result<[u8; 32], BrowserServoError> {
     if value.len() != 64
         || !value
             .bytes()
@@ -934,7 +984,7 @@ mod tests {
         };
         let (to_browser, outbound) = mpsc::channel();
         let (inbound, from_browser) = mpsc::channel();
-        let port = Arc::new(BrowserServoPort::new(
+        let port = Arc::new(BrowserServoPort::new_for_qualification(
             authority.clone(),
             ChannelTransport {
                 outbound: to_browser,
@@ -1133,3 +1183,7 @@ mod tests {
         assert_eq!(result["origin"], "https://example.com");
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "browser_servo_pq_tests.rs"]
+mod pq_tests;

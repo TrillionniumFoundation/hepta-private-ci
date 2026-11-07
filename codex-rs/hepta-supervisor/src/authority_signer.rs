@@ -6,7 +6,6 @@
 //! The request format is tagged JSON so an external ceremony can review the
 //! exact inputs before invoking the signer binary.
 
-use std::fs;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -26,6 +25,15 @@ use serde::Deserialize;
 use serde::Serialize;
 use thiserror::Error;
 use zeroize::Zeroize;
+#[path = "authority_signer_key.rs"]
+mod key_input;
+#[path = "authority_signer_pq.rs"]
+mod pq;
+pub use pq::load_pq_signing_key_from_fd;
+pub use pq::load_pq_signing_key_from_path;
+pub use pq::pq_signing_role;
+pub use pq::read_pq_signing_policy;
+pub use pq::sign_request_pq;
 
 /// Maximum bytes accepted from a key file/FD.  This prevents accidentally
 /// consuming an unbounded stream while still allowing a textual 64-byte hex
@@ -39,14 +47,73 @@ pub const MAX_SIGNING_REQUEST_BYTES: usize = 8 * 1024 * 1024;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SignRequest {
+    RetryRetainedPublication {
+        signer_id: String,
+        signer_epoch: u64,
+        intent: crate::SignedSupervisorIntent,
+        observed: crate::release_transaction::ReleaseBindingWire,
+        observation: crate::RetainedPublicationObservationV1,
+        observed_transaction_sha256: Sha256Digest,
+        lifecycle_generation: u64,
+        authority_epoch: u64,
+        issued_at_unix_seconds: u64,
+        expires_at_unix_seconds: u64,
+    },
+    ConfirmCompletionPublication {
+        signer_id: String,
+        signer_epoch: u64,
+        intent: crate::SignedSupervisorIntent,
+        observed: crate::release_transaction::ReleaseBindingWire,
+        observation: crate::CompletionPublicationObservationV1,
+        observed_transaction_sha256: Sha256Digest,
+        lifecycle_generation: u64,
+        authority_epoch: u64,
+        issued_at_unix_seconds: u64,
+        expires_at_unix_seconds: u64,
+    },
+    /// Fresh PQ confirmation publishes an existing Unknown snapshot unchanged.
+    ConfirmUnknownPublication {
+        signer_id: String,
+        signer_epoch: u64,
+        intent: crate::SignedSupervisorIntent,
+        source: crate::release_transaction::ReleaseBindingWire,
+        predecessor: crate::UnknownRecoveryPredecessorV1,
+        observed_transaction_sha256: Sha256Digest,
+        release_state_generation: u64,
+        lifecycle_generation: u64,
+        authority_epoch: u64,
+        issued_at_unix_seconds: u64,
+        expires_at_unix_seconds: u64,
+    },
     /// Separate explicit ceremony; does not certify an earlier effect outcome.
     AbandonUnknown {
         signer_id: String,
         signer_epoch: u64,
         intent: crate::SignedSupervisorIntent,
         source: crate::release_transaction::ReleaseBindingWire,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        predecessor: Option<crate::UnknownRecoveryPredecessorV1>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        observed_predecessor_transaction_sha256: Option<Sha256Digest>,
         release_state_generation: u64,
         lifecycle_generation: u64,
+        authority_epoch: u64,
+        issued_at_unix_seconds: u64,
+        expires_at_unix_seconds: u64,
+    },
+    ProductionRecovery {
+        signer_id: String,
+        signer_epoch: u64,
+        agent_id: String,
+        grant_sha256: Sha256Digest,
+        intent_sha256: Sha256Digest,
+        release_transaction_sha256: Sha256Digest,
+        observed_release: String,
+        observed_manifest_sha256: Sha256Digest,
+        observed_agentd_sha256: Sha256Digest,
+        observed_matrixd_sha256: Option<Sha256Digest>,
+        outcome: crate::ProductionRecoveryOutcome,
+        expected_lifecycle_generation: u64,
         authority_epoch: u64,
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
@@ -84,6 +151,10 @@ pub enum SignRequest {
 /// envelope directly; the enum keeps the operation boundary explicit.
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "the bounded one-response CLI retains its existing public Rust and JSON response shape"
+)]
 pub enum SignResponse {
     ProductionRecovery {
         decision: crate::ProductionRecoveryDecision,
@@ -120,58 +191,14 @@ pub enum ExternalSignerError {
 /// The file is never written by this module and its bytes are zeroized after
 /// conversion to the dalek key type.
 pub fn load_signing_key_from_path(path: &Path) -> Result<SigningKey, ExternalSignerError> {
-    if !path.is_absolute() {
-        return Err(ExternalSignerError::KeySource(
-            "signing key path must be absolute".to_string(),
-        ));
-    }
-    let metadata = fs::symlink_metadata(path).map_err(ExternalSignerError::KeyIo)?;
-    if !metadata.file_type().is_file() {
-        return Err(ExternalSignerError::KeySource(
-            "signing key path must be a regular, non-symlink file".to_string(),
-        ));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o077 != 0 {
-            return Err(ExternalSignerError::KeySource(
-                "signing key file must not be group/world accessible".to_string(),
-            ));
-        }
-    }
-    let mut file = File::open(path).map_err(ExternalSignerError::KeyIo)?;
-    read_signing_key(&mut file)
+    let seed = key_input::from_path(path)?;
+    Ok(SigningKey::from_bytes(&seed))
 }
 
-/// Read an external Ed25519 seed from an already-open file descriptor.  The
-/// descriptor is duplicated on Unix so this function never closes the
-/// caller's descriptor.  No key material is generated or persisted.
-#[cfg(unix)]
+/// Explicit legacy qualification import from an owned regular descriptor.
 pub fn load_signing_key_from_fd(fd: i32) -> Result<SigningKey, ExternalSignerError> {
-    use std::os::fd::FromRawFd;
-
-    if fd < 0 {
-        return Err(ExternalSignerError::KeySource(
-            "key fd must be non-negative".to_string(),
-        ));
-    }
-    // SAFETY: `dup` returns a new descriptor owned by this function; it is
-    // immediately wrapped in File and therefore closed exactly once.
-    let duplicate = unsafe { libc::dup(fd) };
-    if duplicate < 0 {
-        return Err(ExternalSignerError::KeyIo(std::io::Error::last_os_error()));
-    }
-    // SAFETY: `duplicate` is a valid descriptor returned by dup above.
-    let mut file = unsafe { File::from_raw_fd(duplicate) };
-    read_signing_key(&mut file)
-}
-
-#[cfg(not(unix))]
-pub fn load_signing_key_from_fd(_fd: i32) -> Result<SigningKey, ExternalSignerError> {
-    Err(ExternalSignerError::KeySource(
-        "--key-fd is supported only on Unix hosts".to_string(),
-    ))
+    let seed = key_input::from_fd(fd)?;
+    Ok(SigningKey::from_bytes(&seed))
 }
 
 /// Parse a request from a bounded file or stdin (`path == "-"`).
@@ -191,16 +218,12 @@ pub fn read_request(path: Option<&Path>) -> Result<SignRequest, ExternalSignerEr
                 .map_err(ExternalSignerError::KeyIo)?;
         }
         Some(path) => {
-            let metadata = fs::symlink_metadata(path).map_err(ExternalSignerError::KeyIo)?;
-            if !metadata.file_type().is_file() {
-                return Err(ExternalSignerError::KeySource(
-                    "request path must be a regular, non-symlink file".to_string(),
-                ));
-            }
-            let file = File::open(path).map_err(ExternalSignerError::KeyIo)?;
-            file.take((MAX_SIGNING_REQUEST_BYTES + 1) as u64)
-                .read_to_end(&mut bytes)
-                .map_err(ExternalSignerError::KeyIo)?;
+            bytes =
+                crate::bounded_regular_file::read_optional(path, MAX_SIGNING_REQUEST_BYTES as u64)
+                    .map_err(ExternalSignerError::KeyIo)?
+                    .ok_or_else(|| {
+                        ExternalSignerError::KeySource("request file is missing".to_string())
+                    })?;
         }
     }
     if bytes.len() > MAX_SIGNING_REQUEST_BYTES {
@@ -219,17 +242,29 @@ pub fn sign_request(
     signing_key: &SigningKey,
 ) -> Result<SignResponse, ExternalSignerError> {
     match request {
+        SignRequest::ConfirmUnknownPublication { .. }
+        | SignRequest::ConfirmCompletionPublication { .. }
+        | SignRequest::RetryRetainedPublication { .. } => Err(ExternalSignerError::Grant(
+            "publication confirmation requires the explicit ML-DSA policy profile".to_string(),
+        )),
         SignRequest::AbandonUnknown {
             signer_id,
             signer_epoch,
             intent,
             source,
+            predecessor,
+            observed_predecessor_transaction_sha256,
             release_state_generation,
             lifecycle_generation,
             authority_epoch,
             issued_at_unix_seconds,
             expires_at_unix_seconds,
         } => {
+            if predecessor.is_some() || observed_predecessor_transaction_sha256.is_some() {
+                return Err(ExternalSignerError::Grant(
+                    "legacy qualification does not support PQ predecessor recovery".to_string(),
+                ));
+            }
             let signer = H7H89ProductionGrantSigner::new(
                 signer_id.clone(),
                 *signer_epoch,
@@ -250,6 +285,50 @@ pub fn sign_request(
                     &source,
                     *release_state_generation,
                     *lifecycle_generation,
+                    *authority_epoch,
+                    *issued_at_unix_seconds,
+                    *expires_at_unix_seconds,
+                )
+                .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
+            Ok(SignResponse::ProductionRecovery { decision })
+        }
+        SignRequest::ProductionRecovery {
+            signer_id,
+            signer_epoch,
+            agent_id,
+            grant_sha256,
+            intent_sha256,
+            release_transaction_sha256,
+            observed_release,
+            observed_manifest_sha256,
+            observed_agentd_sha256,
+            observed_matrixd_sha256,
+            outcome,
+            expected_lifecycle_generation,
+            authority_epoch,
+            issued_at_unix_seconds,
+            expires_at_unix_seconds,
+        } => {
+            let signer = H7H89ProductionGrantSigner::new(
+                signer_id.clone(),
+                *signer_epoch,
+                signing_key.clone(),
+            )
+            .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
+            let agent = AgentId::parse(agent_id.clone())
+                .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
+            let decision = signer
+                .sign_recovery(
+                    &agent,
+                    grant_sha256.clone(),
+                    intent_sha256.clone(),
+                    release_transaction_sha256.clone(),
+                    observed_release.clone(),
+                    observed_manifest_sha256.clone(),
+                    observed_agentd_sha256.clone(),
+                    observed_matrixd_sha256.clone(),
+                    *outcome,
+                    *expected_lifecycle_generation,
                     *authority_epoch,
                     *issued_at_unix_seconds,
                     *expires_at_unix_seconds,
@@ -323,43 +402,6 @@ pub fn sign_request(
             Ok(SignResponse::ProductionGrant { grant })
         }
     }
-}
-
-fn read_signing_key(file: &mut File) -> Result<SigningKey, ExternalSignerError> {
-    let mut bytes = Vec::new();
-    file.take((MAX_SIGNING_KEY_INPUT_BYTES + 1) as u64)
-        .read_to_end(&mut bytes)
-        .map_err(ExternalSignerError::KeyIo)?;
-    if bytes.len() > MAX_SIGNING_KEY_INPUT_BYTES {
-        bytes.zeroize();
-        return Err(ExternalSignerError::KeyEncoding);
-    }
-    let result = decode_seed(&bytes).map(|mut seed| {
-        let key = SigningKey::from_bytes(&seed);
-        seed.zeroize();
-        key
-    });
-    bytes.zeroize();
-    result
-}
-
-fn decode_seed(bytes: &[u8]) -> Result<[u8; 32], ExternalSignerError> {
-    if bytes.len() == 32 {
-        let mut seed = [0_u8; 32];
-        seed.copy_from_slice(bytes);
-        return Ok(seed);
-    }
-    let text = std::str::from_utf8(bytes)
-        .map_err(|_| ExternalSignerError::KeyEncoding)?
-        .trim();
-    if text.len() != 64 {
-        return Err(ExternalSignerError::KeyEncoding);
-    }
-    let mut seed = [0_u8; 32];
-    for (index, pair) in text.as_bytes().chunks_exact(2).enumerate() {
-        seed[index] = (hex_value(pair[0])? << 4) | hex_value(pair[1])?;
-    }
-    Ok(seed)
 }
 
 fn hex_value(value: u8) -> Result<u8, ExternalSignerError> {

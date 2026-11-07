@@ -435,6 +435,10 @@ impl PreparedFilesystemAclContext {
 #[path = "prepared_filesystem_existing.rs"]
 mod existing;
 
+#[path = "prepared_process_root_pins.rs"]
+mod process_pins;
+pub(crate) use process_pins::PreparedProcessRootPins;
+
 #[cfg(test)]
 #[path = "prepared_filesystem_readback_tests.rs"]
 mod readback_tests;

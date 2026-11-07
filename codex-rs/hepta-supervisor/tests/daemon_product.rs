@@ -14,6 +14,7 @@ use anyhow::ensure;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::PqReleaseQualification;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
@@ -32,7 +33,9 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
         .tempdir_in("/tmp")?;
     let root = temp.path().canonicalize()?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
-    let registry = FleetRegistry::initialize(fleet_root.clone())?;
+    let (publisher, registry) =
+        PqReleaseQualification::initialize(&root.join("publication"), fleet_root.clone())
+            .map_err(anyhow::Error::from_boxed)?;
     let workspace = root.join("workspace");
     std::fs::create_dir(&workspace)?;
     let workspace = workspace.canonicalize()?;
@@ -43,7 +46,17 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
         ResourceBudget::local_default(),
     )?)?;
 
-    let mut daemon = DaemonChild::spawn(fleet_root.as_path())?;
+    let missing_config = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-supervisord")?)
+        .arg("--fleet-root")
+        .arg(fleet_root.as_path())
+        .output()?;
+    ensure!(!missing_config.status.success());
+    ensure!(
+        String::from_utf8_lossy(&missing_config.stderr)
+            .contains("--release-trust-config is required")
+    );
+    ensure!(!registry.layout().supervisor_socket().exists());
+    let mut daemon = DaemonChild::spawn(fleet_root.as_path(), publisher.config_path())?;
     let client = wait_for_daemon(&registry).await?;
     let health = client.health().await?;
     ensure!(health.ready && health.registered_agents == 1);
@@ -66,6 +79,8 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
     let second = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-supervisord")?)
         .arg("--fleet-root")
         .arg(fleet_root.as_path())
+        .arg("--release-trust-config")
+        .arg(publisher.config_path())
         .output()?;
     ensure!(
         !second.status.success(),
@@ -107,7 +122,7 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
     );
 
     daemon.kill()?;
-    let mut restarted = DaemonChild::spawn(fleet_root.as_path())?;
+    let mut restarted = DaemonChild::spawn(fleet_root.as_path(), publisher.config_path())?;
     let restarted_client = wait_for_daemon(&registry).await?;
     let restarted_health = restarted_client.health().await?;
     ensure!(restarted_health.ready);
@@ -173,10 +188,12 @@ async fn wait_for_daemon(registry: &FleetRegistry) -> Result<SupervisordClient> 
 struct DaemonChild(Child);
 
 impl DaemonChild {
-    fn spawn(fleet_root: &std::path::Path) -> Result<Self> {
+    fn spawn(fleet_root: &std::path::Path, release_trust: &std::path::Path) -> Result<Self> {
         let child = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-supervisord")?)
             .arg("--fleet-root")
             .arg(fleet_root)
+            .arg("--release-trust-config")
+            .arg(release_trust)
             .stdin(Stdio::null())
             .stdout(Stdio::null())
             // Keep daemon startup failures visible to the test harness.  A

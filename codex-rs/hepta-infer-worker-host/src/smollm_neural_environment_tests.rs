@@ -14,7 +14,27 @@ fn explicit_loader_overrides_are_refused_before_spawn() {
         let mut command = Command::new("python3");
         command.env(name, "unapproved");
         assert_eq!(
-            configure_python_environment(&mut command),
+            configure_python_environment_from_ambient(&mut command, std::iter::empty()),
+            Err("neural Python loader overrides are not allowed".to_owned())
+        );
+    }
+}
+
+#[test]
+fn ambient_loader_overrides_are_refused_before_spawn() {
+    for name in [
+        "LD_PRELOAD",
+        "LD_LIBRARY_PATH",
+        "LD_AUDIT",
+        "LD_UNRECOGNIZED",
+        "GLIBC_TUNABLES",
+    ] {
+        let mut command = Command::new("python3");
+        assert_eq!(
+            configure_python_environment_from_ambient(
+                &mut command,
+                [(name.into(), "unapproved".into())].into_iter(),
+            ),
             Err("neural Python loader overrides are not allowed".to_owned())
         );
     }
@@ -39,11 +59,18 @@ fn ambient_python_injection_cannot_enter_supervisor_or_descendant() {
     )
     .unwrap();
     let mut command = Command::new("python3");
+    // Cargo/nextest may inject LD_LIBRARY_PATH for the Rust test executable.
+    // The Python fixture has a separate, explicit environment; production's
+    // ambient-loader refusal is exercised independently above.
+    command.env_clear();
+    if let Some(path) = std::env::var_os("PATH") {
+        command.env("PATH", path);
+    }
     command
         .env("PYTHONPATH", directory.path())
         .env("PYTHONHOME", directory.path().join("missing-python-home"))
         .env("PYTHONUSERBASE", directory.path());
-    configure_python_environment(&mut command).unwrap();
+    configure_python_environment_from_ambient(&mut command, std::iter::empty()).unwrap();
     let output = command.arg(script).output().unwrap();
     assert!(output.status.success(), "{output:?}");
     assert_eq!(

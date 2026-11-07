@@ -22,6 +22,11 @@ impl TerminalEventCompletion {
         Self(Some(completion))
     }
 
+    /// Whether a trusted terminal producer attached an actual owner fence.
+    pub(crate) fn is_owner_bound(&self) -> bool {
+        self.0.is_some()
+    }
+
     pub async fn wait(&self) {
         if let Some(completion) = &self.0 {
             completion.wait().await;

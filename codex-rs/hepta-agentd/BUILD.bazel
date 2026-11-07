@@ -1,7 +1,7 @@
-load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
+load("//bazel/rules/testing:fleet_release_dependencies.bzl", "FLEET_RELEASE_TEST_DEPENDENCIES")
 load("//bazel/rules/testing:foreign_platform_binary.bzl", "foreign_platform_binary")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
 
@@ -112,7 +112,7 @@ _UNIT_TEST_DEPENDENCIES = {
     "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
     "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
     "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
-}
+} | FLEET_RELEASE_TEST_DEPENDENCIES
 
 codex_rust_crate(
     name = "hepta-agentd",
@@ -126,13 +126,41 @@ codex_rust_crate(
     # This process fixture seeds a historical ledger before launching the
     # ordinary product binary. Keep the legacy writer in this harness only.
     integration_test_dependency_replacements = {
-        "plasticity_process_e2e": {
+        path.removeprefix("tests/").removesuffix(".rs"): FLEET_RELEASE_TEST_DEPENDENCIES
+        for path in glob(["tests/*.rs"])
+    } | {
+        "plasticity_process_e2e": FLEET_RELEASE_TEST_DEPENDENCIES | {
             "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
         },
     },
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
     unit_test_runfile_env = _PON_NATIVE_RUNFILE_ENV,
+)
+
+# Fleet fixture types must also stay identical through Agentd's public APIs.
+# This variant does not enable cognitive-write or learning-writer qualification.
+rust_library(
+    name = "hepta-agentd-fleet-test-lib",
+    testonly = True,
+    srcs = glob(
+        ["src/**/*.rs"],
+        exclude = [
+            "src/main.rs",
+            "src/bin/*.rs",
+        ],
+    ),
+    compile_data = ["src/cognitive_three_generation_support.rs"] + _PON_NATIVE_FIXTURE_FILES,
+    crate_features = [
+        "default",
+        "production-cognitive-write",
+    ],
+    crate_name = "codex_hepta_agentd",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    rustc_env = {"BAZEL_PACKAGE": "codex-rs/hepta-agentd"},
+    visibility = ["//codex-rs:__subpackages__"],
+    deps = rust_test_dependencies(FLEET_RELEASE_TEST_DEPENDENCIES),
 )
 
 # Cargo expands qualification-cognitive-write to production-cognitive-write.
@@ -210,7 +238,7 @@ rust_binary(
     tags = ["manual"],
     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
     visibility = ["//visibility:private"],
-    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(),
+    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + rust_test_dependencies(FLEET_RELEASE_TEST_DEPENDENCIES),
 )
 
 rust_test(
@@ -228,8 +256,8 @@ rust_test(
     tags = ["manual"],
     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
     visibility = ["//visibility:private"],
-    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(
-        normal = True,
+    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + rust_test_dependencies(
+        FLEET_RELEASE_TEST_DEPENDENCIES,
         normal_dev = True,
     ),
 )

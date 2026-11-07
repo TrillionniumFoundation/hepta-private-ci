@@ -20,6 +20,16 @@ pub const SUPERVISORD_CONTROL_SCHEMA_VERSION: u32 = 2;
 pub const MAX_SUPERVISORD_CONTROL_FRAME_BYTES: u64 = 65_536;
 pub const MAX_SUPERVISORD_ROSTER: u16 = 256;
 
+#[path = "production_mutation_paging.rs"]
+mod production_mutation_paging;
+pub(crate) use production_mutation_paging::MAX_PRODUCTION_MUTATION_PAGES;
+pub use production_mutation_paging::PRODUCTION_MUTATION_PAGE_SCHEMA_VERSION;
+pub use production_mutation_paging::ProductionMutationCursorV1;
+pub(crate) use production_mutation_paging::ProductionMutationPageAssembler;
+pub use production_mutation_paging::ProductionMutationPageV1;
+pub use production_mutation_paging::ProductionMutationSummaryV1;
+pub(crate) use production_mutation_paging::production_mutation_page;
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct SupervisordRequest {
@@ -49,6 +59,15 @@ impl SupervisordRequest {
             | SupervisordMethod::Snapshot { .. }
             | SupervisordMethod::ReleaseSelection { .. }
             | SupervisordMethod::ProductionMutationStatus { .. } => Ok(()),
+            SupervisordMethod::ProductionMutationStatusPageV1 { agent_id, cursor } => {
+                if let Some(cursor) = cursor {
+                    cursor.validate()?;
+                    if &cursor.control_fence.agent_id != agent_id {
+                        return Err(SupervisordRequestValidationError::InvalidRequest);
+                    }
+                }
+                Ok(())
+            }
             SupervisordMethod::Roster { limit } => {
                 if (1..=MAX_SUPERVISORD_ROSTER).contains(limit) {
                     Ok(())
@@ -65,7 +84,8 @@ impl SupervisordRequest {
             | SupervisordMethod::Rollback { fence }
             | SupervisordMethod::SignedUpgrade { fence, .. }
             | SupervisordMethod::SignedRollback { fence, .. }
-            | SupervisordMethod::ResolveProductionRecovery { fence, .. } => fence.validate(),
+            | SupervisordMethod::ResolveProductionRecovery { fence, .. }
+            | SupervisordMethod::ResolveProductionRecoveryPageV1 { fence, .. } => fence.validate(),
         }
     }
 }
@@ -97,6 +117,11 @@ pub enum SupervisordMethod {
     /// Query the last signed production mutation and its durable witness digests.
     ProductionMutationStatus {
         agent_id: AgentId,
+    },
+    /// Bounded pages of one unchanged durable observation, including all history.
+    ProductionMutationStatusPageV1 {
+        agent_id: AgentId,
+        cursor: Option<ProductionMutationCursorV1>,
     },
     Start {
         fence: SupervisordControlFence,
@@ -138,6 +163,11 @@ pub enum SupervisordMethod {
     /// signed decision binds the observed immutable release bytes and the
     /// current daemon/lifecycle fences.
     ResolveProductionRecovery {
+        fence: SupervisordControlFence,
+        decision: ProductionRecoveryDecision,
+    },
+    /// Applies the mutation once and returns its first bounded observation page.
+    ResolveProductionRecoveryPageV1 {
         fence: SupervisordControlFence,
         decision: ProductionRecoveryDecision,
     },
@@ -340,6 +370,9 @@ pub enum SupervisordPayload {
     },
     ProductionMutationStatus {
         state: Option<ProductionMutationState>,
+    },
+    ProductionMutationStatusPageV1 {
+        page: ProductionMutationPageV1,
     },
     MutationAccepted {
         operation: SupervisordMutation,

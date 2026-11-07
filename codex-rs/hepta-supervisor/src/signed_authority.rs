@@ -30,9 +30,30 @@ const SIGNING_DOMAIN: &[u8] = b"hepta-supervisor:production-authority:v1";
 pub const PRODUCTION_RECOVERY_SCHEMA_VERSION: u32 = 1;
 pub const PRODUCTION_RECOVERY_NAMESPACE: &str = "hepta:production:recovery:v1";
 const RECOVERY_SIGNING_DOMAIN: &[u8] = b"hepta-supervisor:production-recovery:v1";
+#[path = "signed_authority_policy.rs"]
+mod policy;
+#[path = "signed_authority_pq.rs"]
+mod pq;
+#[cfg(test)]
+#[path = "signed_authority_pq_tests.rs"]
+pub(crate) mod pq_tests;
+#[path = "signed_authority_pq_wire.rs"]
+mod pq_wire;
 #[path = "unknown_recovery_authority.rs"]
 mod unknown_recovery;
+#[path = "signed_authority_unsigned.rs"]
+mod unsigned;
+pub use policy::PqAuthorityBinding;
+pub use policy::ProductionAuthorityPolicyV1;
+pub use policy::ProductionAuthorityRoleV1;
+pub use pq::H7PqProductionGrantSigner;
+pub use pq::H7PqProductionRecoverySigner;
 pub use unknown_recovery::UnknownRecoveryObservation;
+pub use unknown_recovery::UnknownRecoveryPredecessorV1;
+#[path = "completion_publication_authority.rs"]
+mod completion_publication;
+pub use completion_publication::CompletionPublicationObservationV1;
+pub use completion_publication::RetainedPublicationObservationV1;
 pub use unknown_recovery::absent_release_transaction_digest;
 
 /// Derives the numeric CAS epoch that external grant issuers bind to the
@@ -71,6 +92,16 @@ pub enum ProductionRecoveryOutcome {
     /// Abandon the grant while retaining its unknown effects. No success or
     /// rollback is certified; a separate signature reauthorizes the source.
     AbandonUnknown,
+    /// Confirm publication of an already retained Unknown disposition after an
+    /// uncertain external CAS. It neither appends history nor permits dispatch.
+    ConfirmUnknownPublication,
+    /// A fresh operator signature confirms publication of an exact retained
+    /// hot-owner completion proposal; it never re-executes that operation.
+    ConfirmCommittedPublication,
+    ConfirmRolledBackPublication,
+    /// Retry the same retained replacement publication under a fresh decision;
+    /// no third proposal, new confirmation material, or effect is created.
+    RetryRetainedPublication,
 }
 
 impl ProductionRecoveryOutcome {
@@ -79,6 +110,10 @@ impl ProductionRecoveryOutcome {
             Self::Committed => "committed",
             Self::RolledBack => "rolled_back",
             Self::AbandonUnknown => "abandon_unknown",
+            Self::ConfirmUnknownPublication => "confirm_unknown_publication",
+            Self::ConfirmCommittedPublication => "confirm_committed_publication",
+            Self::ConfirmRolledBackPublication => "confirm_rolled_back_publication",
+            Self::RetryRetainedPublication => "retry_retained_publication",
         }
     }
 }
@@ -102,12 +137,18 @@ pub struct ProductionRecoveryDecision {
     pub outcome: ProductionRecoveryOutcome,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unknown_observation: Option<UnknownRecoveryObservation>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub completion_observation: Option<CompletionPublicationObservationV1>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub retained_publication_observation: Option<RetainedPublicationObservationV1>,
     pub expected_lifecycle_generation: u64,
     pub authority_epoch: u64,
     pub signer_id: String,
     pub signer_epoch: u64,
     pub issued_at_unix_seconds: u64,
     pub expires_at_unix_seconds: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pq_authority: Option<PqAuthorityBinding>,
     pub signature_base64: String,
     pub decision_sha256: Sha256Digest,
 }
@@ -118,8 +159,12 @@ impl ProductionRecoveryDecision {
     }
 
     pub fn validate_shape(&self) -> Result<(), ProductionAuthorityError> {
-        let unknown = self.outcome == ProductionRecoveryOutcome::AbandonUnknown;
-        if !unknown_recovery::valid_namespace(self, unknown)
+        let unknown = matches!(
+            self.outcome,
+            ProductionRecoveryOutcome::AbandonUnknown
+                | ProductionRecoveryOutcome::ConfirmUnknownPublication
+        );
+        if !pq_wire::recovery_shape(self, unknown)
             || self.expected_lifecycle_generation == 0
             || self.authority_epoch == 0
             || self.signer_epoch == 0
@@ -147,7 +192,9 @@ impl ProductionRecoveryDecision {
         }
         validate_identifier(&self.signer_id, "recovery signer id")?;
         validate_window(self.issued_at_unix_seconds, self.expires_at_unix_seconds)?;
-        if self.decision_sha256 != self.payload_digest() || self.signature_base64.is_empty() {
+        if self.decision_sha256 != self.payload_digest()
+            || !pq_wire::signature_encoding(&self.signature_base64, self.pq_authority.is_some())
+        {
             return Err(ProductionAuthorityError::RecoveryBinding);
         }
         Ok(())
@@ -158,6 +205,9 @@ impl ProductionRecoveryDecision {
     }
 
     fn signing_bytes(&self) -> Vec<u8> {
+        if self.pq_authority.is_some() {
+            return pq_wire::recovery_message(self);
+        }
         let mut hasher = Sha256::new();
         for value in [
             if self.outcome == ProductionRecoveryOutcome::AbandonUnknown {
@@ -238,6 +288,8 @@ pub struct H7H89ProductionGrant {
     pub operator_acceptance: bool,
     pub promotion: bool,
     pub governance_bypass: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pq_authority: Option<PqAuthorityBinding>,
     pub signature_base64: String,
     pub grant_sha256: Sha256Digest,
 }
@@ -305,48 +357,20 @@ impl H7H89ProductionGrantSigner {
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     ) -> Result<H7H89ProductionGrant, ProductionAuthorityError> {
-        h7_envelope
-            .validate_shape()
-            .map_err(|error| ProductionAuthorityError::H7Binding(error.to_string()))?;
-        let source_release = source_release.into();
-        let target_release = target_release.into();
-        validate_release(&source_release)?;
-        validate_release(&target_release)?;
-        if source_release == target_release {
-            return Err(ProductionAuthorityError::Invalid(
-                "source and target releases must differ".to_string(),
-            ));
-        }
-        if expected_lifecycle_generation == 0 || authority_epoch == 0 {
-            return Err(ProductionAuthorityError::Invalid(
-                "lifecycle generation and authority epoch must be non-zero".to_string(),
-            ));
-        }
-        validate_window(issued_at_unix_seconds, expires_at_unix_seconds)?;
-        let mut grant = H7H89ProductionGrant {
-            schema_version: SIGNED_AUTHORITY_SCHEMA_VERSION,
-            namespace: SIGNED_AUTHORITY_NAMESPACE.to_string(),
-            agent_id: agent_id.to_string(),
+        let mut grant = unsigned::grant(
+            &self.signer_id,
+            self.signer_epoch,
+            agent_id,
             source_release,
             target_release,
             transition,
-            h7_envelope_sha256: h7_envelope.digest().clone(),
-            artifact_sha256: h7_envelope.artifact_digest().clone(),
+            h7_envelope,
             expected_control_revision,
             expected_lifecycle_generation,
             authority_epoch,
-            signer_id: self.signer_id.clone(),
-            signer_epoch: self.signer_epoch,
             issued_at_unix_seconds,
             expires_at_unix_seconds,
-            production_authority: true,
-            external_effects: true,
-            operator_acceptance: true,
-            promotion: true,
-            governance_bypass: false,
-            signature_base64: String::new(),
-            grant_sha256: Sha256Digest::for_bytes(b"pending"),
-        };
+        )?;
         grant.grant_sha256 = grant.payload_digest();
         grant.signature_base64 =
             STANDARD.encode(self.signing_key.sign(&grant.signing_bytes()).to_bytes());
@@ -371,16 +395,10 @@ impl H7H89ProductionGrantSigner {
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     ) -> Result<ProductionRecoveryDecision, ProductionAuthorityError> {
-        let observed_release = observed_release.into();
-        validate_release(&observed_release)?;
-        if expected_lifecycle_generation == 0 || authority_epoch == 0 {
-            return Err(ProductionAuthorityError::RecoveryBinding);
-        }
-        validate_window(issued_at_unix_seconds, expires_at_unix_seconds)?;
-        let mut decision = ProductionRecoveryDecision {
-            schema_version: PRODUCTION_RECOVERY_SCHEMA_VERSION,
-            namespace: PRODUCTION_RECOVERY_NAMESPACE.to_string(),
-            agent_id: agent_id.to_string(),
+        let mut decision = unsigned::recovery(
+            &self.signer_id,
+            self.signer_epoch,
+            agent_id,
             grant_sha256,
             intent_sha256,
             release_transaction_sha256,
@@ -389,16 +407,11 @@ impl H7H89ProductionGrantSigner {
             observed_agentd_sha256,
             observed_matrixd_sha256,
             outcome,
-            unknown_observation: None,
             expected_lifecycle_generation,
             authority_epoch,
-            signer_id: self.signer_id.clone(),
-            signer_epoch: self.signer_epoch,
             issued_at_unix_seconds,
             expires_at_unix_seconds,
-            signature_base64: String::new(),
-            decision_sha256: Sha256Digest::for_bytes(b"pending"),
-        };
+        )?;
         decision.decision_sha256 = decision.payload_digest();
         decision.signature_base64 =
             STANDARD.encode(self.signing_key.sign(&decision.signing_bytes()).to_bytes());
@@ -413,7 +426,7 @@ impl H7H89ProductionGrantSigner {
 pub struct H7H89ProductionGrantVerifier {
     signer_id: String,
     signer_epoch: u64,
-    verifying_key: VerifyingKey,
+    keys: policy::AuthorityVerificationKeys,
     h7_verifier: H7ArtifactVerifier,
 }
 
@@ -455,7 +468,7 @@ impl H7H89ProductionGrantVerifier {
         Ok(Self {
             signer_id,
             signer_epoch,
-            verifying_key,
+            keys: policy::AuthorityVerificationKeys::Classical(verifying_key),
             h7_verifier,
         })
     }
@@ -538,19 +551,7 @@ impl H7H89ProductionGrantVerifier {
         if now_unix_seconds >= grant.expires_at_unix_seconds {
             return Err(ProductionAuthorityError::Expired);
         }
-        let signature_bytes = STANDARD
-            .decode(&grant.signature_base64)
-            .map_err(|_| ProductionAuthorityError::SignatureMalformed)?;
-        if signature_bytes.len() != 64
-            || STANDARD.encode(&signature_bytes) != grant.signature_base64
-        {
-            return Err(ProductionAuthorityError::SignatureMalformed);
-        }
-        let signature = Signature::from_slice(&signature_bytes)
-            .map_err(|_| ProductionAuthorityError::SignatureMalformed)?;
-        self.verifying_key
-            .verify(&grant.signing_bytes(), &signature)
-            .map_err(|_| ProductionAuthorityError::SignatureInvalid)
+        self.keys.verify_grant(grant)
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -583,10 +584,13 @@ impl H7H89ProductionGrantVerifier {
         {
             return Err(ProductionAuthorityError::RecoveryBinding);
         }
-        if decision.signer_id != self.signer_id {
+        let (signer_id, signer_epoch) = self
+            .keys
+            .recovery_identity(&self.signer_id, self.signer_epoch);
+        if decision.signer_id != signer_id {
             return Err(ProductionAuthorityError::SignerMismatch);
         }
-        if decision.signer_epoch != self.signer_epoch {
+        if decision.signer_epoch != signer_epoch {
             return Err(ProductionAuthorityError::SignerEpochMismatch);
         }
         if now_unix_seconds < decision.issued_at_unix_seconds {
@@ -595,19 +599,7 @@ impl H7H89ProductionGrantVerifier {
         if now_unix_seconds >= decision.expires_at_unix_seconds {
             return Err(ProductionAuthorityError::Expired);
         }
-        let signature_bytes = STANDARD
-            .decode(&decision.signature_base64)
-            .map_err(|_| ProductionAuthorityError::SignatureMalformed)?;
-        if signature_bytes.len() != 64
-            || STANDARD.encode(&signature_bytes) != decision.signature_base64
-        {
-            return Err(ProductionAuthorityError::SignatureMalformed);
-        }
-        let signature = Signature::from_slice(&signature_bytes)
-            .map_err(|_| ProductionAuthorityError::SignatureMalformed)?;
-        self.verifying_key
-            .verify(&decision.signing_bytes(), &signature)
-            .map_err(|_| ProductionAuthorityError::SignatureInvalid)
+        self.keys.verify_recovery(decision)
     }
 }
 
@@ -623,8 +615,7 @@ impl H7H89ProductionGrant {
         h7_envelope
             .validate_shape()
             .map_err(|error| ProductionAuthorityError::H7Binding(error.to_string()))?;
-        if self.schema_version != SIGNED_AUTHORITY_SCHEMA_VERSION
-            || self.namespace != SIGNED_AUTHORITY_NAMESPACE
+        if !pq_wire::grant_shape(self)
             || !self.production_authority
             || !self.external_effects
             || !self.operator_acceptance
@@ -670,7 +661,7 @@ impl H7H89ProductionGrant {
         if self.grant_sha256 != self.payload_digest() {
             return Err(ProductionAuthorityError::DigestMismatch);
         }
-        if self.signature_base64.is_empty() {
+        if !pq_wire::signature_encoding(&self.signature_base64, self.pq_authority.is_some()) {
             return Err(ProductionAuthorityError::SignatureMalformed);
         }
         Ok(())
@@ -681,6 +672,9 @@ impl H7H89ProductionGrant {
     }
 
     fn signing_bytes(&self) -> Vec<u8> {
+        if self.pq_authority.is_some() {
+            return pq_wire::grant_message(self);
+        }
         let mut hasher = Sha256::new();
         for value in [
             SIGNING_DOMAIN,

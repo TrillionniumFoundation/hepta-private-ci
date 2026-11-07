@@ -18,6 +18,27 @@ mod model;
 mod module_catalog;
 mod registry;
 mod release;
+mod release_authority;
+mod release_authority_bundle;
+mod release_authority_config;
+mod release_authority_set;
+mod release_authority_state;
+mod release_authority_store;
+mod release_authority_wire;
+mod release_intent_anchor;
+mod release_intent_reconciliation;
+mod release_intent_reconciliation_record;
+#[cfg(all(unix, any(test, feature = "qualification")))]
+mod release_qualification;
+mod release_registry;
+#[cfg(all(unix, any(test, feature = "qualification")))]
+pub use release_qualification::PqReleaseQualification;
+#[cfg(all(unix, any(test, feature = "qualification")))]
+pub use release_qualification::QualificationResult;
+#[cfg(all(unix, any(test, feature = "qualification")))]
+mod release_qualification_bundle;
+#[cfg(all(unix, any(test, feature = "qualification")))]
+mod release_qualification_trust;
 
 pub use allocation::calculate_local_allocation_v1;
 pub use allocation_model::LOCAL_ALLOCATION_CALCULATOR_VERSION;
@@ -59,6 +80,15 @@ pub use release::ReleaseBinding;
 pub use release::ReleaseId;
 pub use release::ReleaseMetadata;
 pub use release::ReleaseProgramMetadata;
+pub use release_authority::FleetReleaseTrustConfig;
+pub use release_authority::ReleaseIntentHistory;
+pub use release_intent_anchor::ReleaseIntentAnchorV1;
+pub use release_intent_anchor::ReleaseIntentPhaseV1;
+pub use release_intent_anchor::ReleaseIntentTerminalWitnessV1;
+pub use release_intent_anchor::ReleaseIntentWitnessKindV1;
+pub use release_intent_reconciliation::PendingIntentReconciliationAdmission;
+pub use release_registry::CurrentProtocolConfigurationAdmission;
+pub use release_registry::CurrentReleaseAdmission;
 pub use revocation_control::FleetNodeRevocationState;
 pub use revocation_control::FleetRevocationCoordinator;
 pub use revocation_control::FleetRevocationError;
@@ -68,3 +98,36 @@ pub use revocation_control::MAX_FLEET_REVOCATION_NODES;
 #[cfg(test)]
 #[path = "allocation_tests.rs"]
 mod allocation_tests;
+
+#[cfg(all(test, unix))]
+#[path = "release_authority_history_tests.rs"]
+mod release_authority_history_tests;
+#[cfg(all(test, unix))]
+#[path = "release_authority_projection_tests.rs"]
+mod release_authority_projection_tests;
+#[cfg(all(test, unix))]
+#[path = "release_authority_recovery_tests.rs"]
+mod release_authority_recovery_tests;
+#[cfg(all(test, unix))]
+#[path = "release_authority_tests.rs"]
+mod release_authority_tests;
+
+#[cfg(all(test, unix))]
+#[path = "release_intent_anchor_recovery_tests.rs"]
+mod release_intent_anchor_recovery_tests;
+#[cfg(all(test, unix))]
+#[path = "release_intent_anchor_tests.rs"]
+mod release_intent_anchor_tests;
+#[cfg(all(test, unix))]
+#[path = "release_intent_reconciliation_completion_tests.rs"]
+mod release_intent_reconciliation_completion_tests;
+#[cfg(all(test, unix))]
+#[path = "release_intent_reconciliation_tests.rs"]
+mod release_intent_reconciliation_tests;
+
+#[cfg(all(test, unix))]
+#[path = "release_intent_decision_window_tests.rs"]
+mod release_intent_decision_window_tests;
+#[cfg(all(test, unix))]
+#[path = "release_intent_reconciliation_retry_tests.rs"]
+mod release_intent_reconciliation_retry_tests;

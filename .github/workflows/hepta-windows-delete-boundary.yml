@@ -9,6 +9,9 @@ on:
       - codex-rs/hepta-prompt-registry/**
       - scripts/test_hepta_windows_boundary_receipts.py
       - scripts/test_hepta_windows_terminal_receipts.py
+      - scripts/hepta_windows_prepared_owner_receipt.py
+      - scripts/test_hepta_windows_prepared_owner_receipt.py
+      - scripts/hepta_windows_psec_capability.ps1
       - .github/workflows/hepta-windows-delete-boundary.yml
 
 permissions:
@@ -680,6 +683,52 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests command-runner-terminal 3 "$codes"
+      - name: Prepare the independent three-case Windows process-owner scope
+        id: prepared_owner
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/windows-prepared-owner"
+          test ! -e "$out"
+          mkdir -p "$out"
+          python -m unittest discover -s scripts -p 'test_hepta_windows_prepared_owner_receipt.py' > "$out/reader-controls.log" 2>&1
+          python scripts/hepta_windows_prepared_owner_receipt.py before "$out"
+          set +e
+          (cd codex-rs && NEXTEST_PROFILE=local RUST_MIN_STACK=8388608 cargo nextest list --locked -p codex-windows-sandbox --lib -E 'test(/^process::prepared_context::tests::/)' --run-ignored all --message-format json) > "$out/registry.json" 2> "$out/registry.stderr"
+          code=$?
+          set -e
+          python scripts/hepta_windows_prepared_owner_receipt.py prepare "$out" "$code"
+      - name: Run exactly the three retained process-owner mechanisms
+        if: ${{ !cancelled() && steps.prepared_owner.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-windows-sandbox --lib -E 'test(/^process::prepared_context::tests::/)' --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-prepared-owner/native.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python scripts/hepta_windows_prepared_owner_receipt.py run "$RUNNER_TEMP/windows-prepared-owner" "$codes"
+      - name: Prepare the independent two-case process-root pin scope
+        id: process_root_pins
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/windows-process-root-pins"
+          test ! -e "$out"
+          mkdir -p "$out"
+          python -m unittest discover -s scripts -p 'test_hepta_windows_process_root_pins_receipt.py' > "$out/reader-controls.log" 2>&1
+          python scripts/hepta_windows_process_root_pins_receipt.py before "$out"
+          set +e
+          (cd codex-rs && NEXTEST_PROFILE=local RUST_MIN_STACK=8388608 cargo nextest list --locked -p codex-windows-sandbox --lib -E 'test(/^process::prepared_context::root_pins_tests::/)' --run-ignored all --message-format json) > "$out/registry.json" 2> "$out/registry.stderr"
+          code=$?
+          set -e
+          python scripts/hepta_windows_process_root_pins_receipt.py prepare "$out" "$code"
+      - name: Run exactly the two independent process-root pin mechanisms
+        if: ${{ !cancelled() && steps.process_root_pins.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-windows-sandbox --lib -E 'test(/^process::prepared_context::root_pins_tests::/)' --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-process-root-pins/native.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python scripts/hepta_windows_process_root_pins_receipt.py run "$RUNNER_TEMP/windows-process-root-pins" "$codes"
       - name: Require unchanged source and all twenty completed Windows result receipts
         if: ${{ always() && steps.source.outcome == 'success' }}
         run: python "$RUNNER_TEMP/windows-delete-boundary/check.py" source after
@@ -688,5 +737,98 @@ jobs:
         with:
           name: hepta-windows-delete-boundary-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/windows-delete-boundary/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Bind the independent owner receipt to unchanged source and actual Windows PE
+        if: ${{ always() && steps.source.outcome == 'success' }}
+        run: python scripts/hepta_windows_prepared_owner_receipt.py finish "$RUNNER_TEMP/windows-prepared-owner"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-windows-prepared-owner-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-prepared-owner/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Bind the independent root pin receipt to unchanged source and actual Windows PE
+        if: ${{ always() && steps.source.outcome == 'success' }}
+        run: python scripts/hepta_windows_process_root_pins_receipt.py finish "$RUNNER_TEMP/windows-process-root-pins"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-windows-process-root-pins-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-process-root-pins/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record read-only PSEC API diagnostics after all original Windows controls
+        if: always()
+        timeout-minutes: 2
+        working-directory: ${{ github.workspace }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, shutil, subprocess, time
+          from datetime import datetime, timezone
+          from pathlib import Path
+          root = Path.cwd() / "hepta"
+          out = Path(os.environ["RUNNER_TEMP"]) / "windows-psec-capability"
+          out.mkdir(exist_ok=False)
+          relative = "scripts/hepta_windows_psec_capability.ps1"
+          script = root / relative
+          report = {
+              "schema": "hepta-windows-psec-diagnostic-invocation-v1",
+              "scope": "Read-only API observations, never original20 or sandbox qualification",
+              "source_sha": os.environ["SOURCE_SHA"], "tested_sha": os.environ["TESTED_SHA"],
+              "base_sha": os.environ["BASE_SHA"], "lane": os.environ["HEPTA_CI_LANE"],
+              "runner": os.environ["HEPTA_CI_RUNNER"], "target": os.environ["HEPTA_CI_TARGET"],
+              "runner_arch": os.environ.get("RUNNER_ARCH"), "image_version": os.environ.get("ImageVersion"),
+              "cwd": str(root), "started_at": datetime.now(timezone.utc).isoformat(),
+              "timeout_seconds": 60, "timed_out": False, "returncode": None, "error": None,
+              "counts_as_original20_pass": False, "production_sandbox_admitted": False,
+          }
+          started = time.monotonic()
+          with (out / "query.stdout.json").open("xb") as stdout, (out / "query.stderr.log").open("xb") as stderr:
+              try:
+                  def git(*args):
+                      return subprocess.check_output(["git", "-C", str(root), *args], timeout=10)
+                  report["checkout_head"] = git("rev-parse", "HEAD").decode().strip()
+                  report["checkout_tree"] = git("rev-parse", "HEAD^{tree}").decode().strip()
+                  if report["checkout_head"] != report["tested_sha"]:
+                      raise RuntimeError("PSEC diagnostic checkout does not match this lane")
+                  raw = script.read_bytes()
+                  if raw != git("show", "HEAD:" + relative):
+                      raise RuntimeError("PSEC query bytes differ from the tested commit")
+                  report["script_sha256"] = hashlib.sha256(raw).hexdigest()
+                  report["script_git_blob"] = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+                  (out / "query-source.ps1").write_bytes(raw)
+                  pwsh = shutil.which("pwsh")
+                  if pwsh is None:
+                      raise RuntimeError("PowerShell 7 is unavailable; original controls remain independent")
+                  report["argv"] = [pwsh, "-NoLogo", "-NoProfile", "-NonInteractive", "-File", str(script)]
+                  report["returncode"] = subprocess.run(
+                      report["argv"], cwd=root, stdin=subprocess.DEVNULL,
+                      stdout=stdout, stderr=stderr, timeout=60, check=False,
+                  ).returncode
+                  if script.read_bytes() != raw:
+                      raise RuntimeError("PSEC query source changed during observation")
+              except subprocess.TimeoutExpired as error:
+                  report["timed_out"] = True
+                  report["error"] = str(error)
+              except Exception as error:
+                  report["error"] = str(error)
+          report["elapsed_seconds"] = time.monotonic() - started
+          report["finished_at"] = datetime.now(timezone.utc).isoformat()
+          report["files"] = {
+              name: {"bytes": (out / name).stat().st_size, "sha256": hashlib.sha256((out / name).read_bytes()).hexdigest()}
+              for name in ("query.stdout.json", "query.stderr.log")
+          }
+          (out / "invocation.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          if report["error"] is not None or report["returncode"] != 0:
+              raise SystemExit(1)
+          PY
+      - name: Upload separate PSEC diagnostics without changing original result receipts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-windows-psec-capability-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-psec-capability/
           if-no-files-found: error
           retention-days: 14

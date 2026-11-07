@@ -24,11 +24,13 @@ fn fixture(
         binary,
         binary_sha256: Sha256Digest::for_bytes(script.as_bytes()),
         store: root,
-        state_backend: "authenticated-v1".into(),
-        genesis_time: 1,
-        evaluation_policy: "fixture".into(),
-        task_profile: "fixture".into(),
-        model_profile: "fixture".into(),
+        profile: crate::automation_effect_host::pon_profile::Profile::Development {
+            state_backend: "authenticated-v1".into(),
+            genesis_time: 1,
+            evaluation_policy: "fixture".into(),
+            task_profile: "fixture".into(),
+            model_profile: "fixture".into(),
+        },
         workers: 1,
         min_confirmation_depth: 1,
         min_confirmation_work_depth_hex: format!("{}01", "00".repeat(63)),
@@ -234,3 +236,6 @@ async fn pon_descendant_held_pipe_cannot_extend_the_exchange_deadline() -> anyho
     assert!(matches!(outcome, PonInvocation::Unknown));
     Ok(())
 }
+
+#[path = "automation_effect_host_pon_genesis_tests.rs"]
+mod genesis_tests;

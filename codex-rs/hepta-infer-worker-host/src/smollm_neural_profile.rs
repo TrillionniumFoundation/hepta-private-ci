@@ -7,6 +7,10 @@ use serde::Serialize;
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
+#[path = "smollm_material_runtime_bridge.rs"]
+mod material_bridge;
+pub use material_bridge::SmolLmMaterialRuntimeBridgeV1;
+
 pub(super) const SCHEMA: &str = "hepta-smollm-neural-read-worker-v2";
 pub(super) const PROFILE: &str = "hepta-smollm-single-token-action-score-v1";
 
@@ -20,6 +24,8 @@ pub struct SmolLmNeuralReadConfigV1 {
     pub source_pins: BTreeMap<PathBuf, Digest32>,
     /// Independently pinned v2 cold-runtime snapshot. No capture-at-load fallback.
     pub runtime_snapshot: Vec<u8>,
+    /// Explicit fixed-pair mode. None retains the original V2 entry and digest.
+    pub material_runtime_bridge: Option<SmolLmMaterialRuntimeBridgeV1>,
     pub target_contract: Vec<u8>,
     pub wrapped_adapter: Vec<u8>,
     pub contract_digest: Digest32,
@@ -51,7 +57,40 @@ impl SmolLmNeuralReadConfigV1 {
             4_u32,
         ))
         .map_err(|error| error.to_string())?;
-        Ok(Digest32::of_bytes(&bytes))
+        let original = Digest32::of_bytes(&bytes);
+        match &self.material_runtime_bridge {
+            Some(bridge) => bridge.execution_digest(self, original),
+            None => Ok(original),
+        }
+    }
+
+    pub(super) fn ready_schema(&self) -> &'static str {
+        if self.material_runtime_bridge.is_some() {
+            material_bridge::READY_SCHEMA
+        } else {
+            SCHEMA
+        }
+    }
+
+    pub(super) fn serve_command(&self) -> &'static str {
+        if self.material_runtime_bridge.is_some() {
+            "serve-bridge-v1"
+        } else {
+            "serve"
+        }
+    }
+
+    pub(super) fn bridge_material_plan(&self) -> Option<&[u8]> {
+        self.material_runtime_bridge
+            .as_ref()
+            .map(SmolLmMaterialRuntimeBridgeV1::plan)
+    }
+
+    pub(super) fn decode_ready(&self, raw: &[u8]) -> Result<Ready, String> {
+        match &self.material_runtime_bridge {
+            Some(bridge) => bridge.decode_ready(self, raw),
+            None => serde_json::from_slice(raw).map_err(|e| e.to_string()),
+        }
     }
 
     pub(crate) fn source_identities(&self) -> Result<BTreeMap<String, String>, String> {
@@ -100,6 +139,9 @@ impl SmolLmNeuralReadConfigV1 {
             if Digest32::of_bytes(&read_bounded(path, 2 * 1024 * 1024)?) != *expected {
                 return Err("neural executable changed; independent reload required".to_owned());
             }
+        }
+        if let Some(bridge) = &self.material_runtime_bridge {
+            bridge.verify_config(self)?;
         }
         Ok(())
     }

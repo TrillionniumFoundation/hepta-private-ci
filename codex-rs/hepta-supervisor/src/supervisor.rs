@@ -66,18 +66,21 @@ impl<D: ProcessDriver> Supervisor<D> {
         // before its directory sync failed. Readable bytes alone cannot lift
         // the fence. Reconcile the exact retained journal through the original
         // atomic publisher before adopting any child from any Agent.
-        for (agent_id, record) in &snapshot.agents {
-            if let Some(intent) = read_intent(record.layout.run_root())
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-                && !intent.unknown_effects.is_empty()
-            {
-                if intent.agent_id != agent_id.to_string() {
-                    return Err(SupervisorError::Invalid(
-                        "signed supervisor intent agent binding mismatch".to_string(),
-                    ));
+        if registry.is_release_qualification() {
+            for (agent_id, record) in &snapshot.agents {
+                if let Some(intent) = read_intent(record.layout.run_root())
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+                    && !intent.unknown_effects.is_empty()
+                {
+                    if intent.agent_id != agent_id.to_string() {
+                        return Err(SupervisorError::Invalid(
+                            "signed supervisor intent agent binding mismatch".to_string(),
+                        ));
+                    }
+                    write_intent(record.layout.run_root(), &intent).map_err(|_| {
+                        SupervisorError::SignedIntentRecoveryRequired(agent_id.clone())
+                    })?;
                 }
-                write_intent(record.layout.run_root(), &intent)
-                    .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
             }
         }
         let slots = snapshot
@@ -100,8 +103,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // reports a per-Agent fault. Otherwise an adoption error could
                 // hide a recovery-required signed intent or restart/release
                 // fence and incorrectly make the daemon appear ready.
-                supervisor.restore_release_state(&agent_id, slot, &record)?;
                 let mut process_faults = Vec::new();
+                if let Err(error) = supervisor.restore_release_state(&agent_id, slot, &record) {
+                    slot.active_release = None;
+                    slot.previous_release = None;
+                    slot.last_command = None;
+                    process_faults.push(error);
+                }
                 if let Err(error) = supervisor.recover_slot(&agent_id, slot, &record, now) {
                     process_faults.push(error);
                 }
@@ -593,6 +601,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<ProductionMutationReceipt, SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            if supervisor.registry.is_release_intent_reconciliation()
+                || slot.intent_publication_fenced
+            {
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
             let record = supervisor.record(agent_id)?;
             let current = slot.active_release.as_ref().ok_or_else(|| {
                 SupervisorError::Invalid(format!(
@@ -615,6 +630,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                     )));
                 }
             }
+            supervisor.preflight_upgrade_in_slot(agent_id, slot, &target)?;
+            let policy_admission = crate::signed_intent_policy::MutationPolicyAdmission::acquire(
+                &supervisor.registry,
+                verifier,
+                now_unix_seconds,
+            )?;
+            let current_now = policy_admission.now_seconds()?;
             verifier
                 .verify(
                     grant,
@@ -625,10 +647,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     slot.control_revision,
                     record.lifecycle.generation,
                     expected_authority_epoch,
-                    now_unix_seconds,
+                    current_now,
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
-            supervisor.preflight_upgrade_in_slot(agent_id, slot, &target)?;
             if slot.signed_intent.as_ref().is_some_and(|intent| {
                 !(matches!(
                     intent.status,
@@ -651,12 +672,45 @@ impl<D: ProcessDriver> Supervisor<D> {
                 expected_authority_epoch,
                 SignedIntentStatus::Prepared,
             )
+            .and_then(|intent| intent.bind_authority(grant, h7_envelope, verifier))
             .and_then(|intent| intent.inherit_unknown_effects(slot.signed_intent.as_ref()))
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &intent)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            policy_admission.revalidate_window(
+                grant
+                    .issued_at_unix_seconds
+                    .max(h7_envelope.issued_at_unix_seconds),
+                grant
+                    .expires_at_unix_seconds
+                    .min(h7_envelope.expires_at_unix_seconds),
+            )?;
+            let previous = slot.signed_intent.clone();
+            slot.intent_publication_fenced = true;
+            let policy_admission =
+                match policy_admission.publish_current(&record, previous.as_ref(), &intent) {
+                    Ok(admission) => admission,
+                    Err(error) => {
+                        slot.signed_intent = read_intent(record.layout.run_root())
+                            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                        let _ = supervisor.contain_signed_intent_processes(agent_id, slot);
+                        return Err(error);
+                    }
+                };
             Self::set_control_revision_for_slot(slot, next_control_revision)?;
             slot.signed_intent = Some(intent.clone());
+            if let Err(error) = policy_admission.revalidate_window(
+                grant
+                    .issued_at_unix_seconds
+                    .max(h7_envelope.issued_at_unix_seconds),
+                grant
+                    .expires_at_unix_seconds
+                    .min(h7_envelope.expires_at_unix_seconds),
+            ) {
+                drop(policy_admission);
+                let _ = supervisor.contain_signed_intent_processes(agent_id, slot);
+                return Err(error);
+            }
+            slot.intent_publication_fenced = false;
+            drop(policy_admission);
             let explicit_rollback = grant.transition == H7H89ProductionTransition::Rollback;
             if let Err(error) = supervisor.upgrade_slot(
                 agent_id,
@@ -669,16 +723,60 @@ impl<D: ProcessDriver> Supervisor<D> {
                 let recovery = intent
                     .with_status(SignedIntentStatus::RecoveryRequired)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                let _ = write_intent(record.layout.run_root(), &recovery);
-                slot.signed_intent = Some(recovery);
+                slot.intent_publication_fenced = true;
+                let current_record = supervisor.record(agent_id)?;
+                if crate::signed_intent_anchor::publish_history(
+                    &supervisor.registry,
+                    &current_record,
+                    &intent,
+                    &recovery,
+                )
+                .is_ok()
+                {
+                    slot.signed_intent = Some(recovery);
+                    slot.intent_publication_fenced = false;
+                }
+                let _ = supervisor.contain_signed_intent_processes(agent_id, slot);
                 return Err(error);
             }
             let queued = intent
                 .with_status(SignedIntentStatus::Queued)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &queued)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            slot.intent_publication_fenced = true;
+            let publication = (|| {
+                let current_record = supervisor.record(agent_id)?;
+                let admission = crate::signed_intent_policy::MutationPolicyAdmission::acquire(
+                    &supervisor.registry,
+                    verifier,
+                    now_unix_seconds,
+                )?;
+                admission.revalidate_window(
+                    grant
+                        .issued_at_unix_seconds
+                        .max(h7_envelope.issued_at_unix_seconds),
+                    grant
+                        .expires_at_unix_seconds
+                        .min(h7_envelope.expires_at_unix_seconds),
+                )?;
+                let admission =
+                    admission.publish_current(&current_record, Some(&intent), &queued)?;
+                admission.revalidate_window(
+                    grant
+                        .issued_at_unix_seconds
+                        .max(h7_envelope.issued_at_unix_seconds),
+                    grant
+                        .expires_at_unix_seconds
+                        .min(h7_envelope.expires_at_unix_seconds),
+                )
+            })();
+            if let Err(error) = publication {
+                slot.signed_intent = read_intent(record.layout.run_root())
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                let _ = supervisor.contain_signed_intent_processes(agent_id, slot);
+                return Err(error);
+            }
             slot.signed_intent = Some(queued);
+            slot.intent_publication_fenced = false;
             Ok(ProductionMutationReceipt::queued(
                 grant,
                 next_control_revision,
@@ -687,7 +785,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub(crate) fn commit_signed_intent_if_target(
-        &self,
+        &mut self,
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
@@ -724,13 +822,40 @@ impl<D: ProcessDriver> Supervisor<D> {
         } else {
             return Ok(());
         };
+        let record = self.record(agent_id)?;
+        if intent.pq_authority.is_some()
+            && !slot
+                .release_transaction
+                .as_ref()
+                .is_some_and(|transaction| {
+                    crate::signed_intent_policy::terminal_owner_matches(
+                        &intent,
+                        transaction,
+                        &record,
+                    )
+                })
+        {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
+        }
         let terminal = intent
             .with_status(terminal_status)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let record = self.record(agent_id)?;
-        write_intent(record.layout.run_root(), &terminal)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        slot.intent_publication_fenced = true;
+        if let Err(error) = crate::signed_intent_anchor::publish_history(
+            &self.registry,
+            &record,
+            &intent,
+            &terminal,
+        ) {
+            slot.signed_intent = read_intent(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            let _ = self.contain_signed_intent_processes(agent_id, slot);
+            return Err(error);
+        }
         slot.signed_intent = Some(terminal);
+        slot.intent_publication_fenced = false;
         Ok(())
     }
 
@@ -745,18 +870,22 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        Ok(slot
-            .signed_intent
-            .as_ref()
-            .is_some_and(super::signed_intent::SignedSupervisorIntent::requires_recovery))
+        Ok(self.registry.is_release_intent_reconciliation()
+            || slot.intent_publication_fenced
+            || slot
+                .signed_intent
+                .as_ref()
+                .is_some_and(super::signed_intent::SignedSupervisorIntent::requires_recovery))
     }
 
     pub fn any_production_recovery_required(&self) -> bool {
-        self.slots.values().any(|slot| {
-            slot.signed_intent
-                .as_ref()
-                .is_some_and(super::signed_intent::SignedSupervisorIntent::requires_recovery)
-        })
+        self.registry.is_release_intent_reconciliation()
+            || self.slots.values().any(|slot| {
+                slot.intent_publication_fenced
+                    || slot.signed_intent.as_ref().is_some_and(
+                        super::signed_intent::SignedSupervisorIntent::requires_recovery,
+                    )
+            })
     }
 
     pub fn release_selection_snapshot(
@@ -778,16 +907,25 @@ impl<D: ProcessDriver> Supervisor<D> {
         else {
             return Ok(None);
         };
-        let status = match intent.status {
-            SignedIntentStatus::Prepared | SignedIntentStatus::Queued => {
-                crate::ProductionMutationStatus::Queued
+        let publication_fenced = self.registry.is_release_intent_reconciliation()
+            || self
+                .slots
+                .get(agent_id)
+                .is_some_and(|slot| slot.intent_publication_fenced);
+        let status = if publication_fenced {
+            crate::ProductionMutationStatus::RecoveryRequired
+        } else {
+            match intent.status {
+                SignedIntentStatus::Prepared | SignedIntentStatus::Queued => {
+                    crate::ProductionMutationStatus::Queued
+                }
+                SignedIntentStatus::Committed => crate::ProductionMutationStatus::Committed,
+                SignedIntentStatus::RolledBack => crate::ProductionMutationStatus::RolledBack,
+                SignedIntentStatus::RecoveryRequired => {
+                    crate::ProductionMutationStatus::RecoveryRequired
+                }
+                SignedIntentStatus::Aborted => crate::ProductionMutationStatus::Aborted,
             }
-            SignedIntentStatus::Committed => crate::ProductionMutationStatus::Committed,
-            SignedIntentStatus::RolledBack => crate::ProductionMutationStatus::RolledBack,
-            SignedIntentStatus::RecoveryRequired => {
-                crate::ProductionMutationStatus::RecoveryRequired
-            }
-            SignedIntentStatus::Aborted => crate::ProductionMutationStatus::Aborted,
         };
         let control_revision = intent
             .expected_control_revision
@@ -830,6 +968,24 @@ impl<D: ProcessDriver> Supervisor<D> {
             let intent = read_intent(record.layout.run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
                 .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+            if !supervisor.registry.is_release_qualification() {
+                match decision.outcome {
+                    ProductionRecoveryOutcome::AbandonUnknown | ProductionRecoveryOutcome::ConfirmUnknownPublication => {
+                        return supervisor.resolve_current_unknown_publication(agent_id, slot, &record, &intent, decision, verifier, expected_authority_epoch);
+                    }
+                    ProductionRecoveryOutcome::ConfirmCommittedPublication | ProductionRecoveryOutcome::ConfirmRolledBackPublication => {
+                        return supervisor.confirm_completed_publication(agent_id, slot, &record, &intent, decision, verifier, expected_authority_epoch);
+                    }
+                    ProductionRecoveryOutcome::RetryRetainedPublication => {
+                        return supervisor.retry_retained_publication(agent_id, slot, &record, &intent, decision, verifier, expected_authority_epoch);
+                    }
+                    ProductionRecoveryOutcome::Committed | ProductionRecoveryOutcome::RolledBack => {
+                        if supervisor.registry.is_release_intent_reconciliation() || intent.pq_authority.is_none() {
+                            return Err(SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()));
+                        }
+                    }
+                }
+            }
             if !intent.requires_recovery() {
                 return Err(SupervisorError::Invalid(
                     "production recovery requires a quarantined signed intent".to_string(),
@@ -871,7 +1027,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     H7H89ProductionTransition::Rollback,
                     ProductionRecoveryOutcome::RolledBack,
                 ) => intent.target_release.as_str(),
-                (_, ProductionRecoveryOutcome::AbandonUnknown) => {
+                (_, ProductionRecoveryOutcome::AbandonUnknown | ProductionRecoveryOutcome::ConfirmUnknownPublication
+                    | ProductionRecoveryOutcome::ConfirmCommittedPublication | ProductionRecoveryOutcome::ConfirmRolledBackPublication
+                    | ProductionRecoveryOutcome::RetryRetainedPublication) => {
                     return Err(SupervisorError::Invalid("unknown outcome requires its v2 recovery path".to_string()));
                 }
                 (
@@ -905,7 +1063,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     H7H89ProductionTransition::Upgrade,
                     ProductionRecoveryOutcome::RolledBack,
                 ) => transaction.source_binding.as_ref(),
-                (_, ProductionRecoveryOutcome::AbandonUnknown) => {
+                (_, ProductionRecoveryOutcome::AbandonUnknown | ProductionRecoveryOutcome::ConfirmUnknownPublication
+                    | ProductionRecoveryOutcome::ConfirmCommittedPublication | ProductionRecoveryOutcome::ConfirmRolledBackPublication
+                    | ProductionRecoveryOutcome::RetryRetainedPublication) => {
                     return Err(SupervisorError::Invalid("unknown outcome requires its v2 recovery path".to_string()));
                 }
                 (
@@ -936,13 +1096,20 @@ impl<D: ProcessDriver> Supervisor<D> {
                 Sha256Digest::parse(value)
                     .map_err(|_| SupervisorError::Invalid(format!("{label} digest is malformed")))
             };
-            let manifest = parse(binding.manifest_sha256, "recovery observed manifest")?;
-            let agentd = parse(binding.agentd_program_sha256, "recovery observed agentd")?;
+            let manifest = parse(binding.manifest_sha256.clone(), "recovery observed manifest")?;
+            let agentd = parse(binding.agentd_program_sha256.clone(), "recovery observed agentd")?;
             let matrixd = binding
                 .matrixd_program_sha256
+                .clone()
                 .map(|value| parse(value, "recovery observed matrixd"))
                 .transpose()?;
 
+            let policy_admission = crate::signed_intent_policy::MutationPolicyAdmission::acquire(
+                &supervisor.registry, verifier, now_unix_seconds)?;
+            if policy_admission.binding(&supervisor.registry, agent_id, &expected_release_id)? != binding {
+                return Err(SupervisorError::ProductionAuthority("recovery release permission changed before current policy admission".to_string()));
+            }
+            let current_now = policy_admission.now_seconds()?;
             verifier
                 .verify_recovery(
                     decision,
@@ -956,7 +1123,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     matrixd.as_ref(),
                     record.lifecycle.generation,
                     expected_authority_epoch,
-                    now_unix_seconds,
+                    current_now,
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
 
@@ -973,7 +1140,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     H7H89ProductionTransition::Rollback,
                     ProductionRecoveryOutcome::RolledBack,
                 ) => ReleaseTransactionPhase::RolledBack,
-                (_, ProductionRecoveryOutcome::AbandonUnknown) => {
+                (_, ProductionRecoveryOutcome::AbandonUnknown | ProductionRecoveryOutcome::ConfirmUnknownPublication
+                    | ProductionRecoveryOutcome::ConfirmCommittedPublication | ProductionRecoveryOutcome::ConfirmRolledBackPublication
+                    | ProductionRecoveryOutcome::RetryRetainedPublication) => {
                     return Err(SupervisorError::Invalid("unknown outcome requires its v2 recovery path".to_string()));
                 }
                 (
@@ -998,7 +1167,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     H7H89ProductionTransition::Rollback,
                     ProductionRecoveryOutcome::RolledBack,
                 ) => SignedIntentStatus::RolledBack,
-                (_, ProductionRecoveryOutcome::AbandonUnknown) => {
+                (_, ProductionRecoveryOutcome::AbandonUnknown | ProductionRecoveryOutcome::ConfirmUnknownPublication
+                    | ProductionRecoveryOutcome::ConfirmCommittedPublication | ProductionRecoveryOutcome::ConfirmRolledBackPublication
+                    | ProductionRecoveryOutcome::RetryRetainedPublication) => {
                     return Err(SupervisorError::Invalid("unknown outcome requires its v2 recovery path".to_string()));
                 }
                 (
@@ -1009,15 +1180,24 @@ impl<D: ProcessDriver> Supervisor<D> {
             let terminal_transaction = transaction
                 .with_recovery_resolution(terminal_phase, decision.digest().clone())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            policy_admission.revalidate_window(decision.issued_at_unix_seconds, decision.expires_at_unix_seconds)?;
+            if policy_admission.binding(&supervisor.registry, agent_id, &expected_release_id)? != binding
+                || supervisor.record(agent_id)?.release_state != record.release_state
+                || supervisor.record(agent_id)?.lifecycle != record.lifecycle
+                || read_release_transaction(record.layout.run_root()).map_err(|error| SupervisorError::Invalid(error.to_string()))?.as_ref() != Some(&transaction) {
+                return Err(SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()));
+            }
             write_release_transaction(record.layout.run_root(), &terminal_transaction)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.release_transaction = Some(terminal_transaction);
             let terminal_intent = intent
                 .with_status(terminal_intent_status)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &terminal_intent)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            slot.intent_publication_fenced = true;
+            let policy_admission = policy_admission.publish_recovery(&record, &intent, &terminal_intent, decision)?;
+            policy_admission.revalidate_window(decision.issued_at_unix_seconds, decision.expires_at_unix_seconds)?;
             slot.signed_intent = Some(terminal_intent.clone());
+            slot.intent_publication_fenced = false;
 
             let next_control_revision = Self::next_control_revision_for_slot(slot)?;
             Self::set_control_revision_for_slot(slot, next_control_revision)?;
@@ -1041,7 +1221,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                         H7H89ProductionTransition::Rollback,
                         ProductionRecoveryOutcome::RolledBack,
                     ) => crate::ProductionMutationStatus::RolledBack,
-                    (_, ProductionRecoveryOutcome::AbandonUnknown) => {
+                    (_, ProductionRecoveryOutcome::AbandonUnknown | ProductionRecoveryOutcome::ConfirmUnknownPublication
+                    | ProductionRecoveryOutcome::ConfirmCommittedPublication | ProductionRecoveryOutcome::ConfirmRolledBackPublication
+                    | ProductionRecoveryOutcome::RetryRetainedPublication) => {
                         return Err(SupervisorError::Invalid("unknown outcome requires its v2 recovery path".to_string()));
                     }
                     (

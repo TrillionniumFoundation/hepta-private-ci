@@ -718,6 +718,11 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     )?;
     assert_user_item_once(&b_before_failure.thread.turns, B_CLIENT_ID, B_TEXT)?;
 
+    // Retain the live pending invocation before killing A. Recovery publishes
+    // this exact checkpoint without measuring or re-signing A's stopped image.
+    let retained_recovery_a = fleet
+        .retain_live_recovery_frontier(&agent_a, /*expected_provider_invocation_rows*/ 1)
+        .await?;
     fleet.supervisor.kill(&agent_a.agent_id)?;
     wait_inactive(&mut fleet, &agent_a.agent_id).await?;
     drop(client_a);
@@ -737,6 +742,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     assert_user_item_once(&b_during_failure.thread.turns, B_CLIENT_ID, B_TEXT)?;
     ensure!(model_b_state.request_count()? == 1);
 
+    retained_recovery_a.publish()?;
     fleet
         .supervisor
         .restart(&agent_a.agent_id, Instant::now())?;

@@ -25,6 +25,10 @@ use crate::release::load_release_state;
 
 const LIFECYCLE_FILE_PREFIX: &str = "lifecycle-";
 const LIFECYCLE_FILE_SUFFIX: &str = ".json";
+// These records contain one canonical workspace path and fixed identity,
+// resource or lifecycle fields. Keep generous durable-record headroom while
+// bounding both the producer and every fresh owner read.
+const MAX_CONTROL_FILE_BYTES: u64 = 262_144;
 static STAGING_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -50,6 +54,7 @@ impl FleetSnapshot {
 #[derive(Clone, Debug)]
 pub struct FleetRegistry {
     layout: HeptaFleetLayout,
+    pub(crate) release_authority: crate::release_registry::ReleaseMode,
 }
 
 impl FleetRegistry {
@@ -66,12 +71,16 @@ impl FleetRegistry {
             validate_physical_directory(directory)?;
         }
         sync_directory(layout.fleet_root().as_path())?;
-        Ok(Self { layout })
+        Ok(Self {
+            layout,
+            release_authority: crate::release_registry::ReleaseMode::StateOnly,
+        })
     }
 
     pub fn open_existing(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
         let registry = Self {
             layout: fleet_root.layout(),
+            release_authority: crate::release_registry::ReleaseMode::StateOnly,
         };
         for directory in [
             registry.layout.fleet_root().as_path(),
@@ -464,6 +473,11 @@ fn staging_root(agents_root: &Path, agent_id: &AgentId) -> PathBuf {
 }
 
 fn write_new_file(path: &Path, contents: &[u8]) -> Result<(), FleetRegistryError> {
+    if contents.len() as u64 > MAX_CONTROL_FILE_BYTES {
+        return Err(FleetRegistryError::Corrupt(
+            "agent control file exceeds its byte bound".to_string(),
+        ));
+    }
     let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
     file.write_all(contents)?;
     file.sync_all()?;
@@ -471,14 +485,13 @@ fn write_new_file(path: &Path, contents: &[u8]) -> Result<(), FleetRegistryError
 }
 
 fn read_regular_file(path: &Path) -> Result<String, FleetRegistryError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
-        return Err(FleetRegistryError::Corrupt(format!(
-            "control path is not a regular file: {}",
-            path.display()
-        )));
-    }
-    std::fs::read_to_string(path).map_err(Into::into)
+    let bytes = crate::release::catalog_io::read(
+        path,
+        MAX_CONTROL_FILE_BYTES,
+        crate::release::catalog_io::FileRule::Regular,
+    )?;
+    String::from_utf8(bytes)
+        .map_err(|error| std::io::Error::new(ErrorKind::InvalidData, error).into())
 }
 
 fn validate_physical_directory(path: &Path) -> Result<(), FleetRegistryError> {

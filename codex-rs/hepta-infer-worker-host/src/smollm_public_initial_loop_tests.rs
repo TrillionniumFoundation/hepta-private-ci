@@ -130,13 +130,22 @@ async fn train_round(
             .ok_or("explicit exact-source real-round runner required")?,
     )
     .canonicalize()?;
+    let historical_chain = if input.material_runtime_bridge.is_some() {
+        PathBuf::from(
+            std::env::var_os("HEPTA_PUBLIC_INITIAL_HISTORICAL_CHAIN")
+                .ok_or("explicit historical round source required")?,
+        )
+        .canonicalize()?
+    } else {
+        input.chain.clone()
+    };
     let stem = output.parent().ok_or("round output parent")?;
     let stdout = File::create(stem.join(format!("round-{round}.stdout.log")))?;
     let stderr = File::create(stem.join(format!("round-{round}.stderr.log")))?;
     let mut launch = serde_json::json!({
         "schema":"hepta-controlled-real-round-launch-v2", "round":round,
         "python":input.python,"script":script,"script_sha256":Digest32::of_bytes(&fs::read(&script)?).to_string(),
-        "chain":input.chain,"materials":input.materials,"parent":input.parent,
+        "chain":historical_chain,"materials":input.materials,"parent":input.parent,
         "parent_sha256":input.parent_sha256,"ordinary_readback":readback,"output":output,
         "overall_round_guard_seconds":2_700,"all_phase_worst_cases_covered":false,
         "original_phase_budgets_unchanged":true,"isolated_python":true,"fresh_owned_process_group":true,
@@ -146,6 +155,18 @@ async fn train_round(
         launch["schema"] = serde_json::json!("hepta-controlled-real-round-launch-observed-v1");
         launch["execution_profile"] = serde_json::json!(OBSERVED_PROFILE);
     }
+    if input.material_runtime_bridge.is_some() {
+        if historical_chain == input.chain {
+            return Err("current runtime cannot replace the historical round source".into());
+        }
+        launch["schema"] = serde_json::json!(match execution {
+            RoundExecution::OriginalV2 => "hepta-controlled-real-round-launch-material-bridge-v1",
+            RoundExecution::ObservedV1 =>
+                "hepta-controlled-real-round-launch-observed-material-bridge-v1",
+        });
+        launch["current_runtime_chain"] = serde_json::json!(input.chain);
+        launch["historical_chain_role_explicit"] = serde_json::json!(true);
+    }
     fs::write(
         stem.join(format!("round-{round}.launch.json")),
         serde_json::to_vec_pretty(&launch)?,
@@ -154,7 +175,7 @@ async fn train_round(
         .args(["-I", "-B"])
         .arg(&script)
         .arg("--chain")
-        .arg(&input.chain)
+        .arg(&historical_chain)
         .arg("--materials")
         .arg(&input.materials)
         .arg("--parent")

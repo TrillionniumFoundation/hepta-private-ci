@@ -147,6 +147,79 @@ class MetadataArtifactTests(unittest.TestCase):
         self.assertEqual(result["omitted_file_count"], 1)
         self.assertFalse(result["independent_payload_replay_available"])
 
+    def test_original_ordinary_worker_failure_logs_are_retained_without_other_sessions_or_keys(
+        self,
+    ):
+        diagnostics = {
+            "host-process.log": b"original host supervisor reported child exit 1\n",
+            "session/worker/process.log": b"original worker exception before ready\n",
+            "session/worker/supervisor.json": b'{"outcome":"failed","exit_code":1}',
+            "session/worker/cost-events.jsonl": b'{"event":"process-exit","exit_code":1}\n',
+        }
+        expected = {"evidence-index.json"}
+        for session in ("ordinary-selected-initial", "public-reopen-session-0"):
+            prefix = f"n/{session}/session/"
+            for relative, raw in diagnostics.items():
+                name = prefix + relative
+                self.file(name, raw)
+                expected.add(name)
+            self.file(prefix + "artifact.safetensors", b"omitted tensor fixture")
+            self.file(prefix + "wrapped-adapter.json", b'{"modules":{"q":[1]}}')
+            self.file(
+                prefix + "session/worker/private-key.json",
+                b'{"private_key":"test-only"}',
+            )
+        for session in ("public-reopen-session-1", "unreviewed-session"):
+            self.file(
+                f"n/{session}/session/session/worker/process.log", b"unreviewed path\n"
+            )
+        self.index()
+        result = self.run_export()
+        self.assertEqual(set(result["files"]), expected)
+        self.assertEqual(result["omitted_file_count"], 8)
+        for relative in expected:
+            self.assertEqual(
+                (self.output / relative).read_bytes(),
+                (self.root / relative).read_bytes(),
+            )
+        self.assertFalse(result["product_qualification"])
+        self.assertFalse(result["checkpoint_payloads_exported"])
+
+    def test_changed_ordinary_worker_log_refuses_original_index_binding(self):
+        prefix = "n/ordinary-selected-initial/session/"
+        self.file(prefix + "host-process.log", b"original host failure\n")
+        worker = self.file(
+            prefix + "session/worker/process.log", b"original worker failure\n"
+        )
+        self.index()
+        worker.write_bytes(b"changed worker failure\n")
+        with self.assertRaisesRegex(ValueError, "differs from original index"):
+            self.run_export()
+        self.assertFalse(self.output.exists())
+
+    def test_ordinary_worker_receipts_keep_binary_and_payload_refusal(self):
+        prefix = "n/public-reopen-session-0/session/session/worker/"
+        for filename, raw, reason in (
+            ("process.log", b"binary\x00payload", "binary data"),
+            (
+                "supervisor.json",
+                b'{"exit_code":1,"private_key":"test-only"}',
+                "payload-bearing",
+            ),
+            (
+                "cost-events.jsonl",
+                b'{"exit_code":1}\n{"tensor_bytes":"encoded"}\n',
+                "payload-bearing",
+            ),
+        ):
+            with self.subTest(filename=filename):
+                self.rows.clear()
+                self.file(prefix + filename, raw)
+                self.index()
+                with self.assertRaisesRegex(ValueError, reason):
+                    self.run_export()
+                self.assertFalse(self.output.exists())
+
     def test_wrong_index_hash_aborts_without_publishing_partial_directory(self):
         self.file("hepta-source.txt", b"original\n")
         self.file("required-outcomes.json", b'{"all_required_outcomes_passed":false}')

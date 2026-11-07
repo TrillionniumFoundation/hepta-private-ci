@@ -17,6 +17,7 @@ from types import SimpleNamespace
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import hepta_smollm_three_rounds_v2 as rounds
 import hepta_smollm_execution_source_v1 as execution_source
+import hepta_smollm_runtime_roles_v1 as runtime_roles
 
 EXECUTION_SOURCE_PROFILE = os.environ.get("HEPTA_PAIRED_EXECUTION_PROFILE")
 CHAIN_COMMIT = execution_source.selected_commit(
@@ -237,9 +238,11 @@ def validate_request(args):
     )
     gates = validate_gates(args.original_gates, source)
     config = read_record(args.original_native_input)
+    historical_chain, source_roles = runtime_roles.native_roles(
+        config, getattr(args, "original_historical_chain", None), rounds.CHAIN_COMMIT
+    )
     rounds.require(
-        config["schema"] == "hepta-smollm-neural-native-check-v2"
-        and all(
+        all(
             Path(config[k]).is_absolute()
             for k in ("chain", "materials", "parent", "output")
         )
@@ -249,7 +252,7 @@ def validate_request(args):
         "original native inputs must match this actual parent",
     )
     original_head = subprocess.check_output(
-        ["git", "-C", config["chain"], "rev-parse", "HEAD"], text=True
+        ["git", "-C", str(historical_chain), "rev-parse", "HEAD"], text=True
     ).strip()
     rounds.require(
         original_head == rounds.CHAIN_COMMIT,
@@ -259,7 +262,7 @@ def validate_request(args):
         [
             "git",
             "-C",
-            config["chain"],
+            str(historical_chain),
             "diff",
             "--exit-code",
             "HEAD",
@@ -296,6 +299,9 @@ def validate_request(args):
             execution_profile=loop["execution_profile"],
             original_model_material_source_unchanged=True,
         )
+    if source_roles is not None:
+        context["schema"] = "hepta-material-bridge-original-gates-for-answer-eos-v1"
+        context["source_roles"] = source_roles
     return context
 
 
@@ -309,9 +315,10 @@ def main():
         "output",
     ):
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--historical-chain", type=Path)
     args = parser.parse_args()
     rounds.require(
-        all(value.is_absolute() for value in vars(args).values()),
+        all(value.is_absolute() for value in vars(args).values() if value is not None),
         "absolute paths required",
     )
     config = read_record(args.native_input)
@@ -330,6 +337,7 @@ def main():
             research_profile=PROFILE,
             original_gates=args.original_gates,
             original_native_input=args.native_input,
+            original_historical_chain=args.historical_chain,
         )
     )
 

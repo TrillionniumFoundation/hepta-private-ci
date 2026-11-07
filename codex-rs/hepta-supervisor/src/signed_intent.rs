@@ -6,8 +6,6 @@
 //! an in-flight operation and can fail closed instead of guessing.
 
 use std::fs::OpenOptions;
-use std::io::ErrorKind;
-use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
@@ -29,6 +27,9 @@ pub const SIGNED_INTENT_RECOVERY_SCHEMA_VERSION: u32 = 1;
 pub const SIGNED_INTENT_RECOVERY_FILE: &str = "supervisor-signed-intent-recovery.json";
 pub const MAX_UNKNOWN_EFFECT_DISPOSITIONS: usize = 32;
 const MAX_INTENT_BYTES: u64 = 262_144;
+#[path = "signed_intent_predecessor.rs"]
+pub(crate) mod predecessor;
+
 const INTENT_DOMAIN: &[u8] = b"hepta-supervisor:signed-intent:v1";
 const RECOVERY_DOMAIN: &[u8] = b"hepta-supervisor:signed-intent-recovery:v1";
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
@@ -62,6 +63,8 @@ pub struct SignedSupervisorIntent {
     pub expected_lifecycle_generation: u64,
     pub authority_epoch: u64,
     pub status: SignedIntentStatus,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pq_authority: Option<crate::signed_intent_policy::SignedIntentPqAuthority>,
     pub intent_sha256: Sha256Digest,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub unknown_effects: Vec<UnknownEffectDisposition>,
@@ -131,6 +134,7 @@ impl SignedSupervisorIntent {
             expected_lifecycle_generation,
             authority_epoch,
             status,
+            pq_authority: None,
             intent_sha256: Sha256Digest::for_bytes(b"pending"),
             unknown_effects: Vec::new(),
         };
@@ -140,13 +144,16 @@ impl SignedSupervisorIntent {
     }
 
     pub fn validate(&self) -> Result<(), SignedIntentError> {
-        if !matches!(self.schema_version, 1 | 2)
+        if !matches!(self.schema_version, 1..=3)
+            || (self.schema_version == 3) != self.pq_authority.is_some()
             || (self.schema_version == 1 && !self.unknown_effects.is_empty())
             || self.unknown_effects.len() > MAX_UNKNOWN_EFFECT_DISPOSITIONS
             || self.agent_id.trim().is_empty()
             || self.agent_id.len() > 256
             || self.source_release.trim().is_empty()
+            || self.source_release.len() > 128
             || self.target_release.trim().is_empty()
+            || self.target_release.len() > 128
             || self.source_release == self.target_release
             || self.expected_lifecycle_generation == 0
             || self.authority_epoch == 0
@@ -162,11 +169,15 @@ impl SignedSupervisorIntent {
                 "signed intent digest is malformed".to_string(),
             ));
         }
+        if let Some(authority) = &self.pq_authority {
+            authority.validate_for(self)?;
+        }
         for unknown in &self.unknown_effects {
             if unknown.decision.outcome
                 != crate::signed_authority::ProductionRecoveryOutcome::AbandonUnknown
                 || unknown.decision.agent_id != self.agent_id
                 || unknown.target_release.is_empty()
+                || unknown.target_release.len() > 128
                 || unknown.target_release == unknown.decision.observed_release
             {
                 return Err(SignedIntentError::Invalid(
@@ -223,7 +234,7 @@ impl SignedSupervisorIntent {
     ) -> Result<Self, SignedIntentError> {
         if let Some(previous) = previous {
             self.unknown_effects = previous.unknown_effects.clone();
-            if !self.unknown_effects.is_empty() {
+            if !self.unknown_effects.is_empty() && self.pq_authority.is_none() {
                 self.schema_version = 2;
             }
             self.intent_sha256 = self.compute_digest()?;
@@ -235,7 +246,46 @@ impl SignedSupervisorIntent {
         &self,
         decision: &crate::signed_authority::ProductionRecoveryDecision,
     ) -> Result<Self, SignedIntentError> {
-        if !self.requires_recovery()
+        if !self.requires_recovery() {
+            return Err(SignedIntentError::Invalid(
+                "Unknown disposition requires a quarantined intent".to_string(),
+            ));
+        }
+        self.append_unknown(decision)
+    }
+
+    /// An explicitly observed PQ publication cut retains the exact original
+    /// Prepared bytes. It does not fabricate an intermediate recovery digest.
+    pub(crate) fn abandon_unknown_at_publication_cut(
+        &self,
+        decision: &crate::signed_authority::ProductionRecoveryDecision,
+    ) -> Result<Self, SignedIntentError> {
+        if self.pq_authority.is_none()
+            || decision.pq_authority.is_none()
+            || decision
+                .unknown_observation
+                .as_ref()
+                .and_then(|observation| observation.predecessor.as_ref())
+                .is_none()
+            || !matches!(
+                self.status,
+                SignedIntentStatus::Prepared
+                    | SignedIntentStatus::Queued
+                    | SignedIntentStatus::RecoveryRequired
+            ) && !self.requires_recovery()
+        {
+            return Err(SignedIntentError::Invalid(
+                "explicit PQ publication-cut observation required".to_string(),
+            ));
+        }
+        self.append_unknown(decision)
+    }
+
+    fn append_unknown(
+        &self,
+        decision: &crate::signed_authority::ProductionRecoveryDecision,
+    ) -> Result<Self, SignedIntentError> {
+        if decision.outcome != crate::ProductionRecoveryOutcome::AbandonUnknown
             || decision.intent_sha256 != self.intent_sha256
             || decision.grant_sha256 != self.grant_sha256
             || decision.agent_id != self.agent_id
@@ -247,7 +297,9 @@ impl SignedSupervisorIntent {
             ));
         }
         let mut next = self.clone();
-        next.schema_version = 2;
+        if next.pq_authority.is_none() {
+            next.schema_version = 2;
+        }
         next.status = SignedIntentStatus::Aborted;
         next.unknown_effects.push(UnknownEffectDisposition {
             target_release: self.target_release.clone(),
@@ -259,7 +311,7 @@ impl SignedSupervisorIntent {
         Ok(next)
     }
 
-    fn compute_digest(&self) -> Result<Sha256Digest, SignedIntentError> {
+    pub(crate) fn compute_digest(&self) -> Result<Sha256Digest, SignedIntentError> {
         let payload = serde_json::to_vec(&(
             self.schema_version,
             &self.grant_sha256,
@@ -274,6 +326,16 @@ impl SignedSupervisorIntent {
         ))?;
         let bytes = if self.schema_version == 1 {
             [INTENT_DOMAIN, payload.as_slice()].concat()
+        } else if self.schema_version == 3 {
+            let history = serde_json::to_vec(&self.unknown_effects)?;
+            let policy = serde_json::to_vec(&self.pq_authority)?;
+            [
+                b"hepta-supervisor:signed-intent:ml-dsa65:v3".as_slice(),
+                payload.as_slice(),
+                history.as_slice(),
+                policy.as_slice(),
+            ]
+            .concat()
         } else {
             let history = serde_json::to_vec(&self.unknown_effects)?;
             [
@@ -325,18 +387,9 @@ impl SignedIntentRecoveryDirective {
 
 pub fn read_intent(run_root: &Path) -> Result<Option<SignedSupervisorIntent>, SignedIntentError> {
     let path = run_root.join(SIGNED_INTENT_FILE);
-    let file = match std::fs::File::open(path) {
-        Ok(file) => file,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
+    let Some(bytes) = crate::bounded_regular_file::read_optional(&path, MAX_INTENT_BYTES)? else {
+        return Ok(None);
     };
-    let mut bytes = Vec::new();
-    file.take(MAX_INTENT_BYTES + 1).read_to_end(&mut bytes)?;
-    if bytes.len() as u64 > MAX_INTENT_BYTES {
-        return Err(SignedIntentError::Invalid(
-            "signed intent exceeds its bounded journal size".to_string(),
-        ));
-    }
     let intent: SignedSupervisorIntent = serde_json::from_slice(&bytes)?;
     intent.validate()?;
     Ok(Some(intent))
@@ -346,10 +399,8 @@ pub fn read_recovery_directive(
     run_root: &Path,
 ) -> Result<Option<SignedIntentRecoveryDirective>, SignedIntentError> {
     let path = run_root.join(SIGNED_INTENT_RECOVERY_FILE);
-    let bytes = match std::fs::read(path) {
-        Ok(bytes) => bytes,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
+    let Some(bytes) = crate::bounded_regular_file::read_optional(&path, MAX_INTENT_BYTES)? else {
+        return Ok(None);
     };
     let directive: SignedIntentRecoveryDirective = serde_json::from_slice(&bytes)?;
     directive.validate()?;
@@ -405,6 +456,14 @@ fn write_atomic_json<T: Serialize>(
     value: &T,
 ) -> Result<(), SignedIntentError> {
     let bytes = serde_json::to_vec(value)?;
+    write_atomic_bytes(run_root, file_name, &bytes)
+}
+
+pub(crate) fn write_atomic_bytes(
+    run_root: &Path,
+    file_name: &str,
+    bytes: &[u8],
+) -> Result<(), SignedIntentError> {
     if bytes.len() as u64 > MAX_INTENT_BYTES {
         return Err(SignedIntentError::Invalid(
             "signed intent exceeds its bounded journal size".to_string(),
@@ -422,7 +481,7 @@ fn write_atomic_json<T: Serialize>(
         .write(true)
         .create_new(true)
         .open(&temp)?;
-    file.write_all(&bytes)?;
+    file.write_all(bytes)?;
     file.sync_all()?;
     drop(file);
     publish::publish(&temp, &final_path)?;

@@ -68,6 +68,7 @@ fn v1_recovery_signature_remains_valid_and_rejects_v2_observation() {
     decoded.unknown_observation = Some(UnknownRecoveryObservation {
         release_state_generation: 1,
         admission_frontier_sha256: Sha256Digest::for_bytes(b"frontier"),
+        predecessor: None,
     });
     assert!(decoded.validate_shape().is_err());
 }

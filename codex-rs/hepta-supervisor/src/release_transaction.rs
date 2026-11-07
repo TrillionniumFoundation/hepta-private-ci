@@ -24,6 +24,10 @@ use thiserror::Error;
 
 pub const RELEASE_TRANSACTION_SCHEMA_VERSION: u32 = 3;
 pub const RELEASE_TRANSACTION_FILE: &str = "supervisor-release-transaction.json";
+// The journal contains identities and fixed-size digests, never release
+// programs, arguments, signatures, or history. Retain the existing signed
+// intent's 256 KiB durable budget for both legacy and registered transactions.
+const MAX_TRANSACTION_BYTES: u64 = 262_144;
 const TRANSACTION_DOMAIN: &[u8] = b"hepta-supervisor:release-transaction:v3";
 const COMPATIBILITY_DOMAIN: &[u8] = b"hepta-supervisor:release-compatibility-binding:v1";
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
@@ -326,10 +330,12 @@ fn compatibility_binding_digest(
 pub fn read_release_transaction(
     run_root: &Path,
 ) -> Result<Option<DurableReleaseTransaction>, ReleaseTransactionError> {
-    let bytes = match std::fs::read(run_root.join(RELEASE_TRANSACTION_FILE)) {
-        Ok(bytes) => bytes,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
+    let Some(bytes) = crate::bounded_regular_file::read_optional(
+        &run_root.join(RELEASE_TRANSACTION_FILE),
+        MAX_TRANSACTION_BYTES,
+    )?
+    else {
+        return Ok(None);
     };
     let value: DurableReleaseTransaction = serde_json::from_slice(&bytes)?;
     value.validate()?;
@@ -340,6 +346,31 @@ pub fn write_release_transaction(
     run_root: &Path,
     transaction: &DurableReleaseTransaction,
 ) -> Result<(), ReleaseTransactionError> {
+    struct BoundedEncoding(Vec<u8>);
+
+    impl Write for BoundedEncoding {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            if self.0.len().saturating_add(bytes.len()) > MAX_TRANSACTION_BYTES as usize {
+                return Err(std::io::Error::new(
+                    ErrorKind::InvalidData,
+                    "release transaction exceeds its durable byte bound",
+                ));
+            }
+            self.0.extend_from_slice(bytes);
+            Ok(bytes.len())
+        }
+
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+
+    // Bound encoding before validation recomputes any digest, and before
+    // creating directories or temporary files. Rejected writes preserve the
+    // previous durable transaction and its original canonical representation.
+    let mut encoded = BoundedEncoding(Vec::new());
+    serde_json::to_writer(&mut encoded, transaction)?;
+    let bytes = encoded.0;
     transaction.validate()?;
     std::fs::create_dir_all(run_root)?;
     let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
@@ -353,7 +384,6 @@ pub fn write_release_transaction(
         ".{RELEASE_TRANSACTION_FILE}.{nanos}.{sequence}.tmp"
     ));
     let final_path = run_root.join(RELEASE_TRANSACTION_FILE);
-    let bytes = serde_json::to_vec(transaction)?;
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -382,7 +412,13 @@ fn replace_same_directory(temp: &Path, final_path: &Path) -> Result<(), std::io:
 
 #[cfg(unix)]
 fn sync_directory(path: &Path) -> Result<(), std::io::Error> {
-    std::fs::File::open(path)?.sync_all()
+    use std::os::unix::fs::OpenOptionsExt;
+
+    OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_NONBLOCK | libc::O_CLOEXEC)
+        .open(path)?
+        .sync_all()
 }
 
 #[cfg(not(unix))]
@@ -396,6 +432,10 @@ fn valid_sha256(value: &str) -> bool {
             .bytes()
             .all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
 }
+
+#[cfg(test)]
+#[path = "release_transaction_io_tests.rs"]
+mod io_tests;
 
 #[cfg(test)]
 mod tests {

@@ -105,10 +105,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        if slot
-            .signed_intent
-            .as_ref()
-            .is_some_and(super::signed_intent::SignedSupervisorIntent::requires_recovery)
+        if self.registry.is_release_intent_reconciliation()
+            || slot.intent_publication_fenced
+            || slot
+                .signed_intent
+                .as_ref()
+                .is_some_and(super::signed_intent::SignedSupervisorIntent::requires_recovery)
         {
             return Err(SupervisorError::SignedIntentRecoveryRequired(
                 agent_id.clone(),
@@ -131,6 +133,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 record.lifecycle.lifecycle
             )));
         }
+        let (release, release_admission) = self.admit_release_for_process(agent_id, &release)?;
         let starting = self.registry.compare_and_transition(
             agent_id,
             record.lifecycle.generation,
@@ -151,6 +154,20 @@ impl<D: ProcessDriver> Supervisor<D> {
             logs_root: record.layout.logs_root().to_path_buf(),
             command: release.command().clone(),
         };
+        if let Err(error) = crate::signed_intent_policy::revalidate_process_admission(
+            release_admission.as_ref(),
+            slot.signed_intent.as_ref(),
+            &record,
+            self.registry.is_release_qualification(),
+        ) {
+            self.transition_without_runtime(
+                agent_id,
+                slot,
+                starting.generation,
+                AgentLifecycle::Failed,
+            )?;
+            return Err(error);
+        }
         let mut spawned = match self.driver.spawn(&spec) {
             Ok(spawned) => spawned,
             Err(error) => {
@@ -226,12 +243,26 @@ impl<D: ProcessDriver> Supervisor<D> {
         // Disposition of an Unknown effect retires its already-observed
         // lifecycle generations. A late lease cannot revive that worker even
         // after the disposition itself or a later grant has been recovered.
-        let retired = crate::signed_intent::read_intent(record.layout.run_root())
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-            .is_some_and(|intent| {
-                intent.unknown_effects.iter().any(|unknown| {
-                    lease.spawn_generation <= unknown.decision.expected_lifecycle_generation
-                })
+        let (persisted_intent, intent_fault) =
+            match crate::signed_intent::read_intent(record.layout.run_root()) {
+                Ok(intent) => (intent, None),
+                Err(error) => (None, Some(SupervisorError::Invalid(error.to_string()))),
+            };
+        // Invalid authorization bytes cannot skip discovery of the independent
+        // process identity. Such an adoption is containment only.
+        let retired = intent_fault.is_some()
+            || persisted_intent.as_ref().is_some_and(|intent| {
+                // A new supervisor epoch never resumes a retained PQ admission.
+                // Adoption is only for identity containment; the original terminal
+                // transaction/CAS witness is reconciled later by the intent owner.
+                (intent.pq_authority.is_some()
+                    && matches!(
+                        intent.status,
+                        crate::SignedIntentStatus::Prepared | crate::SignedIntentStatus::Queued
+                    ))
+                    || intent.unknown_effects.iter().any(|unknown| {
+                        lease.spawn_generation <= unknown.decision.expected_lifecycle_generation
+                    })
             });
         // Validate timing before adoption yields ownership of a live handle.
         let recovery_deadline = if retired {
@@ -254,65 +285,92 @@ impl<D: ProcessDriver> Supervisor<D> {
             control_socket: record.layout.agentd_control_socket().to_path_buf(),
             identity: lease.identity.clone(),
         };
+        // A successful admission lock spans the actual adoption. If admission
+        // fails, adoption is used only to prove identity before fencing/killing
+        // that existing child; it never turns into a permitted running process.
+        let needs_current_release = !retired
+            && (!self.registry.is_release_qualification()
+                || (lease.release_id.as_str() != "unversioned"
+                    && slot
+                        .active_release
+                        .as_ref()
+                        .is_none_or(|active| active.release_id() != &lease.release_id)));
+        let mut release_admission = needs_current_release.then(|| {
+            self.registry
+                .admit_release(agent_id, &lease.release_id)
+                .map_err(SupervisorError::from)
+                .and_then(|admission| {
+                    let release = AgentRelease::try_from(admission.release().clone())?;
+                    crate::signed_intent_policy::revalidate_process_admission(
+                        Some(&admission),
+                        persisted_intent.as_ref(),
+                        record,
+                        self.registry.is_release_qualification(),
+                    )?;
+                    Ok((release, admission))
+                })
+        });
         match self
             .driver
             .adopt(&spec)
             .map_err(|error| driver_error(agent_id, error))?
         {
             Adoption::Adopted(mut process) => {
-                if !retired && lease.release_id.as_str() != "unversioned" {
-                    let needs_resolution = slot
+                let _release_admission = if let Some(admission) = release_admission.take() {
+                    let (leased, guard) = match admission {
+                        Ok(current) => current,
+                        Err(error) => {
+                            // Exact process identity has already been proven by adoption.
+                            // If the active release is no longer currently admitted (or
+                            // its admission state cannot be verified), fail closed by
+                            // fencing and killing the child before returning the fault.
+                            // Keep the runtime handle until exit is observed so recovery
+                            // never leaves a live unmanaged process behind.
+                            let runtime_generation = record.lifecycle.generation;
+                            let kill_requested = process.kill().is_ok();
+                            slot.runtime = Some(AgentRuntime {
+                                process,
+                                identity: lease.identity.clone(),
+                                spawn_generation: lease.spawn_generation,
+                                release_id: lease.release_id,
+                                generation: runtime_generation,
+                                // Failed termination must remain retryable; it is
+                                // not a successfully issued Killing transition.
+                                phase: if kill_requested {
+                                    RuntimePhase::Killing
+                                } else {
+                                    RuntimePhase::Stopping { deadline: now }
+                                },
+                                healthy: false,
+                                fenced: true,
+                            });
+                            if is_live_lifecycle(record.lifecycle.lifecycle) {
+                                let failed = self.transition_without_runtime(
+                                    agent_id,
+                                    slot,
+                                    runtime_generation,
+                                    AgentLifecycle::Failed,
+                                )?;
+                                if let Some(runtime) = slot.runtime.as_mut() {
+                                    runtime.generation = failed;
+                                }
+                            }
+                            return Err(error);
+                        }
+                    };
+                    if slot
                         .active_release
                         .as_ref()
-                        .is_none_or(|active| active.release_id() != &lease.release_id);
-                    if needs_resolution {
-                        let leased =
-                            match self.registry.resolve_release(agent_id, &lease.release_id) {
-                                Ok(release) => AgentRelease::try_from(release)?,
-                                Err(error) => {
-                                    // Exact process identity has already been proven by adoption.
-                                    // If the active release is no longer currently admitted (or
-                                    // its admission state cannot be verified), fail closed by
-                                    // fencing and killing the child before returning the fault.
-                                    // Keep the runtime handle until exit is observed so recovery
-                                    // never leaves a live unmanaged process behind.
-                                    let runtime_generation = record.lifecycle.generation;
-                                    let kill_requested = process.kill().is_ok();
-                                    slot.runtime = Some(AgentRuntime {
-                                        process,
-                                        identity: lease.identity.clone(),
-                                        spawn_generation: lease.spawn_generation,
-                                        release_id: lease.release_id.clone(),
-                                        generation: runtime_generation,
-                                        // Failed termination must remain retryable; it is
-                                        // not a successfully issued Killing transition.
-                                        phase: if kill_requested {
-                                            RuntimePhase::Killing
-                                        } else {
-                                            RuntimePhase::Stopping { deadline: now }
-                                        },
-                                        healthy: false,
-                                        fenced: true,
-                                    });
-                                    if is_live_lifecycle(record.lifecycle.lifecycle) {
-                                        let failed = self.transition_without_runtime(
-                                            agent_id,
-                                            slot,
-                                            runtime_generation,
-                                            AgentLifecycle::Failed,
-                                        )?;
-                                        if let Some(runtime) = slot.runtime.as_mut() {
-                                            runtime.generation = failed;
-                                        }
-                                    }
-                                    return Err(error.into());
-                                }
-                            };
+                        .is_none_or(|active| active.release_id() != leased.release_id())
+                    {
                         slot.previous_release = slot.active_release.take();
-                        slot.last_command = Some(leased.command().clone());
-                        slot.active_release = Some(leased);
                     }
-                }
+                    slot.last_command = Some(leased.command().clone());
+                    slot.active_release = Some(leased);
+                    Some(guard)
+                } else {
+                    None
+                };
                 let mut cleanup_error = if retired { process.kill().err() } else { None };
                 let phase = if retired {
                     if cleanup_error.is_some() {
@@ -404,6 +462,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 };
                 slot.event(generation, SupervisorEventKind::OrphanRejected);
             }
+        }
+        if let Some(error) = intent_fault {
+            return Err(error);
         }
         Ok(())
     }

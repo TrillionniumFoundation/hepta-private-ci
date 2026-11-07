@@ -424,6 +424,12 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
         .map(|agent| agent.agent_id.clone())
         .collect();
     let target_peer_baseline = peer_snapshots(&fleet, &target_peer_ids)?;
+    // Agent 5 completed a real provider invocation while Agent 0 was stopped.
+    // Its external fixture custody must retain that delta before replacement.
+    let retained_recovery = fleet
+        .retain_live_recovery_frontier(&agents[5], /*expected_provider_invocation_rows*/ 2)
+        .await?;
+    retained_recovery.publish()?;
     fleet.supervisor.upgrade(
         &agents[5].agent_id,
         release(&fleet.registry, &agents[5], "six-agent-5-v2", &v2)?,

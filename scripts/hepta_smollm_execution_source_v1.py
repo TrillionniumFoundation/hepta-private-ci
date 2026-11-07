@@ -75,6 +75,18 @@ CHAIN_COMMIT_V11 = "cfa57cd04751427451302b5c10539b3984d7f8db"
 CHAIN_TREE_V11 = "155213c2468edc411325f4f1853b471a6b25f355"
 MANIFEST_NAME_V11 = "smollm2-public-initial-v2.execution-sources-v11.json"
 MANIFEST_SHA256_V11 = "a951e866f66b0e251fc5a9f81d02a7f86954d1b3ca8ac483890fcb23a4955647"
+# Explicit fixed-pair execution; the original V11 record remains unchanged.
+PROFILE_V12 = "hepta-integrated-chain-execution-v12"
+CHAIN_COMMIT_V12 = "cad4c18fe146b7d742ac7fa8872044cd4136c22b"
+CHAIN_TREE_V12 = "1e753c4641f6108f50b356182f8b4e81fa941e31"
+MANIFEST_NAME_V12 = "smollm2-public-initial-v2.execution-sources-v12.json"
+MANIFEST_SHA256_V12 = "02b51be8bd41850879993def86533da0b4870dece4c3d7be2afd646497768902"
+# Explicit successor: V12 remains an independently frozen cad4 record.
+PROFILE_V13 = "hepta-integrated-chain-execution-v13"
+CHAIN_COMMIT_V13 = "5bb29d6ae39fa0c71f9151f3dce31fa1a3ab1800"
+CHAIN_TREE_V13 = "2ca582833816507e9102378610b4db2228a7395a"
+MANIFEST_NAME_V13 = "smollm2-public-initial-v2.execution-sources-v13.json"
+MANIFEST_SHA256_V13 = "d91084ccab02528b957cb6741341944d8934a090d8d02ff93b09f17c312157f5"
 RUNTIME_SOURCES_V11 = frozenset(
     (
         "formal/pon-nakamoto-v1/contract_wire.py",
@@ -131,6 +143,8 @@ def registered_sources():
         PROFILE_V9: (CHAIN_COMMIT_V9, MANIFEST_NAME_V9, MANIFEST_SHA256_V9),
         PROFILE_V10: (CHAIN_COMMIT_V10, MANIFEST_NAME_V10, MANIFEST_SHA256_V10),
         PROFILE_V11: (CHAIN_COMMIT_V11, MANIFEST_NAME_V11, MANIFEST_SHA256_V11),
+        PROFILE_V12: (CHAIN_COMMIT_V12, MANIFEST_NAME_V12, MANIFEST_SHA256_V12),
+        PROFILE_V13: (CHAIN_COMMIT_V13, MANIFEST_NAME_V13, MANIFEST_SHA256_V13),
     }
 
 
@@ -144,6 +158,8 @@ def registered_trees():
         PROFILE_V9: CHAIN_TREE_V9,
         PROFILE_V10: CHAIN_TREE_V10,
         PROFILE_V11: CHAIN_TREE_V11,
+        PROFILE_V12: CHAIN_TREE_V12,
+        PROFILE_V13: CHAIN_TREE_V13,
     }
 
 
@@ -239,6 +255,12 @@ def verify_selected(chain, profile):
 def require_legacy_worker_profile(profile):
     """The old study forward has no explicit runtime-snapshot admission input."""
     require(profile != PROFILE_V11, "V11 cannot execute the legacy worker-v1 forward")
+    require(
+        profile != PROFILE_V12, "V12 requires the explicit runtime-bound forward-v2"
+    )
+    require(
+        profile != PROFILE_V13, "V13 requires the explicit runtime-bound forward-v3"
+    )
 
 
 def verify(chain, profile):
@@ -249,8 +271,8 @@ def verify(chain, profile):
 def verify_merged(chain, profile, base):
     """Check the actual ordered merge with the selected source-input guard."""
     require(
-        profile in (PROFILE_V9, PROFILE_V10, PROFILE_V11),
-        "merged execution-source verification requires V9, V10 or V11",
+        profile in (PROFILE_V9, PROFILE_V10, PROFILE_V11, PROFILE_V12, PROFILE_V13),
+        "merged execution-source verification requires V9, V10, V11, V12 or V13",
     )
     require(
         type(base) is str and re.fullmatch(r"[0-9a-f]{40}", base) is not None,
@@ -269,7 +291,7 @@ def _verify(chain, profile, base):
     head = git("rev-parse", "HEAD", repository=chain)
     if base is None:
         require(head == value["chain_commit"], "exact integrated Chain commit required")
-        if profile in (PROFILE_V10, PROFILE_V11):
+        if profile in (PROFILE_V10, PROFILE_V11, PROFILE_V12, PROFILE_V13):
             # Use the same complete raw-byte and hidden-index policy as the
             # merge lane. Python-only checks cannot bind native Cargo sources,
             # lockfiles or build configuration used by ordinary runtime work.
@@ -303,10 +325,10 @@ def _verify(chain, profile, base):
             git("rev-parse", "HEAD^{tree}", repository=chain) == value["chain_tree"],
             "exact integrated Chain tree required",
         )
-    if profile in (PROFILE_V9, PROFILE_V10, PROFILE_V11):
+    if profile in (PROFILE_V9, PROFILE_V10, PROFILE_V11, PROFILE_V12, PROFILE_V13):
         version = profile.rsplit("-", 1)[-1].upper()
         input_paths = ("scripts", "formal", "config")
-        if profile in (PROFILE_V10, PROFILE_V11):
+        if profile in (PROFILE_V10, PROFILE_V11, PROFILE_V12, PROFILE_V13):
             input_paths += ("trillionnium/crates", "trillionnium/.cargo", ".cargo")
         # Both this interpreter and its children must leave the frozen import
         # directories unchanged. Do not repair the caller's environment or
@@ -351,7 +373,8 @@ def _verify(chain, profile, base):
         "diff",
         *(
             ("--no-ext-diff", "--no-textconv")
-            if profile in (PROFILE_V9, PROFILE_V10, PROFILE_V11)
+            if profile
+            in (PROFILE_V9, PROFILE_V10, PROFILE_V11, PROFILE_V12, PROFILE_V13)
             else ()
         ),
         "--exit-code",
@@ -384,6 +407,17 @@ def _verify(chain, profile, base):
             set(checked_manifest(PROFILE_V10)["files"]) | RUNTIME_SOURCES_V11
             <= set(value["files"]),
             "V11 requires the complete V10 and runtime admission source closure",
+        )
+    if profile == PROFILE_V12:
+        require(
+            set(checked_manifest(PROFILE_V11)["files"]) <= set(value["files"]),
+            "V12 retains the complete historical V11 source closure",
+        )
+    if profile == PROFILE_V13:
+        require(
+            len(value["files"]) == 53
+            and set(checked_manifest(PROFILE_V12)["files"]) == set(value["files"]),
+            "V13 requires the exact complete 53-source V12 closure",
         )
     historical = json.loads(
         (PROFILES / "smollm2-public-initial-v2.sources.json").read_bytes(),

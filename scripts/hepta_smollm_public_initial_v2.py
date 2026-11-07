@@ -23,6 +23,9 @@ PROFILES = (
 )
 PREFIX = "smollm2-public-initial-v2"
 CONTRACT = "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f"
+PUBLIC_PLAN_FILE_SHA256 = (
+    "01ec1a644f37b9fc7a4c6616f589768df97f8eed7a289b5de86afadaa7ce6165"
+)
 
 
 def require(condition, reason):
@@ -57,6 +60,40 @@ def fetch_materials(runtime, materials):
         materials / "material-manifest.json",
         dict(files=files, model=runtime.MODEL, revision=runtime.REVISION),
     )
+
+
+def public_material_plan(runtime, manifest, execution_source_profile):
+    """Keep historical genesis provenance after explicit execution-source admission.
+
+    The caller verifies the complete selected source before importing runtime.
+    Only its runtime-source identity may differ; no execution is performed here.
+    Selected source provenance remains in the separate execution-source record.
+    """
+    generated = runtime.experiment_plan(manifest)
+    historical_raw = (PROFILES / f"{PREFIX}.plan.json").read_bytes()
+    require(
+        hashlib.sha256(historical_raw).hexdigest() == PUBLIC_PLAN_FILE_SHA256,
+        "historical public plan bytes changed",
+    )
+    if execution_source_profile is None:
+        require(
+            runtime.canonical(generated) + b"\n" == historical_raw,
+            "public plan bytes differ",
+        )
+        return generated
+    selected = execution.checked_manifest(execution_source_profile)
+    runtime_source = selected["files"]["scripts/llm_runtime_pilot.py"]["sha256"]
+    require(
+        type(generated) is dict and generated.get("runtime_source") == runtime_source,
+        "public plan does not bind the selected execution source",
+    )
+    historical = json.loads(historical_raw, object_pairs_hook=execution.unique)
+    current_semantics = dict(historical, runtime_source=runtime_source)
+    require(
+        runtime.canonical(generated) == runtime.canonical(current_semantics),
+        "public plan semantics differ",
+    )
+    return historical
 
 
 def derive(chain, materials, output, download, execution_source_profile=None):
@@ -125,12 +162,7 @@ def derive(chain, materials, output, download, execution_source_profile=None):
                 byte_length=count * 4,
                 sha256=digest.hexdigest(),
             )
-    plan = runtime.experiment_plan(manifest)
-    require(
-        runtime.canonical(plan) + b"\n"
-        == (PROFILES / f"{PREFIX}.plan.json").read_bytes(),
-        "public plan bytes differ",
-    )
+    plan = public_material_plan(runtime, manifest, execution_source_profile)
     tokenizer = runtime.read_json(materials / "tokenizer_config.json")
     contract, raw, cid = runtime.contract_from_inventory(
         index, tokenizer["chat_template"], config, manifest, plan

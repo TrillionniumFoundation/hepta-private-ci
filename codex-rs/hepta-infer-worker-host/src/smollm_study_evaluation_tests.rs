@@ -9,6 +9,30 @@ mod checks;
 #[path = "smollm_study_plan_tests.rs"]
 mod plan;
 
+fn runtime_forward_contract() -> TestResult<(&'static str, &'static str, &'static str)> {
+    let profile = std::env::var("HEPTA_RUNTIME_EXECUTION_PROFILE")
+        .map_err(|_| "explicit runtime source profile required")?;
+    let commit = std::env::var("HEPTA_RUNTIME_CHAIN_SHA")
+        .map_err(|_| "explicit runtime source commit required")?;
+    match (profile.as_str(), commit.as_str()) {
+        ("hepta-integrated-chain-execution-v12", "cad4c18fe146b7d742ac7fa8872044cd4136c22b") => {
+            Ok((
+                "hepta-integrated-chain-execution-v12",
+                "smollm2-neural-forward-v2.sources.json",
+                "hepta_neural_study_forward_v2.py",
+            ))
+        }
+        ("hepta-integrated-chain-execution-v13", "5bb29d6ae39fa0c71f9151f3dce31fa1a3ab1800") => {
+            Ok((
+                "hepta-integrated-chain-execution-v13",
+                "smollm2-neural-forward-v3.sources.json",
+                "hepta_neural_study_forward_v3.py",
+            ))
+        }
+        _ => Err("closed current runtime profile and commit tuple required".into()),
+    }
+}
+
 pub(super) struct Qualified {
     pub raw_plan: eval::CrossFoldPlanV1,
     pub product: Value,
@@ -109,10 +133,18 @@ impl Provider<'_> {
                     &worker,
                 )?;
                 let output = self.root.join(format!("{model}-{window}"));
-                let request = json!({"schema":"hepta-neural-study-v1","operation":"forward",
+                let mut request = json!({"schema":"hepta-neural-study-v1","operation":"forward",
                     "runtime_chain":self.input.chain,"training_chain":self.training_chain,"materials":self.input.materials,
                     "parent":parent,"worker_plan":worker_pin,"tasks":tasks,"model":model,
                     "window_id":window_id.as_str(),"phase_id":format!("{model}-{window}"),"output":output});
+                if self.input.material_runtime_bridge.is_some() {
+                    request["forward_profile"] = json!(runtime_forward_contract()?.0);
+                    request["study_profile"] = json!(match self.profile {
+                        StudyProfile::OriginalV1 => "neural-v1",
+                        StudyProfile::BinaryAnswerV2 => "binary-v2",
+                        StudyProfile::BinaryDiverse60V3 => "diverse-v3",
+                    });
+                }
                 helper(
                     self.input,
                     self.script,
@@ -313,13 +345,37 @@ pub(super) fn evaluate(
         .canonicalize()?,
     };
     let worker = read_pin(&pin(worker_plan)?)?;
-    let material = save(
-        &root.join("holdout-material.json"),
-        &json!({"schema":match profile { StudyProfile::OriginalV1 => "hepta-neural-study-future-material-v1", StudyProfile::BinaryAnswerV2 => "hepta-neural-study-future-material-binary-v2", StudyProfile::BinaryDiverse60V3 => "hepta-neural-study-future-material-diverse-v3" },
+    let forward_script = if input.material_runtime_bridge.is_some() {
+        let (_, _, expected_runner) = runtime_forward_contract()?;
+        let selected = PathBuf::from(
+            std::env::var_os("HEPTA_NEURAL_FORWARD_RUNNER")
+                .ok_or("explicit runtime-bound forward helper required")?,
+        )
+        .canonicalize()?;
+        if selected.file_name().and_then(|name| name.to_str()) != Some(expected_runner) {
+            return Err("current runtime forward helper version changed".into());
+        }
+        selected
+    } else {
+        script.to_path_buf()
+    };
+    let mut material_value = json!({"schema":match profile { StudyProfile::OriginalV1 => "hepta-neural-study-future-material-v1", StudyProfile::BinaryAnswerV2 => "hepta-neural-study-future-material-binary-v2", StudyProfile::BinaryDiverse60V3 => "hepta-neural-study-future-material-diverse-v3" },
         "tasks":tasks,"seed":seed,"child":trained["child"],"parent":trained["parent"],"study":study,
         "worker_plan":pin(worker_plan)?,"source":pin(script)?,"training":trained["training"],
-        "fixed_execution_order":[["parent","child"],["child","parent"]],"minimum_window_micros":1_000_000}),
-    )?;
+        "fixed_execution_order":[["parent","child"],["child","parent"]],"minimum_window_micros":1_000_000});
+    if input.material_runtime_bridge.is_some() {
+        material_value["forward_source"] = pin(&forward_script)?;
+        let (runtime_profile, caller_manifest, _) = runtime_forward_contract()?;
+        let caller_contract = forward_script
+            .parent()
+            .and_then(Path::parent)
+            .ok_or("forward source root")?
+            .join("codex-rs/hepta-learning-artifacts/profiles")
+            .join(caller_manifest);
+        material_value["forward_caller_contract"] = pin(&caller_contract)?;
+        material_value["runtime_source_profile"] = json!(runtime_profile);
+    }
+    let material = save(&root.join("holdout-material.json"), &material_value)?;
     let material_digest: Digest32 = material["sha256"]
         .as_str()
         .ok_or("material digest")?
@@ -379,7 +435,7 @@ pub(super) fn evaluate(
     let mut provider = Provider {
         profile,
         input,
-        script,
+        script: &forward_script,
         training_chain: &observation_chain,
         root,
         trained,

@@ -12,7 +12,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: ${{ github.head_ref == 'codex/p0-pair-pressure-20261103' && format('hepta-pon-pair-{0}-{1}', github.event.pull_request.number, github.event.pull_request.head.sha) || format('hepta-pon-pair-{0}', github.event.pull_request.number) }}
+  group: ${{ github.head_ref == 'codex/p0-pair-pressure-20261103' && format('hepta-pon-pair-{0}-{1}', github.event.pull_request.number, github.event.pull_request.head.sha) || format('hepta-pon-pair-{0}', github.event.pull_request.number) }}${{ (github.event.pull_request.head.ref || github.ref_name) == 'fix/hepta-pq-packet-v1-20261105-df8969' && format('-source-{0}', github.event.pull_request.head.sha || github.sha) || '' }}
   # Preserve every running source; the fixed-pair repair qualifies each new
   # exact source independently while earlier native lanes finish unchanged.
   cancel-in-progress: false
@@ -115,6 +115,9 @@ jobs:
       CHAIN_EXECUTION_PROFILE: hepta-integrated-chain-execution-v10
       CHAIN_BASE_SHA: dd6e1c3cbeacbdc532b0679297835b3a0aac78f0
       HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '04be5f02c84cf5cb626a53f34bc03a5bd6ff5137' || 'd7b97e4fc54ad5f25bae4da1393a94094352d5ff' }}
+      HEPTA_PON_NPQ6_EXECUTION_PROFILE: hepta-ordinary-pon-npq6-execution-v1
+      HEPTA_PON_NPQ6_CHAIN_SOURCE: 840522d0b65b4989f1a2a1d09c0ad51af1a1956d
+      HEPTA_PON_NPQ6_CHAIN_TREE: 70377cc0a9c8d029907f6c49bbb8dee1435a6cd1
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -717,7 +720,70 @@ jobs:
         env:
           CARGO_NET_OFFLINE: "true"
         run: |
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pq-ordinary-owner.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_ordinary_pq_loader_dispatches_once_and_reads_original_receipt)' --run-ignored only --no-capture
+          # Versioned successor transport; the legacy inline size refusal stays
+          # asserted before any consumption in the native owner control.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pq-packet-v1-owner.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_ordinary_pq_packet_v1_dispatches_once_and_reads_original_receipt)' --run-ignored only --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pq-packet-v1-socket.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_pq_packet_v1_control_socket_preserves_full_packet_and_offline_receipt)' --run-ignored only --no-capture
+      - name: Require cold local rollback refusal against retained PQ frontier
+        if: matrix.lane == 'source-head'
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pq-packet-v1-cold-rollback.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_pq_packet_v1_full_local_rollback_is_rejected_by_retained_frontier)' --run-ignored only --no-capture
+      - name: Require the ordinary NPQ6 runner evidence-reader controls
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/ordinary-npq6-runner-controls.json" --minimum-tests 6 -- python3 -B scripts/test_hepta_ci_ordinary_npq6_v1.py -v
+      - name: Record the separate ordinary NPQ6 source profile
+        id: ordinary_npq6_binding
+        run: |
+          python3 -I -B - <<'PY'
+          import json, os, pathlib, re
+          keys = ("HEPTA_PON_NPQ6_EXECUTION_PROFILE", "HEPTA_PON_NPQ6_CHAIN_SOURCE", "HEPTA_PON_NPQ6_CHAIN_TREE")
+          values = {key: os.environ.get(key, "") for key in keys}
+          configured = any(values.values())
+          if configured:
+              assert values[keys[0]] == "hepta-ordinary-pon-npq6-execution-v1"
+              assert all(re.fullmatch("[0-9a-f]{40}", values[key]) for key in keys[1:])
+          path = pathlib.Path(os.environ["RUNNER_TEMP"]) / "pon-pair/ordinary-npq6-profile-binding.json"
+          with path.open("x") as output:
+              json.dump({"schema": "ordinary-npq6-ci-binding-v1", "binding": values,
+                         "state": "CONFIGURED_NOT_EXECUTED" if configured else "NOT_CONFIGURED",
+                         "native_pass": False, "production_activation": False}, output, sort_keys=True)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write("configured=" + str(configured).lower() + "\n")
+          PY
+      - name: Check out the independently pinned ordinary NPQ6 Chain source
+        if: steps.ordinary_npq6_binding.outputs.configured == 'true'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.HEPTA_PON_NPQ6_CHAIN_SOURCE }}
+          path: chain-ordinary-npq6
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare the unchanged PQ provider in its own ordinary scope
+        if: steps.ordinary_npq6_binding.outputs.configured == 'true'
+        run: |
+          set -euo pipefail
+          test "$(git -C ../chain-ordinary-npq6 rev-parse HEAD)" = "$HEPTA_PON_NPQ6_CHAIN_SOURCE"
+          test "$(git -C ../chain-ordinary-npq6 rev-parse HEAD^{tree})" = "$HEPTA_PON_NPQ6_CHAIN_TREE"
+          printf '%s  %s\n' ccdcf7e8bb9871607c73adc78624a607b616c227b7fe581b96c48761a3805bfa ../chain-ordinary-npq6/scripts/ci/prepare_pq_provider.sh | sha256sum --check --strict
+          mkdir "$RUNNER_TEMP/ordinary-npq6-provider-build"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/ordinary-npq6-provider.json" -- env RUNNER_TEMP="$RUNNER_TEMP/ordinary-npq6-provider-build" TRNM_CI_RECEIPT_DIR="$RUNNER_TEMP/pon-pair/ordinary-npq6-provider" CARGO_BUILD_JOBS=2 bash ../chain-ordinary-npq6/scripts/ci/prepare_pq_provider.sh
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/ordinary-npq6-fetch.json" --timeout-seconds 600 -- cargo +1.95.0 fetch --locked --manifest-path ../chain-ordinary-npq6/trillionnium/Cargo.toml
+      - name: Compile both sides then prepare and execute each exact NPQ6 pair separately
+        if: steps.ordinary_npq6_binding.outputs.configured == 'true'
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 -B scripts/hepta_ci_ordinary_npq6_v1.py \
+            --chain "$GITHUB_WORKSPACE/chain-ordinary-npq6" \
+            --chain-source "$HEPTA_PON_NPQ6_CHAIN_SOURCE" \
+            --chain-tree "$HEPTA_PON_NPQ6_CHAIN_TREE" \
+            --profile "$HEPTA_PON_NPQ6_EXECUTION_PROFILE" \
+            --output "$RUNNER_TEMP/pon-pair/ordinary-npq6" \
+            --target "$RUNNER_TEMP/ordinary-npq6-chain-target" \
+            --provider-receipt "$RUNNER_TEMP/pon-pair/ordinary-npq6-provider/pq-provider/provider.json"
       - name: Retain read-only source and prior Windows failure diagnostics
         if: always() && matrix.runner == 'ubuntu-24.04' && matrix.lane == 'source-head'
         env:
@@ -775,6 +841,8 @@ jobs:
             ${{ runner.temp }}/pon-pair/prior-windows-SCOPE.txt
             ${{ runner.temp }}/pon-pair/from-zero-reader.log
             ${{ runner.temp }}/pon-pair/current-pq-v10/
+            ${{ runner.temp }}/pon-pair/ordinary-npq6/
+            ${{ runner.temp }}/pon-pair/ordinary-npq6-provider/
             ${{ runner.temp }}/pon-pair/chain-from-zero-native-host/
             ${{ runner.temp }}/pon-pair/chain-from-zero-native/manifest.json
             ${{ runner.temp }}/pon-pair/chain-from-zero-native/public_v3_from_zero

@@ -2,8 +2,8 @@
 //! envelopes.
 //!
 //! The signer and verifier are deliberately separate values.  A verifier is
-//! constructed from an independently pinned Ed25519 public key, signer id,
-//! and signer epoch; values supplied by an envelope never choose the trust
+//! constructed with an explicit classical or ML-DSA profile, independently
+//! pinned public key, signer id, and epoch; envelope data never chooses the trust
 //! anchor.  The signed payload binds all artifact, evaluation, trajectory,
 //! OPE, CAS, and validity-window fields.  Every authority/effect bit is
 //! explicitly false, so this module cannot be used as a production promotion
@@ -12,10 +12,8 @@
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
 use codex_hepta_contracts::Sha256Digest;
-use ed25519_dalek::Signature;
 use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
-use ed25519_dalek::Verifier as _;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
@@ -34,6 +32,16 @@ pub const H7_SIGNED_ARTIFACT_SIGNATURE_ALGORITHM: &str = "ed25519";
 pub const H7_SIGNED_ARTIFACT_MAX_LIFETIME_SECONDS: u64 = 86_400;
 
 const SIGNING_DOMAIN: &[u8] = b"hepta-memory:h7-signed-artifact-envelope:v1";
+
+#[path = "h7_signed_artifact_pq.rs"]
+mod pq;
+#[path = "h7_signed_artifact_unsigned.rs"]
+mod unsigned;
+
+pub use pq::H7_PQ_SIGNED_ARTIFACT_SCHEMA_VERSION;
+pub use pq::H7_PQ_SIGNED_ARTIFACT_SIGNATURE_ALGORITHM;
+pub use pq::H7_PQ_SIGNED_ARTIFACT_SIGNATURE_DOMAIN;
+pub use pq::H7PqArtifactSigner;
 
 /// A transition authorized by a signed qualification artifact.
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -54,7 +62,7 @@ impl H7SignedArtifactTransition {
 
 /// A detached signature envelope for one exact H7 artifact and optional OPE
 /// result.  `envelope_sha256` commits to every field except the detached
-/// signature itself; the Ed25519 signature commits to that same payload.
+/// signature itself; the selected signature profile authenticates that payload.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct H7SignedArtifactEnvelope {
@@ -69,6 +77,9 @@ pub struct H7SignedArtifactEnvelope {
     pub ope_evaluation_sha256: Option<Sha256Digest>,
     pub signer_id: String,
     pub signer_epoch: u64,
+    /// Required only by the ML-DSA profile and covered by its exact message.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub signer_public_key_id: Option<[u8; 32]>,
     pub issued_at_unix_seconds: u64,
     pub expires_at_unix_seconds: u64,
     pub transition: H7SignedArtifactTransition,
@@ -152,7 +163,7 @@ impl H7ArtifactSigner {
         H7ArtifactVerifier {
             signer_id: self.signer_id.clone(),
             signer_epoch: self.signer_epoch,
-            verifying_key: self.verifying_key(),
+            verifying_key: ArtifactVerifier::ClassicalV1(self.verifying_key()),
         }
     }
 
@@ -167,48 +178,17 @@ impl H7ArtifactSigner {
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     ) -> Result<H7SignedArtifactEnvelope, H7SignedArtifactError> {
-        artifact
-            .validate()
-            .map_err(|error| H7SignedArtifactError::Runtime(error.to_string()))?;
-        if let Some(ope) = ope {
-            ope.validate()
-                .map_err(|error| H7SignedArtifactError::Feedback(error.to_string()))?;
-        }
-        validate_window(issued_at_unix_seconds, expires_at_unix_seconds)?;
-        if expected_runtime_generation > u64::MAX - 1 {
-            return Err(H7SignedArtifactError::Invalid(
-                "runtime generation is outside the bounded range".to_string(),
-            ));
-        }
-        if matches!(transition, H7SignedArtifactTransition::Rollback)
-            && predecessor_artifact_sha256.is_none()
-        {
-            return Err(H7SignedArtifactError::PredecessorRequired);
-        }
-        let mut envelope = H7SignedArtifactEnvelope {
-            schema_version: H7_SIGNED_ARTIFACT_SCHEMA_VERSION,
-            namespace: H7_SIGNED_ARTIFACT_NAMESPACE.to_string(),
-            signature_domain: H7_SIGNED_ARTIFACT_SIGNATURE_DOMAIN.to_string(),
-            signature_algorithm: H7_SIGNED_ARTIFACT_SIGNATURE_ALGORITHM.to_string(),
-            artifact_id: artifact.artifact_id.clone(),
-            artifact_sha256: artifact.body_sha256.clone(),
-            trajectory_sha256: artifact.trajectory_sha256.clone(),
-            evaluation_sha256: artifact.evaluation_sha256.clone(),
-            ope_evaluation_sha256: ope.map(|evaluation| evaluation.evaluation_digest.clone()),
-            signer_id: self.signer_id.clone(),
-            signer_epoch: self.signer_epoch,
-            issued_at_unix_seconds,
-            expires_at_unix_seconds,
+        let mut envelope = unsigned::artifact_envelope(
+            &self.signer_id,
+            self.signer_epoch,
+            artifact,
+            ope,
             transition,
             expected_runtime_generation,
             predecessor_artifact_sha256,
-            qualification_only: true,
-            production_authority: false,
-            external_effects: false,
-            promotion_eligible: false,
-            signature_base64: String::new(),
-            envelope_sha256: Sha256Digest::for_bytes(b"pending"),
-        };
+            issued_at_unix_seconds,
+            expires_at_unix_seconds,
+        )?;
         envelope.envelope_sha256 = envelope.payload_digest();
         envelope.signature_base64 =
             STANDARD.encode(self.signing_key.sign(&envelope.signing_bytes()).to_bytes());
@@ -218,12 +198,18 @@ impl H7ArtifactSigner {
 }
 
 /// Independent verifier.  The trust anchor is supplied by the caller and is
-/// not taken from the envelope.
+/// not taken from the envelope. A pinned key proves origin, not current authority.
 #[derive(Clone)]
 pub struct H7ArtifactVerifier {
     signer_id: String,
     signer_epoch: u64,
-    verifying_key: VerifyingKey,
+    verifying_key: ArtifactVerifier,
+}
+
+#[derive(Clone)]
+enum ArtifactVerifier {
+    ClassicalV1(VerifyingKey),
+    MlDsa65V2(std::sync::Arc<codex_hepta_contracts::pq_auth::PqNativeVerifier>),
 }
 
 impl H7ArtifactVerifier {
@@ -242,7 +228,7 @@ impl H7ArtifactVerifier {
         Ok(Self {
             signer_id,
             signer_epoch,
-            verifying_key,
+            verifying_key: ArtifactVerifier::ClassicalV1(verifying_key),
         })
     }
 
@@ -267,7 +253,7 @@ impl H7ArtifactVerifier {
         self.signer_epoch
     }
 
-    /// Verifies the detached Ed25519 signature and validity window without
+    /// Verifies the explicitly selected signature profile and validity window without
     /// requiring the artifact/OPE bodies to be present.  Production control
     /// planes use this when an artifact registry is owned by a separate
     /// process; digest and policy binding still remain in the envelope and
@@ -290,19 +276,7 @@ impl H7ArtifactVerifier {
         if now_unix_seconds >= envelope.expires_at_unix_seconds {
             return Err(H7SignedArtifactError::Expired);
         }
-        let signature_bytes = STANDARD
-            .decode(&envelope.signature_base64)
-            .map_err(|_| H7SignedArtifactError::SignatureMalformed)?;
-        if STANDARD.encode(&signature_bytes) != envelope.signature_base64
-            || signature_bytes.len() != 64
-        {
-            return Err(H7SignedArtifactError::SignatureMalformed);
-        }
-        let signature = Signature::from_slice(&signature_bytes)
-            .map_err(|_| H7SignedArtifactError::SignatureMalformed)?;
-        self.verifying_key
-            .verify(&envelope.signing_bytes(), &signature)
-            .map_err(|_| H7SignedArtifactError::SignatureInvalid)
+        self.verify_signature_for_profile(envelope)
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -393,10 +367,16 @@ impl H7SignedArtifactEnvelope {
     }
 
     pub fn validate_shape(&self) -> Result<(), H7SignedArtifactError> {
-        if self.schema_version != H7_SIGNED_ARTIFACT_SCHEMA_VERSION
+        let classical = self.schema_version == H7_SIGNED_ARTIFACT_SCHEMA_VERSION
+            && self.signature_domain == H7_SIGNED_ARTIFACT_SIGNATURE_DOMAIN
+            && self.signature_algorithm == H7_SIGNED_ARTIFACT_SIGNATURE_ALGORITHM
+            && self.signer_public_key_id.is_none();
+        let pq = self.schema_version == H7_PQ_SIGNED_ARTIFACT_SCHEMA_VERSION
+            && self.signature_domain == H7_PQ_SIGNED_ARTIFACT_SIGNATURE_DOMAIN
+            && self.signature_algorithm == H7_PQ_SIGNED_ARTIFACT_SIGNATURE_ALGORITHM
+            && self.signer_public_key_id.is_some_and(|id| id != [0; 32]);
+        if !(classical || pq)
             || self.namespace != H7_SIGNED_ARTIFACT_NAMESPACE
-            || self.signature_domain != H7_SIGNED_ARTIFACT_SIGNATURE_DOMAIN
-            || self.signature_algorithm != H7_SIGNED_ARTIFACT_SIGNATURE_ALGORITHM
             || !self.qualification_only
             || self.production_authority
             || self.external_effects
@@ -444,8 +424,12 @@ impl H7SignedArtifactEnvelope {
         Sha256Digest::from_sha256_output(Sha256::digest(self.signing_bytes()))
     }
 
-    /// Returns the exact bytes covered by the detached Ed25519 signature.
+    /// Returns the exact message for the explicit versioned signature profile.
+    /// Classical v1 bytes are unchanged; PQ v2 signs the complete framed fields.
     pub fn signing_bytes(&self) -> Vec<u8> {
+        if self.schema_version == H7_PQ_SIGNED_ARTIFACT_SCHEMA_VERSION {
+            return pq::signing_bytes(self);
+        }
         let mut hasher = Sha256::new();
         frame_part(&mut hasher, SIGNING_DOMAIN);
         frame_part(&mut hasher, &self.schema_version.to_be_bytes());

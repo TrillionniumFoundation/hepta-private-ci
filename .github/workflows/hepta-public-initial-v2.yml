@@ -38,6 +38,9 @@ jobs:
       HEPTA_CI_LANE: source-head
       HEPTA_PAIRED_EXECUTION_PROFILE: hepta-integrated-chain-execution-v11
       CHAIN_SHA: cfa57cd04751427451302b5c10539b3984d7f8db
+      HEPTA_RUNTIME_CHAIN_SHA: 5bb29d6ae39fa0c71f9151f3dce31fa1a3ab1800
+      HEPTA_RUNTIME_EXECUTION_PROFILE: hepta-integrated-chain-execution-v13
+      HEPTA_PUBLIC_INITIAL_HISTORICAL_CHAIN: ${{ github.workspace }}/chain
       RESEARCH_CHAIN_SHA: cfa57cd04751427451302b5c10539b3984d7f8db
       OBSERVATION_CHAIN_SHA: cfa57cd04751427451302b5c10539b3984d7f8db
       CARGO_BUILD_JOBS: "2"
@@ -69,6 +72,12 @@ jobs:
           repository: TrillionniumFoundation/Trillionnium-Chain
           ref: ${{ env.CHAIN_SHA }}
           path: chain
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.HEPTA_RUNTIME_CHAIN_SHA }}
+          path: chain-runtime
           persist-credentials: false
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -138,6 +147,9 @@ jobs:
           python3 -I -B scripts/hepta_smollm_execution_source_v1.py --chain "$GITHUB_WORKSPACE/chain-observed" --profile "$HEPTA_PAIRED_EXECUTION_PROFILE" > "$OUT/observation-execution-source.json"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/hepta-source.txt"
           git -C ../chain rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/chain-source.txt"
+          test "$(git -C ../chain-runtime rev-parse HEAD)" = "$HEPTA_RUNTIME_CHAIN_SHA"
+          python3 -I -B scripts/hepta_smollm_execution_source_v1.py --chain "$GITHUB_WORKSPACE/chain-runtime" --profile "$HEPTA_RUNTIME_EXECUTION_PROFILE" > "$RUNNER_TEMP/hepta-public-initial-v2/runtime-execution-source.json"
+          git -C ../chain-runtime rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/runtime-chain-source.txt"
           git -C ../chain-answer-eos rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/research-chain-source.txt"
           git -C ../chain-observed rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/observation-chain-source.txt"
           rustc -vV > "$RUNNER_TEMP/hepta-public-initial-v2/rustc.txt"
@@ -280,13 +292,23 @@ jobs:
           with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
               output.write(f"available={str(available).lower()}\n")
           PY
+      - name: Require explicit current runtime and historical role controls
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-source-v12-controls.json" --timeout-seconds 60 --minimum-tests 4 -- python3 scripts/test_hepta_smollm_execution_source_v12.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-forward-v2-controls.json" --timeout-seconds 60 --minimum-tests 12 -- python3 scripts/test_hepta_neural_forward_v2.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-source-role-controls.json" --timeout-seconds 60 --minimum-tests 12 -- python3 scripts/test_hepta_smollm_runtime_roles_v1.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-evidence-role-controls.json" --timeout-seconds 60 --minimum-tests 16 -- python3 scripts/test_hepta_neural_runtime_evidence_v1.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-source-v13-controls.json" --timeout-seconds 60 --minimum-tests 7 -- python3 scripts/test_hepta_smollm_execution_source_v13.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-forward-v3-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 scripts/test_hepta_neural_forward_v13.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/runtime-profile-v13-controls.json" --timeout-seconds 60 --minimum-tests 7 -- python3 scripts/test_hepta_neural_runtime_profiles_v13.py -v
       - name: Install the exact CPU wheel closure in a new environment
         id: cold_runtime
         if: ${{ success() && steps.model_target.outputs.available == 'true' }}
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/material-download-controls.json" --timeout-seconds 60 --minimum-tests 2 -- python3 scripts/test_hepta_smollm_public_initial_v2.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/material-download-controls.json" --timeout-seconds 60 --minimum-tests 7 -- python3 scripts/test_hepta_smollm_public_initial_v2.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-boundary-controls.json" --timeout-seconds 60 --minimum-tests 4 -- python3 scripts/test_hepta_smollm_descendant_v2.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/research-boundary-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_smollm_answer_eos_research_v3.py -v
           python3 -I -B -m venv "$RUNNER_TEMP/hepta-public-env"
@@ -305,10 +327,12 @@ jobs:
           from pathlib import Path
           root = Path(os.environ["RUNNER_TEMP"])
           parent = root / "hepta-public-initial-v2/genesis/parent-material.json"
-          config = dict(schema="hepta-smollm-neural-native-check-v2",
+          config = dict(schema="hepta-smollm-neural-native-check-material-bridge-v1",
+              material_runtime_bridge=dict(profile="smollm2-public-v2-material-runtime-bridge-v1",
+                  material_plan=Path("codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.plan.json").read_text()),
               runtime_snapshot=os.environ["HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"],
               runtime_snapshot_sha256=hashlib.sha256(Path(os.environ["HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"]).read_bytes()).hexdigest(),
-              python=str(root / "hepta-public-env/bin/python"), chain=str(Path(os.environ["GITHUB_WORKSPACE"]) / "chain"),
+              python=str(root / "hepta-public-env/bin/python"), chain=str(Path(os.environ["GITHUB_WORKSPACE"]) / "chain-runtime"),
               materials=str(root / "hepta-public-model"), parent=str(parent),
               parent_sha256=hashlib.sha256(parent.read_bytes()).hexdigest(),
               output=str(root / "hepta-public-initial-v2/n"))
@@ -326,6 +350,15 @@ jobs:
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 -I -B - <<'PY_LOADER'
+          import json, os
+          blocked = sorted(name for name in os.environ
+              if name.startswith(("LD_", "DYLD_")) or name == "GLIBC_TUNABLES")
+          print(json.dumps(dict(schema="hepta-native-loader-preflight-v1",
+              original_ambient_loader_variables=blocked), sort_keys=True))
+          if blocked:
+              raise SystemExit("original ambient loader overrides are not permitted")
+          PY_LOADER
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/ordinary-native.json" --timeout-seconds 900 --minimum-tests 2 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_selected_initial_serves_ordinary_context_then_refuses_revocation) | test(real_public_initial_reopens_same_ordinary_owners)' --run-ignored only --no-capture
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
@@ -335,6 +368,15 @@ jobs:
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 -I -B - <<'PY_LOADER'
+          import json, os
+          blocked = sorted(name for name in os.environ
+              if name.startswith(("LD_", "DYLD_")) or name == "GLIBC_TUNABLES")
+          print(json.dumps(dict(schema="hepta-native-loader-preflight-v1",
+              original_ambient_loader_variables=blocked), sort_keys=True))
+          if blocked:
+              raise SystemExit("original ambient loader overrides are not permitted")
+          PY_LOADER
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/three-rounds-native.json" --timeout-seconds 11100 --minimum-tests 1 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_public_initial_three_rounds_hold_and_read_original_current)' --run-ignored only --no-capture
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
       - name: Execute six-arm candidate descendants and retain typed install blockers
@@ -343,7 +385,7 @@ jobs:
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-execution.json" --timeout-seconds 9000 --minimum-tests 0 -- "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_descendant_v2.py --native-input "$HEPTA_PN3_NEURAL_NATIVE_CONFIG" --ordinary-readback "$RUNNER_TEMP/hepta-public-initial-v2/n/p/ordinary-0/ordinary-session-result.json" --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-diagnostics"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-execution.json" --timeout-seconds 9000 --minimum-tests 0 -- "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_descendant_v2.py --historical-chain "$GITHUB_WORKSPACE/chain" --native-input "$HEPTA_PN3_NEURAL_NATIVE_CONFIG" --ordinary-readback "$RUNNER_TEMP/hepta-public-initial-v2/n/p/ordinary-0/ordinary-session-result.json" --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-diagnostics"
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
       - name: Finish the scoped lint and formatting gate after tests
         id: lint
@@ -390,8 +432,15 @@ jobs:
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/answer-eos-research-execution.json" --timeout-seconds 1800 --minimum-tests 0 -- "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_answer_eos_research_v3.py --native-input "$HEPTA_PN3_NEURAL_NATIVE_CONFIG" --ordinary-readback "$RUNNER_TEMP/hepta-public-initial-v2/n/p/ordinary-0/ordinary-session-result.json" --original-gates "$RUNNER_TEMP/hepta-public-initial-v2" --chain "$GITHUB_WORKSPACE/chain-answer-eos" --output "$RUNNER_TEMP/hepta-public-initial-v2/answer-eos-research-v3"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/answer-eos-research-execution.json" --timeout-seconds 1800 --minimum-tests 0 -- "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_answer_eos_research_v3.py --historical-chain "$GITHUB_WORKSPACE/chain" --native-input "$HEPTA_PN3_NEURAL_NATIVE_CONFIG" --ordinary-readback "$RUNNER_TEMP/hepta-public-initial-v2/n/p/ordinary-0/ordinary-session-result.json" --original-gates "$RUNNER_TEMP/hepta-public-initial-v2" --chain "$GITHUB_WORKSPACE/chain-answer-eos" --output "$RUNNER_TEMP/hepta-public-initial-v2/answer-eos-research-v3"
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
+      - name: Recheck the explicit current runtime without relabeling historical roles
+        if: always()
+        working-directory: hepta
+        run: |
+          set -euo pipefail
+          python3 -I -B scripts/hepta_smollm_execution_source_v1.py --chain "$GITHUB_WORKSPACE/chain-runtime" --profile "$HEPTA_RUNTIME_EXECUTION_PROFILE" > "$RUNNER_TEMP/hepta-public-initial-v2/runtime-execution-source-after.json"
+          git -C ../chain-runtime rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/runtime-chain-source-after.txt"
       - name: Validate metadata-only export without executing a model
         id: metadata_controls
         if: always()
@@ -414,7 +463,9 @@ jobs:
                   with path.open("rb") as handle:
                       sha = hashlib.file_digest(handle, "sha256").hexdigest()
                   rows[str(path.relative_to(root))] = dict(sha256=sha, bytes=path.stat().st_size)
-          (root / "evidence-index.json").write_text(json.dumps(dict(source=os.environ["SOURCE_SHA"],
+          (root / "evidence-index.json").write_text(json.dumps(dict(schema="hepta-material-runtime-evidence-index-v1",
+              runtime_chain=os.environ["HEPTA_RUNTIME_CHAIN_SHA"], runtime_profile=os.environ["HEPTA_RUNTIME_EXECUTION_PROFILE"],
+              source=os.environ["SOURCE_SHA"],
               chain=os.environ["CHAIN_SHA"], research_chain=os.environ["RESEARCH_CHAIN_SHA"],
               answer_eos_research_outcome=os.environ.get("ANSWER_EOS_RESEARCH_OUTCOME", "unavailable"),
               files=rows, product_qualification=False,

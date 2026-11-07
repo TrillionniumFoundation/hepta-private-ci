@@ -8,7 +8,9 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     use codex_hepta_infer_worker_host::smollm_cognitive_host::SmolLmCognitiveHostInputsV1;
     use codex_hepta_infer_worker_host::smollm_cognitive_host::prepare_smollm_cell_neural_agentd_v2;
     use codex_hepta_infer_worker_host::smollm_cognitive_host::prepare_smollm_neural_agentd_v1;
+    use codex_hepta_infer_worker_host::smollm_cognitive_process::load_smollm_cognitive_cell_host_inputs_material_bridge_v1;
     use codex_hepta_infer_worker_host::smollm_cognitive_process::load_smollm_cognitive_cell_host_inputs_v2;
+    use codex_hepta_infer_worker_host::smollm_cognitive_process::load_smollm_cognitive_host_inputs_material_bridge_v1;
     use codex_hepta_infer_worker_host::smollm_cognitive_process::load_smollm_cognitive_host_inputs_v2;
     use codex_hepta_types::Digest32;
     use codex_utils_absolute_path::AbsolutePathBuf;
@@ -26,7 +28,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     codex_arg0::arg0_dispatch_or_else_with_preflight(|| {
         let arguments = std::env::args_os().skip(1).collect::<Vec<_>>();
         let cell_v2 = arguments.windows(2)
-            .any(|pair| pair[0] == "--host-format" && pair[1] == "cell-v2");
+            .any(|pair| pair[0] == "--host-format" && (pair[1] == "cell-v2" || pair[1] == "cell-bridge-v1"));
         if cell_v2 {
             // An anonymous sealed ELF cannot supply the original path-based
             // helper re-execs inside a fresh sandbox PID namespace. Reject this
@@ -51,7 +53,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let mut args = std::env::args_os().skip(1);
         while let Some(flag) = args.next() {
             if flag == "--help" {
-                println!("hepta-neural-agentd --host-config ABSOLUTE_JSON --host-config-sha256 HEX --evidence-recovery-frontier-file ABSOLUTE_JSON --evidence-recovery-frontier-trust-file ABSOLUTE_JSON [--host-format owner-v2|cell-v2]\nUses the normal HEPTA_AGENT_* identity and original Agentd runtime. owner-v2 (default) requires the original hepta-smollm-cognitive-host-v2 file. cell-v2 requires hepta-smollm-cognitive-cell-host-v2 with independently pinned complete TCD1 and sidecar bytes. Both require the same PQ evidence recovery admission before model preparation and retain real product-qualified neural bootstrap v3 and independently operated Unix FinalUse admission. No model fallback or qualification is manufactured.");
+                println!("hepta-neural-agentd --host-config ABSOLUTE_JSON --host-config-sha256 HEX --evidence-recovery-frontier-file ABSOLUTE_JSON --evidence-recovery-frontier-trust-file ABSOLUTE_JSON [--host-format owner-v2|cell-v2|owner-bridge-v1|cell-bridge-v1]\nUses the normal HEPTA_AGENT_* identity and original Agentd runtime. owner-v2 (default) requires the original hepta-smollm-cognitive-host-v2 file. cell-v2 requires hepta-smollm-cognitive-cell-host-v2 with independently pinned complete TCD1 and sidecar bytes. owner-bridge-v1 and cell-bridge-v1 require their distinct material-bridge-v1 schemas and the fixed material/current-runtime pair. All formats require the same PQ evidence recovery admission before model preparation and retain real product-qualified neural bootstrap v3 and independently operated Unix FinalUse admission. No model fallback or qualification is manufactured.");
                 return Ok(());
             }
             let value = args.next().ok_or_else(|| io::Error::other("missing neural host argument value"))?;
@@ -80,6 +82,8 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let inputs = match host_format {
             "owner-v2" => HostInputs::Original(load_smollm_cognitive_host_inputs_v2(&path, digest).map_err(io::Error::other)?),
             "cell-v2" => HostInputs::Cell(load_smollm_cognitive_cell_host_inputs_v2(&path, digest).map_err(io::Error::other)?),
+            "owner-bridge-v1" => HostInputs::Original(load_smollm_cognitive_host_inputs_material_bridge_v1(&path, digest).map_err(io::Error::other)?),
+            "cell-bridge-v1" => HostInputs::Cell(load_smollm_cognitive_cell_host_inputs_material_bridge_v1(&path, digest).map_err(io::Error::other)?),
             _ => return Err(io::Error::other("unsupported neural host format").into()),
         };
         let config = AgentdConfig::from_process_environment()?

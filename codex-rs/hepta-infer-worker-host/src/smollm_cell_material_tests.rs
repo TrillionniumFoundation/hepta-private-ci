@@ -158,6 +158,7 @@ fn declaration_fixture() -> DeclarationFixture {
         source_pins,
         runtime_snapshot: b"explicit unexecuted runtime snapshot fixture; not model evidence"
             .to_vec(),
+        material_runtime_bridge: None,
         target_contract: b"synthetic-declaration-only".to_vec(),
         wrapped_adapter: b"no-model-bytes".to_vec(),
         contract_digest: Digest32::of_bytes(b"contract"),

@@ -58,8 +58,12 @@ migration tooling must first stage an explicitly approved image and have the
 recovery owner sign that exact image. `run` independently repeats authentication
 and the read-only comparison, then rechecks the writable image before
 `AgentdState::new`, runtime plasticity composition, AuthBus or the App Server can
-run. Process tests stage their initial fixture once and retain the same checkpoint
-over restart; they do not re-sign a restored image automatically.
+run. Process tests stage their initial fixture once. Tests that perform provider
+invocations explicitly capture and sign the expected live frontier before a
+failure or replacement, retain those bytes outside Agent-owned roots, and advance
+the external generation floor before restart. Restart never measures or re-signs
+the restored image. This fixture custody does not establish a production recovery
+owner or independent deployment.
 
 This is an admission boundary for the shared evidence image, not a recovery
 protocol for every database opened by bootstrap or runtime owners. Files outside Agent home do not establish

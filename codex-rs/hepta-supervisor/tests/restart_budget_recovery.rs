@@ -203,7 +203,7 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let temp = tempfile::tempdir()?;
     let root = HeptaFleetRoot::parse(temp.path().join("fleet"))
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    let registry = FleetRegistry::initialize(root.clone())?;
+    let registry = FleetRegistry::initialize_for_qualification(root.clone())?;
     let workspace = temp.path().join("workspace");
     std::fs::create_dir(&workspace)?;
     let agent_id =
