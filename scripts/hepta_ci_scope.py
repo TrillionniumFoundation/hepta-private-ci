@@ -71,11 +71,14 @@ FILE_GROUPS = {
     },
 }
 
-# This process-level fixture must compile against the default product ledger.
-# Cargo dev-dependency features and Bazel's production integration dependency
-# differ, so a local Cargo-only scope is insufficient for this regression.
+# These integration fixtures cross production Bazel dependency boundaries
+# that Cargo's dev-dependency feature set does not fully exercise. Keep the
+# full Bazel matrix active for either source path.
 BAZEL_SENSITIVE_TESTS = frozenset(
-    {"codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs"}
+    {
+        "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+        "codex-rs/hepta-automation/tests/automation.rs",
+    }
 )
 
 
