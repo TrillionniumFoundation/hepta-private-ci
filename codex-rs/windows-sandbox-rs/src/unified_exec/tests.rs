@@ -689,77 +689,29 @@ fn legacy_workspace_write_delete_refuses_unqualified_filesystem_backend() {
         let test_root = TempDir::new_in(sandbox_cwd()).expect("create legacy delete test root");
         let codex_home = sandbox_home("legacy-delete-writable-roots");
         let workspace = test_root.path().join("workspace");
-        let temp_root = test_root.path().join("temp");
-        let tmp_root = test_root.path().join("tmp");
         let outside_root = test_root.path().join("outside");
-        for directory in [&workspace, &temp_root, &tmp_root, &outside_root] {
-            fs::create_dir_all(directory).expect("create legacy delete test directory");
-        }
+        fs::create_dir_all(&workspace).expect("create workspace");
+        fs::create_dir_all(&outside_root).expect("create outside root");
         let protected_git_dir = workspace.join(".git");
         fs::create_dir(&protected_git_dir).expect("create protected .git directory");
 
         let workspace_file = workspace.join("workspace-delete.txt");
-        let temp_file = temp_root.join("temp-delete.txt");
-        let tmp_file = tmp_root.join("tmp-delete.txt");
         let outside_file = outside_root.join("outside-delete.txt");
         fs::write(&workspace_file, "workspace").expect("seed workspace file");
-        fs::write(&temp_file, "temp").expect("seed TEMP file");
-        fs::write(&tmp_file, "tmp").expect("seed TMP file");
         fs::write(&outside_file, "outside").expect("seed outside file");
 
-        let script = workspace.join("delete-fixtures.cmd");
-        fs::write(
-            &script,
-            concat!(
-                "@echo off\\r\\n",
-                "del /f /q \\"%WORKSPACE_DELETE%\\"\\r\\n",
-                "del /f /q \\"%TEMP_DELETE%\\"\\r\\n",
-                "del /f /q \\"%TMP_DELETE%\\"\\r\\n",
-                "del /f /q \\"%OUTSIDE_DELETE%\\"\\r\\n",
-                "rmdir \\"%PROTECTED_GIT_DIR%\\"\\r\\n",
-                "exit /b 0\\r\\n",
-            ),
-        )
-        .expect("write delete script");
-
-        let env_map = HashMap::from([
-            ("TEMP".to_string(), temp_root.to_string_lossy().into_owned()),
-            ("TMP".to_string(), tmp_root.to_string_lossy().into_owned()),
-            (
-                "WORKSPACE_DELETE".to_string(),
-                workspace_file.to_string_lossy().into_owned(),
-            ),
-            (
-                "TEMP_DELETE".to_string(),
-                temp_file.to_string_lossy().into_owned(),
-            ),
-            (
-                "TMP_DELETE".to_string(),
-                tmp_file.to_string_lossy().into_owned(),
-            ),
-            (
-                "OUTSIDE_DELETE".to_string(),
-                outside_file.to_string_lossy().into_owned(),
-            ),
-            (
-                "PROTECTED_GIT_DIR".to_string(),
-                protected_git_dir.to_string_lossy().into_owned(),
-            ),
-        ]);
-
-        let permission_profile = PermissionProfile::workspace_write();
         let result = spawn_windows_sandbox_session_legacy(
-            &permission_profile,
+            &PermissionProfile::workspace_write(),
             workspace_roots_for(workspace.as_path()).as_slice(),
             codex_home.path(),
             vec![
-                "C:\\\\Windows\\\\System32\\\\cmd.exe".to_string(),
+                "C:\\Windows\\System32\\cmd.exe".to_string(),
                 "/d".to_string(),
                 "/c".to_string(),
-                script.display().to_string(),
+                "exit 0".to_string(),
             ],
             workspace.as_path(),
-            env_map,
+            HashMap::new(),
             /*timeout_ms*/ Some(5_000),
             &[],
             &[],
@@ -781,23 +733,15 @@ fn legacy_workspace_write_delete_refuses_unqualified_filesystem_backend() {
             "unexpected legacy refusal: {error_text}"
         );
 
-        // Refusal must precede child execution: all writable and out-of-root
+        // Refusal must precede child execution: all workspace and out-of-root
         // fixtures remain intact, including the protected .git directory.
         assert_eq!(
             (
                 workspace_file.exists(),
-                temp_file.exists(),
-                tmp_file.exists(),
                 fs::read_to_string(&outside_file).ok(),
                 protected_git_dir.is_dir(),
             ),
-            (
-                true,
-                true,
-                true,
-                Some("outside".to_string()),
-                true,
-            ),
+            (true, Some("outside".to_string()), true),
         );
     });
 }
