@@ -186,6 +186,7 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
         self.assertNotIn(
             "--extra_execution_platforms=//:windows_x86_64_msvc", result
         )
+        self.assertNotIn("--host_platform=//:windows_x86_64_msvc", result)
         self.assertNotIn("--host_platform=//:local_windows_msvc", result)
 
     def test_query_remote_configuration_is_inserted_before_expression(self) -> None:

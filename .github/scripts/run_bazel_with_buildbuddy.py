@@ -203,14 +203,14 @@ def bazel_args_without_remote_execution(
                 injected_args.append(f"{option}={value}")
 
     if requested_native_windows_msvc and not requested_windows_cross:
-        # The native MSVC target needs the MSVC host platform as well as an
-        # ABI-qualified execution-platform candidate. The ci-windows config
-        # otherwise supplies the gnullvm host platform by default.
+        # The rules_rs target_triple select needs the fully constrained x86_64/MSVC
+        # host platform. The ci-windows config otherwise supplies the gnullvm
+        # host platform by default.
         if not any(
             arg == "--host_platform" or arg.startswith("--host_platform=")
             for arg in prefix
         ):
-            injected_args.append("--host_platform=//:local_windows_msvc")
+            injected_args.append("--host_platform=//:windows_x86_64_msvc")
         if not option_contains_value(
             prefix, "--extra_execution_platforms", LOCAL_WINDOWS_MSVC_EXEC_PLATFORM
         ):
