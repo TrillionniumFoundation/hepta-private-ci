@@ -1,0 +1,204 @@
+{
+  "schema": "ndu-torch-hepta-transport-v1",
+  "host": "ai395",
+  "job_id": "1a1b5c71440-12894-f2",
+  "execution_request": {
+    "host": "ai395",
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/venv/bin/python",
+    "args": [
+      "/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd/supervise_torch_contract.py",
+      "--base",
+      "/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd",
+      "--bundle-sha256",
+      "61e8ddf988cd62def71076a92b87c07563b8e0993e9121d30aa9fd6d5c42954f",
+      "--manifest-sha256",
+      "ce150c78896083be9d460f0e553db50eff5c1672fd9b852c3267193e506e4494",
+      "--supervisor-sha256",
+      "36b94c4f81d7725fc7d9cafa52ca424a7689e74d13c4b8f3e23c9e33605b3432"
+    ],
+    "cwd": "/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd",
+    "env": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONNOUSERSITE": "1"
+    },
+    "idempotency_key": "ndu-torch-contract-61e8ddf988cd-bc2efaf10cd0-001",
+    "timeout_seconds": 300,
+    "cpu_quota_percent": 100,
+    "memory_max_bytes": 2147483648,
+    "nice": 10
+  },
+  "execution_start": {
+    "wall_ms": 12744,
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd/supervise_torch_contract.py\",\n      \"--base\",\n      \"/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd\",\n      \"--bundle-sha256\",\n      \"61e8ddf988cd62def71076a92b87c07563b8e0993e9121d30aa9fd6d5c42954f\",\n      \"--manifest-sha256\",\n      \"ce150c78896083be9d460f0e553db50eff5c1672fd9b852c3267193e506e4494\",\n      \"--supervisor-sha256\",\n      \"36b94c4f81d7725fc7d9cafa52ca424a7689e74d13c4b8f3e23c9e33605b3432\"\n    ],\n    \"created_unix_ms\": 1794051085376,\n    \"cwd\": \"/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd\",\n    \"env_keys\": [\n      \"MKL_NUM_THREADS\",\n      \"OMP_NUM_THREADS\",\n      \"OPENBLAS_NUM_THREADS\",\n      \"PYTHONDONTWRITEBYTECODE\",\n      \"PYTHONNOUSERSITE\"\n    ],\n    \"executable\": \"/home/qq/hepta-smollm2-weight-research-20261103/venv/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1b5c71440-12894-f2\",\n    \"idempotency_key\": \"ndu-torch-contract-61e8ddf988cd-bc2efaf10cd0-001\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b5c71440-12894-f2\",\n    \"request_digest\": \"03cc9de166d95c9288a68abbff8b84bc590ff804e754d21b70df6debba777ff2\",\n    \"request_fingerprint\": 273767268781481106,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b5c71440-12894-f2\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b5c71440-12894-f2\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "execution_terminal": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1794051088773,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b5c71440-12894-f2\",\n  \"launch_nonce\": \"d06970ff162be07a3b3d2bbaeab822a9\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 271,\n      \"stored\": 271\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "execution_output": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b5c71440-12894-f2\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22737461747573223a2022504153535f454e47494e454552494e475f434f4e545241435453222c202272657475726e636f6465223a20302c202274696d65645f6f7574223a2066616c73652c2022736f757263655f6d6174636865735f737570706c6965645f6d616e6966657374223a20747275652c20226368696c645f77616c6c5f7365636f6e6473223a20322e323239323633343839313334363039372c20226368696c645f757365725f6370755f7365636f6e6473223a20312e3635313335392c20226368696c645f73797374656d5f6370755f7365636f6e6473223a20302e3136323532372c20226368696c645f7065616b5f7273735f6279746573223a203233343434363834387d0a\",\n    \"eof\": true,\n    \"next_offset\": 271,\n    \"offset\": 0,\n    \"size\": 271,\n    \"text\": \"{\\\"status\\\": \\\"PASS_ENGINEERING_CONTRACTS\\\", \\\"returncode\\\": 0, \\\"timed_out\\\": false, \\\"source_matches_supplied_manifest\\\": true, \\\"child_wall_seconds\\\": 2.2292634891346097, \\\"child_user_cpu_seconds\\\": 1.651359, \\\"child_system_cpu_seconds\\\": 0.162527, \\\"child_peak_rss_bytes\\\": 234446848}\\n\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "preparation": {
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-c\",\n      \"from pathlib import Path; import json,os; p=Path(\\\"/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd\\\"); p.mkdir(mode=0o700); print(json.dumps({'prepared_directory':str(p),'uid':p.stat().st_uid,'mode':oct(p.stat().st_mode & 0o777),'source_execution_started':False}))\"\n    ],\n    \"created_unix_ms\": 1794051001702,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1b5c5cd66-12894-ef\",\n    \"idempotency_key\": \"ndu-torch-prepare-61e8ddf988cd-bc2efaf10cd0-001\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b5c5cd66-12894-ef\",\n    \"request_digest\": \"c8c3571e4431158d7dc99918251468097e4eedd53dcf3cf9548bb09e72fde378\",\n    \"request_fingerprint\": 14466502215548867981,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b5c5cd66-12894-ef\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b5c5cd66-12894-ef\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "terminal": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"at_unix_ms\": 1794051002680,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b5c5cd66-12894-ef\",\n  \"launch_nonce\": \"de59698e2bc5f2725e6978e9e0b54c0e\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 160,\n      \"stored\": 160\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "output": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b5c5cd66-12894-ef\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b2270726570617265645f6469726563746f7279223a20222f686f6d652f71712f6e64752d746578742d696d6167652d636f6e7472616374732d32303236313130372d6263326566616631306364302d363165386464663938386364222c2022756964223a20313030302c20226d6f6465223a2022306f373030222c2022736f757263655f657865637574696f6e5f73746172746564223a2066616c73657d0a\",\n    \"eof\": true,\n    \"next_offset\": 160,\n    \"offset\": 0,\n    \"size\": 160,\n    \"text\": \"{\\\"prepared_directory\\\": \\\"/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd\\\", \\\"uid\\\": 1000, \\\"mode\\\": \\\"0o700\\\", \\\"source_execution_started\\\": false}\\n\"\n  }\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "uploads": {
+    "final-source-v2.zip": {
+      "duration_wall_ms": 27888,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"mode\":384,\"sha256\":\"61e8ddf988cd62def71076a92b87c07563b8e0993e9121d30aa9fd6d5c42954f\",\"size\":128568,\"version\":\"66306:49283133:128568:1794051052514619514:1794051052515456716\",\"written\":128568}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    "FINAL_SOURCE_MANIFEST_V2.json": {
+      "duration_wall_ms": 8289,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"mode\":384,\"sha256\":\"ce150c78896083be9d460f0e553db50eff5c1672fd9b852c3267193e506e4494\",\"size\":4374,\"version\":\"66306:49283136:4374:1794051058182268208:1794051058183680149\",\"written\":4374}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    "supervise_torch_contract.py": {
+      "duration_wall_ms": 2948,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"mode\":384,\"sha256\":\"36b94c4f81d7725fc7d9cafa52ca424a7689e74d13c4b8f3e23c9e33605b3432\",\"size\":7822,\"version\":\"66306:49283139:7822:1794051063968592889:1794051063969051979\",\"written\":7822}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  },
+  "read_receipts": [
+    {
+      "name": "execution.json",
+      "chunk_sha256": "aca26ad6187cad384ba0f105b4925033f0451716982dc8e952b04cff7cb7f32f",
+      "eof": true,
+      "next_offset": 11346,
+      "offset": 0,
+      "path": "/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd/execution.json",
+      "size": 11346,
+      "version": "66306:49283194:11346:1794051088738176624:1794051088738176624"
+    },
+    {
+      "name": "source-admission.json",
+      "chunk_sha256": "fdf46167a82e5c61cac3381476b19e0a8823072086ab024b30731c61ff7e666f",
+      "eof": true,
+      "next_offset": 4704,
+      "offset": 0,
+      "path": "/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd/source-admission.json",
+      "size": 4704,
+      "version": "66306:49283188:4704:1794051086488095794:1794051086488095794"
+    },
+    {
+      "name": "stdout.bin",
+      "chunk_sha256": "098d9ef705f45370af76423afce1144e1c692f76fce742b0d7739ed7bea221da",
+      "eof": true,
+      "next_offset": 114,
+      "offset": 0,
+      "path": "/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd/stdout.bin",
+      "size": 114,
+      "version": "66306:49283189:114:1794051088342190619:1794051088342190619"
+    },
+    {
+      "name": "stderr.bin",
+      "chunk_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eof": true,
+      "next_offset": 0,
+      "offset": 0,
+      "path": "/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd/stderr.bin",
+      "size": 0,
+      "version": "66306:49283190:0:1794051086488095794:1794051086488095794"
+    },
+    {
+      "name": "qualification/receipt.json",
+      "chunk_sha256": "61d09900dfa5a144610e65db9d38f90e04251660f8efeab9fd5977179df3ccf1",
+      "eof": true,
+      "next_offset": 9238,
+      "offset": 0,
+      "path": "/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd/qualification/receipt.json",
+      "size": 9238,
+      "version": "66306:49283193:9238:1794051088336195691:1794051088336195691"
+    },
+    {
+      "name": "qualification/tests.log",
+      "chunk_sha256": "e340544dbccc855856f3ef0f3dce5d6ef79c11f72d97bcce45e0853588db1304",
+      "eof": true,
+      "next_offset": 643,
+      "offset": 0,
+      "path": "/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd/qualification/tests.log",
+      "size": 643,
+      "version": "66306:49283192:643:1794051088335984908:1794051088335984908"
+    }
+  ],
+  "original_v1_bundle_executed": false,
+  "no_gpu_allocated": true,
+  "new_dependencies_installed": false
+}
