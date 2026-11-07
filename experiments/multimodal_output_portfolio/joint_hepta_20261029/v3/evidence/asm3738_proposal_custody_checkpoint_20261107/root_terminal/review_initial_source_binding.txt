@@ -1,0 +1,346 @@
+"""Independently check fixed console records without exporting private streams."""
+
+import ast
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import re
+import stat
+
+
+BASE = Path("/workspace/scratch/3f6a885bb83c")
+HERE = Path(__file__).resolve().parent
+SOURCE = BASE / "round3_ci/arm_sha256_custody38/work"
+RUN = 42331975252
+JOB = 128280323713
+HEAD = "57015012fbcc3227c15e4eb3edbfff1d679f2c58"
+TREE = "5fd210ff4608cf61f205a4f960ef2e12483e1449"
+NATIVE = BASE / "round3_ci/arm_sha256_custody38/runs" / str(RUN)
+
+
+def need(value, message):
+    if not value:
+        raise ValueError(message)
+
+
+def identity(path):
+    raw = path.read_bytes()
+    return {
+        "bytes": len(raw),
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "git_blob": hashlib.sha1(
+            b"blob " + str(len(raw)).encode() + b"\0" + raw
+        ).hexdigest(),
+    }
+
+
+def main():
+    api_path = BASE / "round3_asm38_terminal_root_api.json"
+    api = json.loads(api_path.read_bytes())
+    need(
+        len(api["results"]) == 4
+        and all(x["status"] == "fulfilled" for x in api["results"]),
+        "fresh API responses",
+    )
+    run, jobs, artifacts, commit = [
+        json.loads(x["value"]["structuredContent"]["content"]) for x in api["results"]
+    ]
+    need(
+        run["id"] == RUN
+        and run["run_attempt"] == 1
+        and run["head_sha"] == HEAD
+        and (run["status"], run["conclusion"]) == ("completed", "failure"),
+        "actual terminal run",
+    )
+    need(jobs["total_count"] == len(jobs["jobs"]) == 1, "complete job list")
+    job = jobs["jobs"][0]
+    need(
+        job["id"] == JOB
+        and job["head_sha"] == HEAD
+        and job["run_attempt"] == 1
+        and (job["status"], job["conclusion"]) == ("completed", "failure"),
+        "actual terminal job",
+    )
+    need(
+        commit["sha"] == HEAD
+        and commit["tree"]["sha"] == TREE
+        and artifacts["total_count"] == 0
+        and artifacts["artifacts"] == [],
+        "source and absent artifact",
+    )
+    source_api_path = BASE / "round3_asm38_terminal_root_source_verified.json"
+    source_api = json.loads(source_api_path.read_bytes())
+    need(
+        source_api["tree"] == TREE and len(source_api["paths"]) == 4,
+        "source tree binding",
+    )
+    source_pins = {}
+    for path, value in source_api["paths"].items():
+        pin = identity(SOURCE / path)
+        need(
+            pin["git_blob"] == value["sha"]
+            and value["mode"] == "100644"
+            and value["type"] == "blob"
+            and pin["bytes"] == value["size"],
+            "fresh source bytes",
+        )
+        source_pins[path] = pin
+    platform = ast.parse(
+        (SOURCE / ".github/scripts/sha256_asm_platform_guards.py").read_bytes()
+    )
+    triples = next(
+        ast.literal_eval(n.value)
+        for n in platform.body
+        if isinstance(n, ast.Assign)
+        and any(isinstance(t, ast.Name) and t.id == "TRIPLES" for t in n.targets)
+    )
+    runner = ast.parse(
+        (SOURCE / ".github/scripts/propose_sha256_asm_locks.py").read_bytes()
+    )
+    stage_node = next(
+        n.value
+        for n in runner.body
+        if isinstance(n, ast.Assign)
+        and any(isinstance(t, ast.Name) and t.id == "STAGES" for t in n.targets)
+    )
+    stages = eval(
+        compile(ast.Expression(stage_node), "<fixed-stage-expression>", "eval"),
+        {"__builtins__": {}, "TRIPLES": triples},
+    )[:-1]
+    need(len(stages) == 24 and len(triples) == 4, "fixed original command count")
+    log_path = NATIVE / ("job-" + str(JOB) + ".log")
+    before = identity(log_path)
+    info = log_path.lstat()
+    need(
+        stat.S_ISREG(info.st_mode) and stat.S_IMODE(info.st_mode) == 0o600,
+        "private log retained",
+    )
+    raw = log_path.read_bytes()
+    need(
+        len(raw) == 1568846
+        and hashlib.sha256(raw).hexdigest()
+        == "12887ac1c31fd479986abbd3466ac38f5b961783079715370d68019d8bfb470f",
+        "original private bytes",
+    )
+    records, ready, preflight, checkout, errors, frames, observations = (
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+    )
+    previous = ""
+    for number, line in enumerate(raw.decode().splitlines(), 1):
+        match = re.fullmatch(r"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z) (.*)", line)
+        if not match:
+            continue
+        timestamp, body = match[1], match[2]
+        if body == HEAD and "git log -1 --format=%H" in previous:
+            checkout.append(number)
+        previous = body
+        try:
+            value = json.loads(body)
+        except ValueError:
+            value = None
+        if isinstance(value, dict):
+            if set(value) == {"stage", "exit_code"} and value["stage"] in stages:
+                need(type(value["exit_code"]) is int, "numeric exit")
+                records.append({"line": number, "timestamp_utc": timestamp, **value})
+            if value == {"stage": "scanner-ready", "success": True}:
+                ready.append(number)
+            if (
+                value.get("head") == HEAD
+                and value.get("tree") == TREE
+                and value.get("original_product_unchanged") is True
+            ):
+                preflight.append({"line": number, "value": value})
+            if value.get("diagnostic") == "sha256-command-read-stat-v1":
+                need(
+                    set(value) == {"diagnostic", "slot", "regular", "nlink", "size"},
+                    "closed diagnostic schema",
+                )
+                need(
+                    type(value["regular"]) is bool
+                    and all(
+                        type(value[k]) is int and value[k] >= 0
+                        for k in ("slot", "nlink", "size")
+                    ),
+                    "diagnostic field types",
+                )
+                observations.append(
+                    {"line": number, "timestamp_utc": timestamp, **value}
+                )
+        if (
+            body
+            == "sha256_asm_proposal_evidence.ProposalError: INVALID_PRIVATE_METADATA_FILE"
+        ):
+            errors.append(number)
+        frame = re.fullmatch(
+            r'  File "[^"]*/sha256_asm_proposal_evidence\.py", line (315|210|534|18), in (collect|validate_command_custody|read_checked|require)',
+            body,
+        )
+        if frame:
+            frames.append((number, int(frame[1]), frame[2]))
+    need(
+        tuple(x["stage"] for x in records) == stages
+        and all(x["exit_code"] == 0 for x in records),
+        "complete ordered original zero exits",
+    )
+    need(
+        len(ready) == len(preflight) == len(checkout) == len(errors) == 1,
+        "single fixed control event",
+    )
+    need(
+        [(x[1], x[2]) for x in frames]
+        == [
+            (315, "collect"),
+            (210, "validate_command_custody"),
+            (534, "read_checked"),
+            (18, "require"),
+        ],
+        "original failure control path",
+    )
+    need(
+        records[-1]["line"]
+        < observations[0]["line"]
+        < observations[-1]["line"]
+        < frames[0][0]
+        < errors[0],
+        "failure follows observed stat and commands",
+    )
+    normal_order = [
+        2 * stages.index(name)
+        for name in ("metadata-before", "metadata-generate", "metadata-repeat")
+    ] + list(range(48))
+    need(
+        len(normal_order) == 51
+        and len(observations) == 18
+        and [r["slot"] for r in observations] == normal_order[:18],
+        "entire expected observation prefix",
+    )
+    need(
+        all(
+            r["regular"] and r["nlink"] == 1 and r["size"] <= 64 * 1024 * 1024
+            for r in observations[:-1]
+        ),
+        "all prior conjunctions true",
+    )
+    last = observations[-1]
+    need(
+        last["slot"] == 14
+        and last["regular"] is True
+        and last["nlink"] == 1
+        and last["size"] == 80624041
+        and last["size"] > 64 * 1024 * 1024,
+        "actual size-only violating observation",
+    )
+    need(
+        stages[last["slot"] // 2] == "aquery-before-aarch64-unknown-linux-gnu"
+        and last["slot"] % 2 == 0,
+        "fixed stdout mapping",
+    )
+    text = (SOURCE / ".github/scripts/sha256_asm_proposal_evidence.py").read_text()
+    collector = text.splitlines()
+    need(
+        collector[209].strip()
+        == 'identity(read_checked(stdout)) == actual["stdout_identity"],',
+        "actual stdout custody operand",
+    )
+    need(
+        collector[531].strip() == "before = os.fstat(stream.fileno())"
+        and collector[532].strip() == "observe_registered_stat(path, before)",
+        "same fstat object observed before original conjunction",
+    )
+    need(
+        "stat.S_ISREG(before.st_mode)" in collector[534]
+        and "before.st_nlink == 1" in collector[535]
+        and "before.st_size <= 64 * 1024 * 1024" in collector[536],
+        "unchanged original conjunction",
+    )
+    verification = preflight[0]["value"]["complete_worktree_verification"]
+    need(
+        verification["base_leaves"] == 15340
+        and verification["checked_worktree_leaves"] == 15350
+        and verification["checked_bytes"] == 529384023
+        and verification["exact_validated_output_overrides"] == {},
+        "source preflight count and bytes",
+    )
+    need(
+        verification["all_tracked_objects_rehashed"] is True
+        and verification["symlink_targets_hashed_without_following"] is True
+        and verification["stat_cache_not_used_as_byte_evidence"] is True,
+        "source preflight assertions",
+    )
+    owner_path = NATIVE / "SAFE_NATIVE_TERMINAL_OBSERVATIONS.json"
+    need(
+        identity(owner_path)["sha256"]
+        == "cd1ea2815bf101deb93648798cd13f432c76f311c624dcd47d777b25ca16ce62",
+        "frozen owner receipt",
+    )
+    owner = json.loads(owner_path.read_bytes())
+    need(
+        owner["original_command_exit_records"] == records
+        and owner["fixed_file_stat_observations"] == observations,
+        "independently parsed records agree",
+    )
+    need(
+        owner["source_preflight"]["complete_worktree_verification"] == verification
+        and owner["normal_complete_observation_order"] == normal_order,
+        "source and sequence agree",
+    )
+    need(
+        identity(log_path) == before and stat.S_IMODE(log_path.stat().st_mode) == 0o600,
+        "raw original unchanged",
+    )
+    result = {
+        "observed_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "scope": "Root independent fixed-control-record cross-check; no private stream export",
+        "fresh_api": identity(api_path),
+        "fresh_source_api": identity(source_api_path),
+        "source": source_pins,
+        "run": RUN,
+        "job": JOB,
+        "attempt": 1,
+        "head": HEAD,
+        "tree": TREE,
+        "run_conclusion": "failure",
+        "job_conclusion": "failure",
+        "artifact_count": 0,
+        "private_log_identity": {**before, "mode": "0600", "exported": False},
+        "original_commands": records,
+        "registered_stat_observations": observations,
+        "complete_expected_success_order": normal_order,
+        "source_preflight": verification,
+        "checkout_line": checkout[0],
+        "source_preflight_line": preflight[0]["line"],
+        "scanner_ready_line": ready[0],
+        "failure_line": errors[0],
+        "failed_slot": 14,
+        "failed_stage": stages[7],
+        "failed_stream": "stdout",
+        "failed_operand": "size_at_most_64MiB",
+        "actual_bytes": 80624041,
+        "maximum_bytes": 67108864,
+        "excess_bytes": 13515177,
+        "old37_failed_operand": "UNKNOWN",
+        "owner_receipt": identity(owner_path),
+        "complete_evidence_qualified": False,
+        "product_qualified": False,
+        "limits": [
+            "24 successful original commands do not replace the rejected collection gate.",
+            "No original lock, patch, configured graph, command stdout or stderr was extracted or reconstructed.",
+            "The actual 38 size observation does not backfill historical 37 failure operands.",
+            "No native command or repeated workflow was run for this audit.",
+        ],
+    }
+    output = HERE / "ROOT_REVIEW.json"
+    need(not output.exists(), "new root receipt only")
+    output.write_text(json.dumps(result, indent=2) + "\n")
+    print(json.dumps(identity(output)))
+
+
+if __name__ == "__main__":
+    main()

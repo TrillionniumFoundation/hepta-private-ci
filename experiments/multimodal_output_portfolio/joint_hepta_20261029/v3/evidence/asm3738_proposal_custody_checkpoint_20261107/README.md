@@ -1,0 +1,11 @@
+# ASM proposal and command-file custody evidence
+
+This packet preserves the failed original #5217 proposal and the published #5223–#5226 diagnostic successor. The exact native conclusions and source identities are in INDEX.json; local component checks and internal source reviews do not replace native qualification. The original #5217 command-file predicate operand remains unknown. Any newer fixed-slot observation belongs to its own source and run.
+
+The diagnostic registers 48 fixed stdout/stderr slots. A complete successful collect normally observes 51 reads because the three private metadata files are read before command custody as well. Missing rows do not imply a value or a successful read. Only the exact fstat object used by the original reader's conjunction is observed. No gate, limit, scanner, original command, timeout, license policy or original read error was relaxed.
+
+Every listed input is preserved byte for byte. Private native consoles are excluded and their identities recorded; no rejected command stdout, lock, or aquery payload was reconstructed. Two private local stdout/stderr files from the older input plan are also excluded. The old input plan is retained unchanged, making that selection explicit. The older #5188 producer ZIP is solely a declared-model input already preserved elsewhere, not a generated ASM artifact.
+
+The 92 original model checks, 11 initial observation checks, 16 final observation checks, historical source gaps, corrected observation I/O behavior, all eight proposal stage sources, and the peer/root review records retain their own scope. The writer-only draft and the first direct observer's output-I/O limitation remain historical records.
+
+Run `python -O -B restore.py NEW_EMPTY_DESTINATION` from this directory. The published bounded reader differs only in its fixed INDEX seal. It verifies all parts, archive hashes and member identities before writing inert regular 0644 files, and never executes archived code. Original modes are recorded separately. Limits remain 64 MiB compressed, 256 MiB uncompressed, 2,048 files, 450,000 bytes per wrapped part and 440,000 bytes per decoded segment. Packaging validates the reader in memory; it does not create another expanded restore.

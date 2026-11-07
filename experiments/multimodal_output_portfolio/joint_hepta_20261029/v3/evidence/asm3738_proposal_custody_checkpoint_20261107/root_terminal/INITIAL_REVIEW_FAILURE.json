@@ -1,0 +1,11 @@
+{
+  "failure": "fresh source bytes",
+  "exit_code": 1,
+  "initial_source_sha256": "e2a7458691f6f24eba67b012faddf79c0a48e5459e71896db32aab2d94046d71",
+  "reason": "The working specification has null staged identities; the published D unit has the final bound specification. Three actual Python source files matched fresh remote blobs.",
+  "corrections": [
+    "Bind the specification from the existing final D candidate path, not the unbound work draft.",
+    "Correct the source-only observer function spelling to observe_command_stat; this assertion was not yet reached."
+  ],
+  "native_rerun": false
+}
