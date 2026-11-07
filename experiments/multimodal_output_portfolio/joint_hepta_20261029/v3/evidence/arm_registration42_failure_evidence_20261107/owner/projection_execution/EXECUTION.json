@@ -1,0 +1,72 @@
+{
+  "source": {
+    "path": "/dev/shm/ndu_arm42_failure_20261107/audit_projection.py",
+    "bytes": 12074,
+    "sha256": "9a0691ead89ca9734fdec076a4ab914829797b825cbcac9cb0deb2bb7107dfc2"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_arm42_failure_20261107/audit_projection.py"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/projection_execution/0.stdout",
+        "bytes": 25,
+        "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/projection_execution/0.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_arm42_failure_20261107/audit_projection.py"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/projection_execution/1.stdout",
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/projection_execution/1.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-O",
+        "/dev/shm/ndu_arm42_failure_20261107/audit_projection.py"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/projection_execution/2.stdout",
+        "bytes": 147,
+        "sha256": "f3ae409553bae36df7989b4cd2a0220137fc98a052a25ca0c034e7074f395dc2"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/projection_execution/2.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "all_exit_zero": true,
+  "HOME_inherited": true,
+  "native_execution": false
+}

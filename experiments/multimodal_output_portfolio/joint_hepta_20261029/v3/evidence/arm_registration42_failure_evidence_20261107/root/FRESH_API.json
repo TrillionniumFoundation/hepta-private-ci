@@ -1,0 +1,1815 @@
+{
+  "observed_at": "2026-11-07 09:12:36 UTC",
+  "run": {
+    "id": 42353199414,
+    "name": "NDU dependency port candidate",
+    "node_id": "WFR_kwLOTrgxoM8AAAAJ3HKJNg",
+    "head_branch": "research/ndu-arm-registration-session-reuse-20261107",
+    "head_sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+    "path": ".github/workflows/ndu-port-candidate.yml",
+    "display_title": "fix(matrixd): reuse registration sessions for Linux fixture membership",
+    "run_number": 38,
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "failure",
+    "workflow_id": 398176374,
+    "check_suite_id": 114750434628,
+    "check_suite_node_id": "CS_kwDOTrgxoM8AAAAat6itRA",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+    "pull_requests": [
+      {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/5271",
+        "id": 5199644522,
+        "number": 5271,
+        "head": {
+          "ref": "research/ndu-arm-registration-session-reuse-20261107",
+          "sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+          "repo": {
+            "id": 1320694176,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+            "name": "hepta-private-ci"
+          }
+        },
+        "base": {
+          "ref": "research/ndu-arm-backend-source-amendment-20261107",
+          "sha": "2962db10db984c1f9bcafd124721cb213e5a71a4",
+          "repo": {
+            "id": 1320694176,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+            "name": "hepta-private-ci"
+          }
+        }
+      }
+    ],
+    "created_at": "2026-11-07T07:54:22Z",
+    "updated_at": "2026-11-07T08:41:39Z",
+    "actor": {
+      "login": "Tomasrgbsf",
+      "id": 273673612,
+      "node_id": "U_kgDOEE_tjA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273673612?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Tomasrgbsf",
+      "html_url": "https://github.com/Tomasrgbsf",
+      "followers_url": "https://api.github.com/users/Tomasrgbsf/followers",
+      "following_url": "https://api.github.com/users/Tomasrgbsf/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Tomasrgbsf/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Tomasrgbsf/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Tomasrgbsf/subscriptions",
+      "organizations_url": "https://api.github.com/users/Tomasrgbsf/orgs",
+      "repos_url": "https://api.github.com/users/Tomasrgbsf/repos",
+      "events_url": "https://api.github.com/users/Tomasrgbsf/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Tomasrgbsf/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "run_attempt": 1,
+    "referenced_workflows": [],
+    "run_started_at": "2026-11-07T07:54:22Z",
+    "triggering_actor": {
+      "login": "Tomasrgbsf",
+      "id": 273673612,
+      "node_id": "U_kgDOEE_tjA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273673612?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Tomasrgbsf",
+      "html_url": "https://github.com/Tomasrgbsf",
+      "followers_url": "https://api.github.com/users/Tomasrgbsf/followers",
+      "following_url": "https://api.github.com/users/Tomasrgbsf/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Tomasrgbsf/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Tomasrgbsf/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Tomasrgbsf/subscriptions",
+      "organizations_url": "https://api.github.com/users/Tomasrgbsf/orgs",
+      "repos_url": "https://api.github.com/users/Tomasrgbsf/repos",
+      "events_url": "https://api.github.com/users/Tomasrgbsf/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Tomasrgbsf/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/attempts/1/jobs",
+    "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/attempts/1/logs",
+    "check_suite_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-suites/114750434628",
+    "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/artifacts",
+    "cancel_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/cancel",
+    "rerun_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/rerun",
+    "previous_attempt_url": null,
+    "workflow_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/398176374",
+    "head_commit": {
+      "id": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+      "tree_id": "8b46b24ccca6bf77227e1b21aa66ec84b0ea5473",
+      "message": "fix(matrixd): reuse registration sessions for Linux fixture membership\n\nSigned-off-by: Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com>",
+      "timestamp": "2026-11-07T07:54:16Z",
+      "author": {
+        "name": "Tomasrgbsf",
+        "email": "273673612+Tomasrgbsf@users.noreply.github.com"
+      },
+      "committer": {
+        "name": "Tomasrgbsf",
+        "email": "273673612+Tomasrgbsf@users.noreply.github.com"
+      }
+    },
+    "repository": {
+      "id": 1320694176,
+      "node_id": "R_kgDOTrgxoA",
+      "name": "hepta-private-ci",
+      "full_name": "TrillionniumFoundation/hepta-private-ci",
+      "private": false,
+      "owner": {
+        "login": "TrillionniumFoundation",
+        "id": 262513357,
+        "node_id": "O_kgDOD6WizQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/262513357?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/TrillionniumFoundation",
+        "html_url": "https://github.com/TrillionniumFoundation",
+        "followers_url": "https://api.github.com/users/TrillionniumFoundation/followers",
+        "following_url": "https://api.github.com/users/TrillionniumFoundation/following{/other_user}",
+        "gists_url": "https://api.github.com/users/TrillionniumFoundation/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/TrillionniumFoundation/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/TrillionniumFoundation/subscriptions",
+        "organizations_url": "https://api.github.com/users/TrillionniumFoundation/orgs",
+        "repos_url": "https://api.github.com/users/TrillionniumFoundation/repos",
+        "events_url": "https://api.github.com/users/TrillionniumFoundation/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/TrillionniumFoundation/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+      "description": "Private verification-only mirror for Hepta hosted CI",
+      "fork": false,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+      "forks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/forks",
+      "keys_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/teams",
+      "hooks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/hooks",
+      "issue_events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/events",
+      "assignees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/tags",
+      "blobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/languages",
+      "stargazers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/stargazers",
+      "contributors_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contributors",
+      "subscribers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscribers",
+      "subscription_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscription",
+      "commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/merges",
+      "archive_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/downloads",
+      "issues_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/labels{/name}",
+      "releases_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/deployments"
+    },
+    "head_repository": {
+      "id": 1320694176,
+      "node_id": "R_kgDOTrgxoA",
+      "name": "hepta-private-ci",
+      "full_name": "TrillionniumFoundation/hepta-private-ci",
+      "private": false,
+      "owner": {
+        "login": "TrillionniumFoundation",
+        "id": 262513357,
+        "node_id": "O_kgDOD6WizQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/262513357?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/TrillionniumFoundation",
+        "html_url": "https://github.com/TrillionniumFoundation",
+        "followers_url": "https://api.github.com/users/TrillionniumFoundation/followers",
+        "following_url": "https://api.github.com/users/TrillionniumFoundation/following{/other_user}",
+        "gists_url": "https://api.github.com/users/TrillionniumFoundation/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/TrillionniumFoundation/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/TrillionniumFoundation/subscriptions",
+        "organizations_url": "https://api.github.com/users/TrillionniumFoundation/orgs",
+        "repos_url": "https://api.github.com/users/TrillionniumFoundation/repos",
+        "events_url": "https://api.github.com/users/TrillionniumFoundation/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/TrillionniumFoundation/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+      "description": "Private verification-only mirror for Hepta hosted CI",
+      "fork": false,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+      "forks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/forks",
+      "keys_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/teams",
+      "hooks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/hooks",
+      "issue_events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/events",
+      "assignees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/tags",
+      "blobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/languages",
+      "stargazers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/stargazers",
+      "contributors_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contributors",
+      "subscribers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscribers",
+      "subscription_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscription",
+      "commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/merges",
+      "archive_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/downloads",
+      "issues_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/labels{/name}",
+      "releases_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/deployments"
+    }
+  },
+  "jobs": {
+    "total_count": 11,
+    "jobs": [
+      {
+        "id": 128345548630,
+        "run_id": 42353199414,
+        "workflow_name": "NDU dependency port candidate",
+        "head_branch": "research/ndu-arm-registration-session-reuse-20261107",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAd4f2nVg",
+        "head_sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/128345548630",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/job/128345548630",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-07T07:54:22Z",
+        "started_at": "2026-11-07T07:54:25Z",
+        "completed_at": "2026-11-07T07:57:00Z",
+        "name": "generate-reviewable-candidate",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-07T07:54:25Z",
+            "completed_at": "2026-11-07T07:54:26Z"
+          },
+          {
+            "name": "Check out the exact reviewed new source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-07T07:54:26Z",
+            "completed_at": "2026-11-07T07:54:43Z"
+          },
+          {
+            "name": "Test source binding, phase evidence and failure preservation",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-07T07:54:43Z",
+            "completed_at": "2026-11-07T07:55:38Z"
+          },
+          {
+            "name": "Test Linux source and artifact boundaries before candidate generation",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-07T07:55:38Z",
+            "completed_at": "2026-11-07T07:55:42Z"
+          },
+          {
+            "name": "Test post-qualification fix evidence and source separation",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-07T07:55:42Z",
+            "completed_at": "2026-11-07T07:55:47Z"
+          },
+          {
+            "name": "Prepare pinned Bazel tooling",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-07T07:55:47Z",
+            "completed_at": "2026-11-07T07:55:57Z"
+          },
+          {
+            "name": "Install explicit candidate compiler",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-07T07:55:57Z",
+            "completed_at": "2026-11-07T07:56:03Z"
+          },
+          {
+            "name": "Verify integrated source and zero-drift Cargo and Bazel locks",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-07T07:56:03Z",
+            "completed_at": "2026-11-07T07:56:55Z"
+          },
+          {
+            "name": "Retain complete or partial producer evidence",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-07T07:56:55Z",
+            "completed_at": "2026-11-07T07:56:57Z"
+          },
+          {
+            "name": "Post Prepare pinned Bazel tooling",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17,
+            "started_at": "2026-11-07T07:56:57Z",
+            "completed_at": "2026-11-07T07:56:57Z"
+          },
+          {
+            "name": "Post Check out the exact reviewed new source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18,
+            "started_at": "2026-11-07T07:56:57Z",
+            "completed_at": "2026-11-07T07:56:57Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19,
+            "started_at": "2026-11-07T07:56:57Z",
+            "completed_at": "2026-11-07T07:56:57Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/128345548630",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000036840,
+        "runner_name": "GitHub Actions 1000036840",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 128345548820,
+        "run_id": 42353199414,
+        "workflow_name": "NDU dependency port candidate",
+        "head_branch": "research/ndu-arm-registration-session-reuse-20261107",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAd4f2oFA",
+        "head_sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/128345548820",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/job/128345548820",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-07T07:54:23Z",
+        "started_at": "2026-11-07T07:54:26Z",
+        "completed_at": "2026-11-07T08:02:04Z",
+        "name": "produce-independent-matrix-018-fixture",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-07T07:54:27Z",
+            "completed_at": "2026-11-07T07:54:29Z"
+          },
+          {
+            "name": "Check out the new driver and reviewed fixture patch",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-07T07:54:29Z",
+            "completed_at": "2026-11-07T07:54:54Z"
+          },
+          {
+            "name": "Independently check out the fixed original source and 0.18 lock",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-07T07:54:54Z",
+            "completed_at": "2026-11-07T07:55:00Z"
+          },
+          {
+            "name": "Run ./driver/.github/actions/setup-ci",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-07T07:55:00Z",
+            "completed_at": "2026-11-07T07:55:05Z"
+          },
+          {
+            "name": "Install Linux build prerequisites",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-07T07:55:05Z",
+            "completed_at": "2026-11-07T07:55:14Z"
+          },
+          {
+            "name": "Install explicit original compiler",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-07T07:55:14Z",
+            "completed_at": "2026-11-07T07:55:23Z"
+          },
+          {
+            "name": "Install normal CI nextest version",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-07T07:55:23Z",
+            "completed_at": "2026-11-07T07:55:24Z"
+          },
+          {
+            "name": "Produce and seal actual old-version state using only the fixture patch",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-07T07:55:24Z",
+            "completed_at": "2026-11-07T08:01:47Z"
+          },
+          {
+            "name": "Retain original source, lock, executable, database files and failures",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-07T08:01:47Z",
+            "completed_at": "2026-11-07T08:02:00Z"
+          },
+          {
+            "name": "Post Independently check out the fixed original source and 0.18 lock",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17,
+            "started_at": "2026-11-07T08:02:00Z",
+            "completed_at": "2026-11-07T08:02:00Z"
+          },
+          {
+            "name": "Post Check out the new driver and reviewed fixture patch",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18,
+            "started_at": "2026-11-07T08:02:00Z",
+            "completed_at": "2026-11-07T08:02:01Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19,
+            "started_at": "2026-11-07T08:02:01Z",
+            "completed_at": "2026-11-07T08:02:01Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/128345548820",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000036843,
+        "runner_name": "GitHub Actions 1000036843",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 128346079270,
+        "run_id": 42353199414,
+        "workflow_name": "NDU dependency port candidate",
+        "head_branch": "research/ndu-arm-registration-session-reuse-20261107",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAd4gXAJg",
+        "head_sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/128346079270",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/job/128346079270",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-07T07:57:00Z",
+        "started_at": "2026-11-07T07:57:03Z",
+        "completed_at": "2026-11-07T08:10:56Z",
+        "name": "linux-bazel-libraries",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-07T07:57:04Z",
+            "completed_at": "2026-11-07T07:57:05Z"
+          },
+          {
+            "name": "Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-07T07:57:05Z",
+            "completed_at": "2026-11-07T07:57:21Z"
+          },
+          {
+            "name": "Prepare pinned Linux Bazel tooling",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-07T07:57:21Z",
+            "completed_at": "2026-11-07T07:57:34Z"
+          },
+          {
+            "name": "Install explicit candidate compiler",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-07T07:57:34Z",
+            "completed_at": "2026-11-07T07:57:43Z"
+          },
+          {
+            "name": "Download the same candidate",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-07T07:57:43Z",
+            "completed_at": "2026-11-07T07:57:45Z"
+          },
+          {
+            "name": "Build real vendor libraries and first-party consumers with sealed locks",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-07T07:57:45Z",
+            "completed_at": "2026-11-07T08:10:51Z"
+          },
+          {
+            "name": "Retain complete library build results and failures",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-07T08:10:51Z",
+            "completed_at": "2026-11-07T08:10:53Z"
+          },
+          {
+            "name": "Post Prepare pinned Linux Bazel tooling",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13,
+            "started_at": "2026-11-07T08:10:53Z",
+            "completed_at": "2026-11-07T08:10:53Z"
+          },
+          {
+            "name": "Post Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14,
+            "started_at": "2026-11-07T08:10:53Z",
+            "completed_at": "2026-11-07T08:10:53Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15,
+            "started_at": "2026-11-07T08:10:53Z",
+            "completed_at": "2026-11-07T08:10:53Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/128346079270",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000036873,
+        "runner_name": "GitHub Actions 1000036873",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 128346079296,
+        "run_id": 42353199414,
+        "workflow_name": "NDU dependency port candidate",
+        "head_branch": "research/ndu-arm-registration-session-reuse-20261107",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAd4gXAQA",
+        "head_sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/128346079296",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/job/128346079296",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-07T07:57:00Z",
+        "started_at": "2026-11-07T07:57:03Z",
+        "completed_at": "2026-11-07T08:14:00Z",
+        "name": "targeted-workspace-tests (yaml)",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-07T07:57:03Z",
+            "completed_at": "2026-11-07T07:57:05Z"
+          },
+          {
+            "name": "Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-07T07:57:05Z",
+            "completed_at": "2026-11-07T07:57:20Z"
+          },
+          {
+            "name": "Run ./.github/actions/setup-ci",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-07T07:57:20Z",
+            "completed_at": "2026-11-07T07:57:25Z"
+          },
+          {
+            "name": "Install Linux build prerequisites",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-07T07:57:25Z",
+            "completed_at": "2026-11-07T07:57:34Z"
+          },
+          {
+            "name": "Install explicit candidate compiler",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-07T07:57:34Z",
+            "completed_at": "2026-11-07T07:57:41Z"
+          },
+          {
+            "name": "Install normal CI nextest version",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-07T07:57:41Z",
+            "completed_at": "2026-11-07T07:57:41Z"
+          },
+          {
+            "name": "Download the one producer artifact from this run",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-07T07:57:41Z",
+            "completed_at": "2026-11-07T07:57:43Z"
+          },
+          {
+            "name": "Verify exact source and artifacts then run actual workspace packages",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-07T07:57:43Z",
+            "completed_at": "2026-11-07T08:10:08Z"
+          },
+          {
+            "name": "Install the candidate compiler's Clippy for changed YAML consumers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-07T08:10:08Z",
+            "completed_at": "2026-11-07T08:10:09Z"
+          },
+          {
+            "name": "Record scoped YAML Clippy fixes after the original qualification",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10,
+            "started_at": "2026-11-07T08:10:09Z",
+            "completed_at": "2026-11-07T08:13:55Z"
+          },
+          {
+            "name": "Retain every attempted regression and failure",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11,
+            "started_at": "2026-11-07T08:13:55Z",
+            "completed_at": "2026-11-07T08:13:56Z"
+          },
+          {
+            "name": "Retain attempted YAML fixes separately from the original tested source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12,
+            "started_at": "2026-11-07T08:13:56Z",
+            "completed_at": "2026-11-07T08:13:58Z"
+          },
+          {
+            "name": "Post Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 24,
+            "started_at": "2026-11-07T08:13:58Z",
+            "completed_at": "2026-11-07T08:13:58Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 25,
+            "started_at": "2026-11-07T08:13:58Z",
+            "completed_at": "2026-11-07T08:13:58Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/128346079296",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000036872,
+        "runner_name": "GitHub Actions 1000036872",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 128346079300,
+        "run_id": 42353199414,
+        "workflow_name": "NDU dependency port candidate",
+        "head_branch": "research/ndu-arm-registration-session-reuse-20261107",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAd4gXARA",
+        "head_sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/128346079300",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/job/128346079300",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-07T07:57:00Z",
+        "started_at": "2026-11-07T07:57:03Z",
+        "completed_at": "2026-11-07T07:58:50Z",
+        "name": "full-scope-candidate-cargo-deny",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-07T07:57:04Z",
+            "completed_at": "2026-11-07T07:57:05Z"
+          },
+          {
+            "name": "Build EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-07T07:57:05Z",
+            "completed_at": "2026-11-07T07:57:19Z"
+          },
+          {
+            "name": "Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-07T07:57:19Z",
+            "completed_at": "2026-11-07T07:57:27Z"
+          },
+          {
+            "name": "Run ./.github/actions/setup-ci",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-07T07:57:27Z",
+            "completed_at": "2026-11-07T07:57:30Z"
+          },
+          {
+            "name": "Install explicit candidate compiler",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-07T07:57:30Z",
+            "completed_at": "2026-11-07T07:57:39Z"
+          },
+          {
+            "name": "Download the same candidate",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-07T07:57:39Z",
+            "completed_at": "2026-11-07T07:57:40Z"
+          },
+          {
+            "name": "Verify and restore candidate before scanning",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-07T07:57:40Z",
+            "completed_at": "2026-11-07T07:57:46Z"
+          },
+          {
+            "name": "Run the original pinned cargo-deny action with unchanged complete scope",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-07T07:57:46Z",
+            "completed_at": "2026-11-07T07:58:42Z"
+          },
+          {
+            "name": "Preserve same-version host diagnostics after a scan failure",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9,
+            "started_at": "2026-11-07T07:58:42Z",
+            "completed_at": "2026-11-07T07:58:42Z"
+          },
+          {
+            "name": "Verify scan preserved policy, source, features and locks",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10,
+            "started_at": "2026-11-07T07:58:42Z",
+            "completed_at": "2026-11-07T07:58:46Z"
+          },
+          {
+            "name": "Retain scan binding and all diagnostic failures",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11,
+            "started_at": "2026-11-07T07:58:46Z",
+            "completed_at": "2026-11-07T07:58:48Z"
+          },
+          {
+            "name": "Post Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 22,
+            "started_at": "2026-11-07T07:58:48Z",
+            "completed_at": "2026-11-07T07:58:48Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 23,
+            "started_at": "2026-11-07T07:58:48Z",
+            "completed_at": "2026-11-07T07:58:48Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/128346079300",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000036871,
+        "runner_name": "GitHub Actions 1000036871",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 128346079305,
+        "run_id": 42353199414,
+        "workflow_name": "NDU dependency port candidate",
+        "head_branch": "research/ndu-arm-registration-session-reuse-20261107",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAd4gXASQ",
+        "head_sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/128346079305",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/job/128346079305",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-07T07:57:00Z",
+        "started_at": "2026-11-07T07:57:04Z",
+        "completed_at": "2026-11-07T08:41:38Z",
+        "name": "native-arm64-synapse",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-07T07:57:05Z",
+            "completed_at": "2026-11-07T07:57:06Z"
+          },
+          {
+            "name": "Check out the exact producer source including the reviewed Linux driver",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-07T07:57:06Z",
+            "completed_at": "2026-11-07T07:57:23Z"
+          },
+          {
+            "name": "Download the same source and lock candidate from this run",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-07T07:57:23Z",
+            "completed_at": "2026-11-07T07:57:24Z"
+          },
+          {
+            "name": "Prepare sealed native inputs then qualify the actual isolated business test",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 4,
+            "started_at": "2026-11-07T07:57:24Z",
+            "completed_at": "2026-11-07T08:38:30Z"
+          },
+          {
+            "name": "Reclaim only this qualification's recorded Docker resources",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-07T08:38:30Z",
+            "completed_at": "2026-11-07T08:38:31Z"
+          },
+          {
+            "name": "Package the declared diagnostic view alongside the full artifact",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-07T08:38:31Z",
+            "completed_at": "2026-11-07T08:38:51Z"
+          },
+          {
+            "name": "Retain diagnostic view policy and inventories",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-07T08:38:51Z",
+            "completed_at": "2026-11-07T08:38:52Z"
+          },
+          {
+            "name": "Retain diagnostic view part 1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-07T08:38:52Z",
+            "completed_at": "2026-11-07T08:38:53Z"
+          },
+          {
+            "name": "Retain diagnostic view part 2",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9,
+            "started_at": "2026-11-07T08:38:53Z",
+            "completed_at": "2026-11-07T08:38:53Z"
+          },
+          {
+            "name": "Retain diagnostic view part 3",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 10,
+            "started_at": "2026-11-07T08:38:53Z",
+            "completed_at": "2026-11-07T08:38:53Z"
+          },
+          {
+            "name": "Retain diagnostic view part 4",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 11,
+            "started_at": "2026-11-07T08:38:53Z",
+            "completed_at": "2026-11-07T08:38:53Z"
+          },
+          {
+            "name": "Retain diagnostic view part 5",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 12,
+            "started_at": "2026-11-07T08:38:53Z",
+            "completed_at": "2026-11-07T08:38:53Z"
+          },
+          {
+            "name": "Retain diagnostic view part 6",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 13,
+            "started_at": "2026-11-07T08:38:53Z",
+            "completed_at": "2026-11-07T08:38:53Z"
+          },
+          {
+            "name": "Retain diagnostic view part 7",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 14,
+            "started_at": "2026-11-07T08:38:53Z",
+            "completed_at": "2026-11-07T08:38:53Z"
+          },
+          {
+            "name": "Retain diagnostic view part 8",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 15,
+            "started_at": "2026-11-07T08:38:53Z",
+            "completed_at": "2026-11-07T08:38:53Z"
+          },
+          {
+            "name": "Retain sealed images, seeds, actual binaries, runtime receipts and failures",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16,
+            "started_at": "2026-11-07T08:38:53Z",
+            "completed_at": "2026-11-07T08:41:33Z"
+          },
+          {
+            "name": "Post Check out the exact producer source including the reviewed Linux driver",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 32,
+            "started_at": "2026-11-07T08:41:33Z",
+            "completed_at": "2026-11-07T08:41:33Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 33,
+            "started_at": "2026-11-07T08:41:33Z",
+            "completed_at": "2026-11-07T08:41:33Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/128346079305",
+        "labels": [
+          "ubuntu-24.04-arm"
+        ],
+        "runner_id": 1000036874,
+        "runner_name": "GitHub Actions 1000036874",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 128346079349,
+        "run_id": 42353199414,
+        "workflow_name": "NDU dependency port candidate",
+        "head_branch": "research/ndu-arm-registration-session-reuse-20261107",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAd4gXAdQ",
+        "head_sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/128346079349",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/job/128346079349",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-07T07:57:00Z",
+        "started_at": "2026-11-07T07:57:03Z",
+        "completed_at": "2026-11-07T07:58:38Z",
+        "name": "targeted-workspace-tests (keyring)",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-07T07:57:04Z",
+            "completed_at": "2026-11-07T07:57:06Z"
+          },
+          {
+            "name": "Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-07T07:57:06Z",
+            "completed_at": "2026-11-07T07:57:22Z"
+          },
+          {
+            "name": "Run ./.github/actions/setup-ci",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-07T07:57:22Z",
+            "completed_at": "2026-11-07T07:57:26Z"
+          },
+          {
+            "name": "Install Linux build prerequisites",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-07T07:57:26Z",
+            "completed_at": "2026-11-07T07:57:36Z"
+          },
+          {
+            "name": "Install explicit candidate compiler",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-07T07:57:36Z",
+            "completed_at": "2026-11-07T07:57:46Z"
+          },
+          {
+            "name": "Install normal CI nextest version",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-07T07:57:46Z",
+            "completed_at": "2026-11-07T07:57:47Z"
+          },
+          {
+            "name": "Download the one producer artifact from this run",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-07T07:57:47Z",
+            "completed_at": "2026-11-07T07:57:48Z"
+          },
+          {
+            "name": "Verify exact source and artifacts then run actual workspace packages",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-07T07:57:48Z",
+            "completed_at": "2026-11-07T07:58:35Z"
+          },
+          {
+            "name": "Install the candidate compiler's Clippy for changed YAML consumers",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9,
+            "started_at": "2026-11-07T07:58:35Z",
+            "completed_at": "2026-11-07T07:58:35Z"
+          },
+          {
+            "name": "Record scoped YAML Clippy fixes after the original qualification",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 10,
+            "started_at": "2026-11-07T07:58:35Z",
+            "completed_at": "2026-11-07T07:58:35Z"
+          },
+          {
+            "name": "Retain every attempted regression and failure",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11,
+            "started_at": "2026-11-07T07:58:35Z",
+            "completed_at": "2026-11-07T07:58:36Z"
+          },
+          {
+            "name": "Retain attempted YAML fixes separately from the original tested source",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 12,
+            "started_at": "2026-11-07T07:58:36Z",
+            "completed_at": "2026-11-07T07:58:36Z"
+          },
+          {
+            "name": "Post Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 24,
+            "started_at": "2026-11-07T07:58:36Z",
+            "completed_at": "2026-11-07T07:58:36Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 25,
+            "started_at": "2026-11-07T07:58:36Z",
+            "completed_at": "2026-11-07T07:58:36Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/128346079349",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000036875,
+        "runner_name": "GitHub Actions 1000036875",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 128346079351,
+        "run_id": 42353199414,
+        "workflow_name": "NDU dependency port candidate",
+        "head_branch": "research/ndu-arm-registration-session-reuse-20261107",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAd4gXAdw",
+        "head_sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/128346079351",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/job/128346079351",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-07T07:57:00Z",
+        "started_at": "2026-11-07T07:57:03Z",
+        "completed_at": "2026-11-07T07:59:22Z",
+        "name": "targeted-workspace-tests (execpolicy)",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-07T07:57:03Z",
+            "completed_at": "2026-11-07T07:57:05Z"
+          },
+          {
+            "name": "Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-07T07:57:05Z",
+            "completed_at": "2026-11-07T07:57:25Z"
+          },
+          {
+            "name": "Run ./.github/actions/setup-ci",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-07T07:57:25Z",
+            "completed_at": "2026-11-07T07:57:28Z"
+          },
+          {
+            "name": "Install Linux build prerequisites",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-07T07:57:28Z",
+            "completed_at": "2026-11-07T07:57:37Z"
+          },
+          {
+            "name": "Install explicit candidate compiler",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-07T07:57:37Z",
+            "completed_at": "2026-11-07T07:57:47Z"
+          },
+          {
+            "name": "Install normal CI nextest version",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-07T07:57:47Z",
+            "completed_at": "2026-11-07T07:57:47Z"
+          },
+          {
+            "name": "Download the one producer artifact from this run",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-07T07:57:47Z",
+            "completed_at": "2026-11-07T07:57:48Z"
+          },
+          {
+            "name": "Verify exact source and artifacts then run actual workspace packages",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-07T07:57:48Z",
+            "completed_at": "2026-11-07T07:59:20Z"
+          },
+          {
+            "name": "Install the candidate compiler's Clippy for changed YAML consumers",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9,
+            "started_at": "2026-11-07T07:59:20Z",
+            "completed_at": "2026-11-07T07:59:20Z"
+          },
+          {
+            "name": "Record scoped YAML Clippy fixes after the original qualification",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 10,
+            "started_at": "2026-11-07T07:59:20Z",
+            "completed_at": "2026-11-07T07:59:20Z"
+          },
+          {
+            "name": "Retain every attempted regression and failure",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11,
+            "started_at": "2026-11-07T07:59:20Z",
+            "completed_at": "2026-11-07T07:59:21Z"
+          },
+          {
+            "name": "Retain attempted YAML fixes separately from the original tested source",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 12,
+            "started_at": "2026-11-07T07:59:21Z",
+            "completed_at": "2026-11-07T07:59:21Z"
+          },
+          {
+            "name": "Post Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 24,
+            "started_at": "2026-11-07T07:59:21Z",
+            "completed_at": "2026-11-07T07:59:21Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 25,
+            "started_at": "2026-11-07T07:59:21Z",
+            "completed_at": "2026-11-07T07:59:21Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/128346079351",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000036876,
+        "runner_name": "GitHub Actions 1000036876",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 128346079354,
+        "run_id": 42353199414,
+        "workflow_name": "NDU dependency port candidate",
+        "head_branch": "research/ndu-arm-registration-session-reuse-20261107",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAd4gXAeg",
+        "head_sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/128346079354",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/job/128346079354",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-07T07:57:00Z",
+        "started_at": "2026-11-07T07:57:03Z",
+        "completed_at": "2026-11-07T07:59:16Z",
+        "name": "independent-full-upstream-aws",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-07T07:57:03Z",
+            "completed_at": "2026-11-07T07:57:05Z"
+          },
+          {
+            "name": "Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-07T07:57:05Z",
+            "completed_at": "2026-11-07T07:57:24Z"
+          },
+          {
+            "name": "Run ./.github/actions/setup-ci",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-07T07:57:24Z",
+            "completed_at": "2026-11-07T07:57:28Z"
+          },
+          {
+            "name": "Install Linux build prerequisites",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-07T07:57:28Z",
+            "completed_at": "2026-11-07T07:57:37Z"
+          },
+          {
+            "name": "Install explicit candidate compiler",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-07T07:57:37Z",
+            "completed_at": "2026-11-07T07:57:45Z"
+          },
+          {
+            "name": "Install normal CI nextest version",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-07T07:57:45Z",
+            "completed_at": "2026-11-07T07:57:46Z"
+          },
+          {
+            "name": "Download the same producer artifact",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-07T07:57:46Z",
+            "completed_at": "2026-11-07T07:57:47Z"
+          },
+          {
+            "name": "Qualify all 245 upstream cases on a separate exact-source copy",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-07T07:57:47Z",
+            "completed_at": "2026-11-07T07:59:12Z"
+          },
+          {
+            "name": "Retain all upstream sources, executables, retries and failures",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-07T07:59:12Z",
+            "completed_at": "2026-11-07T07:59:14Z"
+          },
+          {
+            "name": "Post Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18,
+            "started_at": "2026-11-07T07:59:14Z",
+            "completed_at": "2026-11-07T07:59:15Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19,
+            "started_at": "2026-11-07T07:59:15Z",
+            "completed_at": "2026-11-07T07:59:15Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/128346079354",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000036877,
+        "runner_name": "GitHub Actions 1000036877",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 128346079417,
+        "run_id": 42353199414,
+        "workflow_name": "NDU dependency port candidate",
+        "head_branch": "research/ndu-arm-registration-session-reuse-20261107",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAd4gXAuQ",
+        "head_sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/128346079417",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/job/128346079417",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-07T07:57:00Z",
+        "started_at": "2026-11-07T07:57:03Z",
+        "completed_at": "2026-11-07T08:09:55Z",
+        "name": "targeted-workspace-tests (aws)",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-07T07:57:05Z",
+            "completed_at": "2026-11-07T07:57:06Z"
+          },
+          {
+            "name": "Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-07T07:57:06Z",
+            "completed_at": "2026-11-07T07:57:26Z"
+          },
+          {
+            "name": "Run ./.github/actions/setup-ci",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-07T07:57:26Z",
+            "completed_at": "2026-11-07T07:57:30Z"
+          },
+          {
+            "name": "Install Linux build prerequisites",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-07T07:57:30Z",
+            "completed_at": "2026-11-07T07:57:40Z"
+          },
+          {
+            "name": "Install explicit candidate compiler",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-07T07:57:40Z",
+            "completed_at": "2026-11-07T07:57:48Z"
+          },
+          {
+            "name": "Install normal CI nextest version",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-07T07:57:48Z",
+            "completed_at": "2026-11-07T07:57:49Z"
+          },
+          {
+            "name": "Download the one producer artifact from this run",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-07T07:57:49Z",
+            "completed_at": "2026-11-07T07:57:51Z"
+          },
+          {
+            "name": "Verify exact source and artifacts then run actual workspace packages",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-07T07:57:51Z",
+            "completed_at": "2026-11-07T08:09:51Z"
+          },
+          {
+            "name": "Install the candidate compiler's Clippy for changed YAML consumers",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9,
+            "started_at": "2026-11-07T08:09:51Z",
+            "completed_at": "2026-11-07T08:09:51Z"
+          },
+          {
+            "name": "Record scoped YAML Clippy fixes after the original qualification",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 10,
+            "started_at": "2026-11-07T08:09:51Z",
+            "completed_at": "2026-11-07T08:09:51Z"
+          },
+          {
+            "name": "Retain every attempted regression and failure",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11,
+            "started_at": "2026-11-07T08:09:51Z",
+            "completed_at": "2026-11-07T08:09:53Z"
+          },
+          {
+            "name": "Retain attempted YAML fixes separately from the original tested source",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 12,
+            "started_at": "2026-11-07T08:09:53Z",
+            "completed_at": "2026-11-07T08:09:53Z"
+          },
+          {
+            "name": "Post Check out the exact producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 24,
+            "started_at": "2026-11-07T08:09:53Z",
+            "completed_at": "2026-11-07T08:09:53Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 25,
+            "started_at": "2026-11-07T08:09:53Z",
+            "completed_at": "2026-11-07T08:09:53Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/128346079417",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000036878,
+        "runner_name": "GitHub Actions 1000036878",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 128347154475,
+        "run_id": 42353199414,
+        "workflow_name": "NDU dependency port candidate",
+        "head_branch": "research/ndu-arm-registration-session-reuse-20261107",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAd4hYoKw",
+        "head_sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/128347154475",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42353199414/job/128347154475",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-07T08:02:04Z",
+        "started_at": "2026-11-07T08:06:43Z",
+        "completed_at": "2026-11-07T08:32:26Z",
+        "name": "matrix-workspace-and-old-fixture",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-07T08:06:43Z",
+            "completed_at": "2026-11-07T08:06:45Z"
+          },
+          {
+            "name": "Check out the exact candidate producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-07T08:06:45Z",
+            "completed_at": "2026-11-07T08:07:03Z"
+          },
+          {
+            "name": "Run ./.github/actions/setup-ci",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-07T08:07:03Z",
+            "completed_at": "2026-11-07T08:07:07Z"
+          },
+          {
+            "name": "Install Linux build prerequisites",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-07T08:07:07Z",
+            "completed_at": "2026-11-07T08:07:16Z"
+          },
+          {
+            "name": "Install explicit candidate compiler",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-07T08:07:16Z",
+            "completed_at": "2026-11-07T08:07:24Z"
+          },
+          {
+            "name": "Install normal CI nextest version",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-07T08:07:24Z",
+            "completed_at": "2026-11-07T08:07:25Z"
+          },
+          {
+            "name": "Download the same candidate",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-07T08:07:25Z",
+            "completed_at": "2026-11-07T08:07:26Z"
+          },
+          {
+            "name": "Download the independent old-source fixture from this run",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-07T08:07:26Z",
+            "completed_at": "2026-11-07T08:07:30Z"
+          },
+          {
+            "name": "Run four actual Matrix crates and reopen a verified writable copy",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-07T08:07:30Z",
+            "completed_at": "2026-11-07T08:26:06Z"
+          },
+          {
+            "name": "Install the candidate compiler's Clippy for changed Matrix consumers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10,
+            "started_at": "2026-11-07T08:26:06Z",
+            "completed_at": "2026-11-07T08:26:06Z"
+          },
+          {
+            "name": "Record scoped Matrix Clippy fixes after the original migration qualification",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11,
+            "started_at": "2026-11-07T08:26:06Z",
+            "completed_at": "2026-11-07T08:32:11Z"
+          },
+          {
+            "name": "Retain actual regression logs, executable and migrated copy",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12,
+            "started_at": "2026-11-07T08:32:11Z",
+            "completed_at": "2026-11-07T08:32:22Z"
+          },
+          {
+            "name": "Retain attempted Matrix fixes separately from the original tested source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13,
+            "started_at": "2026-11-07T08:32:22Z",
+            "completed_at": "2026-11-07T08:32:24Z"
+          },
+          {
+            "name": "Post Check out the exact candidate producer source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 26,
+            "started_at": "2026-11-07T08:32:24Z",
+            "completed_at": "2026-11-07T08:32:24Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 27,
+            "started_at": "2026-11-07T08:32:24Z",
+            "completed_at": "2026-11-07T08:32:24Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/128347154475",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000037009,
+        "runner_name": "GitHub Actions 1000037009",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      }
+    ]
+  },
+  "head": {
+    "sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+    "node_id": "C_kwDOTrgxoNoAKDhiMGZjZjgwYWZiOTVjNTE5OWJlOWI1ZjEzMWQ2NDU0NjYzYzE2MzI",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/8b0fcf80afb95c5199be9b5f131d6454663c1632",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/8b0fcf80afb95c5199be9b5f131d6454663c1632",
+    "author": {
+      "name": "Tomasrgbsf",
+      "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+      "date": "2026-11-07T07:54:16Z"
+    },
+    "committer": {
+      "name": "Tomasrgbsf",
+      "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+      "date": "2026-11-07T07:54:16Z"
+    },
+    "tree": {
+      "sha": "8b46b24ccca6bf77227e1b21aa66ec84b0ea5473",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/8b46b24ccca6bf77227e1b21aa66ec84b0ea5473"
+    },
+    "message": "fix(matrixd): reuse registration sessions for Linux fixture membership\n\nSigned-off-by: Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com>",
+    "parents": [
+      {
+        "sha": "2962db10db984c1f9bcafd124721cb213e5a71a4",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/2962db10db984c1f9bcafd124721cb213e5a71a4",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/2962db10db984c1f9bcafd124721cb213e5a71a4"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "merge": {
+    "sha": "99e81f8e932e805869d57bd8534761b9f3266ed8",
+    "node_id": "C_kwDOTrgxoNoAKDk5ZTgxZjhlOTMyZTgwNTg2OWQ1N2JkODUzNDc2MWI5ZjMyNjZlZDg",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/99e81f8e932e805869d57bd8534761b9f3266ed8",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/99e81f8e932e805869d57bd8534761b9f3266ed8",
+    "author": {
+      "name": "Tomasrgbsf",
+      "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+      "date": "2026-11-07T07:54:19Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-11-07T07:54:19Z"
+    },
+    "tree": {
+      "sha": "8b46b24ccca6bf77227e1b21aa66ec84b0ea5473",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/8b46b24ccca6bf77227e1b21aa66ec84b0ea5473"
+    },
+    "message": "Merge 8b0fcf80afb95c5199be9b5f131d6454663c1632 into 2962db10db984c1f9bcafd124721cb213e5a71a4",
+    "parents": [
+      {
+        "sha": "2962db10db984c1f9bcafd124721cb213e5a71a4",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/2962db10db984c1f9bcafd124721cb213e5a71a4",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/2962db10db984c1f9bcafd124721cb213e5a71a4"
+      },
+      {
+        "sha": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/8b0fcf80afb95c5199be9b5f131d6454663c1632",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/8b0fcf80afb95c5199be9b5f131d6454663c1632"
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq7tkrCRC1aQ7uu5UhlAAAfe4QAB2uoJqfDErKpRKBreUSn3ij\nuLZaQgdTgLKAnUj8vyYuJpNRgf35OzgFznBi6aoMLMo+0gvU9YLIEpR2Q82eWw5M\nXLHIHJZ3gcfOzlAOZWCOqusW9kHlo+hC71KC9RYWCDwm3oiLYz7QJsgJNoSitySM\nkJkJx2357sbz51SEfrzVBBlJo2a8mJBmrkzpg8Chxi1WiHkBwB+piQV8BSi1PEsg\nuaRD1eacj2rJ5qdke/rtvihkOm/kF8O1Wc9DaxdRDnL2WQ6tolsiu7Zz5g4UOiPt\n7gjGi3MF4ipeln2vElGzg2Gee1r33k/oNcDs4vw7tscJ55IHY393gvjtbkJcoL/5\nFORbS+raUQG8XKV9xoFhDsdihBvTMiI/19cyLPwW0J6KeL172TRnoKdw8hDsX3Km\nA8pj929r3g+0eE0ZRvBH0b3erFoX+tXRtnxiTkYr9R3bnwubWqzyLUAL1IjbqTYF\nvPCQ+e+2z/iI2T8BzjZYwzJJj1RL3pN31ncJ0lWX9T9W3AULH6sOao/VybSXu243\nPH/HlR3HtRJ9DxjL6VQ8firqBK2Hw6qLHXFi9h1vrlzHuWRXzarIk8farPHliKZF\n4T5j/x3gQhO5g7Txuc09qCAOe4TI+LnKXRGbiw6Mh1El1wdWJ+VzpElaylB5y2SI\nnMrZM5oTLrTOJwTMD4JN\n=V40k\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 8b46b24ccca6bf77227e1b21aa66ec84b0ea5473\nparent 2962db10db984c1f9bcafd124721cb213e5a71a4\nparent 8b0fcf80afb95c5199be9b5f131d6454663c1632\nauthor Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com> 1794038059 -0500\ncommitter GitHub <noreply@github.com> 1794038059 -0500\n\nMerge 8b0fcf80afb95c5199be9b5f131d6454663c1632 into 2962db10db984c1f9bcafd124721cb213e5a71a4\n",
+      "verified_at": "2026-11-07T07:54:20Z"
+    }
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "schema": "ndu.arm42.phase-static-review.v1",
+  "observed_at_utc": "2026-11-07T09:00:50.528464+00:00",
+  "review_scope": "Read-only exact-source phase, success predicates and failure-path interpretation. No private console read, no candidate edit, no native or model execution.",
+  "source": {
+    "path": "/dev/shm/ndu_arm_session_20261107/post_format/codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+    "repository_path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+    "bytes": 239842,
+    "sha256": "7d6c72402524b28f663cb0a27f93e17f854244a761f107431813f21d631fffb3",
+    "git_blob": "cfbae813707837709de0475feaaa48f9b1b903f6",
+    "git_mode": "100644"
+  },
+  "source_manifest": {
+    "path": "/dev/shm/ndu_arm_session_20261107/final_unit/manifest.json",
+    "bytes": 11265,
+    "sha256": "907d8885e755dce93c71033a0c3efe47d86ff84f3e13fc8288e67419107adeb0",
+    "postimage_matched": true
+  },
+  "published_identity_reported_by_owner": {
+    "pr": 5271,
+    "head": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+    "tree": "8b46b24ccca6bf77227e1b21aa66ec84b0ea5473",
+    "single_parent": "2962db10db984c1f9bcafd124721cb213e5a71a4",
+    "fresh_remote_api_independently_fetched_here": false
+  },
+  "source_anchors": [
+    {
+      "name": "phase_body",
+      "line_start": 503,
+      "line_end": 734,
+      "bytes": 10934,
+      "sha256": "cc56da814059d524632f94a46811644face024cb75bedd0cba222a67219fbc31"
+    },
+    {
+      "name": "model_b_sequence",
+      "line_start": 279,
+      "line_end": 294,
+      "bytes": 488,
+      "sha256": "82fb5192f3aa22466c22244797cb9daeb8648a79c178d03c9a165db0786d9679"
+    },
+    {
+      "name": "authority_input_assertion",
+      "line_start": 1101,
+      "line_end": 1116,
+      "bytes": 460,
+      "sha256": "e119471729ba5ba60b13c08373ab3dc7cdcc7caa7d6957c58f3c5e54e2464af0"
+    },
+    {
+      "name": "pending_cancel_dispatch",
+      "line_start": 1183,
+      "line_end": 1248,
+      "bytes": 2454,
+      "sha256": "b74e2cc1e4a7bf532cd42760fbe47aaa3986d0f48161fcb06760d568e03bfce0"
+    },
+    {
+      "name": "owner_resume_queue_start",
+      "line_start": 1250,
+      "line_end": 1353,
+      "bytes": 4114,
+      "sha256": "b7352392909fec6a38cff1b23e62b1e97d6c99236bfd74d132953ae9f0c243b8"
+    },
+    {
+      "name": "pending_invariants",
+      "line_start": 1395,
+      "line_end": 1409,
+      "bytes": 669,
+      "sha256": "fc10b52106b307f2f2c7cfe56eec57d49064450dd53cf974458bacecee426e19"
+    },
+    {
+      "name": "drain_and_receipt",
+      "line_start": 1538,
+      "line_end": 1690,
+      "bytes": 5541,
+      "sha256": "919a5a6e2c2f628a4a5e38a8bed3d954bfe69aabed57c41ba33a8a5da353fa7b"
+    },
+    {
+      "name": "wire_target_proof",
+      "line_start": 4359,
+      "line_end": 4405,
+      "bytes": 1594,
+      "sha256": "10047a3a38fb6ad5f6dfffad006212d66c102218d5d1ae581e9152721afb2204"
+    },
+    {
+      "name": "failure_poll",
+      "line_start": 4983,
+      "line_end": 5028,
+      "bytes": 2181,
+      "sha256": "01ac5a6af9cb97cc1057f7a3bdbdc739d4767288e5a08ae10920cb36314d45a5"
+    },
+    {
+      "name": "human_body_wait_and_sync",
+      "line_start": 5958,
+      "line_end": 6049,
+      "bytes": 3377,
+      "sha256": "ae750f40230dc98ea911542967a0b79f3f7b95aaf391e29cd4c33e50c23f5863"
+    }
+  ],
+  "pre_mark_done_requires": [
+    "The selected outbound payload has a first-attempt mode-0600 receipt with schema 1, requested type m.room.message, the exact post-send/pre-mark ack-disposition, and its expected plaintext-body SHA256.",
+    "The receipt transaction and event identifiers parse; the human timeline event is the first Synapse event identifier from that receipt.",
+    "The corresponding durable outbox record reaches Sent with exactly two attempts; its payload equals the selected body and its sent event identifier equals the receipt event identifier.",
+    "The three named transient hook files are absent, and the sampled pending inbox, dispatch and outbox queues are empty.",
+    "The downstream capture has no parser errors and exactly two requests matching that transaction, both PUT and byte-equal to the expected complete encrypted-send URI.",
+    "After another human sync, the selected decrypted body occurs once in the accumulated seen list and model A has exactly two requests."
+  ],
+  "pre_mark_limits": [
+    "The wire helper compares method and complete URI; it does not compare two HTTP request-body byte strings. Do not call it an independent equality proof for the encrypted request bodies.",
+    "The predicate is scoped to this selected message and the observed prefix. Later stable-count freeze, all-message encryption, shutdown, network recovery, sidecar recovery, generation rollover and final isolation predicates have not thereby passed.",
+    "This completed A phase does not establish B health or B post-cancel reconciliation."
+  ],
+  "authority_cancelled_requires": [
+    "A real B pending approval was observed with an active turn and exactly one approval; Cancel was an allowed decision.",
+    "After the authority-looking Matrix message and original 750ms wait, active thread, active turn, approval list and fence still equal the pre-message values, and model B still has one request.",
+    "An owner-local fenced ResolveApproval(Cancel) request was accepted; the pending approval thread equals the original active thread.",
+    "The control snapshot becomes idle with no pending approvals, and the exact old thread/turn inbox dispatch record reaches Completed before the cancelled stage marker."
+  ],
+  "resume_and_queue_start_done_requires": [
+    "The generation-bound Agentd client returns the expected App Server socket; the owner-local remote client resumes the exact original thread.",
+    "Across the paginated queue listing, exactly one submission matches client_user_message_id derived from B and the actual authority Matrix event room/event identifiers.",
+    "A typed ThreadQueueStart response for that exact queued submission is received and the remote client shutdown call succeeds."
+  ],
+  "resume_limits": [
+    "The returned ThreadQueueStartResponse is returned without an additional assertion of new Matrix dispatch persistence or output delivery.",
+    "No completed-stage marker proves the subsequent model request, Matrix reconciliation, encrypted send, decryption or reply delivery."
+  ],
+  "next_failure_boundary": {
+    "next_await": "encrypted_matrix_b.wait_for_body(AGENT_B_MXID, agent-b-authority-probe)",
+    "deadline_seconds": 45,
+    "wait_behavior": "Runs human sync_once(1000ms) until a newly returned decrypted text message matches both sender and body. It does not search old seen records as the success test.",
+    "outer_timeout_context": "timed out decrypting {sender}: {body}",
+    "inner_error_behavior": "SDK sync, timeline deserialization and undecrypted-event errors propagate as the inner Result; the outer timeout context is applied only to the timeout error.",
+    "on_error": "Exactly one failure-path Supervisor tick plus bounded snapshots/events/retained child logs via authority_probe_wait_for_body, then return the original error.",
+    "diagnostic_limit": "The post-failure sample is not a continuous health history. This review does not parse or re-export its raw contents."
+  },
+  "not_reached_if_that_await_returns_error": [
+    "The assertion that authority text appeared as ordinary user model input and authority_probe:done.",
+    "A proxy reconnect, A process/fence recovery checks, stale-fence rejection and peer-unchanged check.",
+    "A offline-message reply, post-recovery durable drain, model-A count 3 and network_disconnect_recovery:done.",
+    "Subsequent sidecar restart, generation rollover, final stable-count/isolation/shutdown and whole qualification PASS."
+  ],
+  "reported_runtime_observations_not_independently_read_here": {
+    "provider": "/root/arm_session_fix",
+    "markers": [
+      "authority_probe:cancelled",
+      "authority_probe:resume_and_queue_start:done"
+    ],
+    "diagnostic_stage": "authority_probe_wait_for_body",
+    "fixed_error": "timed out decrypting @hepta-agent-b:localhost: agent-b-authority-probe",
+    "reported_b_state": {
+      "matrix_active": false,
+      "matrix_healthy": false,
+      "matrix_degraded": true,
+      "agent_active": true,
+      "agent_healthy": true
+    },
+    "reported_error_mapping_pending_owner_source_binding": "MatrixRuntimeError::StoreOperation(operation=record reconciled Core turn, source=MatrixDurableError::Unavailable)"
+  },
+  "smallest_next_evidence_and_fix_scope": [
+    "The ARM owner should bind the reported StoreOperation and its Unavailable conversion to the actual product input source and retain the first fixed underlying diagnostic if already available.",
+    "Distinguish the completed old canceled dispatch from the newly resumed queued turn: a successful queue/start response does not prove the Matrix durable reconciliation write succeeded.",
+    "An exact underlying store/reconciliation cause can justify a narrow change in that call chain. The present phase evidence alone does not justify authentication changes, retries, larger deadlines, weaker queue/assertion gates or changes to the not-yet-reached A reconnect.",
+    "If the original Unavailable mapping discarded the lower cause, retain that observation gap explicitly; do not infer SQLite busy, corruption, locking or a common authentication cause from the display string."
+  ],
+  "qualification": {
+    "candidate_modified": false,
+    "private_console_read": false,
+    "native_executed": false,
+    "runtime_qualified_by_this_review": false,
+    "all_blockers_closed": false
+  }
+}

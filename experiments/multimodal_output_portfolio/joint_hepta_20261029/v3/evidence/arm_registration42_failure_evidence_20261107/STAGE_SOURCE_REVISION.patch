@@ -1,0 +1,80 @@
+--- arm42_initial_stage_source_failure
++++ arm42_final_native_failure_auditor
+@@ -282,13 +282,60 @@
+     "JUNIT_CASE",
+ )
+ stages = []
+-source_labels = set(re.findall(r'"R4_STAGE ([a-z_]+(?::[a-z_]+)+)"', test_source))
++manifest_path = Path("/dev/shm/ndu_arm_session_20261107/final_unit/manifest.json")
++need(
++    identity(manifest_path.read_bytes())
++    == {
++        "bytes": 11265,
++        "sha256": "907d8885e755dce93c71033a0c3efe47d86ff84f3e13fc8288e67419107adeb0",
++    },
++    "FROZEN_SIX_SOURCE_MANIFEST",
++)
++registration_rows = [
++    row
++    for row in json.loads(manifest_path.read_bytes())["files"]
++    if row["path"]
++    == "codex-rs/hepta-matrixd/tests/fixtures/linux_qualification/registration.rs"
++]
++need(len(registration_rows) == 1, "REGISTRATION_STAGE_SOURCE")
++registration_path = Path(registration_rows[0]["source_file"])
++registration_raw = registration_path.read_bytes()
++registration_pin = registration_rows[0]["postimage"]
++need(
++    identity(registration_raw)
++    == {key: registration_pin[key] for key in ("bytes", "sha256")}
++    and git_object("blob", registration_raw) == registration_pin["git_blob"],
++    "REGISTRATION_STAGE_SOURCE_BYTES",
++)
++source_labels = set(
++    re.findall(
++        r'"R4_STAGE ([a-z_]+(?::[a-z_]+)+)"', test_source + registration_raw.decode()
++    )
++)
++for ending in ("start", "done"):
++    need(
++        '"R4_STAGE agent_{label}_join:' + ending + '"' in test_source,
++        "FIXED_TWO_AGENT_STAGE_FORMATTER",
++    )
++    source_labels.update(f"agent_{label}_join:{ending}" for label in ("a", "b"))
+ for number, original_line in enumerate(lines, 1):
+     line = original_line.strip()
+     if line.startswith("R4_STAGE "):
+-        stage = line.removeprefix("R4_STAGE ")
+-        need(stage in source_labels, "STAGE_NOT_IN_FIXED_SOURCE")
+-        stages.append({"line": number, "stage": stage})
++        parsed = re.fullmatch(
++            r"R4_STAGE ([a-z_]+(?::[a-z_]+)+)(?: elapsed_ms=([0-9]+))?", line
++        )
++        need(parsed is not None, "STAGE_SHAPE")
++        stage, elapsed = parsed.groups()
++        row = {"line": number, "stage": stage}
++        if elapsed is None:
++            need(stage in source_labels, "STAGE_NOT_IN_FIXED_SOURCE")
++        else:
++            need(
++                '"R4_STAGE ' + stage + ' elapsed_ms={}"' in test_source,
++                "TIMED_STAGE_NOT_IN_FIXED_SOURCE",
++            )
++            row["elapsed_ms"] = int(elapsed)
++        stages.append(row)
+ counts = Counter(row["stage"] for row in stages)
+ need(
+     counts["agent_join_whoami:done"] == counts["agent_join_logout:done"] == 2,
+@@ -435,6 +482,12 @@
+     "primary_source_API": file_identity(api_path),
+     "complete_primary_trees_rehashed": 10,
+     "primary_sources": sources,
++    "registration_stage_source": {
++        "manifest": file_identity(manifest_path),
++        "source": file_identity(registration_path),
++        "git_blob": registration_pin["git_blob"],
++        "scope": "Previously root-qualified six-source manifest; the original qualification tree is the same published tree",
++    },
+     "original_console": {
+         **identity(console),
+         "mode": "0600",

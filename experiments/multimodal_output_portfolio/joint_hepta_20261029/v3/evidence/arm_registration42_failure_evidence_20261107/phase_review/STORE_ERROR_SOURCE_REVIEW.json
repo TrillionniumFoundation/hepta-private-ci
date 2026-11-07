@@ -1,0 +1,203 @@
+{
+  "schema": "ndu.arm42.reconciled-turn-store-static-review.v1",
+  "observed_at_utc": "2026-11-07T09:07:40.661704+00:00",
+  "scope": "Read-only source and schema analysis of the exact reported StoreOperation. No source changes, native execution, private console or private database reads.",
+  "source_index": {
+    "path": "/dev/shm/ndu_arm42_failure_20261107/ERROR_SOURCE_API.json",
+    "bytes": 143238,
+    "sha256": "e8bbbc097ad5fddba6436422d7deb39b2c8bd0e3aeb0973815bae91178f7fdc9",
+    "head": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+    "root_tree": "8b46b24ccca6bf77227e1b21aa66ec84b0ea5473",
+    "complete_tree_objects_rehashed": 10,
+    "tree_links_and_four_leaf_bytes_verified": true
+  },
+  "leaves": [
+    {
+      "path": "codex-rs/hepta-matrixd/src/runtime.rs",
+      "local": "/dev/shm/ndu_arm42_failure_20261107/source/runtime.rs",
+      "bytes": 24286,
+      "sha256": "3b983a64f68bc8aed5e2b7fabb432ac5bd9023f750d601960ee1826d63338404",
+      "git_blob": "7a81a5a338e153bae8df20c46575fc3e5d1b1080",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-store/src/store.rs",
+      "local": "/dev/shm/ndu_arm42_failure_20261107/source/store.rs",
+      "bytes": 151045,
+      "sha256": "8264b8de5dbca3d5fa1048092978c89b765e0e2d5ca2f32322aab4601f282598",
+      "git_blob": "a19ab6a201652d9ca5135dccd65aff9b2731dc10",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "local": "/dev/shm/ndu_arm42_failure_20261107/source/supervisor_matrix.rs",
+      "bytes": 31847,
+      "sha256": "021fd2d4cef0a765e651676a7efd06a58dc77f7932d184001d1ade8cf09b3bed",
+      "git_blob": "58f0ac9ef340c5253b56e22a5baef969a941055f",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "local": "/dev/shm/ndu_arm42_failure_20261107/source/sdk.rs",
+      "bytes": 29341,
+      "sha256": "9462a09f15bf7130413669dba1c29cd737c9421740c7307d2218782fd5d68848",
+      "git_blob": "82c7e2a7151dfbc9590502feb780511727d73f7d",
+      "mode": "100644"
+    }
+  ],
+  "additional_pinned_sources": [
+    {
+      "path": "/dev/shm/ndu_arm42_phase_review_20261107/additional_sources/0001_matrix_durable.sql",
+      "bytes": 6262,
+      "sha256": "078308b5eb738f2f3fd34ec169dd0fa5f45abbc2cdf6f7a2c1525dcbb4e604ee",
+      "git_blob": "2d0e43e9fc98755283bae225a28ed95660fb1fdf",
+      "mode": "100644"
+    },
+    {
+      "path": "/dev/shm/ndu_arm42_phase_review_20261107/additional_sources/0005_matrix_sync_mutations_v2.sql",
+      "bytes": 8578,
+      "sha256": "9f8bb4c28eb4ec2846703d3ce3e62ff1b0137dfa648347526bc2f469e1315981",
+      "git_blob": "3354f21221e467935e68005d845baabdb8c8a7dd",
+      "mode": "100644"
+    },
+    {
+      "path": "/dev/shm/ndu_arm42_phase_review_20261107/additional_sources/sync_v2_tombstone.rs",
+      "bytes": 22539,
+      "sha256": "c5b7f808510188d17bcc17a8b72595da35c0404f04b0feb2221f8649139d1a60",
+      "git_blob": "0552350759943268cf896b5112ca8a9d6576b771",
+      "mode": "100644"
+    }
+  ],
+  "additional_migrations_tree": {
+    "sha": "4d3a5688a87b2ef62559241e46035ff2c2e85ea0",
+    "untruncated": true,
+    "complete_object_hash_verified": true,
+    "entries": 5
+  },
+  "reported_operation": {
+    "runtime_file": "codex-rs/hepta-matrixd/src/runtime.rs",
+    "line": 397,
+    "operation": "record reconciled Core turn",
+    "callee": "MatrixDurableStore::record_inbox_admitted",
+    "displayed_source_variant": "MatrixDurableError::Unavailable",
+    "runtime_observation_owned_by": "/root/arm_session_fix",
+    "runtime_log_independently_read_here": false
+  },
+  "source_call_chain": [
+    "process_event or recover_pending or project_app_server_event enters the existing MatrixRuntime semaphore; the latter two can call recover_pending_locked.",
+    "recover_pending_locked iterates this Agent pending inbox records and calls process_inbox_locked.",
+    "process_inbox_locked reconciles room/thread and submission identity, then only MatrixSubmissionState::ReconciledTurn calls record_inbox_admitted under the reported operation string.",
+    "record_inbox_admitted validates draft identities, begins one SQLx transaction, loads and decodes the existing dispatch, checks state/time/identity, verifies the current room binding including tombstones, verifies thread association, updates the dispatch, appends and trims the change log, then commits.",
+    "An already Admitted or Completed exact identity has a separate idempotent commit-and-return path.",
+    "Runtime store_operation preserves MatrixDurableError as source; the lower helper unavailable(_error: impl Display) has already discarded its input completely."
+  ],
+  "sites_that_can_lose_error_information": [
+    {
+      "site": "BEGIN",
+      "scope": "record_inbox_admitted pool.begin"
+    },
+    {
+      "site": "LOAD_DISPATCH",
+      "scope": "inbox_dispatch_by_event_tx SELECT"
+    },
+    {
+      "site": "DECODE_DISPATCH",
+      "scope": "inbox_dispatch_from_row try_get operations"
+    },
+    {
+      "site": "IDEMPOTENT_COMMIT",
+      "scope": "already Admitted/Completed exact-row path"
+    },
+    {
+      "site": "LOAD_BINDING",
+      "scope": "require_current_binding SELECT"
+    },
+    {
+      "site": "DECODE_BINDING",
+      "scope": "require_current_binding try_get operations"
+    },
+    {
+      "site": "ROOM_TOMBSTONE",
+      "scope": "sync_v2_tombstone::is_room_tombstoned_tx SELECT EXISTS"
+    },
+    {
+      "site": "LOAD_ROOM_THREAD",
+      "scope": "ensure_dispatch_thread_tx -> room_thread_tx SELECT"
+    },
+    {
+      "site": "DECODE_ROOM_THREAD",
+      "scope": "room_thread_from_row try_get operations"
+    },
+    {
+      "site": "COUNT_OTHER_THREAD",
+      "scope": "ensure_dispatch_thread_tx SELECT COUNT"
+    },
+    {
+      "site": "BIND_ROOM_THREAD",
+      "scope": "conditional room_threads UPDATE when missing"
+    },
+    {
+      "site": "ADMIT_DISPATCH",
+      "scope": "record_inbox_admitted inbox_dispatches UPDATE"
+    },
+    {
+      "site": "APPEND_CHANGE",
+      "scope": "append_change INSERT"
+    },
+    {
+      "site": "TRIM_CHANGE",
+      "scope": "append_change DELETE"
+    },
+    {
+      "site": "COMMIT",
+      "scope": "final transaction.commit"
+    }
+  ],
+  "what_current_unavailable_does_and_does_not_establish": [
+    "Within this inspected call chain, Unavailable can arise from SQLx operations or SQLx row decoding. It does not uniquely mean transient storage unavailability.",
+    "Invalid local identities or numeric conversions return Invalid. Explicit state/time/idempotency/row-count conflicts return Conflict. Parsed malformed stored identities/states return Corrupt. Missing or mismatched current authority/tombstones return AccessDenied. These explicit branches do not produce this Unavailable display.",
+    "No transaction stage, SQLx variant, SQLite result code or underlying error value survives the existing unavailable helper.",
+    "The same display can cover acquisition, statement, decode or commit failures; it cannot select busy/lock, schema, constraint, pool closure or corruption as the actual cause.",
+    "The operation label contains no event or turn identity. It is not proof that the failing row is exactly the just-started authority message; recovery can examine other pending inbox entries.",
+    "The bounded Supervisor sample follows the wait failure. It does not timestamp the durable error relative to queue-start completion or prove continuous preceding process health."
+  ],
+  "schema_and_transition_review": [
+    "Migration 0001 explicitly permits admitted/completed state with a non-null prior queued_submission_id: the admitted/completed CHECK requires thread_id and turn_id but does not clear or forbid queue identity.",
+    "The normal queued-to-admitted code retains the exact queued_submission_id, verifies both old identity and current binding, and updates state/thread/turn/time in the same transaction.",
+    "The inspected schema therefore supplies no deterministic reason to clear queued_submission_id, relax the original state constraints or bypass the admitted-row update.",
+    "The existing per-MatrixRuntime semaphore serializes its methods only. This source fact does not prove that every database connection, actor or process is serialized."
+  ],
+  "next_unit_recommendation": {
+    "production_correctness_patch_justified_now": false,
+    "reason": "The actual lower error was erased before the retained typed message. No exact failing SQLx site or deterministic schema contradiction was established by this source review.",
+    "minimal_observation_contract": "At the original error boundary in this admission call chain, preserve fixed stage plus a closed projection of the actual SQLx error variant and, for recognized database errors only, a bounded validated numeric code. Preserve the original Unavailable result and exact transaction/control flow.",
+    "must_cover_transitive_helpers": "An outer admission wrapper seeing only MatrixDurableError is too late. Nested SELECT, row decode, tombstone, thread and append_change failures require context before their original mapping if the diagnostic claims to identify all admission stages.",
+    "must_not_emit": [
+      "Display or Debug of the original error",
+      "SQL text",
+      "query arguments",
+      "paths",
+      "event/room/thread identifiers",
+      "tokens or credentials",
+      "unknown enum strings"
+    ],
+    "must_not_change": [
+      "retry count",
+      "deadline",
+      "permission checks",
+      "queued/admitted state constraints",
+      "existing assertions",
+      "transaction commit/rollback ordering",
+      "original error class"
+    ],
+    "fallback": "If a code or variant cannot be safely recognized, emit an explicit fixed OTHER/UNKNOWN classification; never use parsing failure as a success or as a reason to reveal the original text.",
+    "execution_status": "Proposal only; no diagnostic code, new native or model execution was performed."
+  },
+  "limits": {
+    "all_blockers_closed": false,
+    "arm_qualification_passed": false,
+    "native_executed": false,
+    "private_console_or_database_read": false,
+    "new_candidate_written": false
+  }
+}

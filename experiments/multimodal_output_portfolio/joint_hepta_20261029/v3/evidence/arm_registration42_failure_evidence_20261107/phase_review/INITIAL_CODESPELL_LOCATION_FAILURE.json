@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "python",
+    "-m",
+    "codespell_lib",
+    "--ignore-words",
+    ".codespellignore",
+    "--skip",
+    "./.git",
+    "/dev/shm/ndu_arm42_phase_review_20261107/PHASE_SOURCE_REVIEW.json"
+  ],
+  "cwd": "/workspace/scratch/3f6a885bb83c/hepta-research",
+  "exit_code": 1,
+  "stderr": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python: No module named codespell_lib\n",
+  "cause": "Initial tool-location omission; no source or report edit."
+}
