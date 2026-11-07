@@ -9,7 +9,7 @@ from scipy.integrate import quad
 
 from qualification.hcsn import reference
 from qualification.hcsn_regenerative.process import (
-    KilledDiffusion, ResetRule, finite_horizon_value, stationary_hx_value,
+    KilledDiffusion, ResetRule, finite_horizon_value, regenerative_transition, stationary_hx_value,
 )
 
 
@@ -161,6 +161,120 @@ class RenewalTests(unittest.TestCase):
             finite_horizon_value(process, ResetRule(1e-5), .1, 1, max_terms=1)
         with self.assertRaises(ValueError):
             process.transition(.2, .1, [0, .3, .2])
+
+
+class SuccessorTests(unittest.TestCase):
+    def test_reset_successor_and_remaining_time_atoms(self):
+        process = KilledDiffusion(-.1, .3, .08)
+        reset = ResetRule(.15, .35)
+        edges, remaining = [0, .1, .2, .6], [0, .1, .2, .35]
+        before = regenerative_transition(process, reset, 0, .2, edges,
+                                         refractory_edges=remaining)
+        self.assertEqual(before.active_bins, (0, 0, 0))
+        self.assertEqual(before.refractory_bins, (0, 1, 0))
+        released = regenerative_transition(process, reset, 0, .35, edges,
+                                           refractory_edges=remaining)
+        self.assertEqual(released.active_bins, (0, 1, 0))
+        self.assertEqual(released.refractory_bins, (0, 0, 0))
+        later = regenerative_transition(process, reset, 0, 1.1, edges,
+                                        refractory_edges=remaining)
+        restarted = regenerative_transition(process, reset, .15, 1.1-.35, edges,
+                                             refractory_edges=remaining)
+        np.testing.assert_allclose(later.active_bins, restarted.active_bins, atol=2e-10)
+        np.testing.assert_allclose(later.refractory_bins, restarted.refractory_bins, atol=2e-10)
+        self.assertAlmostEqual(later.expected_hits, 1+restarted.expected_hits, delta=2e-13)
+
+    def test_successor_matches_independent_time_and_space_kernel(self):
+        process = KilledDiffusion(-.1, .3, .08)
+        reset = ResetRule(.15, .35)
+        x, horizon = .1, .6
+        edges, remaining = [0, .1, .2, .6], [0, .1, .2, .35]
+        out = regenerative_transition(process, reset, x, horizon, edges,
+                                      refractory_edges=remaining)
+
+        def normal_cdf(z):
+            return .5*math.erfc(-z/math.sqrt(2))
+
+        def killed_bin(start, time, lo, hi):
+            scale = process.sigma*math.sqrt(time)
+            mean, image = start+process.mu*time, -start+process.mu*time
+            first = normal_cdf((hi-mean)/scale)-normal_cdf((lo-mean)/scale)
+            second = normal_cdf((hi-image)/scale)-normal_cdf((lo-image)/scale)
+            return first-math.exp(-2*process.mu*start/process.sigma**2)*second
+
+        initial_bin = killed_bin(x, horizon, .1, .2)
+        restarted_bin = quad(lambda t: density(t, x, process.mu, process.sigma)
+                             * killed_bin(reset.margin, horizon-reset.refractory-t, .1, .2),
+                             0, horizon-reset.refractory, epsabs=2e-11)[0]
+        self.assertAlmostEqual(out.active_bins[1], initial_bin+restarted_bin, delta=2e-10)
+        for i, (lo, hi) in enumerate(zip(remaining[:-1], remaining[1:])):
+            expected = 0.0
+            for n in (1, 2):
+                left = max(0, horizon-n*reset.refractory+lo)
+                right = max(0, horizon-n*reset.refractory+hi)
+                expected += quad(lambda t: density(t, x+(n-1)*reset.margin,
+                                                   process.mu, process.sigma),
+                                 left, right, epsabs=2e-12)[0]
+            self.assertAlmostEqual(out.refractory_bins[i], expected, delta=2e-11)
+        self.assertGreater(out.upper_tail, 0)
+        self.assertAlmostEqual(sum(out.active_bins)+out.upper_tail+sum(out.refractory_bins),
+                               1, delta=2e-10)
+        value = finite_horizon_value(process, reset, x, horizon)
+        self.assertAlmostEqual(out.active_probability, value.active_probability, delta=2e-10)
+
+    def test_instant_reset_successor_and_undiscounted_counts(self):
+        reset = ResetRule(.1)
+        edges = [0, .05, .2, math.inf]
+        corner = regenerative_transition(KilledDiffusion(-.2, .2), reset, 0, 0, edges)
+        self.assertEqual(corner.active_bins, (0, 1, 0))
+        self.assertEqual(corner.expected_hits, 1)
+        out = regenerative_transition(KilledDiffusion(-.2, .2, .9), reset, .1, .8, edges)
+        count = finite_horizon_value(KilledDiffusion(-.2, .2), reset, .1, .8)
+        self.assertGreater(out.expected_hits, 1)
+        self.assertEqual(out.refractory_bins, ())
+        self.assertEqual(out.upper_tail, 0)
+        self.assertAlmostEqual(sum(out.active_bins), 1, delta=2e-9)
+        self.assertAlmostEqual(out.expected_hits, count.expected_discounted_hits, delta=2e-9)
+
+    def test_low_noise_successor_resolves_active_and_refractory_phases(self):
+        process = KilledDiffusion(-1, 1e-4)
+        reset = ResetRule(.3, .07)
+        active = regenerative_transition(process, reset, .4, 1.1, [0, .1, .3, .5],
+                                          refractory_edges=[0, .005, .015, .07])
+        refractory = regenerative_transition(process, reset, .4, 1.2, [0, .1, .3, .5],
+                                              refractory_edges=[0, .005, .015, .07])
+        self.assertAlmostEqual(active.active_bins[0], 1, delta=1e-8)
+        self.assertEqual(active.expected_hits, 2)
+        self.assertAlmostEqual(refractory.refractory_bins[1], 1, delta=1e-8)
+        self.assertEqual(refractory.expected_hits, 3)
+        self.assertAlmostEqual(refractory.active_probability, 0, delta=1e-8)
+
+    def test_invalid_remaining_time_partition(self):
+        process = KilledDiffusion(-.1, .3)
+        for remaining in ([0, .1], [0, .4, .3], [.1, .3]):
+            with self.assertRaises(ValueError):
+                regenerative_transition(process, ResetRule(.1, .3), .1, .2, [0, 1],
+                                        refractory_edges=remaining)
+
+
+class NonfiniteResultTests(unittest.TestCase):
+    def test_finite_extreme_inputs_cannot_return_nan_transition(self):
+        process = KilledDiffusion(-1e155, 1)
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", RuntimeWarning)
+            with self.assertRaisesRegex(FloatingPointError, "FP64"):
+                process.transition(1e155, 1, [0, 1, 2])
+            with self.assertRaisesRegex(FloatingPointError, "FP64"):
+                regenerative_transition(process, ResetRule(.1, .1), 1e155, 1, [0, 1, 2])
+
+    def test_finite_rewards_cannot_return_infinite_finite_horizon_value(self):
+        with self.assertRaisesRegex(FloatingPointError, "Finite-horizon value"):
+            finite_horizon_value(KilledDiffusion(-1, .2), ResetRule(.1, hit_reward=1e308),
+                                 .1, 1)
+
+    def test_finite_rewards_cannot_return_infinite_stationary_value(self):
+        with self.assertRaisesRegex(FloatingPointError, "Stationary HX value"):
+            stationary_hx_value(reference.HXParams(), ResetRule(.2, .137, 1e308), .4)
 
 
 class StationaryHXTests(unittest.TestCase):

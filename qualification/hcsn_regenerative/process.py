@@ -9,7 +9,7 @@ from dataclasses import dataclass
 import math
 
 import numpy as np
-from scipy.integrate import quad
+from scipy.integrate import quad, quad_vec
 
 from qualification.hcsn import reference
 from qualification.hcsn.population import killed_transition
@@ -28,6 +28,18 @@ def _scalar(name, value, lower=None, strict=False):
         raise ValueError(f"{name} must be a finite scalar")
     if lower is not None and (value <= lower if strict else value < lower):
         raise ValueError(f"{name} is outside its domain")
+
+
+def _finite_result(name, *values):
+    if any(not np.all(np.isfinite(value)) for value in values):
+        raise FloatingPointError(f"{name} is unresolved in this FP64 domain")
+
+
+def _probability_result(name, value):
+    _finite_result(name, value)
+    if np.any(np.asarray(value) < -2e-10) or np.any(np.asarray(value) > 1+2e-10):
+        raise FloatingPointError(f"{name} violates probability bounds")
+    return value
 
 
 @dataclass(frozen=True)
@@ -53,30 +65,40 @@ class KilledDiffusion:
             raise ValueError("sigma squared must be representable in FP64")
 
     def hit_probability(self, x, horizon):
-        return reference.first_passage_cdf(x, horizon, self.mu, self.sigma)
+        return _probability_result("First-hit probability", reference.first_passage_cdf(
+            x, horizon, self.mu, self.sigma))
 
     def survival(self, x, horizon):
-        return reference.first_passage_survival(x, horizon, self.mu, self.sigma)
+        return _probability_result("Survival probability", reference.first_passage_survival(
+            x, horizon, self.mu, self.sigma))
 
     def discounted_hit(self, x, horizon):
-        return reference.discounted_first_passage(
-            x, horizon, self.mu, self.sigma, self.discount)
+        return _probability_result("Discounted first hit", reference.discounted_first_passage(
+            x, horizon, self.mu, self.sigma, self.discount))
 
     def density(self, time, x):
         """Regular first-hit density; the x=0 atom is carried by hit_probability."""
-        return reference.first_passage_density(time, x, self.mu, self.sigma)
+        value = reference.first_passage_density(time, x, self.mu, self.sigma)
+        _finite_result("First-hit density", value)
+        if np.any(np.asarray(value) < 0):
+            raise FloatingPointError("First-hit density became negative")
+        return value
 
     def laplace_root(self, rate):
         _scalar("rate", rate, 0)
         chi = math.hypot(self.mu, math.sqrt(2 * rate) * self.sigma)
         if self.mu < 0:
-            return 2 * rate / (chi - self.mu)
-        return (chi + self.mu) / self.sigma**2
+            root = 2 * rate / (chi - self.mu)
+        else:
+            root = (chi + self.mu) / self.sigma**2
+        _finite_result("First-hit Laplace exponent", root)
+        return root
 
     def laplace(self, x, rate=None):
         _scalar("x", x, 0)
         rate = self.discount if rate is None else rate
-        return math.exp(-self.laplace_root(rate) * x)
+        return _probability_result("First-hit Laplace transform",
+                                   math.exp(-self.laplace_root(rate) * x))
 
     def transition(self, x, horizon, edges):
         """Unconditional surviving mass in [edge_i,edge_(i+1)), plus hit/tail.
@@ -103,8 +125,13 @@ class KilledDiffusion:
         # Avoid its indeterminate log(0)-log(0) at an infinite escape edge.
         unbounded = math.isinf(edges[-1])
         finite_edges = edges[:-1] if unbounded else edges
-        matrix, hit, tail = killed_transition(
-            np.array([x]), finite_edges, np.array([self.mu]), self.sigma, horizon)
+        with np.errstate(over="ignore", invalid="ignore"):
+            matrix, hit, tail = killed_transition(
+                np.array([x]), finite_edges, np.array([self.mu]), self.sigma, horizon)
+        for name, value in (("Survivor bins", matrix), ("Hit mass", hit), ("Upper tail", tail)):
+            _probability_result(name, value)
+        if abs(math.fsum((*matrix[0], hit[0], tail[0])) - 1) > 2e-10:
+            raise FloatingPointError("Killed transition mass is unresolved")
         bins = tuple(float(v) for v in matrix[0])
         if unbounded:
             return Transition(bins + (float(tail[0]),), float(hit[0]), 0.0)
@@ -177,7 +204,7 @@ def _active_probability(process, reset, x, horizon, terms):
         values.append(process.hit_probability(distance, remaining)
                       - process.hit_probability(distance + reset.margin, remaining))
     result = math.fsum(values)
-    if result < -1e-12 or result > 1 + 1e-10:
+    if not math.isfinite(result) or result < -1e-12 or result > 1 + 1e-10:
         raise FloatingPointError("Renewal active probability violates probability bounds")
     return result
 
@@ -240,8 +267,131 @@ def finite_horizon_value(process, reset, x, horizon, *, active_reward=0.0,
     regenerative = (active_reward * active_time + reset.hit_reward * discounted_hits
                     + terminal_reward * discount * active)
     value_bound = tail * (abs(reset.hit_reward) + horizon * abs(active_reward) + abs(terminal_reward))
+    _finite_result("Finite-horizon value", single, regenerative, discounted_hits,
+                   active, active_time, tail, value_bound, quadrature_error)
     return ValueReceipt(single, regenerative, discounted_hits, active, active_time,
                         tail, value_bound, quadrature_error, terms)
+
+
+@dataclass(frozen=True)
+class RegenerativeTransition:
+    """Unconditional state measure at one deadline, starting from active x.
+
+    Active bins are [lo,hi); refractory remaining-time bins are (lo,hi].
+    The explicit upper tail is still active, not permanently escaped. Hit count
+    is an expectation and may exceed one. Probabilities are never discounted.
+    """
+
+    active_bins: tuple
+    upper_tail: float
+    refractory_bins: tuple
+    refractory_edges: tuple
+    first_hit_probability: float
+    expected_hits: float
+    active_probability: float
+    mass_residual: float
+    renewal_tail_bound: float
+    quadrature_error: float
+    terms: int
+
+
+def _density_points(process, distance, horizon):
+    """Resolve a narrow first-hit peak before adaptive vector quadrature."""
+    variance = process.sigma**2
+    mode = distance**2 / (1.5*variance + math.hypot(1.5*variance, process.mu*distance))
+    width = mode / math.sqrt(distance**2/(variance*mode)-1.5)
+    return [mode + k*width for k in (-8, -4, -2, 0, 2, 4, 8)
+            if 0 < mode + k*width < horizon]
+
+
+def regenerative_transition(process, reset, x, horizon, edges, *,
+                            refractory_edges=None, tolerance=1e-9, max_terms=10000):
+    """Propagate the same diffusion through repeated physical-time resets.
+
+    This is a point-to-measure reference, not a step-end reset approximation.
+    Integrate each nth-release law against the reset point's killed successor.
+    Return refractory *remaining* time, permitting external clocks to retain
+    the correct phase. Binning is a requested projection; no within-bin state
+    approximation is used to calculate this one-horizon distribution.
+    """
+    _scalar("x", x, 0)
+    _scalar("horizon", horizon, 0)
+    _scalar("tolerance", tolerance, 0, strict=True)
+    if isinstance(max_terms, bool) or not isinstance(max_terms, int) or max_terms < 1:
+        raise ValueError("max_terms must be a positive integer")
+    initial = process.transition(x, horizon, edges)
+    terms, tail = _term_count(process, reset, x, horizon, tolerance, max_terms)
+    if reset.refractory == 0:
+        if refractory_edges is not None:
+            raise ValueError("Zero refractory has no remaining-time bins")
+        remaining_edges = np.array([0.0])
+    else:
+        remaining_edges = np.asarray(
+            [0.0, reset.refractory] if refractory_edges is None else refractory_edges,
+            dtype=np.float64)
+        if (remaining_edges.ndim != 1 or remaining_edges.size < 2
+                or not np.all(np.isfinite(remaining_edges)) or remaining_edges[0] != 0
+                or remaining_edges[-1] != reset.refractory
+                or np.any(np.diff(remaining_edges) <= 0)):
+            raise ValueError("Remaining-time edges must increase from zero to refractory")
+    refractory = np.zeros(len(remaining_edges)-1)
+    active = np.array(initial.survivor_bins + (initial.upper_tail,))
+    expected_hits = []
+    quadrature_error = 0.0
+    for n in range(1, terms + 1):
+        distance = x + (n-1)*reset.margin
+        hit_horizon = horizon - (n-1)*reset.refractory
+        if hit_horizon < 0:
+            break
+        expected_hits.append(process.hit_probability(distance, hit_horizon))
+        release_horizon = horizon - n*reset.refractory
+        if distance == 0:
+            # The initial boundary hit is an atom; never feed it to a density.
+            if release_horizon >= 0:
+                released = process.transition(reset.margin, release_horizon, edges)
+                active += np.array(released.survivor_bins + (released.upper_tail,))
+            else:
+                remaining = reset.refractory - horizon
+                index = np.searchsorted(remaining_edges, remaining, side="left")-1
+                refractory[index] += 1.0
+        else:
+            if release_horizon > 0:
+                def integrand(s):
+                    successor = process.transition(reset.margin, release_horizon-s, edges)
+                    return process.density(s, distance) * np.array(
+                        successor.survivor_bins + (successor.upper_tail,))
+
+                value, error, info = quad_vec(
+                    integrand, 0, release_horizon, epsabs=tolerance/terms,
+                    epsrel=tolerance, norm="max", limit=400, full_output=True,
+                    points=_density_points(process, distance, release_horizon))
+                if not info.success or not np.all(np.isfinite(value)) or not math.isfinite(error):
+                    raise FloatingPointError("Renewal successor quadrature did not converge")
+                active += value
+                quadrature_error += error
+            for i, (lo, hi) in enumerate(zip(remaining_edges[:-1], remaining_edges[1:])):
+                left, right = release_horizon + lo, release_horizon + hi
+                f_hi = process.hit_probability(distance, right) if right > 0 else 0.0
+                f_lo = process.hit_probability(distance, left) if left > 0 else 0.0
+                refractory[i] += f_hi - f_lo
+    _finite_result("Regenerative successor", active, refractory, expected_hits,
+                   tail, quadrature_error)
+    total_active = math.fsum(active)
+    residual = 1 - math.fsum((*active, *refractory))
+    _finite_result("Regenerative successor mass", total_active, residual)
+    # The norm estimate is per vector component. This is a diagnostic guard,
+    # not a certified FP64 enclosure; neither bins nor tails are rescaled.
+    numerical = 20*(tolerance + len(active)*quadrature_error)
+    _finite_result("Regenerative successor mass tolerance", numerical)
+    if (np.any(active < -numerical) or np.any(refractory < -numerical)
+            or residual < -numerical or residual > tail+numerical
+            or abs(total_active-_active_probability(process, reset, x, horizon, terms))
+            > tail+numerical):
+        raise FloatingPointError("Regenerative successor mass is unresolved")
+    return RegenerativeTransition(tuple(float(v) for v in active[:-1]), float(active[-1]),
+                                  tuple(float(v) for v in refractory), tuple(float(v) for v in remaining_edges),
+                                  process.hit_probability(x, horizon), math.fsum(expected_hits),
+                                  total_active, residual, tail, quadrature_error, terms)
 
 
 @dataclass(frozen=True)
@@ -276,5 +426,7 @@ def stationary_hx_value(par, reset, x):
     u_reset = (e_reset + process.laplace(reset.margin) * reset.hit_reward) / denominator
     u_x = e_x + process.laplace(x) * (
         reset.hit_reward + math.exp(-par.r * reset.refractory) * u_reset)
+    _finite_result("Stationary HX value", e_x, u_x, e_reset, u_reset,
+                   math.exp(log_cycle), 1 / denominator)
     return StationaryHXValue(e_x, u_x, e_reset, u_reset,
                              math.exp(log_cycle), 1 / denominator)

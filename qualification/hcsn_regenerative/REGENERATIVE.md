@@ -3,9 +3,13 @@
 ## Scope and identity
 
 This package is a **new scalar FP64 research reference**. It imports the existing
-HCSN first-passage and bin-integrated killed kernels, but does not modify the
-frozen `qualification/hcsn` source, its experiment identity, trained weights,
-170-run comparison, deployment inventory or training budget.
+HCSN first-passage and bin-integrated killed kernels, without changing the
+existing `qualification/hcsn` package in candidate base
+`a20ea6a862e501d8a4993195c7da1ac52ca9a7be`. The original 170-run campaign is frozen
+at `f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b`; these are distinct source sets
+(the candidate already differs in `baselines.py`). The imported `reference.py`
+and `population.py` are unchanged between those two bases. This package does
+not change the campaign identity, trained weights, run budget or prior evidence.
 
 The reference covers constant drift/volatility, a fixed absorbing boundary,
 a fixed strictly positive reset distance and a physical refractory duration.
@@ -136,6 +140,51 @@ CDF kernels, underflow, extreme scales and missed localized quadrature features
 still require independent numerical audits. Passing the tests below is not a
 claim of global numerical validity or exact analytic gradients.
 
+Finite inputs alone do not establish a representable FP64 result. Public
+probabilities/densities, killed and regenerative successor masses, and returned
+E/U values are checked for nonfinite results; unresolved overflow raises rather
+than returning a NaN/Infinity receipt. This includes finite rewards whose
+regenerative value overflows. These guards do not certify the accuracy of every
+finite result. The inherited kernels remain unchanged.
+
+## Executable regenerative successor measure
+
+`regenerative_transition(process, reset, x, T, edges, refractory_edges=...)`
+returns the state measure at T, including repeated resets. For each active
+bin B, it evaluates the renewal successor
+
+    P(X_T in B, active) = K_T(x,B)
+      + sum_(n>=1) integral_[0,T-n*d] K_(T-n*d-s)(a,B) dF_[x+(n-1)*a](s).
+
+The n=1, x=0 atom is evaluated directly; it never enters the regular density.
+Other terms use adaptive vector quadrature of the first-hit density against
+the killed kernel. Panels include the mode and local width of concentrated
+first-hit densities. This resolves the initial first-hit peak in the tested
+low-noise examples without simulating a trajectory or rounding event times.
+
+Refractory bins use **remaining** time `(lo,hi]`, with edges spanning `[0,d]`.
+For an ordinary first-hit law, each nth-hit contribution is
+
+    F_[x+(n-1)*a](T-n*d+hi) - F_[x+(n-1)*a](T-n*d+lo),
+
+where negative-time CDF values are zero. An initial boundary atom contributes
+at remaining time d-T while 0<=T<d. At T=d it moves to the active Dirac mass at
+a. With d=0 there are no refractory bins. The returned upper tail belongs to
+the active state at the deadline; it is not a permanently absorbing escape.
+
+The receipt distinguishes first-hit probability from expected cumulative hit
+count, which can exceed one. Both are undiscounted, irrespective of the value
+object's q. It returns active bins, refractory bins and their edges, upper tail,
+active probability, mass residual, renewal tail and vector quadrature estimate.
+Mass and active-probability consistency failures raise rather than silently
+renormalizing a distribution. An omitted renewal tail can account for missing
+mass; the reported quadrature estimate remains a numerical diagnostic.
+
+This is a point-to-measure reference, with a requested bin projection. It does
+not assert that repeatedly feeding bin averages back through the solver is an
+exact Markov state representation. Such a time-stepped population adapter,
+with its own spatial and temporal errors, still needs independent validation.
+
 ## Existing HX cashflow: stationary E versus U
 
 The existing HX single-cycle function solves `(r-L)E=g_HX`, killed at zero,
@@ -166,8 +215,10 @@ upper tails and boundary atoms, compare a two-hit window against time-domain
 convolution, exercise an off-grid refractory and exact-deadline release, test
 multiple hits, signed rewards and remainder receipts, approach a low-noise
 limit, and check the stationary HX fixed point and interior differential
-operator with finite differences. They do not merely compare two wrappers
-around the same value function.
+operator with finite differences. Successor tests also compare a bin against
+an independent Gaussian-image kernel and time convolution, integrate remaining
+refractory mass directly from the density, and test exact release atoms. They
+do not merely compare two wrappers around the same value function.
 
 Before using this as a trainable cell, the common generator contract must be
 extended to the actual controlled drift/boundary; its survivor evolution,
