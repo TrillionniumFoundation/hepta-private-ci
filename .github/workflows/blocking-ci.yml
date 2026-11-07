@@ -211,6 +211,101 @@ jobs:
         if: needs.scope.outputs.derived == 'true'
         run: python3 scripts/hepta-module-docs.py refresh-derived --check
 
+  authbus-owner-replay:
+    name: AuthBus Bazel ${{ matrix.lane }} replay
+    needs: scope
+    if: github.event_name == 'pull_request' && needs.scope.outputs.full_repo == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, prospective-merge]
+    steps:
+      - name: Checkout exact ${{ matrix.lane }} commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact tested commit
+        env:
+          LANE: ${{ matrix.lane }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          if [[ "$LANE" == "prospective-merge" ]]; then
+            git merge-base --is-ancestor "$SOURCE_SHA" "$TESTED_SHA"
+          fi
+          printf 'AuthBus %s SHA: %s\n' "$LANE" "$TESTED_SHA"
+
+      - name: Prepare Bazel CI
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-authbus-${{ matrix.lane }}
+
+      - name: Check rusty_v8 MODULE.bazel checksums
+        shell: bash
+        run: |
+          python3 .github/scripts/rusty_v8_bazel.py check-module-bazel
+          just test-github-scripts
+
+      - name: Check MODULE.bazel.lock is up to date
+        shell: bash
+        run: ./scripts/check-module-bazel-lock.sh
+
+      - name: Run uncached AuthBus owner target
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: ${{ runner.temp }}/bazel-execution-logs/${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          mkdir -p "$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-test-logs \
+            --print-failed-action-summary \
+            -- \
+            test \
+            --nocache_test_results \
+            --test_tag_filters=-argument-comment-lint \
+            --test_verbose_timeout_warnings \
+            --build_metadata=COMMIT_SHA="$TESTED_SHA" \
+            -- \
+            //codex-rs/hepta-evidence:hepta-evidence-unit-tests
+
+      - name: Upload Bazel execution logs
+        if: always() && !cancelled()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-execution-logs-authbus-${{ matrix.lane }}
+          path: ${{ runner.temp }}/bazel-execution-logs/${{ matrix.lane }}
+          if-no-files-found: ignore
+
+      - name: Save Bazel repository cache
+        if: always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ steps.prepare_bazel.outputs.repository-cache-path }}
+          key: ${{ steps.prepare_bazel.outputs.repository-cache-key }}
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
   lightweight:
     name: Lightweight prose and derived checks
     needs: scope
@@ -251,6 +346,7 @@ jobs:
       - rust-ci
       - sdk
       - hepta-scoped
+      - authbus-owner-replay
       - lightweight
     runs-on: ubuntu-24.04
     steps:
@@ -263,6 +359,7 @@ jobs:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
+          EVENT_NAME: ${{ github.event_name }}
         shell: bash
         run: |
           set -euo pipefail
@@ -277,6 +374,8 @@ jobs:
               allowed.append("hepta-contract-gate")
           if not full:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
+          if not full or os.environ["EVENT_NAME"] != "pull_request":
+              allowed.append("authbus-owner-replay")
           if not (native and not full):
               allowed.append("hepta-scoped")
           if not (not native and not full):
