@@ -1,0 +1,119 @@
+{
+  "schema": "ndu-existing-runtime-import-v1",
+  "source_commit": "a7af7254636910f83f517c58f97abc32136d289a",
+  "source_tree": "8c853fbd6c897d7a890990bec0de8df710835a6e",
+  "published_equivalent_commit": "46aafed3d55549765f3c5006a235376c80f720c1",
+  "scope": "Mechanical byte-identical import of existing Python runtime and its tests only. Existing historical artifacts stay at their source branch; no model/data evidence is imported or reclassified.",
+  "files": [
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/__init__.py",
+      "bytes": 80,
+      "sha256": "d3a4f83067b98376325c75773b0cf96a917edc33edc75849017c94e1e6ce2ac0"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/acquire_models.py",
+      "bytes": 8135,
+      "sha256": "ec9d7dbc943ab029e51174fbf6065be4bd29ac23fb912d1aa3f14c065ad0e1cf"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/adapted_models.py",
+      "bytes": 2956,
+      "sha256": "0346016c2fe77fc77070dae3400da59a678bcf6ec8970fdc484edbd4b2498737"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/diagnostics.py",
+      "bytes": 9125,
+      "sha256": "e9ed1bd8205f9be8518b2ba6e0792e015ab28bfa0649e707bc19b124f1810db1"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/dual_runtime.py",
+      "bytes": 12784,
+      "sha256": "bfe19eb73644bac3323806ded95d37a63645bbb4e63b33ec47f73dc07918fb4e"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/exact.py",
+      "bytes": 15250,
+      "sha256": "858cf604c55573ded56ab62b43a93d2350036bdfb1e768aa585099d06ca5df87"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/factorial.py",
+      "bytes": 16752,
+      "sha256": "d751492366575889e109fa55187c7bcef7a5c52b880046d59e781a2f60af985b"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/local_models.py",
+      "bytes": 8933,
+      "sha256": "70a119d2ac4297c31fe86b5c299b30b1f43bb128e3a72f06087a32162f3965e1"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/meter.py",
+      "bytes": 9097,
+      "sha256": "8b960fbfb0fea4794339fcdbc2920b67060e397af72da1b784eebb04fe805398"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/run_real.py",
+      "bytes": 5368,
+      "sha256": "85ba5b217ff55b1ee87bf8ed65ca8b83347b71ad036199da1417f3dc041e35c6"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/run_training.py",
+      "bytes": 8501,
+      "sha256": "3a0cbb9d109cb8d3ff88a134f451667b27440f67fe4c8c438727951a8598cbfe"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_adapted_models.py",
+      "bytes": 4278,
+      "sha256": "64e608be53c6c354f0919b66cc65b07018cbde110f145c09fcadf672f7fce86d"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_dual_runtime.py",
+      "bytes": 7511,
+      "sha256": "3cf7bf880449dd0d750680b8209d39ca87ffca54256eef1c3470fc12802624be"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_exact.py",
+      "bytes": 8291,
+      "sha256": "5588c6b47106a37a110192c4fa1ebcda81c4ea729578e929d0a3d911cc6e8a12"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_factorial.py",
+      "bytes": 10551,
+      "sha256": "b9bd13d3605a4ffa9d80bf86e2053c23885bbe9c0fbd90c07f38ca043b740ee7"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_local_models.py",
+      "bytes": 4009,
+      "sha256": "6bc693f4f93b3fc1f349ee1118da754770e8e79782cab196c63f1f679b205a25"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_meter.py",
+      "bytes": 11591,
+      "sha256": "d20d6c2d6b095076191ffe4541359c03248adc0830d6d510070110e252ed8a51"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_run_training.py",
+      "bytes": 3434,
+      "sha256": "90716942799d51f26d24da58b93aaafe0bae270ccd9375245fe03db7ecfc684b"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_train_adapter.py",
+      "bytes": 11891,
+      "sha256": "2086dd4b3b148f5f9a865231d6bc865e71bd02ae9981cef8d6a9cf044fe04f15"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_train_image_adapter.py",
+      "bytes": 10108,
+      "sha256": "014d6182f3dd954338555b249026523f1a5f17cf2fef3920248f9201c169a1f7"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/train_adapter.py",
+      "bytes": 20550,
+      "sha256": "ba76e1a7f38632f65c86d16b70ba4ecd47f98c616649b0e08fb81b2a1f911c4f"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/train_image_adapter.py",
+      "bytes": 21539,
+      "sha256": "446ba050e366125874cf8502f3f1a0f05fe9cac3c87a03217ec11f76ca6dbe06"
+    }
+  ]
+}
