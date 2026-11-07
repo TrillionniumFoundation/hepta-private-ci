@@ -213,10 +213,10 @@ jobs:
           if [[ "$LANE" == "prospective-merge" ]]; then
             git merge-base --is-ancestor "$SOURCE_SHA" "$TESTED_SHA"
           fi
-          expected_files="$(printf '%s\\n' ".github/workflows/blocking-ci.yml")"
+          expected_files="$(printf '%s\n' ".github/workflows/blocking-ci.yml")"
           actual_files="$(git diff --name-only "$PARENT_SHA" "$SOURCE_SHA")"
           test "$actual_files" = "$expected_files"
-          printf 'TaskFlow %s SHA: %s\\n' "$LANE" "$TESTED_SHA"
+          printf 'TaskFlow %s SHA: %s\n' "$LANE" "$TESTED_SHA"
 
       - name: Prepare Bazel CI
         id: prepare_bazel
@@ -245,16 +245,16 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           mkdir -p "$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"
-          ./.github/scripts/run-bazel-ci.sh \\
-            --print-failed-test-logs \\
-            --print-failed-action-summary \\
-            -- \\
-            test \\
-            --nocache_test_results \\
-            --test_output=all \\
-            --test_verbose_timeout_warnings \\
-            --build_metadata=COMMIT_SHA="$TESTED_SHA" \\
-            -- \\
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-test-logs \
+            --print-failed-action-summary \
+            -- \
+            test \
+            --nocache_test_results \
+            --test_output=all \
+            --test_verbose_timeout_warnings \
+            --build_metadata=COMMIT_SHA="$TESTED_SHA" \
+            -- \
             //codex-rs/hepta-automation:hepta-automation-automation-test
 
       - name: Upload TaskFlow Bazel execution logs
