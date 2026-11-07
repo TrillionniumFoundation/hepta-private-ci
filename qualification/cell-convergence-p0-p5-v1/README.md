@@ -14,11 +14,11 @@
 | HCSN、权限与恢复 | #5067 `a20ea6a862e501d8a4993195c7da1ac52ca9a7be` |
 | Core / 产品入口 / final-use | #4855 `a86267a0525448870c47a641fb54cd510543ba7a` |
 
-已记录的合并 commit 为 `d0e90e179887d9d018f2cc547d855b90d0bfc2ab`、
-`f778c50ac7445d746133ad7822f9044ba1c97bb3`、
-`34122eb78334b5c3c9dda5d92f9f22f56e719822`、
-`fd3dd5e83b8b8731cdf355c95a16e31e49ff7f3f`；Memory 账本修复 commit 为
-`650401bd2f2ac736cd895197e7cee6d21280e42b`。这些完整身份应在最终候选
+已记录的合并 commit 为 `a35f5162e084ad78f3ac8c29c4185879d093bfa0`、
+`0f60efaf8bed433cf26131f36f7648b83b385015`、
+`3ad3eb953b065134cf1c0d2b0b730940b0c28e48`、
+`ab89bfceec021437eebd1e37f331f441076c76ac`；Memory 账本修复 commit 为
+`dea4acd6f5d6892380972ce7fcf7e7cf1f88404c`。这些完整身份应在最终候选
 祖先链中核对；集成记录本身不是原生或科学资格。
 
 本文件不能预先写入一个包含自身的最终 commit 哈希。CI 必须针对真实 checkout
@@ -82,3 +82,15 @@ HOLD。没有把协议/fixture 测试数量当作模型实验，也不将历史�
 本组合说明不授予生产权限。受保护的 desktop campaign
 `hcsn-cuda-170run-20261105-r1`（job `1a1acdd69f2-fc05-5757`）没有因本工作
 启动、重试或变更。
+
+## 发布身份与源码等价
+
+远端工作区未配置 Git 推送凭据，因此使用已连接的 GitHub Git Database API
+发布。API 重新生成 author/committer 元数据，提交 SHA 随之改变；25 个阶段的
+源码 tree 均逐项核对为完全相同，提交父链按同一映射保留。上列集成历史使用
+GitHub 上可检查的提交身份；本地原始身份与发布身份的对应关系见
+`PUBLICATION.json`。
+
+发布身份记录作为额外元数据提交加入，不预编自身最终 SHA。正式 CI 仍必须
+绑定实际 checkout；发布前运行过的诊断，包括已经失败的权限扫描，不直接
+转移成新 head 的通过结果。
