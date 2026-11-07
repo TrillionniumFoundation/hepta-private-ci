@@ -217,7 +217,23 @@ impl LearningIterationRuntimeBootstrapV1 {
                 if snapshot.request != request || snapshot.owners != self.owners {
                     return Err(LearningIterationRuntimeErrorV1::WrongScope);
                 }
-                LearningIterationCoordinatorV1::from_snapshot(snapshot)?
+                let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
+                require_ready(state)?;
+                if restored.next_stage().is_some()
+                    && clock()? >= request.envelope.expiry_unix_seconds
+                {
+                    return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
+                }
+                crate::learning_iteration_auth::authenticate_restored_iteration_v1(
+                    state,
+                    self.ports.as_ref(),
+                    &self.verifier,
+                    &restored,
+                    &clock,
+                )
+                .await?;
+                require_ready(state)?;
+                restored
             }
             None => {
                 require_ready(state)?;

@@ -40,6 +40,11 @@ fn ok<T, E: Debug>(result: Result<T, E>) -> T {
     }
 }
 
+struct AttestationBarrier {
+    entered: tokio::sync::oneshot::Sender<()>,
+    resume: tokio::sync::oneshot::Receiver<()>,
+}
+
 struct IterationPorts {
     signing: SigningFixture,
     verifier: LearningEvidenceVerifierV1,
@@ -49,6 +54,10 @@ struct IterationPorts {
     executed: Mutex<Vec<LearningIterationStageV1>>,
     lose_ack_once: AtomicBool,
     corrupt_signature: AtomicBool,
+    corrupt_stage: Mutex<Option<LearningIterationStageV1>>,
+    attested: Mutex<Vec<LearningIterationStageV1>>,
+    checkpoint_calls: Mutex<Vec<Digest32>>,
+    attestation_barrier: Mutex<Option<AttestationBarrier>>,
 }
 impl IterationPorts {
     fn owners(&self) -> LearningIterationOwnersV1 {
@@ -78,6 +87,10 @@ impl IterationPorts {
             executed: Mutex::new(Vec::new()),
             lose_ack_once: AtomicBool::new(false),
             corrupt_signature: AtomicBool::new(false),
+            corrupt_stage: Mutex::default(),
+            attested: Mutex::default(),
+            checkpoint_calls: Mutex::default(),
+            attestation_barrier: Mutex::default(),
         }
     }
 }
@@ -95,6 +108,7 @@ impl LearningIterationOwnerPortsV1 for IterationPorts {
         snapshot: &'a LearningIterationSnapshotV1,
     ) -> LearningIterationOwnerFutureV1<'a, Digest32> {
         Box::pin(async move {
+            ok(self.checkpoint_calls.lock()).push(expected);
             let mut current = ok(self.checkpoint.lock());
             if current
                 .as_ref()
@@ -218,6 +232,12 @@ impl LearningIterationOwnerPortsV1 for IterationPorts {
         _now: u64,
     ) -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1> {
         Box::pin(async move {
+            ok(self.attested.lock()).push(receipt.observation.stage());
+            let barrier = ok(self.attestation_barrier.lock()).take();
+            if let Some(barrier) = barrier {
+                ok(barrier.entered.send(()));
+                ok(barrier.resume.await);
+            }
             let (signer, role) = match receipt.observation.stage() {
                 LearningIterationStageV1::Training => (0, LearningEvidenceRoleV1::Generator),
                 LearningIterationStageV1::Evaluation => (2, LearningEvidenceRoleV1::Evaluator),
@@ -232,13 +252,18 @@ impl LearningIterationOwnerPortsV1 for IterationPorts {
                 role,
                 &ok(learning_iteration_receipt_signing_bytes_v1(receipt)),
             );
-            if self.corrupt_signature.load(Ordering::SeqCst) {
+            if self.corrupt_signature.load(Ordering::SeqCst)
+                || *ok(self.corrupt_stage.lock()) == Some(receipt.observation.stage())
+            {
                 signed.signature[0] ^= 1;
             }
             Ok(signed)
         })
     }
 }
+
+#[path = "learning_iteration_recovery_tests.rs"]
+mod recovery_tests;
 
 fn iteration_request(daemon: &AgentdFixture) -> LearningIterationRequestV1 {
     LearningIterationRequestV1 {

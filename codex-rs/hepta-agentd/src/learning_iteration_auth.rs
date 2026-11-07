@@ -11,8 +11,47 @@ use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::VerifiedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_signed_actor_separation;
 
+use crate::AgentdState;
 use crate::LearningIterationOwnerPortsV1;
 use crate::LearningIterationRuntimeErrorV1;
+use crate::learning_iteration::require_ready;
+
+/// Protected checkpoint data does not restore its separate current signatures.
+/// Rebuild each original predecessor context without executing or checkpointing
+/// a stage. Proposal has no learning-signature role: the host's restore contract
+/// still authenticates its original durable proposal and independent anchor.
+pub(super) async fn authenticate_restored_iteration_v1(
+    state: &AgentdState,
+    ports: &dyn LearningIterationOwnerPortsV1,
+    verifier: &LearningEvidenceVerifierV1,
+    coordinator: &LearningIterationCoordinatorV1,
+    clock: &(impl Fn() -> Result<u64, LearningIterationRuntimeErrorV1> + Send + Sync),
+) -> Result<(), LearningIterationRuntimeErrorV1> {
+    let snapshot = coordinator.snapshot();
+    let mut predecessor =
+        LearningIterationCoordinatorV1::new(snapshot.request.clone(), snapshot.owners.clone())?;
+    let current_time = || {
+        require_ready(state)?;
+        clock()
+    };
+    for receipt in &snapshot.receipts {
+        if receipt.observation.stage() != LearningIterationStageV1::Proposal {
+            authenticate_iteration_receipt_at_clock_v1(
+                ports,
+                verifier,
+                &predecessor,
+                receipt,
+                &current_time,
+            )
+            .await?;
+        }
+        // Structural replay uses the original observation time. A completed
+        // iteration can be read after its work deadline if current evidence is
+        // still valid; this never renews that deadline or authorizes new work.
+        predecessor.record(receipt.clone(), receipt.observed_unix_seconds)?;
+    }
+    Ok(())
+}
 
 pub(super) async fn authenticate_iteration_receipt_v1(
     ports: &dyn LearningIterationOwnerPortsV1,
@@ -21,8 +60,19 @@ pub(super) async fn authenticate_iteration_receipt_v1(
     receipt: &LearningIterationReceiptV1,
     now: u64,
 ) -> Result<(), LearningIterationRuntimeErrorV1> {
+    authenticate_iteration_receipt_at_clock_v1(ports, verifier, coordinator, receipt, &|| Ok(now))
+        .await
+}
+
+async fn authenticate_iteration_receipt_at_clock_v1(
+    ports: &dyn LearningIterationOwnerPortsV1,
+    verifier: &LearningEvidenceVerifierV1,
+    coordinator: &LearningIterationCoordinatorV1,
+    receipt: &LearningIterationReceiptV1,
+    clock: &(impl Fn() -> Result<u64, LearningIterationRuntimeErrorV1> + Send + Sync),
+) -> Result<(), LearningIterationRuntimeErrorV1> {
     let snapshot = coordinator.snapshot();
-    let current = verify_receipt(ports, verifier, snapshot, receipt, now).await?;
+    let current = verify_receipt(ports, verifier, snapshot, receipt, clock).await?;
     let independent_stages: &[LearningIterationStageV1] = match receipt.observation.stage() {
         LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training],
         LearningIterationStageV1::Selection => &[
@@ -46,8 +96,8 @@ pub(super) async fn authenticate_iteration_receipt_v1(
             .ok_or(LearningIterationRuntimeErrorV1::Evidence(
                 SignedEvidenceError::ContextMismatch,
             ))?;
-        let prior = verify_receipt(ports, verifier, snapshot, earlier, now).await?;
-        verify_signed_actor_separation(&prior, &current, now)
+        let prior = verify_receipt(ports, verifier, snapshot, earlier, clock).await?;
+        verify_signed_actor_separation(&prior, &current, clock()?)
             .map_err(LearningIterationRuntimeErrorV1::Evidence)?;
     }
     Ok(())
@@ -58,7 +108,7 @@ async fn verify_receipt(
     verifier: &LearningEvidenceVerifierV1,
     snapshot: &LearningIterationSnapshotV1,
     receipt: &LearningIterationReceiptV1,
-    now: u64,
+    clock: &(impl Fn() -> Result<u64, LearningIterationRuntimeErrorV1> + Send + Sync),
 ) -> Result<VerifiedLearningEvidenceV1, LearningIterationRuntimeErrorV1> {
     let role = match receipt.observation.stage() {
         LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator,
@@ -74,7 +124,8 @@ async fn verify_receipt(
         }
     };
     let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-    let signature = ports.receipt_attestation(snapshot, receipt, now).await?;
+    let signature = ports.receipt_attestation(snapshot, receipt, clock()?).await?;
+    let now = clock()?;
     let verified = verifier
         .verify(role, &signature, &payload, now)
         .map_err(LearningIterationRuntimeErrorV1::Evidence)?;
