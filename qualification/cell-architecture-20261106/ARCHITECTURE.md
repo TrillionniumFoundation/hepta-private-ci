@@ -2,6 +2,8 @@
 
 本说明以 `a6f3aa12ba187448c35449c7da0a9798ae4ca987` 为既有基线，区分该基线已经实现的机制与本候选的增量。审计在 2026-11-07 UTC 更新；目录日期沿用本轮任务标识。本文件是源码与验证范围索引，不是生产启用、真实模型质量或资源收益的批准。
 
+本轮实际结果已汇入 [验证报告](VALIDATION.md)：冻结 `87cce806` 的四包原生测试 **990 项通过、66 项跳过**，严格 Clippy 通过；最终格式化 Rust 子树及八项精确审计输入上的独立 caller proof 通过 **171 个边界／5,315 个 Rust 文件**。原生主机另一轮 caller proof 的 900 秒超时仍单独保留。后续上游合并、JS 机械格式修复和证据提交没有改变受测 Rust 子树；不能因此把原回执重新标成任意后续完整提交的结果。
+
 **本候选补齐表示接口、输入背压、有限恢复余量与完整状态绑定的具体缺口；生产中的统一 Cell 调度、全部表示后端和跨 owner 原生迁移仍需接线与独立验收。** 既有 `DENY_ALL`、外部效果 owner、独立认证、最终使用处的 fence、旧 TaskFlow 无环检查继续成立。新增测试的源码存在不等于测试已执行；实际结果须使用绑定本候选源码的独立运行回执，不能继承历史测试总数。[原注册边界][registry]、[原 Circuit admission][circuit-admission]、[原 topology admission][topology-execution]
 
 ## 1. 六项映射
@@ -157,7 +159,7 @@ Agentd 的 learning iteration 已有真实可选 runtime 接线：[`AgentdConfig
 
 [`runtime.rs`][agentd-runtime] 保持一个 generation 的 identity、Fleet registry、state、cancellation 和 task supervision；App Server 继续是其 required service。模型／Cell、记忆／学习、authority 和外部效果已经有独立文件与 owner 适配器，本候选复用这些边界，没有声称完成新一轮全部宿主拆分。
 
-| 组件 | 已有组合路径 | 保留的 owner 责任 |
+| 组件 | 实际组合路径 | 保留的 owner 责任 |
 | --- | --- | --- |
 | 模型与 Cell | [`circuit_cell.rs`][circuit-cell]、[`circuit_cell_representation.rs`][circuit-cell-representation]、[`circuit_cell_dispatch.rs`][circuit-cell-dispatch]、原 inference worker | Cell checkpoint 与共享 inference facility 分开；表示 dispatch 复验双方当前契约与时钟／lease；历史读回保持冻结绑定；仍需普通 daemon 接入 |
 | 记忆与学习 | [`shared_terminal_cell.rs`][shared-terminal]、[`learning_iteration.rs`][learning-iteration-host]、[`plasticity_runtime.rs`][plasticity-runtime] | Memory 来源许可、ledger、artifact、评价与 proposal writer 留在原 owner；慢学习额度独立 |

@@ -100,5 +100,33 @@
     "path_and_blob_budget": "success",
     "product_tests": "not_in_this_job",
     "receipt": "../cell-architecture-20261106/ci/windows-archive.json"
+  },
+  "new_linux_job": {
+    "source_sha": "b4afdbadc247c6fadfad4e416c00a9a853affa1c",
+    "run_id": 42323275294,
+    "job_id": 128252598512,
+    "checkout": "success",
+    "archive_regressions": {
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0
+    },
+    "complete_archive_verification": "success",
+    "path_and_blob_budget": "success",
+    "product_tests": "not_in_this_job",
+    "receipt": "../cell-architecture-20261106/ci/b4-linux-archive.json"
+  },
+  "separate_product_results": "../cell-architecture-20261106/VALIDATION.md",
+  "product_qualification_scope": "The storage migration itself does not qualify native products; separate product executions retain their own source and scope.",
+  "later_platform_confirmation": {
+    "source_sha": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+    "run_id": 42331671872,
+    "windows_job_id": 128279386114,
+    "ubuntu_job_id": 128279386486,
+    "both_checkout_and_archive_validation": "success",
+    "archive_regressions_per_platform": 14,
+    "product_tests": "not_in_these_jobs",
+    "windows_receipt": "../cell-architecture-20261106/ci/4ce-windows-archive.json",
+    "ubuntu_receipt": "../cell-architecture-20261106/ci/4ce-linux-archive.json"
   }
 }

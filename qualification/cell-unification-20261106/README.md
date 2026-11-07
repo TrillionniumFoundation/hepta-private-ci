@@ -60,7 +60,7 @@ that root. A write failure leaves a partial new destination; the archive remains
 unchanged. The original reports, manifests, scripts, and nested archives can then
 be read at their original relative paths.
 
-## Observed validation and remaining platform gate
+## Observed archive validation and product-test boundary
 
 The final archive passed complete roster, payload, and member verification. A real
 restore of all 4,087 files matched the original bytes, Git blob IDs, and Git modes.
@@ -69,7 +69,15 @@ truncation, existing destinations, cumulative manifest limits, and separate path
 and blob limits. The first development fixture failure and the preceding test log
 are retained under `failures/`; the final test receipt binds the tested sources.
 
-The dedicated `Hepta evidence archive` workflow verifies the exact candidate on
-Linux and Windows. No new Windows execution or native product result is claimed
-by this storage migration. The original Windows checkout failure remains part of
-the evidence, and its skipped product tests remain unexecuted for that run.
+The dedicated `Hepta evidence archive` workflow is configured to verify the archive
+on Linux and Windows. For source `4ce8808d8b48624a17d247fdf47c7fbdaaab80a4`,
+Windows job `128279386114` and Ubuntu job `128279386486` both completed checkout,
+all 14 archive regression tests, complete archive verification, and the path/blob
+budget checks successfully. The [Windows receipt](../cell-architecture-20261106/ci/4ce-windows-archive.json)
+and [Ubuntu receipt](../cell-architecture-20261106/ci/4ce-linux-archive.json)
+preserve the original job logs and hashes.
+
+Those archive jobs did not run Rust product tests. Their results are scoped to the
+recorded source revision and do not qualify later revisions. The original Windows
+checkout failure remains part of the evidence, and its skipped product tests
+remain unexecuted for that original run.
