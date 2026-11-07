@@ -1,6 +1,7 @@
 use std::cell::Cell;
 
 use codex_hepta_types::Generation;
+use pretty_assertions::assert_eq;
 
 use super::*;
 use crate::CircuitCellRepresentationResolverV1;
@@ -32,6 +33,18 @@ fn projected_input() -> (
     RegisteredCellBackendV1,
     CellNativeRepresentationInputV1,
     CellRepresentationUseV1,
+) {
+    let (backend, projected, current, _, _, _) = projected_materials();
+    (backend, projected, current)
+}
+
+fn projected_materials() -> (
+    RegisteredCellBackendV1,
+    CellNativeRepresentationInputV1,
+    CellRepresentationUseV1,
+    CellRepresentationNegotiationV1,
+    CellRepresentationV1,
+    CellGlobalQ24SelectionV1,
 ) {
     let definition = cell_definition();
     let generation = checked(Generation::new(1));
@@ -153,7 +166,7 @@ fn projected_input() -> (
         &current,
         &selection,
     ));
-    (backend, projected, current)
+    (backend, projected, current, negotiation, source, selection)
 }
 
 async fn projected_run(
@@ -216,7 +229,7 @@ async fn represented_circuit_uses_both_current_owners_and_replays_after_their_se
     let resolver = CurrentOwners {
         current,
         calls: Cell::new(0),
-        stale_on: 3,
+        stale_on: 4,
     };
     let represented = || CircuitCellRepresentationUseV1 {
         backend: &backend,
@@ -227,8 +240,8 @@ async fn represented_circuit_uses_both_current_owners_and_replays_after_their_se
         checked(runtime.execute_representation(admission, request.clone(), represented(), time));
     assert_eq!(
         resolver.calls.get(),
-        2,
-        "before admission and at actual model contact"
+        3,
+        "at preparation, before admission, and at actual model contact"
     );
     assert_eq!(executed.decision.authority, AuthorityPosture::DENY_ALL);
     assert_eq!(
@@ -250,7 +263,7 @@ async fn represented_circuit_uses_both_current_owners_and_replays_after_their_se
         },
     ));
     assert_eq!(replayed, executed);
-    assert_eq!((calls.load(Ordering::SeqCst), resolver.calls.get()), (1, 2));
+    assert_eq!((calls.load(Ordering::SeqCst), resolver.calls.get()), (1, 3));
     let mut foreign = backend.registration().clone();
     foreign.expert.version_id = id("different-expert-same-definition");
     let foreign_registry = checked(CellBackendRegistryV1::new(
@@ -284,7 +297,7 @@ async fn represented_circuit_uses_both_current_owners_and_replays_after_their_se
             CellExecutionError::IncompatibleBundle
         ))
     );
-    assert_eq!((calls.load(Ordering::SeqCst), resolver.calls.get()), (1, 2));
+    assert_eq!((calls.load(Ordering::SeqCst), resolver.calls.get()), (1, 3));
     let completion = apply(
         &store,
         "complete",
@@ -306,7 +319,7 @@ async fn represented_circuit_uses_both_current_owners_and_replays_after_their_se
 
 #[tokio::test]
 async fn represented_circuit_refuses_stale_before_admission_and_preserves_post_admission_unknown() {
-    for stale_on in [1, 2] {
+    for stale_on in [1, 2, 3] {
         let (backend, projected, current) = projected_input();
         let (definition, bindings) = configuration();
         let (_directory, store, dispatch, request) = projected_run(&definition, &projected).await;
@@ -339,7 +352,7 @@ async fn represented_circuit_refuses_stale_before_admission_and_preserves_post_a
         assert_eq!(calls.load(Ordering::SeqCst), 0);
         assert_eq!(
             checked(runtime.state_owner().pending_inference(&request.scope)).is_some(),
-            stale_on == 2
+            stale_on == 3
         );
         let recovery = checked(
             store
@@ -358,7 +371,7 @@ async fn represented_circuit_refuses_stale_before_admission_and_preserves_post_a
             (calls.load(Ordering::SeqCst), resolver.calls.get()),
             (0, stale_on)
         );
-        assert_eq!(reads.load(Ordering::SeqCst), usize::from(stale_on == 2));
+        assert_eq!(reads.load(Ordering::SeqCst), usize::from(stale_on == 3));
         let run = checked(store.bounded_circuit_run("run-1").await).expect("original run");
         assert_eq!(run.budget().reserved(), 2_000);
         store.close().await;
@@ -398,3 +411,9 @@ async fn generic_circuit_entry_cannot_skip_representation_endpoint_checks() {
     );
     store.close().await;
 }
+
+#[path = "circuit_cell_representation_recovery_tests.rs"]
+mod recovery;
+
+#[path = "circuit_cell_representation_guard_tests.rs"]
+mod guard;
