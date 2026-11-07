@@ -1,0 +1,473 @@
+{
+  "packet": "arm5188_hash_timing_backend",
+  "suggested_repository_directory": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/arm5188_hash_timing_backend_checkpoint_20261107",
+  "snapshot_utc": "2026-11-07 01:40:04 UTC",
+  "index": {
+    "bytes": 91537,
+    "sha256": "d778f5e8990f2abdcfaf304740018cd627c62a98df474b3d2277b01ce244c57b",
+    "git_blob": "fec4804bee3bce405b15f77f357ecf88200df036"
+  },
+  "source_file_count": 236,
+  "raw_source_bytes": 106266595,
+  "archive_bytes": 106516480,
+  "compressed_bytes": 11788972,
+  "verification": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/READER_SUCCESSOR_REVIEW.json",
+    "bytes": 9851,
+    "sha256": "223ec366c7d96ceb81c1f3890b64becadcbc2e5e0749163a6d1df363073eb43d",
+    "git_blob": "6521973a38eae8a672a6fecf12fe309eee6a6a12"
+  },
+  "local_reader_validation": "The already published formatted canonical reader differs only in its INDEX seal; full AST equals the first reader. Its read_package recovered all 236 files in memory with identical bytes and original mode inventory. Ruff check/format and Codespell of all 30 publication files passed. No expanded disk restore.",
+  "reader_template": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_native/sdk_product_evidence_20261106/restore.py",
+    "bytes": 6899,
+    "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+    "git_blob": "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1",
+    "only_replacement": "fixed INDEX SHA-256",
+    "already_published_git_blob": "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1"
+  },
+  "codespell": {
+    "version": "2.4.3",
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/INDEX.json",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/README.md",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part000.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part001.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part002.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part003.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part004.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part005.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part006.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part007.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part008.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part009.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part010.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part011.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part012.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part013.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part014.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part015.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part016.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part017.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part018.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part019.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part020.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part021.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part022.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part023.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part024.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part025.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part026.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/restore.py"
+    ],
+    "cwd": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107",
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "scope": "Exactly all 30 publication files, replacing only the reader source path; original repository configuration and exclusions, no new skip.",
+    "configuration": {
+      ".codespellrc": {
+        "bytes": 471,
+        "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+        "git_blob": "663be376c7381108af0a41eafc3dd08f27125d96"
+      },
+      ".codespellignore": {
+        "bytes": 69,
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      ".codespell-exclude-lines": {
+        "bytes": 20003,
+        "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+        "git_blob": "490e840301fdfae10d6e40c44a566ff16f82e324"
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "INDEX.json",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/INDEX.json",
+      "mode": "100644",
+      "bytes": 91537,
+      "sha256": "d778f5e8990f2abdcfaf304740018cd627c62a98df474b3d2277b01ce244c57b",
+      "git_blob": "fec4804bee3bce405b15f77f357ecf88200df036"
+    },
+    {
+      "path": "README.md",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/README.md",
+      "mode": "100644",
+      "bytes": 3365,
+      "sha256": "062756b6d7f5056d7f21cf49bdd01bf8a5c8432d6a5f97573c953ae7d8c2d613",
+      "git_blob": "6dc69f9891896f6af76b70aedec9ad96eb795ce1"
+    },
+    {
+      "path": "native-evidence.tar.xz.part000.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part000.gz",
+      "mode": "100644",
+      "bytes": 440077,
+      "sha256": "d69d8b4b3a5b5c7bd747bf7e36fffeec65f6d9862a6da8a2914b7bdbdc760797",
+      "git_blob": "0f0958261fc9bc914fd34e172ef4b392c99e581e"
+    },
+    {
+      "path": "native-evidence.tar.xz.part001.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part001.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "5120f9fa97d3552b84579a327dc51255c32944beddc06e02cb63e6890155aa79",
+      "git_blob": "9e33050208f9a62bcc2bbd7498d36282fe2426e8"
+    },
+    {
+      "path": "native-evidence.tar.xz.part002.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part002.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "dee8de65bdbc399f1211cf5f76a0990a21da54fd82aa9db61a7857a3383a380e",
+      "git_blob": "e4e795a2ba127bd54971059aba75f20a998805d5"
+    },
+    {
+      "path": "native-evidence.tar.xz.part003.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part003.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "ce1aff83b42b4032c3eacc6f4fb67772b11ad070f8c89a7ca67b2021ca402fce",
+      "git_blob": "93caf7e4de503f75f2544dddbf145b7631530a5c"
+    },
+    {
+      "path": "native-evidence.tar.xz.part004.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part004.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "dd76f14c48e1e76f555757014c4e6508e4aac0a0bdaa9be9361203088622ea9b",
+      "git_blob": "d2ce97e4d5545565709859a635bd3615a2088b22"
+    },
+    {
+      "path": "native-evidence.tar.xz.part005.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part005.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "3329842474ff237531236daebb384ab8d79d67152bad26ff7e625748321c9b2b",
+      "git_blob": "5e6133a42ae3c2722ca232513efd4c3a2b309d72"
+    },
+    {
+      "path": "native-evidence.tar.xz.part006.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part006.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "467e8e1a9615910fb31f16d3336efb77940536b98fd64cc882f08560781aed23",
+      "git_blob": "1deab1fa97cb74f386d9bb878ff79a310b59fcb3"
+    },
+    {
+      "path": "native-evidence.tar.xz.part007.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part007.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "b76456adbff75148f5cc37872e92b213cb9e9a14efa586f041f3395fa3e33f51",
+      "git_blob": "bd053158cbededc8cd059737ce3001093a74ae9d"
+    },
+    {
+      "path": "native-evidence.tar.xz.part008.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part008.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "12483391a4dee8f5e1836b286be3c106fc5f4e115dbee9968ddbdd9974ff87a5",
+      "git_blob": "28361f7da92f0c276f058c988e5917f365fc106e"
+    },
+    {
+      "path": "native-evidence.tar.xz.part009.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part009.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "3b40361d363088025387bf19735fb8341965098e94c7d58545bc0a1309e9b28f",
+      "git_blob": "d862c3c64a566a7b7fb04b49a5bf5b871a6b1ca1"
+    },
+    {
+      "path": "native-evidence.tar.xz.part010.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part010.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "ecf4b567c6a4f8f7ef856b152d15c83425948a0e7ef9202e275f9e7a73f3a7f9",
+      "git_blob": "adb1878c994033435fe326f90f5db02439535985"
+    },
+    {
+      "path": "native-evidence.tar.xz.part011.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part011.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "78299fee57e0d457a59bd5e09bc89d7f2287608e343b2e1d732c5962f4f3372a",
+      "git_blob": "7022bd1c19facd8a9b83b04a489d7a9299779573"
+    },
+    {
+      "path": "native-evidence.tar.xz.part012.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part012.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "a1e30d32e072c3affa66da6bf889ec33ce59b7ff4c2ea0a154532d49087d4c00",
+      "git_blob": "82cd95ca6e336691710ff0bf9fd1afa418903287"
+    },
+    {
+      "path": "native-evidence.tar.xz.part013.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part013.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "d93e6bb16866b44cf88e0b4b925f6f4f5e0e52ea0efbf3f717ac479e27d2bd40",
+      "git_blob": "c90911f2a8d46a623c20ffe9a6a52a2b61a9ee35"
+    },
+    {
+      "path": "native-evidence.tar.xz.part014.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part014.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "a6f3a6607290e48fa2d396920cb2b1142457800e8101fb3d513c7773762a73db",
+      "git_blob": "ba25515254e48adc7795521aaa88d2431da5eb27"
+    },
+    {
+      "path": "native-evidence.tar.xz.part015.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part015.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "9b8c05143fa5dcacc3c2199c0814723923e5a1d7894576655e4a12c5d0e48cb3",
+      "git_blob": "00b58e23e44ac6f7d349f1b6bfb6da3077c54f35"
+    },
+    {
+      "path": "native-evidence.tar.xz.part016.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part016.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "dd78115d481afe489688807f1c6a6634a43b6f453fb0d45b95286bf58015e9c2",
+      "git_blob": "6d483af39f5294ab0bbe5804f29d8f2456174452"
+    },
+    {
+      "path": "native-evidence.tar.xz.part017.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part017.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "2c8cc78554f03fa927debd1b96b4c31925922b58583c2a36e19108c4526ac06a",
+      "git_blob": "6b5f44ed319d942cc6fa1610522ceffc3b9bf076"
+    },
+    {
+      "path": "native-evidence.tar.xz.part018.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part018.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "cece113be80d58f7789ac490869e5871173a79e69c3d132e435fb7da1ddad6b7",
+      "git_blob": "bff0717e78b46685ba182262dced256cdcc3e276"
+    },
+    {
+      "path": "native-evidence.tar.xz.part019.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part019.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "010bb408f00e56bd74349d7af80196236de0bdaf7b9343ade29d5141f2f3d366",
+      "git_blob": "fcfdab511752199958bc6851681372dea931c4fb"
+    },
+    {
+      "path": "native-evidence.tar.xz.part020.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part020.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "8cf80c9a052fd1e89b8090668129a4630151db61e873c1b70b45189c47fca908",
+      "git_blob": "5d94fea5b246dc2e57b2c936a36ebfca082a81c2"
+    },
+    {
+      "path": "native-evidence.tar.xz.part021.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part021.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "0f492d7e6edf230cff4d15c2328253d998ded9a569ed766e886e73858ea2ec85",
+      "git_blob": "48e0e5618b027d45411662b20d5f94376d685f6f"
+    },
+    {
+      "path": "native-evidence.tar.xz.part022.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part022.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "f5fc198732b5d1fe1c8900693a775ce83c011f5c35694f4119099f98639991e6",
+      "git_blob": "24ae2cc802e28fb0618ea7d0f59448461980f2d8"
+    },
+    {
+      "path": "native-evidence.tar.xz.part023.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part023.gz",
+      "mode": "100644",
+      "bytes": 440082,
+      "sha256": "6542c591fc6ef2bc6f371088740fd6392dd4c3b3220a7dfc0c602060985f84b9",
+      "git_blob": "37054fe99e541a89b12e9f8d3d3bc5ce513ace89"
+    },
+    {
+      "path": "native-evidence.tar.xz.part024.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part024.gz",
+      "mode": "100644",
+      "bytes": 440064,
+      "sha256": "1fbc0a0563ffb4b3117b6519ec693156368ba6088e172d021d6da460e78886a5",
+      "git_blob": "3ebe785c42c3f876337db745d28b457e7b64b912"
+    },
+    {
+      "path": "native-evidence.tar.xz.part025.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part025.gz",
+      "mode": "100644",
+      "bytes": 439594,
+      "sha256": "fe36411b2ee36729cb2e64fc0b93964a360970689c3b734cb258b495c33adc78",
+      "git_blob": "cc90133b2089f85de9a52ed011afa17faaccdd1f"
+    },
+    {
+      "path": "native-evidence.tar.xz.part026.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part026.gz",
+      "mode": "100644",
+      "bytes": 349100,
+      "sha256": "3df027d563fe35c4a1cf6d09f20d6f18cb98e59a535bbb8e7216df354d19dd57",
+      "git_blob": "c5fca435c29f532f8c71da56538ee836c53ecc43"
+    },
+    {
+      "path": "restore.py",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/restore.py",
+      "mode": "100644",
+      "bytes": 6899,
+      "sha256": "d4ca355cbc8fee3dcc1952bfebf6f60da5ff49f201682cad26b7e0184800e7cd",
+      "git_blob": "4d23f6fb49b751696b9d04c3f78e0f2a0a842bd6"
+    }
+  ],
+  "qualification_scope": {
+    "native_source_commit": "5043c1a1937200edb5b34d044425e39f5dfd3281",
+    "native_source_tree": "f7b0144a48fbc5c2f9947e8ae0570c839bc3e6b3",
+    "workflow_merge_commit": "f2561f47864d85fc3707bd8c1a2cccb4940c9950",
+    "prepared_native_worktree_commit": "269225b2622d7e642e53b7cb733875c84fe7bc8a",
+    "prepared_native_worktree_tree": "f7b0144a48fbc5c2f9947e8ae0570c839bc3e6b3",
+    "run_id": 42312327246,
+    "job_id": 128217534470,
+    "attempt": 1,
+    "overall_job": "failure",
+    "business": {
+      "tests": 1,
+      "passed": 0,
+      "timed_out": 1,
+      "filtered": 8,
+      "just_exit": 100,
+      "test_seconds": 1200.073,
+      "summary_seconds": 1200.074,
+      "just_wall_seconds": 1200.221839199,
+      "aggregate_child_cpu_seconds": 1198.277491,
+      "stderr": {
+        "bytes": 10687,
+        "sha256": "94730b4446f6582b1daffc872b227802e52e016bddb65edb2a2d4aeac20d8c4a"
+      },
+      "junit": {
+        "bytes": 8262,
+        "sha256": "eb24fb3dffe26b8eef60303fec48631871ac155a4e70597c817ab895a5e8aaaa"
+      }
+    },
+    "build_stage": "Both original nextest list commands exited zero; source_clean and seed_unchanged were true.",
+    "completed_read_and_validation_spans": {
+      "completed_calls": 36,
+      "completed_elapsed_ms": 692469,
+      "completed_bytes": 10544121936,
+      "phases": {
+        "install": {
+          "completed_calls": 18,
+          "elapsed_ms": 346255,
+          "bytes": 5272060968
+        },
+        "start": {
+          "completed_calls": 12,
+          "elapsed_ms": 230813,
+          "bytes": 3514707312
+        },
+        "record_a": {
+          "completed_calls": 4,
+          "elapsed_ms": 76847,
+          "bytes": 1171569104
+        },
+        "record_b": {
+          "completed_calls": 2,
+          "elapsed_ms": 38554,
+          "bytes": 585784552
+        }
+      },
+      "pending_at_kill": "release executable identity",
+      "post_ready_record_b_completed": false,
+      "post_ready_sync_a_reached": false
+    },
+    "backend": "The original AArch64 Cargo compiler-artifact records show sha2 0.10.9 default/std without asm, with opt_level zero. The fixed crate source selects the software backend. No CPU SHA2 HWCAP or accelerated performance was measured.",
+    "archive_retention": {
+      "original_freeze": {
+        "bytes": 49387,
+        "sha256": "9fef493ab90f11d29ca56fae62f7914c1c770868b5650bb5cf0449933fd683cd",
+        "git_blob": "7a55c23566cb05efd5421c59b69b731263321026"
+      },
+      "original_frozen_file_count": 185,
+      "retained_frozen_file_count": 183,
+      "retained_frozen_bytes": 97653763,
+      "excluded_original_console_files": {
+        "job-128217534470.log": {
+          "bytes": 44884,
+          "sha256": "7cd4fdeb9b30922dfbe33b64ecb7a180f59df514f31ae7df009ffc368e2545d4",
+          "git_blob": "bb45f362c7d0a69e6b9bbe1722bf72e1ca7f3bcf",
+          "mode": 384
+        },
+        "job-128217534470.raw.json": {
+          "bytes": 45859,
+          "sha256": "79a514f686f89c33a9f49b187566567b10f24c8e4f2c5e31e0a5e7a6cfb73785",
+          "git_blob": "c8a88b8148fa4a22a5606f16896fcfec2eee911d",
+          "mode": 384
+        }
+      },
+      "excluded_console_bytes_not_restorable_from_packet": true,
+      "original_freeze_retained_unchanged": true,
+      "both_original_narrow_diagnostic_zip_containers_retained": true,
+      "all_four_zip_members_crc_verified_by_original_audit": true,
+      "complete_selected_view_files": 1447,
+      "complete_selected_view_bytes": 68383939,
+      "source_catalogue_entries": 84421,
+      "full_artifact_api_only": {
+        "id": 13551822425,
+        "name": "ndu-native-synapse-arm64-42312327246-1",
+        "size_in_bytes": 1788250243,
+        "digest": "sha256:d4cecf710a2dfc2c9f2ad8ac2991a51bdcd1c2ba819609a4e48b3120164d85fa"
+      },
+      "full_artifact_downloaded_or_reconstructed": false,
+      "excluded_source_catalogue_entries_have_metadata_only": true
+    },
+    "timing36": "The source change and its initial formatting failures, final checks, publication and independent reviews are retained. It changed observation only; the old timeout, profile, validation calls and assertions remained.",
+    "independent_root_review_external_companion": {
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/ROOT_REVIEW.json",
+      "bytes": 8948,
+      "sha256": "93ef445e2b8f7abb074592e79a08c8567203d987c03a83134b5f31562c710820",
+      "git_blob": "5e478b1f6a6f2c1a5f257425bde9ce9286aaf5e9",
+      "inside_this_index": false,
+      "scope": "Root independently checked the original ZIPs, all 1447 view payloads, all 84421 catalogue entries, all 185 frozen original identities and modes, fresh source/API bindings, timing and compiler records. Its directory can be published as a separate companion."
+    },
+    "limits": [
+      "Timing spans contain one original std::fs::read and validation/hash; they do not isolate CPU hashing or all validation work.",
+      "Completed disjoint spans consume 692.469 seconds, more than half the unchanged 1200.073-second test duration. The final span is incomplete and is not assigned an elapsed duration.",
+      "The observed run did not reach post-ready sync A; this narrows this timeout, not every historical timeout.",
+      "Actual AArch64 Cargo compiler-artifact features select the verified 0.10.9 software backend. CPU SHA2 HWCAP was not observed, so accelerated hardware availability and future performance remain unqualified.",
+      "The full 1.79 GB ZIP has API identity only; it was not downloaded, hashed or reconstructed. The selected view was fully verified, and excluded entries have catalogue metadata only.",
+      "No retry, timeout, profile, assertion, syscall, product dependency or lock was changed by this audit.",
+      "This packet preserves a failed native run and its diagnosis, not an accelerated product, generated new dependency locks, or a later native success.",
+      "The pre-existing backend review predates the terminal compiler-artifact audit. Its earlier uncertainty is retained; the later native receipt supplies additional evidence without rewriting it.",
+      "The builder validates the canonical reader in memory and does not create another expanded disk restore. Original file modes are recorded; the bounded restore program always writes inert regular 0644 files."
+    ]
+  },
+  "publication_ready": true,
+  "old_packets_modified": false,
+  "revision": "v2_formatted_published_reader_same_index_and_parts",
+  "supersedes_publication_manifest": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/ARM5188_HASH_TIMING_BACKEND_EVIDENCE_PUBLICATION.json",
+    "bytes": 21152,
+    "sha256": "2ce9c38ff826e30061ee926776aee32866eeff83d0976150bdc16dffedd7fcd4",
+    "git_blob": "2080e83626e16487e78b01b13eb07ba4ee0aefbd"
+  }
+}

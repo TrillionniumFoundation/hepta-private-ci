@@ -1,0 +1,295 @@
+"""Independently audit the retained ARM diagnostic projection without rerunning it."""
+
+from collections import Counter, defaultdict
+import datetime
+import hashlib
+import json
+import re
+import tomllib
+from pathlib import Path, PurePosixPath
+import stat
+import tarfile
+import zipfile
+import zlib
+
+
+ROOT = Path(__file__).resolve().parents[2]
+OUT = Path(__file__).resolve().parent
+SOURCE = ROOT / "round3_ci/port_diagnosis/arm5188"
+VIEW = SOURCE / "reviewed-diagnostics"
+HEAD = "5043c1a1937200edb5b34d044425e39f5dfd3281"
+TREE = "f7b0144a48fbc5c2f9947e8ae0570c839bc3e6b3"
+MERGE = "f2561f47864d85fc3707bd8c1a2cccb4940c9950"
+
+
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def pairs(rows):
+    result = {}
+    for key, value in rows:
+        require(key not in result, "duplicate JSON key")
+        result[key] = value
+    return result
+
+
+def parse(raw):
+    return json.loads(raw, object_pairs_hook=pairs)
+
+
+def ident(raw):
+    return {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+
+
+def file_identity(path):
+    with path.open("rb") as stream:
+        digest = hashlib.file_digest(stream, "sha256").hexdigest()
+    return {"bytes": path.stat().st_size, "sha256": digest}
+
+
+def safe_name(name):
+    require(isinstance(name, str) and 0 < len(name.encode()) <= 1024, "path bound")
+    require(not any(ord(c) < 32 or ord(c) == 127 or c in "\\:" for c in name), "unsafe path")
+    parts = name.split("/")
+    require(all(p not in {"", ".", ".."} for p in parts), "path traversal")
+    require(PurePosixPath(name).as_posix() == name, "noncanonical path")
+    return PurePosixPath(name)
+
+
+api = [parse((OUT / f"fresh_api_{n}.json").read_bytes())["structuredContent"] for n in range(5)]
+run, jobs, artifact_response, commit = parse(api[0]["content"]), parse(api[1]["content"])["jobs"], parse(api[2]["content"]), parse(api[3]["content"])
+require(run["id"] == 42312327246 and run["head_sha"] == HEAD and run["run_attempt"] == 1, "run identity")
+require(run["status"] == "completed" and run["conclusion"] == "failure", "run result")
+require(parse(api[1]["content"])["total_count"] == len(jobs) == 11, "complete jobs")
+source_commit = parse(api[4]["content"])
+require(source_commit["sha"] == HEAD and source_commit["tree"]["sha"] == TREE, "source head tree")
+job = next(j for j in jobs if j["id"] == 128217534470)
+require(job["status"] == "completed" and job["conclusion"] == "failure", "job result")
+steps = {s["number"]: s for s in job["steps"]}
+require(steps[4]["conclusion"] == "failure", "business step")
+require(all(steps[n]["conclusion"] == "success" for n in [6, 7, 8, 16]), "export steps")
+require(commit["sha"] == MERGE and commit["tree"]["sha"] == TREE, "actual merge tree")
+require(HEAD in {p["sha"] for p in commit["parents"]}, "merge parent")
+require(artifact_response["total_count"] == len(artifact_response["artifacts"]), "artifact pagination")
+artifacts = {a["id"]: a for a in artifact_response["artifacts"]}
+source_pins = parse((OUT / "SOURCE_API.json").read_bytes())
+require(source_pins["tree"] == TREE and len(source_pins["source"]) == 9, "nine exact source paths")
+old_pins = parse((ROOT / "round3_local_qualification/arm5160_root/SOURCE_API.json").read_bytes())["source"]
+for path, before in old_pins.items():
+    current = source_pins["source"][path]
+    if path != "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs":
+        require(all(current[k] == before[k] for k in ["sha", "size", "mode"]), "unchanged source guard and workflow pins")
+for path, current in source_pins["source"].items():
+    raw = (SOURCE / "source" / path).read_bytes()
+    blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+    require(current["sha"] == blob and current["size"] == len(raw) and current["mode"] == "100644", "exact source bytes")
+freeze = parse((SOURCE / "FREEZE.json").read_bytes())
+require(len(freeze["files"]) == freeze["file_count"] == 185, "frozen count")
+for name, expected in freeze["files"].items():
+    safe_name(name)
+    path = SOURCE / name
+    raw = path.read_bytes()
+    require(ident(raw) == {k: expected[k] for k in ["bytes", "sha256"]}, "frozen bytes")
+    require(hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest() == expected["git_blob"], "frozen blob")
+    require(stat.S_ISREG(path.lstat().st_mode) and stat.S_IMODE(path.stat().st_mode) == expected["mode"], "frozen mode")
+require(sum(x["bytes"] for x in freeze["files"].values()) == freeze["total_bytes"] == 97744506, "frozen bytes total")
+archive_identities = {}
+for name, artifact_id in [("manifest-artifact.zip", 13551626880), ("part-artifact.zip", 13551158728)]:
+    actual = file_identity(SOURCE / name)
+    official = artifacts[artifact_id]
+    require(actual["bytes"] == official["size_in_bytes"] and "sha256:" + actual["sha256"] == official["digest"], "official archive identity")
+    archive_identities[name] = {**actual, "artifact_id": artifact_id}
+
+with zipfile.ZipFile(SOURCE / "manifest-artifact.zip") as archive:
+    require(archive.namelist() == ["DIAGNOSTICS.json", "PROJECTION.json", "SOURCE_DIRECTORY.json"], "manifest member set")
+    require(archive.testzip() is None, "manifest CRC")
+    metadata = {n: archive.read(n) for n in archive.namelist()}
+diagnostics, projection, catalogue = [parse(metadata[n]) for n in ["DIAGNOSTICS.json", "PROJECTION.json", "SOURCE_DIRECTORY.json"]]
+for name, raw in metadata.items():
+    if (SOURCE / name).exists():
+        require((SOURCE / name).read_bytes() == raw, "retained metadata bytes")
+    else:
+        require(name == "SOURCE_DIRECTORY.json", "unexpected unmaterialized metadata")
+require(projection["source_commit"] == HEAD and projection["complete_projection"] is True and diagnostics["complete"] is True, "complete source-bound projection")
+require(projection["whole_original_artifact_restorable"] is False and projection["qualification_or_promotion"] is False and diagnostics["qualification_or_promotion"] is False, "scope flags")
+require(all(projection[k] is True for k in ["collector_called", "source_catalogue_complete", "original_selected_files_unchanged"]), "projection completion")
+require(diagnostics["original_artifact_unchanged"] is True, "original artifact flag")
+require(projection["original_collector_sha256"] == "47867b1e884c29993524558020b4dcf3800910ae33dc00feb11b435081be0761", "unchanged collector")
+bounds = {"max_files": 5000, "max_path_bytes": 1024, "part_bytes": 134217728, "max_parts": 8}
+suffixes = [".json", ".jsonl", ".log", ".stderr", ".stdout", ".txt", ".xml"]
+prefixes = ["preparation/prefetch/cargo-home/", "qualification/build/cargo-home/", "qualification/build/cold-test/", "qualification/build/cold-product/"]
+require(projection["bounds"] == diagnostics["bounds"] == bounds, "unchanged bounds")
+require(projection["selection"] == {"suffixes": suffixes, "excluded_prefixes": prefixes}, "projection selection")
+require(diagnostics["selection"] == {"recursive_suffixes": suffixes}, "collector selection")
+require(projection["diagnostics"] == ident(metadata["DIAGNOSTICS.json"]) and projection["source_catalogue"] == ident(metadata["SOURCE_DIRECTORY.json"]), "metadata hashes")
+require(diagnostics["workflow"] == {"GITHUB_RUN_ID": "42312327246", "GITHUB_RUN_ATTEMPT": "1", "GITHUB_SHA": MERGE}, "workflow provenance")
+require(isinstance(catalogue, list) and len(catalogue) <= 200000 and len(metadata["SOURCE_DIRECTORY.json"]) <= 67108864, "catalogue bounds")
+seen, selected = set(), set()
+excluded = {p: {"entries": 0, "lstat_bytes": 0, "suffix_files": 0} for p in prefixes}
+for row in catalogue:
+    require(set(row) == {"path", "lstat_bytes", "mode", "category"}, "catalogue fields")
+    name = row["path"]
+    path = safe_name(name)
+    require(name not in seen and type(row["lstat_bytes"]) is int and row["lstat_bytes"] >= 0 and type(row["mode"]) is int, "catalogue entry")
+    seen.add(name)
+    category = next((p for p in prefixes if name.startswith(p)), "selected" if path.suffix in suffixes else "other-suffix")
+    require(row["category"] == category, "catalogue classification")
+    if category in excluded:
+        excluded[category]["entries"] += 1
+        excluded[category]["lstat_bytes"] += row["lstat_bytes"]
+        excluded[category]["suffix_files"] += int(path.suffix in suffixes)
+    if category == "selected":
+        require(stat.S_ISREG(row["mode"]) and row["lstat_bytes"] == projection["files"][name]["bytes"], "selected metadata")
+        selected.add(name)
+require(excluded == projection["excluded_inventory"], "exclusion inventory")
+require(selected == set(projection["files"]) == set(diagnostics["files"]), "selected set")
+require(len(selected) == diagnostics["file_count"] == 1447, "selected count")
+require(len(diagnostics["parts"]) == 1, "part count")
+part = diagnostics["parts"][0]
+require(part["file"] == "part-01.tar.part" and part["bytes"] <= bounds["part_bytes"], "part identity")
+verified, selected_bytes = set(), 0
+required_build_members = {"qualification/build/commands/000-source-identity.stdout", "qualification/build/commands/001-source-identity.stdout", "qualification/build/commands/026-END.json", "qualification/build/commands/027-END.json"}
+build_members = {}
+with zipfile.ZipFile(SOURCE / "part-artifact.zip") as archive:
+    require(archive.namelist() == [part["file"]] and archive.testzip() is None, "part member and CRC")
+    with archive.open(part["file"]) as stream:
+        actual_tar_sha = hashlib.file_digest(stream, "sha256").hexdigest()
+    require(archive.getinfo(part["file"]).file_size == part["bytes"] and actual_tar_sha == part["sha256"] == diagnostics["tar_sha256"], "whole tar identity")
+    with archive.open(part["file"]) as stream, tarfile.open(fileobj=stream, mode="r|") as tar:
+        for member in tar:
+            name = member.name
+            safe_name(name)
+            require(member.isfile() and member.mode == 0o600 and name in selected and name not in verified, "tar member")
+            raw = tar.extractfile(member).read()
+            require(member.size == len(raw) and ident(raw) == diagnostics["files"][name], "raw member identity")
+            require({**ident(raw), "crc32": f"{zlib.crc32(raw) & 0xffffffff:08x}"} == projection["files"][name], "member CRC")
+            if name in required_build_members:
+                build_members[name] = raw
+            local = VIEW / name
+            if local.exists() or local.is_symlink():
+                require(stat.S_ISREG(local.lstat().st_mode) and stat.S_IMODE(local.stat().st_mode) == 0o600 and local.read_bytes() == raw, "retained subset identity")
+            verified.add(name)
+            selected_bytes += len(raw)
+require(verified == selected and selected_bytes == diagnostics["selected_bytes"] == 68383939, "whole declared view")
+
+build = parse((VIEW / "qualification/build/BUILD_RESULT.json").read_bytes())
+require(build["status"] == "built_not_executed" and build["source_clean"] is True and build["seed_unchanged"] is True, "build status")
+native_head = build_members["qualification/build/commands/000-source-identity.stdout"].decode().strip()
+native_tree = build_members["qualification/build/commands/001-source-identity.stdout"].decode().strip()
+require(native_tree == TREE, "prepared native worktree tree")
+list_records = []
+for number in [26, 27]:
+    record = parse(build_members[f"qualification/build/commands/{number:03d}-END.json"])
+    require(record["exit_code"] == 0 and record["tool"] == "cargo-nextest" and record["executable_unchanged"] is True, "list result")
+    require(record["arguments"][:2] == ["nextest", "list"] and "hepta-linux-build:/hepta-build/nextest-build.toml" in record["arguments"], "list configuration")
+    list_records.append({k: record[k] for k in ["arguments", "exit_code", "stdout", "stderr", "executable"]})
+end = parse((VIEW / "qualification/runtime/commands/025-END.json").read_bytes())
+stderr = (VIEW / "qualification/runtime/commands/025-actual-just-test.stderr").read_bytes()
+require(end["tool"] == "just" and end["exit_code"] == 100 and end["executable_unchanged"] is True, "business command")
+require(ident(stderr) == {k: end["stderr"][k] for k in ["bytes", "sha256"]}, "business stderr")
+require(b"secret capability omitted its final newline" not in stderr, "previous newline failure returned")
+require(b"Summary [1200.074s] 1 test run: 0 passed, 1 timed out, 8 skipped" in stderr and b"TIMEOUT [1200.073s]" in stderr, "original nextest timeout")
+require(b"R4_STAGE post_ready_record_b:start" in stderr and b"R4_STAGE post_ready_record_b:done" not in stderr and b"R4_STAGE post_ready_sync_a:start" not in stderr, "observed stage interval")
+require("--retries" in end["arguments"] and end["arguments"][end["arguments"].index("--retries") + 1] == "0", "original retry policy")
+require("--test-threads" in end["arguments"] and end["arguments"][end["arguments"].index("--test-threads") + 1] == "1", "original concurrency")
+import xml.etree.ElementTree as ET
+junit = (VIEW / "qualification/runtime/nextest-store/linux-synapse/junit.xml").read_bytes()
+report = ET.fromstring(junit)
+require(report.attrib["tests"] == "1" and report.attrib["failures"] == "1", "JUnit totals")
+cases = report.findall(".//testcase")
+require(len(cases) == 1 and cases[0].find("failure").attrib["type"] == "test timeout", "JUnit timeout")
+seal = parse((VIEW / "qualification/source/SOURCE_SEAL.json").read_bytes())
+require(seal["producer_source_commit"] == HEAD and seal["candidate_tree"] == seal["qualification_tree"] == TREE and seal["qualification_commit"] == native_head and seal["source_clean"] is True, "exact prepared source seal")
+
+# Independently pair the sequential instrumented spans; never add the containing stage twice.
+phases = defaultdict(lambda: {"completed_calls": 0, "elapsed_ms": 0, "bytes": 0})
+phase, pending, events, starts = "setup", None, [], 0
+for line in stderr.decode().splitlines():
+    for token, value in [("paired_release_install:start", "install"), ("agent_pair_start:start", "start"), ("post_ready_record_a:start", "record_a"), ("post_ready_record_b:start", "record_b")]:
+        if "R4_STAGE " + token in line:
+            phase = value
+    start = re.search(r'R4_HASH_START label="([^"]+)"', line)
+    done = re.search(r'R4_HASH_DONE label="([^"]+)" elapsed_ms=(\d+) bytes=(\d+)', line)
+    if start:
+        require(pending is None, "nonoverlapping spans")
+        pending = start[1]
+        starts += 1
+    if done:
+        require(pending == done[1], "paired span label")
+        pending = None
+        event = {"phase": phase, "label": done[1], "elapsed_ms": int(done[2]), "bytes": int(done[3])}
+        events.append(event)
+        for key, value in [("completed_calls", 1), ("elapsed_ms", event["elapsed_ms"]), ("bytes", event["bytes"])]:
+            phases[phase][key] += value
+require(starts == 37 and len(events) == 36 and pending == "release executable identity", "observed span count")
+require(sum(e["elapsed_ms"] for e in events) == 692469 and sum(e["bytes"] for e in events) == 10544121936, "completed span totals")
+require(b"R4_STAGE post_ready_record_a:done elapsed_ms=115381" in stderr, "outer record A stage")
+compiler_raw = (VIEW / "qualification/build/commands/024-cold-test-build.stdout").read_bytes()
+compiler_end = parse((VIEW / "qualification/build/commands/024-END.json").read_bytes())
+require(compiler_end["exit_code"] == 0 and ident(compiler_raw) == {k: compiler_end["stdout"][k] for k in ["bytes", "sha256"]}, "actual compiler stream")
+compiler_rows = [parse(line) for line in compiler_raw.splitlines()]
+arm_sha = [r for r in compiler_rows if r.get("reason") == "compiler-artifact" and r.get("package_id", "").endswith("#sha2@0.10.9") and r["filenames"] and all("/aarch64-unknown-linux-gnu/" in name for name in r["filenames"])]
+require(len(arm_sha) == 1 and arm_sha[0]["features"] == ["default", "std"] and arm_sha[0]["profile"]["opt_level"] == "0" and arm_sha[0]["fresh"] is False, "actual software backend feature set")
+rustc = (VIEW / "qualification/runtime/commands/003-rustc-vv.stdout").read_bytes()
+require(b"host: aarch64-unknown-linux-gnu" in rustc and b"release: 1.96.0" in rustc, "native host rustc")
+backend = ROOT / "round3_ci/arm_sha256_backend_readonly"
+backend_pins = parse((OUT / "BACKEND_SOURCE_API.json").read_bytes())
+require(backend_pins["tree"] == TREE and len(backend_pins["source"]) == 5, "backend source pins")
+for name, pin in backend_pins["source"].items():
+    raw = (backend / "source" / name).read_bytes()
+    require(pin["mode"] == "100644" and pin["size"] == len(raw) and pin["sha"] == hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest(), "backend source body")
+lock = tomllib.loads((backend / "source/codex-rs/Cargo.lock").read_text())
+sha_node = next(p for p in lock["package"] if p["name"] == "sha2" and p["version"] == "0.10.9")
+require(sha_node["checksum"] == "a7507d819769d01a365ab707794a4084392c824f54a7a6a7862f8c3d0892b283" and not any(p["name"] == "sha2-asm" for p in lock["package"]), "locked backend identity")
+crate = backend / "locked-sha2-0.10.9/sha2-0.10.9.crate"
+require(file_identity(crate) == {"bytes": 29271, "sha256": sha_node["checksum"]}, "original registry archive checksum")
+backend_receipt = parse((backend / "BACKEND_SOURCE_AND_GRAPH.json").read_bytes())
+with tarfile.open(crate, "r:gz") as tar:
+    members = tar.getmembers()
+    require(len({m.name for m in members}) == len(members), "unique crate member names")
+    for item in backend_receipt["locked_registry_archive"]["members"]:
+        member = tar.getmember(item["archive_path"])
+        require(member.isfile(), "regular crate source")
+        raw = tar.extractfile(member).read()
+        require(ident(raw) == {k: item[k] for k in ["bytes", "sha256"]}, "crate source identity")
+        local = backend / "locked-sha2-0.10.9" / item["archive_path"].removeprefix("sha2-0.10.9/")
+        require(local.read_bytes() == raw, "reviewed backend bytes")
+backend_select = (backend / "locked-sha2-0.10.9/src/sha256.rs").read_text()
+require('else if #[cfg(all(feature = "asm", target_arch = "aarch64"))]' in backend_select, "reviewed AArch64 condition")
+owner = parse((SOURCE / "AUDITED_TERMINAL_FACTS.json").read_bytes())
+require(owner["read_and_validation_spans"]["events"] == events and owner["read_and_validation_spans"]["phases"] == dict(phases), "independently rebuilt timing matches owner")
+
+full = artifacts[13551822425]
+require(full["size_in_bytes"] == 1788250243 and full["digest"] == "sha256:d4cecf710a2dfc2c9f2ad8ac2991a51bdcd1c2ba819609a4e48b3120164d85fa", "full artifact API identity")
+receipt = {
+    "observed_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    "source_head": HEAD, "source_tree": TREE, "workflow_merge": MERGE,
+    "prepared_native_worktree_commit": native_head, "prepared_native_worktree_tree": native_tree,
+    "run_id": run["id"], "attempt": 1, "job_id": job["id"], "job_conclusion": "failure",
+    "nine_source_pins_API": file_identity(OUT / "SOURCE_API.json"),
+    "archives": archive_identities, "all_four_zip_members_CRC_verified": True,
+    "declared_selected_files": len(verified), "selected_bytes": selected_bytes,
+    "all_member_sizes_SHA256_CRC32_and_retained_bytes_verified": True,
+    "source_catalogue_entries": len(catalogue), "categories": dict(Counter(r["category"] for r in catalogue)),
+    "all_catalogue_classifications_recomputed": True, "original_bounds": bounds,
+    "build_stage": {"status": build["status"], "source_clean": True, "seed_unchanged": True, "nextest_lists": list_records},
+    "business_result": {"native_tests_run": 1, "passed": 0, "timed_out": 1, "filtered_out": 8, "stderr": ident(stderr), "junit": ident(junit), "error": "original nextest 1200-second timeout", "last_stage": "post_ready_record_b:start", "next_stage_not_observed": "post_ready_sync_a:start", "just_exit_code": 100, "wall_seconds": end["wall_seconds"], "aggregate_child_cpu_seconds": end["child_cpu_seconds"]},
+    "previous_secret_capability_newline_stage": "Advanced beyond original failure through encrypted rooms, pair start and ready; business remains failed.",
+    "retained_subset_files": sum(1 for p in VIEW.rglob("*") if p.is_file()),
+    "timing": {"completed_calls": 36, "starts": 37, "elapsed_ms": 692469, "bytes": 10544121936, "phases": dict(phases), "incomplete_span": pending},
+    "actual_compilation": {"compiler_stream": ident(compiler_raw), "arm_sha2_artifact": arm_sha[0], "host_rustc": ident(rustc)},
+    "backend_inference": "Verified sha2 0.10.9 source plus the actual AArch64 compiler feature set select the software backend. CPU SHA2 HWCAP and future performance remain unobserved.",
+    "backend_source_API": file_identity(OUT / "BACKEND_SOURCE_API.json"),
+    "original_registry_archive": file_identity(crate),
+    "frozen_owner_files_verified": {"files": 185, "bytes": 97744506, "freeze": file_identity(SOURCE / "FREEZE.json")},
+    "full_artifact_API_only": {k: full[k] for k in ["id", "name", "size_in_bytes", "digest"]},
+    "limits": ["No new native or scanner execution. The two archives were independently read without extracting another view.", "The prepared worktree has a distinct ephemeral commit with the exact source tree; it is not claimed to have the workflow merge commit.", "The full 1.79 GB artifact was not downloaded, independently hashed or reconstructed. Excluded entries have metadata only.", "Build/store and declared diagnostic export stages qualify at this source. The business test and overall job fail; eight filtered cases are not passes."],
+    "timing_limits": ["The 692.469 seconds measure completed original file reads plus validation; CPU hashing and other validation are not isolated.", "The 115.381-second enclosing record-A stage is not added to the nested hash spans.", "The current run stops before sync A; this does not explain all historical timeouts or prove the proposed acceleration.", "No retry, environment, original assertion, timeout or profile changed."],
+    "owner_validation_identity": file_identity(SOURCE / "PROJECTION_PAYLOAD_VALIDATION.json"),
+
+}
+with (OUT / "ROOT_REVIEW.json").open("x") as stream:
+    stream.write(json.dumps(receipt, indent=2) + "\n")
+print(json.dumps({"selected_files": len(verified), "selected_bytes": selected_bytes, "catalogue_entries": len(catalogue), "build_store_stage": "passed", "business": "failed", "receipt": file_identity(OUT / "ROOT_REVIEW.json")}))

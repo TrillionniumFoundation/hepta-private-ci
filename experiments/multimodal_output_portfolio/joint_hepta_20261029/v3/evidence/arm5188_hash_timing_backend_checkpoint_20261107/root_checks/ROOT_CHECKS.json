@@ -1,0 +1,131 @@
+{
+  "observed_at_utc": "2026-11-07T02:08:51.684343+00:00",
+  "scope": "All 59 pre-existing publication payload files. This receipt and six captured output files are additional evidence, not self-tested payload.",
+  "publication_files": 66,
+  "checks": [
+    {
+      "command": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_checkpoint_root/review.py",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/restore.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_checkpoint_root/review.py",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/restore.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 26,
+        "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "codespell_lib",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/INDEX.json",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/README.md",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part000.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part001.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part002.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part003.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part004.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part005.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part006.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part007.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part008.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part009.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part010.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part011.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part012.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part013.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part014.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part015.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part016.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part017.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part018.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part019.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part020.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part021.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part022.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part023.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part024.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part025.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part026.gz",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/restore.py",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ARM5188_HASH_TIMING_BACKEND_EVIDENCE_PUBLICATION_V2.json",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/READER_SUCCESSOR_REVIEW.json",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ARM5188_HASH_TIMING_BACKEND_IN_MEMORY_VERIFICATION.json",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ARM5188_HASH_TIMING_BACKEND_EVIDENCE_PUBLICATION.json",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/restore.py",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_checkpoint_root/INITIAL_READER_FORMAT_FAILURE.json",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/prepare.py",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/reader-format.patch",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_checkpoint_root/ROOT_REVIEW.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_checkpoint_root/READER_SOURCE_API.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_checkpoint_root/review.py",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/check-0.stdout.log",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/check-0.stderr.log",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/check-1.stdout.log",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/check-1.stderr.log",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/codespell.stdout.log",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/codespell.stderr.log",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/BACKEND_SOURCE_API.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/CODESPELL.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/ROOT_REVIEW.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/SOURCE_API.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/codespell.stderr",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/codespell.stdout",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/fresh_api_0.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/fresh_api_1.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/fresh_api_2.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/fresh_api_3.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/fresh_api_4.json",
+        "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_root/review.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "new_codespell_ignores_or_skips": false,
+  "HOME_inherited": true
+}

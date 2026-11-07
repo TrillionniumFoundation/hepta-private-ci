@@ -1,0 +1,172 @@
+{
+  "scope": "A format-only successor reader, with the unchanged evidence INDEX and all archive bytes. No archive rebuild, disk restore or native execution.",
+  "v1_publication": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/ARM5188_HASH_TIMING_BACKEND_EVIDENCE_PUBLICATION.json",
+    "bytes": 21152,
+    "sha256": "2ce9c38ff826e30061ee926776aee32866eeff83d0976150bdc16dffedd7fcd4",
+    "git_blob": "2080e83626e16487e78b01b13eb07ba4ee0aefbd"
+  },
+  "v1_reader": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/restore.py",
+    "bytes": 6656,
+    "sha256": "6f0de4ed81d8fb04242d58c29c2b2d866cf3903f76695c8bcca003d40be60a7c",
+    "git_blob": "8f62ddac2f0274eba0ce4516923940b43eff8208"
+  },
+  "initial_root_format_failure": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_checkpoint_root/INITIAL_READER_FORMAT_FAILURE.json",
+    "bytes": 1142,
+    "sha256": "607ca4572669a745d2af41af0a39fce0ebd8aa6cc2a3ad279c23939f2afdbe05",
+    "git_blob": "821362bd272af606c8177b05297d6d0a5ce285ce",
+    "exit_code": 1,
+    "scope": "Original root merged exec output, not separately captured stdout/stderr; retained unchanged."
+  },
+  "published_canonical_reader": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_native/sdk_product_evidence_20261106/restore.py",
+    "bytes": 6899,
+    "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+    "git_blob": "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1",
+    "binding": {
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_checkpoint_root/READER_SOURCE_API.json",
+      "bytes": 556,
+      "sha256": "8ce4b583eefb979c79fbe3db36864a3e16cdf2cf7d2e366d25a78f77ad242287",
+      "git_blob": "a1ef1fcc3dcfd315c11200b776aee69e594da5d0"
+    }
+  },
+  "v2_reader": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/restore.py",
+    "bytes": 6899,
+    "sha256": "d4ca355cbc8fee3dcc1952bfebf6f60da5ff49f201682cad26b7e0184800e7cd",
+    "git_blob": "4d23f6fb49b751696b9d04c3f78e0f2a0a842bd6"
+  },
+  "canonical_source_only_changed_field": "EXPECTED_INDEX_SHA256",
+  "canonical_reverse_seal_substitution_byte_identical": true,
+  "v1_to_v2_entire_ast_identical_including_seal": true,
+  "all_bounds_and_restore_behavior_unchanged": true,
+  "unchanged_index": {
+    "bytes": 91537,
+    "sha256": "d778f5e8990f2abdcfaf304740018cd627c62a98df474b3d2277b01ce244c57b",
+    "git_blob": "fec4804bee3bce405b15f77f357ecf88200df036"
+  },
+  "unchanged_part_count": 27,
+  "unchanged_original_file_count": 236,
+  "unchanged_original_file_bytes": 106266595,
+  "canonical_read_package_in_memory_pass": true,
+  "complete_member_set_bytes_and_original_modes_match": true,
+  "disk_restore_executed": false,
+  "ruff": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/restore.py"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/restore.py"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 25,
+        "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50",
+        "git_blob": "5e122f397b6d5d61b45621051851165eadce6a78"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    }
+  ],
+  "codespell": {
+    "version": "2.4.3",
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/INDEX.json",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/README.md",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part000.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part001.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part002.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part003.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part004.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part005.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part006.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part007.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part008.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part009.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part010.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part011.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part012.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part013.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part014.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part015.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part016.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part017.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part018.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part019.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part020.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part021.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part022.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part023.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part024.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part025.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/native-evidence.tar.xz.part026.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_reader_format_v2/restore.py"
+    ],
+    "cwd": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5188_hash_timing_backend_checkpoint_20261107",
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "scope": "Exactly all 30 publication files, replacing only the reader source path; original repository configuration and exclusions, no new skip.",
+    "configuration": {
+      ".codespellrc": {
+        "bytes": 471,
+        "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+        "git_blob": "663be376c7381108af0a41eafc3dd08f27125d96"
+      },
+      ".codespellignore": {
+        "bytes": 69,
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      ".codespell-exclude-lines": {
+        "bytes": 20003,
+        "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+        "git_blob": "490e840301fdfae10d6e40c44a566ff16f82e324"
+      }
+    }
+  },
+  "v1_bundle_manifest_and_freeze_not_modified": true
+}

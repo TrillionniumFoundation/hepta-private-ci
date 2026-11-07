@@ -1,0 +1,83 @@
+{
+  "observed_at_utc": "2026-11-07T02:06:08.588574+00:00",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-O",
+    "/workspace/scratch/3f6a885bb83c/round3_local_qualification/arm5188_checkpoint_root/review.py"
+  ],
+  "interpreter_optimized": true,
+  "publication_v1": {
+    "bytes": 21152,
+    "sha256": "2ce9c38ff826e30061ee926776aee32866eeff83d0976150bdc16dffedd7fcd4",
+    "git_blob": "2080e83626e16487e78b01b13eb07ba4ee0aefbd"
+  },
+  "publication_v2": {
+    "bytes": 25885,
+    "sha256": "fa71cf1cf48f98cebbefea74913db1a2d877a66f9b0260adb70eac2d467bc535",
+    "git_blob": "065fc2ec7345d5a146efc7674d3b80e914052e78"
+  },
+  "index": {
+    "bytes": 91537,
+    "sha256": "d778f5e8990f2abdcfaf304740018cd627c62a98df474b3d2277b01ce244c57b",
+    "git_blob": "fec4804bee3bce405b15f77f357ecf88200df036"
+  },
+  "reader": {
+    "bytes": 6899,
+    "sha256": "d4ca355cbc8fee3dcc1952bfebf6f60da5ff49f201682cad26b7e0184800e7cd",
+    "git_blob": "4d23f6fb49b751696b9d04c3f78e0f2a0a842bd6"
+  },
+  "published_reader_template": {
+    "bytes": 6899,
+    "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+    "git_blob": "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1"
+  },
+  "reader_source_API": {
+    "bytes": 556,
+    "sha256": "8ce4b583eefb979c79fbe3db36864a3e16cdf2cf7d2e366d25a78f77ad242287",
+    "git_blob": "a1ef1fcc3dcfd315c11200b776aee69e594da5d0"
+  },
+  "initial_reader_format_failure": {
+    "bytes": 1142,
+    "sha256": "607ca4572669a745d2af41af0a39fce0ebd8aa6cc2a3ad279c23939f2afdbe05",
+    "git_blob": "821362bd272af606c8177b05297d6d0a5ce285ce"
+  },
+  "owner_reader_successor_review": {
+    "bytes": 9851,
+    "sha256": "223ec366c7d96ceb81c1f3890b64becadcbc2e5e0749163a6d1df363073eb43d",
+    "git_blob": "6521973a38eae8a672a6fecf12fe309eee6a6a12"
+  },
+  "original_freeze": {
+    "bytes": 49387,
+    "sha256": "9fef493ab90f11d29ca56fae62f7914c1c770868b5650bb5cf0449933fd683cd",
+    "git_blob": "7a55c23566cb05efd5421c59b69b731263321026"
+  },
+  "independent_native_audit": {
+    "bytes": 8948,
+    "sha256": "93ef445e2b8f7abb074592e79a08c8567203d987c03a83134b5f31562c710820",
+    "git_blob": "5e478b1f6a6f2c1a5f257425bde9ce9286aaf5e9"
+  },
+  "canonical_reader_only_seal_changed": true,
+  "v1_v2_full_AST_equal": true,
+  "publication_only_one_reader_row_changed": true,
+  "complete_recovered_files": 236,
+  "complete_recovered_bytes": 106266595,
+  "all_member_bytes_git_blobs_and_original_modes_equal": true,
+  "original_frozen_inputs_unchanged": 185,
+  "retained_frozen_originals": 183,
+  "private_console_originals_excluded": 2,
+  "native_job_conclusion": "failure",
+  "native_business_passes": 0,
+  "artifact_selected_view_files": 1447,
+  "artifact_catalogue_entries": 84421,
+  "restored_to_disk": false,
+  "archive_sources_executed": false,
+  "native_commands_or_scanner_reexecuted": false,
+  "limits": [
+    "This review verifies lossless packet recovery in memory; it does not claim an expanded disk restore.",
+    "Original input modes are evidence only. The canonical restore program writes regular 0644 files.",
+    "The 1.79 GB whole artifact retains API identity only. Both original narrow ZIPs and the complete selected view are retained.",
+    "The original native job and business case remain failed. Timing measures original file reads plus validation, not isolated hash CPU time.",
+    "The reader successor and root companions are outside the already frozen 236-member INDEX; no earlier evidence was rewritten."
+  ]
+}

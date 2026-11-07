@@ -1,0 +1,260 @@
+{
+  "observed_at_utc": "2026-11-07T00:53:30.362476+00:00",
+  "source_head": "5043c1a1937200edb5b34d044425e39f5dfd3281",
+  "source_tree": "f7b0144a48fbc5c2f9947e8ae0570c839bc3e6b3",
+  "workflow_merge": "f2561f47864d85fc3707bd8c1a2cccb4940c9950",
+  "prepared_native_worktree_commit": "269225b2622d7e642e53b7cb733875c84fe7bc8a",
+  "prepared_native_worktree_tree": "f7b0144a48fbc5c2f9947e8ae0570c839bc3e6b3",
+  "run_id": 42312327246,
+  "attempt": 1,
+  "job_id": 128217534470,
+  "job_conclusion": "failure",
+  "nine_source_pins_API": {
+    "bytes": 3391,
+    "sha256": "297ffb12c0dd3362aa06b0746a1574f66d3232804a483eea5534629252e969f7"
+  },
+  "archives": {
+    "manifest-artifact.zip": {
+      "bytes": 21231446,
+      "sha256": "3fa1b86a0282bb9d967a12da5e92e4042a18ba5e68939437d86cf5be568caf49",
+      "artifact_id": 13551626880
+    },
+    "part-artifact.zip": {
+      "bytes": 69427346,
+      "sha256": "27d7ccf1b1baaf715dd988eb2750f80eb3e6d557ba2ff73139f4122206306008",
+      "artifact_id": 13551158728
+    }
+  },
+  "all_four_zip_members_CRC_verified": true,
+  "declared_selected_files": 1447,
+  "selected_bytes": 68383939,
+  "all_member_sizes_SHA256_CRC32_and_retained_bytes_verified": true,
+  "source_catalogue_entries": 84421,
+  "categories": {
+    "selected": 1447,
+    "other-suffix": 349,
+    "preparation/prefetch/cargo-home/": 82625
+  },
+  "all_catalogue_classifications_recomputed": true,
+  "original_bounds": {
+    "max_files": 5000,
+    "max_path_bytes": 1024,
+    "part_bytes": 134217728,
+    "max_parts": 8
+  },
+  "build_stage": {
+    "status": "built_not_executed",
+    "source_clean": true,
+    "seed_unchanged": true,
+    "nextest_lists": [
+      {
+        "arguments": [
+          "nextest",
+          "list",
+          "--list-type",
+          "binaries-only",
+          "--message-format",
+          "json",
+          "--cargo-metadata",
+          "/hepta-build/cargo-metadata.json",
+          "--tool-config-file",
+          "hepta-linux-build:/hepta-build/nextest-build.toml",
+          "--locked",
+          "--offline",
+          "--target",
+          "aarch64-unknown-linux-gnu",
+          "--cargo-profile",
+          "test",
+          "-p",
+          "codex-hepta-matrixd",
+          "--features",
+          "real-synapse-e2e",
+          "--test",
+          "real_synapse_e2e"
+        ],
+        "exit_code": 0,
+        "stdout": {
+          "bytes": 2364,
+          "path": "026-frozen-test-binaries-metadata.stdout",
+          "sha256": "566bce689b87c880f0776367d995e03103ae25c592d1375ec3876224c137b1f1"
+        },
+        "stderr": {
+          "bytes": 15208,
+          "path": "026-frozen-test-binaries-metadata.stderr",
+          "sha256": "c396abdc1229390cf3fe55ea68ca1b9fbbd05a03418050651ce779fa8e3fb8cc"
+        },
+        "executable": {
+          "bytes": 18241504,
+          "path": "/hepta-tools/cargo-nextest",
+          "sha256": "e51dcc9f12176d9fd010334abcca79d31ea6a2a50cbdbe31032a4371fb04820d"
+        }
+      },
+      {
+        "arguments": [
+          "nextest",
+          "list",
+          "--cargo-metadata",
+          "/hepta-build/cargo-metadata.json",
+          "--binaries-metadata",
+          "/hepta-build/binaries-metadata.json",
+          "--tool-config-file",
+          "hepta-linux-build:/hepta-build/nextest-build.toml",
+          "--message-format",
+          "json"
+        ],
+        "exit_code": 0,
+        "stdout": {
+          "bytes": 3615,
+          "path": "027-cold-full-test-inventory.stdout",
+          "sha256": "05cab326d72702f941d3842e560599fc78910c0d9d8903570ef5ae2a1840f0a0"
+        },
+        "stderr": {
+          "bytes": 107,
+          "path": "027-cold-full-test-inventory.stderr",
+          "sha256": "a6d829a550a32969e551980547a6fc9cce09b68532f7a29ab3328a55d26692d1"
+        },
+        "executable": {
+          "bytes": 18241504,
+          "path": "/hepta-tools/cargo-nextest",
+          "sha256": "e51dcc9f12176d9fd010334abcca79d31ea6a2a50cbdbe31032a4371fb04820d"
+        }
+      }
+    ]
+  },
+  "business_result": {
+    "native_tests_run": 1,
+    "passed": 0,
+    "timed_out": 1,
+    "filtered_out": 8,
+    "stderr": {
+      "bytes": 10687,
+      "sha256": "94730b4446f6582b1daffc872b227802e52e016bddb65edb2a2d4aeac20d8c4a"
+    },
+    "junit": {
+      "bytes": 8262,
+      "sha256": "eb24fb3dffe26b8eef60303fec48631871ac155a4e70597c817ab895a5e8aaaa"
+    },
+    "error": "original nextest 1200-second timeout",
+    "last_stage": "post_ready_record_b:start",
+    "next_stage_not_observed": "post_ready_sync_a:start",
+    "just_exit_code": 100,
+    "wall_seconds": 1200.221839199,
+    "aggregate_child_cpu_seconds": 1198.277491
+  },
+  "previous_secret_capability_newline_stage": "Advanced beyond original failure through encrypted rooms, pair start and ready; business remains failed.",
+  "retained_subset_files": 137,
+  "timing": {
+    "completed_calls": 36,
+    "starts": 37,
+    "elapsed_ms": 692469,
+    "bytes": 10544121936,
+    "phases": {
+      "install": {
+        "completed_calls": 18,
+        "elapsed_ms": 346255,
+        "bytes": 5272060968
+      },
+      "start": {
+        "completed_calls": 12,
+        "elapsed_ms": 230813,
+        "bytes": 3514707312
+      },
+      "record_a": {
+        "completed_calls": 4,
+        "elapsed_ms": 76847,
+        "bytes": 1171569104
+      },
+      "record_b": {
+        "completed_calls": 2,
+        "elapsed_ms": 38554,
+        "bytes": 585784552
+      }
+    },
+    "incomplete_span": "release executable identity"
+  },
+  "actual_compilation": {
+    "compiler_stream": {
+      "bytes": 1166215,
+      "sha256": "e9bd9e667da13fafbe1cfbbcad58325aa43a5c5fa9686cbb39f414e1bc20f747"
+    },
+    "arm_sha2_artifact": {
+      "reason": "compiler-artifact",
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#sha2@0.10.9",
+      "manifest_path": "/hepta-build/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.10.9/Cargo.toml",
+      "target": {
+        "kind": [
+          "lib"
+        ],
+        "crate_types": [
+          "lib"
+        ],
+        "name": "sha2",
+        "src_path": "/hepta-build/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.10.9/src/lib.rs",
+        "edition": "2018",
+        "doc": true,
+        "doctest": true,
+        "test": true
+      },
+      "profile": {
+        "opt_level": "0",
+        "debuginfo": 0,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "features": [
+        "default",
+        "std"
+      ],
+      "filenames": [
+        "/hepta-build/cold-test/aarch64-unknown-linux-gnu/debug/deps/libsha2-83521fdd5b594e78.rlib",
+        "/hepta-build/cold-test/aarch64-unknown-linux-gnu/debug/deps/libsha2-83521fdd5b594e78.rmeta"
+      ],
+      "executable": null,
+      "fresh": false
+    },
+    "host_rustc": {
+      "bytes": 197,
+      "sha256": "f77b0143371b8a220549f762eacd32249d05c8c34f767890aef5fff616c3a07a"
+    }
+  },
+  "backend_inference": "Verified sha2 0.10.9 source plus the actual AArch64 compiler feature set select the software backend. CPU SHA2 HWCAP and future performance remain unobserved.",
+  "backend_source_API": {
+    "bytes": 1785,
+    "sha256": "2157b822963c24e7e2345a6baa3708c7c4b94ea24425e0d51bd3bc2f49a5b368"
+  },
+  "original_registry_archive": {
+    "bytes": 29271,
+    "sha256": "a7507d819769d01a365ab707794a4084392c824f54a7a6a7862f8c3d0892b283"
+  },
+  "frozen_owner_files_verified": {
+    "files": 185,
+    "bytes": 97744506,
+    "freeze": {
+      "bytes": 49387,
+      "sha256": "9fef493ab90f11d29ca56fae62f7914c1c770868b5650bb5cf0449933fd683cd"
+    }
+  },
+  "full_artifact_API_only": {
+    "id": 13551822425,
+    "name": "ndu-native-synapse-arm64-42312327246-1",
+    "size_in_bytes": 1788250243,
+    "digest": "sha256:d4cecf710a2dfc2c9f2ad8ac2991a51bdcd1c2ba819609a4e48b3120164d85fa"
+  },
+  "limits": [
+    "No new native or scanner execution. The two archives were independently read without extracting another view.",
+    "The prepared worktree has a distinct ephemeral commit with the exact source tree; it is not claimed to have the workflow merge commit.",
+    "The full 1.79 GB artifact was not downloaded, independently hashed or reconstructed. Excluded entries have metadata only.",
+    "Build/store and declared diagnostic export stages qualify at this source. The business test and overall job fail; eight filtered cases are not passes."
+  ],
+  "timing_limits": [
+    "The 692.469 seconds measure completed original file reads plus validation; CPU hashing and other validation are not isolated.",
+    "The 115.381-second enclosing record-A stage is not added to the nested hash spans.",
+    "The current run stops before sync A; this does not explain all historical timeouts or prove the proposed acceleration.",
+    "No retry, environment, original assertion, timeout or profile changed."
+  ],
+  "owner_validation_identity": {
+    "bytes": 24840,
+    "sha256": "0d552f3ff9df6f761f43362fbb824114916da321e847d993e90f778aaad68933"
+  }
+}

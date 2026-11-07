@@ -1,0 +1,139 @@
+"""Bind the published formatted reader to the unchanged ARM evidence archive."""
+
+import ast
+import copy
+import difflib
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import stat
+import subprocess
+import sys
+
+
+if not __debug__:
+    raise SystemExit("READER_SUCCESSOR_CHECKS_REQUIRE_ASSERTIONS")
+sys.dont_write_bytecode = True
+HERE = Path(__file__).resolve().parent
+CI = HERE.parent
+WORK = CI.parent
+V1_PATH = CI / "ARM5188_HASH_TIMING_BACKEND_EVIDENCE_PUBLICATION.json"
+SOURCE = WORK / "round3_native/sdk_product_evidence_20261106/restore.py"
+PACKAGE = CI / "arm5188_hash_timing_backend_checkpoint_20261107"
+INDEX_SEAL = "d778f5e8990f2abdcfaf304740018cd627c62a98df474b3d2277b01ce244c57b"
+ROOT_NOTE = WORK / "round3_local_qualification/arm5188_checkpoint_root/INITIAL_READER_FORMAT_FAILURE.json"
+ROOT_SOURCE = ROOT_NOTE.parent / "READER_SOURCE_API.json"
+CONFIG = CI / "vodozemac_recipe_experiment/review-source"
+
+
+def identity(raw):
+    return {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(), "git_blob": hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()}
+
+
+def sealed_value(raw):
+    tree = ast.parse(raw)
+    matches = [node.value.value for node in tree.body if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name) and node.targets[0].id == "EXPECTED_INDEX_SHA256"]
+    assert len(matches) == 1 and isinstance(matches[0], str)
+    return matches[0]
+
+
+v1_raw = V1_PATH.read_bytes()
+assert identity(v1_raw)["sha256"] == "2ce9c38ff826e30061ee926776aee32866eeff83d0976150bdc16dffedd7fcd4"
+v1 = json.loads(v1_raw)
+index_raw = (PACKAGE / "INDEX.json").read_bytes()
+assert identity(index_raw)["sha256"] == INDEX_SEAL
+old_reader = (PACKAGE / "restore.py").read_bytes()
+source = SOURCE.read_bytes()
+assert len(source) == 6899 and identity(source)["sha256"] == "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d"
+source_api = json.loads(ROOT_SOURCE.read_bytes())
+source_leaf = next(iter(source_api["leaves"].values()))
+assert source_leaf["mode"] == "100644" and source_leaf["size"] == len(source)
+assert source_leaf["sha"] == identity(source)["git_blob"] == "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1"
+old_source_seal = sealed_value(source)
+assert source.count(old_source_seal.encode()) == 1
+reader = source.replace(old_source_seal.encode(), INDEX_SEAL.encode())
+assert reader.replace(INDEX_SEAL.encode(), old_source_seal.encode()) == source
+assert sealed_value(old_reader) == sealed_value(reader) == INDEX_SEAL
+assert ast.dump(ast.parse(old_reader), include_attributes=False) == ast.dump(ast.parse(reader), include_attributes=False)
+reader_path = HERE / "restore.py"
+assert not reader_path.exists()
+reader_path.write_bytes(reader)
+(HERE / "reader-format.patch").write_text("".join(difflib.unified_diff(old_reader.decode().splitlines(True), reader.decode().splitlines(True), fromfile="v1/restore.py", tofile="v2/restore.py")))
+for row in v1["files"]:
+    raw = Path(row["source_file"]).read_bytes()
+    assert identity(raw) == {key: row[key] for key in ("bytes", "sha256", "git_blob")}
+module_spec = importlib.util.spec_from_file_location("arm5188_formatted_reader", reader_path)
+assert module_spec and module_spec.loader
+module = importlib.util.module_from_spec(module_spec)
+module_spec.loader.exec_module(module)
+index, payloads = module.read_package(PACKAGE)
+assert index == json.loads(index_raw)
+assert len(payloads) == len(index["files"]) == 236
+for row in index["files"]:
+    original = WORK / row["path"]
+    info = original.lstat()
+    assert stat.S_ISREG(info.st_mode) and not original.is_symlink()
+    assert payloads[row["path"]] == original.read_bytes()
+    assert format(stat.S_IMODE(info.st_mode), "04o") == row["original_mode"]
+assert sum(len(raw) for raw in payloads.values()) == 106266595
+commands = [
+    [str(CI / "ruff_tooling/ruff"), "check", "--config", str(CI / "ruff_tooling/pyproject.toml"), str(reader_path)],
+    [str(CI / "ruff_tooling/ruff"), "format", "--check", "--config", str(CI / "ruff_tooling/pyproject.toml"), str(reader_path)],
+]
+checks = []
+for number, argv in enumerate(commands):
+    result = subprocess.run(argv, cwd=WORK, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+    (HERE / f"check-{number}.stdout.log").write_bytes(result.stdout)
+    (HERE / f"check-{number}.stderr.log").write_bytes(result.stderr)
+    checks.append({"argv": argv, "exit_code": result.returncode, "stdout": identity(result.stdout), "stderr": identity(result.stderr)})
+    assert result.returncode == 0
+spell_files = [str(reader_path) if row["path"] == "restore.py" else row["source_file"] for row in v1["files"]]
+assert len(spell_files) == 30
+spell_argv = [sys.executable, "-m", "codespell_lib", "--ignore-words", ".codespellignore", "--skip", "./.git", *spell_files]
+spell = subprocess.run(spell_argv, cwd=PACKAGE, env={**os.environ, "PYTHONPATH": str(WORK / "tooling/codespell-2.4.3")}, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+(HERE / "codespell.stdout.log").write_bytes(spell.stdout)
+(HERE / "codespell.stderr.log").write_bytes(spell.stderr)
+assert spell.returncode == 0
+assert reader_path.read_bytes() == reader
+assert V1_PATH.read_bytes() == v1_raw and (PACKAGE / "INDEX.json").read_bytes() == index_raw
+review = {
+    "scope": "A format-only successor reader, with the unchanged evidence INDEX and all archive bytes. No archive rebuild, disk restore or native execution.",
+    "v1_publication": {"source_file": str(V1_PATH), **identity(v1_raw)},
+    "v1_reader": {"source_file": str(PACKAGE / "restore.py"), **identity(old_reader)},
+    "initial_root_format_failure": {"source_file": str(ROOT_NOTE), **identity(ROOT_NOTE.read_bytes()), "exit_code": 1, "scope": "Original root merged exec output, not separately captured stdout/stderr; retained unchanged."},
+    "published_canonical_reader": {"source_file": str(SOURCE), **identity(source), "binding": {"source_file": str(ROOT_SOURCE), **identity(ROOT_SOURCE.read_bytes())}},
+    "v2_reader": {"source_file": str(reader_path), **identity(reader)},
+    "canonical_source_only_changed_field": "EXPECTED_INDEX_SHA256",
+    "canonical_reverse_seal_substitution_byte_identical": True,
+    "v1_to_v2_entire_ast_identical_including_seal": True,
+    "all_bounds_and_restore_behavior_unchanged": True,
+    "unchanged_index": identity(index_raw),
+    "unchanged_part_count": 27,
+    "unchanged_original_file_count": 236,
+    "unchanged_original_file_bytes": 106266595,
+    "canonical_read_package_in_memory_pass": True,
+    "complete_member_set_bytes_and_original_modes_match": True,
+    "disk_restore_executed": False,
+    "ruff": checks,
+    "codespell": {"version": "2.4.3", "argv": spell_argv, "cwd": str(PACKAGE), "exit_code": spell.returncode, "stdout": identity(spell.stdout), "stderr": identity(spell.stderr), "scope": "Exactly all 30 publication files, replacing only the reader source path; original repository configuration and exclusions, no new skip.", "configuration": {name: identity((CONFIG / name).read_bytes()) for name in (".codespellrc", ".codespellignore", ".codespell-exclude-lines")}},
+    "v1_bundle_manifest_and_freeze_not_modified": True,
+}
+review_path = HERE / "READER_SUCCESSOR_REVIEW.json"
+review_path.write_text(json.dumps(review, indent=2) + "\n")
+v2 = copy.deepcopy(v1)
+v2["revision"] = "v2_formatted_published_reader_same_index_and_parts"
+v2["supersedes_publication_manifest"] = {"source_file": str(V1_PATH), **identity(v1_raw)}
+for row in v2["files"]:
+    if row["path"] == "restore.py":
+        row.update(source_file=str(reader_path), **identity(reader))
+assert sum(a != b for a, b in zip(v1["files"], v2["files"])) == 1
+v2["reader_template"] = {"source_file": str(SOURCE), **identity(source), "only_replacement": "fixed INDEX SHA-256", "already_published_git_blob": source_leaf["sha"]}
+v2["verification"] = {"source_file": str(review_path), **identity(review_path.read_bytes())}
+v2["codespell"] = review["codespell"]
+v2["local_reader_validation"] = "The already published formatted canonical reader differs only in its INDEX seal; full AST equals the first reader. Its read_package recovered all 236 files in memory with identical bytes and original mode inventory. Ruff check/format and Codespell of all 30 publication files passed. No expanded disk restore."
+out = CI / "ARM5188_HASH_TIMING_BACKEND_EVIDENCE_PUBLICATION_V2.json"
+assert not out.exists()
+out.write_text(json.dumps(v2, indent=2) + "\n")
+print(json.dumps({"manifest": str(out), "manifest_sha256": identity(out.read_bytes())["sha256"], "reader_sha256": identity(reader)["sha256"], "review_sha256": identity(review_path.read_bytes())["sha256"], "same_index": INDEX_SEAL, "same_parts": 27, "source_files": 236, "source_bytes": 106266595, "ruff_exit_codes": [r["exit_code"] for r in checks], "codespell_exit": 0, "disk_restore_executed": False}))
