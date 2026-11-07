@@ -1,0 +1,103 @@
+{
+  "reviewed_complete_script": {
+    "path": "/dev/shm/ndu_windows43_packet_audit_20261107/review_windows43_packet.py",
+    "bytes": 30736,
+    "sha256": "623685f95191d78479017ec59853cb41173ba2db2a17656f458b9cd9dabfb8b6"
+  },
+  "checks": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_windows43_packet_audit_20261107/review_windows43_packet.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.015433806998771615,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows43_packet_root_checks/00.stdout",
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows43_packet_root_checks/00.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_windows43_packet_audit_20261107/review_windows43_packet.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.014518425989081152,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows43_packet_root_checks/01.stdout",
+        "bytes": 25,
+        "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows43_packet_root_checks/01.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "codespell_lib",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git",
+        "/dev/shm/ndu_windows43_packet_audit_20261107/review_windows43_packet.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "wall_seconds": 0.10952554999676067,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows43_packet_root_checks/02.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows43_packet_root_checks/02.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-O",
+        "/dev/shm/ndu_windows43_packet_audit_20261107/review_windows43_packet.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.3135725930042099,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows43_packet_root_checks/03.stdout",
+        "bytes": 229,
+        "sha256": "a51c4c11fe2029d1386d63eabc774ae3465814acadcdfee961ef942f5cfc2048"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows43_packet_root_checks/03.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "HOME_inherited": true,
+  "native_execution": false
+}

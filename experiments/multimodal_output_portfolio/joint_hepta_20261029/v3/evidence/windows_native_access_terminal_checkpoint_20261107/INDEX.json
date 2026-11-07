@@ -1,0 +1,1677 @@
+{
+  "format": "native-blocker-evidence-v1",
+  "created_at_utc": "2026-11-07T07:27:33.801850+00:00",
+  "archive_bytes": 2160640,
+  "archive_sha256": "f2f05716b2c3f3d0d72c47036682355ec9aa18a509681ce5ace5c49c9b126a89",
+  "compressed_bytes": 136780,
+  "compressed_sha256": "20b9766688d39fce112092059207bbe7602cd0404d208590f94e9a194eebb965",
+  "parts": [
+    {
+      "name": "native-evidence.tar.xz.part000.gz",
+      "bytes": 136843,
+      "sha256": "a52b3b3cf826939d2e61ad56fba160fcfd18836822238a9b7df84fe348e58b29",
+      "segment_bytes": 136780,
+      "segment_sha256": "20b9766688d39fce112092059207bbe7602cd0404d208590f94e9a194eebb965"
+    }
+  ],
+  "files": [
+    {
+      "path": "round3_core_ci/build_windows43_checkpoint.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/build_windows43_checkpoint.py",
+      "bytes": 15539,
+      "sha256": "2d0ea27cc2c280c059e497aedcc1a0b017948076ec4194a71b154df5d294ed92",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_core_ci/independent_reviews/windows43_api_semantics/REVIEW.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/independent_reviews/windows43_api_semantics/REVIEW.json",
+      "bytes": 2571,
+      "sha256": "4b685bcb5bcec17cc6aaf6220b3672460140d4ec2a2255cf57c467fd1175d350",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_core_ci/independent_reviews/windows43_source_review2/REVIEW.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/independent_reviews/windows43_source_review2/REVIEW.json",
+      "bytes": 5820,
+      "sha256": "4fa8b51894f0b961c775caf9542eaff9f53bdbd6d54be6e7a3222ef21f30b6e5",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_core_ci/independent_reviews/windows43_source_review2/REVIEW3_ADDENDUM.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/independent_reviews/windows43_source_review2/REVIEW3_ADDENDUM.json",
+      "bytes": 4010,
+      "sha256": "e670387b361ae7b320bbab06d095c3e274f54d74d830b70874dc2d00aea1026a",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_core_ci/select_windows43_checkpoint.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/select_windows43_checkpoint.py",
+      "bytes": 14367,
+      "sha256": "ad5390d981dc8cfe3ff14fbfbbfc1afab816402f3a9a3c325468a9efbca8a3ba",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/core35_windows43_audit_checks/ROOT_CHECKS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/core35_windows43_audit_checks/ROOT_CHECKS.json",
+      "bytes": 5922,
+      "sha256": "6ccb399833b7b92431c4ac6512396ac560a5909febca269976223264be96a5a9",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/core35_windows43_audit_checks/codespell.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/core35_windows43_audit_checks/codespell.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/core35_windows43_audit_checks/codespell.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/core35_windows43_audit_checks/codespell.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/core35_windows43_audit_checks/format.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/core35_windows43_audit_checks/format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/core35_windows43_audit_checks/format.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/core35_windows43_audit_checks/format.stdout",
+      "bytes": 26,
+      "sha256": "eee76f865de5a9f2456950f710ae5d5f9b5bd0ea02aa54f614c5eed6642a0bfd",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/core35_windows43_audit_checks/ruff.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/core35_windows43_audit_checks/ruff.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/core35_windows43_audit_checks/ruff.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/core35_windows43_audit_checks/ruff.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/review_windows43.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/review_windows43.py",
+      "bytes": 12581,
+      "sha256": "0307d0746bb84fc9b19e14dc381c541bdb820f7f74ce2e6dbd931306ffa942f6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/review_windows43_terminal.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/review_windows43_terminal.py",
+      "bytes": 17767,
+      "sha256": "7adbbbce2720edbaba29e66b076d27052cfb9530d5fc6ac8900e545237bb46ba",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43/ROOT_REVIEW.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43/ROOT_REVIEW.json",
+      "bytes": 73048,
+      "sha256": "6200b1d95c133ef443828efcc195fbd98f660c5df58095566325f5e4a1ecbda4",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43/just-fmt.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43/just-fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43/just-fmt.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43/just-fmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_source_checks/0.stderr.log",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_source_checks/0.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_source_checks/0.stdout.log",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_source_checks/0.stdout.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_source_checks/1.stderr.log",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_source_checks/1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_source_checks/1.stdout.log",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_source_checks/1.stdout.log",
+      "bytes": 25,
+      "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_source_checks/2.stderr.log",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_source_checks/2.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_source_checks/2.stdout.log",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_source_checks/2.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_source_checks/ROOT_CHECKS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_source_checks/ROOT_CHECKS.json",
+      "bytes": 4932,
+      "sha256": "36f613f8a145cd0a7068566106f3b3fb7e3acf60fd8936da2f484974202a9eda",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_source_execution/EXECUTION.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_source_execution/EXECUTION.json",
+      "bytes": 497,
+      "sha256": "5d6a6fd5cb33d88ee40e96f1087fd13ec9c8b8f79dd37965f5eb7b4a4619486e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_source_execution/stderr.log",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_source_execution/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_source_execution/stdout.log",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_source_execution/stdout.log",
+      "bytes": 183,
+      "sha256": "383018383a8fb890a2daee28b92b15677b438d5efef8dd30b028808c0b20708d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_terminal_execution/EXECUTION.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_terminal_execution/EXECUTION.json",
+      "bytes": 515,
+      "sha256": "36dfdb932a5351bba68a126970387ea26d4dae1bb4d3c1dfad412d5ea37d218f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_terminal_execution/stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_terminal_execution/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_terminal_execution/stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_terminal_execution/stdout",
+      "bytes": 261,
+      "sha256": "004ed7a846c3e86ae13439ba0db05e5e1cd758c17725b7414a11996f8b786811",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows43_terminal_root/ROOT_REVIEW.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_local_qualification/windows43_terminal_root/ROOT_REVIEW.json",
+      "bytes": 9943,
+      "sha256": "89e385093775b49208bff9de85b802a5afa564793c6c0567c1187848c6fcec32",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_mirror_receipts/windows43_source_20261107.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_mirror_receipts/windows43_source_20261107.json",
+      "bytes": 1096,
+      "sha256": "715bfab849a831bafd25bb94348afee9fa8ceea44c6c16a290e8af987fd50ba7",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/HISTORY.md",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows43_safe_checkpoint_inputs/HISTORY.md",
+      "bytes": 3262,
+      "sha256": "0efddee84c7f6006aa2a19f9affd00dc8545a106b785d527f010abeab1299a61",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/RUN_STATUS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows43_safe_checkpoint_inputs/RUN_STATUS.json",
+      "bytes": 2649,
+      "sha256": "35ad46b7c68393a9a71aa2aad61a2ba2d03ee80fcf5d69aa3ac2577659fd4710",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/SELECTED_FILES.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows43_safe_checkpoint_inputs/SELECTED_FILES.json",
+      "bytes": 106248,
+      "sha256": "d98328939406dd4495a5fa17e2b7c16f9ed34f3691c092c7609d97c2f1e6889f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_root_continuation_20261107/round3_win43_native_api.json",
+      "source_path": "/dev/shm/ndu_root_continuation_20261107/round3_win43_native_api.json",
+      "bytes": 167646,
+      "sha256": "8cd0d930f7259ad5a1bddea5b969feeedf78f527ba17fe1e20f1a0984cf3b9dd",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_root_continuation_20261107/round3_win43_native_leaves.json",
+      "source_path": "/dev/shm/ndu_root_continuation_20261107/round3_win43_native_leaves.json",
+      "bytes": 2803,
+      "sha256": "5eda57aa0bff81b57938fe0f236bb792c80c8be65da74959325ca54e6b56e3fe",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_root_continuation_20261107/windows43_terminal_api_update.json",
+      "source_path": "/dev/shm/ndu_root_continuation_20261107/windows43_terminal_api_update.json",
+      "bytes": 10923,
+      "sha256": "e5369965f568bb7e83a28202d3cb7da0c7beb6be687d48b6863bc6d270328aea",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_windows43_20261107/HEAD_COMMIT_API.json",
+      "source_path": "/dev/shm/ndu_windows43_20261107/HEAD_COMMIT_API.json",
+      "bytes": 1368,
+      "sha256": "c5c2dab9f1cbb8154d01d8658a6ce7bab1dd00795b67a1c59468222653b4b9ee",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_windows43_20261107/INITIAL_API_ORCHESTRATION_FAILURE.json",
+      "source_path": "/dev/shm/ndu_windows43_20261107/INITIAL_API_ORCHESTRATION_FAILURE.json",
+      "bytes": 290,
+      "sha256": "4f51c2837ac41363ce56d3b18949c393850c2c57de7ea9d3108edeb39cb94ea4",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_windows43_20261107/INITIAL_NATIVE_STATUS.json",
+      "source_path": "/dev/shm/ndu_windows43_20261107/INITIAL_NATIVE_STATUS.json",
+      "bytes": 1595,
+      "sha256": "79ce48e32569e2d5f024f00d31f31947986c166d0d4a64201e79a7b001ab4c94",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_windows43_20261107/JOBS_OBSERVATION1_API.json",
+      "source_path": "/dev/shm/ndu_windows43_20261107/JOBS_OBSERVATION1_API.json",
+      "bytes": 94872,
+      "sha256": "d29e336faa224b735708111c6bed97c29b8d719ca06d957437899ef201dc4f97",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_windows43_20261107/PR_API.json",
+      "source_path": "/dev/shm/ndu_windows43_20261107/PR_API.json",
+      "bytes": 20696,
+      "sha256": "45edb884df6bf476ca8603da3d929e089ed0b9b6f6e49640a877c6ba4fd45a61",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_windows43_20261107/PR_MERGE_CANDIDATE_API.json",
+      "source_path": "/dev/shm/ndu_windows43_20261107/PR_MERGE_CANDIDATE_API.json",
+      "bytes": 2806,
+      "sha256": "bc0080c1da61e93ef7096d858677a2226e7952570ef200c426ea032ab3614d37",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_windows43_20261107/RUN_DISCOVERY_API.json",
+      "source_path": "/dev/shm/ndu_windows43_20261107/RUN_DISCOVERY_API.json",
+      "bytes": 47239,
+      "sha256": "38c61ee51842cc45c01ebed68f2d1ff52e91b5f529c43aed82ed173ffb99fca7",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_windows43_20261107/RUN_OBSERVATION1_API.json",
+      "source_path": "/dev/shm/ndu_windows43_20261107/RUN_OBSERVATION1_API.json",
+      "bytes": 17078,
+      "sha256": "a9a683aabb1d56abb241e4c30b99fbdd6cb201dafcad7663d1de5a72d2f1649b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_windows43_20261107/SAFE_NATIVE_OBSERVATIONS.json",
+      "source_path": "/dev/shm/ndu_windows43_20261107/SAFE_NATIVE_OBSERVATIONS.json",
+      "bytes": 85666,
+      "sha256": "be68efe3f242a0c9c8b8fb696a356aa3f1bbc32ae21e50b6e677cde1e17d9fb3",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows43_safe_checkpoint_inputs/external_originals/ndu_windows43_20261107/read_initial_status.py",
+      "source_path": "/dev/shm/ndu_windows43_20261107/read_initial_status.py",
+      "bytes": 3401,
+      "sha256": "ef9d72421914e3d1102d102dfbda83be7f7281c1f23e86280e6eb2e1902918c1",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/ASSESSMENT.md",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/ASSESSMENT.md",
+      "bytes": 11464,
+      "sha256": "085defca9724156f7223f1c4e8cef7207d0a6d51923341775b8acec859f41635",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/PROPOSED_CONTRACT.md",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/PROPOSED_CONTRACT.md",
+      "bytes": 6087,
+      "sha256": "862266ddb54b4067e20d8d3adc217f7c292c6a522d6f37e7f99b5ed47d5f5cdc",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/FINAL_MODEL_CHECKS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/FINAL_MODEL_CHECKS.json",
+      "bytes": 1695,
+      "sha256": "56f34c47fd6d827d7dc5d0e54dc2c9a4c63acbd7893dc6911cf0e5cc9bff8c04",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/INITIAL_PREPARATION_FAILURE.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/INITIAL_PREPARATION_FAILURE.json",
+      "bytes": 613,
+      "sha256": "ef5ce8f0a56b6689d6e1f7c0fb38eedbf520ac14a93f16ccd486b9b0cf9c5dd3",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/MANIFEST.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/MANIFEST.json",
+      "bytes": 2643,
+      "sha256": "5cfefb488b419dc578550655202eb38664edbf812a44af7ae332778f05dbf40a",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/MODEL_CHECKS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/MODEL_CHECKS.json",
+      "bytes": 1695,
+      "sha256": "9621a845556a5478ee6c0ee582d231fdc2d5602ce3519ed125b613e960ad9f89",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/OBSERVATION_CONTRACT.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/OBSERVATION_CONTRACT.json",
+      "bytes": 10616,
+      "sha256": "3b5c9f1697e67bfeb97aa81e15b11bb78af69099f817b0622f8d5267377050d5",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/STYLE_CHECKS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/STYLE_CHECKS.json",
+      "bytes": 2253,
+      "sha256": "0fb9df8c0850124ffbf208740cf17ecadc3556c6f8f2774e689dfa2378325641",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/before_format/MODEL_CHECKS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/before_format/MODEL_CHECKS.json",
+      "bytes": 1695,
+      "sha256": "9621a845556a5478ee6c0ee582d231fdc2d5602ce3519ed125b613e960ad9f89",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/before_format/check_native_block.py.txt",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/before_format/check_native_block.py.txt",
+      "bytes": 7178,
+      "sha256": "10690a8b6ff5735dfe0cf2c8e86e197d73ff61e364d97a5044aab7b919999dfb",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/before_format/native_block.py.txt",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/before_format/native_block.py.txt",
+      "bytes": 7898,
+      "sha256": "48869397c9f7c265a9f3471bdb2f5deddd610c20efd8ce1e7329a10d5cb943c9",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/before_format/observe_native43.py.txt",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/before_format/observe_native43.py.txt",
+      "bytes": 14861,
+      "sha256": "f6b8fd1934509a635c7337549e0abe2b6750eb8ed275a81baf189a100da43d90",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/check_native_block.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/check_native_block.py",
+      "bytes": 8547,
+      "sha256": "8f14d9cdb38e73d5f5c9484d310a554ae11774d3da3ec12fe913f4a800d1f9b9",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/initial_prepare_observe_native43.py.txt",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/initial_prepare_observe_native43.py.txt",
+      "bytes": 14840,
+      "sha256": "715dc04a89a617bd99091012e2656c3564faf01ec38ab45b98b0047d6df146f6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/native_block.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/native_block.py",
+      "bytes": 8946,
+      "sha256": "24e3a30d36caca9dec4547a6cbbdd9b73402c4135fc920cd9aa2f4eec7af2022",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v1/observe_native43.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v1/observe_native43.py",
+      "bytes": 17675,
+      "sha256": "780ef0d1a72c86284956108fa3be8235687a43a00b3e7b14284feeee23e98405",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v2/INITIAL_OBSERVER_FAILURE.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v2/INITIAL_OBSERVER_FAILURE.json",
+      "bytes": 966,
+      "sha256": "8ee1a276c0e4379136746e9511e65dd21a5e6d15efb0ac603cf6dec4038c8cbe",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v2/MANIFEST.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v2/MANIFEST.json",
+      "bytes": 1830,
+      "sha256": "977849b72600b7d19fe42524630d6bbd67ec1d838398d6f84bbf16ded3bf46f9",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v2/OBSERVATION_CONTRACT.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v2/OBSERVATION_CONTRACT.json",
+      "bytes": 10616,
+      "sha256": "3b5c9f1697e67bfeb97aa81e15b11bb78af69099f817b0622f8d5267377050d5",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v2/SERIALIZATION_COMPONENT_CHECKS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v2/SERIALIZATION_COMPONENT_CHECKS.json",
+      "bytes": 266,
+      "sha256": "9d573d5d368e64894e233e58e41de92fad18be0b25a87525ad4b13e42dd3ba0c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v2/from_v1.patch",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v2/from_v1.patch",
+      "bytes": 494,
+      "sha256": "edeaa671b15c9ce75cd9d975535eedf934dca755fbb240f7e7293beea210a523",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v2/native_block.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v2/native_block.py",
+      "bytes": 8946,
+      "sha256": "24e3a30d36caca9dec4547a6cbbdd9b73402c4135fc920cd9aa2f4eec7af2022",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/observer_v2/observe_native43.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/observer_v2/observe_native43.py",
+      "bytes": 17699,
+      "sha256": "1d8145b0f6630482b6158a7dd14594b2baed85f4c35698dfc5b5e0b0f59eadb5",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/prepare_revision3.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/prepare_revision3.py",
+      "bytes": 10037,
+      "sha256": "1399008dc8e9a8bb3da8122cc7c4416a892922418fd58f5382450a07f10b5aa6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/reference/CARGO_FETCH.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/reference/CARGO_FETCH.json",
+      "bytes": 480,
+      "sha256": "cf20e66674fe5b1fadf62f4e7c8c8a2bc6e297453c78c666ca309163708c719e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/reference/CARGO_NEWLINE_CORRECTION.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/reference/CARGO_NEWLINE_CORRECTION.json",
+      "bytes": 751,
+      "sha256": "4bf9262a15d221b43533684eec2ee84f2b2670331d9a8e39ec35ffb567ba15ec",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/reference/Cargo.initial_newline_projection.toml",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/reference/Cargo.initial_newline_projection.toml",
+      "bytes": 2484,
+      "sha256": "d159d126e44689f13ef85ec66892c26fc48fd293e2ad6232cd124a563372c775",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/reference/Cargo.toml",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/reference/Cargo.toml",
+      "bytes": 2483,
+      "sha256": "dce261976c1eb7b943da155c6663241b3631e21ff8221df268ff1d104cba33fe",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/ASSESSMENT.md",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/ASSESSMENT.md",
+      "bytes": 11464,
+      "sha256": "085defca9724156f7223f1c4e8cef7207d0a6d51923341775b8acec859f41635",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/FORMATTED_SOURCE.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/FORMATTED_SOURCE.json",
+      "bytes": 5604,
+      "sha256": "e260f5f43d3af08247450a6f56940e2cb5b05de3d55d3c28e0ccc0382a2e82c3",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/INITIAL_FORMATTER_STARTUP_FAILURE.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/INITIAL_FORMATTER_STARTUP_FAILURE.json",
+      "bytes": 714,
+      "sha256": "b9fce51ab2ab8174731b26321da84ce3c01753808f930454fd218d15bcefa74f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/INITIAL_POST_DEPENDENCY_RECEIPT_FAILURE.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/INITIAL_POST_DEPENDENCY_RECEIPT_FAILURE.json",
+      "bytes": 355,
+      "sha256": "53e8dd4127d75c2accbb2511f586757ceb1864e45c3a81e9d1467c3ccaa43624",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/LOCKED_DEPENDENCY_SOURCE.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/LOCKED_DEPENDENCY_SOURCE.json",
+      "bytes": 7088,
+      "sha256": "3e4d6311ed3d1f254517ae4d21f80000765ccb889a5a0a70d885e47da3feb466",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/METADATA_CHECK.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/METADATA_CHECK.json",
+      "bytes": 12565,
+      "sha256": "8bb3a2aa86b187a1aee8c52dc93923cbeae78669a669de1d005b93dfdebc034f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/PROBE_ONLY.patch",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/PROBE_ONLY.patch",
+      "bytes": 707,
+      "sha256": "12f852bac764917e2f15592ddc854b060cfe4aff2643f61a189771e41035067a",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/PROJECTION_METADATA.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/PROJECTION_METADATA.json",
+      "bytes": 2187,
+      "sha256": "075eca8b45140143bd1f29cec29f558cb42fa59ba5a50d81fb717aacbe0c8f4d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/PROJECTION_METADATA.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/PROJECTION_METADATA.stderr",
+      "bytes": 46430,
+      "sha256": "03ed8d77503bd395ebcfd9c0e13cb38aa6e0f7e63de18717ab4bac0ca72ab618",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/PROJECTION_METADATA.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/PROJECTION_METADATA.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/PROPOSED_CONTRACT.md",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/PROPOSED_CONTRACT.md",
+      "bytes": 6087,
+      "sha256": "862266ddb54b4067e20d8d3adc217f7c292c6a522d6f37e7f99b5ed47d5f5cdc",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/REVIEW1_FREEZE.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/REVIEW1_FREEZE.json",
+      "bytes": 12180,
+      "sha256": "48549e804a226dc79cb024d0255627c19e44cef2a0e1ad0b4eae4b67b0989533",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/ROOT_FINDINGS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/ROOT_FINDINGS.json",
+      "bytes": 934,
+      "sha256": "ed332bba23a68bd9c5fed2fc5f2e207fc41869713ebd86385d28a98d0b44c8c8",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/RUSTC_VERSION.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/RUSTC_VERSION.json",
+      "bytes": 998,
+      "sha256": "5b506419406b95224c8c8bf913dc3edf885f355906533263b05e874bc4f7c4a1",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/RUSTC_VERSION.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/RUSTC_VERSION.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/RUSTC_VERSION.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/RUSTC_VERSION.stdout",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/RUSTFMT.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/RUSTFMT.json",
+      "bytes": 1093,
+      "sha256": "cd4aecc40fdf2ca98355636804fd0a52dcbc741d698ed6f030eeb2e1280c69a0",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/RUSTFMT.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/RUSTFMT.stderr",
+      "bytes": 277,
+      "sha256": "feb65ad780638553c48c3bcbf429b38051bafdc67ba0152a128df24378581176",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/RUSTFMT.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/RUSTFMT.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/RUSTFMT_WITH_RUNTIME.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/RUSTFMT_WITH_RUNTIME.json",
+      "bytes": 1297,
+      "sha256": "5dac2fe002b167ac30303258db7ce9145b1f276be7735dfc8cf5b424c504e78c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/RUSTFMT_WITH_RUNTIME.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/RUSTFMT_WITH_RUNTIME.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/RUSTFMT_WITH_RUNTIME.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/RUSTFMT_WITH_RUNTIME.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/WINDOWS_SYS_METADATA.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/WINDOWS_SYS_METADATA.json",
+      "bytes": 2723,
+      "sha256": "e6ad9e04ab0210ce09c654e79bddd8f0fe50f83164994732daecd44ce2e91e1c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/WINDOWS_SYS_METADATA.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/WINDOWS_SYS_METADATA.stderr",
+      "bytes": 2949,
+      "sha256": "f62cd909a0e5e8dea95142173b7554386534218f8decff726c6009324ff1c2dd",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/WINDOWS_SYS_METADATA.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/WINDOWS_SYS_METADATA.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/before_rustfmt/token_native_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/before_rustfmt/token_native_access_tests.rs",
+      "bytes": 13283,
+      "sha256": "4d0b2372fb8fef5cfea89d5738c3bd1b024c0e21019b363d01059899f4766a1b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/before_rustfmt/token_read_authority_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/before_rustfmt/token_read_authority_tests.rs",
+      "bytes": 30624,
+      "sha256": "50f7032be7abe3d0ece078233d2b8a2f87b16ba4abfea794708a7030b88a53d6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/candidate/codex-rs/windows-sandbox-rs/src/token_access_request_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/candidate/codex-rs/windows-sandbox-rs/src/token_access_request_tests.rs",
+      "bytes": 3753,
+      "sha256": "9679df8c7064895940faf2e84e622a5b01967e948a44dfa118333215dc989593",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/candidate/codex-rs/windows-sandbox-rs/src/token_descriptor_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/candidate/codex-rs/windows-sandbox-rs/src/token_descriptor_access_tests.rs",
+      "bytes": 11177,
+      "sha256": "c1891d4f1f3beb354789d31ee9cff635ce923b719f83a5db550907b279c45705",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/candidate/codex-rs/windows-sandbox-rs/src/token_native_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/candidate/codex-rs/windows-sandbox-rs/src/token_native_access_tests.rs",
+      "bytes": 14256,
+      "sha256": "5fc51e4cebdc60ef55439f1dbd8138c8359024863946c12d1b7aa45352847085",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/candidate/codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/candidate/codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs",
+      "bytes": 30624,
+      "sha256": "50f7032be7abe3d0ece078233d2b8a2f87b16ba4abfea794708a7030b88a53d6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/continue_metadata.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/continue_metadata.py",
+      "bytes": 4144,
+      "sha256": "c4dc5487c30cae615945ae9ebdb98ce0d9217cc2e0feb0b4d86434f3151e1a6d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/initial_prepare_metadata.py.txt",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/initial_prepare_metadata.py.txt",
+      "bytes": 8019,
+      "sha256": "9ca9be3cc1318942e07352483594d967581ad909569a4a60bf9e9eace8977bf6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/metadata_projection/src/lib.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/metadata_projection/src/lib.rs",
+      "bytes": 1006,
+      "sha256": "965437d27e2c275a2b1b4a75b7fbeb6c656fb4db832b43c4e54585fbe6859ebf",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/metadata_projection/src/parent_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/metadata_projection/src/parent_tests.rs",
+      "bytes": 1197,
+      "sha256": "811e80a56e7048b82a66b2cefde857428f68944d8fd1e487ef1b1efce67fb1ce",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/metadata_projection/src/token.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/metadata_projection/src/token.rs",
+      "bytes": 18360,
+      "sha256": "dfcab3add0e5888c85c37bf307736291173d71fa1b989c91e41856e3837b4528",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/metadata_projection/src/token_access_request_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/metadata_projection/src/token_access_request_tests.rs",
+      "bytes": 3753,
+      "sha256": "9679df8c7064895940faf2e84e622a5b01967e948a44dfa118333215dc989593",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/metadata_projection/src/token_descriptor_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/metadata_projection/src/token_descriptor_access_tests.rs",
+      "bytes": 11177,
+      "sha256": "c1891d4f1f3beb354789d31ee9cff635ce923b719f83a5db550907b279c45705",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/metadata_projection/src/token_native_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/metadata_projection/src/token_native_access_tests.rs",
+      "bytes": 14256,
+      "sha256": "5fc51e4cebdc60ef55439f1dbd8138c8359024863946c12d1b7aa45352847085",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/metadata_projection/src/token_read_authority_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/metadata_projection/src/token_read_authority_tests.rs",
+      "bytes": 30624,
+      "sha256": "50f7032be7abe3d0ece078233d2b8a2f87b16ba4abfea794708a7030b88a53d6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review1/prepare_metadata.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/prepare_metadata.py",
+      "bytes": 8661,
+      "sha256": "50b974e301967e2e6e46bf0c26b0aa2a31038ffcd4af2a14bba2860528dc7245",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/CODESPELL.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/CODESPELL.json",
+      "bytes": 1451,
+      "sha256": "ef8942aea6fe8b5762129244b3d9be5849f5567076d5d4a5e7b25de65f19ab4f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/CODESPELL.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/CODESPELL.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/CODESPELL.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/CODESPELL.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/FINAL_FINITE_RECORD_CHECKS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/FINAL_FINITE_RECORD_CHECKS.json",
+      "bytes": 1689,
+      "sha256": "2f973c36372da02966a486cb0d892429dbea65d156c505bca9cd89f7d3b7c2c9",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/FINAL_OWNERSHIP_ORDER.patch",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/FINAL_OWNERSHIP_ORDER.patch",
+      "bytes": 2604,
+      "sha256": "c94876406fc7e62bdb961d3dca4d7e24df0a67033f8c506babd67ad3fc2c1452",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/FINAL_PROJECTION_METADATA.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/FINAL_PROJECTION_METADATA.json",
+      "bytes": 2039,
+      "sha256": "46634316a35a96847b4159527da63385905d192d9385ae515c5349607baedc83",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/FINAL_PROJECTION_METADATA.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/FINAL_PROJECTION_METADATA.stderr",
+      "bytes": 46916,
+      "sha256": "9424fb784e5730c301f9b69951ca7649038d1ea9f718ce584414cd0dd4302864",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/FINAL_PROJECTION_METADATA.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/FINAL_PROJECTION_METADATA.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/FINAL_RUSTFMT.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/FINAL_RUSTFMT.json",
+      "bytes": 1105,
+      "sha256": "50bd46c2094dc933797345d5326f3281e49f75264396a2197e8261fb53c990fd",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/FINAL_RUSTFMT.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/FINAL_RUSTFMT.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/FINAL_RUSTFMT.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/FINAL_RUSTFMT.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/FINAL_SOURCE_CHECKS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/FINAL_SOURCE_CHECKS.json",
+      "bytes": 3329,
+      "sha256": "79364db29ffe6019fa9bd804bee73805ed12a7a376110f62c378fbea0a6cbe5e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/FINITE_RECORD_CHECKS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/FINITE_RECORD_CHECKS.json",
+      "bytes": 1689,
+      "sha256": "461f6b7654767a448ec56dcff2519b08c76ccf73e6c19f31269e8ec87eff6ab7",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/PROJECTION_METADATA.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/PROJECTION_METADATA.json",
+      "bytes": 2012,
+      "sha256": "44443fdcdcaefd0d25bac81e608e54e66de47cade1c9d0735223440111abe214",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/PROJECTION_METADATA.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/PROJECTION_METADATA.stderr",
+      "bytes": 46430,
+      "sha256": "f52f8187d4a3ac5a9425e62486a933a8f1680c71f68a07bff54878c37dc4ee46",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/PROJECTION_METADATA.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/PROJECTION_METADATA.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/PROTOCOL.md",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/PROTOCOL.md",
+      "bytes": 8230,
+      "sha256": "c02571cea28dfec521ad1efd8c38199cce8244d247bb4056cab933ff63e02126",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/PURE_COMPILE.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/PURE_COMPILE.json",
+      "bytes": 1255,
+      "sha256": "3c87026381488ab903bc59e32d5a49f4340c15edd3d0fd94600fee8c4a7d690c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/PURE_COMPILE.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/PURE_COMPILE.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/PURE_COMPILE.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/PURE_COMPILE.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/PURE_PATH_CASES.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/PURE_PATH_CASES.json",
+      "bytes": 785,
+      "sha256": "51e5d68251fa9602615c04082a03c6500cb62b777a19b321f472c995c520c58b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/PURE_PATH_CASES.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/PURE_PATH_CASES.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/PURE_PATH_CASES.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/PURE_PATH_CASES.stdout",
+      "bytes": 314,
+      "sha256": "94fa021b67470415534f0bd044896b2e4bfaa312eba14b613d746cac1798cbad",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/RUSTFMT.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/RUSTFMT.json",
+      "bytes": 1093,
+      "sha256": "b6c80b76f193812587689be96b3ca7f957cf10a5a910225101e09cb8c329da37",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/RUSTFMT.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/RUSTFMT.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/RUSTFMT.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/RUSTFMT.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/SOURCE_CHECKS.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/SOURCE_CHECKS.json",
+      "bytes": 7293,
+      "sha256": "069dd50291e1ac80add05a1e4f61d592acd42242c666db93274ed468e2bc1d84",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/VERIFICATION.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/VERIFICATION.json",
+      "bytes": 1901,
+      "sha256": "ca4ad5cf215529a631eb2a1cd628da5c91e1c54cd06320e93c5dacbe834c53f0",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/after_first_metadata_before_ownership_order.rs.txt",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/after_first_metadata_before_ownership_order.rs.txt",
+      "bytes": 15065,
+      "sha256": "3b07a1361ac4dac61c7cf31de9f81d3a820043da813c9571521538258097836e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/before_python_format/check_finite_records.py.txt",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/before_python_format/check_finite_records.py.txt",
+      "bytes": 4421,
+      "sha256": "0d135ca256fda83c5da1fe016dbd473070fbda6bf67d84f7fb4abaf9b45493bd",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/before_python_format/check_source.py.txt",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/before_python_format/check_source.py.txt",
+      "bytes": 5209,
+      "sha256": "444269a9a88dab999f9c7cf8a35425bec1c83679267cdc44293881e075a0d6f4",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/before_python_format/final_source_checks.py.txt",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/before_python_format/final_source_checks.py.txt",
+      "bytes": 2606,
+      "sha256": "8edac5bac5da3ab934c0c6bc8a0748182f8f098fd864b077d48498705aefd729",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/before_python_format/finite_native_records.py.txt",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/before_python_format/finite_native_records.py.txt",
+      "bytes": 3824,
+      "sha256": "55127ae613c3dd04248ec201890558ff4de87d147c5ee1a80e526b2cd12b9c1d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/before_rustfmt.rs.txt",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/before_rustfmt.rs.txt",
+      "bytes": 14829,
+      "sha256": "01f488e2561487c710581d9f3f49c374f3556ef10c975accadad735abc5ad7c2",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/candidate/codex-rs/windows-sandbox-rs/src/token_access_request_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/candidate/codex-rs/windows-sandbox-rs/src/token_access_request_tests.rs",
+      "bytes": 3753,
+      "sha256": "9679df8c7064895940faf2e84e622a5b01967e948a44dfa118333215dc989593",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/candidate/codex-rs/windows-sandbox-rs/src/token_descriptor_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/candidate/codex-rs/windows-sandbox-rs/src/token_descriptor_access_tests.rs",
+      "bytes": 11177,
+      "sha256": "c1891d4f1f3beb354789d31ee9cff635ce923b719f83a5db550907b279c45705",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/candidate/codex-rs/windows-sandbox-rs/src/token_native_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/candidate/codex-rs/windows-sandbox-rs/src/token_native_access_tests.rs",
+      "bytes": 15371,
+      "sha256": "ca88a622925c035183787e0d4a054a89399f82b3a45bb3e750ae1f39b4998fb9",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/candidate/codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/candidate/codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs",
+      "bytes": 30624,
+      "sha256": "50f7032be7abe3d0ece078233d2b8a2f87b16ba4abfea794708a7030b88a53d6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/check_finite_records.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/check_finite_records.py",
+      "bytes": 4763,
+      "sha256": "4efa2f1560ea5bd3cbae2648861098644ada9238284e2ecb7bc452d6217a7c96",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/check_source.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/check_source.py",
+      "bytes": 6079,
+      "sha256": "29309146a8cb0ecde59ae2695ab5a1740f575cb2f5abd4a79ebb209e14e77d59",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/final_metadata_projection/src/lib.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/final_metadata_projection/src/lib.rs",
+      "bytes": 1006,
+      "sha256": "965437d27e2c275a2b1b4a75b7fbeb6c656fb4db832b43c4e54585fbe6859ebf",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/final_metadata_projection/src/parent_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/final_metadata_projection/src/parent_tests.rs",
+      "bytes": 1197,
+      "sha256": "811e80a56e7048b82a66b2cefde857428f68944d8fd1e487ef1b1efce67fb1ce",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/final_metadata_projection/src/token.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/final_metadata_projection/src/token.rs",
+      "bytes": 18360,
+      "sha256": "dfcab3add0e5888c85c37bf307736291173d71fa1b989c91e41856e3837b4528",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/final_metadata_projection/src/token_access_request_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/final_metadata_projection/src/token_access_request_tests.rs",
+      "bytes": 3753,
+      "sha256": "9679df8c7064895940faf2e84e622a5b01967e948a44dfa118333215dc989593",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/final_metadata_projection/src/token_descriptor_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/final_metadata_projection/src/token_descriptor_access_tests.rs",
+      "bytes": 11177,
+      "sha256": "c1891d4f1f3beb354789d31ee9cff635ce923b719f83a5db550907b279c45705",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/final_metadata_projection/src/token_native_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/final_metadata_projection/src/token_native_access_tests.rs",
+      "bytes": 15371,
+      "sha256": "ca88a622925c035183787e0d4a054a89399f82b3a45bb3e750ae1f39b4998fb9",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/final_metadata_projection/src/token_read_authority_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/final_metadata_projection/src/token_read_authority_tests.rs",
+      "bytes": 30624,
+      "sha256": "50f7032be7abe3d0ece078233d2b8a2f87b16ba4abfea794708a7030b88a53d6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/final_source_checks.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/final_source_checks.py",
+      "bytes": 2918,
+      "sha256": "b899d10cda811b2ebb49d71659b16e50e790cbfe50bb8164915290ac24ea7ad0",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/finite_native_records.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/finite_native_records.py",
+      "bytes": 4029,
+      "sha256": "62221709dd4151e3496aaeda03a9d726a7b934a82fe930437779f9bb3160c2dc",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/freeze_source.py",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/freeze_source.py",
+      "bytes": 9351,
+      "sha256": "92ff385d742a515c233509c50e36c0e204e377eb4811da7a4469ca38308925c2",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/from_review1.patch",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/from_review1.patch",
+      "bytes": 12775,
+      "sha256": "c6b57d2423c6323fb0d93aa1f974424189508cdd6c99aae48edd55aa4b50e86a",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/manifest.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/manifest.json",
+      "bytes": 5669,
+      "sha256": "5ae1de2fc2cf97e342e6fddc60bd058dc7b6de5e3c4bb5dfc4106f2b0cc3bcdc",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/metadata_projection/src/lib.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/metadata_projection/src/lib.rs",
+      "bytes": 1006,
+      "sha256": "965437d27e2c275a2b1b4a75b7fbeb6c656fb4db832b43c4e54585fbe6859ebf",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/metadata_projection/src/parent_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/metadata_projection/src/parent_tests.rs",
+      "bytes": 1197,
+      "sha256": "811e80a56e7048b82a66b2cefde857428f68944d8fd1e487ef1b1efce67fb1ce",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/metadata_projection/src/token.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/metadata_projection/src/token.rs",
+      "bytes": 18360,
+      "sha256": "dfcab3add0e5888c85c37bf307736291173d71fa1b989c91e41856e3837b4528",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/metadata_projection/src/token_access_request_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/metadata_projection/src/token_access_request_tests.rs",
+      "bytes": 3753,
+      "sha256": "9679df8c7064895940faf2e84e622a5b01967e948a44dfa118333215dc989593",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/metadata_projection/src/token_descriptor_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/metadata_projection/src/token_descriptor_access_tests.rs",
+      "bytes": 11177,
+      "sha256": "c1891d4f1f3beb354789d31ee9cff635ce923b719f83a5db550907b279c45705",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/metadata_projection/src/token_native_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/metadata_projection/src/token_native_access_tests.rs",
+      "bytes": 15065,
+      "sha256": "3b07a1361ac4dac61c7cf31de9f81d3a820043da813c9571521538258097836e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/metadata_projection/src/token_read_authority_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/metadata_projection/src/token_read_authority_tests.rs",
+      "bytes": 30624,
+      "sha256": "50f7032be7abe3d0ece078233d2b8a2f87b16ba4abfea794708a7030b88a53d6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/path_cases.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/path_cases.rs",
+      "bytes": 2092,
+      "sha256": "c440e74947df49bc9725f7f743782dbb5ac7d1517ab8d7e3958710221eb7bb9d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/pure_path_projection.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/pure_path_projection.rs",
+      "bytes": 3598,
+      "sha256": "d4eaf1b19d34bc40462577160e9de7117de2000a3ade9e7f5c40dc7f91675654",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/repair.patch",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/repair.patch",
+      "bytes": 16604,
+      "sha256": "bbc02fff4456aeccd7278ebced1c3f38302e8662ad335c0e741879295841f1ad",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/source_api/PARENT_COMMIT_API.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/source_api/PARENT_COMMIT_API.json",
+      "bytes": 1388,
+      "sha256": "cecffdd3dac823e521627cbfbdd424484b774b490f29c966972143ae6a47e5f5",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/source_api/PARENT_PR_API.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/source_api/PARENT_PR_API.json",
+      "bytes": 20424,
+      "sha256": "0ec0cf3c9c04fcdeb37e340ae971ca6496106ef3ec4a4bdea0504a6ac3b96837",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/source_api/TREE_codex_API.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/source_api/TREE_codex_API.json",
+      "bytes": 38697,
+      "sha256": "ba08fcd7c2c9b5e008d7e562f019013ff665044a2be6aa1c9aad3c69ba8360cf",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/source_api/TREE_crate_API.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/source_api/TREE_crate_API.json",
+      "bytes": 1893,
+      "sha256": "a94b78fe533ebfb01612fbdca9b680e0bd8391be220a56d2c1a200fb4ce784a0",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/source_api/TREE_root_API.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/source_api/TREE_root_API.json",
+      "bytes": 13040,
+      "sha256": "836fc8451c5418c7fa126da8e23f575fa05dd53c9df09d775367a988c13d991e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review2/source_api/TREE_src_API.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/source_api/TREE_src_API.json",
+      "bytes": 11418,
+      "sha256": "3cde848c0fb82eb782ab0b7693b6d36e52c053986a6ed35139ba5a58158b4837",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/CODESPELL.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/CODESPELL.json",
+      "bytes": 1302,
+      "sha256": "8996b0501bb3c24e7cb4e07dfc641de08065d25ecf119d0e7f96b0ad6656fdbb",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/CODESPELL.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/CODESPELL.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/CODESPELL.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/CODESPELL.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/PROTOCOL.md",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/PROTOCOL.md",
+      "bytes": 9093,
+      "sha256": "d79be496c5065cd04f255d5a28132157370352b88bc6e4c2c4a73536bc9ac34f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/RUSTFMT.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/RUSTFMT.json",
+      "bytes": 1277,
+      "sha256": "cc7eca8567199f4828b337ac2ab57c80a019cb1b2ddd0a70379000e0163bd382",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/RUSTFMT.stderr",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/RUSTFMT.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/RUSTFMT.stdout",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/RUSTFMT.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/VERIFICATION.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/VERIFICATION.json",
+      "bytes": 1288,
+      "sha256": "dbf5d48c7d7bc4194981e4c137fb8e21bc0142ff5de5095370ea33af6e65bd49",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/candidate/codex-rs/windows-sandbox-rs/src/token_access_request_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/candidate/codex-rs/windows-sandbox-rs/src/token_access_request_tests.rs",
+      "bytes": 3753,
+      "sha256": "9679df8c7064895940faf2e84e622a5b01967e948a44dfa118333215dc989593",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/candidate/codex-rs/windows-sandbox-rs/src/token_descriptor_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/candidate/codex-rs/windows-sandbox-rs/src/token_descriptor_access_tests.rs",
+      "bytes": 11177,
+      "sha256": "c1891d4f1f3beb354789d31ee9cff635ce923b719f83a5db550907b279c45705",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/candidate/codex-rs/windows-sandbox-rs/src/token_native_access_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/candidate/codex-rs/windows-sandbox-rs/src/token_native_access_tests.rs",
+      "bytes": 15481,
+      "sha256": "13ed029a784aa0751807dd6953c59708cda6fc2108a10b9cb498e8e8d80d55c6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/candidate/codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/candidate/codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs",
+      "bytes": 30624,
+      "sha256": "50f7032be7abe3d0ece078233d2b8a2f87b16ba4abfea794708a7030b88a53d6",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/from_review2.patch",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/from_review2.patch",
+      "bytes": 1353,
+      "sha256": "2a7ff194d6507a1a304fc7aa71d60d6da46626e75404a853dac942cdd4410474",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/manifest.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/manifest.json",
+      "bytes": 6764,
+      "sha256": "eadbaffba25c61221148e2c4a76d7b27f93f432fab5d2a77fdeabed3c2b150c7",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_native_access_43/review3/repair.patch",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review3/repair.patch",
+      "bytes": 16718,
+      "sha256": "92f210083ddf0f68eb2b3a1a3b9d3774405d19d2d8d3b6d92792be325bab6bfe",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_publications/round3_windows43.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_publications/round3_windows43.json",
+      "bytes": 2592,
+      "sha256": "565c8ccba88871f8d6325f14d5dc4c6b2f1abbb6dad786e20c64c252b3a1101f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_windows43_source_api.json",
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_windows43_source_api.json",
+      "bytes": 88470,
+      "sha256": "0386b49d78c57604ea03ae99df5e27f0c55c597ee1964c55c09d76a654fcc1d0",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    }
+  ],
+  "scope": "Windows43 source history, finite native observations and additive full-workflow status; P0 remains open",
+  "excluded": [
+    {
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/libwindows_sys.rmeta",
+      "reason": "Rebuildable binary/cache or excluded original flow; bytes not included",
+      "bytes": 10743145
+    },
+    {
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/libwindows_sys_native43.d",
+      "reason": "Rebuildable binary/cache or excluded original flow; bytes not included",
+      "bytes": 9892
+    },
+    {
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review1/metadata-only.rmeta",
+      "reason": "Rebuildable binary/cache or excluded original flow; bytes not included",
+      "bytes": 0
+    },
+    {
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/final-metadata-only.rmeta",
+      "reason": "Rebuildable binary/cache or excluded original flow; bytes not included",
+      "bytes": 0
+    },
+    {
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/metadata-only.rmeta",
+      "reason": "Rebuildable binary/cache or excluded original flow; bytes not included",
+      "bytes": 0
+    },
+    {
+      "source_path": "/workspace/scratch/3f6a885bb83c/round3_native/windows_native_access_43/review2/pure_path_projection",
+      "reason": "Rebuildable binary/cache or excluded original flow; bytes not included",
+      "bytes": 6956280
+    },
+    {
+      "source_path": "/dev/shm/ndu_windows43_20261107/job_128326978690.log",
+      "bytes": 501087,
+      "sha256": "8d56216ef73eef5744a7fed47304a81db8e4209888204417c33027e2d9f3074b",
+      "git_blob": "2b5ad5f7d9e07a4bf654e92995fadc3c1d805c6f",
+      "reason": "Private unscanned console; identity is copied from the frozen root receipt, and the original flow was not read by this selector"
+    }
+  ],
+  "source_restore": "Inert regular 0644; original permission/stat modes and original source_path are evidence records",
+  "lossless_boundary": "Exactly the selected source, finite records and APIs. No private console or execution ZIP content is included or reconstructed."
+}
