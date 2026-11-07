@@ -1,0 +1,31 @@
+{
+  "ordinary_memory_roundtrip_exact": true,
+  "optimized": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-O",
+      "/workspace/scratch/3f6a885bb83c/round3_core_ci/build_windows43_checkpoint.py",
+      "--verify-only"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "files": 202,
+      "bytes": 1978941,
+      "optimized_python": true,
+      "exact_members_bytes_and_source_modes": true,
+      "disk_extraction": false,
+      "archived_source_executed": false,
+      "native_execution": false
+    },
+    "stderr": ""
+  },
+  "files": 202,
+  "bytes": 1978941,
+  "index_sha256": "a82fd3950e0617613d4dabc34000a04add66b379bf734deb929ce01d5b1a0e07",
+  "bundle_inputs_unchanged": true,
+  "source_path_and_modes_compared": true,
+  "on_disk_extraction": false,
+  "restored_on_disk_modes_tested": false,
+  "archived_source_or_native_executed": false
+}
