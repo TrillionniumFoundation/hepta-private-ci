@@ -222,7 +222,11 @@ jobs:
           if [[ "$LANE" == "prospective-merge" ]]; then
             git merge-base --is-ancestor "$SOURCE_SHA" "$TESTED_SHA"
           fi
-          expected_files="$(printf '%s\n' ".github/workflows/blocking-ci.yml" "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs")"
+          expected_files="$(printf '%s\n' \
+            ".github/workflows/blocking-ci.yml" \
+            ".github/workflows/hepta-cell-differentiation.yml" \
+            "codex-rs/Cargo.lock" \
+            "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs")"
           actual_files="$(git diff --name-only "$PARENT_SHA" "$SOURCE_SHA")"
           test "$actual_files" = "$expected_files"
           printf 'Cell cost %s SHA: %s\n' "$LANE" "$TESTED_SHA"
