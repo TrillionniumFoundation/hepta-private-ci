@@ -1,0 +1,396 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-11-07 10:00:08 UTC",
+  "scope": "Additive continuation checkpoint; source review and API metadata do not close native or research gates",
+  "durable_source_checkpoint": {
+    "commit": "28e15e4e564dddc95d8de51cbdecaa2b435e2ed4",
+    "tree": "fcef393dc13503ea35c8ffcb8770cb4565dc0574",
+    "branch": "research/ndu-arm42-terminal-failure-evidence-20261107",
+    "pr": 5290,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5290"
+  },
+  "counts_before_this_documentation_commit": {
+    "main_evidence_stack": 169,
+    "side_proposals": 83,
+    "merges": 0
+  },
+  "all_blockers_closed": false,
+  "research_decision": "NO_GO_FOR_LARGE_SCALE_TRAINING",
+  "execution_environment": {
+    "state": "UNAVAILABLE",
+    "evidence": "Platform environment context marked unavailable after exec-server transport disconnected and recovery timed out after 45s",
+    "subsequent_local_checks": "NOT_EXECUTED",
+    "automatic_approval_rejection": false
+  },
+  "arm43": {
+    "pr": 5287,
+    "head": "558cf97e25f5b6627aa1d799795e9a3247efa94c",
+    "tree": "0c71d4360882418630111024d5d64382f2e2a4ab",
+    "parent_pr": 5271,
+    "parent_head": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+    "run": 42360673915,
+    "attempt": 1,
+    "api_status": "in_progress",
+    "api_conclusion": null,
+    "job": 128368922412,
+    "job_api_status": "in_progress",
+    "active_step_number": 4,
+    "active_step_name": "Prepare sealed native inputs then qualify the actual isolated business test",
+    "complete_job_page": {
+      "total_count": 11,
+      "returned": 11
+    },
+    "metadata_does_not_identify_current_subphase_or_case_outcome": true,
+    "declared_view_qualification_after_outage": "NOT_PERFORMED",
+    "job_api_conclusion": null,
+    "job_observed_at_utc": "2026-11-07 10:01:26 UTC",
+    "run_observed_at_utc": "2026-11-07 10:02:03 UTC"
+  },
+  "latest_published_work": [
+    {
+      "pr": 5283,
+      "scope": "Windows44 packet builder source and bounded evidence"
+    },
+    {
+      "pr": 5284,
+      "scope": "Windows44 independent packet audit and retained failed predecessors"
+    },
+    {
+      "pr": 5285,
+      "scope": "Windows44 terminal checkpoint"
+    },
+    {
+      "pr": 5287,
+      "scope": "ARM43 bounded store diagnostic source, side parent5271"
+    },
+    {
+      "pr": 5289,
+      "scope": "ARM42 terminal audit tools"
+    },
+    {
+      "pr": 5290,
+      "scope": "ARM42 terminal failure evidence"
+    }
+  ],
+  "e18": {
+    "state": "SOURCE_REVIEW_COMPLETE_UNPUBLISHED",
+    "product_parent_pr": 5285,
+    "product_parent_head": "8da2b4f5977d461f020e1bc74dd68965f16b907c",
+    "product_parent_tree": "7dbf7c28b2633fd7f5f2c5c437eae539f997707f",
+    "formal_A_B_publication_manifests_generated": false,
+    "source_stages_published": 0,
+    "native_jobs_triggered": 0,
+    "qualification_kind": "RELEASE_ASSET_RUNTIME",
+    "current_source_built_canary_qualified": false,
+    "stage_changed_lines": {
+      "A": 456,
+      "B": 427,
+      "C": 342,
+      "D": 444
+    },
+    "source_files": [
+      {
+        "path": ".github/scripts/hepta-v8-native-assets.json",
+        "bytes": 3087,
+        "sha256": "b637ca4ac0d60e0fb55ec38043c0c3c19cdcddba707eecd89218c6ed68d07c12",
+        "git_blob": "4697510259959b1ea49cfc9a6af89fd2adc70c6f"
+      },
+      {
+        "path": ".github/scripts/hepta-v8-native-report.toml",
+        "bytes": 41,
+        "sha256": "125599b6ce4943046306bf8449742cc9a6d78d43fa56fd5bf1be2aa8386989e6",
+        "git_blob": "9838986737f0e2359fd6d21eca133d61e7b33195"
+      },
+      {
+        "path": ".github/scripts/hepta-v8-native-spec.json",
+        "bytes": 3789,
+        "sha256": "f9cb02ffc56ff5b9b7968cce4f2a47c47ce9a222618d7a3100bb6dc5027094b2",
+        "git_blob": "a8ce36c1e22784f7d780c88ed03b9d2b30b39b8c"
+      },
+      {
+        "path": ".github/scripts/hepta_v8_native.py",
+        "bytes": 10849,
+        "sha256": "d00ffe704e4f7b79f16f92ec61fd3ccdff2d82decf835f8fb55a8fbf56b79838",
+        "git_blob": "973471df5c071147a0ff4d278e2f9e5f0e49553d"
+      },
+      {
+        "path": ".github/scripts/hepta_v8_native_assets.py",
+        "bytes": 4258,
+        "sha256": "880fa5fcddcf37b0423ddd62d362db72f40cd5e57ea872b68c335c97fb9d6101",
+        "git_blob": "80cbdfeb4e1a9943d4397488ba742e3d2205ef4a"
+      },
+      {
+        "path": ".github/scripts/hepta_v8_native_contract.py",
+        "bytes": 10872,
+        "sha256": "c9538362291c49f29a5dbaa5d3440269a1e606bd4c2c21e45abdd0dd111da526",
+        "git_blob": "233f8f25f89fc3a8653ca1bd254e5ce754fe99c7"
+      },
+      {
+        "path": ".github/scripts/hepta_v8_native_evidence.py",
+        "bytes": 12909,
+        "sha256": "7e4c73741ea7aaf8d4eebd221c43343868bfcf18e8575d81aa973d127671a0a1",
+        "git_blob": "35364e1923767b9fedf5a4259f90d20ba63ab398"
+      },
+      {
+        "path": ".github/scripts/hepta_v8_native_guard.py",
+        "bytes": 9073,
+        "sha256": "5643750753947c6961126367e1e7ac587990464471654291475e30fb67996650",
+        "git_blob": "9d1886e4a2dfcdb13ba0b9fa311dc48a06ceed9e"
+      },
+      {
+        "path": ".github/workflows/hepta-v8-native-proposal.yml",
+        "bytes": 5392,
+        "sha256": "df4dc2bbb339ee8363241e29ba16ab44703eeed47a111d8baffe460e03cbc6be",
+        "git_blob": "19cdb8457bfaa5e94bf0eea5d83498348d1d68b2"
+      }
+    ],
+    "root_review": {
+      "path": "/dev/shm/ndu_root_continuation_20261107/e18_format_root/ROOT_REVIEW.json",
+      "bytes": 85108,
+      "sha256": "f3faa92786d072276d7a704deeb12a7ccf53b7d29fca696fd1deb3b53c7dfc4c",
+      "original_just_fmt_exit": 0,
+      "nine_candidates_byte_unchanged": true,
+      "prior_153_owned_files_unchanged": true,
+      "final_owned_file_count": 162
+    },
+    "peer_review": {
+      "path": "/dev/shm/ndu_e18_peer_20261107/REVIEW.json",
+      "bytes": 21372,
+      "sha256": "49523ae787c3979712b77eac3a6aa5fea18f909217503e9ae750fb4df2b8f28c",
+      "finding": "No blocker within the reviewed source scope",
+      "source_runtime_qualification": false,
+      "final_peer_only_codespell_and_format_check": "NOT_CONFIRMED_EXECUTED_AFTER_ENVIRONMENT_FAILURE"
+    },
+    "models": {
+      "count": 40,
+      "sha256": "6ad09bb102903197ef0dea63201b63327af2f754a5cce5e1875b9ba48a27810b",
+      "scope": "Candidate evidence/contract/assets modules loaded; AST-extracted guard called in tiny owned Git repository; verify_assets and collect called on synthetic files with explicitly recorded test doubles",
+      "controller_execute_called": false,
+      "download_assets_called": false,
+      "cargo_or_rust_native_execution": false,
+      "ambient_environment_mutated": false,
+      "real_ambient_scanner": "AMBIGUOUS_SHORT_CREDENTIAL_REJECTION_RETAINED",
+      "pre_review_no_import_statement": "Historical snapshot before these model checks"
+    },
+    "actionlint": {
+      "original_1_7_7": "FAILED_UNRECOGNIZED_OFFICIAL_WINDOWS_ARM_LABEL_RETAINED",
+      "official_1_7_12": "EXIT_0",
+      "old_checker_success_claim": false
+    },
+    "python_architecture_addendum": {
+      "path": "/dev/shm/ndu_e18_entry_review_20261107/PYTHON_ARCHITECTURE_SCOPE_ADDENDUM.md",
+      "bytes": 1716,
+      "sha256": "9dde3ba7881720bc62330dbbf6ab11fff61b3eafc91099795f2d48ab166deda6",
+      "scope": "platform.machine reports machine type, not independent Python process ISA; Rust host, target, nextest metadata and actual cases remain required"
+    },
+    "local_originals_accessible_now": false,
+    "reconstruct_unavailable_private_bytes": false,
+    "fixed_release": {
+      "repository": "openai/codex",
+      "tag": "rusty-v8-v150.4.0",
+      "id": 361445880,
+      "draft": false,
+      "prerelease": true
+    }
+  },
+  "scientific_remote_preservation": {
+    "observed_at_utc": "2026-11-07T09:58:09.415Z",
+    "head": "28e15e4e564dddc95d8de51cbdecaa2b435e2ed4",
+    "tree": "fcef393dc13503ea35c8ffcb8770cb4565dc0574",
+    "checks": [
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_blocker_closure_20261106/STATUS.json",
+        "git_blob": "ef2fc34865477161b30902606d8e0682e3c4af0c",
+        "sha256": "447441497e5d0e9378942415986dbd28c879d172db382af9a8782dfa530aa81c",
+        "bytes": 5234,
+        "mode": "100644",
+        "current_remote_leaf": {
+          "path": "STATUS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ef2fc34865477161b30902606d8e0682e3c4af0c",
+          "size": 5234,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/ef2fc34865477161b30902606d8e0682e3c4af0c"
+        }
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_learned_stateful/README.md",
+        "git_blob": "d13c5275e63c924e8498b25dd1a5b10b9d19332c",
+        "sha256": "6fd7ddce9c1b2a4fc72bc4a3141ee206a3a6f5d9728b52329aac9d0207ea489e",
+        "bytes": 10974,
+        "mode": "100644",
+        "current_remote_leaf": {
+          "path": "README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d13c5275e63c924e8498b25dd1a5b10b9d19332c",
+          "size": 10974,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d13c5275e63c924e8498b25dd1a5b10b9d19332c"
+        }
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_decision_relevance_20261106/README.md",
+        "git_blob": "8bc5c031623054313ac831358349f700859830dd",
+        "sha256": "d719cc139163d11c0a5c90286d17a1fed7017b6536d831ba00e5af9fe05272f6",
+        "bytes": 1970,
+        "mode": "100644",
+        "current_remote_leaf": {
+          "path": "README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8bc5c031623054313ac831358349f700859830dd",
+          "size": 1970,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/8bc5c031623054313ac831358349f700859830dd"
+        }
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_finite_catalog_20261106/README.md",
+        "git_blob": "728c2d9cd6a8c493d0919063a40a2e846c7657c1",
+        "sha256": "8898bbb17f56ed6e7558e76bed7aca9bd5494fe6e6a145218294515f717372a5",
+        "bytes": 3518,
+        "mode": "100644",
+        "current_remote_leaf": {
+          "path": "README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "728c2d9cd6a8c493d0919063a40a2e846c7657c1",
+          "size": 3518,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/728c2d9cd6a8c493d0919063a40a2e846c7657c1"
+        }
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_pilot_20261106/RESULTS.md",
+        "git_blob": "6e14cbe58f1eef6428495a5e498e356a6885f456",
+        "sha256": "ab58a20dbced154b8fea1a1c7dd91f1d8ef91b6bbd3652789b1d68ddca093566",
+        "bytes": 3457,
+        "mode": "100644",
+        "current_remote_leaf": {
+          "path": "RESULTS.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6e14cbe58f1eef6428495a5e498e356a6885f456",
+          "size": 3457,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/6e14cbe58f1eef6428495a5e498e356a6885f456"
+        }
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/RESULTS.md",
+        "git_blob": "681ec5c91dad65b497b35e4ec85242fe35fa8469",
+        "sha256": "1392c80636fe4cb206f2d589dad3462495ff7a77a6f9ae59abf94a2ed8d7c03a",
+        "bytes": 3656,
+        "mode": "100644",
+        "current_remote_leaf": {
+          "path": "RESULTS.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "681ec5c91dad65b497b35e4ec85242fe35fa8469",
+          "size": 3656,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/681ec5c91dad65b497b35e4ec85242fe35fa8469"
+        }
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/RESULTS.md",
+        "git_blob": "99a94dcae478eab84f1f61dee23f28fff94812c5",
+        "sha256": "e7ba08a9b19cd8c8766f9aced3d4a5ea24c6fa8d2c2fdb0bad3e4b6039d70f1c",
+        "bytes": 4941,
+        "mode": "100644",
+        "current_remote_leaf": {
+          "path": "RESULTS.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "99a94dcae478eab84f1f61dee23f28fff94812c5",
+          "size": 4941,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/99a94dcae478eab84f1f61dee23f28fff94812c5"
+        }
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/STATUS.json",
+        "git_blob": "a355ce9f91a7034796a9320a379a0250ff416a6b",
+        "sha256": "ef2a4fe42ee70c06bfc55b58fc8e67d8905a54b595f67d14a7b7a6f95c20d7e8",
+        "bytes": 1501,
+        "mode": "100644",
+        "current_remote_leaf": {
+          "path": "STATUS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a355ce9f91a7034796a9320a379a0250ff416a6b",
+          "size": 1501,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/a355ce9f91a7034796a9320a379a0250ff416a6b"
+        }
+      }
+    ],
+    "all_eight_remote_leaf_identities_match": true,
+    "local_file_bytes_rechecked_after_outage": false,
+    "new_scientific_sampling": false,
+    "new_model_execution": false
+  },
+  "open_findings": [
+    {
+      "scope": "ARM42 original business case",
+      "status": "FAIL",
+      "run": 42353199414,
+      "attempt": 1,
+      "job": 128346079305,
+      "just_exit": 100,
+      "junit_passes": 0,
+      "junit_failures": 1,
+      "selected_files": 1474,
+      "selected_bytes": 68665776,
+      "selected_view_qualified_before_outage": true,
+      "failure": "Agent B authority-probe decryption timeout; earlier durable Core reconciliation Unavailable; underlying SQLx site/class/code remains unknown"
+    },
+    {
+      "scope": "Windows44 selected native cases",
+      "status": "FOUR_PASS_TWO_FAIL",
+      "run": 42352197933,
+      "attempt": 1,
+      "job": 128343024490,
+      "full_probe_records": 0,
+      "F0_F4": "UNOBSERVED",
+      "outside_delete_P0": "OPEN",
+      "legacy_ACL_migration": "OPEN"
+    },
+    {
+      "scope": "Linux production admission",
+      "status": "OPEN",
+      "required": "Trusted live authority producer and qualified original restricted-read cases"
+    },
+    {
+      "scope": "Core selected case evidence",
+      "status": "PARTIAL_QUALIFICATION",
+      "detail": "Core35 seven original cases and profile146/146 passed, but same-job Core19-slot gate has only18 accepted; original list stderr rejection remains"
+    },
+    {
+      "scope": "Other original complete evidence gates",
+      "status": "OPEN",
+      "detail": "Core4 has18/19 accepted; AppServer5 has16/19 accepted; no reconstruction or scanner relaxation"
+    },
+    {
+      "scope": "Windows credential rotation",
+      "status": "BLOCKED_AT_ORIGINAL_SCANNER_READINESS",
+      "account_entry": "NOT_REACHED",
+      "cleanup": "NOT_REACHED"
+    },
+    {
+      "scope": "Whole repository native qualification",
+      "status": "OPEN"
+    },
+    {
+      "scope": "New learned stateful near-bound algorithm, independent task net benefit, originality",
+      "status": "NOT_ESTABLISHED"
+    }
+  ],
+  "resume_order": [
+    "Restore access to the existing workspace; read and hash original files before any mutation",
+    "Reconcile current remote branch heads and this checkpoint before restoring the local publication state",
+    "Read ARM43 current original run and attempt; qualify any terminal declared view with the original exact guards",
+    "Recover and hash the nine E18 candidates and all receipts; do not rerun completed synthetic models",
+    "Generate formal E18 A/B manifests, publish four strict stages from actual5285, binding actual head/tree after each stage",
+    "Execute and qualify the four native combinations through original just; retain all failures and refused originals",
+    "Refresh full status and history from qualified original evidence without changing frozen scientific results"
+  ],
+  "new_scientific_sampling": false,
+  "new_scientific_model_calls": 0,
+  "changed_original_gates": false,
+  "changed_assertions_timeouts_retries_concurrency_scanners_source_guards": false
+}
