@@ -1,0 +1,117 @@
+{
+  "schema": "windows44-independent-packet-custody-review-v1",
+  "decision": "FAIL_PLAIN_SOURCE_BYTE_ALIAS",
+  "publication": {
+    "path": "/dev/shm/ndu_windows44_checkpoint_20261107/WINDOWS44_TERMINAL_CHECKPOINT_PUBLICATION_MANIFEST.json",
+    "bytes": 5457,
+    "sha256": "0705e3f9d77010f9d60bfd800b0ea954b8dcc547bce803a624e922223322bdc3",
+    "git_blob": "9fad3c2a215fe1514cbd25bd3703341baeab9a27"
+  },
+  "roster": {
+    "path": "/dev/shm/ndu_windows44_checkpoint_20261107/INPUT_ROSTER.json",
+    "bytes": 106982,
+    "sha256": "91d8207d90177d14c456d2dab88802c9d152bb80602ea1b11c082b949f2f5257",
+    "git_blob": "1da6a84744c59df9708a183693d2a3a74e8f1959"
+  },
+  "index": {
+    "path": "/dev/shm/ndu_windows44_checkpoint_20261107/packet/INDEX.json",
+    "bytes": 88351,
+    "sha256": "ae47c2bbf680035368452c23ef968d9ba7aac45894419354894ce0c8b102b5d2",
+    "git_blob": "c8f406f56877ce89896c5ddfd7af4f1a3fb69520"
+  },
+  "canonical_reader": {
+    "local": {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_native/access_terminal_checkpoint_inputs/reviewed_restore.py",
+      "bytes": 6899,
+      "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+      "git_blob": "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1"
+    },
+    "root_fresh_api": {
+      "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_canonical_api.json",
+      "bytes": 620,
+      "sha256": "f99f6e85347979bdfb03f161d06908cafe1c75724f9b9ed10d7694105bf1be9a",
+      "git_blob": "95c7da4bf8725b1c8334e2e7e569da977242386f"
+    },
+    "remote_blob": "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1"
+  },
+  "canonical_reader_only_index_seal_changed": true,
+  "files": 184,
+  "bytes": 1904082,
+  "exact_member_original_bytes_and_0644_modes": true,
+  "single_bounded_gzip_members": 1,
+  "single_bounded_xz_and_tar_hashes_verified": true,
+  "publication_files": 9,
+  "publication_nonmechanical_lines": 543,
+  "private_inputs_identity_only_never_read": [
+    {
+      "source_path": "/dev/shm/ndu_windows44_20261107/source_auto_ci_42352197933/initial_apply_patch_lf_capture.log",
+      "reason": "PRIVATE ORIGINAL OR INITIAL NORMALIZED PRIVATE CAPTURE: identity only, never included",
+      "bytes": 527326,
+      "sha256": "ff68213e64a35eadf3483531f50d19a1419c15f7a9da5fffb30bb79ff3929a8a",
+      "git_blob": "ae925e2d09240c54a7d0917517576dcba2910182",
+      "mode": "0600"
+    },
+    {
+      "source_path": "/dev/shm/ndu_windows44_20261107/source_auto_ci_42352197933/job_128343024490.log",
+      "reason": "PRIVATE ORIGINAL OR INITIAL NORMALIZED PRIVATE CAPTURE: identity only, never included",
+      "bytes": 532020,
+      "sha256": "afc8e0e074eb2243ad53db45a0832f93d9c496c3cb38bfece3f094522c4297cb",
+      "git_blob": "58012c1ca0727888083d2f9781a6a5d5747f71d3",
+      "mode": "0600"
+    }
+  ],
+  "six_plain_source_paths_excluded": true,
+  "six_plain_source_bytes_excluded": false,
+  "plain_byte_alias_findings": [
+    {
+      "member": "round3_native/windows44_safe_checkpoint_inputs/external_originals/dev/shm/ndu_windows44_20261107/source_auto_ci_42352197933/assertion_values44_v3.before_format.py.txt",
+      "source_path": "/dev/shm/ndu_windows44_20261107/source_auto_ci_42352197933/assertion_values44_v3.before_format.py.txt",
+      "plain_source_path": "/dev/shm/ndu_windows44_20261107/source_auto_ci_42352197933/assertion_values44_v3.py",
+      "bytes": 8888,
+      "sha256": "cac1e72bfebc4ed53470a8d76f8c8b3b4d636328f2d82efc366d1f96bfc22869"
+    }
+  ],
+  "three_historical_implementations_identity_only": [
+    {
+      "source_path": "/dev/shm/ndu_root_continuation_20261107/review_windows44_source.py",
+      "reason": "Historical audit implementation not included; receipt retained and exact identity referenced. No standalone replay of that historical audit is claimed.",
+      "bytes": 10504,
+      "sha256": "acd90ce5857b33cc91020bac5a8cd965be52114a888bde31f38d06637de6698e",
+      "git_blob": "e05a911b3849f125cc9d9af35abe987324f68e8e",
+      "mode": "0644"
+    },
+    {
+      "source_path": "/dev/shm/ndu_root_continuation_20261107/windows44_source_reviewer_initial_ruff.py",
+      "reason": "Historical audit implementation not included; receipt retained and exact identity referenced. No standalone replay of that historical audit is claimed.",
+      "bytes": 10491,
+      "sha256": "d44438923dd4be9bd48e47e584b748b2be9369056059b39b9e763d81f231d10b",
+      "git_blob": "1efe24004766016f12704b82120c17cc46c272a4",
+      "mode": "0644"
+    },
+    {
+      "source_path": "/dev/shm/ndu_windows44_peer_20261107/review_static.py",
+      "reason": "Historical audit implementation not included; receipt retained and exact identity referenced. No standalone replay of that historical audit is claimed.",
+      "bytes": 14117,
+      "sha256": "b190eeba6b6207cf9970369a71eaff2744456160d3b325e6dd2fd088ac77a108",
+      "git_blob": "50461dca0bfd8a963cb10bc6834118a5a55b2baa",
+      "mode": "0644"
+    }
+  ],
+  "required_failure_history_present": [
+    "/dev/shm/ndu_root_continuation_20261107/windows44_source_reviewer_initial_ruff.json",
+    "/dev/shm/ndu_windows44_20261107/PREPARATION_SPACE_FAILURE.json",
+    "/dev/shm/ndu_windows44_20261107/review2/from_review1.patch",
+    "/dev/shm/ndu_windows44_20261107/review2/manifest.json",
+    "/dev/shm/ndu_windows44_20261107/source_auto_ci_42352197933/ASSERTION_INITIAL_FAILURE.json",
+    "/dev/shm/ndu_windows44_20261107/source_auto_ci_42352197933/ASSERTION_SECOND_FAILURE.json",
+    "/dev/shm/ndu_windows44_20261107/source_auto_ci_42352197933/INITIAL_CAPTURE_TRANSPORT_FAILURE.json",
+    "/dev/shm/ndu_windows44_20261107/source_auto_ci_42352197933/assertion_values44.py",
+    "/dev/shm/ndu_windows44_20261107/source_auto_ci_42352197933/assertion_values44_v2.py",
+    "/workspace/scratch/3f6a885bb83c/round3_native/windows_mutation_deny_44/review1/SELF_REVIEW_FINDING.json"
+  ],
+  "inputs_byte_identical_when_reread": 201,
+  "new_native_or_case_qualification": false,
+  "payload_import_execution_or_filesystem_restore": false,
+  "private_console_or_execution_zip_read": false,
+  "P0_or_old_ACL_migration_closed": false
+}

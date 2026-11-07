@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-O",
+    "/dev/shm/ndu_windows44_packet_peer_20261107/audit_packet.py",
+    "--manifest",
+    "/dev/shm/ndu_windows44_checkpoint_20261107/WINDOWS44_TERMINAL_CHECKPOINT_PUBLICATION_MANIFEST_v2.json",
+    "--manifest-sha",
+    "a7de9ec24b78f688aef347f1178807296fdae984abef837325823c4a154a9f0f",
+    "--roster",
+    "/dev/shm/ndu_windows44_checkpoint_20261107/INPUT_ROSTER_v2.json",
+    "--roster-sha",
+    "14df96951737d091acda46a1ec4c167e31f9d4244ad3dfd875bcceb71f194146",
+    "--expected-files",
+    "183",
+    "--expected-bytes",
+    "1895194",
+    "--output",
+    "/dev/shm/ndu_windows44_packet_peer_20261107/revision2/REVIEW.json"
+  ],
+  "exit_code": 0,
+  "auditor_sha256": "2c966450a535f73e2dfec7a550d45364da2a82f0aac7863959e86f37c8b0f98d",
+  "stdout": "PASS_SELECTED_SAFE_BYTE_CUSTODY\n",
+  "stderr": ""
+}

@@ -1,0 +1,168 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_root_continuation_20261107/review_windows44_builder_delta.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.008224125995184295,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/00.stdout",
+        "bytes": 19,
+        "sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/00.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_windows44_packet_peer_20261107/audit_packet.py",
+        "/dev/shm/ndu_windows44_packet_peer_20261107/check_revision_delta.py",
+        "/dev/shm/ndu_windows44_checkpoint_20261107/build_windows44_checkpoint_v2.py",
+        "/dev/shm/ndu_root_continuation_20261107/review_windows44_builder_delta.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.008444279999821447,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/01.stdout",
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/01.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_windows44_packet_peer_20261107/audit_packet.py",
+        "/dev/shm/ndu_windows44_packet_peer_20261107/check_revision_delta.py",
+        "/dev/shm/ndu_windows44_checkpoint_20261107/build_windows44_checkpoint_v2.py",
+        "/dev/shm/ndu_root_continuation_20261107/review_windows44_builder_delta.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.00844440099899657,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/02.stdout",
+        "bytes": 26,
+        "sha256": "177f260a5645724013185e4b140c7045cc39e56c0c97b120f5cb23599f85f0de"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/02.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-O",
+        "/dev/shm/ndu_root_continuation_20261107/review_windows44_builder_delta.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.1361283540027216,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/03.stdout",
+        "bytes": 29,
+        "sha256": "262610c2a47ae6121ac66c674604f083e614809e56d1fd3e5bd281f5ab546dde"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/03.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-O",
+        "/dev/shm/ndu_windows44_packet_peer_20261107/audit_packet.py",
+        "--manifest",
+        "/dev/shm/ndu_windows44_checkpoint_20261107/WINDOWS44_TERMINAL_CHECKPOINT_PUBLICATION_MANIFEST_v2.json",
+        "--manifest-sha",
+        "a7de9ec24b78f688aef347f1178807296fdae984abef837325823c4a154a9f0f",
+        "--roster",
+        "/dev/shm/ndu_windows44_checkpoint_20261107/INPUT_ROSTER_v2.json",
+        "--roster-sha",
+        "14df96951737d091acda46a1ec4c167e31f9d4244ad3dfd875bcceb71f194146",
+        "--expected-files",
+        "183",
+        "--expected-bytes",
+        "1895194",
+        "--output",
+        "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/ROOT_REVIEW.json"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.20094763601082377,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/04.stdout",
+        "bytes": 32,
+        "sha256": "290dfb7d8405f48fd9ddee9c7d1a916d3096675307a379257f63ec66b8716c4e"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/04.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "codespell_lib",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git",
+        "/dev/shm/ndu_windows44_packet_peer_20261107/audit_packet.py",
+        "/dev/shm/ndu_windows44_packet_peer_20261107/check_revision_delta.py",
+        "/dev/shm/ndu_windows44_checkpoint_20261107/build_windows44_checkpoint_v2.py",
+        "/dev/shm/ndu_root_continuation_20261107/review_windows44_builder_delta.py",
+        "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/ROOT_REVIEW.json",
+        "/dev/shm/ndu_root_continuation_20261107/windows44_builder_root.json"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "wall_seconds": 0.10301418900780845,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/05.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows44_packet_root_checks/05.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "audit_only_PYTHONPATH": "/workspace/scratch/3f6a885bb83c/tooling/codespell-2.4.3"
+    }
+  ],
+  "HOME_inherited": true,
+  "native_execution": false,
+  "payload_import_or_execution": false
+}

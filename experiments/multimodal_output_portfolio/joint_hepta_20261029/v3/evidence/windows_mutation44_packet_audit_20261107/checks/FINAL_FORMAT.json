@@ -1,0 +1,47 @@
+{
+  "sha256": "2c966450a535f73e2dfec7a550d45364da2a82f0aac7863959e86f37c8b0f98d",
+  "bytes": 17922,
+  "lines": 494,
+  "checks": [
+    {
+      "name": "final_format",
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_windows44_packet_peer_20261107/audit_packet.py"
+      ],
+      "exit_code": 0,
+      "stdout": "1 file left unchanged\n",
+      "stderr": ""
+    },
+    {
+      "name": "final_format_check",
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_windows44_packet_peer_20261107/audit_packet.py"
+      ],
+      "exit_code": 0,
+      "stdout": "1 file already formatted\n",
+      "stderr": ""
+    },
+    {
+      "name": "final_ruff_check",
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_windows44_packet_peer_20261107/audit_packet.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    }
+  ]
+}
