@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/review.py", line 313, in <module>
+    main()
+  File "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/review.py", line 173, in main
+    formatter = original_json(
+                ^^^^^^^^^^^^^^
+  File "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/review.py", line 36, in original_json
+    require(identity(data)["sha256"] == sha, "frozen root evidence identity")
+  File "/workspace/scratch/3f6a885bb83c/round3_local_qualification/authority_terminal_checkpoint_root/review.py", line 21, in require
+    raise ValueError(message)
+ValueError: frozen root evidence identity

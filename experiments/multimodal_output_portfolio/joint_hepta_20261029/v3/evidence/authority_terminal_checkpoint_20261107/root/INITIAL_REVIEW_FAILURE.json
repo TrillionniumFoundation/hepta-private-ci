@@ -1,0 +1,28 @@
+{
+  "observed_at_utc": "2026-11-07T02:14:51.545380+00:00",
+  "command": [
+    "python",
+    "-B",
+    "round3_local_qualification/authority_terminal_checkpoint_root/review.py"
+  ],
+  "exit_code": 1,
+  "failure": "ValueError: frozen root evidence identity at original_json for windows39/ROOT_REVIEW.json",
+  "cause": "The newly written root reviewer mistyped the expected SHA-256 literal by omitting three hexadecimal characters. The packet and local source agreed before this mistaken pin comparison.",
+  "incorrect_literal": "346cd81da5f556f2e1645dae988072de6ba143b986284477204bb4976c76a",
+  "correct_literal": "346cd81da5f556f2e1645dae988072de6ba143b986286284477204bb4976c76a",
+  "initial_reviewer": {
+    "bytes": 11466,
+    "sha256": "37f919c6cf7ca819c91962d96fb25a8e530bb280334dc371b65d17cdd254d521"
+  },
+  "original_packet_modified": false,
+  "initial_restore_destination_preserved": "/workspace/scratch/3f6a885bb83c/round3_root_restore_authority_terminal_20261107",
+  "initial_restore_stdout": {
+    "bytes": 423,
+    "sha256": "ab074e2222bb1e5cd82bd1b750d9dd98c0fd0ccdebbf9ad9e81616f1bab1f7dc"
+  },
+  "initial_restore_stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "next_action": "Correct only the reviewer digest literal and use a new artifact restore destination and output names; do not rerun native jobs."
+}
