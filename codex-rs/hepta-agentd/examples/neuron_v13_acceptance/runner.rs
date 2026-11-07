@@ -1,5 +1,4 @@
 use std::fs;
-use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::os::unix::fs::OpenOptionsExt;
@@ -10,21 +9,17 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use anyhow::ensure;
+use codex_arg0::Arg0DispatchPaths;
 use codex_hepta_agentd::*;
-use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_neuron::*;
-use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_types::Digest32;
 use serde_json::Value;
 use tokio::time::sleep;
 use tokio::time::timeout;
 
 use super::descriptor::Input;
+use super::lifecycle::Host;
 use super::lifecycle::ShutdownExpectation;
 use super::lifecycle::host_config;
 use super::lifecycle::ordinary_session;
@@ -45,20 +40,12 @@ fn save(path: &Path, value: &Value) -> Result<()> {
     Ok(())
 }
 
-pub(super) async fn run(input: Input, output: &Path) -> Result<()> {
-    ensure!(
-        output.is_absolute() && output.file_name().is_some(),
-        "output directory must be absolute and new"
-    );
-    let parent = output
-        .parent()
-        .ok_or_else(|| anyhow::anyhow!("output parent missing"))?;
-    ensure!(
-        parent.canonicalize()? == parent,
-        "output parent must be canonical"
-    );
-    fs::create_dir(output)?;
-    File::open(parent)?.sync_all()?;
+pub(super) async fn run(
+    input: Input,
+    output: &Path,
+    host: Host,
+    arg0_paths: &Arg0DispatchPaths,
+) -> Result<()> {
     let started = Instant::now();
     save(
         &output.join("START.json"),
@@ -69,7 +56,7 @@ pub(super) async fn run(input: Input, output: &Path) -> Result<()> {
             "included_in_junit": false,
         }),
     )?;
-    let result = execute(input, output).await;
+    let result = execute(input, output, host, arg0_paths).await;
     match result {
         Ok(mut receipt) => {
             receipt["acceptance_wall_micros"] =
@@ -92,7 +79,13 @@ pub(super) async fn run(input: Input, output: &Path) -> Result<()> {
     }
 }
 
-async fn execute(input: Input, output: &Path) -> Result<Value> {
+async fn execute(
+    input: Input,
+    output: &Path,
+    host: Host,
+    arg0_paths: &Arg0DispatchPaths,
+) -> Result<Value> {
+    let Host { registry, config } = host;
     let Input {
         descriptor,
         digest,
@@ -115,33 +108,6 @@ async fn execute(input: Input, output: &Path) -> Result<Value> {
     )?;
     let task_bytes = descriptor.task.encode()?;
     let task_digest = Digest32::of_bytes(&task_bytes).into_array();
-    let fleet_path = output.join("fleet");
-    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())?;
-    let registry = FleetRegistry::initialize(fleet_root.clone())?;
-    let workspace = output.join("workspace");
-    fs::create_dir(&workspace)?;
-    let agent_id =
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c75").map_err(anyhow::Error::msg)?;
-    let record = registry.register(AgentManifest::new(
-        agent_id.clone(),
-        WorkspaceBinding::new(&workspace, &fleet_root)?,
-        ResourceBudget::local_default(),
-    )?)?;
-    registry.compare_and_transition(
-        &agent_id,
-        /*expected_generation*/ 0,
-        AgentLifecycle::Starting,
-    )?;
-    let config = AgentdConfig::load(
-        fleet_path,
-        agent_id,
-        /*spawn_generation*/ 1,
-        record.layout.home_root().into(),
-        record.layout.run_root().into(),
-        record.layout.home_root().into(),
-        workspace,
-    )?;
-    config.require_neuron_generation_profile()?;
     let identity = config.identity().clone();
     let CellLearningBindingV2::Resumable { weights, .. } = &descriptor.closure.learning else {
         anyhow::bail!("complete resumable learning binding required");
@@ -211,6 +177,7 @@ async fn execute(input: Input, output: &Path) -> Result<Value> {
     let config = config.with_neuron_generation_bootstrap(bootstrap)?;
     let first = ordinary_session(
         config,
+        arg0_paths,
         &registry,
         ShutdownExpectation::UnacknowledgedOutput,
         || async {
@@ -227,8 +194,13 @@ async fn execute(input: Input, output: &Path) -> Result<Value> {
                     .checked_add(120_000_000)
                     .context("request deadline overflow")?,
             };
-            let receipt =
-                original_result(&handle, &request, handle.step(request.clone()).await).await?;
+            let receipt = original_result(
+                &handle,
+                &request,
+                prepared.worker().clock().as_ref(),
+                handle.step(request.clone()).await,
+            )
+            .await?;
             ensure!(
                 receipt.disposition == CellGenerationDispositionV2::Advanced,
                 "original V13 task did not succeed: {:?}",
@@ -294,57 +266,63 @@ async fn execute(input: Input, output: &Path) -> Result<Value> {
     })
     .await??;
     let config = config.with_neuron_generation_bootstrap(bootstrap)?;
-    let second = ordinary_session(config, &registry, ShutdownExpectation::Drained, || async {
-        ensure!(
-            handle.snapshot().await? == before_reopen
-                && handle.task_cost().await? == before_reopen_cost,
-            "reopen changed the original snapshot or charged preparation twice"
-        );
-        ensure!(
-            handle.pending_output().await?.as_ref() == Some(&chunk),
-            "reopen lost or changed the unacknowledged output"
-        );
-        ensure!(
-            handle.step(request.clone()).await? == receipt,
-            "reopen changed original result"
-        );
-        ensure!(
-            fs::read(output.join("control.journal"))? == control_before,
-            "readback dispatched new computation"
-        );
-        ensure!(
-            !handle.drain().await?,
-            "unacknowledged reopened output did not block drain"
-        );
-        let delivery_hash = deliver(
-            &handle,
-            &request,
-            chunk.clone(),
-            &output.join("DELIVERED.jsonl"),
-            before_reopen_cost.identity(),
-        )
-        .await?;
-        ensure!(handle.drain().await?, "acknowledged owner did not drain");
-        handle.resume().await?;
-        let cancellation = cancellation(
-            &handle,
-            &request,
-            prepared.worker().clock().as_ref(),
-            output,
-            before_reopen_cost.identity(),
-        )
-        .await?;
-        ensure!(
-            handle.drain().await?,
-            "settled cancellation owner did not drain"
-        );
-        Ok((
-            delivery_hash,
-            cancellation,
-            handle.snapshot().await?,
-            handle.task_cost().await?,
-        ))
-    })
+    let second = ordinary_session(
+        config,
+        arg0_paths,
+        &registry,
+        ShutdownExpectation::Drained,
+        || async {
+            ensure!(
+                handle.snapshot().await? == before_reopen
+                    && handle.task_cost().await? == before_reopen_cost,
+                "reopen changed the original snapshot or charged preparation twice"
+            );
+            ensure!(
+                handle.pending_output().await?.as_ref() == Some(&chunk),
+                "reopen lost or changed the unacknowledged output"
+            );
+            ensure!(
+                handle.step(request.clone()).await? == receipt,
+                "reopen changed original result"
+            );
+            ensure!(
+                fs::read(output.join("control.journal"))? == control_before,
+                "readback dispatched new computation"
+            );
+            ensure!(
+                !handle.drain().await?,
+                "unacknowledged reopened output did not block drain"
+            );
+            let delivery_hash = deliver(
+                &handle,
+                &request,
+                chunk.clone(),
+                &output.join("DELIVERED.jsonl"),
+                before_reopen_cost.identity(),
+            )
+            .await?;
+            ensure!(handle.drain().await?, "acknowledged owner did not drain");
+            handle.resume().await?;
+            let cancellation = cancellation(
+                &handle,
+                &request,
+                prepared.worker().clock().as_ref(),
+                output,
+                before_reopen_cost.identity(),
+            )
+            .await?;
+            ensure!(
+                handle.drain().await?,
+                "settled cancellation owner did not drain"
+            );
+            Ok((
+                delivery_hash,
+                cancellation,
+                handle.snapshot().await?,
+                handle.task_cost().await?,
+            ))
+        },
+    )
     .await?;
     let (delivery_hash, cancellation, snapshot, cost) = second.value;
     drop(handle);
