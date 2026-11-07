@@ -1,0 +1,89 @@
+{
+  "schema": "hepta.evidence-migration.v1",
+  "source_revision": "a6f3aa12ba187448c35449c7da0a9798ae4ca987",
+  "source_prefix": "qualification/cell-unification-20261106",
+  "source_listing_sha256": "c1e6d2104a3b33f7a37b600efd8468e2a169e7a5e624682ac6fe78a674ea6669",
+  "original_members": 4087,
+  "original_bytes": 116240752,
+  "original_members_over_512000_bytes": 47,
+  "original_paths_over_190_utf16_units": 37,
+  "archive_format": "hepta-evidence-stream-v1",
+  "archive_index": "archive/index.json",
+  "archive_index_sha256": "bd2b113a509835bff49f684c40bed51ef6b76649b1e0ca52e9cafaefb009bbe4",
+  "payload_sha256": "684f8fef0dad5b6fa75b0ab295c47872178edbe713966a157454b043f61b9752",
+  "payload_bytes": 68586635,
+  "payload_parts": 143,
+  "member_manifest_shards": 3,
+  "maximum_archive_file_bytes": 480000,
+  "complete_original_roster_verified": true,
+  "actual_restore_compared": true,
+  "restored_files_byte_equal": true,
+  "restored_git_modes_equal": true,
+  "unit_tests": {
+    "passed": 14,
+    "failed": 0,
+    "skipped": 0,
+    "receipt": "failures/test-result.json"
+  },
+  "original_windows_job": {
+    "run_id": 42302804112,
+    "job_id": 128184561094,
+    "checkout": "failure",
+    "product_tests": "skipped"
+  },
+  "new_windows_execution": "not_observed",
+  "new_native_product_qualification": false,
+  "scope": "Storage representation only. Original failures, unknown results, budgets and scientific claims are unchanged.",
+  "records": [
+    {
+      "path": "failures/windows-checkout.log.gz",
+      "bytes": 5977,
+      "sha256": "4b6f4d36079e901347463b1d991c017d072d8866aa3b77f0d92259c072e751c1",
+      "decoded_bytes": 31482,
+      "decoded_sha256": "c6b8be95a915d42da077d7a56f4ee6536616f32cbc710db7749f66754233b539"
+    },
+    {
+      "path": "failures/tests-first-failure.log.gz",
+      "bytes": 954,
+      "sha256": "9c13ef15731cb4b9b9f5034dce7cd9217754abcd5ebc14ad1d66c779800078e2",
+      "decoded_bytes": 3822,
+      "decoded_sha256": "47cdce96638d1d9688e5bedd725c46230cd61867cbd86045a09def824ef08766"
+    },
+    {
+      "path": "failures/tests-before-windows-fixture.log.gz",
+      "bytes": 550,
+      "sha256": "b6b263a5de5d9821eb84f8b0b9625553d8c652dab8c587b472d29e9dbc138f5c",
+      "decoded_bytes": 2443,
+      "decoded_sha256": "af97dd67a7c64d88f69a8e55fde5368ade8bfae383cdadeb330a36d295a83698"
+    },
+    {
+      "path": "failures/tests-verified.log.gz",
+      "bytes": 550,
+      "sha256": "dd9b7264bde0b17a5f934ea0d1eca11adc8dc0d80b4649801578165d45bc6314",
+      "decoded_bytes": 2443,
+      "decoded_sha256": "764c85efd10c3ab61e347c38fc97840c00d49089432847ab942a69dd53d0c5b9"
+    },
+    {
+      "path": "failures/windows-checkout.json",
+      "bytes": 3958,
+      "sha256": "3f8bbbf1c2bf8c6cf6a10141dc704fe9bf78a8c438e01078bc131efdb084497f"
+    },
+    {
+      "path": "failures/test-result.json",
+      "bytes": 591,
+      "sha256": "e092709226e9f717ba59d6c0afb0083e3ff713702ddd0b7502d6870337a72a06"
+    },
+    {
+      "path": "failures/read-interruptions.json",
+      "bytes": 2399,
+      "sha256": "e26353aa9b8e590862cee83783aeff21db7d3056ee28d8f50a500b8642fb581f"
+    },
+    {
+      "path": "failures/acquisition.json.gz",
+      "bytes": 9896,
+      "sha256": "71b80aa4844a98c3e744d05d348a4f481110814327a8f47058dc4f3e9165fda9",
+      "decoded_bytes": 50090,
+      "decoded_sha256": "79fa14018c3bf757fc13edc8db0d7c67c06e5144c41a307f27e9d45fa60242da"
+    }
+  ]
+}

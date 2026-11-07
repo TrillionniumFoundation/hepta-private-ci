@@ -1,0 +1,55 @@
+{
+  "capture": "Observed orchestration notifications; not independent remote execution receipts",
+  "observations": [
+    {
+      "round": 14,
+      "name": "r18",
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/checkpoint-r18-closed.tar.gz",
+      "offset": 917504,
+      "expected_version": "66306:50907211:1093599:1793957832272197066:1793957832272197066",
+      "error": "McpServerError: Connection failed.",
+      "error_code": "UNAVAILABLE",
+      "disposition": "read retried with the same offset and version; no command or model replay"
+    },
+    {
+      "round": 14,
+      "name": "r19",
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/checkpoint-r19-closed.tar.gz",
+      "offset": 917504,
+      "expected_version": "66306:50907241:1127067:1793959347788211681:1793959347788211681",
+      "error": "McpServerError: Connection failed.",
+      "error_code": "UNAVAILABLE",
+      "disposition": "read retried with the same offset and version; no command or model replay"
+    },
+    {
+      "round": 14,
+      "name": "r20",
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/checkpoint-r20-closed.tar.gz",
+      "offset": 917504,
+      "expected_version": "66306:50907388:1271446:1793967124248621149:1793967124248621149",
+      "error": "McpServerError: Connection failed.",
+      "error_code": "UNAVAILABLE",
+      "disposition": "read retried with the same offset and version; no command or model replay"
+    },
+    {
+      "round": 14,
+      "name": "r23",
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/checkpoint-r23-closed.tar.gz",
+      "offset": 917504,
+      "expected_version": "66306:50907481:2165685:1793972422690848642:1793972422690848642",
+      "error": "McpServerError: Connection failed.",
+      "error_code": "UNAVAILABLE",
+      "disposition": "read retried with the same offset and version; no command or model replay"
+    },
+    {
+      "round": 16,
+      "name": "r17",
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/checkpoint-r17-closed.tar.gz",
+      "offset": 1048576,
+      "expected_version": "66306:50907104:1093535:1793956340514528679:1793956340514528679",
+      "error": "McpServerError: Connection failed.",
+      "error_code": "UNAVAILABLE",
+      "disposition": "read retried with the same offset and version; no command or model replay"
+    }
+  ]
+}

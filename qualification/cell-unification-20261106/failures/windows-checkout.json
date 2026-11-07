@@ -1,0 +1,102 @@
+{
+  "run_id": 42302804112,
+  "job_id": 128184561094,
+  "source_sha": "a6f3aa12ba187448c35449c7da0a9798ae4ca987",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42302804112/job/128184561094",
+  "checkout_conclusion": "failure",
+  "product_tests": "skipped",
+  "failed_paths": [
+    "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/apply-preparation/references/source53-git/actual-tree-reads/codex-rs__app-server__src__request_processors__account_processor-after.json",
+    "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/apply-preparation/references/source53-git/actual-tree-reads/codex-rs__app-server__src__request_processors__account_processor-before.json",
+    "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/attempt2/evidence/native-source53-apply/input/after/codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+    "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/attempt2/evidence/native-source53-apply/input/before/codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+    "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/root-registration-and-authorization/actual-tree-reads/codex-rs__app-server__src__request_processors__account_processor-after.json",
+    "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/root-registration-and-authorization/actual-tree-reads/codex-rs__app-server__src__request_processors__account_processor-before.json"
+  ],
+  "step_results": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1
+    },
+    {
+      "name": "Checkout immutable PR head without saved credentials",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 2
+    },
+    {
+      "name": "Install repository test runners",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 3
+    },
+    {
+      "name": "Verify exact source identity and pinned native compiler",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 4
+    },
+    {
+      "name": "Exercise private file handles, ACL, reparse and hardlink invariants",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 5
+    },
+    {
+      "name": "Exercise actual Prompt Registry Windows durable owner",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 6
+    },
+    {
+      "name": "Exercise signed final-use and authority-lease durable stores",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 7
+    },
+    {
+      "name": "Validate Agentd Prompt Runtime integration and reopened state",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 8
+    },
+    {
+      "name": "Enforce source-level Rust formatting for durable owners",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 9
+    },
+    {
+      "name": "Prove directory acquisition rejects both original native attacks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 10
+    },
+    {
+      "name": "Confirm no generated or modified tracked source",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 11
+    },
+    {
+      "name": "Preserve exact source and all acquisition qualification logs",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 12
+    },
+    {
+      "name": "Post Checkout immutable PR head without saved credentials",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 24
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 25
+    }
+  ]
+}
