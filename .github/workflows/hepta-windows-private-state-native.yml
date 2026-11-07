@@ -36,6 +36,11 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 65
     steps:
+      - name: Enable long paths for immutable Windows checkout
+        shell: pwsh
+        run: |
+          git config --global core.longpaths true
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Checkout immutable PR head without saved credentials
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
