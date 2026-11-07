@@ -1,0 +1,347 @@
+[
+  {
+    "case": {
+      "x": 0.35,
+      "horizon": 1.4,
+      "mu": -0.1,
+      "sigma": 0.3,
+      "discount": 0.15,
+      "margin": 0.25,
+      "refractory": 0.11,
+      "active_reward": 0.4,
+      "terminal_reward": 0.2
+    },
+    "result": {
+      "single_cycle": 0.8971374772337991,
+      "regenerative": 1.1910438701199235,
+      "single_slope": -0.6077844243136288,
+      "regenerative_slope": -2.129864605927257,
+      "space_step": 0.01,
+      "time_step": 0.004,
+      "space_intervals": 300,
+      "time_intervals": 350,
+      "domain": 3,
+      "drift_scheme": "central",
+      "upper_boundary_hit_probability": 7.470719841189032e-16
+    },
+    "candidate": {
+      "single_cycle": 0.8978211074867941,
+      "regenerative": 1.1912660003387066,
+      "expected_discounted_hits": 0.5566963441098793,
+      "active_probability": 0.9420925724160312,
+      "active_time": 1.2046014418490871,
+      "renewal_tail_bound": 0.0,
+      "value_tail_bound": 0.0,
+      "quadrature_error": 3.5861815886787345e-11,
+      "terms": 13
+    },
+    "e_error": -0.0006836302529950045,
+    "u_error": -0.0002221302187830343
+  },
+  {
+    "case": {
+      "x": 0.35,
+      "horizon": 1.4,
+      "mu": -0.1,
+      "sigma": 0.3,
+      "discount": 0.15,
+      "margin": 0.25,
+      "refractory": 0.11,
+      "active_reward": 0.4,
+      "terminal_reward": 0.2
+    },
+    "result": {
+      "single_cycle": 0.8974840965146796,
+      "regenerative": 1.1912244436817445,
+      "single_slope": -0.6079462986836481,
+      "regenerative_slope": -2.130702573853416,
+      "space_step": 0.005,
+      "time_step": 0.002,
+      "space_intervals": 600,
+      "time_intervals": 700,
+      "domain": 3,
+      "drift_scheme": "central",
+      "upper_boundary_hit_probability": 7.470719841189032e-16
+    },
+    "candidate": {
+      "single_cycle": 0.8978211074867941,
+      "regenerative": 1.1912660003387066,
+      "expected_discounted_hits": 0.5566963441098793,
+      "active_probability": 0.9420925724160312,
+      "active_time": 1.2046014418490871,
+      "renewal_tail_bound": 0.0,
+      "value_tail_bound": 0.0,
+      "quadrature_error": 3.5861815886787345e-11,
+      "terms": 13
+    },
+    "e_error": -0.00033701097211447095,
+    "u_error": -4.1556656962038474e-05
+  },
+  {
+    "case": {
+      "x": 0.35,
+      "horizon": 1.4,
+      "mu": -0.1,
+      "sigma": 0.3,
+      "discount": 0.15,
+      "margin": 0.25,
+      "refractory": 0.11,
+      "active_reward": 0.4,
+      "terminal_reward": 0.2
+    },
+    "result": {
+      "single_cycle": 0.8976538079894598,
+      "regenerative": 1.1912412851454215,
+      "single_slope": -0.6079808537782005,
+      "regenerative_slope": -2.131006850207618,
+      "space_step": 0.0025,
+      "time_step": 0.001,
+      "space_intervals": 1200,
+      "time_intervals": 1400,
+      "domain": 3,
+      "drift_scheme": "central",
+      "upper_boundary_hit_probability": 7.470719841189032e-16
+    },
+    "candidate": {
+      "single_cycle": 0.8978211074867941,
+      "regenerative": 1.1912660003387066,
+      "expected_discounted_hits": 0.5566963441098793,
+      "active_probability": 0.9420925724160312,
+      "active_time": 1.2046014418490871,
+      "renewal_tail_bound": 0.0,
+      "value_tail_bound": 0.0,
+      "quadrature_error": 3.5861815886787345e-11,
+      "terms": 13
+    },
+    "e_error": -0.0001672994973342945,
+    "u_error": -2.471519328506311e-05
+  },
+  {
+    "case": {
+      "x": 0.1,
+      "horizon": 0.15,
+      "mu": -0.3,
+      "sigma": 0.2,
+      "discount": 0.1,
+      "margin": 0.12,
+      "refractory": 0.03,
+      "active_reward": 0.2,
+      "terminal_reward": 0.1
+    },
+    "result": {
+      "single_cycle": 0.45529368651519597,
+      "regenerative": 0.4954215611329123,
+      "single_slope": -5.118159446008527,
+      "regenerative_slope": -6.07434673271017,
+      "space_step": 0.01,
+      "time_step": 0.003947368421052632,
+      "space_intervals": 300,
+      "time_intervals": 38,
+      "domain": 3,
+      "drift_scheme": "central",
+      "upper_boundary_hit_probability": 1.95515e-318
+    },
+    "candidate": {
+      "single_cycle": 0.4594315401571521,
+      "regenerative": 0.49663317785029043,
+      "expected_discounted_hits": 0.3794831448381805,
+      "active_probability": 0.9072803709298858,
+      "active_time": 0.13886380207528665,
+      "renewal_tail_bound": 0.0,
+      "value_tail_bound": 0.0,
+      "quadrature_error": 1.1578351656711556e-11,
+      "terms": 5
+    },
+    "e_error": -0.004137853641956124,
+    "u_error": -0.0012116167173781278
+  },
+  {
+    "case": {
+      "x": 0.1,
+      "horizon": 0.15,
+      "mu": -0.3,
+      "sigma": 0.2,
+      "discount": 0.1,
+      "margin": 0.12,
+      "refractory": 0.03,
+      "active_reward": 0.2,
+      "terminal_reward": 0.1
+    },
+    "result": {
+      "single_cycle": 0.4573324472824666,
+      "regenerative": 0.4961437516526689,
+      "single_slope": -5.174868942529271,
+      "regenerative_slope": -6.109708767124233,
+      "space_step": 0.005,
+      "time_step": 0.002,
+      "space_intervals": 600,
+      "time_intervals": 75,
+      "domain": 3,
+      "drift_scheme": "central",
+      "upper_boundary_hit_probability": 1.95515e-318
+    },
+    "candidate": {
+      "single_cycle": 0.4594315401571521,
+      "regenerative": 0.49663317785029043,
+      "expected_discounted_hits": 0.3794831448381805,
+      "active_probability": 0.9072803709298858,
+      "active_time": 0.13886380207528665,
+      "renewal_tail_bound": 0.0,
+      "value_tail_bound": 0.0,
+      "quadrature_error": 1.1578351656711556e-11,
+      "terms": 5
+    },
+    "e_error": -0.0020990928746855153,
+    "u_error": -0.0004894261976215453
+  },
+  {
+    "case": {
+      "x": 0.1,
+      "horizon": 0.15,
+      "mu": -0.3,
+      "sigma": 0.2,
+      "discount": 0.1,
+      "margin": 0.12,
+      "refractory": 0.03,
+      "active_reward": 0.2,
+      "terminal_reward": 0.1
+    },
+    "result": {
+      "single_cycle": 0.45838375185821556,
+      "regenerative": 0.49636148498660737,
+      "single_slope": -5.198843160471111,
+      "regenerative_slope": -6.123391148957602,
+      "space_step": 0.0025,
+      "time_step": 0.001,
+      "space_intervals": 1200,
+      "time_intervals": 150,
+      "domain": 3,
+      "drift_scheme": "central",
+      "upper_boundary_hit_probability": 1.95515e-318
+    },
+    "candidate": {
+      "single_cycle": 0.4594315401571521,
+      "regenerative": 0.49663317785029043,
+      "expected_discounted_hits": 0.3794831448381805,
+      "active_probability": 0.9072803709298858,
+      "active_time": 0.13886380207528665,
+      "renewal_tail_bound": 0.0,
+      "value_tail_bound": 0.0,
+      "quadrature_error": 1.1578351656711556e-11,
+      "terms": 5
+    },
+    "e_error": -0.0010477882989365361,
+    "u_error": -0.00027169286368305956
+  },
+  {
+    "case": {
+      "x": 0.12,
+      "horizon": 0.8,
+      "mu": -0.2,
+      "sigma": 0.015,
+      "discount": 0.1,
+      "margin": 0.08,
+      "refractory": 0.07
+    },
+    "result": {
+      "single_cycle": 0.8091121655868139,
+      "regenerative": 0.9248261936665311,
+      "single_slope": -5.7383892447173785,
+      "regenerative_slope": -9.984465026137906,
+      "space_step": 0.01,
+      "time_step": 0.004,
+      "space_intervals": 300,
+      "time_intervals": 200,
+      "domain": 3,
+      "drift_scheme": "monotone_upwind",
+      "upper_boundary_hit_probability": 0.0
+    },
+    "candidate": {
+      "single_cycle": 0.940665364626813,
+      "regenerative": 0.9406788885074338,
+      "expected_discounted_hits": 0.9406788885074338,
+      "active_probability": 0.9824016708367369,
+      "active_time": 0.7035742238870091,
+      "renewal_tail_bound": 0.0,
+      "value_tail_bound": 0.0,
+      "quadrature_error": 1.2190658388809058e-11,
+      "terms": 12
+    },
+    "e_error": -0.13155319903999918,
+    "u_error": -0.01585269484090268
+  },
+  {
+    "case": {
+      "x": 0.12,
+      "horizon": 0.8,
+      "mu": -0.2,
+      "sigma": 0.015,
+      "discount": 0.1,
+      "margin": 0.08,
+      "refractory": 0.07
+    },
+    "result": {
+      "single_cycle": 0.8627906855305878,
+      "regenerative": 0.9119455278735635,
+      "single_slope": -5.323190916157006,
+      "regenerative_slope": -8.342171424412603,
+      "space_step": 0.005,
+      "time_step": 0.002,
+      "space_intervals": 600,
+      "time_intervals": 400,
+      "domain": 3,
+      "drift_scheme": "monotone_upwind",
+      "upper_boundary_hit_probability": 0.0
+    },
+    "candidate": {
+      "single_cycle": 0.940665364626813,
+      "regenerative": 0.9406788885074338,
+      "expected_discounted_hits": 0.9406788885074338,
+      "active_probability": 0.9824016708367369,
+      "active_time": 0.7035742238870091,
+      "renewal_tail_bound": 0.0,
+      "value_tail_bound": 0.0,
+      "quadrature_error": 1.2190658388809058e-11,
+      "terms": 12
+    },
+    "e_error": -0.07787467909622525,
+    "u_error": -0.02873336063387022
+  },
+  {
+    "case": {
+      "x": 0.12,
+      "horizon": 0.8,
+      "mu": -0.2,
+      "sigma": 0.015,
+      "discount": 0.1,
+      "margin": 0.08,
+      "refractory": 0.07
+    },
+    "result": {
+      "single_cycle": 0.9033647072331248,
+      "regenerative": 0.9176172525091936,
+      "single_slope": -4.004085938293511,
+      "regenerative_slope": -5.4360006376999115,
+      "space_step": 0.0025,
+      "time_step": 0.001,
+      "space_intervals": 1200,
+      "time_intervals": 800,
+      "domain": 3,
+      "drift_scheme": "monotone_upwind",
+      "upper_boundary_hit_probability": 0.0
+    },
+    "candidate": {
+      "single_cycle": 0.940665364626813,
+      "regenerative": 0.9406788885074338,
+      "expected_discounted_hits": 0.9406788885074338,
+      "active_probability": 0.9824016708367369,
+      "active_time": 0.7035742238870091,
+      "renewal_tail_bound": 0.0,
+      "value_tail_bound": 0.0,
+      "quadrature_error": 1.2190658388809058e-11,
+      "terms": 12
+    },
+    "e_error": -0.037300657393688263,
+    "u_error": -0.023061635998240182
+  }
+]

@@ -1,0 +1,158 @@
+[
+  {
+    "kind": "stationary_hx",
+    "dx": 0.04,
+    "result": {
+      "single_cycle": 84.81013596480241,
+      "regenerative": 116.85477930092222,
+      "single_slope": 238.55124464947713,
+      "regenerative_slope": 179.19664904815755,
+      "space_step": 0.04,
+      "domain": 6.0,
+      "drift_scheme": "central"
+    },
+    "expected": {
+      "single_cycle": 84.71022800632653,
+      "regenerative": 116.58897326850622,
+      "reset_single_cycle": 29.932721142783283,
+      "reset_regenerative": 80.56730204129725,
+      "discounted_reset_probability": 0.6261312503019715,
+      "renewal_multiplier": 2.6747354541070734
+    }
+  },
+  {
+    "kind": "stationary_hx",
+    "dx": 0.02,
+    "result": {
+      "single_cycle": 84.72809856259623,
+      "regenerative": 116.64785792413853,
+      "single_slope": 238.62778852769452,
+      "regenerative_slope": 179.5396020975238,
+      "space_step": 0.02,
+      "domain": 6.0,
+      "drift_scheme": "central"
+    },
+    "expected": {
+      "single_cycle": 84.71022800632653,
+      "regenerative": 116.58897326850622,
+      "reset_single_cycle": 29.932721142783283,
+      "reset_regenerative": 80.56730204129725,
+      "discounted_reset_probability": 0.6261312503019715,
+      "renewal_multiplier": 2.6747354541070734
+    }
+  },
+  {
+    "kind": "stationary_hx",
+    "dx": 0.01,
+    "result": {
+      "single_cycle": 84.71469620598845,
+      "regenerative": 116.59932675844124,
+      "single_slope": 238.65283498254774,
+      "regenerative_slope": 179.6384410534687,
+      "space_step": 0.01,
+      "domain": 6.0,
+      "drift_scheme": "central"
+    },
+    "expected": {
+      "single_cycle": 84.71022800632653,
+      "regenerative": 116.58897326850622,
+      "reset_single_cycle": 29.932721142783283,
+      "reset_regenerative": 80.56730204129725,
+      "discounted_reset_probability": 0.6261312503019715,
+      "renewal_multiplier": 2.6747354541070734
+    }
+  },
+  {
+    "kind": "stationary_hx",
+    "dx": 0.005,
+    "result": {
+      "single_cycle": 84.71134535960748,
+      "regenerative": 116.59156136236723,
+      "single_slope": 238.65909742681401,
+      "regenerative_slope": 179.65506495197536,
+      "space_step": 0.005,
+      "domain": 6.0,
+      "drift_scheme": "central"
+    },
+    "expected": {
+      "single_cycle": 84.71022800632653,
+      "regenerative": 116.58897326850622,
+      "reset_single_cycle": 29.932721142783283,
+      "reset_regenerative": 80.56730204129725,
+      "discounted_reset_probability": 0.6261312503019715,
+      "renewal_multiplier": 2.6747354541070734
+    }
+  },
+  {
+    "kind": "low_noise_remediation",
+    "dx": 0.001,
+    "dt": 0.002,
+    "result": {
+      "single_cycle": 0.9387403008290437,
+      "regenerative": 0.9390744519683316,
+      "single_slope": -1.128333378584534,
+      "regenerative_slope": -1.2007079363181572,
+      "space_step": 0.001,
+      "time_step": 0.002,
+      "space_intervals": 800,
+      "time_intervals": 400,
+      "domain": 0.8,
+      "drift_scheme": "central",
+      "upper_boundary_hit_probability": 0.0
+    }
+  },
+  {
+    "kind": "low_noise_remediation",
+    "dx": 0.0005,
+    "dt": 0.001,
+    "result": {
+      "single_cycle": 0.9397774968155818,
+      "regenerative": 0.9398669560148476,
+      "single_slope": -0.9267596550586177,
+      "regenerative_slope": -0.950638756694322,
+      "space_step": 0.0005,
+      "time_step": 0.001,
+      "space_intervals": 1600,
+      "time_intervals": 800,
+      "domain": 0.8,
+      "drift_scheme": "central",
+      "upper_boundary_hit_probability": 0.0
+    }
+  },
+  {
+    "kind": "low_noise_remediation",
+    "dx": 0.00025,
+    "dt": 0.0005,
+    "result": {
+      "single_cycle": 0.9402442658108429,
+      "regenerative": 0.9402821610790982,
+      "single_slope": -0.8338591924472727,
+      "regenerative_slope": -0.8452725182817034,
+      "space_step": 0.00025,
+      "time_step": 0.0005,
+      "space_intervals": 3200,
+      "time_intervals": 1600,
+      "domain": 0.8,
+      "drift_scheme": "central",
+      "upper_boundary_hit_probability": 0.0
+    }
+  },
+  {
+    "kind": "low_noise_remediation",
+    "dx": 0.000125,
+    "dt": 0.00025,
+    "result": {
+      "single_cycle": 0.9404610963591614,
+      "regenerative": 0.9404842608585193,
+      "single_slope": -0.7896977669581418,
+      "regenerative_slope": -0.7971405180460245,
+      "space_step": 0.000125,
+      "time_step": 0.00025,
+      "space_intervals": 6400,
+      "time_intervals": 3200,
+      "domain": 0.8,
+      "drift_scheme": "central",
+      "upper_boundary_hit_probability": 0.0
+    }
+  }
+]

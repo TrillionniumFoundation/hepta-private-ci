@@ -1,0 +1,533 @@
+{
+  "schema": "hcsn-regenerative-causal-checks.v1",
+  "started_utc": "2026-11-07T00:22:28.683615+00:00",
+  "source_files_sha256": {
+    "qualification/hcsn/checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "qualification/hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "qualification/hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "qualification/hcsn_causal/__init__.py": "d4898f27e9cec67e13457937d5eef8d0c958fd6b1212e8cf6ec18ea15a8519ac",
+    "qualification/hcsn_causal/checks.py": "081844e4d311a1a3ae59d9c3457c701c15e2b0861e06edf65e55f3b4c278d345",
+    "qualification/hcsn_causal/comparison.py": "35b334433be96622c7702fb61b222f812fc8e467ffe3686771872366c68bc13f",
+    "qualification/hcsn_causal/event_stream.py": "84ee237ce90f3a96b7bdf4ca93faff034e06a570041933c00f06599b343118c7",
+    "qualification/hcsn_causal/inventory.py": "19e808e8bfc3771805dfdff0ca4a8d26fee09bb9e960c235479bd2535f9f53ee",
+    "qualification/hcsn_causal/test_comparison.py": "3caa274b7fca94d6b83c78697b419031e9ff427f534ff4737d00875022866bd1",
+    "qualification/hcsn_causal/test_event_stream.py": "3a24ac256d88033de9659e2e263062a984000965989e5d5bfd42664a398150a0",
+    "qualification/hcsn_causal/test_inventory.py": "3f403d648f0baadcb5e7f6b59235a078fe1561d57f76efef3aa5002d13eef32f",
+    "qualification/hcsn_regenerative/__init__.py": "133f20d47b4146591d160e498819b910e8217bb852a3bff9deeaeee06b3a4319",
+    "qualification/hcsn_regenerative/audit.py": "0fc55cc51ebdc741f11641785ae4609bb46f6298a20bfe3b291e640237548d8c",
+    "qualification/hcsn_regenerative/process.py": "e7a7b6b8eed0c22c4ca61237db8729408eb2e23938d71716ecdce69714a6be67",
+    "qualification/hcsn_regenerative/run_audit.py": "f2bd3042eae70e6e41229045dd4e5d2c3d2455d3534efb490e8cf083f25542e5",
+    "qualification/hcsn_regenerative/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qualification/hcsn_regenerative/tests/test_audit.py": "e4b8c644c90866a999afdfceaeb4294eb686ce5473d72726b6962daf3c5b8e82",
+    "qualification/hcsn_regenerative/tests/test_process.py": "f1cb36d7e037af664be27e501f2b2de1607cb826689c672e7668c24433b41710"
+  },
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "software": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "new_training_campaigns": 0,
+  "scientific_gain_established": false,
+  "checkout_head_before_execution": "17c5dee5474ad8645b3daa9da79c661352260d0b",
+  "tests_discovered": 68,
+  "tests_run": 68,
+  "passed": 68,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "expected_failures": 0,
+  "unexpected_successes": 0,
+  "unfinished": 0,
+  "fixture_failures": 0,
+  "fixture_errors": 0,
+  "fixture_skipped": 0,
+  "failure_records": 0,
+  "error_records": 0,
+  "skipped_records": 0,
+  "method_outcomes": [
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_async_source_order_does_not_rewrite_past",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_chunking_preserves_events_and_query_time",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_event_owns_immutable_tokens",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_identity_mismatch_and_token_budget_are_atomic",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_interrupted_partial_operation_cannot_replay",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_interrupted_query_after_advance_poisons",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_invalid_later_event_rejects_whole_batch_before_effects",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_long_interference_and_query_swap_do_not_advance_clock",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_partial_core_failure_poison_requires_recovery",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_prefix_is_cropped_before_encoding_and_weights_checked",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_query_seals_all_events_at_its_ready_time",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_ready_clock_follows_lazy_token_materialization",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_replay_and_nonfinite_tokens_reject",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_reversed_ready_clock_rejects",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_simultaneous_contents_survive_without_fake_time",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_event_stream.StreamTests.test_wide_real_frontend_dimensions_are_preserved",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_a_complete_list_is_not_a_closed_attempt_ledger",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_bad_capacity_initialization_and_design_are_rejected",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_duplicates_and_best_of_restarts_are_rejected",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_extreme_finite_quality_and_cost_cannot_emit_nan_report",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_failure_and_oom_costs_survive_completed_final",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_four_paired_effects_and_interaction",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_log_ratio_avoids_intermediate_underflow",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_missing_arm_never_drops_the_denominator",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_missing_physical_energy_cannot_pass_net_gate",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_no_gain_without_prespecified_quality_and_latency",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_partial_training_and_excess_retry_budget_block",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_same_search_cap_with_unequal_realized_search_is_rejected",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_unknown_attempt_even_with_counters_is_not_terminal",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_comparison.ComparisonTests.test_unknown_cost_blocks_comparison_without_imputation",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_inventory.InventoryTests.test_change_between_full_reads_rejects_snapshot",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_inventory.InventoryTests.test_closed_inventory_and_paired_gate",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_inventory.InventoryTests.test_extra_entry_duplicate_json_and_alias_identity_reject",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_inventory.InventoryTests.test_later_ledger_edit_or_pair_deletion_invalidates_inventory",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_inventory.InventoryTests.test_omitted_oom_changed_cost_and_duplicate_are_rejected",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_inventory.InventoryTests.test_symlink_hardlink_and_nested_directory_reject",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_inventory.InventoryTests.test_unknown_outcome_and_missing_nullable_field_reject",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_causal.test_inventory.InventoryTests.test_unpaired_starts_or_terminals_cannot_close",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.KilledGeneratorTests.test_boundary_and_zero_horizon_atoms",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.KilledGeneratorTests.test_infinite_bin_edge_has_no_warning_or_renormalization",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.KilledGeneratorTests.test_laplace_solves_same_interior_generator",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.KilledGeneratorTests.test_survivor_hit_and_upper_tail_share_mass",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.NonfiniteResultTests.test_finite_extreme_inputs_cannot_return_nan_transition",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.NonfiniteResultTests.test_finite_rewards_cannot_return_infinite_finite_horizon_value",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.NonfiniteResultTests.test_finite_rewards_cannot_return_infinite_stationary_value",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.RenewalTests.test_domains_and_unresolved_tail_fail_explicitly",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.RenewalTests.test_low_noise_active_occupation",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.RenewalTests.test_remaining_time_boundary_identity_and_release_atom",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.RenewalTests.test_tail_receipt_bounds_tolerance_change",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.RenewalTests.test_two_hit_window_against_independent_time_convolution",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.RenewalTests.test_zero_refractory_and_multiple_hits",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.StationaryHXTests.test_renewal_fixed_point_and_boundary",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.StationaryHXTests.test_same_interior_cashflow_for_E_and_U",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.SuccessorTests.test_instant_reset_successor_and_undiscounted_counts",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.SuccessorTests.test_invalid_remaining_time_partition",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.SuccessorTests.test_low_noise_successor_resolves_active_and_refractory_phases",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.SuccessorTests.test_reset_successor_and_remaining_time_atoms",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_process.SuccessorTests.test_successor_matches_independent_time_and_space_kernel",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_audit.RegenerativeAuditTests.test_instant_reset_nonlocal_boundary_at_positive_deadline",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_audit.RegenerativeAuditTests.test_integrated_density_scores_against_function_derivatives",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_audit.RegenerativeAuditTests.test_invalid_domains_are_rejected_before_atom_shortcuts",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_audit.RegenerativeAuditTests.test_killed_bins_and_explicit_upper_tail",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_audit.RegenerativeAuditTests.test_parameter_sensitivity_uses_independent_pde",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_audit.RegenerativeAuditTests.test_positive_integral_in_tail_and_at_low_noise",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_audit.RegenerativeAuditTests.test_refinement_of_killed_and_regenerative_values",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_audit.RegenerativeAuditTests.test_remaining_horizon_and_exact_refractory_release_atom",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_audit.RegenerativeAuditTests.test_short_horizon_and_low_noise_require_resolved_grids",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "qualification.hcsn_regenerative.tests.test_audit.RegenerativeAuditTests.test_stationary_hx_resolvent_and_regenerative_slope",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    }
+  ],
+  "fixture_outcomes": [],
+  "skipped_tests": [],
+  "failures": [],
+  "status": "passed",
+  "elapsed_seconds": 6.90862057999766,
+  "source_unchanged_during_execution": true,
+  "finished_utc": "2026-11-07T00:22:36.325806+00:00"
+}

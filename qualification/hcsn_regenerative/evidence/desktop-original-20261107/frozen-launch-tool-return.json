@@ -1,0 +1,16 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\n  \"schema\": \"hcsn-campaign-runtime-launch-v2\",\n  \"observed_at_utc\": \"2026-11-05 18:02:27 UTC\",\n  \"host\": \"desktop\",\n  \"job_id\": \"1a1acdd69f2-fc05-5757\",\n  \"idempotency_key\": \"hcsn-cuda-r1-gated-full170-campaign-v2\",\n  \"request_digest\": \"1ab4f345eb683f49febbe79914ed7861ab01e569af82d43d6405aadb99f3dfaf\",\n  \"launch_state\": \"launched\",\n  \"launch_ok\": true,\n  \"reused\": false,\n  \"created_unix_ms\": 1793901554162,\n  \"task_root\": \"/data/hcsn-cuda-170run-20261105-r1\",\n  \"bundle_directory\": \"/data/hcsn-cuda-170run-20261105-r1/experiments/execution_v2\",\n  \"output_directory\": \"/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2\",\n  \"manifest_sha256\": \"dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531\",\n  \"archive_sha256\": \"a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5\",\n  \"source_commit\": \"f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b\",\n  \"process_observation\": {\n    \"audit_recorded\": true,\n    \"backend\": \"systemd\",\n    \"job_id\": \"1a1acdd69f2-fc05-5757\",\n    \"state\": \"running\",\n    \"systemd\": {\n      \"ActiveState\": \"active\",\n      \"Description\": \"Hepta Runtime job 1a1acdd69f2-fc05-5757 d47233c214bcc8143da5e05871f44372\",\n      \"ExecMainCode\": \"0\",\n      \"ExecMainPID\": \"356991\",\n      \"ExecMainStatus\": \"0\",\n      \"InvocationID\": \"639f5d79691948ff8e3f2b7d82d26810\",\n      \"LoadState\": \"loaded\",\n      \"Result\": \"success\",\n      \"SubState\": \"running\"\n    }\n  },\n  \"runtime_receipts\": [\n    {\n      \"name\": \"progress.json\",\n      \"sha256\": \"655d597d42d9f9ab02c54eb368545404da6b787a9035b23c6e70f6ba64781b72\",\n      \"bytes\": 564\n    },\n    {\n      \"name\": \"claim.json\",\n      \"sha256\": \"074b5449ca235a19608e8787208c6700bd618d2ccacb3b3574bca87ab750e6ab\",\n      \"bytes\": 304\n    },\n    {\n      \"name\": \"predeclared-plan.json\",\n      \"sha256\": \"40c977e94cbb3763b3b44f00a69bb3e0da4f74a584bd4f064af82a560bf5dcc0\",\n      \"bytes\": 12607\n    }\n  ],\n  \"cuda_model_work_completed\": 0,\n  \"global_qualification\": \"open\",\n  \"scope\": \"Successful durable launch and initial waiting observation only; no tensor, CUDA model, full-budget or physical-energy qualification is inferred.\"\n}\n",
+    "encoding": "utf-8",
+    "sha": "2a0f4aeecbc3bf3f2f1bb569bfec35b088d6011a",
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/aecef421370c143a2a707ef47c161f2609454221/qualification/hcsn/evidence/desktop-20261105/campaign-v2/campaign-runtime-launch.json",
+    "display_title": "campaign-runtime-launch.json"
+  },
+  "isError": false
+}

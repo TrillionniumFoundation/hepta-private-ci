@@ -1,0 +1,316 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "model": "population_flux",
+  "task": "delayed_recall",
+  "seed": 0,
+  "pid": 3203738,
+  "started_utc": "2026-11-06T07:58:12.882659+00:00",
+  "probe_sha256": "f8a2b7c193d2750cafb95446eff314195ca54ebb0305c008a35336f6bd874e08",
+  "repo_root": "/data/hcsn-cuda-170run-20261105-r1",
+  "scope": "candidate-only rematerialized B; one random-initialized FP32 CUDA training step, same registered first batch",
+  "base_preflight_sha256": "70331f392c9695e0522da52817b3511b544304a6f4e23a169a016a07ea9f1285",
+  "comparison_scope": "candidate only; no simultaneous original full-shape graph",
+  "rematerialization": {
+    "segment_steps": 1,
+    "use_reentrant": false,
+    "preserve_rng_state": true,
+    "full_bptt": true
+  },
+  "eligibility_checked_by_probe": false,
+  "required_external_eligibility": [
+    "original full-shape B OOM",
+    "fixed CPU and CUDA parity receipts passed"
+  ],
+  "candidate_expected_sha256": {
+    "qualification/hcsn/rematerialization.py": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+    "CANDIDATE.json": "d864fdb4819a7f21c7e1a8178686b6bf9ec82df92cf88609240faa918876f51b",
+    "check_rematerialization.py": "664a508d7e1c70ee81efe077225b5f4f751bb790efc83cecfc6f1494a09bb509"
+  },
+  "counts_toward_170_runs": false,
+  "heldout_evaluated": false,
+  "optimizer_steps_completed": 1,
+  "training_examples_submitted": 64,
+  "training_tokens_submitted": 4096,
+  "peak_reset_before_step": true,
+  "stage": "parameter_validation",
+  "stages": {
+    "cuda_setup": {
+      "status": "completed",
+      "seconds": 0.029786150087602437
+    },
+    "construction": {
+      "status": "completed",
+      "seconds": 1.1828444009879604
+    },
+    "training_data": {
+      "status": "completed",
+      "seconds": 0.012946391012519598
+    },
+    "data_transfer": {
+      "status": "completed",
+      "seconds": 0.0012634570011869073
+    },
+    "forward": {
+      "status": "completed",
+      "seconds": 1.8561810840619728
+    },
+    "loss": {
+      "status": "completed",
+      "seconds": 0.06837792100850493
+    },
+    "backward": {
+      "status": "completed",
+      "seconds": 3.279309378936887
+    },
+    "gradient_validation": {
+      "status": "completed",
+      "seconds": 0.00209683901630342
+    },
+    "clip": {
+      "status": "completed",
+      "seconds": 0.07435392099432647
+    },
+    "optimizer_step": {
+      "status": "completed",
+      "seconds": 0.06571962998714298
+    },
+    "parameter_validation": {
+      "status": "completed",
+      "seconds": 0.0018963470356538892
+    }
+  },
+  "finite": {
+    "prediction": true,
+    "loss": true,
+    "gradients": true,
+    "updated_parameters": true
+  },
+  "software": {
+    "torch": "2.8.0+cu128",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "ncps": "1.0.1",
+    "mamba-ssm": "2.3.1",
+    "triton": "3.4.0",
+    "causal-conv1d": "1.5.4",
+    "nvidia-ml-py": "13.610.43",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "cuda_runtime": "12.8"
+  },
+  "hardware": {
+    "cuda_available": true,
+    "cuda_device_count": 1,
+    "device": "cuda:0",
+    "name": "NVIDIA GeForce RTX 4060",
+    "uuid": "a33875b7-7eb7-679e-df08-19227d3decee",
+    "capability": [
+      8,
+      9
+    ],
+    "total_memory_bytes": 8184135680,
+    "driver_missing_reason": "CalledProcessError: Command '['nvidia-smi', '-i', 'a33875b7-7eb7-679e-df08-19227d3decee', '--query-gpu=uuid,driver_version', '--format=csv,noheader']' returned non-zero exit status 6."
+  },
+  "memory_fraction": 0.5,
+  "memory_limit_scope": "PyTorch process allocator only; not GPU reservation or a limit on external CUDA allocations",
+  "memory_scope": "training split and model resident; one Adam step; no validation/test tensors or best-state copies",
+  "energy": {
+    "joules_by_physical_counter": null,
+    "scope": "instrumented single-step wall interval; whole device/package, not process attribution",
+    "sampling_interval_seconds": 1.0,
+    "partial_unavailable_reasons": [
+      "RAPL inaccessible: PermissionError",
+      "RAPL inaccessible: PermissionError",
+      "NVML unavailable: NVMLError_NotSupported"
+    ],
+    "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported",
+    "interval_completion": "synchronized"
+  },
+  "config": {
+    "profile": "research",
+    "device": "cuda:0",
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "models": [
+      "hx_dual",
+      "hx_fixed",
+      "hx_call",
+      "hx_risk",
+      "no_rollover",
+      "softplus",
+      "no_recovery",
+      "hx_attention",
+      "population_flux",
+      "population_flux_no_recovery",
+      "gru",
+      "lif",
+      "adaptive_lif",
+      "pif",
+      "transformer",
+      "cfc",
+      "mamba2"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "data_seed": 271828,
+    "train_count": 4096,
+    "validation_count": 512,
+    "test_count": 1024,
+    "length": 64,
+    "hidden_size": 64,
+    "batch_size": 64,
+    "train_steps": 400,
+    "learning_rate": 0.001,
+    "dt": 0.1,
+    "latency_repeats": 100,
+    "cpu_threads": 2
+  },
+  "config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+  "source_files_sha256": {
+    "__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "attempts.py": "9c43646b29a2f5fbecd7f8adf0f5da2ee25d0e23768ec3b420d5c79bacc4d470",
+    "audit_population.py": "97e6d7cae07ddf35448e8e6f67c42bf3c75dc9216b4a52df320a1dbdbe0dcee8",
+    "baselines.py": "914a244abe4014a919b35539c4db04a9d334f627981d07fda20935af90026408",
+    "benchmark.py": "fc55f0f71cf35af742a423a407e42defb828c84285b9a6602b91d9b314ac2830",
+    "cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6",
+    "checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+    "population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+    "reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/test_audit_population.py": "249a8118632082d802bebed55005abd100ebaf292290e5573822d594ef57dc6d",
+    "tests/test_benchmark.py": "15939465d403647ecbd924dfb97297aee43c0c8e64e69d196d157ebdf19852e2",
+    "tests/test_cells.py": "efa7459f38a3f9a8b1bdce5e18c259a4f77cc86c51e27f032b4eeea33c780740",
+    "tests/test_checks.py": "54c994b9a6ca76d9e048f5fb0b3f770bfe4f6025329d29be22808b493e3ca68f",
+    "tests/test_hx_tensor.py": "d1c405651f956b112d907f4109c0d759648703b6d6b303e503cb716228fde7a4",
+    "tests/test_population.py": "85dacb782ac9cf6f61f7c5c70027693d3ef50f83da24ce40348658ea0ed04c95",
+    "tests/test_population_torch.py": "7bf3ba7a2f54f8dd7707a166fddf0a5f91c90d017a4e3564666a8f9ec0798076",
+    "tests/test_reference.py": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d",
+    "tests/test_tensor.py": "355ba9bf747bc427acb0f10c8525ed80bc5f6e55f9f897602141bf0b6cb4421f",
+    "validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045"
+  },
+  "expected_source_map_sha256": "13860b933a93966e880e64840efa0ac26b70ab62cbe7e38bf71587575d9831a3",
+  "actual_source_map_sha256": "13860b933a93966e880e64840efa0ac26b70ab62cbe7e38bf71587575d9831a3",
+  "expected_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+  "base_commit": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+  "candidate_files_sha256": {
+    "qualification/hcsn/rematerialization.py": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+    "CANDIDATE.json": "d864fdb4819a7f21c7e1a8178686b6bf9ec82df92cf88609240faa918876f51b",
+    "check_rematerialization.py": "664a508d7e1c70ee81efe077225b5f4f751bb790efc83cecfc6f1494a09bb509"
+  },
+  "candidate_pins_valid": true,
+  "encoder_class": "RematerializedPopulationFluxEncoder",
+  "parameters": 4353,
+  "population_config": {
+    "bins": 32,
+    "x_max": 2.5,
+    "dt": 0.1,
+    "sigma": 0.15,
+    "rest_margin": 0.8,
+    "reset_margin": 0.8,
+    "leak": 3.0,
+    "base_drift": 0.0,
+    "refractory": 0.24,
+    "recovery_tau": 0.6,
+    "recovery_strength": 0.2
+  },
+  "training_split_sha256": "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+  "batch_indices": [
+    3141,
+    125,
+    1462,
+    690,
+    2883,
+    1204,
+    291,
+    2360,
+    2130,
+    3327,
+    1960,
+    3999,
+    145,
+    1904,
+    2355,
+    590,
+    617,
+    3751,
+    1862,
+    1474,
+    466,
+    218,
+    2447,
+    661,
+    1494,
+    1079,
+    820,
+    2810,
+    1524,
+    2088,
+    1267,
+    3878,
+    1638,
+    556,
+    4016,
+    1500,
+    1899,
+    1328,
+    1613,
+    921,
+    2045,
+    2849,
+    239,
+    2672,
+    3220,
+    3866,
+    2833,
+    911,
+    1588,
+    3740,
+    1754,
+    248,
+    214,
+    2171,
+    453,
+    1486,
+    1577,
+    1574,
+    2256,
+    2689,
+    2749,
+    1369,
+    3705,
+    818
+  ],
+  "batch_sha256": "a9604f7e32ff3ea6ec93399ebec1be19609c4c8585a9efcadb1e2bdc019a8dd8",
+  "input_shape": [
+    64,
+    64,
+    2
+  ],
+  "input_dtype": "float32",
+  "resident_allocated_bytes": 2134528,
+  "device_free_before_step_bytes": 6382944256,
+  "training_batch_mse_before_step": 0.47189587354660034,
+  "missing_gradients": [],
+  "gradient_norm_before_clip": 8.581199645996094,
+  "terminal_cuda_synchronized": true,
+  "peak_allocated_bytes": 833757184,
+  "peak_reserved_bytes": 857735168,
+  "device_free_after_step_bytes": 5471272960,
+  "source_unchanged": true,
+  "candidate_unchanged": true,
+  "probe_unchanged": true,
+  "gpu_energy_counter_measured": false,
+  "finished_utc": "2026-11-06T07:58:20.348355+00:00",
+  "wall_seconds": 7.429685393930413
+}
