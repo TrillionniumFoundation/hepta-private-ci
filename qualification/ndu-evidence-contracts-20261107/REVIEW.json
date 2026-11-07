@@ -1,0 +1,57 @@
+{
+  "schema": "ndu-contract-implementation-review-v1",
+  "review_kind": "Parallel assistant code review and adversarial probes, followed by regression tests",
+  "independent_task_evaluation": false,
+  "native_authentication_tested": false,
+  "reviewed_intermediate_sources": {
+    "factorial_replication_sha256": "6306ce6b6bd6bfe9346af8b4ead2193540c94fdcddb785006ddcbe28bfb01a55",
+    "learning_outcome_sha256": "e685749e9b3ba46f823537db0f75476b1b0585056c9991c2b6b9c23ae9dd7cbf",
+    "learning_second_review_sha256": "1dac75d3b9b7cdb420976791f35d4ad4274627149725614afa853fac03e32e02"
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "problem": "Returned nested research costs and comparator choices aliased input dictionaries; mutation changed the report without changing its evidence digest.",
+      "resolution": "Return a finite deep snapshot.",
+      "regression": "test_audit_report_is_detached_from_input_costs_and_selection"
+    },
+    {
+      "id": "R2",
+      "problem": "Finite per-item costs could overflow totals; success serialization outside the handler left an old report in place.",
+      "resolution": "Validate all derived numbers and serialize inside the bound failure path; retain original input bytes and hash.",
+      "regression": "test_derived_cost_overflow_rejected_and_cli_replaces_stale_report"
+    },
+    {
+      "id": "L1",
+      "problem": "Candidate evaluation could precede construction and still be conditionally Adoptable.",
+      "resolution": "Bind construction output/evaluation input to the candidate manifest and enforce causal job order.",
+      "regression": "test_evaluation_binds_constructed_artifact_and_cannot_precede_reconstruction"
+    },
+    {
+      "id": "L2",
+      "problem": "Terminal evaluator work had no ledger job; reported subtotal could be mistaken for complete cost.",
+      "resolution": "Require separate terminal metering and mark missing/unreconciled coverage unknown; total remains null.",
+      "regression": "test_no_data_terminal_evaluation_requires_a_separate_metered_job"
+    },
+    {
+      "id": "L3",
+      "problem": "Training/search with a null candidate escaped the finite candidate inventory.",
+      "resolution": "Require all training/search jobs to belong to a registered candidate.",
+      "regression": "test_training_and_search_cannot_hide_in_unowned_shared_work"
+    },
+    {
+      "id": "L4",
+      "problem": "A next-task declaration could reuse the source owner checkpoint.",
+      "resolution": "Require a distinct declared new checkpoint; native verification remains separate.",
+      "regression": "test_source_checkpoint_is_not_next_task_execution_evidence"
+    },
+    {
+      "id": "L5",
+      "problem": "The terminal meter could reference the signed terminal artifact through its artifact digest, creating a cycle.",
+      "resolution": "The terminal meter must have null artifact digest and a separate meter receipt.",
+      "regression": "test_no_data_terminal_evaluation_requires_a_separate_metered_job"
+    }
+  ],
+  "disposition": "All listed findings have final-source regression coverage; 176 local integrated tests passed with no skips.",
+  "scope": "This review qualifies software contracts only. It does not establish real-model efficacy, source independence, native receipts or incumbent next-task use."
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "ndu-contract-research-work-v1",
+  "scope": "Six distinct root verification commands. Nested tests are not added again within each command. Synthetic candidate ledger units are not measured physical expenditure.",
+  "recorded_attempts": [
+    {
+      "attempt": "baseline-contracts",
+      "status": "PASS_CONTRACTS_TORCH_NOT_EXECUTED",
+      "tests_run": 139,
+      "cpu_seconds": 15.135307961,
+      "wall_seconds": 15.409143810999922,
+      "source_unchanged": true,
+      "evidence_receipt_sha256": "0e90ef9263fb26353410211dd93b22c6363021ee2e30d8861a62865cd5cf47c3"
+    },
+    {
+      "attempt": "integrated-contracts-first",
+      "status": "PASS_CONTRACTS",
+      "tests_run": 170,
+      "cpu_seconds": 35.089613987,
+      "wall_seconds": 35.415699440000026,
+      "source_unchanged": true,
+      "evidence_receipt_sha256": "4ec0e166672e1bc549635728474b37de3e6fac11c0996f47ba10601fc8637f75"
+    },
+    {
+      "attempt": "replication-evidence-first",
+      "status": "PASS_CONTRACTS",
+      "tests_run": 48,
+      "cpu_seconds": 29.64227859,
+      "wall_seconds": 29.572739340000226,
+      "source_unchanged": true,
+      "evidence_receipt_sha256": "2789bf736bd9ef738b4b96e2d50c6f1423643c6328f94e54c994366cd02cd2dc"
+    },
+    {
+      "attempt": "integrated-contracts-final",
+      "status": "PASS_CONTRACTS",
+      "tests_run": 176,
+      "cpu_seconds": 39.904256604000004,
+      "wall_seconds": 40.55165425300038,
+      "source_unchanged": true,
+      "evidence_receipt_sha256": "444b77964251d7fdaab9ab722b6ea1cf3a16ba6201530e0ac7b60dd38498ec66"
+    },
+    {
+      "attempt": "replication-evidence-final",
+      "status": "PASS_CONTRACTS",
+      "tests_run": 50,
+      "cpu_seconds": 33.793340420999996,
+      "wall_seconds": 33.80690739000056,
+      "source_unchanged": true,
+      "evidence_receipt_sha256": "7324533c95ab2958a6ddbdd3f49c1487626b7c957ef769e9b458df5209d54098"
+    },
+    {
+      "attempt": "learning-evidence-final",
+      "status": "PASS_CONTRACTS",
+      "tests_run": 22,
+      "cpu_seconds": 0.100089765,
+      "wall_seconds": 0.02916010499939148,
+      "source_unchanged": true,
+      "evidence_receipt_sha256": "19825b118b2ad60b66199c6a54ea13461dee5b6b0ebc0add4ec3d84339ec9682"
+    }
+  ],
+  "other_agent_tests_and_review_cost": "not_fully_metered",
+  "installation_and_acquisition_cost": "not_fully_metered_locally",
+  "energy_joules": null,
+  "complete_study_cost": null,
+  "real_training_runs_in_this_package": 0,
+  "artifact_sha256": {
+    "execution-evidence.zip": "2aa911178fd77d191526eaedcbf20d14b14be7ac7e44b515993b6b7c67e4d0d7",
+    "VERIFICATION.json": "444b77964251d7fdaab9ab722b6ea1cf3a16ba6201530e0ac7b60dd38498ec66",
+    "FORMAT_EQUIVALENCE.json": "ebaaf0fc25c8fbb8d76ff1d3072253d8807d38418d6583caac2a5faa066c916b"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "ndu-evidence-readiness-v1",
+  "scope": "Checked research snapshots; this inventory is not a native owner receipt or an independent task evaluation.",
+  "research_status": "NO_GO_FOR_LARGE_SCALE_TRAINING",
+  "current_evidence_classification": "Inconclusive",
+  "basis": "Missing registered real-task evidence is not evidence of zero eligible data and is not a completed finite NoUpdate decision.",
+  "checked_sources": {
+    "text_image_protocol": {
+      "pr": 5198,
+      "commit": "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+      "path": "qualification/ndu-text-image-20261106/PROTOCOL.md",
+      "sha256": "f00437f2a62f08fffac853aa9fcdd0cd07621d192000147a57b57a3fef49c1d4"
+    },
+    "real_gradient_probe": {
+      "commit": "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+      "path": "qualification/ndu-text-image-20261106/evidence/real-content/probe/terminal.json",
+      "sha256": "49afe24170351341c9772d66392ef30e022e533ad4e92457fcd56607146b79d6"
+    },
+    "same_model_next_task": {
+      "pr": 5192,
+      "commit": "09db432b6eb81e0b209986f14e3a958937cec8bd",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5192"
+    },
+    "native_owner": {
+      "pr": 4944,
+      "reviewed_commit": "25fa6d6dd7e1c5c1827a4099f601aee49b2f1b58",
+      "executed_commit": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+      "path": "qualification/neuron-portfolio-integration-20261106/README.zh.md"
+    },
+    "prior_real_training": {
+      "pr": 4839,
+      "commit": "e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+      "run_id": 41976044300,
+      "job_id": 127075010670,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41976044300",
+      "conclusion": "failure",
+      "text_updates": 2,
+      "image_updates": 0,
+      "error": "self.stride(-1) must be 1 to view BFloat16 as Byte (different element sizes), but got 320",
+      "inference": "not_run_unqualified_training",
+      "outer_cpu_seconds": 193.311381964,
+      "outer_wall_seconds": 140.111789741,
+      "source_count": 1,
+      "holdout_sources": 0
+    }
+  },
+  "requirements": {
+    "five_family_independent_sources": "MISSING_IN_CHECKED_PACKET",
+    "retention_panel": "MISSING_IN_CHECKED_PACKET",
+    "independent_locked_evaluator": "MISSING_IN_CHECKED_PACKET",
+    "real_light_ndu_fixed_voi_mpc": "NOT_EXECUTED_IN_CHECKED_PACKET",
+    "authenticated_episode_receipts": "MISSING_IN_CHECKED_PACKET",
+    "native_owner_api": "SOURCE_AVAILABLE_SEPARATE_BRANCH",
+    "native_owner_tests": "HISTORICAL_EXACT_SOURCE_PASS_NOT_REAL_EPISODE_RECEIPTS",
+    "full_physical_costs": "INCOMPLETE",
+    "independent_training_replication": "NO_REAL_FITS_SUPPLIED",
+    "real_gradient_probe": "HISTORICAL_SINGLE_DEVELOPMENT_IMAGE_ONLY",
+    "formal_noupdate_to_actual_next_use": "NOT_CLOSED"
+  },
+  "actual_confirmation_episodes": 0,
+  "real_training_method_claim": false,
+  "native_receipt_verification": false,
+  "adoption_authorized": false,
+  "chain_submission": null,
+  "reward_eligible": false,
+  "notes": [
+    "Source snapshots and historical tests must not be relabelled as execution of a newer head.",
+    "One disclosed image and synthetic repetitions cannot create independent source groups.",
+    "A declared real flag, hashes or distinct evaluator names cannot authenticate native execution or independence.",
+    "The sibling image fingerprint repair has separate source and execution evidence; it cannot qualify this factorial experiment."
+  ]
+}

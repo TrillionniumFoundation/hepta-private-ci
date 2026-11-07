@@ -1,0 +1,73 @@
+{
+  "schema": "ndu-learning-pr-ci-observation-v1",
+  "observed_at": "2026-11-07T11:41:41.445Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr_number": 5311,
+  "requested_head": "7f33cc33aed948779a2725bf9a56f805063abb57",
+  "base_sha": "2049567ce7dd6ca81758431b8797938e017a070b",
+  "tested_prospective_merge": "0d41d6561e3cc6d06afc19d559a4a1555f5db567",
+  "tested_tree": "83229a2c93cd8bf5b216f252c6eef4f668fff3fc",
+  "tested_tree_matches_requested_head": true,
+  "blocking_run_id": 42369039914,
+  "blocking_state_at_read": "in_progress",
+  "ndu_job": {
+    "id": 128393139123,
+    "conclusion": "success",
+    "portfolio_tests": 140,
+    "portfolio_failures": 0,
+    "portfolio_errors": 0,
+    "portfolio_skips": 0,
+    "learning_outcome_tests": 22,
+    "factorial_replication_tests": 15,
+    "separate_semantic_material_tests": 33,
+    "artifact_id": 13573116467,
+    "artifact_sha256": "62444af7751769bb41b0bbb47337a04b5c5a51d3a0ab3aeb9cd55b490a9ade11",
+    "artifact_bytes": 25099,
+    "source_manifest_sha256": "4fc18605d3c5e5e5f0871db524289563164aacbad3e55a78cc661bf7c4a422a7",
+    "source_unchanged_during_run": true,
+    "overall_research_status": "RESEARCH_ONLY_HOLD",
+    "native_integration": "not executed; no Rust source changes"
+  },
+  "architecture": {
+    "run_id": 42369039924,
+    "source_head_job": 128393138996,
+    "conclusion": "failure",
+    "failed_step": "Test execution-record rejection and retained diagnostics",
+    "reason": "unittest discovery imports ndu_semantic_state/__init__.py; numpy is absent from this interpreter",
+    "observed_tests": 46,
+    "passed": 45,
+    "errors": 1,
+    "relationship": "same pre-existing missing-numpy failure assigned to the factorial agent; not repaired here"
+  },
+  "other_observations": {
+    "codespell": "success",
+    "scope": "in_progress at checkout",
+    "blob_size": "in_progress at checkout",
+    "v8_metadata": "in_progress at checkout"
+  },
+  "limitations": [
+    "Observation bound only to the specified head and prospective merge.",
+    "NDU software regressions and synthetic evidence do not qualify the real five-family experiment.",
+    "No full blocking-CI success claimed; dependent jobs had not started at this read."
+  ],
+  "immutable_evidence_files": {
+    "RESULTS.md": "e87b5ca0239c008e6391361d84bdef9ec962db50ae3efc24daec859ff70b5a86",
+    "architecture-source-head-128393138996.log": "738c5bc4329f324459ca209f90e024735e0211f66cd53b04f6eee78b583e8481",
+    "bound-readback.json": "e51b620a4b763f04f3dda5b882701292566247eba91ebdb2fc26aabb034b3ec6",
+    "initial-snapshot.json": "0bc3ac465242e8cec38ea5cf4393b89e411029c3aee969f91f9ac2b5bc6841a6",
+    "ndu-reference-128393139123.log": "afcd9161c56893ac55f3589508ad474d253b93ba7608d1a13841d936b2608f45",
+    "ndu-reference-42369039914-1.zip": "62444af7751769bb41b0bbb47337a04b5c5a51d3a0ab3aeb9cd55b490a9ade11",
+    "results.json": "0a22bd6188113dc0adcfed1b536550d92ecc6192919baf7bb8e6a097c6cb531d",
+    "semantic-contracts.log": "23be2b883219df09b8053676a0ddf6be13113362f70fafa92d2ac928d603397a",
+    "tests.log": "bdce78f5a9f19b65a7826cc99bbdb1afce7a2787f1714667277725e914d9b6f4"
+  },
+  "preserved_archive": {
+    "path": "ci-readback.zip",
+    "sha256": "f6996619fe965fd87628b07705fd5fbee23e802e448b2bf898baf0b1d1c520fb",
+    "bytes": 80518
+  },
+  "followup": {
+    "replication_base_fix": "fe4193438457b31ca22e6af7235193d7446cb127",
+    "scope": "Merge the execution-record workflow repair; the learning and replication Python modules retain the hashes already tested. A newer CI result must retain its own source identity."
+  }
+}
