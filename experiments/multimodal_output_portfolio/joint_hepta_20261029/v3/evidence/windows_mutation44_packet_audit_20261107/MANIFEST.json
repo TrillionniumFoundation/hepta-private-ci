@@ -1,0 +1,383 @@
+{
+  "schema": "windows44-independent-packet-review-manifest-v1",
+  "state": "FROZEN_READ_ONLY_BYTE_REVIEW",
+  "decision": "V1_FAIL_DECLARED_EXCLUSION;_V2_PASS_SELECTED_SAFE_CUSTODY",
+  "auditor": {
+    "path": "/dev/shm/ndu_windows44_packet_peer_20261107/audit_packet.py",
+    "bytes": 17922,
+    "sha256": "2c966450a535f73e2dfec7a550d45364da2a82f0aac7863959e86f37c8b0f98d",
+    "git_blob": "81dae37e2cd783b8662014fdb9bd4acbc289cf0d",
+    "mode": "100644",
+    "lines": 494
+  },
+  "delta_checker": {
+    "path": "/dev/shm/ndu_windows44_packet_peer_20261107/check_revision_delta.py",
+    "bytes": 2039,
+    "sha256": "ef0d49f859ce4be86f965a2393dec8a07322bc7e8276cf732589195aa95d1726",
+    "git_blob": "d4f520fb6149d8ecd2d3911ccc341226927a37e6",
+    "mode": "100644",
+    "lines": 51
+  },
+  "source_publication_lines": 545,
+  "requires_separate_source_unit_from_owner_builder": true,
+  "original_review": {
+    "path": "/dev/shm/ndu_windows44_packet_peer_20261107/initial_alias_finding/REVIEW.json",
+    "bytes": 6074,
+    "sha256": "7961f739f2ce18905cfe3053c7cdd54f01d2dd5acbc01e7e6a063dbd032f4abe",
+    "git_blob": "16e2adad1146b4322530b2b6239795040e078373",
+    "mode": "100644",
+    "lines": 117
+  },
+  "replacement_review": {
+    "path": "/dev/shm/ndu_windows44_packet_peer_20261107/revision2/REVIEW.json",
+    "bytes": 5540,
+    "sha256": "a74373acddb2c08c1c8105097185bad8f3bf32377ef2d7b08c9a38f97ba29047",
+    "git_blob": "13b3ee9497ec82bb00b3c02b01e5f24dbd515af2",
+    "mode": "100644",
+    "lines": 109
+  },
+  "roster_delta": {
+    "path": "/dev/shm/ndu_windows44_packet_peer_20261107/REVISION_DELTA.json",
+    "bytes": 1233,
+    "sha256": "55f788b41fcd45540cb711aa632ac08e1725ee67bdcb223e168a4b94ce3da60d",
+    "git_blob": "ed19bbb098637bb20a453bcb244ba428c9a755c9",
+    "mode": "100644",
+    "lines": 22
+  },
+  "old_counts": [
+    184,
+    1904082
+  ],
+  "new_counts": [
+    183,
+    1895194
+  ],
+  "actual_optimized_exits": {
+    "original": 1,
+    "replacement": 0,
+    "roster_delta": 0
+  },
+  "ruff_format_check": 0,
+  "ruff_check": 0,
+  "codespell": 0,
+  "payload_import_or_execution": false,
+  "filesystem_restore": false,
+  "private_console_or_execution_zip_read": false,
+  "owner_packet_changes": false,
+  "remote_writes": false,
+  "new_native_qualification": false,
+  "files": [
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/README.md",
+      "bytes": 2669,
+      "sha256": "05312a43b096f3cfa80344d436042a1581b81d7faf58e6faf50e24363ba33c3d",
+      "git_blob": "f1957319e8964d8523d3adb8be50331f89bfa50a",
+      "mode": "100644",
+      "lines": 49
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/REVISION_DELTA.json",
+      "bytes": 1233,
+      "sha256": "55f788b41fcd45540cb711aa632ac08e1725ee67bdcb223e168a4b94ce3da60d",
+      "git_blob": "ed19bbb098637bb20a453bcb244ba428c9a755c9",
+      "mode": "100644",
+      "lines": 22
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/audit_packet.py",
+      "bytes": 17922,
+      "sha256": "2c966450a535f73e2dfec7a550d45364da2a82f0aac7863959e86f37c8b0f98d",
+      "git_blob": "81dae37e2cd783b8662014fdb9bd4acbc289cf0d",
+      "mode": "100644",
+      "lines": 494
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/audit_packet_initial.py.txt",
+      "bytes": 14682,
+      "sha256": "9c6e4ed635ea55acd2c651ec085883e633f2185b0e642f2c7686d61ddaf5f16b",
+      "git_blob": "549c2abea5c059f1264ccf8645d3031e2c65abda",
+      "mode": "100644",
+      "lines": 270
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/check_revision_delta.py",
+      "bytes": 2039,
+      "sha256": "ef0d49f859ce4be86f965a2393dec8a07322bc7e8276cf732589195aa95d1726",
+      "git_blob": "d4f520fb6149d8ecd2d3911ccc341226927a37e6",
+      "mode": "100644",
+      "lines": 51
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/CODESPELL.json",
+      "bytes": 3396,
+      "sha256": "4821bde85edacfd85a00afa3e2cc6b9207e040b92a217538bd27d679d9646ac7",
+      "git_blob": "71fc21bda7e899e4ab2cab125306944b10307869",
+      "mode": "100644",
+      "lines": 54
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/DELTA_CHECKS.json",
+      "bytes": 2270,
+      "sha256": "24b684c9ea50eb976904f5c39c0e1a30f1a22bf5742202e3870b8ffc364fa9a1",
+      "git_blob": "86b1df3c490d88378439b6ad39ce5f056928051e",
+      "mode": "100644",
+      "lines": 58
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/FINAL_FORMAT.json",
+      "bytes": 1399,
+      "sha256": "93fa825d001f1aeead823a2ea8e6173945efcf344b7ad2cf9f74a67315b93e08",
+      "git_blob": "df9a17bc196d4ec701d4c4cca2f46061540ffd6d",
+      "mode": "100644",
+      "lines": 47
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/FORMAT.json",
+      "bytes": 1453,
+      "sha256": "0afc71041a1787332709b329749783a69f002066f40bf084665e62c853e24937",
+      "git_blob": "1081219ef3197f609f2f48441e3777a9e76cd426",
+      "mode": "100644",
+      "lines": 47
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/both_format_check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/both_format_check.stdout",
+      "bytes": 26,
+      "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938",
+      "git_blob": "983e5b7d3b8260cd7b6465688368178dddd7e316",
+      "mode": "100644",
+      "lines": 1
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/both_ruff_check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/both_ruff_check.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a",
+      "mode": "100644",
+      "lines": 1
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/codespell.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/codespell.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/delta_format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/delta_format.stdout",
+      "bytes": 19,
+      "sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127",
+      "git_blob": "3110eee6fdcf112be64f64b680ff5662f027ab39",
+      "mode": "100644",
+      "lines": 1
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/delta_optimized.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/delta_optimized.stdout",
+      "bytes": 32,
+      "sha256": "f91267766a94d139c9ca93826a5d1e2224a4c738440487ecc099ea92a254f669",
+      "git_blob": "ccfd1f2185dc6438dff70b096eca46e2cc3d489a",
+      "mode": "100644",
+      "lines": 1
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/final_format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/final_format.stdout",
+      "bytes": 22,
+      "sha256": "d807f3580f2470a7fe15ad89e1a6c08e4166ffe1e33d94152d605f0c46d21bfa",
+      "git_blob": "851cc66af728b86508364f4f9cd02966ee8b548d",
+      "mode": "100644",
+      "lines": 1
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/final_format_check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/final_format_check.stdout",
+      "bytes": 25,
+      "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50",
+      "git_blob": "5e122f397b6d5d61b45621051851165eadce6a78",
+      "mode": "100644",
+      "lines": 1
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/final_ruff_check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/final_ruff_check.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a",
+      "mode": "100644",
+      "lines": 1
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/format.stdout",
+      "bytes": 19,
+      "sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127",
+      "git_blob": "3110eee6fdcf112be64f64b680ff5662f027ab39",
+      "mode": "100644",
+      "lines": 1
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/format_check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/format_check.stdout",
+      "bytes": 25,
+      "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50",
+      "git_blob": "5e122f397b6d5d61b45621051851165eadce6a78",
+      "mode": "100644",
+      "lines": 1
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/ruff_check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/checks/ruff_check.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a",
+      "mode": "100644",
+      "lines": 1
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/initial_alias_finding/EXECUTION.json",
+      "bytes": 923,
+      "sha256": "5698d878ec2cee192c737143e1b479758a196e1d1890d0348e80b855bcde2425",
+      "git_blob": "705189c8316afaee416045f9b2fffb35298c4057",
+      "mode": "100644",
+      "lines": 26
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/initial_alias_finding/REVIEW.json",
+      "bytes": 6074,
+      "sha256": "7961f739f2ce18905cfe3053c7cdd54f01d2dd5acbc01e7e6a063dbd032f4abe",
+      "git_blob": "16e2adad1146b4322530b2b6239795040e078373",
+      "mode": "100644",
+      "lines": 117
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/initial_alias_finding/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/initial_alias_finding/stdout",
+      "bytes": 29,
+      "sha256": "f50e4dd317621c57eccbdaec531b825baf629045fe5bca4c274e0247c5f00f49",
+      "git_blob": "b7115ddc4b9fb9816997c858334225ff2464c302",
+      "mode": "100644",
+      "lines": 1
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/revision2/EXECUTION.json",
+      "bytes": 920,
+      "sha256": "ce1beb24663e2e77b907a457e9b425eef4a50ac121ca54b86854467dd240ea3d",
+      "git_blob": "e7c5ca70e925cb60fe2e603c3b94afc5cace4b5f",
+      "mode": "100644",
+      "lines": 26
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/revision2/REVIEW.json",
+      "bytes": 5540,
+      "sha256": "a74373acddb2c08c1c8105097185bad8f3bf32377ef2d7b08c9a38f97ba29047",
+      "git_blob": "13b3ee9497ec82bb00b3c02b01e5f24dbd515af2",
+      "mode": "100644",
+      "lines": 109
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/revision2/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "lines": 0
+    },
+    {
+      "path": "/dev/shm/ndu_windows44_packet_peer_20261107/revision2/stdout",
+      "bytes": 32,
+      "sha256": "290dfb7d8405f48fd9ddee9c7d1a916d3096675307a379257f63ec66b8716c4e",
+      "git_blob": "0330204a45c8af4e8ce5a31bc180cacaaf95072f",
+      "mode": "100644",
+      "lines": 1
+    }
+  ]
+}
