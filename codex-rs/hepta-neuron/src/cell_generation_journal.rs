@@ -7,11 +7,18 @@ use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
+use std::sync::Arc;
 
 use codex_hepta_types::Digest32;
 
 use crate::AnchorWitnessStore;
 use crate::JournalAnchor;
+use crate::cell_generation_current::CellGenerationCurrentV1;
+use crate::cell_generation_current::CellGenerationOpenModeV1;
+use crate::cell_generation_current::CellGenerationOwnerBindingV1;
+use crate::cell_generation_current::CellGenerationPreparedCheckpointV1;
+use crate::cell_generation_current::continuity_checkpoint;
+use crate::cell_generation_observation::CellGenerationObservationV1;
 use crate::cell_generation_state::CellGenerationConfigV2;
 use crate::cell_generation_state::GenerationEvent;
 use crate::cell_generation_state::GenerationState;
@@ -38,6 +45,10 @@ pub struct CellGenerationJournalV2<W: AnchorWitnessStore> {
     length: u64,
     max_records: u64,
     healthy: bool,
+    current: Option<(
+        Arc<dyn CellGenerationCurrentV1>,
+        CellGenerationOwnerBindingV1,
+    )>,
 }
 
 impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
@@ -46,6 +57,33 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         witness: W,
         config: CellGenerationConfigV2,
         max_records: u64,
+    ) -> Result<Self, CellGenerationErrorV2> {
+        Self::open_inner(file, witness, config, max_records, /*current*/ None)
+    }
+
+    /// Opt-in current-generation custody. Ordinary `open` rejects this format;
+    /// an old guarded journal cannot bypass its live Control floor on reopen.
+    pub fn open_guarded(
+        file: File,
+        witness: W,
+        config: CellGenerationConfigV2,
+        max_records: u64,
+        current: Arc<dyn CellGenerationCurrentV1>,
+    ) -> Result<Self, CellGenerationErrorV2> {
+        let binding = CellGenerationOwnerBindingV1::new(&config, max_records)?;
+        current.check_open(&binding)?;
+        Self::open_inner(file, witness, config, max_records, Some((current, binding)))
+    }
+
+    fn open_inner(
+        file: File,
+        witness: W,
+        config: CellGenerationConfigV2,
+        max_records: u64,
+        current: Option<(
+            Arc<dyn CellGenerationCurrentV1>,
+            CellGenerationOwnerBindingV1,
+        )>,
     ) -> Result<Self, CellGenerationErrorV2> {
         if !(6..=65_536).contains(&max_records) {
             return Err(CellGenerationErrorV2::Capacity);
@@ -56,6 +94,9 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
             b"hepta.cell.generation-owner.v2\0",
             &(&config, max_records),
         )?);
+        if let Some((_, binding)) = &current {
+            header = binding.header();
+        }
         let mut file = LockedFile::acquire(file).map_err(|_| CellGenerationErrorV2::Unavailable)?;
         if file
             .metadata()
@@ -87,6 +128,7 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
             length: 0,
             max_records,
             healthy: false,
+            current,
         };
         owner.recover()?;
         Ok(owner)
@@ -97,6 +139,7 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
     /// before truncation; recovery never calls a model or transport.
     pub fn recover(&mut self) -> Result<(), CellGenerationErrorV2> {
         self.healthy = false;
+        let mode = self.open_mode()?;
         let expected = self
             .witness
             .current()
@@ -156,6 +199,12 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         if !witnessed {
             return Err(CellGenerationErrorV2::AcknowledgedHistoryMissing);
         }
+        if mode == CellGenerationOpenModeV1::Preparing
+            && (head.is_some() || length != HEADER_BYTES as u64)
+        {
+            return Err(CellGenerationErrorV2::InvalidBinding);
+        }
+        self.open_mode()?;
         if offset < bytes.len() {
             self.file
                 .set_len(offset as u64)
@@ -187,22 +236,77 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         Ok(&self.state.snapshot)
     }
 
+    /// Capture state, cost, unresolved work and delivery at one healthy owner
+    /// cut. This read adds no events and cannot dispatch or settle work.
+    pub fn observe_generation(&self) -> Result<CellGenerationObservationV1, CellGenerationErrorV2> {
+        CellGenerationObservationV1::capture(
+            &self.config,
+            &self.state,
+            self.continuity_checkpoint()?,
+        )
+    }
+
     /// Identify the exact healthy journal cut without adding persistent bytes.
     /// The header binds the frozen config and limits; the head binds every
     /// retained event, including cost, cancellation, drain and delivery ACKs.
     /// This is a continuity observation, not an adoption or writer grant.
     pub fn continuity_checkpoint(&self) -> Result<Digest32, CellGenerationErrorV2> {
         self.require_healthy()?;
-        let (sequence, head) = self.head.map_or((0, Digest32::ZERO), |anchor| {
-            (anchor.sequence, anchor.checkpoint_digest)
-        });
-        Ok(Digest32::of_parts(&[
-            b"hepta.cell.generation-continuity.v2\0",
-            &self.header,
-            &sequence.to_be_bytes(),
-            head.as_array(),
-            &self.length.to_be_bytes(),
-        ]))
+        Ok(continuity_checkpoint(&self.header, self.head, self.length))
+    }
+
+    pub fn owner_binding(&self) -> Option<&CellGenerationOwnerBindingV1> {
+        self.current.as_ref().map(|(_, binding)| binding)
+    }
+
+    /// Read an actually synced empty guarded journal. The returned cut cannot
+    /// activate it; only the original Control publication changes current.
+    pub fn prepared_checkpoint(
+        &self,
+    ) -> Result<CellGenerationPreparedCheckpointV1, CellGenerationErrorV2> {
+        if !self.healthy || self.head.is_some() || self.length != HEADER_BYTES as u64 {
+            return Err(CellGenerationErrorV2::InvalidBinding);
+        }
+        self.open_mode()?;
+        let binding = self
+            .owner_binding()
+            .ok_or(CellGenerationErrorV2::InvalidBinding)?;
+        Ok(CellGenerationPreparedCheckpointV1 {
+            binding: binding.clone(),
+            checkpoint: continuity_checkpoint(&self.header, self.head, self.length),
+        })
+    }
+
+    /// Add the host's live selected-artifact and revocation checks before
+    /// handing this guarded journal to the normal runtime. Its immutable
+    /// binding and original protected header cannot change through this API.
+    pub fn rebind_current(
+        mut self,
+        current: Arc<dyn CellGenerationCurrentV1>,
+    ) -> Result<Self, CellGenerationErrorV2> {
+        self.require_healthy()?;
+        let binding = self
+            .owner_binding()
+            .ok_or(CellGenerationErrorV2::InvalidBinding)?
+            .clone();
+        current.check_current(&binding)?;
+        self.current = Some((current, binding));
+        Ok(self)
+    }
+
+    /// Recheck the same live owner immediately before external computation.
+    pub fn require_current(&self) -> Result<(), CellGenerationErrorV2> {
+        if let Some((current, binding)) = &self.current {
+            current.check_current(binding)?;
+        }
+        Ok(())
+    }
+
+    fn open_mode(&self) -> Result<CellGenerationOpenModeV1, CellGenerationErrorV2> {
+        self.current.as_ref().map_or(
+            Ok(CellGenerationOpenModeV1::Active),
+            |(current, binding)| current.check_open(binding),
+        )
     }
 
     pub fn pending_request(
@@ -217,6 +321,7 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         Ok(self.state.outbox.as_ref())
     }
 
+    /// Recorded cost only; use `observe_generation` for episode completeness.
     pub fn task_cost(&self) -> Result<&CellTaskCostV2, CellGenerationErrorV2> {
         self.require_healthy()?;
         Ok(&self.state.cost)
@@ -425,7 +530,7 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
 
     fn require_healthy(&self) -> Result<(), CellGenerationErrorV2> {
         if self.healthy {
-            Ok(())
+            self.require_current()
         } else {
             Err(CellGenerationErrorV2::CommitUncertain)
         }

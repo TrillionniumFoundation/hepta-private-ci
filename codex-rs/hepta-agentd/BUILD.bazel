@@ -2,6 +2,7 @@ load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
+load(":v13_acceptance.bzl", "v13_acceptance_example")
 
 _UNIT_TEST_DEPENDENCIES = {
     "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
@@ -11,10 +12,11 @@ _UNIT_TEST_DEPENDENCIES = {
     "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
 }
 
-_JOINT_TEST_FIXTURE = [
+_GENERATION_TEST_FIXTURE = [
     "tests/support/neuron_generation.rs",
     "//codex-rs/hepta-neuron:tests/fixtures/joint-synthetic-v1.json",
     "//codex-rs/hepta-neuron:tests/support/joint_synthetic.rs",
+    "//qualification/neuron-v13-generation:proposal_worker.py",
 ]
 
 codex_rust_crate(
@@ -27,7 +29,7 @@ codex_rust_crate(
         "tests/fixtures/notes-objective-literal-v1.json",
         "tests/fixtures/notes-target-v1.json",
         "tests/fixtures/notes-model-v1.json",
-    ] + _JOINT_TEST_FIXTURE,
+    ] + _GENERATION_TEST_FIXTURE,
     # Match the Agentd Cargo default on both the library and product binaries.
     crate_features = ["production-cognitive-write"],
     crate_name = "codex_hepta_agentd",
@@ -39,6 +41,8 @@ codex_rust_crate(
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
     unit_test_extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
 )
+
+v13_acceptance_example()
 
 # Compile the local writer qualification separately from the default product
 # library. These unit fixtures need only temporary registry and SQLite state;
@@ -55,7 +59,7 @@ rust_library(
         "tests/fixtures/notes-objective-literal-v1.json",
         "tests/fixtures/notes-target-v1.json",
         "tests/fixtures/notes-model-v1.json",
-    ] + _JOINT_TEST_FIXTURE,
+    ] + _GENERATION_TEST_FIXTURE,
     crate_features = ["qualification-cognitive-write"],
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
@@ -74,7 +78,7 @@ rust_test(
         "tests/fixtures/notes-objective-literal-v1.json",
         "tests/fixtures/notes-target-v1.json",
         "tests/fixtures/notes-model-v1.json",
-    ] + _JOINT_TEST_FIXTURE,
+    ] + _GENERATION_TEST_FIXTURE,
     crate = ":hepta-agentd-cognitive-write-qualification-lib",
     crate_features = ["qualification-cognitive-write"],
     rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [

@@ -63,6 +63,35 @@ fn maximum_generation_pages_and_inputs_roundtrip_within_existing_frame() {
 
 #[test]
 fn generation_wire_rejects_unknown_fields_and_unbounded_byte_values() {
+    for request in [
+        GenerationControlRequestV1::Status {},
+        GenerationControlRequestV1::Cost {},
+        GenerationControlRequestV1::Drain {},
+        GenerationControlRequestV1::Resume {},
+    ] {
+        let mut encoded = serde_json::to_value(&request).expect("encode empty request");
+        assert_eq!(
+            serde_json::from_value::<GenerationControlRequestV1>(encoded.clone())
+                .expect("decode empty request"),
+            request
+        );
+        encoded["grant"] = serde_json::json!(true);
+        assert!(serde_json::from_value::<GenerationControlRequestV1>(encoded).is_err());
+    }
+    for response in [
+        GenerationControlResponseV1::Acknowledged {},
+        GenerationControlResponseV1::CancelRequested {},
+        GenerationControlResponseV1::Resumed {},
+    ] {
+        let mut encoded = serde_json::to_value(&response).expect("encode empty response");
+        assert_eq!(
+            serde_json::from_value::<GenerationControlResponseV1>(encoded.clone())
+                .expect("decode empty response"),
+            response
+        );
+        encoded["grant"] = serde_json::json!(true);
+        assert!(serde_json::from_value::<GenerationControlResponseV1>(encoded).is_err());
+    }
     assert!(
         serde_json::from_str::<GenerationControlRequestV1>(
             r#"{"operation":"status","grant":true}"#

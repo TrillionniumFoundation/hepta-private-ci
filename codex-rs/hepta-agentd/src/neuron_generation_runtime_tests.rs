@@ -18,6 +18,15 @@ mod support;
 
 #[path = "neuron_generation_control_tests.rs"]
 mod control;
+#[path = "neuron_generation_episode_tests.rs"]
+mod episode;
+#[path = "neuron_generation_no_contact_tests.rs"]
+mod no_contact;
+#[path = "neuron_generation_observation_tests.rs"]
+mod observation;
+#[cfg(unix)]
+#[path = "neuron_generation_update_runtime_tests.rs"]
+mod update;
 use support::Fixture;
 use support::checked;
 use support::cost;

@@ -26,7 +26,8 @@ pub struct GenerationStepV1 {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
 pub enum GenerationControlRequestV1 {
-    Status,
+    // Empty struct variants retain strict field validation for tagged JSON.
+    Status {},
     Step {
         request: Box<GenerationStepV1>,
     },
@@ -45,9 +46,9 @@ pub enum GenerationControlRequestV1 {
         delivery: GenerationOutputReferenceV1,
         acknowledgement: [u8; 32],
     },
-    Cost,
-    Drain,
-    Resume,
+    Cost {},
+    Drain {},
+    Resume {},
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -155,12 +156,12 @@ pub enum GenerationControlResponseV1 {
         complete: bool,
     },
     Cost(Box<GenerationCostSummaryV1>),
-    Acknowledged,
-    CancelRequested,
+    Acknowledged {},
+    CancelRequested {},
     Drain {
         complete: bool,
     },
-    Resumed,
+    Resumed {},
 }
 
 #[cfg(test)]

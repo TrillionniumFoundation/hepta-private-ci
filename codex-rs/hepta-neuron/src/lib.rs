@@ -23,7 +23,9 @@ mod cell;
 mod cell_batch;
 mod cell_binding;
 mod cell_generation_control;
+mod cell_generation_current;
 mod cell_generation_journal;
+mod cell_generation_observation;
 mod cell_generation_state;
 mod cell_generation_types;
 mod cell_inference;
@@ -41,6 +43,14 @@ mod cell_task_cost;
 mod cell_test_support;
 mod cell_types;
 mod cell_update;
+#[cfg(target_os = "linux")]
+mod cell_v13_assets;
+#[cfg(target_os = "linux")]
+mod cell_v13_generation;
+#[cfg(target_os = "linux")]
+mod cell_v13_process;
+#[cfg(target_os = "linux")]
+mod cell_v13_protocol;
 mod deletion;
 mod inference_control;
 mod journal;
@@ -65,7 +75,12 @@ pub use cell_binding::canonical_cell_step_request_digest_v1;
 pub use cell_generation_control::CellGenerationWorkerV2;
 pub use cell_generation_control::ControlledCellGenerationConfigV2;
 pub use cell_generation_control::ControlledCellGenerationPortV2;
+pub use cell_generation_current::CellGenerationCurrentV1;
+pub use cell_generation_current::CellGenerationOpenModeV1;
+pub use cell_generation_current::CellGenerationOwnerBindingV1;
+pub use cell_generation_current::CellGenerationPreparedCheckpointV1;
 pub use cell_generation_journal::CellGenerationJournalV2;
+pub use cell_generation_observation::CellGenerationObservationV1;
 pub use cell_generation_state::CellGenerationConfigV2;
 pub use cell_generation_types::CellBackendManifestV2;
 pub use cell_generation_types::CellEvolutionBindingV2;
@@ -139,6 +154,18 @@ pub use cell_update::CellUpdateOutcomeV1;
 pub use cell_update::CellUpdatePortV1;
 pub use cell_update::CellUpdateRequestV1;
 pub use cell_update::propose_cell_update;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationAssetFileV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationProcessConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationProcessFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationProcessWorkerV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_protocol::V13LearningClosureV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_protocol::V13TaskInputV1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;

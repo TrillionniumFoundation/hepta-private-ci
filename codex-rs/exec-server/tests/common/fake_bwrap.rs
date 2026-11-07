@@ -2,28 +2,35 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::path::PathBuf;
 
+use anyhow::Context as _;
+
+/// Records real namespace launches while retaining one explicit failure injection.
+/// Resolve the real executable before installing the test's PATH wrapper.
 pub(crate) fn write_fake_bwrap(bin_dir: &Path) -> anyhow::Result<PathBuf> {
+    let real_bwrap_path = codex_sandboxing::find_system_bwrap_in_path()
+        .context("real bubblewrap must be available on the original PATH")?;
+    let real_bwrap = real_bwrap_path
+        .to_str()
+        .context("real bubblewrap path must be valid UTF-8 for the test wrapper")?;
+    let real_bwrap = format!("'{}'", real_bwrap.replace('\'', "'\"'\"'"));
+
     std::fs::create_dir_all(bin_dir)?;
     let fake_bwrap = bin_dir.join("bwrap");
     std::fs::write(
         &fake_bwrap,
         r#"#!/bin/bash
 set -euo pipefail
+real_bwrap=__REAL_BWRAP__
 
 for arg in "$@"; do
   if [[ "${arg}" == "--help" ]]; then
-    echo "Usage: bwrap --argv0 --perms --as-pid-1"
-    exit 0
+    exec "${real_bwrap}" "$@"
   fi
 done
 
 args=("$@")
-argv0=""
 command_start=-1
 for i in "${!args[@]}"; do
-  if [[ "${args[$i]}" == "--argv0" && $((i + 1)) -lt ${#args[@]} ]]; then
-    argv0="${args[$((i + 1))]}"
-  fi
   if [[ "${args[$i]}" == "--" ]]; then
     command_start=$((i + 1))
     break
@@ -38,7 +45,7 @@ fi
 cmd=("${args[@]:$command_start}")
 case "${cmd[0]}" in
   /usr/bin/true|/bin/true|true)
-    exec "${cmd[@]}"
+    exec "${real_bwrap}" "$@"
     ;;
 esac
 
@@ -49,11 +56,9 @@ if [[ -f "${0}.fail-once" ]]; then
   exit 125
 fi
 
-if [[ -n "${argv0}" ]]; then
-  exec -a "${argv0}" "${cmd[@]}"
-fi
-exec "${cmd[@]}"
-"#,
+exec "${real_bwrap}" "$@"
+"#
+        .replace("__REAL_BWRAP__", &real_bwrap),
     )?;
     let mut permissions = std::fs::metadata(&fake_bwrap)?.permissions();
     permissions.set_mode(0o755);

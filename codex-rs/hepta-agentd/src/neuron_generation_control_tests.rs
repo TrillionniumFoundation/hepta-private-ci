@@ -82,7 +82,7 @@ impl Serving {
 }
 
 async fn status(client: &AgentdClient) -> TestResult<GenerationStatusV1> {
-    match client.generation(Request::Status).await? {
+    match client.generation(Request::Status {}).await? {
         Response::Status(value) => Ok(*value),
         other => {
             Err(std::io::Error::other(format!("expected generation status: {other:?}")).into())
@@ -130,7 +130,7 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
     assert_eq!(after.revision, 1);
     assert!(after.pending.is_none());
     assert_eq!(
-        serving.client.generation(Request::Drain).await?,
+        serving.client.generation(Request::Drain {}).await?,
         Response::Drain { complete: false }
     );
 
@@ -173,13 +173,13 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
     };
     assert_eq!(
         serving.client.generation(acknowledgement.clone()).await?,
-        Response::Acknowledged
+        Response::Acknowledged {}
     );
     let journal_path = fixture.directory.path().join("generation-journal");
     let durable = fs::read(&journal_path)?;
     assert_eq!(
         serving.client.generation(acknowledgement.clone()).await?,
-        Response::Acknowledged
+        Response::Acknowledged {}
     );
     assert_eq!(fs::read(&journal_path)?, durable);
     assert!(status(&serving.client).await?.drained);
@@ -193,10 +193,10 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
     assert_eq!(reopened.client.generation(original).await?, receipt);
     assert_eq!(
         reopened.client.generation(acknowledgement).await?,
-        Response::Acknowledged
+        Response::Acknowledged {}
     );
     assert_eq!(fs::read(&journal_path)?, durable);
-    let Response::Cost(cost) = reopened.client.generation(Request::Cost).await? else {
+    let Response::Cost(cost) = reopened.client.generation(Request::Cost {}).await? else {
         return Err(std::io::Error::other("expected task cost").into());
     };
     assert_eq!(cost.exclusive_entries, 2);
@@ -205,8 +205,8 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
     assert_eq!(cost.energy_microjoules.unknown_entries, 2);
     assert!(cost.missing_stages.contains(&"training".to_string()));
     assert_eq!(
-        reopened.client.generation(Request::Resume).await?,
-        Response::Resumed
+        reopened.client.generation(Request::Resume {}).await?,
+        Response::Resumed {}
     );
     reopened.finish().await
 }
@@ -304,7 +304,7 @@ async fn uncertain_dispatch_cancels_and_reads_original_without_second_execution(
                 request_digest: pending.request_digest
             })
             .await?,
-        Response::CancelRequested
+        Response::CancelRequested {}
     );
     fixture
         .control
@@ -377,7 +377,7 @@ async fn typed_generation_bootstrap_does_not_implicitly_expose_control() -> Test
     assert!(
         fixture
             .state()
-            .generation_control(Box::new(Request::Status))
+            .generation_control(Box::new(Request::Status {}))
             .await
             .is_err()
     );

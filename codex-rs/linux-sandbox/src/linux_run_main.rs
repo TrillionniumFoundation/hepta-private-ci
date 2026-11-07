@@ -26,6 +26,7 @@ use crate::bwrap::create_bwrap_command_args;
 use crate::landlock::apply_permission_profile_to_current_thread;
 use crate::launcher::exec_bwrap;
 use crate::launcher::preferred_bwrap_supports_argv0;
+use crate::namespace_lifetime::InnerParentLifetime;
 use crate::proxy_routing::activate_proxy_routes_in_netns;
 use crate::proxy_routing::prepare_host_proxy_route_spec;
 use codex_protocol::error::Result as CodexResult;
@@ -122,6 +123,10 @@ pub struct LandlockCommand {
     #[arg(long = "apply-seccomp-then-exec", hide = true, default_value_t = false)]
     pub apply_seccomp_then_exec: bool,
 
+    /// Internal observing endpoint of the outer supervisor's lifetime channel.
+    #[arg(long = "parent-lifetime-fd", hide = true)]
+    pub parent_lifetime_fd: Option<libc::c_int>,
+
     /// Internal compatibility flag.
     ///
     /// By default, restricted-network sandboxing uses isolated networking.
@@ -163,6 +168,7 @@ pub fn run_main() -> ! {
         permission_profile,
         use_legacy_landlock,
         apply_seccomp_then_exec,
+        parent_lifetime_fd,
         allow_network_for_proxy,
         proxy_route_spec,
         verify_fd_mounts,
@@ -175,6 +181,9 @@ pub fn run_main() -> ! {
     }
     if !apply_seccomp_then_exec && !verify_fd_mounts.is_empty() {
         panic!("--verify-fd-mount is only supported in the inner sandbox stage");
+    }
+    if !apply_seccomp_then_exec && parent_lifetime_fd.is_some() {
+        panic!("--parent-lifetime-fd is only supported in the inner sandbox stage");
     }
     ensure_inner_stage_mode_is_valid(apply_seccomp_then_exec, use_legacy_landlock);
     let EffectivePermissions {
@@ -220,6 +229,17 @@ pub fn run_main() -> ! {
             panic!("Linux sandbox retained effective or permitted capabilities");
         }
 
+        // Protect private supervisor descriptors from same-user /proc access.
+        // The capability rejection above remains the first admission boundary.
+        codex_process_hardening::disable_process_dumping()
+            .unwrap_or_else(|err| panic!("failed to protect inner sandbox owner: {err}"));
+        let lifetime_fd = parent_lifetime_fd
+            .unwrap_or_else(|| panic!("inner sandbox requires its outer owner lifetime channel"));
+        // SAFETY: this private argument identifies the endpoint inherited across
+        // exec from the outer supervisor. It has no existing Rust File owner.
+        let parent_lifetime = unsafe { InnerParentLifetime::inherit(lifetime_fd) }
+            .unwrap_or_else(|err| panic!("invalid outer sandbox owner: {err}"));
+
         if allow_network_for_proxy {
             let spec = proxy_route_spec
                 .as_deref()
@@ -247,12 +267,16 @@ pub fn run_main() -> ! {
         }
 
         if command_pid == 0 {
+            drop(parent_lifetime);
             reset_forwarded_signal_handlers_to_default();
             signal_mask.restore();
             exec_or_panic(command);
         }
 
         let signal_forwarders = install_bwrap_signal_forwarders(command_pid);
+        parent_lifetime
+            .start()
+            .unwrap_or_else(|err| panic!("failed to watch outer sandbox owner: {err}"));
         signal_mask.restore();
         loop {
             let mut status = 0;
@@ -557,18 +581,15 @@ fn resolve_true_command() -> String {
 }
 
 fn run_or_exec_bwrap(bwrap_args: crate::bwrap::BwrapArgs) -> ! {
-    if bwrap_args.synthetic_mount_targets.is_empty()
-        && bwrap_args.protected_create_targets.is_empty()
-    {
-        exec_bwrap(bwrap_args.args, bwrap_args.preserved_files);
-    }
+    // Keep the existing outer supervisor alive even when mount cleanup is not
+    // needed: it owns the only peer of the inner namespace lifetime channel.
     run_bwrap_in_child_with_synthetic_mount_cleanup(bwrap_args);
 }
 
 fn run_bwrap_in_child_with_synthetic_mount_cleanup(bwrap_args: crate::bwrap::BwrapArgs) -> ! {
     let crate::bwrap::BwrapArgs {
-        args,
-        preserved_files,
+        mut args,
+        mut preserved_files,
         synthetic_mount_targets,
         protected_create_targets,
     } = bwrap_args;
@@ -577,6 +598,17 @@ fn run_bwrap_in_child_with_synthetic_mount_cleanup(bwrap_args: crate::bwrap::Bwr
     let protected_create_registrations =
         register_protected_create_targets(&protected_create_targets);
     let exec_start_pipe = create_exec_start_pipe(!protected_create_targets.is_empty());
+    // The no-proc fallback can expose host /proc. Protect the sole owner peer
+    // before creating it; neither this supervisor nor inner PID 1 execs a user
+    // command after hardening. User command exec keeps its normal Linux rules.
+    codex_process_hardening::disable_process_dumping()
+        .unwrap_or_else(|err| panic!("failed to protect outer sandbox owner: {err}"));
+    // Host proxy helpers are already started. No later child may retain the
+    // owner peer; only the observing endpoint crosses the bwrap exec.
+    let (lifetime_reader, lifetime_owner) = crate::namespace_lifetime::channel()
+        .unwrap_or_else(|err| panic!("failed to create sandbox lifetime channel: {err}"));
+    crate::namespace_lifetime::attach_reader_argument(&mut args, &lifetime_reader)
+        .unwrap_or_else(|err| panic!("failed to bind sandbox lifetime channel: {err}"));
     let parent_pid = unsafe { libc::getpid() };
     let pid = unsafe { libc::fork() };
     if pid < 0 {
@@ -585,6 +617,8 @@ fn run_bwrap_in_child_with_synthetic_mount_cleanup(bwrap_args: crate::bwrap::Bwr
     }
 
     if pid == 0 {
+        drop(lifetime_owner);
+        preserved_files.push(lifetime_reader);
         reset_forwarded_signal_handlers_to_default();
         setup_signal_mask.restore();
         let setpgid_res = unsafe { libc::setpgid(0, 0) };
@@ -597,6 +631,7 @@ fn run_bwrap_in_child_with_synthetic_mount_cleanup(bwrap_args: crate::bwrap::Bwr
         exec_bwrap(args, preserved_files);
     }
 
+    drop(lifetime_reader);
     close_child_exec_start_read(exec_start_pipe[0]);
     let protected_create_monitor = ProtectedCreateMonitor::start(&protected_create_targets);
     let signal_forwarders = install_bwrap_signal_forwarders(pid);

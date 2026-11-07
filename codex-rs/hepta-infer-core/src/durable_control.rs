@@ -202,14 +202,26 @@ impl DurableInferenceControl {
             options.mode(0o600);
         }
         let file = options.open(&path)?;
-        Self::replay_file(file, path, capacity)
+        let control = Self::replay_file(file, path, capacity)?;
+        #[cfg(unix)]
+        {
+            let parent = control
+                .path
+                .parent()
+                .filter(|parent| !parent.as_os_str().is_empty())
+                .unwrap_or_else(|| Path::new("."));
+            File::open(parent)?.sync_all()?;
+        }
+        Ok(control)
     }
 
     /// Replay an already opened, host-selected Linux read/append file. This method
-    /// never opens or creates the journal pathname; the host chooses create-new
-    /// versus reopen and retains responsibility for its storage identity. The
-    /// actual descriptor flags must be readable and append-mode; the caller must
-    /// not retain a writer or change the shared descriptor flags afterwards.
+    /// never accesses the diagnostic pathname or its parent. The host chooses
+    /// create-new versus reopen, retains responsibility for storage identity,
+    /// and syncs the actual containing directory when creating an entry. Replay,
+    /// locking and append-sync use only the supplied descriptor. Its flags must
+    /// be readable and append-mode; the caller must not retain a writer or change
+    /// the shared descriptor flags afterwards.
     #[cfg(target_os = "linux")]
     pub fn open_file(file: File, path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
         owned_file::validate_read_append(&file)?;
@@ -286,14 +298,6 @@ impl DurableInferenceControl {
             > MAX_JOURNAL_BYTES
         {
             return Err(Error::CapacityExceeded);
-        }
-        #[cfg(unix)]
-        {
-            let parent = path
-                .parent()
-                .filter(|parent| !parent.as_os_str().is_empty())
-                .unwrap_or_else(|| Path::new("."));
-            File::open(parent)?.sync_all()?;
         }
         Ok(Self {
             path,
