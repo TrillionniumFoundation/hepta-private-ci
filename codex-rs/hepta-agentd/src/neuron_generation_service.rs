@@ -181,6 +181,11 @@ where
             GenerationCommand::ObserveGeneration(response) => {
                 respond(state, response, self.owner.journal().observe_generation())
             }
+            GenerationCommand::ObserveIntent { intent, response } => respond(
+                state,
+                response,
+                self.owner.journal().observe_intent(&intent),
+            ),
             GenerationCommand::PendingRequest(response) => respond(
                 state,
                 response,

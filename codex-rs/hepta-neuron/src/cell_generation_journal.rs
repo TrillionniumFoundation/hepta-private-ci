@@ -23,11 +23,14 @@ use crate::cell_task_cost::CellCostRecordV2;
 use crate::cell_task_cost::CellTaskCostV2;
 use crate::journal_lock::LockedFile;
 
+#[path = "cell_generation_intent_observation.rs"]
+mod intent_observation;
 #[path = "cell_generation_lifecycle.rs"]
 mod lifecycle;
 #[path = "cell_generation_migration.rs"]
 mod migration;
 
+pub use intent_observation::CellGenerationIntentObservationV1;
 pub use lifecycle::CellGenerationCheckpointReceiptV2;
 pub use lifecycle::CellGenerationJournalMetricsV2;
 pub use migration::CellGenerationMigratedStateV2;
@@ -574,3 +577,7 @@ mod support;
 #[cfg(test)]
 #[path = "cell_generation_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "cell_generation_intent_observation_tests.rs"]
+mod intent_observation_tests;

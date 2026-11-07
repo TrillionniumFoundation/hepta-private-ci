@@ -86,6 +86,7 @@ pub use cell_generation_control::CellGenerationWorkerV2;
 pub use cell_generation_control::ControlledCellGenerationConfigV2;
 pub use cell_generation_control::ControlledCellGenerationPortV2;
 pub use cell_generation_journal::CellGenerationCheckpointReceiptV2;
+pub use cell_generation_journal::CellGenerationIntentObservationV1;
 pub use cell_generation_journal::CellGenerationJournalMetricsV2;
 pub use cell_generation_journal::CellGenerationJournalV2;
 pub use cell_generation_journal::CellGenerationMigratedStateV2;

@@ -100,15 +100,11 @@ where
                     input_digest: Digest32::of_bytes(&request.input).into_array(),
                     deadline_micros: request.deadline_micros,
                 };
-                if let Some(receipt) = journal.receipt_for_intent(&intent)? {
-                    return codec::receipt(receipt).map(Response::Receipt);
+                let observed = journal.observe_intent(&intent)?;
+                if let Some(receipt) = observed.receipt() {
+                    return codec::receipt(receipt.clone()).map(Response::Receipt);
                 }
-                if let Some(pending) = journal.pending_request()?
-                    && pending.operation_id == operation_id
-                {
-                    if pending.intent()? != intent {
-                        return Err(Error::Conflict);
-                    }
+                if let Some(pending) = observed.pending_request() {
                     return codec::pending(pending).map(Response::Pending);
                 }
                 // In particular, never call Step/Reconcile on absence. A

@@ -8,6 +8,8 @@ use codex_hepta_neuron::CellCostAccountingV2;
 use codex_hepta_neuron::CellCostEntryV2;
 use codex_hepta_neuron::CellGenerationControlPortV2;
 use codex_hepta_neuron::CellGenerationErrorV2;
+use codex_hepta_neuron::CellGenerationIntentObservationV1;
+use codex_hepta_neuron::CellGenerationIntentV2;
 use codex_hepta_neuron::CellGenerationJournalV2;
 use codex_hepta_neuron::CellGenerationObservationV1;
 use codex_hepta_neuron::CellGenerationReceiptV2;
@@ -72,6 +74,10 @@ pub(crate) enum GenerationCommand {
     },
     Snapshot(Response<CellRuntimeSnapshotV2>),
     ObserveGeneration(Response<CellGenerationObservationV1>),
+    ObserveIntent {
+        intent: Box<CellGenerationIntentV2>,
+        response: Response<CellGenerationIntentObservationV1>,
+    },
     PendingRequest(Response<Option<CellGenerationRequestV2>>),
     PendingOutput(Response<Option<CellOutputChunkV2>>),
     TaskCost(Response<CellTaskCostV2>),
@@ -168,6 +174,20 @@ impl NeuronGenerationRuntimeHandleV2 {
         &self,
     ) -> Result<Option<CellGenerationRequestV2>, CellGenerationErrorV2> {
         self.call(GenerationCommand::PendingRequest).await
+    }
+
+    /// Observe the original per-intent receipt/cost and matching pending output
+    /// in one owner command. Missing stays uncertain and never dispatches work.
+    pub async fn observe_intent(
+        &self,
+        intent: CellGenerationIntentV2,
+    ) -> Result<CellGenerationIntentObservationV1, CellGenerationErrorV2> {
+        StableId::new(&intent.operation_id).map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
+        self.call(|response| GenerationCommand::ObserveIntent {
+            intent: Box::new(intent),
+            response,
+        })
+        .await
     }
 
     pub async fn pending_output(&self) -> Result<Option<CellOutputChunkV2>, CellGenerationErrorV2> {

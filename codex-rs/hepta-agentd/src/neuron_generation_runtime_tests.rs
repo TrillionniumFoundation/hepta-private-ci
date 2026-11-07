@@ -24,6 +24,8 @@ mod task_cost;
 mod control;
 #[path = "neuron_generation_episode_tests.rs"]
 mod episode;
+#[path = "neuron_generation_intent_observation_tests.rs"]
+mod intent_observation;
 #[path = "neuron_generation_no_contact_tests.rs"]
 mod no_contact;
 #[path = "neuron_generation_observation_tests.rs"]
