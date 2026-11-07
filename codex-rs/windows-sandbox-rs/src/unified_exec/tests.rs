@@ -679,11 +679,13 @@ fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
 }
 
 #[test]
-fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
+fn legacy_workspace_write_delete_refuses_unqualified_filesystem_backend() {
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        // Keep writable roots out of USERPROFILE exclusions such as AppData.
+        // The legacy direct-token path is intentionally unqualified: its
+        // parent-directory FILE_DELETE_CHILD boundary is not proven. It must
+        // refuse before creating a child process until a qualified owner exists.
         let test_root = TempDir::new_in(sandbox_cwd()).expect("create legacy delete test root");
         let codex_home = sandbox_home("legacy-delete-writable-roots");
         let workspace = test_root.path().join("workspace");
@@ -709,13 +711,13 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
         fs::write(
             &script,
             concat!(
-                "@echo off\r\n",
-                "del /f /q \"%WORKSPACE_DELETE%\"\r\n",
-                "del /f /q \"%TEMP_DELETE%\"\r\n",
-                "del /f /q \"%TMP_DELETE%\"\r\n",
-                "del /f /q \"%OUTSIDE_DELETE%\"\r\n",
-                "rmdir \"%PROTECTED_GIT_DIR%\"\r\n",
-                "exit /b 0\r\n",
+                "@echo off\\r\\n",
+                "del /f /q \\"%WORKSPACE_DELETE%\\"\\r\\n",
+                "del /f /q \\"%TEMP_DELETE%\\"\\r\\n",
+                "del /f /q \\"%TMP_DELETE%\\"\\r\\n",
+                "del /f /q \\"%OUTSIDE_DELETE%\\"\\r\\n",
+                "rmdir \\"%PROTECTED_GIT_DIR%\\"\\r\\n",
+                "exit /b 0\\r\\n",
             ),
         )
         .expect("write delete script");
@@ -746,12 +748,12 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
         ]);
 
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let result = spawn_windows_sandbox_session_legacy(
             &permission_profile,
             workspace_roots_for(workspace.as_path()).as_slice(),
             codex_home.path(),
             vec![
-                "C:\\Windows\\System32\\cmd.exe".to_string(),
+                "C:\\\\Windows\\\\System32\\\\cmd.exe".to_string(),
                 "/d".to_string(),
                 "/c".to_string(),
                 script.display().to_string(),
@@ -765,25 +767,37 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             /*stdin_open*/ false,
             /*use_private_desktop*/ true,
         )
-        .await
-        .expect("spawn legacy delete session");
-        let (stdout, exit_code) =
-            collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(/*secs*/ 10))
-                .await;
-        let stdout = String::from_utf8_lossy(&stdout);
+        .await;
+        let error = match result {
+            Ok(process) => {
+                drop(process);
+                panic!("unqualified legacy filesystem backend unexpectedly launched");
+            }
+            Err(error) => error,
+        };
+        let error_text = format!("{error:#}");
+        assert!(
+            error_text.contains("Windows filesystem isolation is unavailable"),
+            "unexpected legacy refusal: {error_text}"
+        );
 
+        // Refusal must precede child execution: all writable and out-of-root
+        // fixtures remain intact, including the protected .git directory.
         assert_eq!(
             (
-                exit_code,
                 workspace_file.exists(),
                 temp_file.exists(),
                 tmp_file.exists(),
                 fs::read_to_string(&outside_file).ok(),
                 protected_git_dir.is_dir(),
             ),
-            (0, false, false, false, Some("outside".to_string()), true),
-            "stdout={stdout:?}\n{}",
-            sandbox_log(codex_home.path())
+            (
+                true,
+                true,
+                true,
+                Some("outside".to_string()),
+                true,
+            ),
         );
     });
 }
