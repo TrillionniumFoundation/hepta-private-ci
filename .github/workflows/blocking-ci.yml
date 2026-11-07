@@ -221,6 +221,7 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/ndu-reference-venv"
           "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m pip install -r scripts/ndu_portfolio/requirements.txt
+          "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.8.0+cpu
       - name: Run regressions and labelled quick research evidence
         run: |
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
@@ -233,6 +234,7 @@ jobs:
           set -euo pipefail
           "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m unittest -v \
             ndu_semantic_state.test_state ndu_semantic_state.test_materials \
+            ndu_semantic_state.test_torch_adapter \
             2>&1 | tee "$RUNNER_TEMP/ndu-reference-evidence/semantic-contracts.log"
           git diff --check
           git diff --exit-code
