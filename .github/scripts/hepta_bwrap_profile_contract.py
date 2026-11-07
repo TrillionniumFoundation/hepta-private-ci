@@ -19,8 +19,8 @@ from hepta_core_selected_evidence import identity, read_regular, require
 ROOT = Path(__file__).resolve().parents[2]
 PARENT = "25d940b9b768b9117a020fe350fd134198a2efcf"
 PARENT_TREE = "26277e2bebd9e9f5a7cd04869c955dfd2fa7ddd2"
-INPUTS_HEAD = None
-INPUTS_TREE = None
+INPUTS_HEAD = "1a48ab2f96c66ec7c13399a2bdee293562256bd9"
+INPUTS_TREE = "2575889ef1354f67c8c73547702a36f3eb2a277e"
 CHECKS_HEAD = None
 CHECKS_TREE = None
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
