@@ -1,0 +1,117 @@
+{
+  "C": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+  "P": "54d73e897e088369b37db1575af146d228b5db25",
+  "R": "cfe941b4762a773679a552068d1560ae17a3f226",
+  "R_tree": "e6fc9a1cb7c2441c1811d08356f7e31b2e886177",
+  "U": "0e6fbff34b4f9ad9555de057d8807666f2668e84",
+  "after": {
+    "branch": "engineering/cell-integrated-20261108-08b6-followup",
+    "head": "cfe941b4762a773679a552068d1560ae17a3f226",
+    "index_tree": "e6fc9a1cb7c2441c1811d08356f7e31b2e886177",
+    "status": "",
+    "tree": "e6fc9a1cb7c2441c1811d08356f7e31b2e886177"
+  },
+  "before": {
+    "branch": "engineering/cell-integrated-20261108-08b6-followup",
+    "head": "54d73e897e088369b37db1575af146d228b5db25",
+    "index_tree": "f72af42c2481041b061548161f112635b97d10ed",
+    "status": "",
+    "tree": "f72af42c2481041b061548161f112635b97d10ed"
+  },
+  "exit_code": 0,
+  "finished_at_utc": "2026-11-08T20:18:32.120868+00:00",
+  "numstat": "8\t8\tMODULE.bazel.lock\n27\t0\tapps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs\n192\t0\tapps/hepta-control-ui/rust/robrix-ui/src/robrix/room_ime_commit_tests.rs\n35\t34\tcodex-rs/Cargo.lock",
+  "parents": "54d73e897e088369b37db1575af146d228b5db25",
+  "schema": "hepta.followup-source-assembly.v1",
+  "source_files_exact_frozen_owner": true,
+  "started_at_utc": "2026-11-08T20:18:31.763193+00:00",
+  "steps": [
+    {
+      "argv": [
+        "git",
+        "cherry-pick",
+        "0e6fbff34b4f9ad9555de057d8807666f2668e84"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/followup-source",
+      "exit_code": 0,
+      "name": "cherry-pick-U",
+      "stderr": {
+        "bytes": 0,
+        "path": "cherry-pick-U.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 276,
+        "path": "cherry-pick-U.stdout",
+        "sha256": "ebcc3ceb14df8d82e00f526191771fe2fb777f51ab4680ca052c96c857ef184a"
+      },
+      "wall_seconds": 0.01546804403187707
+    },
+    {
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/followup-source/codex-rs",
+      "exit_code": 0,
+      "name": "just-fmt",
+      "stderr": {
+        "bytes": 0,
+        "path": "just-fmt.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 73,
+        "path": "just-fmt.stdout",
+        "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+      },
+      "wall_seconds": 0.11376373196253553
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/format.py",
+        "--check",
+        "--base",
+        "b839558b26c2e5b667055ca4af4ad749ae41c043"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/followup-source",
+      "exit_code": 0,
+      "name": "committed-format-check",
+      "stderr": {
+        "bytes": 0,
+        "path": "committed-format-check.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "committed-format-check.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "wall_seconds": 0.11423865496180952
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "b839558b26c2e5b667055ca4af4ad749ae41c043",
+        "HEAD"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/followup-source",
+      "exit_code": 0,
+      "name": "diff-check",
+      "stderr": {
+        "bytes": 0,
+        "path": "diff-check.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "diff-check.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "wall_seconds": 0.016469919006340206
+    }
+  ]
+}
