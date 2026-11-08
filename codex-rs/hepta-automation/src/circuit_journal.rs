@@ -13,6 +13,7 @@ use crate::BoundedCircuitDefinitionV2;
 use crate::CircuitActivationStatusV2;
 use crate::CircuitCommandReceiptV2;
 use crate::CircuitCommandStatusV2;
+use crate::CircuitCompletionV2;
 use crate::CircuitEventV2;
 use crate::CircuitRunV2;
 use crate::TaskFlowError;
@@ -26,6 +27,7 @@ pub(crate) struct CircuitHistoryV2 {
     pub definition: BoundedCircuitDefinitionV2,
     pub run: CircuitRunV2,
     pub commands: BTreeMap<String, Sha256Digest>,
+    pub completions: BTreeMap<u64, CircuitCompletionV2>,
     pub last_digest: Sha256Digest,
     // Derived from verified history, never a new serialized Run field.
     recovery_lease_claims: u64,
@@ -204,6 +206,7 @@ pub(crate) async fn load(
         + RECOVERY_MAINTENANCE_EVENTS;
     let mut run = None;
     let mut commands = BTreeMap::new();
+    let mut completions = BTreeMap::new();
     let mut previous = Sha256Digest::for_bytes(b"hepta.circuit.genesis.v2");
     let mut expected_seq = 0_u64;
     let mut recovery_lease_claims = 0_u64;
@@ -265,6 +268,14 @@ pub(crate) async fn load(
             if stored_event != digest.as_str() || stored_state != next.state_digest()?.as_str() {
                 return Err(corrupt("circuit event or state digest mismatch"));
             }
+            if let CircuitLedgerEventV2::Applied {
+                event: CircuitEventV2::Complete { completion }
+                    | CircuitEventV2::Reconcile { completion },
+                ..
+            } = &payload
+            {
+                completions.insert(completion.activation_id, completion.clone());
+            }
             if expected_seq > u64::from(definition.limits.max_events)
                 && matches!(&payload, CircuitLedgerEventV2::Claimed { .. })
             {
@@ -294,6 +305,7 @@ pub(crate) async fn load(
         definition,
         run,
         commands,
+        completions,
         last_digest: previous,
         recovery_lease_claims,
     }))

@@ -81,6 +81,7 @@ pub use circuit_state::CircuitActivationV2;
 pub use circuit_state::CircuitCommandReceiptV2;
 pub use circuit_state::CircuitCommandStatusV2;
 pub use circuit_state::CircuitCommandV2;
+pub use circuit_state::CircuitCommittedTraceV2;
 pub use circuit_state::CircuitCompletionV2;
 pub use circuit_state::CircuitDispatchV2;
 pub use circuit_state::CircuitEventV2;
