@@ -4,7 +4,9 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -12,7 +14,7 @@ from unittest.mock import patch
 import hepta_cell_joint_config as config
 
 
-class JointConfigurationTests(unittest.TestCase):
+class JointConfigurationFixture(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
@@ -81,6 +83,8 @@ class JointConfigurationTests(unittest.TestCase):
     def verify(self):
         return config.verify(self.document, self.source, self.artifacts)
 
+
+class JointConfigurationTests(JointConfigurationFixture):
     def test_complete_identity_has_no_adoption_authority(self):
         result = self.verify()
         self.assertEqual(result["source"], self.document["source"])
@@ -305,6 +309,340 @@ class JointConfigurationTests(unittest.TestCase):
         ):
             with self.subTest(raw=raw), self.assertRaises(ValueError):
                 config.strict_json(raw)
+
+
+class JointConfigurationV2Tests(JointConfigurationFixture):
+    """Engineering integrity controls; no model execution or scientific evaluation."""
+
+    def setUp(self):
+        super().setUp()
+        self.legacy = copy.deepcopy(self.document)
+        self.document["schema"] = "hepta.cell-joint-config.v2"
+        self.document["artifacts"]["candidate_model"] = self.bind(
+            "candidate-model-v2.bin", (self.artifacts / "incumbent_model").read_bytes()
+        )
+        for axis in ("state_schema", "encoder", "backend"):
+            for prefix in ("", "incumbent_"):
+                role = prefix + axis
+                self.document["artifacts"][role] = self.bind(
+                    role, (axis + "\n").encode()
+                )
+        models = {}
+        for role, prefix in (
+            ("incumbent_model", "incumbent_"),
+            ("candidate_model", ""),
+        ):
+            models[role] = {"model_sha256": self.document["artifacts"][role]["sha256"]}
+            for axis in ("state_schema", "encoder", "backend"):
+                models[role][axis + "_sha256"] = self.document["artifacts"][
+                    prefix + axis
+                ]["sha256"]
+        self.document["compatibility"] = {
+            "schema": "hepta.cell-model-compatibility.v1",
+            "models": models,
+            "state_transition": {"mode": "carry"},
+        }
+        self.calls = 0
+
+    def cli(self, readback=None, role=None, error=None, task="task-successor-1"):
+        self.calls += 1
+        configuration = self.root / "configuration.json"
+        configuration.write_text(json.dumps(self.document))
+        output = self.root / f"result-{self.calls}.json"
+        argv = [
+            sys.executable,
+            str(Path(config.__file__).resolve()),
+            str(configuration),
+            "--source-root",
+            str(self.source),
+            "--artifact-root",
+            str(self.artifacts),
+            "--output",
+            str(output),
+        ]
+        if readback is not None:
+            path = self.root / "consumer.json"
+            path.write_bytes(
+                readback
+                if isinstance(readback, bytes)
+                else json.dumps(readback).encode()
+            )
+            argv += ["--consumer-readback", str(path)]
+        if role is not None:
+            argv += ["--expected-model-role", role]
+            if task is not None:
+                argv += ["--expected-task-id", task]
+        process = subprocess.run(argv, capture_output=True, text=True, timeout=20)
+        self.assertEqual(
+            process.returncode, 1 if error else 0, process.stdout + process.stderr
+        )
+        response = json.loads(process.stdout)
+        if error:
+            self.assertEqual(response["configuration_integrity"], "rejected")
+            self.assertIn(error, response["error"])
+            self.assertFalse(output.exists())
+            return response
+        return json.loads(output.read_text())
+
+    def readback(self, result, role="candidate_model"):
+        return {
+            "schema": "hepta.cell-consumption-readback.v1",
+            "task_id": "task-successor-1",
+            "model_role": role,
+            "bundle_sha256": result["bundle_sha256"],
+        } | self.document["compatibility"]["models"][role]
+
+    def test_candidate_and_noupdate_use_the_selected_complete_contract(self):
+        self.document["artifacts"]["candidate_model"] = self.document["artifacts"][
+            "incumbent_model"
+        ].copy()
+        models = self.document["compatibility"]["models"]
+        models["candidate_model"]["model_sha256"] = models["incumbent_model"][
+            "model_sha256"
+        ]
+        for axis in ("state_schema", "encoder", "backend"):
+            binding = self.bind("new-" + axis, (axis + " v2\n").encode())
+            self.document["artifacts"][axis] = binding
+            models["candidate_model"][axis + "_sha256"] = binding["sha256"]
+        self.document["compatibility"]["state_transition"] = {"mode": "reset"}
+        frozen = self.cli()
+        for role in ("candidate_model", "incumbent_model"):
+            with self.subTest(role=role):
+                result = self.cli(self.readback(frozen, role), role)
+                self.assertEqual(
+                    result["consumer"]["consumption_binding_integrity"], "verified"
+                )
+                for field in (
+                    "semantic_compatibility_verified",
+                    "state_transition_executed",
+                    "model_execution_verified",
+                    "actual_successor_consumption_verified",
+                    "authority_granted",
+                ):
+                    self.assertFalse(result[field])
+                self.assertFalse(
+                    result["consumer"]["consumer_readback_authenticity_verified"]
+                )
+        self.cli(
+            self.readback(frozen, "incumbent_model"),
+            "candidate_model",
+            "selected model",
+        )
+        wrong = self.readback(frozen, "incumbent_model") | models["candidate_model"]
+        self.cli(wrong, "incumbent_model", "selected model")
+
+    def test_same_model_does_not_allow_reuse_after_any_bound_role_changes(self):
+        original = copy.deepcopy(self.document)
+        frozen = self.cli()
+        old_readback = self.readback(frozen)
+        for role in (
+            "trainer",
+            "evaluator",
+            "data",
+            "budget",
+            "state_schema",
+            "encoder",
+            "backend",
+            "runtime",
+            "adoption_rules",
+        ):
+            with self.subTest(role=role):
+                self.document = copy.deepcopy(original)
+                binding = self.bind("changed-" + role, (role + " changed\n").encode())
+                self.document["artifacts"][role] = binding
+                if role in ("state_schema", "encoder", "backend"):
+                    self.document["compatibility"]["models"]["candidate_model"][
+                        role + "_sha256"
+                    ] = binding["sha256"]
+                    self.document["compatibility"]["state_transition"] = {
+                        "mode": "reset"
+                    }
+                changed = self.cli()
+                self.assertNotEqual(changed["bundle_sha256"], frozen["bundle_sha256"])
+                self.cli(old_readback, "candidate_model", "different complete bundle")
+
+    def test_missing_contracts_wrong_versions_and_undeclared_axes_are_rejected(self):
+        original = copy.deepcopy(self.document)
+        for case in (
+            "state_schema",
+            "configuration_version",
+            "contract_version",
+            "model",
+            "schema",
+            "encoder",
+            "backend",
+            "transition",
+        ):
+            with self.subTest(case=case):
+                self.document = copy.deepcopy(original)
+                declaration = self.document["compatibility"]
+                if case == "state_schema":
+                    del self.document["artifacts"][case]
+                elif case == "configuration_version":
+                    self.document["schema"] = "hepta.cell-joint-config.v99"
+                elif case == "contract_version":
+                    declaration["schema"] = "hepta.cell-model-compatibility.v99"
+                elif case == "transition":
+                    declaration["state_transition"] = {"mode": "unknown"}
+                else:
+                    axis = "state_schema" if case == "schema" else case
+                    declaration["models"]["candidate_model"][axis + "_sha256"] = (
+                        "f" * 64
+                    )
+                self.cli(
+                    error={
+                        "state_schema": "v2 requires",
+                        "configuration_version": "unknown joint",
+                        "contract_version": "unknown or incomplete",
+                        "transition": "must declare",
+                    }.get(case, "does not match")
+                )
+
+    def test_changed_axes_require_reset_or_exact_declared_migration(self):
+        original = copy.deepcopy(self.document)
+        for axis in ("model", "state_schema", "encoder", "backend"):
+            self.document = copy.deepcopy(original)
+            binding = self.bind("new-" + axis, (axis + " incompatible\n").encode())
+            self.document["artifacts"][
+                "candidate_model" if axis == "model" else axis
+            ] = binding
+            declaration = self.document["compatibility"]
+            declaration["models"]["candidate_model"][axis + "_sha256"] = binding[
+                "sha256"
+            ]
+            declaration["state_transition"] = {"mode": "carry"}
+            self.cli(error="requires reset or migration")
+            declaration["state_transition"] = {"mode": "reset"}
+            self.assertFalse(self.cli()["state_transition_executed"])
+        declaration["state_transition"] = {"mode": "migrate"}
+        self.cli(error="v2 requires")
+        migration = self.bind("migration.bin", b"declared migration; never executed\n")
+        self.document["artifacts"]["state_migration"] = migration
+        self.cli(error="both exact contracts")
+        transition = declaration["state_transition"]
+        transition["migration_sha256"] = migration["sha256"]
+        for label, role in (("from", "incumbent_model"), ("to", "candidate_model")):
+            raw = json.dumps(
+                declaration["models"][role],
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=True,
+            ).encode("ascii")
+            transition[label + "_contract_sha256"] = hashlib.sha256(raw).hexdigest()
+        self.assertFalse(self.cli()["semantic_compatibility_verified"])
+        transition["from_contract_sha256"] = transition["to_contract_sha256"]
+        self.cli(error="both exact contracts")
+
+    def test_relocated_content_is_stable_but_a_new_source_commit_invalidates_consumption(
+        self,
+    ):
+        frozen = self.cli()
+        old_readback = self.readback(frozen)
+        moved_source, moved_artifacts = (
+            self.root / "other-source",
+            self.root / "other-artifacts",
+        )
+        shutil.copytree(self.source, moved_source)
+        shutil.copytree(self.artifacts, moved_artifacts)
+        self.source, self.artifacts = moved_source, moved_artifacts
+        (self.artifacts / "relocated").mkdir()
+        for binding in [
+            *self.document["artifacts"].values(),
+            self.document["ci_evidence"],
+        ]:
+            old_path = self.artifacts / binding["path"]
+            binding["path"] = "relocated/" + binding["path"]
+            old_path.rename(self.artifacts / binding["path"])
+        self.assertEqual(
+            self.cli(old_readback, "candidate_model")["bundle_sha256"],
+            frozen["bundle_sha256"],
+        )
+        self.git("commit", "--allow-empty", "-qm", "new execution source")
+        self.document["source"]["commit"] = self.git("rev-parse", "HEAD")
+        self.ci["workflow_runs"][0]["head_sha"] = self.document["source"]["commit"]
+        self.bind_ci()
+        self.cli(old_readback, "candidate_model", "different complete bundle")
+
+    def test_legacy_output_and_consumer_version_and_input_limits(self):
+        current = copy.deepcopy(self.document)
+        readback = self.readback(self.cli())
+        self.document = self.legacy
+        result = self.cli()
+        self.assertTrue(result["legacy"])
+        self.assertEqual(result["schema"], "hepta.cell-joint-config-integrity.v1")
+        self.assertNotIn("bundle_sha256", result)
+        self.cli(readback, "candidate_model", "legacy configurations")
+        self.document = current
+        self.cli(readback, error="explicit expected model role")
+        self.cli(readback, "candidate_model", "task identity", task=None)
+        self.cli(
+            readback | {"task_id": "old-task-same-bundle"},
+            "candidate_model",
+            "different task",
+        )
+        self.cli(
+            readback | {"schema": "hepta.cell-consumption-readback.v99"},
+            "candidate_model",
+            "unknown or incomplete",
+        )
+        self.cli(
+            b'{"bundle_sha256": "a", "bundle_sha256": "b"}',
+            "candidate_model",
+            "duplicate JSON key",
+        )
+        self.cli(b" " * (1024 * 1024 + 1), "candidate_model", "exceeds 1 MiB")
+
+    def test_new_roles_cannot_bypass_byte_integrity_or_nofollow(self):
+        for role in ("state_schema", "incumbent_state_schema", "encoder", "backend"):
+            with self.subTest(role=role):
+                path = self.artifacts / self.document["artifacts"][role]["path"]
+                original = path.read_bytes()
+                path.write_bytes(b"x" * len(original))
+                self.cli(error="artifact bytes or identity changed")
+                path.write_bytes(original)
+        path = self.artifacts / "state_schema"
+        path.rename(self.artifacts / "real-schema")
+        path.symlink_to(self.artifacts / "real-schema")
+        self.cli(error="symlinks")
+
+    def test_consumer_helper_rechecks_bundle_and_has_no_input_aliases(self):
+        result = self.verify()
+        original = copy.deepcopy(self.document)
+        readback = self.readback(result)
+        self.document["source"]["commit"] = "f" * 40
+        self.document["compatibility"]["models"]["candidate_model"]["model_sha256"] = (
+            "f" * 64
+        )
+        self.assertEqual(result["source"], original["source"])
+        self.assertEqual(result["bundle"]["compatibility"], original["compatibility"])
+        consumer = config.check_consumer_readback(
+            result, readback, "candidate_model", "task-successor-1"
+        )
+        self.assertEqual(consumer["readback"], readback)
+        readback["task_id"] = "mutated-after-verification"
+        self.assertEqual(consumer["readback"]["task_id"], "task-successor-1")
+        tampered = copy.deepcopy(result)
+        tampered["bundle"]["compatibility"]["models"]["candidate_model"][
+            "model_sha256"
+        ] = "f" * 64
+        with self.assertRaisesRegex(ValueError, "bundle content"):
+            config.check_consumer_readback(
+                tampered,
+                readback | {"model_sha256": "f" * 64},
+                "candidate_model",
+                "task-successor-1",
+            )
+        for field in ("schema", "configuration_integrity"):
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(ValueError, "verified v2"),
+            ):
+                config.check_consumer_readback(
+                    result | {field: "rejected"},
+                    readback,
+                    "candidate_model",
+                    "task-successor-1",
+                )
 
 
 if __name__ == "__main__":
