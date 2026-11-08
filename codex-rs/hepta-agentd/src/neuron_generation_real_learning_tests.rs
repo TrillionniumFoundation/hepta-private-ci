@@ -22,7 +22,6 @@ use crate::AgentdGenerationUpdateRecoveryV1;
 use crate::AgentdGenerationUpdateRequestV1;
 use crate::AgentdGenerationUpdateRuntimeOptionsV1;
 use crate::AgentdGenerationUpdateRuntimeV1;
-use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::LearningIterationCheckpointOwnerV1;
 use crate::LearningIterationOwnerFutureV1;
@@ -124,7 +123,6 @@ struct ResearchPorts {
     publication: Arc<Fixture>,
     old: Mutex<Option<Journal>>,
     config: Mutex<Option<AgentdConfig>>,
-    identity: AgentdIdentity,
     state: Arc<AgentdState>,
     control: ProcessControl,
     checkpoint: Mutex<LearningIterationCheckpointOwnerV1>,
@@ -346,6 +344,10 @@ impl ResearchPorts {
                     .handle
                     .read_learning_next_use_readback(&coordinator, &intent)
                     .await?;
+                persist(
+                    &self.driver.evidence.join("next-use-acked.json"),
+                    &serde_json::to_vec(&readback)?,
+                )?;
                 let retained = [
                     self.publication.bytes("current.json")?,
                     self.publication.bytes("target-journal")?,
@@ -354,7 +356,24 @@ impl ResearchPorts {
                 ];
                 let intent_digest = running.runtime.publication.intent_digest();
                 running.tasks.shutdown().await;
-                drop(running);
+                let Running {
+                    runtime,
+                    tasks,
+                    _lifetime,
+                    ..
+                } = running;
+                drop(tasks);
+                drop(_lifetime);
+                // Reopen the owner within this live daemon generation using its
+                // original admitted config. AgentdConfig::load is only for a
+                // fresh Starting generation; no Fleet lifecycle is bypassed.
+                let AgentdGenerationUpdateRuntimeV1 {
+                    config,
+                    handle,
+                    publication,
+                } = runtime;
+                drop(handle);
+                drop(publication);
                 let ready = recover_agentd_generation_update_v1(
                     self.publication.reopen_current()?,
                     self.publication.authorities()?,
@@ -365,16 +384,6 @@ impl ResearchPorts {
                             .to_string(),
                         intent_digest,
                     },
-                )?;
-                let i = &self.identity;
-                let config = AgentdConfig::load(
-                    i.fleet_root.clone(),
-                    i.agent_id.clone(),
-                    i.spawn_generation,
-                    i.home_root.clone(),
-                    i.run_root.clone(),
-                    i.home_root.clone(),
-                    i.workspace.clone(),
                 )?;
                 let mut runtime = ready.into_runtime(
                     config,
@@ -792,7 +801,6 @@ async fn actual_smollm_training_no_update_native_next_use_and_cold_readback() ->
         publication: publication.clone(),
         old: Mutex::new(Some(old)),
         config: Mutex::new(Some(config)),
-        identity: host.identity.clone(),
         state: Arc::clone(host.state()),
         control: control.clone(),
         checkpoint: Mutex::new(checkpoint),
