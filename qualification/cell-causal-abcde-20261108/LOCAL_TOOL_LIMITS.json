@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.cell-causal.local-validation-limits.v1",
+  "rust_source_changed": false,
+  "just_fmt": {
+    "attempted": true,
+    "exit_code": 127,
+    "reason": "just command unavailable; exported candidate lacks codex-rs/justfile"
+  },
+  "python_format": {
+    "version": "ruff 0.15.13",
+    "host": "rog",
+    "source_files": 18,
+    "AST_equal": 18
+  },
+  "full_workspace_validated": false,
+  "format_attempts": [
+    {
+      "original_job_id": "1a1ba74878f-12894-1ac9",
+      "status": "failed_before_execution",
+      "reason": "generated script parse error; no source changed"
+    },
+    {
+      "original_job_id": "1a1ba755125-12894-1ad0",
+      "status": "PASS",
+      "receipt": "FORMAT_RESULT.json"
+    }
+  ]
+}
