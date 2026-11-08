@@ -217,6 +217,163 @@ def next_use_fixture():
     return expected, records
 
 
+def cost_fixture(stage, name):
+    ledger = {
+        key: {
+            "status": "not_applicable",
+            "values": {},
+            "evidence": f"fixture {name}: no {key} operation in this disjoint record",
+        }
+        for key in COST_STAGES
+    }
+    ledger[stage] = {
+        "status": "measured",
+        "values": dict.fromkeys(COST_UNITS, 1.0),
+        "evidence": f"fixture meter: {name}/{stage}",
+    }
+    return ledger
+
+
+def e_fixture():
+    start = {
+        "initial_bundle": pin("initial-model"),
+        "seed": 17,
+        "source_cluster": "source-1",
+        "training_families": ["seen-task"],
+        "holdout_family": "unseen-task",
+    }
+    start.update(
+        {
+            key: pin(key)
+            for key in (
+                "training_data",
+                "development_data",
+                "acceptance_data",
+                "holdout_data",
+            )
+        }
+    )
+    plan = {
+        "schema": "ndu.causal.improver-comparison.v1",
+        "improvers": {
+            "parent": {
+                "artifact_digest": pin("parent-improver"),
+                "parent_digest": None,
+            },
+            "child": {
+                "artifact_digest": pin("child-improver"),
+                "parent_digest": pin("parent-improver"),
+            },
+        },
+        "cost_penalty": {"unit": "cpu_seconds", "per_unit": 0.01},
+        "runs": [],
+    }
+    registry = {
+        "schema": "ndu.causal.improver-attempt-registry.v1",
+        "sealed": True,
+        "entries": [],
+        "run_overheads": {},
+        "finals": {},
+    }
+    rows, evaluations = [], {}
+    for role in ("parent", "child"):
+        run = {
+            "run_id": role,
+            "pair_id": "pair-1",
+            "role": role,
+            "improver_digest": plan["improvers"][role]["artifact_digest"],
+            "producer_owner": "trainer-" + role,
+            "evaluator_owner": "independent-evaluator",
+            "common_start": deepcopy(start),
+            "full_budget_contract": {
+                "scope": list(COST_STAGES),
+                "limits": dict.fromkeys(COST_UNITS, 100),
+                "candidate_attempts": 8,
+            },
+            "acceptance_profile": pin("acceptance-profile"),
+            "holdout_profile": pin("future-holdout-profile"),
+        }
+        plan["runs"].append(run)
+        registry["run_overheads"][role] = cost_fixture(
+            "preparation", role + "-construction-and-setup"
+        )
+        for index in (1, 2, 3):
+            attempt_id = role + str(index)
+            entry = {
+                "attempt_id": attempt_id,
+                "run_id": role,
+                "operation_id": "original/" + attempt_id,
+                "request_sha256": pin("request." + attempt_id),
+                "retry_of": None,
+                "original_attempt_reference": "original/journal/" + attempt_id,
+            }
+            registry["entries"].append(entry)
+            if role == "parent" and index == 3:
+                continue
+            valid = index == 1 or role == "child" and index == 2
+            row = {
+                key: entry[key]
+                for key in ("attempt_id", "run_id", "operation_id", "request_sha256")
+            }
+            row.update(
+                terminal_status="SUCCEEDED"
+                if valid
+                else "FAILED"
+                if index == 2
+                else "CANCELLED",
+                candidate_digest=pin("candidate." + attempt_id),
+                validity="VALID" if valid else "INVALID",
+                evaluation_reference=pin("evaluation." + attempt_id) if valid else None,
+                rolled_back=role == "parent" and index == 2,
+                rollback_reference=pin("rollback." + attempt_id)
+                if role == "parent" and index == 2
+                else None,
+                costs=cost_fixture("training", attempt_id),
+            )
+            rows.append(row)
+            if valid:
+                evaluations[("acceptance", row["evaluation_reference"])] = {
+                    "kind": "acceptance",
+                    "run_id": role,
+                    "actor_id": run["evaluator_owner"],
+                    "attempt_id": attempt_id,
+                    "operation_id": entry["operation_id"],
+                    "candidate_bundle": row["candidate_digest"],
+                    "baseline_bundle": start["initial_bundle"],
+                    "evaluation_profile": run["acceptance_profile"],
+                    "data_digest": start["acceptance_data"],
+                    "evidence_digest": pin("evidence." + attempt_id),
+                    "observed_unix_seconds": 12,
+                    "baseline_utility": 0.4,
+                    "candidate_utility": 0.6,
+                    "accepted": index == 1,
+                }
+        final = {
+            "attempt_id": role + "1",
+            "candidate_bundle": pin("candidate." + role + "1"),
+            "selection_digest": pin("selected." + role),
+            "evaluation_reference": pin("final." + role),
+        }
+        registry["finals"][role] = final
+        evaluations[("heldout_final", final["evaluation_reference"])] = {
+            "kind": "heldout_final",
+            "run_id": role,
+            "actor_id": run["evaluator_owner"],
+            "candidate_bundle": final["candidate_bundle"],
+            "baseline_bundle": start["initial_bundle"],
+            "evaluation_profile": run["holdout_profile"],
+            "data_digest": start["holdout_data"],
+            "evidence_digest": pin("final-evidence." + role),
+            "observed_unix_seconds": 20,
+            "baseline_utility": 0.4,
+            "candidate_utility": 0.6 if role == "parent" else 0.8,
+            "selection_digest": final["selection_digest"],
+            "selection_committed_unix_seconds": 15,
+            "task_family": start["holdout_family"],
+        }
+    return plan, registry, rows, evaluations
+
+
 class ArchitectureChecks(unittest.TestCase):
     def run_check(self, arms, registry):
         return assess_a_capabilities(
@@ -426,3 +583,306 @@ class CompositionChecks(unittest.TestCase):
         self.assertEqual(self.read_next(expected, records)["state_mode"], "reset")
 
 
+class ImproverChecks(unittest.TestCase):
+    def compare(self, fixture, *, authenticated=True):
+        plan, registry, rows, evaluations = fixture
+        return compare_improvers(
+            plan,
+            registry,
+            rows,
+            read_evaluation=lambda kind, reference: evaluations.get((kind, reference)),
+            verify_evaluation=(lambda kind, record, owner: record["actor_id"] == owner)
+            if authenticated
+            else None,
+        )
+
+    def test_complete_denominators_and_unknown_cost_survive(self):
+        result = self.compare(e_fixture())
+        parent, child = result["runs"]["parent"], result["runs"]["child"]
+        self.assertEqual(
+            (
+                result["registered_attempts"],
+                result["missing_results"],
+                result["status"],
+            ),
+            (6, ["parent3"], "HOLD_INCOMPLETE_EVIDENCE"),
+        )
+        self.assertEqual(
+            {
+                key: parent[key]
+                for key in (
+                    "attempted",
+                    "valid",
+                    "invalid",
+                    "unknown_validity",
+                    "accepted",
+                    "accepted_per_attempt",
+                    "accepted_per_valid_resolved",
+                )
+            },
+            {
+                "attempted": 3,
+                "valid": 1,
+                "invalid": 1,
+                "unknown_validity": 1,
+                "accepted": 1,
+                "accepted_per_attempt": 1 / 3,
+                "accepted_per_valid_resolved": 1,
+            },
+        )
+        self.assertEqual(parent["acceptance_probability_bounds"], [1 / 3, 2 / 3])
+        self.assertEqual(parent["reported_rollback_bounds"], [1 / 3, 2 / 3])
+        self.assertEqual(parent["cost_totals"], dict.fromkeys(COST_UNITS))
+        self.assertEqual(
+            parent["cost_known_lower_bounds"], dict.fromkeys(COST_UNITS, 3.0)
+        )
+        self.assertIsNone(parent["net_improvement"])
+        self.assertEqual(child["accepted_per_valid_resolved"], 0.5)
+        self.assertAlmostEqual(child["net_improvement"], 0.36)
+        self.assertFalse(result["scientific_efficacy_qualified"])
+
+    def test_unverified_evaluations_are_neither_acceptances_nor_rejections(self):
+        result = self.compare(e_fixture(), authenticated=False)
+        parent = result["runs"]["parent"]
+        self.assertEqual(
+            (
+                parent["accepted"],
+                parent["rejected"],
+                parent["unresolved_evaluation"],
+                parent["accepted_per_valid_resolved"],
+                parent["heldout_delta"],
+            ),
+            (0, 0, 1, None, None),
+        )
+        self.assertEqual(parent["acceptance_probability_bounds"], [0, 2 / 3])
+
+    def test_dropping_failed_result_does_not_shrink_registry_denominator(self):
+        fixture = e_fixture()
+        fixture[2][:] = [row for row in fixture[2] if row["attempt_id"] != "parent2"]
+        parent = self.compare(fixture)["runs"]["parent"]
+        self.assertEqual(
+            (parent["attempted"], parent["terminal_counts"]["UNKNOWN"]), (3, 2)
+        )
+
+    def test_mismatched_start_budget_lineage_and_self_evaluation_are_refused(self):
+        for target in ("start", "budget", "lineage", "self_evaluation", "holdout"):
+            with self.subTest(target=target):
+                fixture = e_fixture()
+                plan = fixture[0]
+                child = plan["runs"][1]
+                if target == "start":
+                    child["common_start"]["seed"] += 1
+                elif target == "budget":
+                    child["full_budget_contract"]["limits"]["cpu_seconds"] += 1
+                elif target == "lineage":
+                    plan["improvers"]["child"]["parent_digest"] = pin("other-parent")
+                elif target == "self_evaluation":
+                    child["evaluator_owner"] = child["producer_owner"]
+                else:
+                    child["common_start"]["holdout_family"] = "seen-task"
+                with self.assertRaises(ACEValidationError):
+                    self.compare(fixture)
+
+    def test_duplicate_attempts_and_retry_of_unknown_cannot_create_more_samples(self):
+        fixture = e_fixture()
+        fixture[1]["entries"].append(deepcopy(fixture[1]["entries"][0]))
+        with self.assertRaisesRegex(ACEValidationError, "DUPLICATE_OR_UNBOUND"):
+            self.compare(fixture)
+        fixture = e_fixture()
+        retry = deepcopy(fixture[1]["entries"][2])
+        retry.update(
+            attempt_id="parent4", operation_id="original/parent4", retry_of="parent3"
+        )
+        fixture[1]["entries"].append(retry)
+        with self.assertRaisesRegex(ACEValidationError, "RETRY_OF_UNRESOLVED"):
+            self.compare(fixture)
+        fixture = e_fixture()
+        fixture[2].append(deepcopy(fixture[2][0]))
+        with self.assertRaisesRegex(ACEValidationError, "DUPLICATE_RESULT"):
+            self.compare(fixture)
+
+    def test_success_with_missing_cost_and_unmeasured_energy_stays_incomplete(self):
+        fixture = e_fixture()
+        child1 = next(row for row in fixture[2] if row["attempt_id"] == "child1")
+        child1["costs"] = None
+        child = self.compare(fixture)["runs"]["child"]
+        self.assertEqual(
+            (child["reported_cost_coverage_complete"], child["net_improvement"]),
+            (False, None),
+        )
+        fixture = e_fixture()
+        child1 = next(row for row in fixture[2] if row["attempt_id"] == "child1")
+        child1["costs"]["training"]["values"]["energy_joules"] = None
+        child = self.compare(fixture)["runs"]["child"]
+        self.assertIsNone(child["cost_totals"]["energy_joules"])
+        self.assertFalse(child["reported_cost_coverage_complete"])
+        self.assertAlmostEqual(child["net_improvement"], 0.36)
+
+    def test_actual_cost_scope_nonfinite_values_and_budget_overrun_are_rejected(self):
+        for mutation in (
+            "missing_stage",
+            "nan",
+            "negative",
+            "unsupported_unit",
+            "overrun",
+            "silent_zero",
+        ):
+            with self.subTest(mutation=mutation):
+                fixture = e_fixture()
+                costs = fixture[2][0]["costs"]
+                if mutation == "missing_stage":
+                    costs.pop("reencoding")
+                elif mutation == "unsupported_unit":
+                    fixture[0]["cost_penalty"]["unit"] = "mixed_resources"
+                elif mutation == "silent_zero":
+                    costs["recovery"]["evidence"] = ""
+                else:
+                    costs["training"]["values"]["cpu_seconds"] = {
+                        "nan": float("nan"),
+                        "negative": -1,
+                        "overrun": 101,
+                    }[mutation]
+                with self.assertRaises(ACEValidationError):
+                    self.compare(fixture)
+
+    def test_evaluation_mismatch_and_posthoc_selection_are_rejected(self):
+        for mutation in ("candidate", "profile", "posthoc_selection", "baseline"):
+            with self.subTest(mutation=mutation):
+                fixture = e_fixture()
+                final = fixture[3][("heldout_final", pin("final.child"))]
+                if mutation == "candidate":
+                    final["candidate_bundle"] = pin("another-candidate")
+                elif mutation == "profile":
+                    final["evaluation_profile"] = pin("acceptance-profile")
+                elif mutation == "posthoc_selection":
+                    final["selection_committed_unix_seconds"] = (
+                        final["observed_unix_seconds"] + 1
+                    )
+                else:
+                    final["baseline_utility"] = 0.3
+                with self.assertRaises(ACEValidationError):
+                    self.compare(fixture)
+
+    def test_zero_attempts_have_no_invented_rates(self):
+        plan, registry, _rows, evaluations = e_fixture()
+        registry.update(entries=[], finals={})
+        result = self.compare((plan, registry, [], evaluations))
+        self.assertEqual(result["runs"]["parent"]["attempted"], 0)
+        self.assertIsNone(result["runs"]["parent"]["valid_per_attempt"])
+        self.assertEqual(result["status"], "HOLD_INCOMPLETE_EVIDENCE")
+
+    def test_unknown_terminal_cost_is_only_a_prefix_even_with_numeric_measurements(
+        self,
+    ):
+        fixture = e_fixture()
+        row = deepcopy(fixture[2][1])
+        row.update(
+            attempt_id="parent3",
+            operation_id="original/parent3",
+            request_sha256=pin("request.parent3"),
+            terminal_status="UNKNOWN",
+            validity="UNKNOWN",
+            candidate_digest=None,
+            rolled_back=False,
+            rollback_reference=None,
+            costs=cost_fixture("training", "parent3-prefix"),
+        )
+        fixture[2].append(row)
+        parent = self.compare(fixture)["runs"]["parent"]
+        self.assertEqual(parent["cost_totals"], dict.fromkeys(COST_UNITS))
+        self.assertEqual(
+            parent["cost_known_lower_bounds"], dict.fromkeys(COST_UNITS, 4.0)
+        )
+        self.assertEqual(parent["reported_rollback_bounds"], [1 / 3, 2 / 3])
+
+    def test_complete_accounting_is_still_descriptive_and_not_efficacy_evidence(self):
+        fixture = e_fixture()
+        row = deepcopy(fixture[2][1])
+        row.update(
+            attempt_id="parent3",
+            operation_id="original/parent3",
+            request_sha256=pin("request.parent3"),
+            candidate_digest=pin("candidate.parent3"),
+            rolled_back=False,
+            rollback_reference=None,
+        )
+        fixture[2].append(row)
+        result = self.compare(fixture)
+        self.assertEqual(
+            (
+                result["status"],
+                result["scientific_efficacy_qualified"],
+                result["cost_provenance_verified"],
+            ),
+            ("DESCRIPTIVE_COMPLETE", False, False),
+        )
+        self.assertAlmostEqual(
+            result["paired_contrasts"][0]["net_improvement_child_minus_parent"], 0.2
+        )
+
+    def test_rolled_back_candidate_cannot_remain_final_gain(self):
+        fixture = e_fixture()
+        child = next(row for row in fixture[2] if row["attempt_id"] == "child1")
+        child.update(
+            rolled_back=True, rollback_reference=pin("original-child-rollback")
+        )
+        with self.assertRaisesRegex(
+            ACEValidationError, "FINAL_CANDIDATE_WAS_ROLLED_BACK"
+        ):
+            self.compare(fixture)
+
+
+class ScalarAndIdentityChecks(unittest.TestCase):
+    def test_architecture_and_composition_do_not_coerce_boolean_numbers(self):
+        for bad in (True, float("nan"), [], " "):
+            with self.subTest(value=repr(bad)):
+                arms, registry = a_fixture()
+                arms[0]["resources"]["memory_bytes"] = bad
+                with self.assertRaises(ACEValidationError):
+                    assess_a_capabilities(
+                        arms, registry, source_commit="a" * 40, source_tree="b" * 40
+                    )
+                manifest = manifest_fixture()
+                manifest["components"]["A"]["rank"] = bad
+                with self.assertRaises(ACEValidationError):
+                    validate_composition_manifest(manifest)
+        for bad in (True, "0" * 64, "sha256:not-a-digest"):
+            manifest = manifest_fixture()
+            manifest["bundle_digest"] = bad
+            with self.assertRaises(ACEValidationError):
+                validate_composition_manifest(manifest)
+
+    def test_owner_binding_does_not_accept_bad_digest_or_truthy_verification(self):
+        expected, records = next_use_fixture()
+        expected["selection_digest"] = True
+        with self.assertRaisesRegex(ACEValidationError, "NEXT_USE_IDENTITY"):
+            check_next_use(expected, "original/journal/receipt")
+        expected, records = next_use_fixture()
+        with self.assertRaisesRegex(ACEValidationError, "AUTHENTICATION_REJECTED"):
+            check_next_use(
+                expected,
+                "original/journal/receipt",
+                read_original=lambda kind, ref: records.get((kind, ref)),
+                verify_owner=lambda *_args: 1,
+            )
+
+    def test_costs_and_evaluator_scalars_are_strict(self):
+        for bad in (True, float("nan"), float("inf"), 10**1000):
+            with self.subTest(value=repr(bad)[:30]):
+                fixture = e_fixture()
+                fixture[2][0]["costs"]["training"]["values"]["cpu_seconds"] = bad
+                with self.assertRaisesRegex(ACEValidationError, "INVALID_COST"):
+                    compare_improvers(*fixture[:3])
+        plan, registry, rows, evaluations = e_fixture()
+        with self.assertRaisesRegex(ACEValidationError, "AUTHENTICATION_REJECTED"):
+            compare_improvers(
+                plan,
+                registry,
+                rows,
+                read_evaluation=lambda kind, ref: evaluations.get((kind, ref)),
+                verify_evaluation=lambda *_args: 1,
+            )
+
+
+if __name__ == "__main__":
+    unittest.main()
