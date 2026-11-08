@@ -98,6 +98,7 @@ pub use cell_generation_types::CellOutputChunkV2;
 pub use cell_generation_types::CellRuntimeSnapshotV2;
 pub use cell_inference::CellInferenceReadbackPortV1;
 pub use cell_inference::infer_cell;
+pub use cell_inference::infer_cell_with_clock;
 pub use cell_inference::recover_cell_inference;
 #[cfg(target_os = "linux")]
 pub use cell_joint_generation::JointGenerationProcessConfigV1;

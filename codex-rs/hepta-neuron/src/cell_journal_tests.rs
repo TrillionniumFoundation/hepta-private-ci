@@ -14,6 +14,8 @@ use std::sync::atomic::Ordering;
 
 #[path = "cell_batch_cost_recovery_tests.rs"]
 mod batch_cost_recovery;
+#[path = "cell_inference_clock_journal_tests.rs"]
+mod inference_clock;
 #[path = "cell_queue_cost_journal_tests.rs"]
 mod queue_cost;
 
