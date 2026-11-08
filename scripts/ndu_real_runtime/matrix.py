@@ -2,14 +2,28 @@
 
 import argparse
 from collections import defaultdict
+from dataclasses import asdict
 import json
 from pathlib import Path
 
 import numpy as np
 
 from ndu_real_materials.common import strict_json
+from .controllers import ControlPlan
 from .metering import atomic_json, canonical_sha, file_sha
 from .study import now, run_requests, verify_plan
+
+
+def arm_fields(design, spec):
+    """Legacy two-field arms keep their original control; v2 names state mode."""
+    if len(spec) not in (2, 3):
+        raise ValueError("An arm names core, controller and optionally memory mode")
+    core, controller = spec[:2]
+    mode = (
+        spec[2] if len(spec) == 3 else design["controller"].get("memory_mode", "reset")
+    )
+    ControlPlan(**{**design["controller"], "memory_mode": mode})
+    return core, controller, mode
 
 
 def profile_candidates(root, index):
@@ -21,8 +35,12 @@ def profile_candidates(root, index):
     for fit in plan["independent_fit_roster"]:
         seed = fit["training_seed"]
         for regime in design["regimes"]:
-            for arm, (core, controller) in design["arms"].items():
-                for trial in range(1 if controller == "initial" else 3):
+            for arm, spec in design["arms"].items():
+                core, controller, mode = arm_fields(design, spec)
+                trials = len(
+                    design.get("training", {}).get("head_learning_rates", [0, 1, 2])
+                )
+                for trial in range(1 if controller == "initial" else trials):
                     rows = (
                         index["content"] if controller == "initial" else index["fits"]
                     )
@@ -31,6 +49,11 @@ def profile_candidates(root, index):
                         for row in rows
                         if row["seed"] == seed
                         and row["core"] == core
+                        and row.get("memory_mode", "reset") == mode
+                        and row.get("observation_policy", "legacy")
+                        == design.get("training", {}).get(
+                            "observation_policy", "legacy"
+                        )
                         and (
                             controller == "initial"
                             or (
@@ -49,6 +72,7 @@ def profile_candidates(root, index):
                                 "fit_id": fit["fit_id"],
                                 "regime": regime,
                                 "arm": arm,
+                                "memory_mode": mode,
                                 "trial_index": trial,
                                 "matching_models": model,
                                 "status": "training_unavailable",
@@ -67,13 +91,25 @@ def profile_candidates(root, index):
                     ):
                         raise ValueError("Training artifacts changed before tuning")
                     control = {
-                        "control": design["controller"],
+                        "control": {**design["controller"], "memory_mode": mode}
+                        if len(spec) == 3
+                        else design["controller"],
                         "episode_wall_seconds": design["budgets"][
                             "episode_wall_seconds"
                         ],
                         "fixed_schedule": design["fixed_schedule_candidates"][trial],
                         "seed": seed,
                     }
+                    fitted = strict_json(receipt.read_bytes())
+                    if len(spec) == 3 and (
+                        fitted.get("memory_mode") != mode
+                        or fitted.get("observation_policy") != "matched_episodes"
+                        or fitted.get("control_profile_sha256")
+                        != canonical_sha(asdict(ControlPlan(**control["control"])))
+                    ):
+                        raise ValueError(
+                            "Paired profile differs from its fitted state/control contract"
+                        )
                     path = controls / (identity + ".json")
                     control_pin = atomic_json(path, control)
                     policy_pin = canonical_sha(
@@ -92,6 +128,13 @@ def profile_candidates(root, index):
                             "arm": arm,
                             "core": core,
                             "controller": controller,
+                            "memory_mode": mode,
+                            "training_memory_mode": fitted.get("memory_mode", "reset"),
+                            "observation_policy": fitted.get(
+                                "observation_policy", "legacy"
+                            ),
+                            "estimand": design.get("estimand", "legacy_pilot"),
+                            "paired_memory_group": f"{fit['fit_id']}/{regime}/{core}/{controller}",
                             "trial_index": trial,
                             "weights": str(weights),
                             "model_sha256": model["weights_sha256"],
@@ -261,14 +304,21 @@ def tune(root, model_index):
     strongest = []
     for fit in plan["independent_fit_roster"]:
         for regime in design["regimes"]:
-            pool = [
-                row
-                for row in choices
-                if row["profile"]["fit_id"] == fit["fit_id"]
-                and row["profile"]["regime"] == regime
-                and row["profile"]["arm"] not in {"A", "B", "C", "D"}
-            ]
-            if pool:
+            for mode in design.get("memory_modes", [None]):
+                pool = [
+                    row
+                    for row in choices
+                    if row["profile"]["fit_id"] == fit["fit_id"]
+                    and row["profile"]["regime"] == regime
+                    and (
+                        row["profile"]["controller"] in {"tuned_fixed", "voi", "mpc"}
+                        and row["profile"]["memory_mode"] == mode
+                        if mode is not None
+                        else row["profile"]["arm"] not in {"A", "B", "C", "D"}
+                    )
+                ]
+                if not pool:
+                    continue
                 winner = max(
                     pool,
                     key=lambda row: (row["mean_tuning_utility"], row["profile"]["arm"]),
@@ -277,10 +327,17 @@ def tune(root, model_index):
                     {
                         "fit_id": fit["fit_id"],
                         "regime": regime,
+                        "memory_mode": mode,
                         "arm": winner["profile"]["arm"],
                         "profile_id": winner["profile"]["profile_id"],
                         "mean_tuning_utility": winner["mean_tuning_utility"],
-                        "all_eight_comparators_available": len(pool) == 8,
+                        "all_eight_comparators_available": len(pool) == 8
+                        if mode is None
+                        else None,
+                        "available_comparator_profiles": len(pool),
+                        "expected_comparator_profiles": 8 if mode is None else 6,
+                        "all_comparators_available": len(pool)
+                        == (8 if mode is None else 6),
                     }
                 )
     incumbents = []
@@ -289,8 +346,10 @@ def tune(root, model_index):
         if profile["regime"] != "frozen" or profile["controller"] != "initial":
             continue
         identity = profile["fit_id"] + "-retention-incumbent-" + profile["core"]
+        if design.get("estimand") == "matched_training":
+            identity += "-" + profile["memory_mode"]
         control = {
-            "control": design["controller"],
+            "control": {**design["controller"], "memory_mode": profile["memory_mode"]},
             "episode_wall_seconds": design["budgets"]["episode_wall_seconds"],
             "fixed_schedule": ["WRITE_TEXT"],
             "seed": profile["training_seed"],
@@ -332,7 +391,12 @@ def tune(root, model_index):
         + len(candidates["unavailable"])
         == len(plan["independent_fit_roster"])
         * len(design["regimes"])
-        * sum(1 if c == "initial" else 3 for _, c in design["arms"].values()),
+        * sum(
+            1
+            if spec[1] == "initial"
+            else len(design.get("training", {}).get("head_learning_rates", [0, 1, 2]))
+            for spec in design["arms"].values()
+        ),
         "all_search_trials_complete": not candidates["unavailable"]
         and all(row["complete"] for row in summaries),
         "native_authentication": "SEPARATE_REQUIRED",
@@ -368,6 +432,11 @@ def compact_row(row):
         "arm",
         "core",
         "controller",
+        "memory_mode",
+        "training_memory_mode",
+        "observation_policy",
+        "estimand",
+        "paired_memory_group",
         "episode_seed",
         "original_operation_id",
         "model_sha256",
@@ -441,7 +510,8 @@ def pilot(root):
     }
     for fit in plan["independent_fit_roster"]:
         for regime in design["regimes"]:
-            for arm, (core, controller) in design["arms"].items():
+            for arm, spec in design["arms"].items():
+                core, controller, mode = arm_fields(design, spec)
                 for case in cases:
                     if (fit["fit_id"], regime, arm, case["id"]) not in covered:
                         rows.append(
@@ -452,6 +522,9 @@ def pilot(root):
                                 "arm": arm,
                                 "core": core,
                                 "controller": controller,
+                                "memory_mode": mode,
+                                "estimand": design.get("estimand", "legacy_pilot"),
+                                "paired_memory_group": f"{fit['fit_id']}/{regime}/{core}/{controller}",
                                 "case_id": case["id"],
                                 "source_group_id": case["source_id"],
                                 "split": case["role"],
@@ -500,13 +573,24 @@ def pilot(root):
         incumbent_phase, design["controller"]["latency_weight"]
     )
     covered = {
-        (row.get("fit_id"), row.get("core"), row.get("case_id"))
+        (
+            row.get("fit_id"),
+            row.get("core"),
+            row.get("memory_mode", "reset"),
+            row.get("case_id"),
+        )
         for row in incumbent_rows
     }
+    incumbent_arms = {
+        (core, mode)
+        for spec in design["arms"].values()
+        for core, controller, mode in [arm_fields(design, spec)]
+        if controller == "initial" and "frozen" in design["regimes"]
+    }
     for fit in plan["independent_fit_roster"]:
-        for core in ("ordinary", "hepta"):
+        for core, mode in sorted(incumbent_arms):
             for case in selected["cases"]["pilot_retention"]:
-                if (fit["fit_id"], core, case["id"]) not in covered:
+                if (fit["fit_id"], core, mode, case["id"]) not in covered:
                     incumbent_rows.append(
                         {
                             **fit,
@@ -514,6 +598,7 @@ def pilot(root):
                             "regime": "frozen",
                             "arm": "incumbent_" + core,
                             "core": core,
+                            "memory_mode": mode,
                             "controller": "tuned_fixed",
                             "case_id": case["id"],
                             "source_group_id": case["source_id"],

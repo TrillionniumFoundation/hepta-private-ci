@@ -40,7 +40,11 @@ from .trajectory import (
     episode_groups,
     memory_replay_metadata,
 )
-from .fit_loop import train_epochs as _epochs, estimate_residuals as _residuals
+from .fit_loop import (
+    OBSERVATION_POLICIES,
+    train_epochs as _epochs,
+    estimate_residuals as _residuals,
+)
 
 SCHEMA = "ndu.real.training-transition.v1"
 ACTION_NAMES = ("PREPARE_ROI", "READ_ROI", "WRITE_TEXT", "RENDER_IMAGE", "STOP")
@@ -530,12 +534,13 @@ def run(args):
         "core": args.core,
         "regime": args.regime,
         "controller": args.controller,
+        "observation_policy": getattr(args, "observation_policy", "legacy"),
         "seed": args.seed,
         "config": asdict(config),
         "source_pins": _source_pins(),
         "training_replicate": stage == "fit" and args.replicate_role == "fit",
         "replicate_role": "collector" if stage == "bootstrap" else args.replicate_role,
-        "independent_replicate_unit": "training seed; cores/controllers/LR candidates are paired, not additional repeats",
+        "independent_replicate_unit": "training seed; cores/controllers/memory modes/LR candidates are paired, not additional repeats",
         "episode_seeds_are_independent_fits": False,
         "threads": 1,
         "gpu_used": False,
@@ -593,6 +598,9 @@ def run(args):
             model = ReceiptPortfolioModel(args.core).float()
             report["torch_version"] = torch.__version__
             report["initial_parameter_sha256"] = parameter_sha(model)
+            report["initialization_scope"] = (
+                "seeded_constructor_before_pretraining_or_loading_content"
+            )
             report["initial_content_sha256"] = parameter_sha(model, content_only=True)
             report["parameter_count"] = sum(p.numel() for p in model.parameters())
             report["content_parameter_count"] = sum(
@@ -644,6 +652,8 @@ def run(args):
                         == report["records"]["sha256"]
                         and previous.get("source_pins") == report["source_pins"]
                         and previous.get("memory_mode") == plan.memory_mode
+                        and previous.get("observation_policy", "legacy")
+                        == report["observation_policy"]
                         and previous.get("utility_profile_sha256")
                         == report["utility_profile_sha256"]
                         and all(
@@ -683,6 +693,7 @@ def run(args):
                     output=output,
                     deadline=deadline,
                     plan=plan,
+                    observation_policy=report["observation_policy"],
                 )
             report["pretrained_content_sha256"] = parameter_sha(
                 model, content_only=True
@@ -709,6 +720,7 @@ def run(args):
                     output=output,
                     deadline=deadline,
                     plan=plan,
+                    observation_policy=report["observation_policy"],
                 )
                 with meter.stage(
                     "critic", "fit residual scale from actual training successors"
@@ -859,6 +871,9 @@ def main(argv=None):
     )
     parser.add_argument("--control-plan", type=Path)
     parser.add_argument("--memory-mode", choices=("reset", "persistent"))
+    parser.add_argument(
+        "--observation-policy", choices=OBSERVATION_POLICIES, default="legacy"
+    )
     stage = parser.add_mutually_exclusive_group()
     stage.add_argument("--bootstrap", action="store_true")
     stage.add_argument("--content-only", action="store_true")

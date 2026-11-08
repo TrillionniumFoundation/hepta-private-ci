@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 import sys
 
+from .controllers import ControlPlan
+from .fit_loop import OBSERVATION_POLICIES
 from .metering import atomic_json, canonical_sha, file_sha
 from .training import FitConfig, _source_pins
 
@@ -22,6 +24,10 @@ def fit_grid(
     head_lrs=(0.001, 0.003, 0.01),
     config=FitConfig(),
     control_plan=None,
+    control_plans=None,
+    observation_policy="legacy",
+    regimes=("frozen", "joint"),
+    controllers=JOINT_CONTROLLERS,
 ):
     """Return every pretraining dependency and fit candidate before selection.
 
@@ -62,6 +68,44 @@ def fit_grid(
             config.latency_weight,
             config.max_wall_seconds,
         )
+    if (
+        observation_policy not in OBSERVATION_POLICIES
+        or not regimes
+        or len(set(regimes)) != len(regimes)
+        or set(regimes) - {"frozen", "joint"}
+        or not controllers
+        or len(set(controllers)) != len(controllers)
+        or set(controllers) - set(JOINT_CONTROLLERS)
+    ):
+        raise ValueError("Invalid bounded training policy, regimes or controllers")
+    paired = control_plans is not None
+    if paired and (
+        control_plan is not None
+        or set(control_plans) != {"reset", "persistent"}
+        or observation_policy != "matched_episodes"
+    ):
+        raise ValueError("Paired memory plans require the explicit matched policy")
+    memory_plans, common_plans = {}, []
+    for mode, path in (
+        [(mode, control_plans[mode]) for mode in ("reset", "persistent")]
+        if paired
+        else [(None, control_plan)]
+    ):
+        if path is None:
+            memory_plans["reset"] = None
+            continue
+        if not Path(path).is_absolute():
+            raise ValueError("Control plan needs an absolute source path")
+        value = json.loads(Path(path).read_text())
+        control = ControlPlan(**value["control"])
+        if mode is not None and mode != control.memory_mode:
+            raise ValueError("Control plan and paired memory mode differ")
+        memory_plans[control.memory_mode] = path
+        common_plans.append(
+            {**value, "control": {**value["control"], "memory_mode": "paired"}}
+        )
+    if paired and common_plans[0] != common_plans[1]:
+        raise ValueError("Paired plans may differ only in memory_mode")
     intent = {
         "records": str(records),
         "records_sha256": records_sha256,
@@ -77,6 +121,10 @@ def fit_grid(
         "max_wall_seconds": config.max_wall_seconds,
         "source_pins": _source_pins(),
         "grid_source_sha256": file_sha(__file__),
+        "observation_policy": observation_policy,
+        "memory_modes": list(memory_plans),
+        "regimes": list(regimes),
+        "controllers": list(controllers),
     }
     prefix = "fit-grid-" + canonical_sha(intent)[:20]
     if control_plan is not None:
@@ -86,15 +134,30 @@ def fit_grid(
             control_plan=str(control_plan), control_plan_sha256=file_sha(control_plan)
         )
         prefix = "fit-grid-" + canonical_sha(intent)[:20]
+    if paired:
+        intent["control_plans"] = {
+            mode: {"path": str(path), "sha256": file_sha(path)}
+            for mode, path in memory_plans.items()
+        }
+        prefix = "fit-grid-" + canonical_sha(intent)[:20]
     jobs = []
 
     def add(
-        seed, core, phase, regime, controller, lr, pretrained=None, trial_index=None
+        seed,
+        core,
+        mode,
+        phase,
+        regime,
+        controller,
+        lr,
+        pretrained=None,
+        trial_index=None,
     ):
+        stem = f"s{seed}/{core}" + (f"/{mode}" if paired else "")
         name = (
-            f"s{seed}/{core}/{phase}"
+            f"{stem}/{phase}"
             if phase == "content"
-            else f"s{seed}/{core}/{regime}-{controller}/lr-{lr:g}"
+            else f"{stem}/{regime}-{controller}/lr-{lr:g}"
         )
         destination = Path(output_root) / name
         identity = prefix + "/" + name
@@ -134,8 +197,12 @@ def fit_grid(
             "--replicate-role",
             "fit",
         ]
-        if control_plan is not None:
-            argv += ["--control-plan", str(control_plan)]
+        path = memory_plans[mode]
+        if path is not None:
+            argv += ["--control-plan", str(path)]
+        if observation_policy != "legacy":
+            argv += ["--observation-policy", observation_policy]
+        argv += ["--memory-mode", mode]
         if phase == "content":
             argv.append("--content-only")
         else:
@@ -145,6 +212,9 @@ def fit_grid(
             "status": "PLANNED_NOT_EXECUTED",
             "seed": seed,
             "core": core,
+            "memory_mode": mode,
+            "observation_policy": observation_policy,
+            "paired_memory_group": f"s{seed}/{core}/{phase}/{regime}/{controller}/{lr:g}",
             "phase": phase,
             "regime": regime,
             "controller": controller,
@@ -157,7 +227,7 @@ def fit_grid(
             "weights_sha256": None,
             "receipt_path": str(destination / "receipt.json"),
             "runtime_job_id": None,
-            "shared_by_controllers": list(JOINT_CONTROLLERS)
+            "shared_by_controllers": list(controllers)
             if regime == "frozen" and phase == "fit"
             else [],
             "costs": None,
@@ -168,31 +238,41 @@ def fit_grid(
 
     for seed in seeds:
         for core in ("ordinary", "hepta"):
-            pretrained = add(
-                seed, core, "content", "frozen", "shared", config.content_lr
-            )
-            for trial_index, lr in enumerate(head_lrs):
-                add(seed, core, "fit", "frozen", "shared", lr, pretrained, trial_index)
-                for controller in JOINT_CONTROLLERS:
-                    add(
-                        seed,
-                        core,
-                        "fit",
-                        "joint",
-                        controller,
-                        lr,
-                        pretrained,
-                        trial_index,
-                    )
+            for mode in memory_plans:
+                pretrained = add(
+                    seed, core, mode, "content", "frozen", "shared", config.content_lr
+                )
+                for trial_index, lr in enumerate(head_lrs):
+                    for regime in regimes:
+                        for controller in (
+                            controllers if regime == "joint" else ("shared",)
+                        ):
+                            add(
+                                seed,
+                                core,
+                                mode,
+                                "fit",
+                                regime,
+                                controller,
+                                lr,
+                                pretrained,
+                                trial_index,
+                            )
+    if len({job["job_id"] for job in jobs}) != len(jobs):
+        raise ValueError(
+            "LR path formatting collides; every original job needs a unique identity"
+        )
     return {
-        "schema": "ndu.real.fit-grid.v1",
+        "schema": "ndu.real.fit-grid.v2" if paired else "ndu.real.fit-grid.v1",
         "intent": intent,
         "grid_id": prefix,
         "counts": {
             "independent_seed_groups": len(seeds),
-            "content": len(seeds) * 2,
-            "frozen_shared": len(seeds) * 2 * len(head_lrs),
-            "joint": len(seeds) * 2 * len(head_lrs) * len(JOINT_CONTROLLERS),
+            "content": sum(j["phase"] == "content" for j in jobs),
+            "frozen_shared": sum(
+                j["phase"] == "fit" and j["regime"] == "frozen" for j in jobs
+            ),
+            "joint": sum(j["phase"] == "fit" and j["regime"] == "joint" for j in jobs),
         },
         "collector_included_in_independent_seed_count": False,
         "fixed_schedule_selection": "separate real development runs; not inferred by this generator",
@@ -208,6 +288,9 @@ def model_index(plan):
         row = {
             "core": job["core"],
             "seed": job["seed"],
+            "memory_mode": job["memory_mode"],
+            "observation_policy": job["observation_policy"],
+            "paired_memory_group": job["paired_memory_group"],
             "directory": job["output"],
             "status": "planned",
             "weights_sha256": None,
@@ -236,6 +319,16 @@ def main(argv=None):
         "--head-lrs", type=float, nargs="+", default=(0.001, 0.003, 0.01)
     )
     parser.add_argument("--control-plan", type=Path)
+    parser.add_argument("--memory-plans", type=Path)
+    parser.add_argument(
+        "--observation-policy", choices=OBSERVATION_POLICIES, default="legacy"
+    )
+    parser.add_argument(
+        "--regimes", choices=("frozen", "joint"), nargs="+", default=("frozen", "joint")
+    )
+    parser.add_argument(
+        "--controllers", choices=JOINT_CONTROLLERS, nargs="+", default=JOINT_CONTROLLERS
+    )
     args = parser.parse_args(argv)
     result = fit_grid(
         args.records,
@@ -245,6 +338,12 @@ def main(argv=None):
         seeds=args.seeds,
         head_lrs=args.head_lrs,
         control_plan=args.control_plan,
+        control_plans=None
+        if args.memory_plans is None
+        else json.loads(args.memory_plans.read_text()),
+        observation_policy=args.observation_policy,
+        regimes=args.regimes,
+        controllers=args.controllers,
     )
     args.manifest.parent.mkdir(parents=True, exist_ok=True)
     digest = atomic_json(args.manifest, result)
