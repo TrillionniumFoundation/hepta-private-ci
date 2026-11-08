@@ -82,6 +82,30 @@ class CallerProofTests(unittest.TestCase):
             receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"]
         )
 
+    def test_later_verification_rebuilds_fields_from_current_source(self) -> None:
+        root = self.make_fixture(method_pattern=True)
+        manifest = root / "CALLERS.toml"
+        text = "\n".join(
+            line for line in manifest.read_text().splitlines()
+            if not line.startswith("call_pattern =")
+        )
+        manifest.write_text(
+            text.replace(
+                'symbol = "Gate::enter"',
+                'symbol = "Gate::enter"\nreceiver_type = "Gate"',
+            ) + "\n"
+        )
+        caller = root / "codex-rs/caller/src/lib.rs"
+        original = (
+            "struct Holder { gate: Gate }\n"
+            "fn use_gate(owner: &Holder) { owner.gate.enter(); }\n"
+        )
+        caller.write_text(original)
+        MODULE.verify(root, manifest)
+        caller.write_text(original.replace("gate: Gate", "gate: Other"))
+        with self.assertRaises(MODULE.VerificationFailure):
+            MODULE.verify(root, manifest)
+
     def test_typed_receiver_rejects_arbitrary_unregistered_parameter(self) -> None:
         root = self.make_fixture(method_pattern=True)
         manifest = root / "CALLERS.toml"

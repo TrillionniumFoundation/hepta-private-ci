@@ -88,6 +88,20 @@ class TypedAuthorityCallTests(unittest.TestCase):
                 "fn f(known: &Gate) { let opaque = opaque_factory(known); opaque.enter(); }"
             )
 
+    def test_later_unresolved_call_is_not_hidden_by_an_earlier_valid_call(self):
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(
+                "fn first(known: &Gate) { known.enter(); } "
+                "fn later(known: &Gate) { let opaque = unknown(known); opaque.enter(); }"
+            )
+
+    def test_later_unbalanced_context_still_refuses_closed(self):
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(
+                "fn first(known: &Gate) { known.enter(); } "
+                "fn later(known: &Gate) { known.enter();"
+            )
+
     def test_same_variable_name_in_other_function_does_not_hide_call(self):
         self.assertTrue(
             self.match(
