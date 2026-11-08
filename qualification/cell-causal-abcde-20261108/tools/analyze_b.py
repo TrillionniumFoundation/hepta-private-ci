@@ -592,3 +592,314 @@ def map_rows(rows, plan, cases, fits, profiles, mapping, lock_digest, canonical_
         "failed_utility_outer_wall_fallback_rows": fallback_count,
         "rows_without_bound_raw_evaluator_score": missing_score,
     }
+
+
+def analyze(bindings, source_root, policy_binding):
+    started, cpu = time.perf_counter(), time.process_time()
+    require(
+        bindings.get("schema") == "hepta.causal-b.analysis-inputs.v1"
+        and set(bindings.get("artifacts", {})) == set(ARTIFACTS),
+        "Unknown or incomplete evidence binding manifest",
+    )
+    raw = {name: read_bound(value) for name, value in bindings["artifacts"].items()}
+    data = {
+        name: strict_json(value) for name, value in raw.items() if name != "paired_rows"
+    }
+    lines = raw["paired_rows"].splitlines()
+    require(
+        len(lines) <= 100000
+        and all(line and len(line) <= 2 * 1024 * 1024 for line in lines),
+        "Unbounded or blank paired row",
+    )
+    rows = [strict_json(line) for line in lines]
+    plan, lock = data["plan"], data["selection_lock"]
+    policy = strict_json(read_bound(policy_binding, 1024 * 1024))
+    require(
+        policy.get("schema") == "hepta.causal-b.prospective-analysis-policy.v1"
+        and policy.get("analysis_helper_sha256")
+        == hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+        and policy.get("evaluation_plan_sha256")
+        == bindings["artifacts"]["plan"]["sha256"]
+        and policy.get("evaluation_design_sha256") == plan["design_sha256"]
+        and policy.get("budget_stop_analysis_policy")
+        == plan["design"]["statistics"].get("budget_stop_analysis_policy")
+        and isinstance(policy.get("budget_stop_analysis_policy"), dict)
+        and policy.get("full_improvement_budget_gate") is False
+        and policy.get("confirmatory_use") is False
+        and policy.get("adoption_authorized") is False,
+        "Analysis policy differs from its frozen helper, evaluation plan or design",
+    )
+    registered = datetime.fromisoformat(policy["registered_utc"])
+    require(registered.tzinfo is not None, "Policy registration requires UTC offset")
+    require(
+        plan.get("schema") == "ndu.real.pilot-plan.v1",
+        "Expected the final prospective evaluation PILOT_PLAN",
+    )
+    require(
+        lock.get("schema") == "ndu.real.comparator-lock.v1",
+        "Unknown frozen comparator-lock schema",
+    )
+    require(
+        digest(plan["rubric_sha256"]) and digest(plan["execution"]["evaluator_sha256"]),
+        "Exact evaluator and rubric pins required",
+    )
+    require(
+        plan["selected_sources_sha256"] == bindings["artifacts"]["selected"]["sha256"],
+        "Selected cases changed after plan freeze",
+    )
+    require(
+        lock["pilot_plan_sha256"] == bindings["artifacts"]["plan"]["sha256"],
+        "Selection lock names another evaluation plan",
+    )
+    if "fit_results_sha256" in plan:
+        require(
+            plan["fit_results_sha256"]
+            == bindings["artifacts"]["fit_results"]["sha256"],
+            "Training result differs from evaluation plan",
+        )
+    paired_contrast, contrasts, canonical_sha, source_pins = load_frozen_analysis(
+        plan, source_root
+    )
+    mapping = condition_map(plan["design"])
+    require(
+        all(set(weights) <= set(mapping.values()) for weights in contrasts.values()),
+        "Contrast inventory names an unplanned condition",
+    )
+    cases, by_split = selected_cases(data["selected"])
+    fits, profiles, gates = training_and_selection_gates(
+        plan, lock, data["fit_results"], mapping
+    )
+    mapped, outcomes = map_rows(
+        rows,
+        plan,
+        cases,
+        fits,
+        profiles,
+        mapping,
+        bindings["artifacts"]["selection_lock"]["sha256"],
+        canonical_sha,
+    )
+    design_eligible = all(
+        gates[key]
+        for key in (
+            "training_complete",
+            "constructor_initialization_complete",
+            "selected_profile_roster_complete",
+            "all_search_trials_complete",
+        )
+    )
+    comparisons = []
+    for regime in plan["design"]["regimes"]:
+        for split, selected in by_split.items():
+            partition = [
+                row
+                for row in mapped
+                if row["regime"] == regime and row["split"] == split
+            ]
+            for metric in METRICS:
+                metric_rows = [
+                    {**row, "analysis_utility": row["metric_values"][metric]}
+                    for row in partition
+                ]
+                for name, weights in contrasts.items():
+                    contrast_rows = [
+                        row for row in partition if row["condition_id"] in weights
+                    ]
+                    result = (
+                        paired_contrast(
+                            metric_rows,
+                            weights,
+                            list(fits),
+                            selected,
+                            draws=2000,
+                            seed=32452843,
+                        )
+                        if selected
+                        else {
+                            "status": "NO_PLANNED_CASES",
+                            "mean": None,
+                            "interval": None,
+                            "planned_rows": 0,
+                            "observed_rows": 0,
+                        }
+                    )
+                    comparisons.append(
+                        {
+                            "regime": regime,
+                            "estimand": "matched_training",
+                            "split": split,
+                            "metric": metric,
+                            "contrast": name,
+                            "coefficients": weights,
+                            "training_and_search_gate_passed": design_eligible,
+                            "original_terminal_status_counts": dict(
+                                Counter(
+                                    row["original_terminal_status"]
+                                    for row in contrast_rows
+                                )
+                            ),
+                            "analysis_terminal_status_counts": dict(
+                                Counter(row["terminal_status"] for row in contrast_rows)
+                            ),
+                            "budget_stop_count": sum(
+                                row["original_terminal_status"] == "BudgetStop"
+                                for row in contrast_rows
+                            ),
+                            "descriptive": result,
+                        }
+                    )
+    for value in [
+        *bindings["artifacts"].values(),
+        *source_pins.values(),
+        policy_binding,
+    ]:
+        read_bound(value)
+    return {
+        "schema": "hepta.causal-b.evidence-analysis.v1",
+        "observed_utc": datetime.now(timezone.utc).isoformat(),
+        "status": "DESCRIPTIVE_ONLY_HOLD",
+        "input_bindings": bindings["artifacts"],
+        "analysis_source_bindings": source_pins,
+        "analysis_policy_binding": policy_binding,
+        "analysis_policy": policy,
+        "analysis_helper_sha256": hashlib.sha256(
+            Path(__file__).read_bytes()
+        ).hexdigest(),
+        "condition_mapping": mapping,
+        "preregistered_contrasts": contrasts,
+        "independent_fits": list(fits.values()),
+        "cases_by_split": by_split,
+        "gates": gates,
+        "outcomes": outcomes,
+        "comparisons": comparisons,
+        "metric_definitions": {
+            "gross_score": "Recorded evaluator score only; a failed/default zero without evaluator/rubric pins stays unknown.",
+            "failure_adjusted_score": "Statistical Completed: recorded score; Failed: frozen -1.0; unresolved/not-started: unknown. A scored BudgetStop with observed deployment wall is statistical Completed under the frozen adapter; original status is retained. No latency penalty.",
+            "deployment_utility": "Existing analysis_utility verified as failure-adjusted score minus registered latency_weight times measured deployment seconds; a resolved BudgetStop missing that derived field uses the same formula on its recorded score and deployment wall. Failed originals may use recorded outer wall fallback.",
+        },
+        "known_limits": [
+            "Training starts at equal seeded constructor bytes; memory-specific pretrained weights can differ.",
+            "Intervals are unadjusted descriptive crossed bootstrap intervals, not powered or multiplicity-adjusted evidence.",
+            "Deployment utility is not complete improvement efficiency: acquisition, training, search, energy/provider and other costs remain separate.",
+            "Byte consistency does not authenticate the provider, native owner, or independent evaluator.",
+            "This helper neither executes episodes nor grants model adoption.",
+            "A resolved BudgetStop is an observed statistical terminal, not original execution success or acceptable quality; unknown energy/provider costs keep the full improvement budget gate closed.",
+        ],
+        "scientific_acceptance": "HOLD",
+        "confirmatory_use": False,
+        "adoption_authorized": False,
+        "provider_authenticity_verified": False,
+        "full_cost_adjusted": False,
+        "helper_wall_seconds_before_serialization": time.perf_counter() - started,
+        "helper_cpu_seconds_before_serialization": time.process_time() - cpu,
+    }
+
+
+def summary(report):
+    gates, outcomes = report["gates"], report["outcomes"]
+    lines = [
+        "B 配对描述性分析：科学结论 HOLD；不授权 adoption。",
+        "",
+        f"训练完整：{gates['training_complete']}；constructor 初始化配对完整：{gates['constructor_initialization_complete']}",
+        f"选中 profile 完整：{gates['selected_profile_roster_complete']}；全部调参尝试完整：{gates['all_search_trials_complete']}",
+        f"训练原始分母：{gates['observed_training_jobs']}/{gates['planned_training_jobs']}；状态：{gates['training_status_counts']}",
+        f"原始部署状态：{outcomes['original_terminal_status_counts']}；缺少绑定原始评分：{outcomes['rows_without_bound_raw_evaluator_score']}",
+        f"统计终态：{outcomes['analysis_terminal_status_counts']}；BudgetStop 原始 {outcomes['budget_stop_count']}，可计算 {outcomes['budget_stop_resolved_count']}，仍未知 {outcomes['budget_stop_unresolved_count']}。",
+        f"预先展开 {len(report['preregistered_contrasts'])} 种 contrast；逐 regime、split、三种指标保留完整分母。",
+        "",
+        "score 为已知失败取 -1 的评分；utility 另扣部署延迟，失败时可使用原 outer wall；两者均不是完整改进成本收益。",
+        "原始 gross_score 另列于 JSON；未观察到独立评分的失败不补零。",
+        "BudgetStop 仅在绑定评分与实际部署延迟齐全时进入统计 Completed；原状态不变，也不表示执行成功或质量达标。",
+        "",
+        "以下固定列出主要对照；其余 fixed/VOI/MPC 与全部状态对照见 JSON：",
+    ]
+    names = {
+        "ndu_in_ordinary/reset",
+        "ndu_in_hepta/reset",
+        "kernel_controller_interaction/persistent",
+        "persistent_minus_reset/ordinary/ndu",
+        "persistent_minus_reset/hepta/ndu",
+        "three_way_interaction",
+    }
+    by_key = {}
+    for item in report["comparisons"]:
+        if item["contrast"] in names:
+            by_key.setdefault((item["regime"], item["split"], item["contrast"]), {})[
+                item["metric"]
+            ] = item["descriptive"]
+    for (regime, split, contrast), values in by_key.items():
+
+        def display(metric):
+            result = values[metric]
+            return "HOLD/缺失" if result["mean"] is None else f"{result['mean']:+.6f}"
+
+        lines.append(
+            f"{regime} | {split} | {contrast}: score {display('failure_adjusted_score')}; utility {display('deployment_utility')}"
+        )
+    lines.extend(
+        [
+            "",
+            "初始化结论限于预训练前 constructor；不能解释为同一 checkpoint 的纯部署状态效应。",
+            "所有区间仅为描述性结果，未经功效保证或多重比较校正；完整训练/搜索门槛不通过时不得视为匹配实验已闭合。",
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--bindings", type=Path, required=True)
+    parser.add_argument("--bindings-sha256", required=True)
+    parser.add_argument("--policy", type=Path, required=True)
+    parser.add_argument("--policy-sha256", required=True)
+    parser.add_argument("--source-root", type=Path, required=True)
+    parser.add_argument("--output-prefix", type=Path, required=True)
+    args = parser.parse_args(argv)
+    require(
+        args.bindings.is_absolute()
+        and args.policy.is_absolute()
+        and args.output_prefix.is_absolute(),
+        "Absolute input and output paths required",
+    )
+    binding = {
+        "path": str(args.bindings),
+        "sha256": args.bindings_sha256,
+        "bytes": args.bindings.stat().st_size,
+    }
+    manifest = strict_json(read_bound(binding, 1024 * 1024))
+    policy_binding = {
+        "path": str(args.policy),
+        "sha256": args.policy_sha256,
+        "bytes": args.policy.stat().st_size,
+    }
+    json_path, text_path = (
+        Path(str(args.output_prefix) + ".json"),
+        Path(str(args.output_prefix) + ".txt"),
+    )
+    require(
+        not json_path.exists() and not text_path.exists(),
+        "Analysis output must be a fresh immutable artifact",
+    )
+    report = analyze(manifest, args.source_root, policy_binding)
+    report["input_manifest"] = binding
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    with json_path.open("x") as output:
+        json.dump(report, output, indent=2, ensure_ascii=False, allow_nan=False)
+        output.write("\n")
+    with text_path.open("x") as output:
+        output.write(summary(report))
+    print(
+        json.dumps(
+            {
+                "analysis_json": str(json_path),
+                "summary_text": str(text_path),
+                "status": report["status"],
+                "contrasts": len(report["preregistered_contrasts"]),
+            }
+        )
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
