@@ -1,34 +1,51 @@
 diff --git a/Src/exec.c b/Src/exec.c
-index 27bca11..baea760 100644
 --- a/Src/exec.c
 +++ b/Src/exec.c
-@@ -507,7 +507,9 @@ zexecve(char *pth, char **argv, char **newenvp)
+@@ -507,7 +507,8 @@
  {
      int eno;
      static char buf[PATH_MAX * 2+1];
 -    char **eep;
 +    char **eep, **exec_argv;
-+    char *orig_pth = pth;
 +    char *exec_wrapper;
  
      unmetafy(pth, NULL);
      for (eep = argv; *eep; eep++)
-@@ -526,8 +528,17 @@ zexecve(char *pth, char **argv, char **newenvp)
+@@ -526,6 +527,31 @@
  
      if (newenvp == NULL)
  	    newenvp = environ;
-+    exec_argv = argv;
 +    if ((exec_wrapper = getenv("EXEC_WRAPPER")) &&
 +	*exec_wrapper && !inblank(*exec_wrapper)) {
++	struct stat statbuf;
++
++	/* Return known unusable PATH candidates to the shell's own search
++	 * before replacing this process.  Permission failures are not
++	 * proof of absence: the wrapper's owner may approve escalation. */
++	if (stat(pth, &statbuf) == 0) {
++	    if (!S_ISREG(statbuf.st_mode)) {
++		eno = EACCES;
++		goto restore_args;
++	    }
++	} else if (errno == ENOENT || errno == ENOTDIR) {
++	    eno = errno;
++	    goto restore_args;
++	}
 +	exec_argv = argv - 2;
 +	exec_argv[0] = exec_wrapper;
-+	exec_argv[1] = orig_pth;
-+	pth = exec_wrapper;
++	exec_argv[1] = pth;
++	winch_unblock();
++	execve(exec_wrapper, exec_argv, newenvp);
++	eno = errno;
++	/* A failed wrapper must not enter the unmediated script fallback. */
++	goto restore_args;
 +    }
      winch_unblock();
--    execve(pth, argv, newenvp);
-+    execve(pth, exec_argv, newenvp);
-+    pth = orig_pth;
+     execve(pth, argv, newenvp);
  
-     /* If the execve returns (which in general shouldn't happen),   *
-      * then check for an errno equal to ENOEXEC.  This errno is set *
+@@ -637,4 +663,5 @@
+     }
++restore_args:
+     /* restore the original arguments and path but do not bother with *
+      * null characters as these cannot be passed to external commands *
+      * anyway.  So the result is truncated at the first null char.    */

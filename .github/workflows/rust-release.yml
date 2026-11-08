@@ -16,8 +16,8 @@ on:
 
 env:
   CODEX_REPO_ROOT: ${{ github.workspace }}
-  CODEX_ZSH_RELEASE_TAG: codex-zsh-v0.1.0
-  CODEX_ZSH_MANIFEST_SHA256: c534eab89dcea7e3d8a5e5b3f49c025c7c64cd4e4d9814ee24871de58a9359a1
+  CODEX_ZSH_RELEASE_TAG: codex-zsh-v0.1.2
+  CODEX_ZSH_MANIFEST_SHA256: f9374bd9434680fa5ec64cc8387ee1ba74b7d843a1fbbd25131b17687b65250d
 
 concurrency:
   group: ${{ github.workflow }}
