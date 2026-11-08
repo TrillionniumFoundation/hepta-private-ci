@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.cell-research-ci-correction.v1",
+  "run_id": 42472303581,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42472303581",
+  "job_id": 128705723534,
+  "source_commit": "065a5937a20841f29ba3a6c38da7d2b9492b0bfc",
+  "failure_scope": "CI execution admission rejected before unit test dispatch",
+  "original_execution_receipt": {
+    "base_sha": "",
+    "before": {
+      "commit": "065a5937a20841f29ba3a6c38da7d2b9492b0bfc",
+      "dirty": false,
+      "parents": [
+        "37cf6a24ab104bec2c683f0c6ef80358f81f8234"
+      ],
+      "tree": "e7d8e1cb7d833dd78c591b54c40458a0a59a8d76"
+    },
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_hepta_cell_research_gate.py",
+      "-v"
+    ],
+    "command_exit_code": null,
+    "elapsed_seconds": 0.3281429449999962,
+    "error": "invalid tested_sha",
+    "exit_code": 2,
+    "finished_at": "2026-11-08T10:39:01.813265+00:00",
+    "job": "evidence-gate",
+    "lane": "",
+    "run_attempt": "1",
+    "run_id": "42472303581",
+    "schema_version": 1,
+    "source_sha": "065a5937a20841f29ba3a6c38da7d2b9492b0bfc",
+    "started_at": "2026-11-08T10:39:01.446195+00:00",
+    "status": "rejected",
+    "tested_sha": "",
+    "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+  },
+  "correction": {
+    "SOURCE_SHA": "github.event.pull_request.head.sha || github.sha",
+    "TESTED_SHA": "github.event.pull_request.head.sha || github.sha",
+    "HEPTA_CI_LANE": "source-head"
+  },
+  "python_source_changed": false,
+  "python_test_source_changed": false,
+  "minimum_tests_lowered": false,
+  "original_failure_retained": true,
+  "new_head_ci_qualified": false
+}
