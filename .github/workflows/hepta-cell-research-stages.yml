@@ -1,0 +1,54 @@
+name: Hepta Cell research stage evidence
+
+on:
+  push:
+    branches: [research/cell-research-stages-20261108-304d]
+  pull_request:
+    paths:
+      - scripts/hepta_cell_research_gate.py
+      - scripts/test_hepta_cell_research_gate.py
+      - scripts/hepta_cell_joint_config.py
+      - .github/workflows/hepta-cell-research-stages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cell-research-stage-evidence-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evidence-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      SOURCE_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Verify the actual source and evidence gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          records="$RUNNER_TEMP/cell-research-stages"
+          mkdir -p "$records"
+          git rev-parse HEAD HEAD^{tree} > "$records/source.txt"
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 10 \
+            --output "$records/research-gate.json" \
+            -- python3 -B -m unittest discover -s scripts \
+            -p test_hepta_cell_research_gate.py -v
+          test -z "$(git status --porcelain)"
+      - name: Retain results for the exact source
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-research-stages-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cell-research-stages
+          if-no-files-found: error
+          retention-days: 14
