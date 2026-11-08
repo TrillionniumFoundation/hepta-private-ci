@@ -1,0 +1,77 @@
+{
+  "archive": "/home/qian-qi/work/cell-pred1-independent-20261108-08b6/pred1-independent-002-evidence.tar.gz",
+  "bytes": 10621681,
+  "sha256": "ab5bd9631074325c56620440aa42ef74a72dc1b1db84c11770e50478bb56329c",
+  "members": 474,
+  "audit": {
+    "schema": "pred1-complete-stored-artifact-audit-v1",
+    "integrity_only": true,
+    "audited_at_utc": "2026-11-08T18:10:16.419995+00:00",
+    "campaign_manifest": {
+      "bytes": 62469,
+      "sha256": "2a9070be2d9182e98b5a2ae4b511719fd7a0d8db1183de139b0d6706b4d682a9"
+    },
+    "verified_manifest_files": 435,
+    "verified_manifest_bytes": 12194839,
+    "fits": 114,
+    "checkpoint_byte_pins_verified_after_execution": 114,
+    "optimizer_steps_consumed": 109440,
+    "selected_checkpoint_steps": 51808,
+    "training_examples_consumed": 14008320,
+    "confirmation_model_seed_records": 96,
+    "confirmation_model_episode_evaluations": 98304,
+    "independent_primary_seed_count": 16,
+    "registered_confirmation_episode_units": 16384,
+    "original_hold_unchanged": true,
+    "independent_result": "simulation_gain_not_established",
+    "primary_comparison": {
+      "descriptive_seed_bootstrap_95": [
+        -0.0003623583637168116,
+        0.0265171241620654
+      ],
+      "independent_seed_count": 16,
+      "inference_scope": "exploratory; sign-exchangeability assumed; small-seed CI is descriptive",
+      "mean_difference": 0.010938962594872181,
+      "one_sided_signflip_p": 0.081268310546875,
+      "seed_differences": [
+        1.0214764619639882e-05,
+        -0.0014762473762065659,
+        0.08452496593917098,
+        0.01065174967323298,
+        0.005360570054099671,
+        0.0015356505170129944,
+        0.001745913555077798,
+        -0.0005547371040993832,
+        -0.0010715906926651968,
+        0.0016485834045529817,
+        0.08330695325230644,
+        -0.004440862528118809,
+        -0.006105058438132506,
+        -0.00011285613604419126,
+        0,
+        1.52633148019915e-07
+      ]
+    },
+    "failed_environment_python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "failed_environment_scientific_output_absent": true,
+    "failed_host_window_seconds": 9.018603511969559,
+    "environment_repair_and_successful_host_window_seconds": 214.9583567699883,
+    "combined_observed_host_windows_seconds": 223.97696028195787,
+    "full_physical_or_monetary_cost": false,
+    "unmeasured": [
+      "research peak memory",
+      "energy",
+      "money",
+      "remote transport/queue",
+      "all human/model research preparation"
+    ],
+    "not_performed": [
+      "new training",
+      "new confirmation generation",
+      "model reselection",
+      "production adoption"
+    ],
+    "audit_wall_seconds": 0.03631546103861183,
+    "audit_process_cpu_seconds": 0.03580275399999999
+  }
+}

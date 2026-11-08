@@ -1,0 +1,226 @@
+{
+  "schema": "hepta.integrated-candidate-native-gate.v1",
+  "started_at_utc": "2026-11-08T18:05:33.507186+00:00",
+  "source_commit": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+  "source_tree": "e411d25b47c166f35783a27054adb6a3f6682594",
+  "steps": [
+    {
+      "name": "common-python-controls",
+      "argv": [
+        "/home/qian-qi/work/cell-integration-20261108-08b6/validation-venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_hepta_cell_joint_config",
+        "ndu_real_runtime.test_state_codec",
+        "ndu_real_runtime.test_subprocess_supervisor",
+        "ndu_real_runtime.test_training_job_result",
+        "test_hepta_source_archive",
+        "hepta_pred1.test_diagnose_training"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 14.36864727496868,
+      "child_cpu_seconds": 10.690979,
+      "stdout": {
+        "path": "common-python-controls.stdout",
+        "bytes": 657,
+        "sha256": "f53081694123446839838f8d493dc945353953bd3ed252fa60a68ec5d84cd196"
+      },
+      "stderr": {
+        "path": "common-python-controls.stderr",
+        "bytes": 14420,
+        "sha256": "d512030ded26610f12d605517240036d2cbd96e0bd02ea63137a0b39e21ec6bf"
+      },
+      "tests": 74,
+      "passed": 74,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "unittest_wall_seconds": 12.826
+    },
+    {
+      "name": "complete-source-archive",
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--prefix=source/",
+        "--output=/home/qian-qi/work/cell-integration-20261108-08b6/final-validation-001/source.tar",
+        "b839558b26c2e5b667055ca4af4ad749ae41c043"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.3661613690201193,
+      "child_cpu_seconds": 0.31212299999999904,
+      "stdout": {
+        "path": "complete-source-archive.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "complete-source-archive.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "complete-archive-integrity",
+      "argv": [
+        "/home/qian-qi/work/cell-integration-20261108-08b6/validation-venv/bin/python",
+        "-B",
+        "scripts/hepta_source_archive.py",
+        "--binding",
+        "/home/qian-qi/work/cell-integration-20261108-08b6/final-validation-001/archive-binding.json",
+        "--source-root",
+        "/home/qian-qi/work/cell-integration-20261108-08b6/source",
+        "--artifact-root",
+        "/home/qian-qi/work/cell-integration-20261108-08b6/final-validation-001",
+        "--output",
+        "/home/qian-qi/work/cell-integration-20261108-08b6/final-validation-001/archive-integrity.json"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 1.5178277249797247,
+      "child_cpu_seconds": 1.4971630000000018,
+      "stdout": {
+        "path": "complete-archive-integrity.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "complete-archive-integrity.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "training-dev-diagnostic",
+      "argv": [
+        "/home/qian-qi/work/cell-integration-20261108-08b6/validation-venv/bin/python",
+        "-B",
+        "scripts/hepta_pred1/diagnose_training.py",
+        "--campaign",
+        "/home/qian-qi/work/cell-pred1-independent-20261108-08b6/bundle/training",
+        "--config",
+        "/home/qian-qi/work/cell-pred1-independent-20261108-08b6/bundle/config/original-registered-config.json",
+        "--source",
+        "/home/qian-qi/work/cell-pred1-independent-20261108-08b6/bundle/source/hepta_pred1/run.py",
+        "--output",
+        "/home/qian-qi/work/cell-integration-20261108-08b6/final-validation-001/diagnostic"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.06548049999400973,
+      "child_cpu_seconds": 0.03835499999999992,
+      "stdout": {
+        "path": "training-dev-diagnostic.stdout",
+        "bytes": 251,
+        "sha256": "c24c4bb3429f5193b937713d3cb24996c1de71f4c72b118fa742c941d4618dbe"
+      },
+      "stderr": {
+        "path": "training-dev-diagnostic.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "exit_code": 0,
+  "scientific_qualified": false,
+  "production_qualified": false,
+  "joint_learning_configuration": null,
+  "resources_before": {
+    "self_process_cpu_seconds": 0.04593613,
+    "children": {
+      "ru_utime": 0,
+      "ru_stime": 0,
+      "ru_maxrss": 0
+    },
+    "cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1bc5644e5-138b0-1cc.service",
+    "cgroup_values": {
+      "cpu.max": "100000 100000",
+      "cpu.stat": "usage_usec 68494\nuser_usec 53385\nsystem_usec 15109\nnice_usec 53000\ncore_sched.force_idle_usec 0\nnr_periods 1\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+      "memory.max": "4294967296",
+      "memory.peak": "22716416"
+    }
+  },
+  "source_before": {
+    "commit": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+    "tree": "e411d25b47c166f35783a27054adb6a3f6682594",
+    "index_tree": "e411d25b47c166f35783a27054adb6a3f6682594"
+  },
+  "runtime": {
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+    "executable": "/usr/bin/python3.12",
+    "executable_pin": {
+      "path": "python3.12",
+      "bytes": 8020928,
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "dependencies": {
+      "Pillow": "12.0.0",
+      "numpy": "1.26.4",
+      "torch": "2.9.1+cpu"
+    },
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "profile": {
+      "path": "VALIDATION_PROFILE.json",
+      "bytes": 1157,
+      "sha256": "3e93559bfe523de91ca8a9366a645aaedbe232a2b60ef4839cd57361e94e4df3"
+    }
+  },
+  "source_after_tests": {
+    "commit": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+    "tree": "e411d25b47c166f35783a27054adb6a3f6682594",
+    "index_tree": "e411d25b47c166f35783a27054adb6a3f6682594"
+  },
+  "archive": {
+    "file": {
+      "path": "source.tar",
+      "bytes": 162334720,
+      "sha256": "d1e54cba3f206516725a53a33aed7aafd204003fd7997992878d3f4a7146cf32"
+    },
+    "report": {
+      "path": "archive-integrity.json",
+      "bytes": 3600091,
+      "sha256": "4dbe4021624b03ecf4feb6eb27fbeb677f42585631a6e8b41b0b98c0427c5324"
+    },
+    "complete_tracked_files": 11386,
+    "inventory_sha256": "1b42283fa40a114b2b39045dd99540dcf373198842db43960f631a6cc7bbb652",
+    "integrity_only": true
+  },
+  "diagnostic": {
+    "scientific_fields_equal_original": true,
+    "report": {
+      "path": "DIAGNOSTIC.json",
+      "bytes": 57587,
+      "sha256": "a1ca982007cae0542d1be9e4abb3c9e2831450378fb72f860f324140de5cc46d"
+    }
+  },
+  "source_after": {
+    "commit": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+    "tree": "e411d25b47c166f35783a27054adb6a3f6682594",
+    "index_tree": "e411d25b47c166f35783a27054adb6a3f6682594"
+  },
+  "finished_at_utc": "2026-11-08T18:05:51.740579+00:00",
+  "total_wall_seconds": 18.23341534996871,
+  "resources_after": {
+    "self_process_cpu_seconds": 1.279815234,
+    "children": {
+      "ru_utime": 10.849644,
+      "ru_stime": 1.832421,
+      "ru_maxrss": 257860
+    },
+    "cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1bc5644e5-138b0-1cc.service",
+    "cgroup_values": {
+      "cpu.max": "100000 100000",
+      "cpu.stat": "usage_usec 14035660\nuser_usec 11578262\nsystem_usec 2457398\nnice_usec 11501000\ncore_sched.force_idle_usec 0\nnr_periods 181\nnr_throttled 51\nthrottled_usec 149379\nnr_bursts 0\nburst_usec 0",
+      "memory.max": "4294967296",
+      "memory.peak": "563838976"
+    }
+  },
+  "cost_scope": "This validation process and its children only; environment setup, research, remote transport and publication separately recorded. Nested step times are not additive to total."
+}

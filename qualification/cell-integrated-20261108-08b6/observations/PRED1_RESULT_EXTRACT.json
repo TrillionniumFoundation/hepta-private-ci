@@ -1,0 +1,264 @@
+{
+  "schema": "pred1-results-v1",
+  "status": "simulation_gain_not_established",
+  "selected_family": "gru",
+  "primary_comparison": {
+    "descriptive_seed_bootstrap_95": [
+      -0.0003623583637168116,
+      0.0265171241620654
+    ],
+    "independent_seed_count": 16,
+    "inference_scope": "exploratory; sign-exchangeability assumed; small-seed CI is descriptive",
+    "mean_difference": 0.010938962594872181,
+    "one_sided_signflip_p": 0.081268310546875,
+    "seed_differences": [
+      1.0214764619639882e-05,
+      -0.0014762473762065659,
+      0.08452496593917098,
+      0.01065174967323298,
+      0.005360570054099671,
+      0.0015356505170129944,
+      0.001745913555077798,
+      -0.0005547371040993832,
+      -0.0010715906926651968,
+      0.0016485834045529817,
+      0.08330695325230644,
+      -0.004440862528118809,
+      -0.006105058438132506,
+      -0.00011285613604419126,
+      0,
+      1.52633148019915e-07
+    ]
+  },
+  "selected_family_auxiliary_comparisons": {
+    "gru_no_action": {
+      "descriptive_seed_bootstrap_95": [
+        -0.0041204257169301555,
+        0.028054260155770526
+      ],
+      "independent_seed_count": 16,
+      "inference_scope": "exploratory; sign-exchangeability assumed; small-seed CI is descriptive",
+      "mean_difference": 0.009982284713067606,
+      "one_sided_signflip_p": 0.1947021484375,
+      "seed_differences": [
+        -0.02286866656733926,
+        -0.0015053226933819143,
+        0.08452496593917098,
+        0.012717123089694594,
+        0.011868768605742958,
+        -0.011964111561228086,
+        0.006044284096405939,
+        0,
+        -0.008610661387272161,
+        0.002044858122327669,
+        0.10448181794361698,
+        -0.002722975319488702,
+        -0.014757024630852591,
+        0.0004634997716853051,
+        0,
+        0
+      ]
+    },
+    "gru_reset": {
+      "descriptive_seed_bootstrap_95": [
+        -0.0009623133235419891,
+        0.026728140614650724
+      ],
+      "independent_seed_count": 16,
+      "inference_scope": "exploratory; sign-exchangeability assumed; small-seed CI is descriptive",
+      "mean_difference": 0.01068812403312045,
+      "one_sided_signflip_p": 0.1334228515625,
+      "seed_differences": [
+        -0.0005373583883262964,
+        -0.006050198356231211,
+        0.08208948187846732,
+        0.004418614952006758,
+        0.0014485798809022385,
+        -0.0017968081174185302,
+        0.01107626514447042,
+        -0.0005547371040993832,
+        -2.4853561196996887e-05,
+        0.002044858122327669,
+        0.09012226848744959,
+        -0.005009038563637953,
+        -0.005611523135288551,
+        -0.0006184116672219298,
+        0,
+        1.2844957724036932e-05
+      ]
+    },
+    "single_step": {
+      "descriptive_seed_bootstrap_95": [
+        -0.0003623583637168116,
+        0.0265171241620654
+      ],
+      "independent_seed_count": 16,
+      "inference_scope": "exploratory; sign-exchangeability assumed; small-seed CI is descriptive",
+      "mean_difference": 0.010938962594872181,
+      "one_sided_signflip_p": 0.081268310546875,
+      "seed_differences": [
+        1.0214764619639882e-05,
+        -0.0014762473762065659,
+        0.08452496593917098,
+        0.01065174967323298,
+        0.005360570054099671,
+        0.0015356505170129944,
+        0.001745913555077798,
+        -0.0005547371040993832,
+        -0.0010715906926651968,
+        0.0016485834045529817,
+        0.08330695325230644,
+        -0.004440862528118809,
+        -0.006105058438132506,
+        -0.00011285613604419126,
+        0,
+        1.52633148019915e-07
+      ]
+    }
+  },
+  "same_architecture_causal_checks": {
+    "gru_no_action": {
+      "descriptive_seed_bootstrap_95": [
+        -0.0041204257169301555,
+        0.028054260155770526
+      ],
+      "independent_seed_count": 16,
+      "inference_scope": "exploratory; sign-exchangeability assumed; small-seed CI is descriptive",
+      "mean_difference": 0.009982284713067606,
+      "one_sided_signflip_p": 0.1947021484375,
+      "seed_differences": [
+        -0.02286866656733926,
+        -0.0015053226933819143,
+        0.08452496593917098,
+        0.012717123089694594,
+        0.011868768605742958,
+        -0.011964111561228086,
+        0.006044284096405939,
+        0,
+        -0.008610661387272161,
+        0.002044858122327669,
+        0.10448181794361698,
+        -0.002722975319488702,
+        -0.014757024630852591,
+        0.0004634997716853051,
+        0,
+        0
+      ]
+    },
+    "gru_reset": {
+      "descriptive_seed_bootstrap_95": [
+        -0.0009623133235419891,
+        0.026728140614650724
+      ],
+      "independent_seed_count": 16,
+      "inference_scope": "exploratory; sign-exchangeability assumed; small-seed CI is descriptive",
+      "mean_difference": 0.01068812403312045,
+      "one_sided_signflip_p": 0.1334228515625,
+      "seed_differences": [
+        -0.0005373583883262964,
+        -0.006050198356231211,
+        0.08208948187846732,
+        0.004418614952006758,
+        0.0014485798809022385,
+        -0.0017968081174185302,
+        0.01107626514447042,
+        -0.0005547371040993832,
+        -2.4853561196996887e-05,
+        0.002044858122327669,
+        0.09012226848744959,
+        -0.005009038563637953,
+        -0.005611523135288551,
+        -0.0006184116672219298,
+        0,
+        1.2844957724036932e-05
+      ]
+    }
+  },
+  "source_sha256": "a07f2eb7c06c5ddf98b632a205a1865e75a18cdc09c9e3085a88dd2f01a32583",
+  "config_sha256": "c3574166b2043e3e4b4ac167e35f81a1003ff8d916a4f446010bf6a94ec77667",
+  "measured_campaign_wall_seconds": 208.0664405929856,
+  "measured_campaign_process_cpu_seconds": 207.318969785,
+  "all_training_wall_seconds": 168.46517189632868,
+  "all_training_process_cpu_seconds": 167.80894672700018,
+  "selection_training_wall_seconds": 26.90281977399718,
+  "independent_evaluation_training_seeds": [
+    3926890411,
+    727086859,
+    1852124203,
+    2302186560,
+    2281010178,
+    440845250,
+    3228430729,
+    3070568927,
+    952767533,
+    3178635790,
+    2295792649,
+    3109268547,
+    111838876,
+    2929527613,
+    2274992072,
+    995533690
+  ],
+  "physical_cost_complete": false,
+  "scientific_scope": "controlled simulation only; exploratory seed inference; no RSI conclusion",
+  "execution_end": {
+    "boundary_guard_process_cpu_seconds": 0.01192865400000187,
+    "boundary_guard_wall_seconds": 0.011926809034775943,
+    "confirmation_seed_attempts": [
+      3926890411,
+      727086859,
+      1852124203,
+      2302186560,
+      2281010178,
+      440845250,
+      3228430729,
+      3070568927,
+      952767533,
+      3178635790,
+      2295792649,
+      3109268547,
+      111838876,
+      2929527613,
+      2274992072,
+      995533690
+    ],
+    "confirmation_seeds_generated": [
+      3926890411,
+      727086859,
+      1852124203,
+      2302186560,
+      2281010178,
+      440845250,
+      3228430729,
+      3070568927,
+      952767533,
+      3178635790,
+      2295792649,
+      3109268547,
+      111838876,
+      2929527613,
+      2274992072,
+      995533690
+    ],
+    "finished_at_utc": "2026-11-08T17:53:43.011698+00:00",
+    "guard_passed": true,
+    "numpy_version": "2.3.5",
+    "status": "COMPLETED",
+    "wrapper_and_campaign_process_cpu_seconds": 207.46132260299999,
+    "wrapper_and_campaign_wall_seconds": 208.21064985601697
+  },
+  "confirmation_boundary": {
+    "checked_at_utc": "2026-11-08T17:53:31.720448+00:00",
+    "checkpoint_count": 114,
+    "checkpoint_manifest_sha256": "847bd4c953fa75c1ed8007e647ee83f8da85b089ec901134638cdb3428aeb425",
+    "confirmation_datasets_generated_before_guard": 0,
+    "family_selection_sha256": "4012a68d5d7bf59838cd72489496540c6c2d108fd964d9209d70734da9b09d4c",
+    "independent_config_sha256": "c3574166b2043e3e4b4ac167e35f81a1003ff8d916a4f446010bf6a94ec77667",
+    "original_protocol_sha256": "19e6d61565d7d8fadf695a9a5814819197ac98835c80ad19d162e61db846b724",
+    "runner_source_identity_sha256": "a07f2eb7c06c5ddf98b632a205a1865e75a18cdc09c9e3085a88dd2f01a32583",
+    "schema": "pred1-confirmation-boundary-guard-v1",
+    "selected_family": "gru",
+    "selection_sha256": "113f82da1856cea31d2501982a75f2e80d5a125484fb2df5384fe185cc6e76bf",
+    "status": "PASSED_BEFORE_FIRST_CONFIRMATION_GENERATION"
+  }
+}
