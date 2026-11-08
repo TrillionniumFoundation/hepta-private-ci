@@ -216,6 +216,7 @@ mod authbus_ingress;
 mod authbus_trust;
 mod automation;
 mod automation_effect_host;
+mod automation_effect_payload;
 mod automation_recovery;
 mod browser_servo;
 mod client;

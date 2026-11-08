@@ -6,6 +6,9 @@ codex_rust_crate(
     name = "hepta-automation",
     compile_data = glob(["migrations/**"]),
     crate_name = "codex_hepta_automation",
+    integration_test_extra_srcs = {
+        "tests/action_skill_act1.rs": glob(["tests/action_skill_support/**/*.rs"]),
+    },
 )
 
 # Keep structural qualification out of the product library's feature set.

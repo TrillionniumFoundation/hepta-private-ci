@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="150" failures="0" errors="0" uuid="a3b6510a-a9e0-402a-86ad-d77a19d13e26" timestamp="2026-11-08T05:53:06.843-05:00" time="2.448">
+    <testsuite name="codex-hepta-automation" tests="64" disabled="0" errors="0" failures="0">
+        <testcase name="action_skill_tests::changed_skill_contract_is_rejected_before_provider_contact" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.844-05:00" time="0.003">
+        </testcase>
+        <testcase name="action_skill_tests::cancellation_and_rejection_do_not_erase_observed_effects" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.844-05:00" time="0.004">
+        </testcase>
+        <testcase name="authorized_effect::intent_tests::canonical_effect_intent_binds_every_execution_dimension" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.847-05:00" time="0.002">
+        </testcase>
+        <testcase name="action_skill_tests::unbound_or_nonterminal_evidence_never_closes_a_completed_provider_effect" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.847-05:00" time="0.004">
+        </testcase>
+        <testcase name="authorized_effect::intent_tests::canonical_effect_intent_rejects_noncanonical_dependencies" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.850-05:00" time="0.002">
+        </testcase>
+        <testcase name="circuit_admission::tests::cancellation_before_a_computation_claim_never_manufactures_execution_authority" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.851-05:00" time="0.022">
+        </testcase>
+        <testcase name="circuit_admission::tests::downstream_request_changes_and_command_id_reuse_cannot_rebind_the_claim" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.852-05:00" time="0.024">
+        </testcase>
+        <testcase name="circuit_admission::tests::independent_owner_connections_cannot_both_claim_the_same_computation" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.873-05:00" time="0.031">
+        </testcase>
+        <testcase name="circuit_admission::tests::lease_takeover_keeps_the_original_invocation_and_only_allows_reconciliation" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.876-05:00" time="0.029">
+        </testcase>
+        <testcase name="circuit_admission::tests::only_first_persisted_claim_returns_a_single_use_execution_admission" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.905-05:00" time="0.030">
+        </testcase>
+        <testcase name="circuit_admission::tests::lost_claim_response_before_any_cell_contact_never_reopens_execution" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.904-05:00" time="0.037">
+        </testcase>
+        <testcase name="circuit_admission::tests::ready_completed_and_corrupt_activations_cannot_be_admitted_as_pending_work" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.935-05:00" time="0.026">
+        </testcase>
+        <testcase name="circuit_admission::tests::run_deadline_rejects_new_claims_but_preserves_readback_of_existing_reservations" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.941-05:00" time="0.021">
+        </testcase>
+        <testcase name="circuit_runtime_tests::all_join_times_out_without_refunding_in_flight_work" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.962-05:00" time="0.003">
+        </testcase>
+        <testcase name="circuit_runtime_tests::any_join_cancels_surplus_but_retains_unknown_work_until_exact_reconciliation" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.965-05:00" time="0.003">
+        </testcase>
+        <testcase name="circuit_runtime_tests::cancelled_before_dispatch_is_refunded_without_creating_unknown_work" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.968-05:00" time="0.002">
+        </testcase>
+        <testcase name="circuit_runtime_tests::child_cannot_borrow_unreserved_parent_capacity" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.970-05:00" time="0.002">
+        </testcase>
+        <testcase name="circuit_runtime_tests::child_overrun_debt_propagates_to_every_parent_without_double_charging" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.973-05:00" time="0.003">
+        </testcase>
+        <testcase name="circuit_runtime_tests::child_work_is_reserved_before_entry_and_charged_exactly_once_to_the_parent" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.975-05:00" time="0.003">
+        </testcase>
+        <testcase name="circuit_runtime_tests::delayed_feedback_reactivates_with_finite_causality_and_preserves_actual_cost" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.978-05:00" time="0.003">
+        </testcase>
+        <testcase name="circuit_runtime_tests::distinct_cells_in_a_feedback_loop_are_checked_for_progress_independently" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.981-05:00" time="0.003">
+        </testcase>
+        <testcase name="circuit_runtime_tests::future_feedback_cannot_win_a_join_before_its_declared_delivery_time" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.984-05:00" time="0.002">
+        </testcase>
+        <testcase name="circuit_runtime_tests::joins_require_the_reference_schema_and_export_the_exact_frozen_bytes" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.986-05:00" time="0.003">
+        </testcase>
+        <testcase name="circuit_runtime_tests::no_progress_and_deadline_stop_admission_without_claiming_unknown_success" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.989-05:00" time="0.004">
+        </testcase>
+        <testcase name="circuit_admission::tests::wrong_owner_generation_expiry_and_clock_regression_never_create_a_token" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.961-05:00" time="0.032">
+        </testcase>
+        <testcase name="circuit_runtime_tests::observed_work_overrun_is_charged_in_full_and_stops_admission" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.992-05:00" time="0.003">
+        </testcase>
+        <testcase name="circuit_runtime_tests::overrun_does_not_refund_another_branches_unknown_work" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.993-05:00" time="0.003">
+        </testcase>
+        <testcase name="circuit_runtime_tests::profile_rejects_same_round_cycles_zero_delay_and_implicit_schema_conversion" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.995-05:00" time="0.002">
+        </testcase>
+        <testcase name="circuit_runtime_tests::quorum_requires_its_declared_count_and_freezes_arrival_order" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.996-05:00" time="0.004">
+        </testcase>
+        <testcase name="circuit_runtime_tests::rejected_receipts_leave_original_state_and_reservation_unchanged" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:06.997-05:00" time="0.003">
+        </testcase>
+        <testcase name="circuit_runtime_tests::shared_subprogram_dag_has_bounded_validation_and_exact_longest_depth" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.000-05:00" time="0.003">
+        </testcase>
+        <testcase name="circuit_runtime_tests::returning_subcircuits_preserve_parent_node_progress_across_child_instances" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.000-05:00" time="0.004">
+        </testcase>
+        <testcase name="circuit_runtime_tests::v1_cycle_validation_remains_an_independent_compatibility_gate" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.003-05:00" time="0.002">
+        </testcase>
+        <testcase name="circuit_store_tests::bounded_circuit_migration_coexists_with_existing_v1_definition" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.003-05:00" time="0.023">
+        </testcase>
+        <testcase name="circuit_store_tests::concurrent_owner_connections_commit_only_one_revision_and_one_dispatch" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.005-05:00" time="0.031">
+        </testcase>
+        <testcase name="circuit_store_tests::durable_dispatch_is_idempotent_and_reopens_without_reissuing_work" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.036-05:00" time="0.029">
+        </testcase>
+        <testcase name="circuit_store_tests::corrupt_projection_and_removed_event_tail_are_never_recovered_as_success" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.027-05:00" time="0.041">
+        </testcase>
+        <testcase name="circuit_store_tests::scope_version_and_owner_mismatch_reject_without_mutating_existing_run" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.067-05:00" time="0.021">
+        </testcase>
+        <testcase name="circuit_store_tests::frozen_join_reference_bytes_survive_canonical_replay_and_reopen" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.065-05:00" time="0.047">
+        </testcase>
+        <testcase name="circuit_store_tests::separate_agent_partitions_can_use_the_same_run_id_without_state_bleed" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.089-05:00" time="0.050">
+        </testcase>
+        <testcase name="circuit_store_tests::successor_fences_old_writer_and_reconciles_original_invocation_after_ack_loss" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.112-05:00" time="0.031">
+        </testcase>
+        <testcase name="effect_executor::tests::current_fence_executes_once" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.143-05:00" time="0.003">
+        </testcase>
+        <testcase name="effect_executor::tests::stale_fence_and_unknown_effect_fail_closed" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.146-05:00" time="0.002">
+        </testcase>
+        <testcase name="lifecycle::tests::deterministic_occurrence_identity_binds_revision_and_instant" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.148-05:00" time="0.003">
+        </testcase>
+        <testcase name="lifecycle::tests::missed_run_math_is_bounded_and_deterministic" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.151-05:00" time="0.002">
+        </testcase>
+        <testcase name="neural_circuit::tests::circuit_compiles_to_existing_taskflow_without_authority" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.153-05:00" time="0.003">
+        </testcase>
+        <testcase name="neural_circuit::tests::circuit_reuses_taskflow_cycle_and_terminal_rejection" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.156-05:00" time="0.002">
+        </testcase>
+        <testcase name="neural_circuit::tests::structural_successor_cannot_rebind_predecessor_or_widen_capabilities" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.158-05:00" time="0.003">
+        </testcase>
+        <testcase name="neural_circuit::tests::successor_binds_exact_predecessor_and_can_change_route_and_parameters" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.161-05:00" time="0.002">
+        </testcase>
+        <testcase name="effect_dispatch_ledger::tests::indeterminate_provider_evidence_reconciles_after_reopen_without_redispatch" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.139-05:00" time="0.027">
+        </testcase>
+        <testcase name="schedule_v2::tests::dst_gap_policy_is_explicit_and_deterministic" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.166-05:00" time="0.002">
+        </testcase>
+        <testcase name="schedule_v2::tests::dst_overlap_selects_first_or_second_utc_instant" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.168-05:00" time="0.002">
+        </testcase>
+        <testcase name="schedule_v2::tests::calendar_policy_revision_preserves_authoritative_schedule_bytes" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.163-05:00" time="0.020">
+        </testcase>
+        <testcase name="schedule_v2::tests::missed_run_catch_up_is_bounded_then_skips_the_remaining_backlog" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.170-05:00" time="0.020">
+        </testcase>
+        <testcase name="schedule_v2::tests::missed_run_coalesce_materializes_only_the_latest_past_instant" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.183-05:00" time="0.019">
+        </testcase>
+        <testcase name="schedule_v2::tests::tzdb_identity_changes_schedule_digest" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.202-05:00" time="0.003">
+        </testcase>
+        <testcase name="schedule_v2::tests::missed_run_skip_jumps_past_the_observation_frontier" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.191-05:00" time="0.018">
+        </testcase>
+        <testcase name="store::migration_convergence_tests::both_historical_branches_converge_without_rewriting_checksums" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.204-05:00" time="0.036">
+        </testcase>
+        <testcase name="store::migration_convergence_tests::canonical_cut_after_rebind_reopens" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.209-05:00" time="0.033">
+        </testcase>
+        <testcase name="store::migration_convergence_tests::canonical_cut_before_rebind_reopens" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.240-05:00" time="0.027">
+        </testcase>
+        <testcase name="store::migration_convergence_tests::displaced_cut_after_rebind_reopens" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.242-05:00" time="0.028">
+        </testcase>
+        <testcase name="store::migration_convergence_tests::occupied_relocation_rolls_back_all_history_rebinding" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.270-05:00" time="0.006">
+        </testcase>
+        <testcase name="store::migration_convergence_tests::unknown_or_dirty_history_is_not_relabelled" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.276-05:00" time="0.010">
+        </testcase>
+        <testcase name="store::migration_convergence_tests::displaced_cut_before_rebind_reopens" classname="codex-hepta-automation" timestamp="2026-11-08T05:53:07.268-05:00" time="0.028">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-automation::action_skill_act1" tests="9" disabled="0" errors="0" failures="0">
+        <testcase name="act1_durable_rejection_proves_failure_and_fences_late_effects" classname="codex-hepta-automation::action_skill_act1" timestamp="2026-11-08T05:53:07.295-05:00" time="0.056">
+        </testcase>
+        <testcase name="act1_cancellation_feedback_retains_both_commit_orders" classname="codex-hepta-automation::action_skill_act1" timestamp="2026-11-08T05:53:07.286-05:00" time="0.080">
+        </testcase>
+        <testcase name="act1_partial_completion_recovers_only_after_missing_subeffect_exists" classname="codex-hepta-automation::action_skill_act1" timestamp="2026-11-08T05:53:07.351-05:00" time="0.041">
+        </testcase>
+        <testcase name="act1_payload_and_contract_drift_are_rejected_before_destination_contact" classname="codex-hepta-automation::action_skill_act1" timestamp="2026-11-08T05:53:07.367-05:00" time="0.055">
+        </testcase>
+        <testcase name="act1_real_input_reader_resumes_original_job_then_verifies_goal" classname="codex-hepta-automation::action_skill_act1" timestamp="2026-11-08T05:53:07.393-05:00" time="0.054">
+        </testcase>
+        <testcase name="act1_sigkill_after_commit_reopens_and_reconciles_all_baselines" classname="codex-hepta-automation::action_skill_act1" timestamp="2026-11-08T05:53:07.447-05:00" time="0.158">
+        </testcase>
+        <testcase name="act1_unknown_without_lookup_survives_reopen_without_resending" classname="codex-hepta-automation::action_skill_act1" timestamp="2026-11-08T05:53:07.605-05:00" time="0.053">
+        </testcase>
+        <testcase name="act1_unsupported_destination_is_rejected_before_any_business_effect" classname="codex-hepta-automation::action_skill_act1" timestamp="2026-11-08T05:53:07.658-05:00" time="0.038">
+        </testcase>
+        <testcase name="act1_shared_fault_matrix_preserves_truth_across_three_baselines" classname="codex-hepta-automation::action_skill_act1" timestamp="2026-11-08T05:53:07.421-05:00" time="1.017">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-automation::authorized_effect" tests="10" disabled="0" errors="0" failures="0">
+        <testcase name="async_provider_effect_binds_exact_wire_bytes_before_burning_grant" classname="codex-hepta-automation::authorized_effect" timestamp="2026-11-08T05:53:07.696-05:00" time="0.045">
+        </testcase>
+        <testcase name="async_provider_unknown_is_quarantined_and_lookup_not_found_remains_unresolved" classname="codex-hepta-automation::authorized_effect" timestamp="2026-11-08T05:53:07.741-05:00" time="0.032">
+        </testcase>
+        <testcase name="compensation_crash_preserves_intent_identity_and_requires_reconciliation" classname="codex-hepta-automation::authorized_effect" timestamp="2026-11-08T05:53:07.773-05:00" time="0.053">
+        </testcase>
+        <testcase name="crash_after_provider_contact_before_observation_requires_recovery_without_redispatch" classname="codex-hepta-automation::authorized_effect" timestamp="2026-11-08T05:53:07.826-05:00" time="0.047">
+        </testcase>
+        <testcase name="final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant" classname="codex-hepta-automation::authorized_effect" timestamp="2026-11-08T05:53:07.873-05:00" time="0.037">
+        </testcase>
+        <testcase name="indeterminate_effect_reopens_without_redispatch_then_reconciles_terminally" classname="codex-hepta-automation::authorized_effect" timestamp="2026-11-08T05:53:07.911-05:00" time="0.050">
+        </testcase>
+        <testcase name="proven_pre_contact_failure_never_blindly_redispatches_same_attempt" classname="codex-hepta-automation::authorized_effect" timestamp="2026-11-08T05:53:07.960-05:00" time="0.034">
+        </testcase>
+        <testcase name="revocation_race_is_fenced_across_the_physical_provider_call" classname="codex-hepta-automation::authorized_effect" timestamp="2026-11-08T05:53:07.994-05:00" time="0.043">
+        </testcase>
+        <testcase name="successful_effect_is_at_most_once_for_one_durable_step_attempt" classname="codex-hepta-automation::authorized_effect" timestamp="2026-11-08T05:53:08.038-05:00" time="0.032">
+        </testcase>
+        <testcase name="wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant" classname="codex-hepta-automation::authorized_effect" timestamp="2026-11-08T05:53:08.070-05:00" time="0.030">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-automation::automation" tests="18" disabled="0" errors="0" failures="0">
+        <testcase name="copied_database_cannot_cross_agent_owner_boundary" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.100-05:00" time="0.031">
+        </testcase>
+        <testcase name="crash_after_external_acceptance_keeps_unknown_intent_across_reopen" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.131-05:00" time="0.032">
+        </testcase>
+        <testcase name="disabling_an_inflight_lease_never_resurrects_the_task" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.163-05:00" time="0.028">
+        </testcase>
+        <testcase name="drain_blockers_require_classification_but_allow_durable_uncertainty" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.191-05:00" time="0.033">
+        </testcase>
+        <testcase name="duplicate_provider_receipt_is_rejected_by_local_outcome_fence" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.224-05:00" time="0.033">
+        </testcase>
+        <testcase name="explicit_dispatch_failure_retries_same_occurrence_and_client_id" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.257-05:00" time="0.040">
+        </testcase>
+        <testcase name="five_real_agent_identities_are_isolated_and_one_blocked_backlog_cannot_starve_peers" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.297-05:00" time="0.152">
+        </testcase>
+        <testcase name="in_flight_unknown_intent_fences_stale_generation_and_second_claim" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.439-05:00" time="0.030">
+        </testcase>
+        <testcase name="legacy_unknown_without_frozen_revision_requires_absence_proof_before_new_claim" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.449-05:00" time="0.031">
+        </testcase>
+        <testcase name="owner_or_generation_fence_is_not_downgraded_to_a_dispatch_retry" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.480-05:00" time="0.040">
+        </testcase>
+        <testcase name="one_shot_periodic_disable_and_cancel_are_durable" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.469-05:00" time="0.055">
+        </testcase>
+        <testcase name="pre_admission_dispatch_error_clears_intent_and_allows_next_generation_retry" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.520-05:00" time="0.040">
+        </testcase>
+        <testcase name="stale_generation_recovery_is_owner_fenced" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.560-05:00" time="0.025">
+        </testcase>
+        <testcase name="restart_reclaims_same_occurrence_with_same_core_client_id_and_fences_old_lease" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.525-05:00" time="0.094">
+        </testcase>
+        <testcase name="successful_dispatch_upgrades_pre_admission_intent_atomically" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.585-05:00" time="0.039">
+        </testcase>
+        <testcase name="uncertain_dispatch_requires_explicit_negative_provider_proof_before_retry" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.619-05:00" time="0.034">
+        </testcase>
+        <testcase name="unknown_provider_outcome_is_quarantined_across_store_recovery_until_reconciled" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.624-05:00" time="0.033">
+        </testcase>
+        <testcase name="v1_store_migrates_atomically_to_dispatch_outcome_schema" classname="codex-hepta-automation::automation" timestamp="2026-11-08T05:53:08.653-05:00" time="0.050">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-automation::durable_causal_chain" tests="10" disabled="0" errors="0" failures="0">
+        <testcase name="allow_overlap_advances_recurrence_without_terminalizing_prior_occurrence" classname="codex-hepta-automation::durable_causal_chain" timestamp="2026-11-08T05:53:08.657-05:00" time="0.042">
+        </testcase>
+        <testcase name="claim_freezes_schedule_revision_before_occurrence_materialization" classname="codex-hepta-automation::durable_causal_chain" timestamp="2026-11-08T05:53:08.698-05:00" time="0.029">
+        </testcase>
+        <testcase name="forbid_overlap_parks_recurrence_until_terminal_observation" classname="codex-hepta-automation::durable_causal_chain" timestamp="2026-11-08T05:53:08.703-05:00" time="0.045">
+        </testcase>
+        <testcase name="proven_absent_unknown_dispatch_reuses_same_occurrence_identity" classname="codex-hepta-automation::durable_causal_chain" timestamp="2026-11-08T05:53:08.727-05:00" time="0.040">
+        </testcase>
+        <testcase name="queue_submission_is_not_occurrence_or_taskflow_success" classname="codex-hepta-automation::durable_causal_chain" timestamp="2026-11-08T05:53:08.749-05:00" time="0.033">
+        </testcase>
+        <testcase name="reopen_rejects_tampered_canonical_occurrence_identity" classname="codex-hepta-automation::durable_causal_chain" timestamp="2026-11-08T05:53:08.767-05:00" time="0.024">
+        </testcase>
+        <testcase name="retired_stale_generation_before_uncertainty_closes_without_provider_contact" classname="codex-hepta-automation::durable_causal_chain" timestamp="2026-11-08T05:53:08.791-05:00" time="0.030">
+        </testcase>
+        <testcase name="retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurrence" classname="codex-hepta-automation::durable_causal_chain" timestamp="2026-11-08T05:53:08.782-05:00" time="0.042">
+        </testcase>
+        <testcase name="stale_generation_between_taskflow_intent_and_uncertainty_recovers_same_occurrence" classname="codex-hepta-automation::durable_causal_chain" timestamp="2026-11-08T05:53:08.822-05:00" time="0.034">
+        </testcase>
+        <testcase name="terminal_observer_cursor_is_durable_bounded_progress" classname="codex-hepta-automation::durable_causal_chain" timestamp="2026-11-08T05:53:08.824-05:00" time="0.033">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-automation::kernel_operations_destination" tests="4" disabled="0" errors="0" failures="0">
+        <testcase name="exact_operation_replay_returns_one_task_and_one_destination_receipt" classname="codex-hepta-automation::kernel_operations_destination" timestamp="2026-11-08T05:53:08.857-05:00" time="0.019">
+        </testcase>
+        <testcase name="destination_dedupe_and_task_survive_store_reopen" classname="codex-hepta-automation::kernel_operations_destination" timestamp="2026-11-08T05:53:08.856-05:00" time="0.024">
+        </testcase>
+        <testcase name="mismatched_destination_or_scope_is_denied_before_domain_mutation" classname="codex-hepta-automation::kernel_operations_destination" timestamp="2026-11-08T05:53:08.876-05:00" time="0.018">
+        </testcase>
+        <testcase name="same_operation_identity_with_changed_task_payload_conflicts" classname="codex-hepta-automation::kernel_operations_destination" timestamp="2026-11-08T05:53:08.880-05:00" time="0.018">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-automation::operation_timer_fence" tests="3" disabled="0" errors="0" failures="0">
+        <testcase name="kernel_destination_rejects_new_schedule_while_timer_is_draining" classname="codex-hepta-automation::operation_timer_fence" timestamp="2026-11-08T05:53:08.895-05:00" time="0.031">
+        </testcase>
+        <testcase name="predecessor_kernel_destination_cannot_write_after_timer_handoff" classname="codex-hepta-automation::operation_timer_fence" timestamp="2026-11-08T05:53:08.898-05:00" time="0.032">
+        </testcase>
+        <testcase name="retirement_blocks_new_effects_after_restart_but_preserves_old_receipts" classname="codex-hepta-automation::operation_timer_fence" timestamp="2026-11-08T05:53:08.925-05:00" time="0.026">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-automation::retirement_recovery" tests="4" disabled="0" errors="0" failures="0">
+        <testcase name="receipt_replay_retains_later_control_decisions_and_rejects_substitution" classname="codex-hepta-automation::retirement_recovery" timestamp="2026-11-08T05:53:08.952-05:00" time="0.032">
+        </testcase>
+        <testcase name="pre_dispatch_release_paths_preserve_disable_and_cancel_across_restart" classname="codex-hepta-automation::retirement_recovery" timestamp="2026-11-08T05:53:08.930-05:00" time="0.094">
+        </testcase>
+        <testcase name="unknown_dispatch_cannot_be_released_as_a_pre_dispatch_retry" classname="codex-hepta-automation::retirement_recovery" timestamp="2026-11-08T05:53:09.024-05:00" time="0.032">
+        </testcase>
+        <testcase name="reopen_rejects_mismatched_durable_receipt_copies" classname="codex-hepta-automation::retirement_recovery" timestamp="2026-11-08T05:53:08.984-05:00" time="0.096">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-automation::taskflow" tests="13" disabled="0" errors="0" failures="0">
+        <testcase name="automation_opener_rejects_foreign_taskflow_rows" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.056-05:00" time="0.023">
+        </testcase>
+        <testcase name="automation_opener_rejects_hash_valid_taskflow_event_fence_tamper" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.079-05:00" time="0.024">
+        </testcase>
+        <testcase name="automation_opener_rejects_tampered_taskflow_event_history" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.080-05:00" time="0.027">
+        </testcase>
+        <testcase name="automation_opener_rejects_taskflow_event_generation_drift" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.104-05:00" time="0.034">
+        </testcase>
+        <testcase name="automation_opener_rejects_uncomputed_persisted_definition_digest" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.107-05:00" time="0.035">
+        </testcase>
+        <testcase name="command_writer_enforces_graph_resume_target_and_advances_current_node" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.138-05:00" time="0.020">
+        </testcase>
+        <testcase name="definition_registration_is_idempotent_and_generation_scoped" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.142-05:00" time="0.017">
+        </testcase>
+        <testcase name="invalid_graph_and_effect_contract_fail_closed" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.158-05:00" time="0.002">
+        </testcase>
+        <testcase name="invalid_transition_does_not_advance_projection_or_event_tail" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.161-05:00" time="0.019">
+        </testcase>
+        <testcase name="indeterminate_requires_explicit_receipt_reconcile" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.158-05:00" time="0.022">
+        </testcase>
+        <testcase name="run_lifecycle_is_fenced_and_command_deduplicated" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.180-05:00" time="0.021">
+        </testcase>
+        <testcase name="taskflow_mutations_reject_corrupt_event_chain_before_replay_or_append" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.180-05:00" time="0.025">
+        </testcase>
+        <testcase name="taskflow_read_rejects_tampered_event_history" classname="codex-hepta-automation::taskflow" timestamp="2026-11-08T05:53:09.201-05:00" time="0.032">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-automation::taskflow_execution_boundary" tests="11" disabled="0" errors="0" failures="0">
+        <testcase name="callers_cannot_add_verified_use_approval_or_graph_completeness_claims" classname="codex-hepta-automation::taskflow_execution_boundary" timestamp="2026-11-08T05:53:09.206-05:00" time="0.003">
+        </testcase>
+        <testcase name="canonical_digest_has_independent_golden_values" classname="codex-hepta-automation::taskflow_execution_boundary" timestamp="2026-11-08T05:53:09.208-05:00" time="0.009">
+        </testcase>
+        <testcase name="every_digest_is_nonzero_lowercase_and_bound" classname="codex-hepta-automation::taskflow_execution_boundary" timestamp="2026-11-08T05:53:09.218-05:00" time="0.003">
+        </testcase>
+        <testcase name="every_proposed_terminal_state_requires_a_trusted_external_observer" classname="codex-hepta-automation::taskflow_execution_boundary" timestamp="2026-11-08T05:53:09.221-05:00" time="0.002">
+        </testcase>
+        <testcase name="json_shape_version_and_enums_are_exact" classname="codex-hepta-automation::taskflow_execution_boundary" timestamp="2026-11-08T05:53:09.223-05:00" time="0.002">
+        </testcase>
+        <testcase name="numeric_and_identifier_bounds_fail_closed" classname="codex-hepta-automation::taskflow_execution_boundary" timestamp="2026-11-08T05:53:09.225-05:00" time="0.003">
+        </testcase>
+        <testcase name="predecessor_count_identity_and_order_are_strictly_bounded" classname="codex-hepta-automation::taskflow_execution_boundary" timestamp="2026-11-08T05:53:09.228-05:00" time="0.003">
+        </testcase>
+        <testcase name="rejected_requests_are_failure_atomic_and_do_not_poison_later_results" classname="codex-hepta-automation::taskflow_execution_boundary" timestamp="2026-11-08T05:53:09.231-05:00" time="0.002">
+        </testcase>
+        <testcase name="valid_effect_request_is_deterministically_unavailable_and_deny_all" classname="codex-hepta-automation::taskflow_execution_boundary" timestamp="2026-11-08T05:53:09.233-05:00" time="0.002">
+        </testcase>
+        <testcase name="request_digest_binds_identity_count_and_action_shape" classname="codex-hepta-automation::taskflow_execution_boundary" timestamp="2026-11-08T05:53:09.233-05:00" time="0.002">
+        </testcase>
+        <testcase name="validation_errors_do_not_reflect_untrusted_values" classname="codex-hepta-automation::taskflow_execution_boundary" timestamp="2026-11-08T05:53:09.235-05:00" time="0.002">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-automation::taskflow_step" tests="4" disabled="0" errors="0" failures="0">
+        <testcase name="step_outbox_failed_commands_leave_no_partial_event_and_expiry_is_fenced" classname="codex-hepta-automation::taskflow_step" timestamp="2026-11-08T05:53:09.237-05:00" time="0.021">
+        </testcase>
+        <testcase name="reconciled_step_remains_readable_after_run_projection_refence" classname="codex-hepta-automation::taskflow_step" timestamp="2026-11-08T05:53:09.235-05:00" time="0.025">
+        </testcase>
+        <testcase name="step_outbox_rejects_wrong_order_and_append_only_tamper" classname="codex-hepta-automation::taskflow_step" timestamp="2026-11-08T05:53:09.261-05:00" time="0.023">
+        </testcase>
+        <testcase name="step_outbox_lifecycle_is_durable_fenced_and_idempotent" classname="codex-hepta-automation::taskflow_step" timestamp="2026-11-08T05:53:09.259-05:00" time="0.032">
+        </testcase>
+    </testsuite>
+</testsuites>
