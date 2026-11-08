@@ -1,0 +1,766 @@
+{
+  "schema": "hepta.joint-cell-delivery.v1",
+  "status": "ENGINEERING_SOURCE_COMPOSED_SCIENTIFIC_STAGES_HOLD",
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "common_head": "f49128e503b24bb52ccdb32a860939e6392c8e08",
+    "code_head": "710df84a6b10afa005976c24a1108fb2a57810d3",
+    "code_tree": "37bf89db155cdd04145914cc63f6a8e1b4e1b2bd",
+    "code_branch": "research/cell-joint-source-20261108-1628",
+    "evidence_branch": "research/cell-joint-evidence-20261108-1628",
+    "evidence_only_child": true,
+    "first_parent_composition": [
+      {
+        "head": "710df84a6b10afa005976c24a1108fb2a57810d3",
+        "tree": "37bf89db155cdd04145914cc63f6a8e1b4e1b2bd",
+        "subject": "Compose signed ObjectiveStart with the original durable Circuit and Cell owners"
+      },
+      {
+        "head": "c37ebf8de8efc660229e66e4030d589be46bc194",
+        "tree": "ac1bd96d97186f404bf38cbaa22edbe021e29290",
+        "subject": "Compose reviewed ORG-1 reference sources into the shared S0-S5 candidate"
+      },
+      {
+        "head": "3ad2a229d956b39bb8ba3c1bc3a11956cbb0116d",
+        "tree": "b8c68b9ba43181579cf0cf9fe87218b252fe119d",
+        "subject": "Compose exact Matrix evidence pins without changing the size policy"
+      },
+      {
+        "head": "9fc756728081df6311b770834d76aa8eea8e1708",
+        "tree": "dcaaf8790eb7c39a788a1ce9b3b4796345812ac8",
+        "subject": "Retain matrix_evidence in shared S0-S5 candidate"
+      },
+      {
+        "head": "aabc08f3ac41ffc380003de23ff59ddc6515d907",
+        "tree": "d157b1652771cee960c94eb55da8668c3d36212a",
+        "subject": "Retain notes_evidence in shared S0-S5 candidate"
+      },
+      {
+        "head": "b2a19aecddacf88cd3a03f275d27df0f15905778",
+        "tree": "203f4d553856732a427c0e8be94fc17707b8de21",
+        "subject": "Retain platform fixture evidence with its exact archive digest"
+      },
+      {
+        "head": "68d8c41eaf94c89604d34acc65f3bb04a2f3d7d3",
+        "tree": "0ae35634197ea22d397d3b37202607a3d9f60ca2",
+        "subject": "Compose matrix_0191 into shared S0-S5 candidate"
+      },
+      {
+        "head": "e98d82f0e54dee1a291ca3791837eb7eaae8f463",
+        "tree": "9e3dc5f0692720ef163e1fe711e027ec07b6cbdd",
+        "subject": "Compose notes_darwin into shared S0-S5 candidate"
+      },
+      {
+        "head": "4bbb9e470f39844339790f99df53f11134ad0a12",
+        "tree": "f14415f6a1c12f68a34ddd95fda4d73a6528286f",
+        "subject": "Compose windows_control_openssh into shared S0-S5 candidate"
+      },
+      {
+        "head": "460d98426afa7413e2847ce00bae22f6e66143c9",
+        "tree": "079bca50fb644355949fcd9bdab8dd18fd0c67fa",
+        "subject": "Compose platform_fixtures into shared S0-S5 candidate"
+      },
+      {
+        "head": "9451c0892f25ded3c84d61d0137607a72dcd68e8",
+        "tree": "8eb7a6f2379ad35894bf8c73b11410d8d936c34c",
+        "subject": "Bind the imported original MEM-1 evidence by exact hash"
+      },
+      {
+        "head": "2e76c4b675204a9303f010df6f508d4f9a0b4fa7",
+        "tree": "baea0e2fb175bcd13d6f4f52d058fb069306e42c",
+        "subject": "Compose audited pin-utils dependency backport into the S0-S5 candidate"
+      },
+      {
+        "head": "30385c7440e3137ca5951982fbb61fcdd7ab58b8",
+        "tree": "4adf4b3640be8c794a765d728746b1bad707629a",
+        "subject": "chore(research): bind imported HCSN evidence to its exact digest"
+      },
+      {
+        "head": "408293ee05418aeec0457da4a159f53fc7011a0a",
+        "tree": "3cc7313245d7144fd93e4e4f7bc8e4a95cef3d9d",
+        "subject": "research(hcsn): compose learning source with its required baseline modules"
+      },
+      {
+        "head": "485a400a9b6f90b5c89a2da38bdc40b9ba966dba",
+        "tree": "2207b0ce135a6cb213ce4e634809e7165bd8fea3",
+        "subject": "compose(cell): import foundations research delta"
+      },
+      {
+        "head": "bc92b2a0728ab860bf013bba7facc17041fc82c6",
+        "tree": "7ebea29e0e37d1c83a15288f1289c0d55de4fe08",
+        "subject": "compose(cell): integrate improver source candidate"
+      },
+      {
+        "head": "3a0641c0717f1abc6922afdb6f84f7a08bcde8ff",
+        "tree": "8353cbe677d5aa77f927b0c078bd9323349ac6b9",
+        "subject": "compose(cell): integrate organization source candidate"
+      },
+      {
+        "head": "cb6b10fd62570ea75b5e6c5b25f7483774b722b1",
+        "tree": "baf8a04b207e8ef98510bcc7c24fa3557c7d4830",
+        "subject": "compose(cell): integrate action source candidate"
+      },
+      {
+        "head": "906e916df3e5a31d535925b6e283302191224e3c",
+        "tree": "e10115bc3984c3b5dc56f7a21f1760c7fb951fe3",
+        "subject": "compose(cell): integrate prediction source candidate"
+      },
+      {
+        "head": "d31b0a748b94acd5645d4d0b9e2e84d8f9c2fb23",
+        "tree": "f571ff9ec3418995ffd8e1e4a1e7b9dae55728e4",
+        "subject": "compose(cell): integrate perception source candidate"
+      },
+      {
+        "head": "df11326f4391989ff57bce4d02167bac4434a0b6",
+        "tree": "460fbb5c606565f280b729242dd517b21c67dd1a",
+        "subject": "compose(cell): integrate verify source candidate"
+      },
+      {
+        "head": "881cc30858aad8d146104d206e69ab3d501a751a",
+        "tree": "d0926df8875a1da12f7cad58213ffa625202c9db",
+        "subject": "compose(cell): integrate control source candidate"
+      },
+      {
+        "head": "a94e8be4d702aed30e90ad83f69320d1e67f9d9b",
+        "tree": "bcc53b3053039acf3f3ee6f84155eaffc28f3615",
+        "subject": "compose(cell): integrate memory source candidate"
+      },
+      {
+        "head": "127722755bfa5b2afa840b6f1498ccb68735192a",
+        "tree": "dee7132289b43b0c65f6b70ece3505be32b2f4d3",
+        "subject": "compose(cell): integrate framework source candidate"
+      }
+    ]
+  },
+  "archive": {
+    "path": "joint-final-native-evidence.tar.gz",
+    "bytes": 9923429,
+    "sha256": "9abc9567e66334a8f16df97b0e7187a286ec04d140a126bb8dcb9300b64cf64a",
+    "regular_members": 360,
+    "all_member_bytes_verified": true,
+    "payload_prefix": "payload/",
+    "original_manifest_sha256": "4b4bfb6c70069d15a85d22fedff2c7de50e56736a2aa12c2cdfdf81995562c5e",
+    "forensic_rmeta_originals": 4,
+    "source_identity": {
+      "head": "710df84a6b10afa005976c24a1108fb2a57810d3",
+      "tree": "37bf89db155cdd04145914cc63f6a8e1b4e1b2bd",
+      "verified_final_identity": true
+    }
+  },
+  "lossless_metadata": [
+    {
+      "path": "raw-manifest.json.gz",
+      "bytes": 28374,
+      "sha256": "8112429049f970beadc91075c956c2250538a626ee036238e1d570487293468b",
+      "original_bytes": 230790,
+      "original_sha256": "4b4bfb6c70069d15a85d22fedff2c7de50e56736a2aa12c2cdfdf81995562c5e",
+      "lossless_gzip": true
+    },
+    {
+      "path": "archive-result.json.gz",
+      "bytes": 468,
+      "sha256": "da06a149dd7d1c9933fc7eff416f226e0ff0f5123e93ed3a324618bf92da39cc",
+      "original_bytes": 677,
+      "original_sha256": "b66b1bb767629b9533c8a1efc14d9d820dc8b9d1c73e539ac737843920c64dd3",
+      "lossless_gzip": true
+    },
+    {
+      "path": "seal-execution.json.gz",
+      "bytes": 1585,
+      "sha256": "287f74f7766b89b0af8c7fda5d645d1ab0bb4688260318bc8bd44f932a7875dd",
+      "original_bytes": 4495,
+      "original_sha256": "b0b4f669de825caf21c846ddcc63f410963de3489933be60dc9c5e34ea2b2ac1",
+      "lossless_gzip": true
+    }
+  ],
+  "validation": {
+    "previous_candidate": {
+      "head": "c37ebf8de8efc660229e66e4030d589be46bc194",
+      "tree": "ac1bd96d97186f404bf38cbaa22edbe021e29290",
+      "selected_passes": 1774,
+      "commands": [
+        {
+          "name": "runtime-libraries",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "--lib",
+            "-p",
+            "codex-hepta-agentd",
+            "-p",
+            "codex-hepta-automation",
+            "-p",
+            "codex-hepta-evidence",
+            "-p",
+            "codex-hepta-memory-retrieval",
+            "-p",
+            "codex-hepta-ndu",
+            "-p",
+            "codex-hepta-neuron",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 1232,
+          "skipped": 63,
+          "wall_seconds": 86.41767239570618,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "5279295c65e9220c1969c27cf229d8b5f8a77185351a74344b570ec329d5a16d"
+        },
+        {
+          "name": "infer-and-joint-proposal",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-infer-worker-host",
+            "--lib",
+            "--bin",
+            "hepta-joint-propose",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 69,
+          "skipped": 0,
+          "wall_seconds": 44.42099070549011,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "42dea79236b198c6d4be99677fea54e065d868026bca9f97708fb884f2ef0582"
+        },
+        {
+          "name": "learning-ledger-default-features",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-learning-ledger",
+            "--lib",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 120,
+          "skipped": 1,
+          "wall_seconds": 7.4236228466033936,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "a6484119df047cf6a8d0af179321e16423696ffc02e2d9daf850b3d4f145740e"
+        },
+        {
+          "name": "action-authority-integration",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-automation",
+            "--test",
+            "action_skill_act1",
+            "--test",
+            "authorized_effect",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 19,
+          "skipped": 2,
+          "wall_seconds": 42.77569890022278,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "67a25c3ad79893bdf9ae7cfb9658677f53d4b84a46ee9bc18d0b37e9f33d6487"
+        },
+        {
+          "name": "agentd-product-wiring",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-agentd",
+            "--test",
+            "verify1_kernel_evidence_product",
+            "--test",
+            "kernel_evidence_product",
+            "--test",
+            "neuron_generation_process_e2e",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 5,
+          "skipped": 0,
+          "wall_seconds": 25.357096195220947,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "fc0b4271d3a5ca55d8f55bcdfb14c42a481b810f47dbc3311637ac5d4b7e6d8f"
+        },
+        {
+          "name": "g14-qualification-feature",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-agentd",
+            "--features",
+            "qualification-cognitive-write",
+            "--test",
+            "cognitive_product_e2e",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 9,
+          "skipped": 4,
+          "wall_seconds": 37.496989250183105,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "6164a3b1b293bb551773bf3433ee1ce7c43585fbbe0035523d6ad528f28a4a01"
+        },
+        {
+          "name": "organization-deny-boundary",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-runtime",
+            "--lib",
+            "--test-threads",
+            "4",
+            "-E",
+            "test(=organs::tests::public_governed_topology_denies_before_grant_consumption_or_callbacks) | test(=organs::tests::public_topology_recovery_denies_before_grant_consumption_or_callbacks)"
+          ],
+          "exit_code": 0,
+          "passed": 2,
+          "skipped": 24,
+          "wall_seconds": 19.3343448638916,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "20a86fafec2c8fd93be0ec1bf0f399bc4bf6662761d17efc09ceae8eadf81655"
+        },
+        {
+          "name": "dependency-affected-packages",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-matrix-sdk",
+            "-p",
+            "codex-network-proxy",
+            "-p",
+            "codex-execpolicy",
+            "-p",
+            "codex-aws-auth",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 289,
+          "skipped": 2,
+          "wall_seconds": 101.967520236969,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "bb11dcf8b5cb489ef7d3a5cacd8e9b9089b4c6347c12781b0f959a88bb23cffc"
+        },
+        {
+          "name": "operator-trust-regression",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-operator-acceptance",
+            "--lib",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 25,
+          "skipped": 0,
+          "wall_seconds": 0.600602388381958,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "219ccb7474f4bcbab6935588034250ccadd39ee92bd110da969d733f74f39a5d"
+        },
+        {
+          "name": "paired-supervisor-lifecycle",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-supervisor",
+            "--test",
+            "paired_process_product",
+            "--test-threads",
+            "2"
+          ],
+          "exit_code": 0,
+          "passed": 2,
+          "skipped": 1,
+          "wall_seconds": 241.17146706581116,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "62b7923adc2dd54d2ccae3519ad1454f0fed36006bb048a65ba8474e905c8703"
+        },
+        {
+          "name": "platform-storage-regressions",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "--lib",
+            "-p",
+            "codex-hepta-memory",
+            "-p",
+            "codex-tui",
+            "--test-threads",
+            "4",
+            "-E",
+            "test(=production_writer::objective_sender::protected_checkpoint_tests::observation_tests::crash::protected_checkpoint_current_recovers_after_polling_and_process_kill_without_replay) | test(=tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery)"
+          ],
+          "exit_code": 0,
+          "passed": 2,
+          "skipped": 4224,
+          "wall_seconds": 184.5902979373932,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "cfff3549f97c3e3eb6380620d23a5170582a1045523434166142e0b15b94190b"
+        }
+      ],
+      "original_v3_wrapper_exit_code": 4,
+      "original_v3_zero_selected_operator_attempt_preserved": true,
+      "raw_receipts": [
+        "joint-native-bound-v3/RESULT.json",
+        "joint-native-remaining-v4/RESULT.json"
+      ]
+    },
+    "current_candidate": {
+      "head": "710df84a6b10afa005976c24a1108fb2a57810d3",
+      "tree": "37bf89db155cdd04145914cc63f6a8e1b4e1b2bd",
+      "selected_passes": 1097,
+      "complete": true,
+      "commands": [
+        {
+          "name": "circuit-owner-libraries",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "--lib",
+            "-p",
+            "codex-hepta-agentd",
+            "-p",
+            "codex-hepta-automation",
+            "-p",
+            "codex-hepta-neuron",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 993,
+          "skipped": 60,
+          "wall_seconds": 134.33742594718933,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "4cee04766d8451353715c596033a82f2d5d42943af55d5d8b9b98691eb547844"
+        },
+        {
+          "name": "infer-and-joint-proposal",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-infer-worker-host",
+            "--lib",
+            "--bin",
+            "hepta-joint-propose",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 69,
+          "skipped": 0,
+          "wall_seconds": 46.64784383773804,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "ef6ca343edeb90b8356b67405b8b1e409893871a37bd5fca3da6f4d740d1456b"
+        },
+        {
+          "name": "action-authority-integration",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-automation",
+            "--test",
+            "action_skill_act1",
+            "--test",
+            "authorized_effect",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 19,
+          "skipped": 2,
+          "wall_seconds": 7.673504114151001,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "3cf83b96d9c4e95b3da5b0063b0e4f586bbdd4b953930a79335fc0ecbe8403c1"
+        },
+        {
+          "name": "agentd-product-wiring",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-agentd",
+            "--test",
+            "verify1_kernel_evidence_product",
+            "--test",
+            "kernel_evidence_product",
+            "--test",
+            "neuron_generation_process_e2e",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 5,
+          "skipped": 0,
+          "wall_seconds": 24.82408905029297,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "1ba8b85e31a14d32ac4f4c3865ce61ebf9386b5a6a65e0d6da07a6a25720629c"
+        },
+        {
+          "name": "g14-qualification-feature",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-agentd",
+            "--features",
+            "qualification-cognitive-write",
+            "--test",
+            "cognitive_product_e2e",
+            "--test-threads",
+            "4"
+          ],
+          "exit_code": 0,
+          "passed": 9,
+          "skipped": 4,
+          "wall_seconds": 43.16413879394531,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "d6c3e1bb05c332b0459236dcb4fec561e2493279ea4ba740c601eb51fcaf2c2e"
+        },
+        {
+          "name": "paired-supervisor-lifecycle",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-supervisor",
+            "--test",
+            "paired_process_product",
+            "--test-threads",
+            "2"
+          ],
+          "exit_code": 0,
+          "passed": 2,
+          "skipped": 1,
+          "wall_seconds": 204.42182779312134,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "ff5838750f0fb313034d064d4c033c357e32672a1e3b9535289a780a0ed4a6cb"
+        }
+      ],
+      "raw_receipt": "joint-circuit-validation-v5/RESULT.json",
+      "named_witness": {
+        "path": "joint-boundary-review/V5_NAMED_EXECUTION.json",
+        "sha256": "912ff6dc9c5f96676f96395e044584e2a49dea85b9cf3818bab80dd821dd23a2",
+        "new_framework_ids": 25,
+        "act_boundary_ids": 3,
+        "ctrl_boundary_ids": 8,
+        "all_first_attempt_pass": true
+      }
+    },
+    "counts_are_not_additive": true,
+    "scope": "Selected integration/correctness suites, not full repository CI or scientific efficacy.",
+    "other_source_bound_checks": [
+      {
+        "name": "ORG1 engineering fixtures",
+        "passed": 41,
+        "head": "c37ebf8de8efc660229e66e4030d589be46bc194",
+        "raw_receipt": "joint-org1-validation/RESULT.json",
+        "new_reference_pair_runs": 0
+      },
+      {
+        "name": "Frozen research compatibility capsule",
+        "passed": 28,
+        "head": "30385c7440e3137ca5951982fbb61fcdd7ab58b8",
+        "scope": "Selected non-training checks only; original source/AST receipts retain their identity."
+      }
+    ],
+    "audit": {
+      "raw_receipt": "joint-audit-final-v1/RESULT.json",
+      "head": "68d8c41eaf94c89604d34acc65f3bb04a2f3d7d3",
+      "cargo_deny_version": "0.19.0",
+      "exit_code": 0,
+      "later_dependency_graph_and_policies_unchanged": true
+    }
+  },
+  "maintenance": {
+    "identity_receipt": {
+      "head": "710df84a6b10afa005976c24a1108fb2a57810d3",
+      "tree": "37bf89db155cdd04145914cc63f6a8e1b4e1b2bd",
+      "source_status": "",
+      "restored_path": "codex-rs/hepta-operator-acceptance/src/durable.rs",
+      "restored_file_sha256": "6967979665396742ed4377838d01853f1beaf07cd8f56af802f24626cb8d4fc6",
+      "rejected_autofix_patch_sha256": "b3cb72e86502e1f0138d64849ff3c642fac0fe54b3a55fe04a6468a5c95e6a06",
+      "review_sha256": "7361be05969b0e8524a8382cb9a680aadb19a9483e9c52ce293adb572f183cc5",
+      "decision": "Discard two no-op non-Windows unit-value autofixes that introduce path_statements warnings; restore the exact tested source bytes. This is not a Windows handle-release or safety defect.",
+      "fmt_argv": [
+        "just",
+        "fmt",
+        "--base",
+        "c37ebf8de8efc660229e66e4030d589be46bc194"
+      ],
+      "fmt_exit_code": 0,
+      "fmt_wall_seconds": 1.1147747039794922,
+      "tracked_files_compared": 13641,
+      "tracked_mismatches": [],
+      "all_tracked_files_equal_to_tested_source": true,
+      "prior_fix_and_fmt_exit_codes": [
+        0,
+        0
+      ],
+      "tests_after_final_fix_fmt": 0,
+      "fmt_stdout_bytes": 0,
+      "fmt_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "fmt_stderr_bytes": 0,
+      "fmt_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original_lint_and_fmt": "joint-finalization/RESULT.json",
+    "discarded_autofix_diff": "joint-finalization/final.patch",
+    "independent_review": "joint-boundary-review/FINAL_FIX_PIN_REVIEW.json",
+    "terminal_indexes": [
+      "root-native-termination-receipts/INDEX.json",
+      "root-native-termination-receipts/FINALIZATION_INDEX.json"
+    ]
+  },
+  "scientific_admission": {
+    "stages": {
+      "S0": "HOLD",
+      "S1": "HOLD",
+      "S2": "HOLD",
+      "S3": "HOLD",
+      "S4": "HOLD",
+      "S5": "HOLD"
+    },
+    "research_advancement": false,
+    "production_qualification": false,
+    "authority_granted": false,
+    "preregistration_verified": false,
+    "new_registered_scientific_experiment_runs": 0,
+    "unit_test_optimizer_operations": "Not globally instrumented; not included in the registered-experiment counter.",
+    "old_s81_submission_effect": "UNKNOWN / MAY_HAVE_BEEN_SENT; 20 reserved, 140 locally unstarted, 0 verified completions, 0 releases/replays. Remote optimizer activity remains unknown.",
+    "missing_joint_inputs": [
+      "Authenticated full-study joint configuration/protocol/model/data and complete budget",
+      "Independent original evaluator and owner authentication",
+      "Confirmed real successor consumption and recovery across the joint study"
+    ]
+  },
+  "product_limits": {
+    "circuit_profile_requires_explicit_host_installation": true,
+    "default_daemon_profile_activated": false,
+    "host_must_supply_original_owners_and_idempotent_consumer": true,
+    "recovery_settled_old_binary_downgrade_qualified": false,
+    "complete_macos_windows_ci_qualified": false,
+    "main_merged_or_deployed": false
+  },
+  "retained_original_failures": [
+    {
+      "scope": "First combined compilation",
+      "exit_code": 101,
+      "tests_executed": 0,
+      "reason": "Reused older normal-library artifacts; both source getters already existed. Exact rustc --extern variant was not retained."
+    },
+    {
+      "scope": "Isolated V2 helper prerequisite",
+      "exit_code": 100,
+      "passed": 1219,
+      "failed": 13,
+      "skipped": 63,
+      "reason": "Actual joint proposal helper metadata missing; originals and retries retained."
+    },
+    {
+      "scope": "V3 operator selection",
+      "exit_code": 4,
+      "tests_executed": 0,
+      "skipped": 25,
+      "reason": "Incorrect module filter; V4 selected all 25 tests without weakening no-tests policy."
+    }
+  ],
+  "external_original_evidence": [
+    {
+      "bytes": 2896268,
+      "kind": "already_published_original_ci_archive",
+      "manifest_path": "qualification/cell-platform-fixtures-20261108/MANIFEST.json",
+      "manifest_sha256": "7a1a1469dfd33857eae4db5b67817d78260b1c1a386a088a7d221db360641886",
+      "path": "qualification/cell-platform-fixtures-20261108/native-and-ci-evidence.tar.gz",
+      "reason_not_duplicated": "Original seven CI logs and readback are already preserved in this exact published archive.",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "retained_members": [
+        {
+          "bytes": 19628174,
+          "path": "original-ci/128811451556.log",
+          "sha256": "7efaf6baefca1690abe4a890fc928533392af29b51a8a6bff4289531597b75e8"
+        },
+        {
+          "bytes": 1547387,
+          "path": "original-ci/128811451947.log",
+          "sha256": "8cebeb4540c25d922437cf34564353f55aa2a4a00cded0f98e8e0431e5d45d3f"
+        },
+        {
+          "bytes": 1023245,
+          "path": "original-ci/128811451969.log",
+          "sha256": "6fab32b2fd319f6d9e1572df557e6d055b0b73489ae8c74a9852492acfd482d1"
+        },
+        {
+          "bytes": 771369,
+          "path": "original-ci/128811451987.log",
+          "sha256": "9109b43c76775dbd42180ae6fe7ee9217151ccb318381debce0afca7d85ca709"
+        },
+        {
+          "bytes": 3803852,
+          "path": "original-ci/128811451998.log",
+          "sha256": "87f7b6de1e1ac0cd5496f64fe50585da947dea346138b542891de95cf6dad09f"
+        },
+        {
+          "bytes": 499151,
+          "path": "original-ci/128811452010.log",
+          "sha256": "3d5d7c82abaeacfff1ab0c218f1585e1440ce4fc12be1c24d40bb2d199b846d8"
+        },
+        {
+          "bytes": 418052,
+          "path": "original-ci/128811452036.log",
+          "sha256": "8e36cd57e4aad44d4d99b2714d951d0458b84a2da6757279b28b9bac9c54d332"
+        },
+        {
+          "bytes": 106309,
+          "path": "original-ci/RESULT.json",
+          "sha256": "961eb82d94ace0d87a97627c00b011425cab7356cb7aeb34770896d7f127e840"
+        }
+      ],
+      "sha256": "11ba543a46a6150bbd89c2ac5513bea56660c69358ddb348122b4bae57533fe7",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3ad2a229d956b39bb8ba3c1bc3a11956cbb0116d/qualification/cell-platform-fixtures-20261108/native-and-ci-evidence.tar.gz",
+      "verified_commit": "3ad2a229d956b39bb8ba3c1bc3a11956cbb0116d"
+    }
+  ],
+  "publication": {
+    "transport": "Native git atomic non-force push; independent GitHub ref readback required.",
+    "required_before_push": [
+      "Scoped evidence formatting",
+      "Existing blob policy on the exact staged tree",
+      "No product changes relative to the frozen code head"
+    ],
+    "hosted_ci": "No full required green status claimed; read actual checks on the draft pull requests.",
+    "raw_snapshot_boundary": "This archive closes code integration/finalization. Evidence-only preparation and publication occur afterward and retain separate native receipts."
+  }
+}
