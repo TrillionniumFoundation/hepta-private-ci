@@ -115,6 +115,7 @@ struct Running {
     _lifetime: CancellationToken,
     request: Option<CellGenerationRequestV2>,
     readback: Option<AgentdGenerationLearningUseReadbackV1>,
+    coordinator: LearningIterationCoordinatorV1,
 }
 
 struct ResearchPorts {
@@ -297,6 +298,7 @@ impl ResearchPorts {
                     _lifetime: lifetime,
                     request: None,
                     readback: None,
+                    coordinator: coordinator.clone(),
                 });
                 Ok((observation, evidence))
             }
@@ -348,117 +350,157 @@ impl ResearchPorts {
                     &self.driver.evidence.join("next-use-acked.json"),
                     &serde_json::to_vec(&readback)?,
                 )?;
-                let retained = [
-                    self.publication.bytes("current.json")?,
-                    self.publication.bytes("target-journal")?,
-                    self.publication.bytes("target-witness")?,
-                    self.publication.bytes("final-use/authority.claims")?,
-                ];
-                let intent_digest = running.runtime.publication.intent_digest();
-                running.tasks.shutdown().await;
-                let Running {
-                    runtime,
-                    tasks,
-                    _lifetime,
-                    ..
-                } = running;
-                drop(tasks);
-                drop(_lifetime);
-                // Reopen the owner within this live daemon generation using its
-                // original admitted config. AgentdConfig::load is only for a
-                // fresh Starting generation; no Fleet lifecycle is bypassed.
-                let AgentdGenerationUpdateRuntimeV1 {
-                    config,
-                    handle,
-                    publication,
-                } = runtime;
-                drop(handle);
-                drop(publication);
-                let ready = recover_agentd_generation_update_v1(
-                    self.publication.reopen_current()?,
-                    self.publication.authorities()?,
-                    self.publication.selection()?,
-                    self.publication.target_reopen()?,
-                    AgentdGenerationUpdateRecoveryV1 {
-                        operation_id: learning_retained_task_operation_id_v1(&coordinator)?
-                            .to_string(),
-                        intent_digest,
-                    },
-                )?;
-                let mut runtime = ready.into_runtime(
-                    config,
-                    self.control.clone(),
-                    monotonic,
-                    AgentdGenerationUpdateRuntimeOptionsV1::default(),
-                )?;
-                let bootstrap = runtime
-                    .config
-                    .take_neuron_generation_bootstrap()
-                    .ok_or_else(|| anyhow::anyhow!("missing recovered actor"))?;
-                let (mut tasks, lifetime) = host::host();
-                spawn_neuron_generation_service(
-                    &mut tasks,
-                    bootstrap,
-                    Arc::clone(&self.state),
-                    lifetime.clone(),
-                )?;
-                anyhow::ensure!(
-                    runtime.handle.step(request.clone()).await? == receipt,
-                    "cold native receipt differs"
-                );
-                anyhow::ensure!(
-                    runtime
-                        .handle
-                        .read_learning_next_use(&coordinator, &intent)
-                        .await?
-                        == observation,
-                    "cold use differs"
-                );
-                anyhow::ensure!(
-                    runtime
-                        .handle
-                        .read_learning_next_use_readback(&coordinator, &intent)
-                        .await?
-                        == readback,
-                    "cold raw readback differs"
-                );
-                anyhow::ensure!(
-                    retained
-                        == [
-                            self.publication.bytes("current.json")?,
-                            self.publication.bytes("target-journal")?,
-                            self.publication.bytes("target-witness")?,
-                            self.publication.bytes("final-use/authority.claims")?
-                        ],
-                    "recovery rewrote native owner files"
-                );
-                let driver = self.driver.clone();
-                let inputs = self.control.model_request(&request)?;
-                let cold =
-                    tokio::task::spawn_blocking(move || driver.run("probe_recover", inputs, None))
-                        .await??;
-                anyhow::ensure!(
-                    cold["result"]["new_forward_calls"] == 0,
-                    "cold worker executed another forward"
-                );
                 let evidence = reference(
                     "next-use-owner.json",
-                    json!({"readback":readback,"worker_recovery":cold,
+                    json!({"readback":readback,
                     "original_generation_request":request,"receipt":receipt,"native_nonce_count":self.publication.authority.capacity()?.used_nonces}),
                 )?;
-                *self.runtime.lock().await = Some(Running {
-                    runtime,
-                    tasks,
-                    _lifetime: lifetime,
-                    request: Some(request),
-                    readback: Some(readback),
-                });
+                running.request = Some(request);
+                running.readback = Some(readback);
+                running.coordinator = coordinator;
+                *self.runtime.lock().await = Some(running);
                 Ok((observation, evidence))
             }
             LearningIterationStageV1::Proposal => {
                 anyhow::bail!("NoUpdate never publishes a candidate proposal")
             }
         }
+    }
+
+    async fn cold_reopen(
+        &self,
+        host: &mut host::Fixture,
+        finished: &LearningIterationSnapshotV1,
+    ) -> anyhow::Result<()> {
+        let mut running = self
+            .runtime
+            .lock()
+            .await
+            .take()
+            .ok_or_else(|| anyhow::anyhow!("selected owner missing"))?;
+        let request = running
+            .request
+            .take()
+            .ok_or_else(|| anyhow::anyhow!("original next task missing"))?;
+        let readback = running
+            .readback
+            .take()
+            .ok_or_else(|| anyhow::anyhow!("original next use missing"))?;
+        let coordinator = running.coordinator.clone();
+        let intent = request.intent()?;
+        let receipt = running.runtime.handle.step(request.clone()).await?;
+        let observation = running
+            .runtime
+            .handle
+            .read_learning_next_use(&coordinator, &intent)
+            .await?;
+        anyhow::ensure!(
+            finished
+                .receipts
+                .last()
+                .is_some_and(|last| last.observation == observation),
+            "completed learning checkpoint does not contain the actual use"
+        );
+        let retained = [
+            self.publication.bytes("current.json")?,
+            self.publication.bytes("target-journal")?,
+            self.publication.bytes("target-witness")?,
+            self.publication.bytes("final-use/authority.claims")?,
+        ];
+        let intent_digest = running.runtime.publication.intent_digest();
+        running.tasks.shutdown().await;
+        drop(running);
+        // The original learning owner is already complete and stopped. Rebuild
+        // the Fleet lifecycle and AgentdState through the retained native test
+        // path; no live service or startup/retirement fence is bypassed.
+        let ready = recover_agentd_generation_update_v1(
+            self.publication.reopen_current()?,
+            self.publication.authorities()?,
+            self.publication.selection()?,
+            self.publication.target_reopen()?,
+            AgentdGenerationUpdateRecoveryV1 {
+                operation_id: learning_retained_task_operation_id_v1(&coordinator)?.to_string(),
+                intent_digest,
+            },
+        )?;
+        let running_generation = host
+            .identity
+            .spawn_generation
+            .checked_add(1)
+            .ok_or_else(|| anyhow::anyhow!("Fleet generation overflow"))?;
+        let config = support::next_config(host, running_generation).await?;
+        let mut runtime = ready.into_runtime(
+            config,
+            self.control.clone(),
+            monotonic,
+            AgentdGenerationUpdateRuntimeOptionsV1::default(),
+        )?;
+        let bootstrap = runtime
+            .config
+            .take_neuron_generation_bootstrap()
+            .ok_or_else(|| anyhow::anyhow!("missing recovered actor"))?;
+        let (mut tasks, lifetime) = host::host();
+        spawn_neuron_generation_service(
+            &mut tasks,
+            bootstrap,
+            Arc::clone(host.state()),
+            lifetime.clone(),
+        )?;
+        anyhow::ensure!(
+            runtime.handle.step(request.clone()).await? == receipt,
+            "cold native receipt differs"
+        );
+        anyhow::ensure!(
+            runtime
+                .handle
+                .read_learning_next_use(&coordinator, &intent)
+                .await?
+                == observation,
+            "cold use differs"
+        );
+        anyhow::ensure!(
+            runtime
+                .handle
+                .read_learning_next_use_readback(&coordinator, &intent)
+                .await?
+                == readback,
+            "cold raw readback differs"
+        );
+        anyhow::ensure!(
+            retained
+                == [
+                    self.publication.bytes("current.json")?,
+                    self.publication.bytes("target-journal")?,
+                    self.publication.bytes("target-witness")?,
+                    self.publication.bytes("final-use/authority.claims")?
+                ],
+            "recovery rewrote native owner files"
+        );
+        let driver = self.driver.clone();
+        let inputs = self.control.model_request(&request)?;
+        let cold = tokio::task::spawn_blocking(move || driver.run("probe_recover", inputs, None))
+            .await??;
+        anyhow::ensure!(
+            cold["result"]["new_forward_calls"] == 0,
+            "cold worker executed another forward"
+        );
+        persist(
+            &self.driver.evidence.join("next-use-cold-owner.json"),
+            &serde_json::to_vec(&json!({"readback":readback,"worker_recovery":cold,
+                "original_generation_request":request,"receipt":receipt,
+                "reopened_spawn_generation":host.identity.spawn_generation,
+                "native_nonce_count":self.publication.authority.capacity()?.used_nonces,
+                "native_daemon_os_restart":false}))?,
+        )?;
+        *self.runtime.lock().await = Some(Running {
+            runtime,
+            tasks,
+            _lifetime: lifetime,
+            request: Some(request),
+            readback: Some(readback),
+            coordinator,
+        });
+        Ok(())
     }
 
     fn verify_reference(&self, reference: &Value) -> anyhow::Result<()> {
@@ -838,6 +880,8 @@ async fn actual_smollm_training_no_update_native_next_use_and_cold_readback() ->
         "native iteration incomplete"
     );
     let checkpoint_before = publication.bytes("learning-checkpoint")?;
+    drop(handle);
+    ports.cold_reopen(&mut host, &finished).await?;
     *ports
         .checkpoint
         .lock()
@@ -913,7 +957,7 @@ async fn actual_smollm_training_no_update_native_next_use_and_cold_readback() ->
         "disposition":"NoUpdate","selected_adapter":driver.prepared["parent"]["adapter"],"retained_artifact_sha256":driver.prepared["parent"]["file_sha256"],
         "original_learning_signature_verifier":true,"original_checkpoint_codec":true,"original_generation_actor":true,
         "generation_owner_reopened":true,"worker_process_restarted":true,"learning_owner_reopened":true,"reexecuted_after_recovery":false,
-        "native_daemon_os_restart":false,"research_keys_and_custody":true,"independent_operator_custody":false,
+        "native_daemon_os_restart":false,"native_fleet_lifecycle_recreated":true,"research_keys_and_custody":true,"independent_operator_custody":false,
         "production_root_capability":false,"production_final_use":false,"production_activation":false,"qualification":"HOLD_NO_GO"});
     persist(
         &driver.evidence.join("native-result.json"),
