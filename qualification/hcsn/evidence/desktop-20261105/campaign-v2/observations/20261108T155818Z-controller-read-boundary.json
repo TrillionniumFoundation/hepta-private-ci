@@ -1,0 +1,226 @@
+{
+  "schema": "hcsn-cuda-campaign-v2-controller-read-boundary-v1",
+  "observed_utc": "2026-11-08T15:58:18Z",
+  "evidence_branch": "research/hcsn-desktop-evidence-20261105",
+  "expected_branch_head_before_publication": "6ee30c3043e1b08841984b73088c4fe67ef7666e",
+  "research_source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "frozen_pins": {
+    "source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "campaign_archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a"
+  },
+  "controller_read_attempt": {
+    "campaign_job_id": "1a1acdd69f2-fc05-5757",
+    "configured_host_alias": "desktop",
+    "attempted_reads": [
+      "process_status for campaign and four known dependency/observer jobs",
+      "campaigns/full-v2/progress.json via configured-host view",
+      "bounded reads of progress-adjacent READY and storage receipts",
+      "configured host list and effective configuration"
+    ],
+    "outcome": "All controller calls returned an internal tool error; no current process state or progress file bytes were obtained in this observation.",
+    "mutation_or_retry": "none",
+    "no_job_started": true,
+    "no_training_started_or_retried": true
+  },
+  "latest_available_campaign_receipt": {
+    "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/observations/20261108T135539Z-gates-runtime-and-installer-receipts.json",
+    "blob_sha": "7baeae78a03962f8da8f0c6313f262163fb9cd18",
+    "observed_utc": "2026-11-08T13:55:39.614411Z",
+    "progress_file_sha256": "0214a828e7a31c652b2b9b10df2841f391d81ff39ecc6017fcc2fe951ef98109",
+    "progress_updated_utc": "2026-11-08T13:55:39.614411Z",
+    "process_state": "running",
+    "active_stage": "full",
+    "progress_reported_completed_cuda_runs": 88,
+    "requested_cuda_runs": 170,
+    "registered_run_indexes": {
+      "completed": 88,
+      "failed": 0,
+      "unavailable": 0
+    },
+    "count_scope": "Progress-reported terminal registrations only; checkpoint, weight, attempt and budget records were not independently audited for all 88."
+  },
+  "verified_stage_receipts_at_latest_available_snapshot": {
+    "strict_baseline_tests": {
+      "status": "passed",
+      "tests": 95,
+      "passed": 95,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "strict_candidate_tests": {
+      "status": "passed",
+      "tests": 109,
+      "passed": 109,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "original_a_fullshape": {
+      "status": "completed",
+      "optimizer_steps": 1,
+      "peak_allocated_bytes": 778152960,
+      "peak_reserved_bytes": 799014912,
+      "counts_toward_170": false
+    },
+    "original_b_fullshape": {
+      "status": "failed",
+      "failure_stage": "forward",
+      "oom": true,
+      "attempted_allocation": "16 MiB",
+      "reported_free_at_failure": "2.14 GiB",
+      "peak_allocated_bytes": 4068922368,
+      "peak_reserved_bytes": 4091543552,
+      "counts_toward_170": false,
+      "failure_preserved": true
+    },
+    "parity_cpu": {
+      "status": "passed",
+      "records": 16,
+      "scope": "one-update fixture; not full-budget qualification"
+    },
+    "parity_cuda": {
+      "status": "passed",
+      "records": 16,
+      "scope": "one-update fixture; not full-budget qualification"
+    },
+    "candidate_b_fullshape_probes": [
+      {
+        "model": "population_flux",
+        "status": "completed",
+        "optimizer_steps": 1,
+        "peak_allocated_bytes": 833757184,
+        "peak_reserved_bytes": 857735168,
+        "counts_toward_170": false
+      },
+      {
+        "model": "population_flux_no_recovery",
+        "status": "completed",
+        "optimizer_steps": 1,
+        "peak_allocated_bytes": 833757184,
+        "peak_reserved_bytes": 857735168,
+        "counts_toward_170": false
+      }
+    ],
+    "original_mamba2_fullshape": {
+      "status": "completed",
+      "optimizer_steps": 1,
+      "peak_allocated_bytes": 150528512,
+      "peak_reserved_bytes": 165675008,
+      "counts_toward_170": false
+    },
+    "runtime": {
+      "device": "cuda:0",
+      "gpu": "NVIDIA GeForce RTX 4060",
+      "driver": "580.178.04",
+      "cuda_runtime": "12.8",
+      "torch": "2.8.0+cu128",
+      "dtype": "float32",
+      "allocator_fraction": 0.5,
+      "population_checkpoint_steps": 1,
+      "execution_config_sha256": "43fb7b280bb80643b0cdbfceae6788b37dd1d45fad682805ec6045088b31611"
+    }
+  },
+  "policy_selection": {
+    "selected_policy": 1,
+    "reason": "Original B full-shape CUDA OOM; fixed 16-case CPU and CUDA one-update parity passed; both candidate B full-shape one-step probes completed.",
+    "uniform_for_all_20_b_identities": true,
+    "selection_by_heldout_quality": false
+  },
+  "dependency_readiness": {
+    "torch": {
+      "state": "ready",
+      "version": "2.8.0+cu128",
+      "ready_receipt_sha256": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+      "recovery_job": "1a1afd5eec2-fc05-6c0f",
+      "recovery_exit_code": 0,
+      "model_computation_performed": false
+    },
+    "mamba": {
+      "state": "imports_ready",
+      "version": "2.3.1",
+      "ready_receipt_sha256": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76",
+      "installer_job": "1a1afd9a386-fc05-6c2c",
+      "installer_exit_code": 0,
+      "model_instantiated": false,
+      "forward_or_backward_performed": false
+    }
+  },
+  "qualification": {
+    "full_170_run": "open; latest available progress 88/170, 82 remaining by progress count only",
+    "checkpoint_weight_attempt_budget_audit": "open",
+    "full_b_audit": "open; 20 identities remain denominator",
+    "mamba2_full_matrix": "open; only one-step probe verified",
+    "complete_shape_parity": "open; current 16-case parity receipts are one-update fixtures",
+    "full_json": "not present at latest available observation",
+    "terminal_json": "not present at latest available observation",
+    "full_runtime_manifest": "not present at latest available observation",
+    "full_b_audit_json": "not present at latest available observation",
+    "physical_gpu_energy": {
+      "joules": null,
+      "status": "NVML NOT_SUPPORTED; CPU RAPL permission denied",
+      "tdp_or_power_limit_imputation": false
+    }
+  },
+  "exact_source_ci": {
+    "run_id": 42078258351,
+    "job_id": 127424159520,
+    "head_sha": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "run_conclusion": "success",
+    "job_conclusion": "success",
+    "steps_passed": 10,
+    "steps_total": 10,
+    "artifact_id": 13461093202,
+    "artifact_sha256": "346701d50b0f09927b59a62116ab85937168243dd68e991f3f04b25726b9b431",
+    "artifact_digest_verified": true,
+    "cpu_strict_tests": {
+      "passed": 109,
+      "failed": 0,
+      "skipped": 0
+    },
+    "cpu_smoke": {
+      "requested": 48,
+      "completed": 45,
+      "failed": 0,
+      "unavailable": 3,
+      "mamba2_completed": 0,
+      "mamba2_unavailable": 3,
+      "device": "cpu",
+      "cuda_available": false,
+      "steps": 8,
+      "batch_size": 16,
+      "length": 8,
+      "hidden_size": 8,
+      "status": "partial"
+    },
+    "scope": "Hosted CI CPU tests and CPU smoke; not the desktop 170-run CUDA campaign."
+  },
+  "trusted_main_gpu_probe": {
+    "run_id": 39526325715,
+    "job_id": 127299267982,
+    "attempt": 5,
+    "status": "completed",
+    "conclusion": "cancelled"
+  },
+  "pr_4873": {
+    "lookup": "404 Not Found in this repository connection",
+    "modified": false
+  },
+  "safety": {
+    "source_branch_modified": false,
+    "campaign_outputs_modified": false,
+    "model_training_started_or_retried": false,
+    "model_budget_changed": false,
+    "unrelated_processes_stopped": false,
+    "files_deleted": false,
+    "driver_or_system_service_changed": false,
+    "credentials_or_signed_urls_published": false
+  },
+  "publication": {
+    "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/observations/20261108T155818Z-controller-read-boundary.json",
+    "method": "create blob/tree/commit and update branch with expected_sha lease",
+    "expected_sha": "6ee30c3043e1b08841984b73088c4fe67ef7666e"
+  }
+}
