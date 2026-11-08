@@ -17,6 +17,7 @@ mod automation_taskflow;
 mod circuit_admission;
 mod circuit_budget;
 mod circuit_compute;
+mod circuit_drain;
 mod circuit_history;
 mod circuit_join;
 mod circuit_journal;
