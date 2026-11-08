@@ -67,6 +67,8 @@ pub trait LearningIterationOwnerPortsV1: Send + Sync {
     /// Re-read the actual owner result and current signature. NextUse resolves
     /// the scoped committed state; it cannot just sign caller-supplied IDs.
     /// Agentd verifies this signature with its bootstrap-pinned trust snapshot.
+    /// The supplied clock is always current, including a terminal historical
+    /// audit. Returning retained evidence does not renew it or grant execution.
     fn receipt_attestation<'a>(
         &'a self,
         snapshot: &'a LearningIterationSnapshotV1,

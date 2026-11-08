@@ -66,3 +66,29 @@ backed; the exported debug snapshot is not a production decoder. The fixture
 trainer and evaluator are deterministic. These results establish an engineering
 path, not real-task quality, deployed production authority, cross-process
 learning-owner recovery, power-loss safety, or five-family/retention completion.
+
+## Authenticated history and current execution
+
+The restored chain is checked against bootstrap-pinned trust before returning
+any result. Terminal replay retains the existing expiry contract: exact NoUpdate
+history stays readable after expiry and never starts a stage or writes a new
+checkpoint. Its private audit rechecks signatures and actor separation within a
+common historical validity window before the operation deadline. This proves
+neither the actual admission time nor current permission; it returns no verified
+authority. Production custody must separately authenticate actual admission.
+
+Owner attestation reads always receive real current host time. Current owner
+refusal, damaged signatures, future observations and mismatched trust/head pins
+still fail without changing the retained history. Nonterminal recovery and the
+next-task bridge require evidence valid at current time; historical readback
+does not relax FinalUse, revocation, no-op or positive-gain rules. Proposal
+receipts remain anchored proposal-owner results, with current-head, rollback,
+withdrawal and revocation checks still mandatory host duties.
+
+The Unix `restored_no_update_authenticates_across_processes` test exits one
+producer before twelve fresh readers exercise these boundaries against bounded
+disk fixtures. Reader ports count and refuse every stage/proposal/checkpoint
+mutation and check the real owner clock. These are fixture keys, local head pins
+and deterministic producer/evaluator behavior. Production learning-owner
+enrollment, actual admission custody, power-loss and cross-boot recovery remain
+unestablished; process restart evidence cannot substitute for them.

@@ -8,11 +8,38 @@ use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedEvidenceError;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::VerifiedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_signed_actor_separation;
 
 use crate::LearningIterationOwnerPortsV1;
 use crate::LearningIterationRuntimeErrorV1;
+
+pub(super) async fn authenticate_restored_iteration_v1(
+    ports: &dyn LearningIterationOwnerPortsV1,
+    verifier: &LearningEvidenceVerifierV1,
+    restored: &LearningIterationCoordinatorV1,
+    now: u64,
+) -> Result<(), LearningIterationRuntimeErrorV1> {
+    let snapshot = restored.snapshot();
+    let historical_only = restored.next_stage().is_none();
+    let mut replay =
+        LearningIterationCoordinatorV1::new(snapshot.request.clone(), snapshot.owners.clone())?;
+    for receipt in &snapshot.receipts {
+        if receipt.observed_unix_seconds > now {
+            return Err(LearningIterationRuntimeErrorV1::Evidence(
+                SignedEvidenceError::ContextMismatch,
+            ));
+        }
+        // Proposal belongs to its existing anchored owner, not an evidence
+        // signer. Restore must authenticate that owner's independent head.
+        if receipt.observation.stage() != LearningIterationStageV1::Proposal {
+            authenticate_receipt(ports, verifier, &replay, receipt, now, historical_only).await?;
+        }
+        replay.record(receipt.clone(), receipt.observed_unix_seconds)?;
+    }
+    Ok(())
+}
 
 pub(super) async fn authenticate_iteration_receipt_v1(
     ports: &dyn LearningIterationOwnerPortsV1,
@@ -21,8 +48,31 @@ pub(super) async fn authenticate_iteration_receipt_v1(
     receipt: &LearningIterationReceiptV1,
     now: u64,
 ) -> Result<(), LearningIterationRuntimeErrorV1> {
+    authenticate_receipt(
+        ports,
+        verifier,
+        coordinator,
+        receipt,
+        now,
+        /*historical_only*/ false,
+    )
+    .await
+}
+
+async fn authenticate_receipt(
+    ports: &dyn LearningIterationOwnerPortsV1,
+    verifier: &LearningEvidenceVerifierV1,
+    coordinator: &LearningIterationCoordinatorV1,
+    receipt: &LearningIterationReceiptV1,
+    now: u64,
+    historical_only: bool,
+) -> Result<(), LearningIterationRuntimeErrorV1> {
     let snapshot = coordinator.snapshot();
-    let current = verify_receipt(ports, verifier, snapshot, receipt, now).await?;
+    // The owner always receives real current time, including historical reads.
+    let mut attestations = vec![(
+        receipt,
+        ports.receipt_attestation(snapshot, receipt, now).await?,
+    )];
     let independent_stages: &[usize] = match receipt.observation.stage() {
         LearningIterationStageV1::Evaluation => &[2],
         LearningIterationStageV1::Selection => &[2, 3],
@@ -40,19 +90,49 @@ pub(super) async fn authenticate_iteration_receipt_v1(
                 .ok_or(LearningIterationRuntimeErrorV1::Evidence(
                     SignedEvidenceError::ContextMismatch,
                 ))?;
-        let prior = verify_receipt(ports, verifier, snapshot, earlier, now).await?;
-        verify_signed_actor_separation(&prior, &current, now)
+        attestations.push((
+            earlier,
+            ports.receipt_attestation(snapshot, earlier, now).await?,
+        ));
+    }
+    let verification_time = if historical_only {
+        // This proves a common historical validity window, not the actual
+        // admission time or current permission. No Verified evidence escapes.
+        let historical = attestations
+            .iter()
+            .fold(receipt.observed_unix_seconds, |at, (_, signed)| {
+                at.max(signed.issued_at)
+            });
+        if historical > now || historical >= snapshot.request.envelope.expiry_unix_seconds {
+            return Err(LearningIterationRuntimeErrorV1::Evidence(
+                SignedEvidenceError::ValidityWindow,
+            ));
+        }
+        historical
+    } else {
+        now
+    };
+    let current = verify_receipt(
+        verifier,
+        snapshot,
+        receipt,
+        &attestations[0].1,
+        verification_time,
+    )?;
+    for (earlier, signature) in attestations.iter().skip(1) {
+        let prior = verify_receipt(verifier, snapshot, earlier, signature, verification_time)?;
+        verify_signed_actor_separation(&prior, &current, verification_time)
             .map_err(LearningIterationRuntimeErrorV1::Evidence)?;
     }
     Ok(())
 }
 
-async fn verify_receipt(
-    ports: &dyn LearningIterationOwnerPortsV1,
+fn verify_receipt(
     verifier: &LearningEvidenceVerifierV1,
     snapshot: &LearningIterationSnapshotV1,
     receipt: &LearningIterationReceiptV1,
-    now: u64,
+    signature: &SignedLearningEvidenceV1,
+    verification_time: u64,
 ) -> Result<VerifiedLearningEvidenceV1, LearningIterationRuntimeErrorV1> {
     let role = match receipt.observation.stage() {
         LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator,
@@ -68,9 +148,8 @@ async fn verify_receipt(
         }
     };
     let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-    let signature = ports.receipt_attestation(snapshot, receipt, now).await?;
     let verified = verifier
-        .verify(role, &signature, &payload, now)
+        .verify(role, signature, &payload, verification_time)
         .map_err(LearningIterationRuntimeErrorV1::Evidence)?;
     if verified.principal().principal_id != receipt.actor_id
         || &receipt.actor_id != snapshot.owners.owner(receipt.observation.stage())
