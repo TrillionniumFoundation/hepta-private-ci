@@ -32,6 +32,8 @@ mod cell_inference;
 #[cfg(target_os = "linux")]
 mod cell_joint_generation;
 #[cfg(target_os = "linux")]
+mod cell_joint_observed;
+#[cfg(target_os = "linux")]
 mod cell_joint_process;
 #[cfg(target_os = "linux")]
 mod cell_joint_protocol;
@@ -105,6 +107,12 @@ pub use cell_joint_generation::JointGenerationProcessConfigV1;
 pub use cell_joint_generation::JointGenerationProcessFilesV1;
 #[cfg(target_os = "linux")]
 pub use cell_joint_generation::JointGenerationProcessWorkerV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_observed::JointGenerationCommandV2;
+#[cfg(target_os = "linux")]
+pub use cell_joint_observed::JointGenerationDeliveryContractV2;
+#[cfg(target_os = "linux")]
+pub use cell_joint_observed::JointGenerationInputV2;
 #[cfg(target_os = "linux")]
 pub use cell_joint_protocol::JointGenerationActionV1;
 #[cfg(target_os = "linux")]
