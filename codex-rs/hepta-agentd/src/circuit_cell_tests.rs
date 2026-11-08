@@ -25,6 +25,9 @@ use support::id;
 use support::input;
 use support::scope;
 
+#[path = "circuit_credit_tests.rs"]
+mod credit_tests;
+
 fn fence() -> TaskFlowFence {
     checked(TaskFlowFence::new(
         checked(AgentId::parse(scope("run-1").agent_id.as_str())),

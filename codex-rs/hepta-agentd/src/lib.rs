@@ -266,6 +266,7 @@ mod circuit_cell;
 mod circuit_cell_binding;
 mod circuit_cell_dispatch;
 mod circuit_cell_output;
+mod circuit_credit;
 #[cfg(target_os = "linux")]
 mod cpu_policy;
 #[cfg(target_os = "linux")]
@@ -462,6 +463,9 @@ pub use circuit_cell_binding::circuit_cell_operation_id_v1;
 pub use circuit_cell_binding::circuit_cell_route_policy_digest_v1;
 pub use circuit_cell_binding::circuit_cell_scope_digest_v1;
 pub use circuit_cell_output::circuit_cell_output_schema_v1;
+pub use circuit_credit::CircuitCreditErrorV1;
+pub use circuit_credit::CircuitCreditSupportV1;
+pub use circuit_credit::CircuitCreditTargetV1;
 pub use client::AgentdClient;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;

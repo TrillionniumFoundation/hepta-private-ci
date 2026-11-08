@@ -225,7 +225,7 @@ where
     }
 }
 
-fn finish(
+pub(crate) fn finish(
     binding: &CircuitCellBindingV1,
     dispatch: &codex_hepta_automation::CircuitDispatchV2,
     input: &CellStepInputV1,
