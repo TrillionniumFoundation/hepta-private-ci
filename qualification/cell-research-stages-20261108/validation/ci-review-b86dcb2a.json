@@ -1,0 +1,803 @@
+{
+  "schema": "hepta.cell-research-stages.ci-review.v1",
+  "record_kind": "historical_ci_execution_review",
+  "prepared_utc": "2026-11-08T11:46:42.238958+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "historical_source": {
+    "source_head": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+    "integration_base": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+    "pull_request_merge_checkout": "31deda5085818cb0b59ddcd2909445fb9ab3d2c2",
+    "source_tree": "cf3cfd099e282bf5aee06543d9cf982d5e0e8dc7",
+    "pull_request_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5346",
+    "merge_vs_head_file_differences": 0,
+    "equivalence_source": "linux_contracts/source_equivalence",
+    "applies_to_future_head": false,
+    "future_head_requires_fresh_execution": true,
+    "baseline_failure_execution_repeated": false
+  },
+  "assessment": {
+    "dedicated_gate": "passed_14_tests_on_historical_source_head",
+    "blocking_ci": "failed",
+    "architecture_source_head_at_1122_snapshot": "in_progress",
+    "scientific_stage_advancement": false,
+    "substantive_evidence_ready": false,
+    "authority_granted": false,
+    "production_qualification": false,
+    "trusted_review_required": true,
+    "complete_budget_verified": false,
+    "total_campaign_cost": null,
+    "unknown_cost_is_not_zero": true,
+    "meaning": "Implementation CI does not establish equal-budget scientific benefit, evaluator authenticity, or production permission.",
+    "architecture_source_head_latest_observed": "success",
+    "architecture_success_is_full_blocking_ci_success": false
+  },
+  "dedicated_gate_execution": {
+    "source_id": "gate_execution",
+    "run_id": 42473012527,
+    "run_attempt": 1,
+    "job_id": 128707993906,
+    "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42473012527/job/128707993906",
+    "lane": "source-head",
+    "tested_sha": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+    "started_at": "2026-11-08T10:49:11.695036+00:00",
+    "finished_at": "2026-11-08T10:49:13.500252+00:00",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_hepta_cell_research_gate.py",
+      "-v"
+    ],
+    "command_exit_code": 0,
+    "observed_passed_tests": 14,
+    "observed_failed_tests": 0,
+    "elapsed_seconds": 1.7985981520000003,
+    "timed_out": false,
+    "source_before": {
+      "commit": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+      "dirty": false,
+      "parents": [
+        "065a5937a20841f29ba3a6c38da7d2b9492b0bfc"
+      ],
+      "tree": "cf3cfd099e282bf5aee06543d9cf982d5e0e8dc7"
+    },
+    "source_after": {
+      "commit": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+      "dirty": false,
+      "parents": [
+        "065a5937a20841f29ba3a6c38da7d2b9492b0bfc"
+      ],
+      "tree": "cf3cfd099e282bf5aee06543d9cf982d5e0e8dc7"
+    },
+    "log": {
+      "bytes": 2499,
+      "sha256": "f983e4671cfe16e747420ebef5f8b073eeea600a064dd674c5693a916099c770",
+      "output_limit_exceeded": false
+    },
+    "result_basis": "Command execution receipt and GitHub job conclusion; not the log download return code."
+  },
+  "blocking_job_snapshot": {
+    "source_id": "job_snapshot",
+    "run_id": 42473016939,
+    "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42473016939",
+    "observed_utc": "2026-11-08T11:22:30.196562+00:00",
+    "all_jobs_completed": true,
+    "counts": {
+      "success": 20,
+      "failure": 13,
+      "skipped": 4
+    },
+    "jobs": [
+      {
+        "job_id": 128708184408,
+        "name": "Select blocking CI scope",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708184562,
+        "name": "Codespell / Check for spelling errors",
+        "conclusion": "failure"
+      },
+      {
+        "job_id": 128708184577,
+        "name": "Blob size policy / Blob size policy",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708242678,
+        "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708242710,
+        "name": "cargo-deny / cargo-deny",
+        "conclusion": "failure"
+      },
+      {
+        "job_id": 128708242761,
+        "name": "repo-checks / Native Hepta paths on windows-latest",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708242766,
+        "name": "rust-ci / Detect changed areas",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708242769,
+        "name": "repo-checks / Native Hepta paths on macos-15",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708242772,
+        "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708242778,
+        "name": "sdk / sdks",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708242806,
+        "name": "sdk / python-sdk",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708242818,
+        "name": "repo-checks / build-test",
+        "conclusion": "failure"
+      },
+      {
+        "job_id": 128708242975,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "conclusion": "failure"
+      },
+      {
+        "job_id": 128708242980,
+        "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708242994,
+        "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708243001,
+        "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708243003,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708243010,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "conclusion": "failure"
+      },
+      {
+        "job_id": 128708243013,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "conclusion": "failure"
+      },
+      {
+        "job_id": 128708243026,
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708243031,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "conclusion": "failure"
+      },
+      {
+        "job_id": 128708243035,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "conclusion": "failure"
+      },
+      {
+        "job_id": 128708243064,
+        "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708243111,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+        "conclusion": "failure"
+      },
+      {
+        "job_id": 128708243112,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "conclusion": "failure"
+      },
+      {
+        "job_id": 128708243184,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "conclusion": "failure"
+      },
+      {
+        "job_id": 128708243445,
+        "name": "Lightweight prose and derived checks",
+        "conclusion": "skipped"
+      },
+      {
+        "job_id": 128708243846,
+        "name": "Hepta scoped native checks",
+        "conclusion": "skipped"
+      },
+      {
+        "job_id": 128708244152,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+        "conclusion": "skipped"
+      },
+      {
+        "job_id": 128708293440,
+        "name": "rust-ci / cargo shear",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708293448,
+        "name": "rust-ci / Cargo manifest preflight",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708293493,
+        "name": "rust-ci / Rust format",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708294343,
+        "name": "rust-ci / Argument comment lint package",
+        "conclusion": "skipped"
+      },
+      {
+        "job_id": 128708368944,
+        "name": "rust-ci / Rust benchmark smoke",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128708644149,
+        "name": "rust-ci / CI results (required)",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 128714173419,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+        "conclusion": "failure"
+      },
+      {
+        "job_id": 128714196721,
+        "name": "CI required",
+        "conclusion": "failure"
+      }
+    ],
+    "interpretation": "CI required failed. Successful sub-workflows and skipped jobs do not replace the aggregate conclusion."
+  },
+  "architecture_observations": [
+    {
+      "source_id": "job_snapshot",
+      "run_id": 42473016935,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42473016935",
+      "observed_utc": "2026-11-08T11:22:30.196562+00:00",
+      "jobs": [
+        {
+          "job_id": 128708040471,
+          "name": "Architecture convergence (base-merge)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "job_id": 128708040604,
+          "name": "Architecture convergence (source-head)",
+          "status": "in_progress",
+          "conclusion": null
+        }
+      ],
+      "source_head_completion_known_at_this_observation": false
+    },
+    {
+      "source_id": "architecture_terminal",
+      "observed_utc": "2026-11-08 11:43:54 UTC",
+      "run_id": 42473016935,
+      "run_attempt": 1,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42473016935",
+      "run_status": "completed",
+      "run_conclusion": "success",
+      "source_head_job": {
+        "id": 128708040604,
+        "name": "Architecture convergence (source-head)",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-08T10:49:18Z",
+        "completed_at": "2026-11-08T11:24:00Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42473016935/job/128708040604"
+      },
+      "companion_jobs": [
+        {
+          "id": 128708040471,
+          "name": "Architecture convergence (base-merge)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-08T10:49:18Z",
+          "completed_at": "2026-11-08T10:49:48Z",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42473016935/job/128708040471",
+          "skipped_step_numbers": [
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            27
+          ]
+        },
+        {
+          "id": 128716061156,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-08T11:24:03Z",
+          "completed_at": "2026-11-08T11:24:07Z",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42473016935/job/128716061156",
+          "skipped_step_numbers": []
+        }
+      ],
+      "retained_source_head_artifact": {
+        "id": 13614962585,
+        "bytes": 88678,
+        "sha256": "6f0fdcf85396194491ef52a021345abf5783f05df42d23f6cbb1d0e2537ba6bd",
+        "github_digest_matches": true,
+        "candidate_binding": {
+          "base_sha": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+          "lane": "source-head",
+          "native_execution_required": true,
+          "requires_source_head_success": false,
+          "schema_version": 1,
+          "source_sha": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+          "source_tree": "cf3cfd099e282bf5aee06543d9cf982d5e0e8dc7",
+          "tested_sha": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+          "tested_tree": "cf3cfd099e282bf5aee06543d9cf982d5e0e8dc7"
+        },
+        "command_receipts": 31,
+        "all_command_statuses_passed": true,
+        "all_command_exit_codes_zero": true,
+        "all_retained_log_bytes_and_hashes_match": true
+      },
+      "terminal_command_execution": {
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "-p",
+          "codex-hepta-agentd",
+          "--test",
+          "optional_module_restart",
+          "forty_first_service",
+          "--",
+          "--nocapture"
+        ],
+        "status": "passed",
+        "exit_code": 0,
+        "command_exit_code": 0,
+        "started_at": "2026-11-08T11:23:53.528553+00:00",
+        "finished_at": "2026-11-08T11:23:56.701721+00:00",
+        "observed_passed_tests": 1,
+        "observed_failed_tests": 0,
+        "source_sha": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+        "tested_sha": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+        "log_file": "optional-process-restart.json.4183c6bed1a14709b1d0d4bd4700dc58.log",
+        "log_bytes": 6336,
+        "log_sha256": "9837a70fd4a9435249ade71d559090bada04f61da72914ed2626d5537a6d29b4"
+      },
+      "integrity_review_is_additional_test_execution": false,
+      "limits": [
+        "The source-head result is historical b86 attempt 1, not a later-head validation.",
+        "The base-merge lane skipped native prerequisite and execution steps 11 through 23; it is not an independent duplicate native run.",
+        "Architecture success does not override failed blocking CI or create scientific or production authority."
+      ]
+    }
+  ],
+  "failure_findings": [
+    {
+      "id": "codespell_technical_identifier",
+      "job_id": 128708184562,
+      "sources": [
+        "direct_logs",
+        "codespell_review"
+      ],
+      "classification": "confirmed_technical_name_false_positive",
+      "finding": "Four errors flag inout in two retained Cargo logs. Cargo.lock contains inout 0.1.4 and 0.2.2. Those logs and the ignore file have identical blobs at base, source head, and merge.",
+      "proposed_scope": "Add only the exact crate name to the existing word list; preserve raw logs and path coverage.",
+      "post_change_codespell_execution_established": false,
+      "raw_log": {
+        "job_id": 128708184562,
+        "downloaded_bytes": 28240,
+        "sha256": "154d9dcb903704898651510c756e35c8df0c5070d8bcfa818a2eedb05b0af1c8",
+        "complete_download": true
+      }
+    },
+    {
+      "id": "python_format_five_files",
+      "job_id": 128708242818,
+      "sources": [
+        "failure_logs",
+        "python_format"
+      ],
+      "classification": "confirmed_format_failure",
+      "historical_files": [
+        {
+          "path": "scripts/hepta_cell_joint_config.py",
+          "historical_git_blob": "7e939e1055d97b036209727b78daed582dce3c94",
+          "historical_sha256": "48f016c10bbf4301f0dc6357f40eca0628bdbad711c36c109cdd0d43c65b3e12"
+        },
+        {
+          "path": "scripts/hepta_ci_chef.py",
+          "historical_git_blob": "ad0ab1846d782edf4bc2c8c11b666d53675565dc",
+          "historical_sha256": "82e2dced3f853f0b9c205bac9ee8f61c02d02df5015e33baaf7ace6e96f5048e"
+        },
+        {
+          "path": "scripts/test_hepta_cell_joint_config.py",
+          "historical_git_blob": "399175074802eba0139720b7cab58e024bfde817",
+          "historical_sha256": "cf2efcf3487fbe5b99790dfef3068369af557d99aaba5baf045b40b30a2134b5"
+        },
+        {
+          "path": "scripts/test_hepta_ci_chef.py",
+          "historical_git_blob": "15e4ead6703089e44eefe51c5417de7525a83885",
+          "historical_sha256": "77734693dc31e308b0195e6297fc9b0a39c6a52a3c929969efe02c807474aecf"
+        },
+        {
+          "path": "scripts/test_hepta_module_status_facts.py",
+          "historical_git_blob": "ee93d78f4c754090fb08a30ed338ea039286d72b",
+          "historical_sha256": "121c3d0f61d1a33e722d4526e7a6b5ba356afe499451b24b9e4ed366464f81c7"
+        }
+      ],
+      "finding": "The historical check reports these five files. Isolated ruff 0.15.13 validation reproduced the failure, formatted them, and passed the check. All five preserved AST and comment tokens.",
+      "isolated_returncodes": {
+        "check_before": 1,
+        "format": 0,
+        "check_after": 0
+      },
+      "behavioral_tests_rerun_for_format_only_change": false,
+      "future_head_ci_validated": false,
+      "raw_log": {
+        "job_id": 128708242818,
+        "downloaded_bytes": 220838,
+        "sha256": "f19ca7fd5f7756222353821a3dd16657ffaf50aa6d65bc010784752e65f236ea",
+        "complete_download": true
+      }
+    },
+    {
+      "id": "external_download_504",
+      "sources": [
+        "direct_logs"
+      ],
+      "classification": "confirmed_fetch_failures_before_tests",
+      "cases": [
+        {
+          "job_id": 128708242975,
+          "archive_url": "https://github.com/bats-core/bats-core/archive/v1.10.0.tar.gz",
+          "step": "MSVC header parser smoke",
+          "smoke_tests_executed": 0,
+          "smoke_tests_defined": 6,
+          "boundary": "Bazel dependency fetch failed before parser build and unittest launch.",
+          "raw_log": {
+            "job_id": 128708242975,
+            "downloaded_bytes": 162583,
+            "sha256": "5e59296ce2bca74e5e698d5142ac5ac6e4f59fad1a38eae64e93633f08ba4277",
+            "complete_download": true
+          }
+        },
+        {
+          "job_id": 128708243112,
+          "archive_url": "https://github.com/v8/v8/archive/refs/tags/15.0.245.2.tar.gz",
+          "step": "MODULE.bazel.lock preflight",
+          "boundary": "Fetch failure does not establish lock drift or a compiled test failure.",
+          "raw_log": {
+            "job_id": 128708243112,
+            "downloaded_bytes": 75515,
+            "sha256": "5946a5551d5ec79ab17ea7b42b7c78d736c45c4f85d5da45c57bb66a01079a5c",
+            "complete_download": true
+          }
+        }
+      ],
+      "same_source_retry_pass_established": false
+    },
+    {
+      "id": "windows_shard3_lock_observation",
+      "job_id": 128708243010,
+      "sources": [
+        "failure_logs",
+        "windows_map"
+      ],
+      "classification": "lock_read_failures_and_separate_invalid_errors",
+      "failed_cases": 45,
+      "win32_error_33_cases": 36,
+      "circuit_invalid_cases": 9,
+      "suite_failed_cases": {
+        "infer_core": 2,
+        "neuron": 18,
+        "agentd_across_two_test_shards": 25
+      },
+      "finding": "Live owners retain exclusive file locks while observations reopen the file path. Windows rejects those second-handle reads. The nine circuit Invalid cases are a distinct unresolved failure.",
+      "reviewed_candidate": {
+        "test_files": 5,
+        "targeted_cases": 16,
+        "infer_cases": 2,
+        "neuron_cases": 14,
+        "live_reads_changed": 42,
+        "production_changes": false,
+        "new_public_production_api": false,
+        "locks_released_or_tests_skipped": false,
+        "native_windows_pass_established": false,
+        "patch_sha256": "baf285bb4f96773ef86c54078b81a53c63448b6bee2d1d1904cc31cb376cb77b"
+      },
+      "remaining_lock_cases": 20,
+      "remaining_boundary": "Cross-crate owners and actors lack safe original-file observation access. Exact byte assertions and lock lifetimes remain required; no remaining-case fix is claimed.",
+      "raw_log": {
+        "job_id": 128708243010,
+        "downloaded_bytes": 518139,
+        "sha256": "c827f30a67d8962cb78abced6cc6301a02761daedfe4a37c6e02eda68cc79ed8",
+        "complete_download": true
+      }
+    },
+    {
+      "id": "cargo_deny_advisories",
+      "job_id": 128708242710,
+      "sources": [
+        "cargo_tail",
+        "cargo_sources",
+        "job_snapshot"
+      ],
+      "classification": "confirmed_advisory_errors",
+      "advisories": [
+        {
+          "id": "RUSTSEC-2026-0441",
+          "package": "pin-utils",
+          "locked_version": "0.1.1",
+          "reported_class": "unmaintained",
+          "source_url": "https://rustsec.org/advisories/RUSTSEC-2026-0441"
+        },
+        {
+          "id": "RUSTSEC-2026-0451",
+          "package": "vodozemac",
+          "locked_version": "0.10.0",
+          "reported_class": "vulnerability",
+          "reported_issue": "degraded secret zeroization",
+          "reported_upgrade_floor": "0.11.2",
+          "source_url": "https://rustsec.org/advisories/RUSTSEC-2026-0451"
+        }
+      ],
+      "cargo_lock": {
+        "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+        "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+        "unchanged_between_base_and_head": true
+      },
+      "advisory_database_revision": null,
+      "upgrade_validated": false,
+      "policy_exception_added": false,
+      "retained_tail": {
+        "content_range": "bytes 19242921-19636136/19636137",
+        "total_log_bytes": 19636137,
+        "retained_bytes": 393216,
+        "sha256": "89ce5951691aa6f697e53a47960a8821ed05074a03c5220f0a5562571940f8b2"
+      },
+      "retrieval_limit": "Earlier log downloads timed out with returncode 124 and partial bytes. The failed job conclusion comes from the job API; these advisory errors come from the later exact 393216-byte tail. A download return code is not a CI result."
+    },
+    {
+      "id": "linux_musl",
+      "job_id": 128708243111,
+      "sources": [
+        "failure_logs",
+        "linux_contracts",
+        "linux_excerpts"
+      ],
+      "classification": "multiple_observed_failures",
+      "observations": [
+        {
+          "area": "exec-server",
+          "failed_targets": 2,
+          "finding": "The wrapper searches original PATH for real bubblewrap despite an existing Bazel binary declaration.",
+          "review_status": "Directory-only metadata resolution was rejected because this repository uses manifest-only runfiles. A separate existing-resolver/dependency candidate requires native metadata update and original-target execution."
+        },
+        {
+          "area": "core Wine executor recovery",
+          "finding": "Cold resume builds a host-interpreted invalid cwd URI and changed roots, failing environment equality.",
+          "review_status": "The test-only candidate reconstructs target-native selections from the closed rollout and calls the existing explicit-environment API. Production context/hash/environment refusal remains. Compile and behavior are unverified here.",
+          "limit": "This explicit helper reads RolloutRecorder rather than ThreadStore; scope is the closed-rollout fixture. Existing override negative tests are host-local source coverage and skip remote execution."
+        },
+        {
+          "area": "operator acceptance trust",
+          "failed_cases": 11,
+          "finding": "Signing fixtures cannot find genuine OpenSSH ssh-keygen in the platform directory or absolute PATH. This is not trust acceptance evidence; policy is unchanged."
+        },
+        {
+          "area": "cognitive product qualification",
+          "finding": "Projection rows do not match their generation receipt. Differing counts and failing call stage are not reported. The counts are checked in one SQL statement; a multi-query read race is unproven.",
+          "root_cause": null,
+          "assertion_weakened": false
+        }
+      ],
+      "raw_log": {
+        "job_id": 128708243111,
+        "downloaded_bytes": 1080087,
+        "sha256": "d8de361ce736f0cf3cb0e58aac01e813c88d877edcae3413afa00d3d7dc9115b",
+        "complete_download": true
+      },
+      "every_failed_shard_exhaustively_diagnosed": false
+    },
+    {
+      "id": "late_platform_failures",
+      "sources": [
+        "late_tails",
+        "job_snapshot"
+      ],
+      "classification": "incomplete_log_coverage",
+      "tails": [
+        {
+          "lane": "windows-shard2",
+          "job_id": 128708243035,
+          "content_range": "bytes 366712-759927/759928",
+          "total_log_bytes": 759928,
+          "retained_bytes": 393216,
+          "sha256": "742d02a1b550146be88ee317bffca9e8f1dc3e8eab74afca5dcee17e3af8fc79",
+          "observed_examples": [
+            "CLI cloud-managed sandbox configuration",
+            "Windows sandbox unit tests",
+            "app-server integration tests"
+          ],
+          "root_cause_complete": false
+        },
+        {
+          "lane": "windows-shard4",
+          "job_id": 128708243031,
+          "content_range": "bytes 639609-1032824/1032825",
+          "total_log_bytes": 1032825,
+          "retained_bytes": 393216,
+          "sha256": "5cd9e8d1cb63a3cc0e1ae1ae8df25e9132f23647b7e6a02e7b7d0ac3271fd307",
+          "observed_examples": [
+            "core integration tests",
+            "operator acceptance trust tests"
+          ],
+          "root_cause_complete": false
+        },
+        {
+          "lane": "macos-arm",
+          "job_id": 128708243013,
+          "content_range": "bytes 3573111-3966326/3966327",
+          "total_log_bytes": 3966327,
+          "retained_bytes": 393216,
+          "sha256": "516c0c6dd380c3e84260477c896716f25dd9efeae6d4c2834a4a12ebf4676b1e",
+          "observed_examples": [
+            "fleet release source rejected as not a non-symlink regular file",
+            "TUI embedded state database corruption recovery assertion"
+          ],
+          "root_cause_complete": false
+        },
+        {
+          "lane": "macos-intel",
+          "job_id": 128708243184,
+          "content_range": "bytes 1215888-1609103/1609104",
+          "total_log_bytes": 1609104,
+          "retained_bytes": 393216,
+          "sha256": "0fca1d5c9a8da5cf266fce20281c5dfbb998263a434a5ffa6a82009346966b0c",
+          "observed_examples": [
+            "fleet release source rejected as not a non-symlink regular file",
+            "TUI embedded state database corruption recovery assertion"
+          ],
+          "root_cause_complete": false
+        }
+      ],
+      "interpretation": "Each is a 393216-byte tail. Selected failure examples are not an exhaustive target list, unique-case total, or complete root-cause diagnosis. Sandbox and permission failures do not authorize relaxing those boundaries.",
+      "safety_boundary_change_proposed": false
+    }
+  ],
+  "provenance": {
+    "capture_path_semantics": "These are local audit capture identifiers, not claimed repository files shipped with this JSON. Their bytes are SHA256-bound; the source URLs identify independent GitHub retrieval locations.",
+    "job_log_url_pattern": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/{job_id}/logs",
+    "source_blob_url_pattern": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b86dcb2ac3c9ebcef480a78b06dd003881c87ba3/{repository_path}",
+    "audit_inputs": [
+      {
+        "id": "gate_execution",
+        "capture_path": "publication/ci-observation-002.json",
+        "bytes": 31481,
+        "sha256": "8a1d2dffe24a6f806a3bbf9a6d46d6c7a62981ebc7e24a7dd062d735ad44f8c7"
+      },
+      {
+        "id": "job_snapshot",
+        "capture_path": "publication/ci-observation-004.json",
+        "bytes": 17093,
+        "sha256": "2e913ff14878f11cbcd78b9428162ad63597e34b6efe4c455ef47dcf261810c6"
+      },
+      {
+        "id": "direct_logs",
+        "capture_path": "audit/blocking-failure-direct-summary.json",
+        "bytes": 45843,
+        "sha256": "c903a24f4c24cbcda0ddbf42ea0e136e09f1818d97849e781e4354cd8ea8342c"
+      },
+      {
+        "id": "failure_logs",
+        "capture_path": "audit/blocking-failure-v2-summary.json",
+        "bytes": 95069,
+        "sha256": "7061ad33f55135232ba3b2858d13b66a8450a36224b0ed1d201c6d4905609947"
+      },
+      {
+        "id": "cargo_tail",
+        "capture_path": "audit/cargo-deny-exact-tail-summary.json",
+        "bytes": 25645,
+        "sha256": "d0d8e21aea33c86e9a79fd673fbe1659969b88ae5434cff2638d590830fa53dc"
+      },
+      {
+        "id": "late_tails",
+        "capture_path": "audit/ci-late-failures-summary.json",
+        "bytes": 67383,
+        "sha256": "2dbb3da1a15d4f6d1cf12cf2f8dcb5f7e663468b819ce7fec5f5741c5a9b6a05"
+      },
+      {
+        "id": "windows_map",
+        "capture_path": "audit/windows-lock/failure-map.json",
+        "bytes": 14027,
+        "sha256": "811ec2fa94c6ffdce7def23bb3a4850665d194b3405a6e6c4fcecb7b4a898a0d"
+      },
+      {
+        "id": "python_format",
+        "capture_path": "audit/inherited-python-format-b86dcb2a/blob-manifest.json",
+        "bytes": 8457,
+        "sha256": "f262d80118b8f28620809dd8f15afcc66ea58a95c9007ef70bf70689d254e794"
+      },
+      {
+        "id": "codespell_review",
+        "capture_path": "audit/codespell-false-positive-b86dcb2a/review.json",
+        "bytes": 6789,
+        "sha256": "72cc494e4aba0175a01c2f2d67d13acd1940da6d386f08d97a41a341e4b4af78"
+      },
+      {
+        "id": "cargo_sources",
+        "capture_path": "audit/cargo_deny_source_binding.json",
+        "bytes": 11097,
+        "sha256": "273e7a8c33ed9c16e1254e77008f653a394af90c47ef81a834ca8585de5a69dc"
+      },
+      {
+        "id": "linux_contracts",
+        "capture_path": "audit/linux-musl-fixes/contract-evidence.json",
+        "bytes": 44589,
+        "sha256": "f3fc1ced79728ceb912062754247e4e8b77469aef72a548e3f8c7c0cf7a5d114"
+      },
+      {
+        "id": "linux_excerpts",
+        "capture_path": "audit/linux-musl-fixes/root-error-excerpts.txt",
+        "bytes": 1982,
+        "sha256": "08f1179f0aa26ced79802e58b8376ab904e2126226dddf58a05c429c051105ce"
+      },
+      {
+        "id": "architecture_terminal",
+        "capture_path": "audit/architecture-current-b86.json",
+        "bytes": 16538,
+        "sha256": "7330c055b06937520db762e68ad5e93b8d9657328f7111d83c6e3fe2cca58561"
+      }
+    ]
+  },
+  "limits": [
+    "This is historical evidence for the specified head and merge. Later commits and reviewed patches need new source-bound execution.",
+    "The 11:22 snapshot leaves source-head architecture running. Its later terminal observation is appended separately; neither changes the failed blocking CI conclusion.",
+    "Downloads, applicability checks, formatting, source review, cached tests, and skipped jobs are not substituted for behavioral execution.",
+    "Unchanged base/head files establish source inheritance, not observed failure reproduction on the base commit.",
+    "No full experiment attempt registry, construction/training budget, independent evaluator authentication, or equal-budget scientific comparison is supplied."
+  ]
+}

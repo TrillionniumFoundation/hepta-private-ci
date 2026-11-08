@@ -21,6 +21,9 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
+    # The original system OpenSSH executable is a runtime dependency. Results
+    # must not be reused across hosts that provide different OpenSSH packages.
+    tags = ["no-remote-cache"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",

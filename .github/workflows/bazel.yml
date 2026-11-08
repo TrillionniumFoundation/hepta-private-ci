@@ -78,6 +78,16 @@ jobs:
         shell: bash
         run: ./scripts/check-module-bazel-lock.sh
 
+      - name: Install OpenSSH for the native operator-acceptance test action
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends openssh-client
+          test -x /usr/bin/ssh-keygen
+          dpkg-query -W -f='${Package} ${Version}\n' openssh-client
+          sha256sum /usr/bin/ssh-keygen
+
       - name: bazel test //...
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}

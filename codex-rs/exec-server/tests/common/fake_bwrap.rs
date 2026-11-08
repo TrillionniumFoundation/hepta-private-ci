@@ -7,8 +7,17 @@ use anyhow::Context as _;
 /// Records real namespace launches while retaining one explicit failure injection.
 /// Resolve the real executable before installing the test's PATH wrapper.
 pub(crate) fn write_fake_bwrap(bin_dir: &Path) -> anyhow::Result<PathBuf> {
-    let real_bwrap_path = codex_sandboxing::find_system_bwrap_in_path()
-        .context("real bubblewrap must be available on the original PATH")?;
+    let real_bwrap_path = match codex_utils_cargo_bin::cargo_bin("bwrap") {
+        Ok(path) => path,
+        Err(codex_utils_cargo_bin::CargoBinError::NotFound { .. }) => {
+            codex_sandboxing::find_system_bwrap_in_path().context(
+                "real bubblewrap must be available in test metadata or on the original PATH",
+            )?
+        }
+        Err(error) => {
+            return Err(error).context("resolve the declared real bubblewrap test binary");
+        }
+    };
     let real_bwrap = real_bwrap_path
         .to_str()
         .context("real bubblewrap path must be valid UTF-8 for the test wrapper")?;
