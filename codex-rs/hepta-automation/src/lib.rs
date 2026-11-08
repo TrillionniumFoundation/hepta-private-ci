@@ -12,6 +12,11 @@
 #[cfg(test)]
 mod effect_executor;
 
+mod action_skill;
+mod action_skill_driver;
+#[cfg(test)]
+#[path = "action_skill_tests.rs"]
+mod action_skill_tests;
 mod authorized_effect;
 mod automation_taskflow;
 mod circuit_admission;
@@ -42,6 +47,21 @@ mod taskflow_recovery;
 mod taskflow_step;
 mod timer_lifecycle;
 
+pub use action_skill::ACTION_SKILL_SCHEMA_VERSION;
+pub use action_skill::ActionCancellationStateV1;
+pub use action_skill::ActionConditionV1;
+pub use action_skill::ActionExecutionStateV1;
+pub use action_skill::ActionGoalStateV1;
+pub use action_skill::ActionInitiationObservationV1;
+pub use action_skill::ActionSkillBindingV1;
+pub use action_skill::ActionSkillBudgetV1;
+pub use action_skill::ActionSkillContractV1;
+pub use action_skill::ActionSkillError;
+pub use action_skill::ActionSkillInvocationV1;
+pub use action_skill::ActionSkillObservationV1;
+pub use action_skill::ActionSkillObserver;
+pub use action_skill::ActionSkillRecoveryV1;
+pub use action_skill_driver::GoalCheckedActionSkillDriver;
 pub use authorized_effect::AsyncAuthorizedEffectDriver;
 pub use authorized_effect::AuthorizedEffectDependency;
 pub use authorized_effect::AuthorizedEffectDispatchRequest;
