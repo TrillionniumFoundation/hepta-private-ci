@@ -1,0 +1,53 @@
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -127,9 +127,6 @@
+ [dependencies.pin-project-lite]
+ version = "0.2.14"
+ 
+-[dependencies.pin-utils]
+-version = "0.1.0"
+-
+ [dependencies.ryu]
+ version = "1.0.22"
+ 
+--- a/Cargo.toml.orig
++++ b/Cargo.toml.orig
+@@ -43,7 +43,6 @@
+ itoa = "1.0.17"
+ num-integer = "0.1.46"
+ pin-project-lite = "0.2.14"
+-pin-utils = "0.1.0"
+ ryu = "1.0.22"
+ time = { version = "0.3.4", features = ["parsing"] }
+ 
+--- a/src/byte_stream.rs
++++ b/src/byte_stream.rs
+@@ -132,7 +132,8 @@
+ use std::future::poll_fn;
+ use std::io::IoSlice;
+ use std::pin::Pin;
+-use std::task::{Context, Poll};
++use std::task::Context;
++use std::task::Poll;
+ 
+ #[cfg(feature = "rt-tokio")]
+ mod bytestream_util;
+@@ -574,7 +575,7 @@
+     async fn collect(self) -> Result<AggregatedBytes, crate::body::Error> {
+         let mut output = SegmentedBuf::new();
+         let body = self.body;
+-        pin_utils::pin_mut!(body);
++        let mut body = std::pin::pin!(body);
+         while let Some(buf) = body.next().await {
+             output.push(buf?);
+         }
+@@ -588,7 +589,8 @@
+ 
+ #[cfg(all(test, feature = "rt-tokio"))]
+ mod tests {
+-    use super::{ByteStream, Inner};
++    use super::ByteStream;
++    use super::Inner;
+     use crate::body::SdkBody;
+     use bytes::Bytes;
+     use std::io::Write;
