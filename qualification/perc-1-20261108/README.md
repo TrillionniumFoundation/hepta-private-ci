@@ -45,7 +45,7 @@ PYTHONPATH=scripts python3 -m perc1 report \
   --output /tmp/perc1-report.json
 ```
 
-The source-pinned local run passed **24 Python tests**. The smoke creates **32
+The source-pinned local and native-host runs each passed **24 Python tests**. The smoke creates **32
 paired traces**: four task-family descriptors, four arms and two declared seed
 receipts. These are synthetic descriptors, including text stand-ins for media.
 There are no independently trained models behind those seed receipts. The smoke
@@ -137,6 +137,30 @@ need controlled continuations or the randomized design in the protocol.
    evaluate independent source groups and training seeds once. Full costs and final
    task benefit determine qualification; probes remain diagnostic.
 
-The public candidate is an extension of Cell candidate `6ddfca24`; main is separately
+This candidate is an extension of Cell candidate `6ddfca24`; main is separately
 pinned at `732e934b`. Source publication, main integration, production activation and
 scientific qualification are distinct observations.
+
+## Retained execution evidence
+
+[ENGINEERING.json](ENGINEERING.json) records the completed engineering gate:
+190 native tests, 24 Python tests on both hosts, scoped strict Clippy, and the
+repository's actual formatting command all passed. [EXECUTION.json](EXECUTION.json)
+retains individual attempts, including the first formatting failure caused by a
+missing DotSlash executable. The second attempt used verified real DotSlash and uv
+binaries. Rust formatting received a separate mechanical review; Python formatting
+preserved the complete AST. Functional tests were not rerun solely for formatting.
+
+[SOURCE_CONTENT.json](SOURCE_CONTENT.json) binds final code bytes to the tested and
+formatted source identities. [ARTIFACTS.json](ARTIFACTS.json) indexes every retained
+artifact and archive member by SHA-256. The [execution archive](execution-logs.tar.gz)
+contains complete gate logs, JUnit, formatting patches, tool receipts and gate
+runners; the helper executable itself is identified by digest, not embedded.
+
+The [synthetic archive](synthetic-smoke.tar.gz) retains the frozen manifest,
+dataset, all captured text views, sealed evaluator, 32 traces, terminal reports and
+both single-observation pairs. [SYNTHETIC_REPORT.json](SYNTHETIC_REPORT.json) is the
+readable four-arm result; [SYNTHETIC_MARGINAL.json](SYNTHETIC_MARGINAL.json) includes
+one useful and one distractor acquisition. Both incur positive cost, and only the
+useful synthetic acquisition changes the terminal answer. These records exercise
+the evaluation machinery and remain **HOLD**; they are not real model confirmation.
