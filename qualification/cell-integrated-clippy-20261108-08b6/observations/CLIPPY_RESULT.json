@@ -1,0 +1,326 @@
+{
+  "schema": "hepta.exact-S-rust195-clippy.v1",
+  "source": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+  "tree": "f06389aa4f5caf0af5fec419da6473e198796b24",
+  "root": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source",
+  "environment": {
+    "PATH": "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin:/home/qian-qi/work/cell-dependency-pin-20261108-08b6-evidence/tools/bin:/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin:/home/qian-qi/.local/bin:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-target",
+    "RUSTFLAGS": null,
+    "CARGO_ENCODED_RUSTFLAGS": null,
+    "CARGO_NET_OFFLINE": null
+  },
+  "steps": [
+    {
+      "name": "verify-S-tool-rustc",
+      "argv": [
+        "rustc",
+        "--version",
+        "--verbose"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source",
+      "returncode": 0,
+      "wall_seconds": 0.007070878986269236,
+      "child_user_seconds": 0.0030709999999999973,
+      "child_system_seconds": 0.0030700000000000033,
+      "cumulative_child_maxrss_kib": 29296,
+      "bytes": 196,
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+      "log": "verify-S-tool-rustc.log"
+    },
+    {
+      "name": "verify-S-tool-cargo",
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source",
+      "returncode": 0,
+      "wall_seconds": 0.003475211968179792,
+      "child_user_seconds": 0.000789000000000005,
+      "child_system_seconds": 0.00157800000000001,
+      "cumulative_child_maxrss_kib": 29296,
+      "bytes": 36,
+      "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+      "log": "verify-S-tool-cargo.log"
+    },
+    {
+      "name": "verify-S-tool-clippy",
+      "argv": [
+        "cargo-clippy",
+        "--version"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source",
+      "returncode": 0,
+      "wall_seconds": 0.005733306985348463,
+      "child_user_seconds": 0.0020629999999999954,
+      "child_system_seconds": 0.0020629999999999954,
+      "cumulative_child_maxrss_kib": 61052,
+      "bytes": 38,
+      "sha256": "35a36a02149eb682cc65a0f29c482942cab20c49fe19f75208155febbcbb78e8",
+      "log": "verify-S-tool-clippy.log"
+    },
+    {
+      "name": "font-prepare-S",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/tools/prepare-fonts.py",
+        "--cache",
+        "/home/qian-qi/work/cell-ui-ime-20261108-08b6-evidence/runtime-assets",
+        "--offline",
+        "--install",
+        "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/robrix-ui/resources/fonts"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source",
+      "returncode": 0,
+      "wall_seconds": 0.10362809599610046,
+      "child_user_seconds": 0.042829000000000006,
+      "child_system_seconds": 0.014276999999999998,
+      "cumulative_child_maxrss_kib": 61052,
+      "bytes": 1934,
+      "sha256": "892276b9c6a49d38829c5040aa98687f63210fd9af0a7975e9cc97d18acc2bbf",
+      "log": "font-prepare-S.log"
+    },
+    {
+      "name": "clippy-S-rust195",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--manifest-path",
+        "apps/hepta-control-ui/rust/Cargo.toml",
+        "-p",
+        "hepta-robrix-ui",
+        "--all-targets",
+        "--features",
+        "ui,native-host,native-presentation",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source",
+      "returncode": 0,
+      "wall_seconds": 34.74361003795639,
+      "child_user_seconds": 52.624729,
+      "child_system_seconds": 6.850572,
+      "cumulative_child_maxrss_kib": 822824,
+      "bytes": 24260,
+      "sha256": "970266810f82baa03fdf413d5a8b1178ed4168ff8f26dee2bd6ec28f3de45d0f",
+      "log": "clippy-S-rust195.log"
+    }
+  ],
+  "started_at_utc": "2026-11-08T21:07:45.791496+00:00",
+  "scope": "Exact original hosted Clippy command on native Linux with Rust 1.95.0; not a hosted CI rerun or browser qualification.",
+  "before": {
+    "head": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+    "tree": "f06389aa4f5caf0af5fec419da6473e198796b24",
+    "status": ""
+  },
+  "sdk_before": {
+    "root": "/home/qian-qi/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c",
+    "head": "337566c8b25d47f7e4fff6a202157b65bf183330",
+    "tree": "c6e18be7754f9634492ec5251bac3e8b4f7e09b7",
+    "status": "?? .cargo-ok\n",
+    "tracked_diff": "",
+    "files": [
+      {
+        "path": "/home/qian-qi/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/widgets/src/text_input.rs",
+        "bytes": 170514,
+        "sha256": "c85d035cb30e54c9a2c7f4afbcd16b5a9517685cc82ff432451e19d6a337e875"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/platform/src/os/web/web.js",
+        "bytes": 141816,
+        "sha256": "0404897d76bbd81e2225ab62b2fde1c4832e34331706b94c4c00aa71640fe765"
+      }
+    ]
+  },
+  "source_input_files_before": [
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/Cargo.lock",
+      "bytes": 64892,
+      "sha256": "99d22c4031512530e66b1e1cbec256d069e6e613e158f37d247d9307de265734"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/Cargo.toml",
+      "bytes": 1073,
+      "sha256": "617ce125c02d4cc5cc85447f3bc0e1473f85a0aa1bb6e00b3b3769c3a014d897"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/robrix-ui/Cargo.toml",
+      "bytes": 1153,
+      "sha256": "533a4af9311e5688b2bb9cec96e859c936a1c6c3564715afe692c4bcee965be4"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs",
+      "bytes": 43979,
+      "sha256": "b9b594270e4b2d9920adc65250e33a367bd37006ccc37401b5893cb1d4e7b45a"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room_ime_commit_tests.rs",
+      "bytes": 7450,
+      "sha256": "bca4e1cc0c0e844e63b2db4207e4084ce0e9222824f601774a438d5dc6be68fa"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/codex-rs/Cargo.lock",
+      "bytes": 417409,
+      "sha256": "b27aaeff41ea4f458a63a175c016be00a10a86e8377589c921272b6ab9537a5b"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/MODULE.bazel.lock",
+      "bytes": 1761913,
+      "sha256": "7d7ca50b8580784cfe0b17039b9a791effda0a0136978b722d4ae4875d364952"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/tools/prepare-fonts.py",
+      "bytes": 4463,
+      "sha256": "ae71842ad59684c7fbbb536bb029daaaba889f7cd50dc5927c2e9df23900789c"
+    }
+  ],
+  "tools": {
+    "rustc": {
+      "file": {
+        "path": "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "bytes": 644784,
+        "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6"
+      },
+      "version": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2"
+    },
+    "cargo": {
+      "file": {
+        "path": "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "bytes": 42185192,
+        "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66"
+      },
+      "version": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)"
+    },
+    "clippy": {
+      "file": {
+        "path": "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo-clippy",
+        "bytes": 1263912,
+        "sha256": "b71b1263063707608daa1e9b231ad9d87507c11d6aa178ede2b01d8372d5effb"
+      },
+      "version": "clippy 0.1.95 (59807616e1 2026-04-14)"
+    },
+    "clippy_driver": {
+      "file": {
+        "path": "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/clippy-driver",
+        "bytes": 20339280,
+        "sha256": "81bd985ee50d78e9d8c5810f6ca836614d1bf95e0e8142f1ec5f42eb250ed729"
+      }
+    }
+  },
+  "fonts": {
+    "manifest": {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/robrix-ui/resources/fonts/MANIFEST.json",
+      "bytes": 2422,
+      "sha256": "fb9e49a7f14b742ac7e390ceee9be115ad6e04a5f852eec67fb0a126870070a3"
+    },
+    "cache": "/home/qian-qi/work/cell-ui-ime-20261108-08b6-evidence/runtime-assets",
+    "assets": [
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NotoSansSC-Bold.otf",
+        "bytes": 8543168,
+        "sha256": "c6cb5a93abaa9edc8ee7463b7ebb7f42d618d40e6ed2f7a5371c97b0b64767c0",
+        "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/SC/NotoSansSC-Bold.otf"
+      },
+      {
+        "path": "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NotoSansSC-Regular.otf",
+        "bytes": 8331336,
+        "sha256": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9",
+        "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/SC/NotoSansSC-Regular.otf"
+      }
+    ]
+  },
+  "during_fonts": {
+    "head": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+    "tree": "f06389aa4f5caf0af5fec419da6473e198796b24",
+    "status": "?? apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NotoSansSC-Bold.otf\n?? apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NotoSansSC-Regular.otf\n"
+  },
+  "clippy_returncode": 0,
+  "font_cleanup": [
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NotoSansSC-Bold.otf",
+      "bytes": 8543168,
+      "sha256": "c6cb5a93abaa9edc8ee7463b7ebb7f42d618d40e6ed2f7a5371c97b0b64767c0"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NotoSansSC-Regular.otf",
+      "bytes": 8331336,
+      "sha256": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9"
+    }
+  ],
+  "after": {
+    "head": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+    "tree": "f06389aa4f5caf0af5fec419da6473e198796b24",
+    "status": ""
+  },
+  "sdk_after": {
+    "root": "/home/qian-qi/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c",
+    "head": "337566c8b25d47f7e4fff6a202157b65bf183330",
+    "tree": "c6e18be7754f9634492ec5251bac3e8b4f7e09b7",
+    "status": "?? .cargo-ok\n",
+    "tracked_diff": "",
+    "files": [
+      {
+        "path": "/home/qian-qi/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/widgets/src/text_input.rs",
+        "bytes": 170514,
+        "sha256": "c85d035cb30e54c9a2c7f4afbcd16b5a9517685cc82ff432451e19d6a337e875"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/platform/src/os/web/web.js",
+        "bytes": 141816,
+        "sha256": "0404897d76bbd81e2225ab62b2fde1c4832e34331706b94c4c00aa71640fe765"
+      }
+    ]
+  },
+  "source_input_files_after": [
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/Cargo.lock",
+      "bytes": 64892,
+      "sha256": "99d22c4031512530e66b1e1cbec256d069e6e613e158f37d247d9307de265734"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/Cargo.toml",
+      "bytes": 1073,
+      "sha256": "617ce125c02d4cc5cc85447f3bc0e1473f85a0aa1bb6e00b3b3769c3a014d897"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/robrix-ui/Cargo.toml",
+      "bytes": 1153,
+      "sha256": "533a4af9311e5688b2bb9cec96e859c936a1c6c3564715afe692c4bcee965be4"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs",
+      "bytes": 43979,
+      "sha256": "b9b594270e4b2d9920adc65250e33a367bd37006ccc37401b5893cb1d4e7b45a"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room_ime_commit_tests.rs",
+      "bytes": 7450,
+      "sha256": "bca4e1cc0c0e844e63b2db4207e4084ce0e9222824f601774a438d5dc6be68fa"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/codex-rs/Cargo.lock",
+      "bytes": 417409,
+      "sha256": "b27aaeff41ea4f458a63a175c016be00a10a86e8377589c921272b6ab9537a5b"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/MODULE.bazel.lock",
+      "bytes": 1761913,
+      "sha256": "7d7ca50b8580784cfe0b17039b9a791effda0a0136978b722d4ae4875d364952"
+    },
+    {
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source/apps/hepta-control-ui/tools/prepare-fonts.py",
+      "bytes": 4463,
+      "sha256": "ae71842ad59684c7fbbb536bb029daaaba889f7cd50dc5927c2e9df23900789c"
+    }
+  ],
+  "identity_unchanged": true,
+  "sdk_unchanged": true,
+  "source_input_files_unchanged": true,
+  "total_wall_seconds": 35.10518193000462,
+  "finished_at_utc": "2026-11-08T21:08:20.896697+00:00"
+}

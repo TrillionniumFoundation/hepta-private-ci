@@ -1,0 +1,214 @@
+{
+  "allowlist_append_bytes": 222,
+  "allowlist_append_sha256": "e6bf36a08b2c69727b24b201e326c2fb6cdb66ac59200059a28371db5d48f51c",
+  "allowlisted_artifacts": [
+    {
+      "bytes": 2042801,
+      "path": "qualification/cell-integrated-clippy-20261108-08b6/observations/raw-evidence.tar.gz",
+      "sha256": "fe8281a293c620bc86209d93eec35eb271c91e0f1c2e43c33b5a9fc6411adacf"
+    }
+  ],
+  "bundle": {
+    "bytes": 2074606,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-delivery-002/R-to-G.bundle",
+    "sha256": "d2f6c237202e7c87db7c65c40de00994207f4c7f9e20e075f4f47ed31f21d088"
+  },
+  "bundle_heads": [
+    "693a013b254d07779f6f2b2a78d0ee31481f4ea9 refs/heads/fix/cell-ui-ime-clippy-20261108-08b6",
+    "ed6bd2eaa281c0ee9d718e5a03f4c92c3d5ec061 refs/heads/engineering/cell-integrated-20261108-08b6-clippy-evidence"
+  ],
+  "bundle_prerequisite": "cfe941b4762a773679a552068d1560ae17a3f226",
+  "cargo_deny_remaining": [
+    "RUSTSEC-2026-0451"
+  ],
+  "clippy_raw": {
+    "bytes": 21463,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-evidence/clippy-S-native-evidence.tar.gz",
+    "sha256": "dcb07fcf1426bf2cd3c0ffa0e4b4af7cc212c5f3533bc78ef3fad0c6a7aaaf0f"
+  },
+  "clippy_receipt": {
+    "bytes": 13905,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-evidence/CLIPPY_RESULT.json",
+    "sha256": "e37938f2d00069298698ff914c262a1da794ed6b31bbcd5895457c1d16afe645"
+  },
+  "complete_end_to_end_cost_established": false,
+  "connector_observations": {
+    "bytes": 6851,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-package-inputs-002/CONNECTOR_JOB_OBSERVATIONS.json",
+    "sha256": "2ed501bbc969d7e45f9b835ad9948e1f89975fbcb59551ee0a1acca277512177"
+  },
+  "costs": {
+    "bytes": 5181,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-delivery-002/COSTS.json",
+    "sha256": "44cf47defbc5b0c3bf1878ac773e1932a60b9642350afe560950c6b4dfedd38e"
+  },
+  "evidence": "ed6bd2eaa281c0ee9d718e5a03f4c92c3d5ec061",
+  "evidence_branch": "engineering/cell-integrated-20261108-08b6-clippy-evidence",
+  "evidence_changed_paths": [
+    ".github/blob-size-allowlist.txt",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/CLIPPY_RESULT.json",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/CONNECTOR_JOB_OBSERVATIONS.json",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/COSTS.json",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/FROZEN_S.json",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/INITIAL_G_DELIVERY.json",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/PREFLIGHT.json",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/RAW_EVIDENCE_MANIFEST.json",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/README.zh-CN.md",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/SOURCE_ARCHIVE_BINDING.json",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/STARTUP_RECONCILIATION.json",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/VALIDATION.json",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/VALIDATION_PROFILE.json",
+    "qualification/cell-integrated-clippy-20261108-08b6/observations/raw-evidence.tar.gz"
+  ],
+  "evidence_name_status": [
+    "M\t.github/blob-size-allowlist.txt",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/CLIPPY_RESULT.json",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/CONNECTOR_JOB_OBSERVATIONS.json",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/COSTS.json",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/FROZEN_S.json",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/INITIAL_G_DELIVERY.json",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/PREFLIGHT.json",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/RAW_EVIDENCE_MANIFEST.json",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/README.zh-CN.md",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/SOURCE_ARCHIVE_BINDING.json",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/STARTUP_RECONCILIATION.json",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/VALIDATION.json",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/VALIDATION_PROFILE.json",
+    "A\tqualification/cell-integrated-clippy-20261108-08b6/observations/raw-evidence.tar.gz"
+  ],
+  "evidence_operations": {
+    "bytes": 7073,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-delivery-002/EVIDENCE_OPERATIONS.json",
+    "sha256": "510ba252d5e1f69861346adb0fe90454d05617931caa8f2230a6e48a201e046f"
+  },
+  "evidence_parent": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+  "evidence_tree": "18acea79275b7bc47ed74f46c28a27f9404f0ce2",
+  "final_source_states": {
+    "C": {
+      "commit": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+      "status": "",
+      "tree": "e411d25b47c166f35783a27054adb6a3f6682594"
+    },
+    "E": {
+      "commit": "6c63d1aab2a4914c3559b368b1ade5a4748e8df7",
+      "status": "",
+      "tree": "0290f23d80cbbca7a7fd9be546dbb305a05c70f9"
+    },
+    "F": {
+      "commit": "fbccef047dfdd435808796dfc5d2d4223eb645c8",
+      "status": "",
+      "tree": "7d2a1cc8c8a45f9f07c7cc4e5c4179941bb9443d"
+    },
+    "G": {
+      "commit": "ed6bd2eaa281c0ee9d718e5a03f4c92c3d5ec061",
+      "status": "",
+      "tree": "18acea79275b7bc47ed74f46c28a27f9404f0ce2"
+    },
+    "R": {
+      "commit": "cfe941b4762a773679a552068d1560ae17a3f226",
+      "status": "",
+      "tree": "e6fc9a1cb7c2441c1811d08356f7e31b2e886177"
+    },
+    "S_owner": {
+      "commit": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+      "status": "",
+      "tree": "f06389aa4f5caf0af5fec419da6473e198796b24"
+    },
+    "S_validation": {
+      "commit": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+      "status": "",
+      "tree": "f06389aa4f5caf0af5fec419da6473e198796b24"
+    },
+    "initial_unpublished_G": {
+      "commit": "a35cbe7a73ffbbb3ec76ed0d9f8c6a9deca4ac81",
+      "status": "",
+      "tree": "04233882ab81765e88ae27f68a8cbaa0b1fd2663"
+    }
+  },
+  "hosted_S_CI_rerun": false,
+  "joint_learning_configuration": null,
+  "native_test_counts": {
+    "aws": 5,
+    "python": 74,
+    "ui": 33
+  },
+  "native_validation": {
+    "bytes": 73457,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-common-validation-001/VALIDATION.json",
+    "sha256": "c88446616596b73c02d99005c373c16a0e503fe2b046132d7ebb51a676033e65"
+  },
+  "overall_gate_pass": false,
+  "preflight": {
+    "bytes": 54791,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-common-preflight-001/PREFLIGHT.json",
+    "sha256": "af126a9496bf6d80bbc705c49707fb5e6999816bef93e943cf9ccb9d89e05fe4"
+  },
+  "production_qualification": false,
+  "profile": {
+    "bytes": 33602,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-common-validation-001/VALIDATION_PROFILE.json",
+    "sha256": "6ba3920bc8ba6cbd4d74f2f4bfc44136556fc8dc54e725c61c76cb2efefb2b07"
+  },
+  "published": false,
+  "raw_evidence": {
+    "bytes": 2042801,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-delivery-002/raw-evidence.tar.gz",
+    "sha256": "fe8281a293c620bc86209d93eec35eb271c91e0f1c2e43c33b5a9fc6411adacf"
+  },
+  "raw_evidence_members": 54,
+  "raw_manifest": {
+    "bytes": 13087,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-delivery-002/RAW_EVIDENCE_MANIFEST.json",
+    "sha256": "e33ae715bf57684d057e71e8adc930eba9b297176408dcf957b1563cf1595ca4"
+  },
+  "recorded_at_utc": "2026-11-08T21:28:57.046294+00:00",
+  "replaces_unpublished_evidence": {
+    "bundle": {
+      "bytes": 1978822,
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-delivery-001/R-to-G.bundle",
+      "sha256": "11ef2c72f1697a10ca708042cfb56aaee260276ad3d52c228bbfdc3e9fddadb3"
+    },
+    "commit": "a35cbe7a73ffbbb3ec76ed0d9f8c6a9deca4ac81",
+    "delivery": {
+      "bytes": 8227,
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-package-inputs-002/INITIAL_G_DELIVERY.json",
+      "sha256": "cc4a89ec4c94c991e810d8e77d087638b13e207b36a016dce319ab82456fc084"
+    },
+    "original_native_delivery_path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-delivery-001/FINAL_DELIVERY.json",
+    "raw_evidence": {
+      "bytes": 1951995,
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-delivery-001/raw-evidence.tar.gz",
+      "sha256": "400b4c5964202a9dded1209c49ae0487e958d91c9ab351f4304f8d87d282f88e"
+    },
+    "reason": "Add explicit unresolved client-startup history and cost boundary; source/tests unchanged.",
+    "retained_branch": "engineering/cell-integrated-20261108-08b6-clippy-evidence-initial-unpublished",
+    "tree": "04233882ab81765e88ae27f68a8cbaa0b1fd2663"
+  },
+  "runtime_code_unchanged_from_S": true,
+  "schema": "hepta.successor-S-G-delivery.v1",
+  "scientific_qualification": false,
+  "skipped": 0,
+  "source": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+  "source_archive": {
+    "bytes": 162334720,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-common-validation-001/source.tar",
+    "sha256": "fb94f5f064aec383d5ac8e839c8e4a51995165651491b7f83782bdbd50a9193a"
+  },
+  "source_archive_integrity": {
+    "bytes": 3600420,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-common-validation-001/archive-integrity.json",
+    "sha256": "49e57f89f61c7e54d1e2924022990f3bd9b1f2759fa5b2ee7682cc960754551f"
+  },
+  "source_branch": "fix/cell-ui-ime-clippy-20261108-08b6",
+  "source_changed_paths": [
+    "apps/hepta-control-ui/rust/robrix-ui/src/robrix/room_ime_commit_tests.rs"
+  ],
+  "source_parent": "cfe941b4762a773679a552068d1560ae17a3f226",
+  "source_tree": "f06389aa4f5caf0af5fec419da6473e198796b24",
+  "startup_reconciliation": {
+    "bytes": 3095,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-package-inputs-002/STARTUP_RECONCILIATION.json",
+    "sha256": "adf84b353abc8dae5f06fbe37921b29216b737ba433a37401cf55224ae95bedb"
+  },
+  "unrecovered_001_request_cost": null
+}

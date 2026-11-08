@@ -1,0 +1,217 @@
+{
+  "schema": "hepta.clippy-one-line-freeze.v1",
+  "base_R": "cfe941b4762a773679a552068d1560ae17a3f226",
+  "root": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source",
+  "evidence": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-evidence",
+  "environment": {
+    "PATH": "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin:/home/qian-qi/work/cell-dependency-pin-20261108-08b6-evidence/tools/bin:/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin:/home/qian-qi/.local/bin:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-target"
+  },
+  "steps": [
+    {
+      "name": "tool-rustc",
+      "argv": [
+        "rustc",
+        "--version",
+        "--verbose"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/followup-source",
+      "returncode": 0,
+      "wall_seconds": 0.005640245042741299,
+      "bytes": 196,
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+      "log": "tool-rustc.log"
+    },
+    {
+      "name": "tool-cargo",
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/followup-source",
+      "returncode": 0,
+      "wall_seconds": 0.02775104099418968,
+      "bytes": 36,
+      "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+      "log": "tool-cargo.log"
+    },
+    {
+      "name": "tool-clippy",
+      "argv": [
+        "cargo-clippy",
+        "--version"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/followup-source",
+      "returncode": 0,
+      "wall_seconds": 0.008998970035463572,
+      "bytes": 38,
+      "sha256": "35a36a02149eb682cc65a0f29c482942cab20c49fe19f75208155febbcbb78e8",
+      "log": "tool-clippy.log"
+    },
+    {
+      "name": "tool-rustfmt",
+      "argv": [
+        "rustfmt",
+        "--version"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/followup-source",
+      "returncode": 0,
+      "wall_seconds": 0.007424001989420503,
+      "bytes": 45,
+      "sha256": "21e923568a260155c34a6f780f9513d3962c088aa3bbe8c91ab5385f470547d1",
+      "log": "tool-rustfmt.log"
+    },
+    {
+      "name": "tool-just",
+      "argv": [
+        "just",
+        "--version"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/followup-source",
+      "returncode": 0,
+      "wall_seconds": 0.001198343001306057,
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+      "log": "tool-just.log"
+    },
+    {
+      "name": "create-worktree",
+      "argv": [
+        "git",
+        "worktree",
+        "add",
+        "-b",
+        "fix/cell-ui-ime-clippy-20261108-08b6",
+        "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source",
+        "cfe941b4762a773679a552068d1560ae17a3f226"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/followup-source",
+      "returncode": 0,
+      "wall_seconds": 0.4525192339788191,
+      "bytes": 143,
+      "sha256": "309236fafe790f020beebcb70d94332a2199cbba66392c638b7763ea192e097a",
+      "log": "create-worktree.log"
+    },
+    {
+      "name": "fmt-final",
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source",
+      "returncode": 0,
+      "wall_seconds": 0.1519310800358653,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log": "fmt-final.log"
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source",
+      "returncode": 0,
+      "wall_seconds": 0.05760518700117245,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log": "diff-check.log"
+    },
+    {
+      "name": "stage-one-line",
+      "argv": [
+        "git",
+        "add",
+        "--",
+        "apps/hepta-control-ui/rust/robrix-ui/src/robrix/room_ime_commit_tests.rs"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source",
+      "returncode": 0,
+      "wall_seconds": 0.05871698696864769,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log": "stage-one-line.log"
+    },
+    {
+      "name": "commit-S",
+      "argv": [
+        "git",
+        "commit",
+        "-m",
+        "fix(ui): avoid unnecessary mutable IME test argument"
+      ],
+      "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-source",
+      "returncode": 0,
+      "wall_seconds": 0.06499069702113047,
+      "bytes": 148,
+      "sha256": "174cb534b0e5fcefb3e7383bce4435a5e10f311519d373b27d62da0ec73d0274",
+      "log": "commit-S.log"
+    }
+  ],
+  "base_before": {
+    "head": "cfe941b4762a773679a552068d1560ae17a3f226",
+    "tree": "e6fc9a1cb7c2441c1811d08356f7e31b2e886177",
+    "status": ""
+  },
+  "missing_components_initially": [],
+  "tools": {
+    "rustc": {
+      "path": "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "bytes": 644784,
+      "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6",
+      "version": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2"
+    },
+    "cargo": {
+      "path": "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "bytes": 42185192,
+      "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66",
+      "version": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)"
+    },
+    "clippy": {
+      "path": "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo-clippy",
+      "bytes": 1263912,
+      "sha256": "b71b1263063707608daa1e9b231ad9d87507c11d6aa178ede2b01d8372d5effb",
+      "version": "clippy 0.1.95 (59807616e1 2026-04-14)"
+    },
+    "rustfmt": {
+      "path": "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "bytes": 5295560,
+      "sha256": "56b31ad3ec8fe0277a2884a189e243b8f04e9b48e5fd22e547c1516c5f8fd34c",
+      "version": "rustfmt 1.9.0-stable (59807616e1 2026-04-14)"
+    },
+    "just": {
+      "path": "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin/just",
+      "bytes": 5452040,
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7",
+      "version": "just 1.51.0"
+    }
+  },
+  "before": {
+    "head": "cfe941b4762a773679a552068d1560ae17a3f226",
+    "tree": "e6fc9a1cb7c2441c1811d08356f7e31b2e886177",
+    "status": ""
+  },
+  "changed_file": {
+    "path": "apps/hepta-control-ui/rust/robrix-ui/src/robrix/room_ime_commit_tests.rs",
+    "before_sha256": "d99d84cf2938647ac71ebe0e5b09827390a0d057dc3c3fddc21fe7ee1dbc9fc4",
+    "after_sha256": "bca4e1cc0c0e844e63b2db4207e4084ce0e9222824f601774a438d5dc6be68fa",
+    "before_bytes": 7454,
+    "after_bytes": 7450
+  },
+  "frozen": {
+    "head": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+    "tree": "f06389aa4f5caf0af5fec419da6473e198796b24",
+    "status": ""
+  },
+  "exact_diff": "diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room_ime_commit_tests.rs b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room_ime_commit_tests.rs\nindex 01bdf0a1..6124703a 100644\n--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room_ime_commit_tests.rs\n+++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room_ime_commit_tests.rs\n@@ -31,7 +31,7 @@ impl Surface {\n             });\n             WidgetRef::script_from_value(vm, value)\n         });\n-        let input = root.text_input(&mut cx, ids!(message_input));\n+        let input = root.text_input(&cx, ids!(message_input));\n         assert!(!input.is_empty());\n         let mut workspace = ChatWorkspace::default();\n         assert!(workspace.edit(text.to_owned()));\n",
+  "numstat": "1\t1\tapps/hepta-control-ui/rust/robrix-ui/src/robrix/room_ime_commit_tests.rs\n",
+  "base_after": {
+    "head": "cfe941b4762a773679a552068d1560ae17a3f226",
+    "tree": "e6fc9a1cb7c2441c1811d08356f7e31b2e886177",
+    "status": ""
+  }
+}

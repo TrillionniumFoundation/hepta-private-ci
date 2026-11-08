@@ -1,0 +1,631 @@
+{
+  "expected_remaining_blocker": "RUSTSEC-2026-0451; no all-gates-green claim",
+  "explicit_environment_additions": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TERM_COLOR": "never",
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PATH": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/home/qian-qi/work/cell-dependency-pin-20261108-08b6-evidence/tools/bin:/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin:/home/qian-qi/.local/bin:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-validation-source/scripts:/home/qian-qi/work/cell-integration-20261108-08b6/clippy-validation-source",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "VECLIB_MAXIMUM_THREADS": "1"
+  },
+  "font_policy": "Strict clean before installation; exactly two pinned untracked resources during UI test; exact-hash cleanup then strict clean.",
+  "fonts": {
+    "assets": [
+      {
+        "bytes": 8543168,
+        "file": "NotoSansSC-Bold.otf",
+        "logical": "hepta_robrix_ui/resources/fonts/NotoSansSC-Bold.otf",
+        "original_cache": "/home/qian-qi/work/cell-ui-ime-20261108-08b6/apps/hepta-control-ui/rust/target/font-assets/fb9e49a7f14b742ac7e390ceee9be115ad6e04a5f852eec67fb0a126870070a3/NotoSansSC-Bold.otf",
+        "repo_path": "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NotoSansSC-Bold.otf",
+        "retained_path": "/home/qian-qi/work/cell-ui-ime-20261108-08b6-evidence/runtime-assets/fb9e49a7f14b742ac7e390ceee9be115ad6e04a5f852eec67fb0a126870070a3/NotoSansSC-Bold.otf",
+        "sha256": "c6cb5a93abaa9edc8ee7463b7ebb7f42d618d40e6ed2f7a5371c97b0b64767c0",
+        "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/SC/NotoSansSC-Bold.otf"
+      },
+      {
+        "bytes": 8331336,
+        "file": "NotoSansSC-Regular.otf",
+        "logical": "hepta_robrix_ui/resources/fonts/NotoSansSC-Regular.otf",
+        "original_cache": "/home/qian-qi/work/cell-ui-ime-20261108-08b6/apps/hepta-control-ui/rust/target/font-assets/fb9e49a7f14b742ac7e390ceee9be115ad6e04a5f852eec67fb0a126870070a3/NotoSansSC-Regular.otf",
+        "repo_path": "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/NotoSansSC-Regular.otf",
+        "retained_path": "/home/qian-qi/work/cell-ui-ime-20261108-08b6-evidence/runtime-assets/fb9e49a7f14b742ac7e390ceee9be115ad6e04a5f852eec67fb0a126870070a3/NotoSansSC-Regular.otf",
+        "sha256": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9",
+        "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/SC/NotoSansSC-Regular.otf"
+      }
+    ],
+    "manifestSha256": "fb9e49a7f14b742ac7e390ceee9be115ad6e04a5f852eec67fb0a126870070a3",
+    "prepare_cache_argument": "/home/qian-qi/work/cell-ui-ime-20261108-08b6-evidence/runtime-assets",
+    "released_at_utc": "2026-11-08T20:13:18.026463+00:00",
+    "runtime_asset_cache": "/home/qian-qi/work/cell-ui-ime-20261108-08b6-evidence/runtime-assets",
+    "status_after": "",
+    "target": "/home/qian-qi/work/cell-ui-ime-20261108-08b6/apps/hepta-control-ui/rust/target",
+    "target_owner_released": true
+  },
+  "job_budget": {
+    "cpu_quota_percent": 200,
+    "memory_max_bytes": 6442450944,
+    "outer_timeout_seconds": 2400
+  },
+  "joint_learning_configuration": null,
+  "makepad": {
+    "actual_checkout_before": {
+      "allowed_untracked": [
+        ".cargo-ok"
+      ],
+      "cargo_marker": {
+        "bytes": 0,
+        "path": "/home/qian-qi/.cargo/git/checkouts/makepad-69d78fae78fc8901/337566c/.cargo-ok",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "checkout_physical_byte_normalization": {
+        "attributes": "apps/sheets/demos/household_budget.csv: text: set\napps/sheets/demos/household_budget.csv: eol: crlf\napps/sheets/demos/project_plan.csv: text: set\napps/sheets/demos/project_plan.csv: eol: crlf\napps/sheets/demos/sales_table.csv: text: set\napps/sheets/demos/sales_table.csv: eol: crlf\ntools/agents.ps1: text: set\ntools/agents.ps1: eol: crlf\ntools/aihub-node-update.ps1: text: set\ntools/aihub-node-update.ps1: eol: crlf\ntools/open_harmony/cmd/aarch64-unknown-linux-ohos-clang++.cmd: text: set\ntools/open_harmony/cmd/aarch64-unknown-linux-ohos-clang++.cmd: eol: crlf\ntools/open_harmony/cmd/aarch64-unknown-linux-ohos-clang.cmd: text: set\ntools/open_harmony/cmd/aarch64-unknown-linux-ohos-clang.cmd: eol: crlf\ntools/open_harmony/cmd/x86_64-unknown-linux-ohos-clang++.cmd: text: set\ntools/open_harmony/cmd/x86_64-unknown-linux-ohos-clang++.cmd: eol: crlf\ntools/open_harmony/cmd/x86_64-unknown-linux-ohos-clang-cl.cmd: text: set\ntools/open_harmony/cmd/x86_64-unknown-linux-ohos-clang-cl.cmd: eol: crlf\ntools/open_harmony/cmd/x86_64-unknown-linux-ohos-clang.cmd: text: set\ntools/open_harmony/cmd/x86_64-unknown-linux-ohos-clang.cmd: eol: crlf\ntools/qwen38/convert_start.ps1: text: set\ntools/qwen38/convert_start.ps1: eol: crlf\ntools/qwen38/dl_start.ps1: text: set\ntools/qwen38/dl_start.ps1: eol: crlf\ntools/qwen38/fetch_convertlog.ps1: text: set\ntools/qwen38/fetch_convertlog.ps1: eol: crlf\ntools/qwen38/get_key.ps1: text: set\ntools/qwen38/get_key.ps1: eol: crlf\ntools/qwen38/hour_probe.ps1: text: set\ntools/qwen38/hour_probe.ps1: eol: crlf\ntools/qwen38/inspect_llamacpp.ps1: text: set\ntools/qwen38/inspect_llamacpp.ps1: eol: crlf\ntools/qwen38/place_binaries.ps1: text: set\ntools/qwen38/place_binaries.ps1: eol: crlf\ntools/qwen38/poll.ps1: text: set\ntools/qwen38/poll.ps1: eol: crlf\ntools/qwen38/poll_done.ps1: text: set\ntools/qwen38/poll_done.ps1: eol: crlf\ntools/qwen38/provision_start.ps1: text: set\ntools/qwen38/provision_start.ps1: eol: crlf\ntools/qwen38/purge_xet.ps1: text: set\ntools/qwen38/purge_xet.ps1: eol: crlf\ntools/qwen38/recon2_217.ps1: text: set\ntools/qwen38/recon2_217.ps1: eol: crlf\ntools/qwen38/recon_217.ps1: text: set\ntools/qwen38/recon_217.ps1: eol: crlf\ntools/qwen38/relaunch_aicontent.ps1: text: set\ntools/qwen38/relaunch_aicontent.ps1: eol: crlf\ntools/qwen38/restart_aicontent.ps1: text: set\ntools/qwen38/restart_aicontent.ps1: eol: crlf\ntools/qwen38/serve_start.ps1: text: set\ntools/qwen38/serve_start.ps1: eol: crlf\ntools/qwen38/tok_parity.ps1: text: set\ntools/qwen38/tok_parity.ps1: eol: crlf\ntools/qwen38/verify_model.ps1: text: set\ntools/qwen38/verify_model.ps1: eol: crlf\ntools/rustup/windows_rustup.bat: text: set\ntools/rustup/windows_rustup.bat: eol: crlf\n",
+        "core_autocrlf": "false",
+        "core_eol": "",
+        "raw_exceptions": [
+          {
+            "actual_mode": "100644",
+            "actual_oid": "c6b727e20573b748978b7aa2bbcc2ad880b1be8c",
+            "bytes": 502,
+            "expected_mode": "100644",
+            "expected_oid": "e1ae7776b614818bcf91b67da1f8f07239495204",
+            "git_bytes": 494,
+            "git_sha256": "5a38754170e5169ac009462a80b47f7f07678020fe1f19fa4c435f4487793d4b",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "apps/sheets/demos/household_budget.csv",
+            "sha256": "4945232b463a6670b6470bac2da8c3b44d3bd2f38c780429696efca8f48a8965"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "621600d06566666a2b230664ab40d68506669e78",
+            "bytes": 579,
+            "expected_mode": "100644",
+            "expected_oid": "e03439650a674bb2e5285abe5616151f5672c70c",
+            "git_bytes": 572,
+            "git_sha256": "49e5966e285a208930d8447e915191aa4f510e1eb790d1da4391c15229435071",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "apps/sheets/demos/project_plan.csv",
+            "sha256": "ba4b2d0c0e3ecc39bf8f1966dde9bd111baf98c579409b12701f3c7b5bba138a"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "62ea2377131ac87b7fa100cadbcf3d6e01bdaa36",
+            "bytes": 353,
+            "expected_mode": "100644",
+            "expected_oid": "2cfbbb3465d0fc820530f4fcce71f2ebb7fb85cd",
+            "git_bytes": 343,
+            "git_sha256": "a235db56a66c8d65040921495f0c82fa44393661042ba5f6ab5df0deb58f7211",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "apps/sheets/demos/sales_table.csv",
+            "sha256": "1d0ed5cfb6245763b11f454e6272a0563f25ab0785c8fbea3c6e8dd4f1b49e12"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "36819adccc8f8c23e3bd86eba24a693fa1dabcfb",
+            "bytes": 855,
+            "expected_mode": "100644",
+            "expected_oid": "d346d5f73fd4bde15b155c9be3d4d4ef28d60f8c",
+            "git_bytes": 835,
+            "git_sha256": "1f85ab99f327ca963546e26eb75fe73e2b8018ca3c0708e9cc5d371216d18a94",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/agents.ps1",
+            "sha256": "ae7df177f1be3934727c3c2795880414741760d8cb7f0e83390ca27b909146d5"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "ffc61f1bc046e1493fdefa1b227d24aa1bef67c0",
+            "bytes": 6290,
+            "expected_mode": "100644",
+            "expected_oid": "141d5790cf63b51d592d1a2ae97860d1375353cb",
+            "git_bytes": 6187,
+            "git_sha256": "78a6feb00bdf2836d9cfca4000e2d039475b7a68639d9353a029a9f1f30c53a8",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/aihub-node-update.ps1",
+            "sha256": "ccad32a2933e6c93341876658e740f740db34b5930e7640b9edab8555da308cd"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "98807dce0a5a607c6702c65d017ecc98c5011ffd",
+            "bytes": 238,
+            "expected_mode": "100644",
+            "expected_oid": "a7a532771f3376f33b4d08953323d9872b08dcad",
+            "git_bytes": 224,
+            "git_sha256": "caec6a51d6960db26ea5cb4dbf4c040acb073b71c570fe917a90d2cc9e454185",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/open_harmony/cmd/aarch64-unknown-linux-ohos-clang++.cmd",
+            "sha256": "248f7dfe1d7e0081b6b6b482582e9662e81201bf4ffca61d1e0c9069fd423a0e"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "af86df6bbd4cff9a6a3ad6e6f5e73a87eeaca8c6",
+            "bytes": 236,
+            "expected_mode": "100644",
+            "expected_oid": "05188ca18769287d10c3f8fd830391a5b7d43967",
+            "git_bytes": 222,
+            "git_sha256": "ecfc2ade15b4d38bf54c6f9ad74945da20deb57cba93c267ce4ed381d914e25d",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/open_harmony/cmd/aarch64-unknown-linux-ohos-clang.cmd",
+            "sha256": "2c6691f2d42a984c49167b0a81663b024cc1cdd8abb05b7a83a219abacae589d"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "943eed60a8ad4313ccbb8fefcd2de5dba17d1e81",
+            "bytes": 253,
+            "expected_mode": "100644",
+            "expected_oid": "607bdfe58c679287f52bed96e5a4b7710c722603",
+            "git_bytes": 238,
+            "git_sha256": "6a5da52c9b8f0f004be2135ff24607dd96f38c40c4cef0803114dc184ec98793",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/open_harmony/cmd/x86_64-unknown-linux-ohos-clang++.cmd",
+            "sha256": "3bcc8a081fb5f920953ba9e05b6eb83aae54df0769ff9887d9d5140fdf954906"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "e41f34723640946ce5378497cd190a7c1c192860",
+            "bytes": 254,
+            "expected_mode": "100644",
+            "expected_oid": "0a9cfa3338833f4fb64963f5cc52b3adc57c5b56",
+            "git_bytes": 239,
+            "git_sha256": "d8de0d7d757c44eb87f56e15e73ae25a3117e40fbeb623ed8a38ee168a11ef0c",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/open_harmony/cmd/x86_64-unknown-linux-ohos-clang-cl.cmd",
+            "sha256": "2894732a7f46df3d7944806bf272fda9841def80bd859c7c1276c6ff9847db75"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "f68510a580e86c16b1edb6dec97d80f21c4121b9",
+            "bytes": 251,
+            "expected_mode": "100644",
+            "expected_oid": "fc7bfcc3f9ade5f5020adbf549ae0afe1b405f7f",
+            "git_bytes": 236,
+            "git_sha256": "cf5077e6ee51b6acbdb852671fbcc9faa813bac0f5c12460b2c0ffd9ecd9426c",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/open_harmony/cmd/x86_64-unknown-linux-ohos-clang.cmd",
+            "sha256": "18e0021dc989b3bd120d7ab731db739a8ea9b944a5adbb1413cfcefa10c0efe2"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "4da1d75117af098d6a2d52e4e92352ea7b415ca1",
+            "bytes": 3495,
+            "expected_mode": "100644",
+            "expected_oid": "10f41905c294988c5f7caa067ef620a595d6eebd",
+            "git_bytes": 3439,
+            "git_sha256": "2919d274e8eac64469281ed5cbc5a3f24a44f641b569964d0cc10d90743ab89a",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/convert_start.ps1",
+            "sha256": "e09861e9b9a5a73d0c62d10fbae6bf0dbe9f564a968442dc1050a9f20dbda09c"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "71f2966b4ab17fde44355df3517b8dd95111f227",
+            "bytes": 975,
+            "expected_mode": "100644",
+            "expected_oid": "7727ba0ea6bc88fa36f77ac7eb1571f34f39aab7",
+            "git_bytes": 954,
+            "git_sha256": "03309ee8d7bbc8f10621230778f68190649074203f091dc83de622c5018bf73f",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/dl_start.ps1",
+            "sha256": "c2dc01819cb4288fa13bdeb5f1d360c2fd7f078c0b71751eb6fd784a4ce874b7"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "44f0d13fc7d2e7937d0e624676c80f8b6f5e8ad3",
+            "bytes": 1067,
+            "expected_mode": "100644",
+            "expected_oid": "c585a222b5418ac82a3b65b5fd5baadb19046f04",
+            "git_bytes": 1056,
+            "git_sha256": "4e18869ef73ff9bea50c110f67ce14604d6dafb3b92b6dfe8a752e83e18f51a2",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/fetch_convertlog.ps1",
+            "sha256": "a3d4cd93144c31efe7f51cc66170cd78e121454c3d1317a073350f6ddc6b306f"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "5ba29d623973a21459413b857252c0d2172b9a5f",
+            "bytes": 43,
+            "expected_mode": "100644",
+            "expected_oid": "11e0d26290b5688541e9774bdf307de33deaef23",
+            "git_bytes": 42,
+            "git_sha256": "9d43bb697da7ee3b550f3b71a39c3d6e15ce16b88eb275b2665f88afa9d9319e",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/get_key.ps1",
+            "sha256": "6aeecdd954df0549b535229ab32572d41f9fd1058cbf9590dee49e797bd71151"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "f8ca4470f4d97be745f1e8288ebb3bdf80531466",
+            "bytes": 1512,
+            "expected_mode": "100644",
+            "expected_oid": "ab45c670bffee94636803030b9298478c73c8ce6",
+            "git_bytes": 1481,
+            "git_sha256": "2e8afd5d829232c5760201de108230d3624053be51c4f5cbf1e7473277f9e505",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/hour_probe.ps1",
+            "sha256": "0f548dfbcb6cae94a5cd6a61c5bad917ead89719f4c69d8731dfc3d1fce37eac"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "ff3bb1184c5164dde82ebc2e0c64bef17f62a48c",
+            "bytes": 1907,
+            "expected_mode": "100644",
+            "expected_oid": "d7f5229cdadf608c4fb9d9d42b4143e2783db25d",
+            "git_bytes": 1884,
+            "git_sha256": "75a291721cfb138074a24970a89cbf798f2e37ca64feb0c9082eab329a981632",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/inspect_llamacpp.ps1",
+            "sha256": "e0666bfe7a67a4679345dd7e7b51ab907d14e56717539f6bf371e77733529669"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "d785974777867b911f9578f130a6f04b133e4a86",
+            "bytes": 803,
+            "expected_mode": "100644",
+            "expected_oid": "9e28edf66a763f7ae3310c04eb2f62ed87dc1df5",
+            "git_bytes": 787,
+            "git_sha256": "69496db15ff1354f1b66ae43df873879c463090d8ec0e81f12b6c24a2ad63878",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/place_binaries.ps1",
+            "sha256": "bbfc5ccc855450fc6b56833b903d2dfa4d2109661324a353665cdd6580a8b3e6"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "6d947c49084041317a268bd611440ed2e1e1a8ff",
+            "bytes": 862,
+            "expected_mode": "100644",
+            "expected_oid": "224bedeb1cd29c8b0fcd6943679b8d8a2b25b27c",
+            "git_bytes": 847,
+            "git_sha256": "0477bbc8b9e779075477545e72254082e1aadd167a845f126fc262cbc21a7e71",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/poll.ps1",
+            "sha256": "1a7227bff484435670f5b30baa41d734c593cc56fd75c4b3bb6d67f416431c69"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "b299e2480edcf891c2a4df5b3fc498ce2aa9433f",
+            "bytes": 1029,
+            "expected_mode": "100644",
+            "expected_oid": "2a55b9bdfc478bd04375661bdff9897dd5ab8447",
+            "git_bytes": 1015,
+            "git_sha256": "0f8475dbaaccd044dfc74278102298c028d4e2880d1f732201a75fd2fc18db34",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/poll_done.ps1",
+            "sha256": "79e15ac88ab1fd19aea27cc390933d1800b601371d865e6771b7fc3bd3ba5622"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "d5e0775f255c9b3f82695324a44b53ab7476e647",
+            "bytes": 1073,
+            "expected_mode": "100644",
+            "expected_oid": "f32f5902003fb14e0e4a3495573e72f79d340cf3",
+            "git_bytes": 1063,
+            "git_sha256": "4a432a5a6f5b150737ac897c48e04e977cd3f5483d7ae7d53ad9f93cc24c3361",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/provision_start.ps1",
+            "sha256": "9a0d0244bbc1e6227b32290dd393d279bce1094753452c22736788aff4b1721e"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "037e1468f0cc3177e7a1dedfd3d718fdfb23299c",
+            "bytes": 667,
+            "expected_mode": "100644",
+            "expected_oid": "f1a1d60188b5a4231d98c2ebb423f627bfe39a68",
+            "git_bytes": 656,
+            "git_sha256": "b1bc2a0a7cb9405b45d9ffa96045cf56ed5c73e2f2b63f755cf4825e90486a98",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/purge_xet.ps1",
+            "sha256": "81242cfb61a1c8ddb33833acb45e8a0d5205f86f36c9b5acf6b982c8eed1bec5"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "c1df9bf89c000ceadfa878b3981834b093bf612c",
+            "bytes": 3138,
+            "expected_mode": "100644",
+            "expected_oid": "7596fc248bae2647f6cf72257913e40032975ddd",
+            "git_bytes": 3096,
+            "git_sha256": "af6b777f50077ebc282d2decb36430381b6f957b3c2c3350ef7d684f8af6a000",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/recon2_217.ps1",
+            "sha256": "1295b6091aa66975abe78499e470539a891571ac62b83e0a313f34b1c5be6448"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "77df4471983097f00d4fc29f2f1a9c32d32d15ab",
+            "bytes": 2810,
+            "expected_mode": "100644",
+            "expected_oid": "4e3a73f082192e920a586a7cd0d3bdba13f2ce58",
+            "git_bytes": 2764,
+            "git_sha256": "43872908ff5593c54a525aa097d40789c164a4d728abbb60275c3354b1f2578f",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/recon_217.ps1",
+            "sha256": "6e6950eccbc891425034c01fbe635b1ae38caa3e0670ef4e6e7d628aefe9efb9"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "dc027555c242f27f968f3433fa37fe4e7538f95b",
+            "bytes": 782,
+            "expected_mode": "100644",
+            "expected_oid": "fff598cddf046af8dadb4f9b085e1826e6caa4df",
+            "git_bytes": 773,
+            "git_sha256": "5fb6331074854b1a0a536740def3180d3ec34bd0f618ea9737bd30b33b79f693",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/relaunch_aicontent.ps1",
+            "sha256": "2b27ff017eb682f16b475d32906e536cc0d3014916260db85f5228c7f5059ef4"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "3189977609b8c637302c871456dd9515c388b3ed",
+            "bytes": 818,
+            "expected_mode": "100644",
+            "expected_oid": "c60d8229e4b6ca392ecbb2b7a962d1079a1e4368",
+            "git_bytes": 804,
+            "git_sha256": "696eb11e856d1f456da6b8407f8db35e7fd245f2f3d677d3fcf6cfeda9e59eef",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/restart_aicontent.ps1",
+            "sha256": "9c58a65da5460f0860410cb8cf76ab7343fb5ceaa298ee22d66c13db9d5fd96f"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "c51ae73b13437f74298765fda46adf43820d5285",
+            "bytes": 3179,
+            "expected_mode": "100644",
+            "expected_oid": "db014a8c608cea15855ff9c271cd0183315b7f2e",
+            "git_bytes": 3121,
+            "git_sha256": "0ec77538bab83c977fd700a9df826c3de8f83c08deb4b3ceea634da3745096de",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/serve_start.ps1",
+            "sha256": "bea983e08646789183ef74e9cb12308b08d7bd177693d32a6a883ba70934f206"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "9183ad5889f487f5f9bd668bbe74e33281faf3ea",
+            "bytes": 1890,
+            "expected_mode": "100644",
+            "expected_oid": "c96b9c31ced9eebea4d4764d2c9045c3b2efb3eb",
+            "git_bytes": 1850,
+            "git_sha256": "9f22ad1bdad192819d3e1d1732ec64ff9ee6f13f0ea8e2c6aaa3a8ecd6bb49ce",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/tok_parity.ps1",
+            "sha256": "7cdcf0404d840c8f779c563d1c75f7dafaf50683b670c2b850754d36236c56cd"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "4b8dcfab22c982b88867e22813b3505f99623a94",
+            "bytes": 2580,
+            "expected_mode": "100644",
+            "expected_oid": "5418598fb1d75df4afabb377d16ea46aad8827e5",
+            "git_bytes": 2520,
+            "git_sha256": "d4ee5393dec6f3f0ddb778066b4e3d5ab6209dbd9c50b992e522cd616bb7e134",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/qwen38/verify_model.ps1",
+            "sha256": "7283a80432da5e59f90fbb25175f94e416473fe975825aa5b98644f6d90446ef"
+          },
+          {
+            "actual_mode": "100644",
+            "actual_oid": "27676003dbc41926e686cb74c4f17da3938e06b8",
+            "bytes": 65,
+            "expected_mode": "100644",
+            "expected_oid": "b717d360645ce3ba56216277ec272da630e5a923",
+            "git_bytes": 61,
+            "git_sha256": "c7462b6785d280353e114eb7d1f100cf8784d096b30bd129002eb5a5c41120d4",
+            "normalization": "checkout_CRLF_to_git_LF",
+            "path": "tools/rustup/windows_rustup.bat",
+            "sha256": "c0393e060bccf373b9afa49da17ed83e2671d92a77b27997535ec9ed1f0f13a6"
+          }
+        ],
+        "scope": "Exact observed SDK checkout byte normalization pins; no files changed, no test results inferred",
+        "sdk_head": "337566c8b25d47f7e4fff6a202157b65bf183330",
+        "sdk_tree": "c6e18be7754f9634492ec5251bac3e8b4f7e09b7",
+        "status": "?? .cargo-ok"
+      },
+      "commit": "337566c8b25d47f7e4fff6a202157b65bf183330",
+      "complete_tracked_files_verified": 8677,
+      "index_tree": "c6e18be7754f9634492ec5251bac3e8b4f7e09b7",
+      "key_files": [
+        {
+          "bytes": 170514,
+          "path": "widgets/src/text_input.rs",
+          "sha256": "c85d035cb30e54c9a2c7f4afbcd16b5a9517685cc82ff432451e19d6a337e875"
+        },
+        {
+          "bytes": 4333,
+          "path": "platform/src/event/keyboard.rs",
+          "sha256": "3ba8a9bde55891387ef615a07059418b4f896cba73c114a61ab160a9814db088"
+        },
+        {
+          "bytes": 141816,
+          "path": "platform/src/os/web/web.js",
+          "sha256": "0404897d76bbd81e2225ab62b2fde1c4832e34331706b94c4c00aa71640fe765"
+        },
+        {
+          "bytes": 17661,
+          "path": "platform/src/os/web/to_wasm.rs",
+          "sha256": "63656088bcf248d906df60d896bb343ef38c81b584968cc6deb65895c2ce29e0"
+        }
+      ],
+      "normalization_input_pin": {
+        "bytes": 18309,
+        "path": "/home/qian-qi/work/cell-integration-20261108-08b6/followup-validation-001/SDK_CHECKOUT_NORMALIZATION.json",
+        "sha256": "cada5b43e95561b21a825b45ff23947dcb010f7dfccf22b89aafc4656109a096"
+      },
+      "physical_byte_exceptions_bound": 29,
+      "raw_bytes_equal_git_tree": false,
+      "rust_source_files_verified_equal_git_blobs": 6008,
+      "scope": "29 explicitly pinned CRLF materializations of LF Git blobs per SDK gitattributes; all Rust sources and all other tracked files equal raw Git bytes; no SDK or Git configuration was modified.",
+      "status_porcelain": "?? .cargo-ok",
+      "tracked_raw_bytes_modes_verified": true,
+      "tree": "c6e18be7754f9634492ec5251bac3e8b4f7e09b7",
+      "wasm_ime_patch_applied": false
+    },
+    "cargo_lock": {
+      "bytes": 64892,
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-validation-source/apps/hepta-control-ui/rust/Cargo.lock",
+      "sha256": "99d22c4031512530e66b1e1cbec256d069e6e613e158f37d247d9307de265734"
+    },
+    "packages": [
+      {
+        "name": "makepad-draw",
+        "source": "git+https://github.com/kevinaboos/makepad?rev=337566c8b25d47f7e4fff6a202157b65bf183330#337566c8b25d47f7e4fff6a202157b65bf183330",
+        "version": "2.0.0"
+      },
+      {
+        "name": "makepad-platform",
+        "source": "git+https://github.com/kevinaboos/makepad?rev=337566c8b25d47f7e4fff6a202157b65bf183330#337566c8b25d47f7e4fff6a202157b65bf183330",
+        "version": "2.0.0"
+      },
+      {
+        "name": "makepad-widgets",
+        "source": "git+https://github.com/kevinaboos/makepad?rev=337566c8b25d47f7e4fff6a202157b65bf183330#337566c8b25d47f7e4fff6a202157b65bf183330",
+        "version": "2.0.0"
+      }
+    ],
+    "scope": "Native SDK FullTextState/RoomScreen path; browser JS/WASM transport not exercised.",
+    "web_patch": {
+      "bytes": 29243,
+      "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-validation-source/apps/hepta-control-ui/rust/robrix-ui/patches/makepad-wasm-ime.patch",
+      "sha256": "694a54d1087bd004456a49ff742f7ff94d46df4803ab52c96bc6898f41bf89d4"
+    },
+    "web_patch_applied_to_native_checkout": false
+  },
+  "not_run": [
+    "PRED confirmation",
+    "Firefox/WASM/Playwright acceptance",
+    "full hosted CI",
+    "joint learned successor trial"
+  ],
+  "other_environment": "Inherited host environment preserved, not dumped; no secret environment capture.",
+  "preflight_receipt": {
+    "bytes": 54791,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-common-preflight-001/PREFLIGHT.json",
+    "sha256": "af126a9496bf6d80bbc705c49707fb5e6999816bef93e943cf9ccb9d89e05fe4"
+  },
+  "production_qualification": false,
+  "python_profile_exact_copy": {
+    "allow_skips": false,
+    "dependencies": {
+      "Pillow": "12.0.0",
+      "numpy": "1.26.4",
+      "torch": "2.9.1+cpu"
+    },
+    "joint_learning_configuration": null,
+    "native_budget": {
+      "cpu_quota_percent": 100,
+      "memory_max_bytes": 4294967296,
+      "outer_timeout_seconds": 600
+    },
+    "production_qualification": false,
+    "python_major_minor": "3.12",
+    "required_tests": 74,
+    "schema": "hepta.integration-validation-profile.v1",
+    "scientific_qualification": false,
+    "scope": "engineering tests and archive integrity; not a joint learning runtime configuration",
+    "source_policy": "clean complete committed tree, observed before and after tests; unchanged during archive verification",
+    "test_modules": [
+      "test_hepta_cell_joint_config",
+      "ndu_real_runtime.test_state_codec",
+      "ndu_real_runtime.test_subprocess_supervisor",
+      "ndu_real_runtime.test_training_job_result",
+      "test_hepta_source_archive",
+      "hepta_pred1.test_diagnose_training"
+    ],
+    "test_timeout_seconds": 360,
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    }
+  },
+  "python_profile_source_pin": {
+    "bytes": 1157,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-validation-source/qualification/cell-integrated-20261108-08b6/VALIDATION_PROFILE.json",
+    "sha256": "3e93559bfe523de91ca8a9366a645aaedbe232a2b60ef4839cd57361e94e4df3"
+  },
+  "python_runtime": {
+    "dependencies": {
+      "Pillow": "12.0.0",
+      "numpy": "1.26.4",
+      "torch": "2.9.1+cpu"
+    },
+    "executable": {
+      "bytes": 8020928,
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+    "version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "required_tests": {
+    "aws_auth": 5,
+    "native_ui_package": 33,
+    "python_common_controls": 74
+  },
+  "same_source_separate_clippy_receipt": {
+    "bytes": 13905,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-evidence/CLIPPY_RESULT.json",
+    "sha256": "e37938f2d00069298698ff914c262a1da794ed6b31bbcd5895457c1d16afe645"
+  },
+  "schema": "hepta.clippy-followup-validation-profile.v1",
+  "scientific_qualification": false,
+  "separate_clippy_scope": "Rust 1.95 original CI clippy runs on the same S in its owner worktree; exact receipt and artifact are separately preserved in G, not inferred from these 112 tests.",
+  "source": {
+    "commit": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+    "tree": "f06389aa4f5caf0af5fec419da6473e198796b24"
+  },
+  "targets": {
+    "aws": "/home/qian-qi/work/cell-dependency-pin-20261108-08b6-target",
+    "ownership": "Both source owners explicitly released before R use.",
+    "ui": "/home/qian-qi/work/cell-ui-ime-20261108-08b6/apps/hepta-control-ui/rust/target"
+  },
+  "tools": {
+    "bazel": {
+      "binary": {
+        "bytes": 77023347,
+        "path": "/home/qian-qi/work/cell-dependency-pin-20261108-08b6-evidence/tools/bin/bazel",
+        "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8"
+      },
+      "version": "bazel 9.3.0"
+    },
+    "cargo": {
+      "binary": {
+        "bytes": 42865872,
+        "path": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "sha256": "f30f9fd1b1d0b8fd10dc33219eb4cd4bec3543f40e434ac71f5a03fd0359063f"
+      },
+      "version": "cargo 1.96.0 (30a34c682 2026-05-25)\nrelease: 1.96.0\ncommit-hash: 30a34c6821b57de0aaec83a901aca39f88f6778c\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nlibgit2: 1.9.2 (sys:0.20.4 vendored)\nlibcurl: 8.19.0-DEV (sys:0.4.87+curl-8.19.0 vendored ssl:OpenSSL/3.5.4)\nssl: OpenSSL 3.5.4 30 Sep 2025\nos: Ubuntu 26.4.0 (resolute) [64-bit]"
+    },
+    "cargo-deny": {
+      "binary": {
+        "bytes": 16086896,
+        "path": "/home/qian-qi/work/cell-dependency-pin-20261108-08b6-evidence/tools/bin/cargo-deny",
+        "sha256": "06f9d1a0ba92b201bff1215b6dc24e669b212c151ecd52cae5d38aab73931d3c"
+      },
+      "version": "cargo-deny 0.19.0"
+    },
+    "cargo-nextest": {
+      "binary": {
+        "bytes": 36176728,
+        "path": "/home/qian-qi/work/cell-dependency-pin-20261108-08b6-evidence/tools/bin/cargo-nextest",
+        "sha256": "aac21fea56e7ae3f45b5b7c606e02d62d4ec5b3578658fefe4a98a5f29c4bf1a"
+      },
+      "version": "cargo-nextest 0.9.146 (8af696ddc 2026-09-21)\nrelease: 0.9.146\ncommit-hash: 8af696ddcce8fff2962d6a5168b6d138b8616a35\ncommit-date: 2026-09-21\nhost: x86_64-unknown-linux-gnu"
+    },
+    "just": {
+      "binary": {
+        "bytes": 5452040,
+        "path": "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin/just",
+        "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+      },
+      "version": "just 1.51.0"
+    },
+    "rustc": {
+      "binary": {
+        "bytes": 646032,
+        "path": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "sha256": "ba4b837efb6612dfa8d941c5a72b8a50d1d03a0f36216743b173949aa8d9eb75"
+      },
+      "version": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "complete_end_to_end_cost_established": false,
+  "complete_retained_inventory": {
+    "bytes": 744353,
+    "distribution": "Retained privately on native host; full host inventory is excluded from final Git evidence and deliverable archive.",
+    "inventory_complete": true,
+    "path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-package-inputs-002/startup-evidence/retained-jobs-rog.json",
+    "sha256": "8e8ee6852f6c1f5ddf4adc4fecbb40c5d3393289dee989f443e135133df1e675",
+    "status_authoritative": false,
+    "total": 5724
+  },
+  "first_G_commit": "a35cbe7a73ffbbb3ec76ed0d9f8c6a9deca4ac81",
+  "first_G_delivery_native_path": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-delivery-001/FINAL_DELIVERY.json",
+  "first_G_delivery_sha256": "cc4a89ec4c94c991e810d8e77d087638b13e207b36a016dce319ab82456fc084",
+  "first_G_tree": "04233882ab81765e88ae27f68a8cbaa0b1fd2663",
+  "first_G_was_not_published": true,
+  "interval_finding": "Only the observed preflight and common job identities were found in this inclusive interval; no additional retained job was observed. This does not settle an unregistered request.",
+  "interval_inclusive_created_unix_ms": [
+    1794172367052,
+    1794172418923
+  ],
+  "interval_retained_job_identities": [
+    {
+      "created_unix_ms": 1794172367052,
+      "execution_mode": "operator",
+      "host": "rog",
+      "id": "1a1bd01b0cc-138b0-56c",
+      "launch_state": "launched"
+    },
+    {
+      "created_unix_ms": 1794172418923,
+      "execution_mode": "operator",
+      "host": "rog",
+      "id": "1a1bd027b6b-138b0-572",
+      "launch_state": "launched"
+    }
+  ],
+  "interval_role": "From observed preflight admission to observed common admission; not a proof that an unregistered client request did not occur.",
+  "inventory_api": "h_process_list",
+  "inventory_authority_scope": "Retained identities only; process_status is the authority for individual terminal states. The inventory does not expose idempotency_key fields.",
+  "inventory_request": {
+    "host": "rog"
+  },
+  "no_zero_cost_claim": true,
+  "original_001_cost": null,
+  "original_001_rejection_or_response": null,
+  "original_001_request_was_sent": null,
+  "published_inventory_extract": {
+    "bytes": 1435,
+    "path": "startup-evidence/retained-jobs-rog-interval.json",
+    "sha256": "f38f6d16dcdc4504edfb192cd304eca80e7ee80ca9ac640a66507c77b2d2d9a2"
+  },
+  "reason": "The original client invocation/rejection record was not retained across agent context compaction. Retained job inventory does not settle whether a pre-admission request was sent or refused.",
+  "replacement_policy": "New evidence commit with parent exact S; preserve first G commit and its original pins under a local initial evidence ref. C/E/R/F/S and actual validation artifacts remain unchanged.",
+  "result_directory": "clippy-common-validation-001",
+  "schema": "hepta.S-startup-observation-gap.v1",
+  "scope": "Read-only bounded reconciliation; no request replay, no new tests, no reconstructed original error.",
+  "second_G_commit": "ed6bd2eaa281c0ee9d718e5a03f4c92c3d5ec061",
+  "second_G_replacement_reason": "Full host inventory accidentally included in local-only G2 evidence; final G3 excludes the full inventory and is directly parented by S, making G1/G2 unreachable from the publication bundle.",
+  "second_G_tree": "18acea79275b7bc47ed74f46c28a27f9404f0ce2",
+  "second_G_was_not_published": true,
+  "source": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+  "source_tree": "f06389aa4f5caf0af5fec419da6473e198796b24",
+  "successful_common_idempotency_key": "cell-clippy-08b6-S-common-validation-002",
+  "successful_common_job_id": "1a1bd027b6b-138b0-572",
+  "tests_counted_only_from_successful_job": 112,
+  "unchanged_separate_clippy_receipt_sha256": "e37938f2d00069298698ff914c262a1da794ed6b31bbcd5895457c1d16afe645",
+  "unrecovered_key_label": "cell-clippy-08b6-S-common-validation-001"
+}

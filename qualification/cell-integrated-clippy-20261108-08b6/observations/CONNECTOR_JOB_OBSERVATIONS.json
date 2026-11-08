@@ -1,0 +1,239 @@
+{
+  "schema": "hepta.successor-S-native-connector-jobs.v1",
+  "scope": "Authoritative h terminal observations for separately scoped S preflight, common validation, and Rust 1.95 clippy; process exit zero does not override cargo-deny gate failure.",
+  "jobs": [
+    {
+      "name": "S-common",
+      "terminal": {
+        "at_unix_ms": 1794172463573,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1bd027b6b-138b0-572",
+        "launch_nonce": "ab5593d77e1fca7d74d46cbb5f31972b",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 3509,
+            "stored": 3509
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      }
+    },
+    {
+      "name": "S-preflight",
+      "terminal": {
+        "at_unix_ms": 1794172382511,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1bd01b0cc-138b0-56c",
+        "launch_nonce": "3b3a8ce1b050bbabde65473e9133524e",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 365,
+            "stored": 365
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      }
+    },
+    {
+      "name": "S-clippy",
+      "terminal": {
+        "at_unix_ms": 1794172100952,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1bcfd14c3-138b0-559",
+        "launch_nonce": "961dd5d488e83ad86eb2c1d6df170c44",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 3169,
+            "stored": 3169
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      }
+    },
+    {
+      "name": "S-clippy-archive",
+      "terminal": {
+        "at_unix_ms": 1794172207666,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1bcff3ee4-138b0-55f",
+        "launch_nonce": "b097b2d68fd8575f6097c79b6b4a65f6",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1718,
+            "stored": 1718
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      }
+    }
+  ],
+  "launches": {
+    "preflight": {
+      "audit_recorded": true,
+      "job": {
+        "args": [
+          "-u",
+          "-"
+        ],
+        "created_unix_ms": 1794172367052,
+        "cwd": null,
+        "env_keys": [],
+        "executable": "/usr/bin/python3",
+        "execution_mode": "operator",
+        "host": "rog",
+        "id": "1a1bd01b0cc-138b0-56c",
+        "idempotency_key": "cell-clippy-08b6-S-preflight-001",
+        "launch_error": null,
+        "launch_state": "launched",
+        "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1bd01b0cc-138b0-56c",
+        "request_digest": "4d0ad20028fcd67e082ea9d4bdca331f9084e5302cd0dac308dcdd65383269e7",
+        "request_fingerprint": 5551480388817050000,
+        "ssh_target": "rog-ts",
+        "system_jobctl": false,
+        "unit": "hepta-runtime-job-1a1bd01b0cc-138b0-56c"
+      },
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a1bd01b0cc-138b0-56c"
+      },
+      "local_record_pending": false,
+      "reused": false
+    },
+    "common": {
+      "audit_recorded": true,
+      "job": {
+        "args": [
+          "-u",
+          "-B",
+          "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-common-validation-001/validate_successor_s.py"
+        ],
+        "created_unix_ms": 1794172418923,
+        "cwd": "/home/qian-qi/work/cell-integration-20261108-08b6/clippy-validation-source",
+        "env_keys": [],
+        "executable": "/home/qian-qi/work/cell-integration-20261108-08b6/validation-venv/bin/python",
+        "execution_mode": "operator",
+        "host": "rog",
+        "id": "1a1bd027b6b-138b0-572",
+        "idempotency_key": "cell-clippy-08b6-S-common-validation-002",
+        "launch_error": null,
+        "launch_state": "launched",
+        "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1bd027b6b-138b0-572",
+        "request_digest": "e70e66639ddbe9cf8b06e9307f6c98cb9086b5a6c40d80b59202cc66554167a5",
+        "request_fingerprint": 16649357450471533000,
+        "ssh_target": "rog-ts",
+        "system_jobctl": false,
+        "unit": "hepta-runtime-job-1a1bd027b6b-138b0-572"
+      },
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a1bd027b6b-138b0-572"
+      },
+      "local_record_pending": false,
+      "reused": false
+    }
+  },
+  "remaining_cargo_deny": [
+    "RUSTSEC-2026-0451"
+  ],
+  "overall_gate_pass": false
+}
