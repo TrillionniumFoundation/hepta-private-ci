@@ -31,7 +31,10 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
+use windows_sys::Win32::System::Com::CoTaskMemFree;
 use windows_sys::Win32::System::SystemInformation::GetSystemDirectoryW;
+use windows_sys::Win32::UI::Shell::FOLDERID_ProgramData;
+use windows_sys::Win32::UI::Shell::SHGetKnownFolderPath;
 
 use crate::AcceptanceError;
 
@@ -366,6 +369,8 @@ pub(crate) fn verify(
         // Windows side-by-side loading needs SystemRoot. Derive it from the
         // trusted OS API, never the caller's environment.
         .env("SystemRoot", system_root)
+        // Win32 OpenSSH initializes ProgramData before its stdio/logging layer.
+        .env("ProgramData", program_data_directory()?)
         .env("LANG", "C")
         .env("LC_ALL", "C")
         .current_dir(&verifier.system_directory)
@@ -429,6 +434,50 @@ pub(crate) fn verify(
         )));
     }
     Ok(())
+}
+
+pub(crate) fn program_data_directory() -> Result<PathBuf, AcceptanceError> {
+    let mut value = std::ptr::null_mut();
+    // SAFETY: the folder ID and out-pointer remain valid for this synchronous
+    // OS call. No caller-provided environment value chooses the directory.
+    let status = unsafe {
+        SHGetKnownFolderPath(
+            &FOLDERID_ProgramData,
+            /*dwflags*/ 0,
+            /*htoken*/ 0,
+            &mut value,
+        )
+    };
+    let result = if status != 0 || value.is_null() {
+        Err(invalid(format!(
+            "resolve Windows ProgramData: HRESULT {status}"
+        )))
+    } else {
+        let mut length = 0;
+        // SAFETY: success returns a NUL-terminated UTF-16 allocation. Bound the
+        // accepted path to the Windows extended-length path limit.
+        while length < 32_768 && unsafe { *value.add(length) } != 0 {
+            length += 1;
+        }
+        if length == 0 || length == 32_768 {
+            Err(invalid("Windows ProgramData path is empty or too long"))
+        } else {
+            // SAFETY: the OS allocation contains these observed code units and
+            // remains owned until the copy completes below.
+            let path = PathBuf::from(OsString::from_wide(unsafe {
+                std::slice::from_raw_parts(value, length)
+            }));
+            if path.is_absolute() {
+                Ok(path)
+            } else {
+                Err(invalid("Windows ProgramData path is not absolute"))
+            }
+        }
+    };
+    // SAFETY: SHGetKnownFolderPath requires CoTaskMemFree on success and failure;
+    // a null pointer is permitted. No borrowed code units escape the copy.
+    unsafe { CoTaskMemFree(value.cast()) };
+    result
 }
 
 fn invalid(message: impl Into<String>) -> AcceptanceError {
