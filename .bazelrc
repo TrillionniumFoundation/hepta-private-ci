@@ -182,10 +182,10 @@ common:ci-linux --config=ci-bazel
 common:ci-linux --build_metadata=TAG_os=linux
 common:ci-linux --platforms=//:rbe
 
-# Operator acceptance verifies through the original /usr/bin/ssh-keygen.
-# CI provisions OpenSSH on the native runner for this test action. Keep its
-# namespace sandbox and leave compilation on RBE.
-common:ci-linux --strategy_regexp='^Testing //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests($| )=linux-sandbox'
+# Bazel 9.3 skips strategy_regexp matching for TestRunner. Prefer RBE for
+# eligible tests; no-remote-exec tests use the native namespace sandbox.
+# CI provisions original system OpenSSH for operator-acceptance there.
+common:ci-linux --strategy=TestRunner=remote,linux-sandbox
 
 # On mac, we can run all the build actions remotely but test actions locally.
 common:ci-macos --config=ci-bazel
