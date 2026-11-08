@@ -9,6 +9,7 @@ is required for every episode; hidden evaluator results never enter this stream.
 import argparse
 from dataclasses import asdict
 import hashlib
+import io
 import json
 from pathlib import Path
 import sys
@@ -21,6 +22,13 @@ from .metering import Meter, atomic_json, file_sha, transport_receipt, canonical
 from .neural import FittedPredictor, ReceiptPortfolioModel
 from .objective import utility_profile
 from .ocr import FIELDS, candidate_features, extract_ocr, requested_field
+from .state_codec import (
+    checkpoint_binding,
+    load_checkpoint,
+    read_bounded,
+    save_checkpoint,
+    validate_continuation,
+)
 
 
 def parameter_sha(model):
@@ -113,6 +121,18 @@ def finish_meter(meter):
     return _last_meter_receipt
 
 
+def checkpoint_result(args, binding, memory, state, action, ocr_pins, meter):
+    if args.checkpoint_dir is None:
+        return {}
+    with meter.stage("sync", "create actor continuation checkpoint"):
+        path = args.checkpoint_dir / f"actor-checkpoint-{state['step'] + 1:02d}.json"
+        return {
+            "checkpoint": save_checkpoint(
+                path, binding, memory, state, action, ocr_pins
+            )
+        }
+
+
 def run():
     global _active_meter
     parser = argparse.ArgumentParser(description=__doc__)
@@ -134,12 +154,28 @@ def run():
     parser.add_argument("--start-step", type=int, default=0)
     parser.add_argument("--max-decisions", type=int, default=8)
     parser.add_argument("--training-exploration", action="store_true")
+    parser.add_argument("--checkpoint-dir", type=Path)
+    parser.add_argument("--resume-checkpoint", type=Path)
+    parser.add_argument("--expected-checkpoint-sha256")
+    parser.add_argument("--expected-continuation-sha256")
     args = parser.parse_args()
+    resume = (
+        args.resume_checkpoint,
+        args.expected_checkpoint_sha256,
+        args.expected_continuation_sha256,
+    )
+    if any(resume) and not all(resume):
+        raise ValueError(
+            "Resume requires both host-pinned checkpoint and next public input"
+        )
+    if args.checkpoint_dir is not None and not args.checkpoint_dir.is_dir():
+        raise ValueError("Checkpoint directory must be prepared by the host")
     torch.set_num_threads(1)
     if torch.get_num_interop_threads() != 1:
         torch.set_num_interop_threads(1)
     torch.manual_seed(0)
-    if file_sha(args.weights) != args.expected_weights_sha256:
+    weights = read_bounded(args.weights, 64 * 1024 * 1024)
+    if hashlib.sha256(weights).hexdigest() != args.expected_weights_sha256:
         raise ValueError("Actor model bytes differ from the host pin")
     plan_json = json.loads(args.control_plan.read_text())
     if set(plan_json) != {"control", "episode_wall_seconds", "fixed_schedule", "seed"}:
@@ -147,6 +183,7 @@ def run():
     plan = ControlPlan(**plan_json["control"])
     profile_digest = canonical_sha(utility_profile(plan))
     control_digest = canonical_sha(asdict(plan))
+    deployment = None
     if args.deployment_profile:
         deployment = json.loads(args.deployment_profile.read_text())
         if (
@@ -175,7 +212,11 @@ def run():
         raise ValueError(
             "Persistent or learned NDU policy requires its training deployment profile"
         )
-    if plan.memory_mode == "persistent" and args.start_step != 0:
+    if (
+        plan.memory_mode == "persistent"
+        and args.start_step != 0
+        and not args.resume_checkpoint
+    ):
         raise ValueError(
             "Persistent actor cannot resume without its complete episode memory"
         )
@@ -195,9 +236,21 @@ def run():
     if set(packet) != expected or packet["schema"] != "ndu.real.public-case.v1":
         raise ValueError("Invalid public case projection")
     model = ReceiptPortfolioModel(args.core)
-    model.load_state_dict(
-        torch.load(args.weights, map_location="cpu", weights_only=True), strict=True
-    )
+    loaded = torch.load(io.BytesIO(weights), map_location="cpu", weights_only=True)
+    expected_state = model.state_dict()
+    if (
+        not isinstance(loaded, dict)
+        or set(loaded) != set(expected_state)
+        or any(
+            not isinstance(value, torch.Tensor)
+            or value.shape != expected_state[name].shape
+            or value.dtype != expected_state[name].dtype
+            or not bool(torch.isfinite(value).all())
+            for name, value in loaded.items()
+        )
+    ):
+        raise ValueError("Pinned weights do not match the complete finite model schema")
+    model.load_state_dict(loaded, strict=True)
     model.eval()
     if (
         not 0 <= args.start_step < 8
@@ -206,6 +259,19 @@ def run():
         raise ValueError("Decision window exceeds the frozen episode bound")
     baseline_parameters = parameter_sha(model)
     cache, memory = {}, None
+    binding, pending, ocr_pins = None, None, {}
+    if args.checkpoint_dir is not None or args.resume_checkpoint is not None:
+        binding = checkpoint_binding(
+            args, packet, model, plan_json, deployment, baseline_parameters
+        )
+    if args.resume_checkpoint is not None:
+        pending, memory = load_checkpoint(
+            args.resume_checkpoint,
+            args.expected_checkpoint_sha256,
+            binding,
+            args.start_step,
+        )
+        ocr_pins = dict(pending["ocr_pins"])
     fixed_schedule = [
         action
         for action in plan_json["fixed_schedule"]
@@ -264,6 +330,13 @@ def run():
             journal_path=Path.cwd() / f"decision-{sequence:02d}.meter.jsonl",
         )
         _active_meter = meter
+        public_input = dict(state)
+        if pending is not None:
+            with meter.stage("codec", "validate host-pinned continuation"):
+                validate_continuation(
+                    pending, public_input, args.expected_continuation_sha256
+                )
+            pending = None
         if not args.training_exploration and (
             args.controller == "initial"
             or (args.controller == "tuned_fixed" and sequence >= len(fixed_schedule))
@@ -287,6 +360,19 @@ def run():
                         "utility_profile_sha256": profile_digest,
                         "memory_mode": plan.memory_mode,
                         "control_profile_sha256": control_digest,
+                        **checkpoint_result(
+                            args,
+                            binding,
+                            memory,
+                            public_input,
+                            {
+                                "schema": "ndu.real.actor-action.v1",
+                                "action": "STOP",
+                                "arguments": {},
+                            },
+                            ocr_pins,
+                            meter,
+                        ),
                         "meter": finish_meter(meter),
                         "ocr": None,
                         "weights_sha256": args.expected_weights_sha256,
@@ -330,6 +416,17 @@ def run():
                     public_text=packet["public_text"],
                 )
             cache[observed["sha256"]] = (candidates, features, len(lines), ocr_record)
+            if binding is not None:
+                with meter.stage("codec", "verify reconstructed OCR content"):
+                    content_pin = canonical_sha(
+                        [candidates, features.tolist(), len(lines)]
+                    )
+                    previous_pin = ocr_pins.get(observed["sha256"])
+                    if previous_pin is not None and previous_pin != content_pin:
+                        raise ValueError(
+                            "Recomputed OCR differs from checkpoint content"
+                        )
+                    ocr_pins[observed["sha256"]] = content_pin
         candidates, features, line_count, ocr_record = cache[observed["sha256"]]
         state["ocr_line_count"] = line_count
         meta = metadata(packet, state, plan_json["episode_wall_seconds"])
@@ -397,7 +494,6 @@ def run():
             "public_features": list(public_state.features),
             "public_metadata": meta,
             "controller": details,
-            "meter": finish_meter(meter),
             "remaining_seconds": state["remaining_seconds"],
             "legal_actions": list(legal),
             "memory_mode": plan.memory_mode,
@@ -407,6 +503,10 @@ def run():
             "ocr": ocr_record,
             "weights_sha256": args.expected_weights_sha256,
             "parameters_unchanged": parameter_sha(model) == baseline_parameters,
+            **checkpoint_result(
+                args, binding, memory, public_input, output, ocr_pins, meter
+            ),
+            "meter": finish_meter(meter),
         }
         if args.training_exploration:
             result.update(
