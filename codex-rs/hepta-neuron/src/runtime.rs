@@ -1,4 +1,10 @@
 //! Stateful host lifecycle for canonical neuron ticks.
+//!
+//! Callers pass the original subject/objective scope. The runtime combines that
+//! subject with its complete frozen configuration before persisting it in the
+//! journal header and checkpoints. Subject-only journals from older runtimes
+//! fail recovery with `JournalError::ContextMismatch`; they are never upgraded
+//! implicitly or used as evidence that a different model can preserve state.
 
 use std::fs::File;
 use std::time::Instant;
@@ -27,6 +33,7 @@ struct PendingWitness {
 
 pub struct NeuronRuntime<W: AnchorWitnessStore> {
     config: NeuronRuntimeConfigV1,
+    scope: JournalScope,
     journal: SparseJournal,
     witness: W,
     pending: Option<PendingWitness>,
@@ -42,6 +49,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         witness: W,
     ) -> Result<Self, NeuronRuntimeError> {
         config.validate_native(&native)?;
+        let scope = config.bind_journal_scope(scope)?;
         if file.metadata().map_err(JournalError::from)?.len() != 0 {
             return Err(NeuronRuntimeError::BootstrapRequiresEmptyJournal);
         }
@@ -51,6 +59,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let journal = SparseJournal::open(file, native, scope, max_records)?;
         Ok(Self {
             config,
+            scope,
             journal,
             witness,
             pending: None,
@@ -90,6 +99,10 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         Ok((runtime, receipt))
     }
 
+    /// Restore only the exact frozen runtime configuration. Header validation
+    /// precedes frame replay, tail repair and any catch-up witness CAS. A model,
+    /// encoder, calibration or resource-policy change requires a fresh state
+    /// generation or a separately qualified migration, never this recovery API.
     pub fn recover(
         file: File,
         native: SparseConfig,
@@ -100,6 +113,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         mut witness: W,
     ) -> Result<Self, NeuronRuntimeError> {
         config.validate_native(&native)?;
+        let scope = config.bind_journal_scope(scope)?;
         if witness.current()? != Some(anchor) {
             return Err(NeuronRuntimeError::RecoveryWitnessMismatch);
         }
@@ -119,6 +133,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         }
         Ok(Self {
             config,
+            scope,
             journal,
             witness,
             pending: None,
@@ -132,6 +147,15 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let input_digest = input.semantic_digest()?;
         if input.feature_vector_q24.len() != self.config.input_feature_dimension {
             return Err(NeuronRuntimeError::InvalidInput);
+        }
+        let scope = self.config.bind_journal_scope(JournalScope {
+            scope_digest: subject_scope_digest(&input.subject_id)?,
+            objective_digest: input.objective_digest,
+        })?;
+        if scope.scope_digest != self.scope.scope_digest
+            || scope.objective_digest != self.scope.objective_digest
+        {
+            return Err(JournalError::ContextMismatch.into());
         }
         Ok(NeuronModelRequestV1 {
             request_id: input.tick_id.clone(),
@@ -165,6 +189,10 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         if latest.sequence <= max_records as u64 {
             return Self::recover(file, native, scope, max_records, config, latest, witness);
         }
+        let scope = config.bind_journal_scope(scope)?;
+        if file.metadata().map_err(JournalError::from)?.len() == 0 {
+            return Err(JournalError::AcknowledgedHistoryMissing.into());
+        }
         let journal = SparseJournal::open(file, native, scope, max_records)?;
         let current = journal
             .current()?
@@ -176,6 +204,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         }
         Ok(Self {
             config,
+            scope,
             journal,
             witness,
             pending: None,
@@ -280,7 +309,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let model_runtime_digest = digest_model_binding(&model_output)?;
 
         let sparse_tick = SparseTick {
-            scope_digest: subject_scope_digest(&input.subject_id)?,
+            scope_digest: self.scope.scope_digest,
             objective_digest: input.objective_digest,
             ndu_digest: input.ndu_snapshot_digest,
             body_digest: body_digest(&self.config, &input),
