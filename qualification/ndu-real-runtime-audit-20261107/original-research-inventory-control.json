@@ -1,0 +1,75 @@
+{
+  "schema": "ndu.real.audit-runtime-control.v1",
+  "original_audit_job_id": "1a1b6b25d0c-12894-5f7",
+  "original_pipeline_job_id": "1a1b63011af-12894-2d7",
+  "auditor_source_sha256": "8502ea7cb829d4138bea8ba42bded0b352e34192e7f30ea458877640811d15f2",
+  "summary_sha256": "1e247de6d2a203b309926824ec99bf64aa658c0373357a2cd0d514c9b9caaddf",
+  "terminal_state": "succeeded",
+  "exit_code": 0,
+  "stdout_complete": true,
+  "stderr_complete": true,
+  "final_log_cursor": {
+    "stdout_offset": 688,
+    "stderr_offset": 0
+  },
+  "start_request": {
+    "host": "ai395",
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "cwd": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0",
+    "cpu_quota_percent": 100,
+    "memory_max_bytes": 1073741824,
+    "nice": 15,
+    "timeout_seconds": 600,
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "idempotency_key": "ndu-real-research-audit-v1-20261107-bc2e",
+    "args": [
+      "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/research_audit.v1.py",
+      "--root",
+      "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/pilot-run-v1",
+      "--output",
+      "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/audit-v1",
+      "--plan-sha256",
+      "139a8c0ce912f4eadb62d80463674ac7295b04fad4c455296654ec7630946880",
+      "--runtime-job-id",
+      "1a1b63011af-12894-2d7"
+    ]
+  },
+  "start_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/research_audit.v1.py\",\n      \"--root\",\n      \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/pilot-run-v1\",\n      \"--output\",\n      \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/audit-v1\",\n      \"--plan-sha256\",\n      \"139a8c0ce912f4eadb62d80463674ac7295b04fad4c455296654ec7630946880\",\n      \"--runtime-job-id\",\n      \"1a1b63011af-12894-2d7\"\n    ],\n    \"created_unix_ms\": 1794066504972,\n    \"cwd\": \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0\",\n    \"env_keys\": [\n      \"MKL_NUM_THREADS\",\n      \"OMP_NUM_THREADS\",\n      \"OPENBLAS_NUM_THREADS\",\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1b6b25d0c-12894-5f7\",\n    \"idempotency_key\": \"ndu-real-research-audit-v1-20261107-bc2e\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b6b25d0c-12894-5f7\",\n    \"request_digest\": \"8e8a2f3297e2c8e4b00f5b613569bfb1e50dc27753a29cc49aa8a2e30a32fe36\",\n    \"request_fingerprint\": 10271073794514929892,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b6b25d0c-12894-5f7\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b6b25d0c-12894-5f7\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "terminal_status_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1794066521275,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b6b25d0c-12894-5f7\",\n  \"launch_nonce\": \"41b302de115ee8325bc28e8e08285bb4\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 688,\n      \"stored\": 688\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "full_log_read_responses": [
+    {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b6b25d0c-12894-5f7\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22657069736f64655f7374617475736573223a207b2242756467657453746f70223a20323432392c2022436f6d706c65746564223a2031393839317d2c2022696e746567726974795f70726f626c656d73223a205b5d2c20226f627365727665645f696e76656e746f72795f696e74656772697479223a2022706173736564222c20226f726967696e616c5f657069736f64655f636f756e74223a2032323332302c20226f726967696e616c5f747261696e696e675f636f756e74223a203135342c202272657365617263685f7461736b5f637075223a207b22636f6d706c6574655f73756d223a2036353637362e32313430373230303030322c202265786163745f636f756e74223a2032323437342c20226b6e6f776e5f636f756e74223a2032323437342c20226b6e6f776e5f73756d223a2036353637362e32313430373230303030322c20226c6f7765725f626f756e645f636f756e74223a20302c202273756d5f69735f6c6f7765725f626f756e64223a2066616c73652c2022756e6974223a20227365636f6e64222c2022756e6b6e6f776e5f636f756e74223a20307d2c202272657365617263685f7461736b5f77616c6c223a207b22636f6d706c6574655f73756d223a2036363137322e36333235303432353835342c202265786163745f636f756e74223a2032323437342c20226b6e6f776e5f636f756e74223a2032323437342c20226b6e6f776e5f73756d223a2036363137322e36333235303432353835342c20226c6f7765725f626f756e645f636f756e74223a20302c202273756d5f69735f6c6f7765725f626f756e64223a2066616c73652c2022756e6974223a20227365636f6e64222c2022756e6b6e6f776e5f636f756e74223a20307d2c2022747261696e696e675f7374617475736573223a207b22636f6d706c65746564223a203135347d7d0a\",\n    \"eof\": true,\n    \"next_offset\": 688,\n    \"offset\": 0,\n    \"size\": 688,\n    \"text\": \"{\\\"episode_statuses\\\": {\\\"BudgetStop\\\": 2429, \\\"Completed\\\": 19891}, \\\"integrity_problems\\\": [], \\\"observed_inventory_integrity\\\": \\\"passed\\\", \\\"original_episode_count\\\": 22320, \\\"original_training_count\\\": 154, \\\"research_task_cpu\\\": {\\\"complete_sum\\\": 65676.21407200002, \\\"exact_count\\\": 22474, \\\"known_count\\\": 22474, \\\"known_sum\\\": 65676.21407200002, \\\"lower_bound_count\\\": 0, \\\"sum_is_lower_bound\\\": false, \\\"unit\\\": \\\"second\\\", \\\"unknown_count\\\": 0}, \\\"research_task_wall\\\": {\\\"complete_sum\\\": 66172.63250425854, \\\"exact_count\\\": 22474, \\\"known_count\\\": 22474, \\\"known_sum\\\": 66172.63250425854, \\\"lower_bound_count\\\": 0, \\\"sum_is_lower_bound\\\": false, \\\"unit\\\": \\\"second\\\", \\\"unknown_count\\\": 0}, \\\"training_statuses\\\": {\\\"completed\\\": 154}}\\n\"\n  }\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  ],
+  "local_checkpoint_limitation": "Executor became temporarily unavailable after these remote jobs completed. Original runtime control responses preserved in tool state and this immutable remote file."
+}

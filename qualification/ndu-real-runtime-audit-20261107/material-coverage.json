@@ -1,0 +1,265 @@
+{
+  "authenticated_source_origin": "NOT_ESTABLISHED",
+  "available_future_source_groups": {
+    "confirmation": 67,
+    "retention_test": 27
+  },
+  "case_counts": {
+    "confirmation": 1160,
+    "development": 525,
+    "retention_test": 189,
+    "retention_validation": 44,
+    "train": 1630
+  },
+  "catalog_cases": 3548,
+  "confirmation_release": false,
+  "coverage_gaps": [
+    {
+      "classification": "requested_five_family_scope_not_covered",
+      "episode_groups_total": 44,
+      "episode_groups_with_family": 0,
+      "role": "retention_validation",
+      "source_groups_total": 27,
+      "source_groups_with_family": 0,
+      "task_family": "text_sufficient"
+    },
+    {
+      "classification": "requested_five_family_scope_not_covered",
+      "episode_groups_total": 44,
+      "episode_groups_with_family": 0,
+      "role": "retention_validation",
+      "source_groups_total": 27,
+      "source_groups_with_family": 0,
+      "task_family": "selective_refinement"
+    },
+    {
+      "classification": "requested_five_family_scope_not_covered",
+      "episode_groups_total": 44,
+      "episode_groups_with_family": 0,
+      "role": "retention_validation",
+      "source_groups_total": 27,
+      "source_groups_with_family": 0,
+      "task_family": "preparation_required"
+    },
+    {
+      "classification": "requested_five_family_scope_not_covered",
+      "episode_groups_total": 44,
+      "episode_groups_with_family": 0,
+      "role": "retention_validation",
+      "source_groups_total": 27,
+      "source_groups_with_family": 0,
+      "task_family": "continuation_not_worthwhile"
+    },
+    {
+      "classification": "requested_five_family_scope_not_covered",
+      "episode_groups_total": 189,
+      "episode_groups_with_family": 0,
+      "role": "retention_test",
+      "source_groups_total": 27,
+      "source_groups_with_family": 0,
+      "task_family": "text_sufficient"
+    },
+    {
+      "classification": "requested_five_family_scope_not_covered",
+      "episode_groups_total": 189,
+      "episode_groups_with_family": 0,
+      "role": "retention_test",
+      "source_groups_total": 27,
+      "source_groups_with_family": 0,
+      "task_family": "selective_refinement"
+    },
+    {
+      "classification": "requested_five_family_scope_not_covered",
+      "episode_groups_total": 189,
+      "episode_groups_with_family": 0,
+      "role": "retention_test",
+      "source_groups_total": 27,
+      "source_groups_with_family": 0,
+      "task_family": "preparation_required"
+    },
+    {
+      "classification": "requested_five_family_scope_not_covered",
+      "episode_groups_total": 189,
+      "episode_groups_with_family": 0,
+      "role": "retention_test",
+      "source_groups_total": 27,
+      "source_groups_with_family": 0,
+      "task_family": "continuation_not_worthwhile"
+    }
+  ],
+  "eligible_episode_groups": 896,
+  "family_case_counts": {
+    "confirmation": {
+      "continuation_not_worthwhile": 232,
+      "preparation_required": 232,
+      "selective_refinement": 232,
+      "text_image_complementary": 232,
+      "text_sufficient": 232
+    },
+    "development": {
+      "continuation_not_worthwhile": 105,
+      "preparation_required": 105,
+      "selective_refinement": 105,
+      "text_image_complementary": 105,
+      "text_sufficient": 105
+    },
+    "retention_test": {
+      "text_image_complementary": 189
+    },
+    "retention_validation": {
+      "text_image_complementary": 44
+    },
+    "train": {
+      "continuation_not_worthwhile": 326,
+      "preparation_required": 326,
+      "selective_refinement": 326,
+      "text_image_complementary": 326,
+      "text_sufficient": 326
+    }
+  },
+  "family_episode_group_counts": {
+    "confirmation": {
+      "continuation_not_worthwhile": 232,
+      "preparation_required": 232,
+      "selective_refinement": 232,
+      "text_image_complementary": 232,
+      "text_sufficient": 232
+    },
+    "development": {
+      "continuation_not_worthwhile": 105,
+      "preparation_required": 105,
+      "selective_refinement": 105,
+      "text_image_complementary": 105,
+      "text_sufficient": 105
+    },
+    "retention_test": {
+      "continuation_not_worthwhile": 0,
+      "preparation_required": 0,
+      "selective_refinement": 0,
+      "text_image_complementary": 189,
+      "text_sufficient": 0
+    },
+    "retention_validation": {
+      "continuation_not_worthwhile": 0,
+      "preparation_required": 0,
+      "selective_refinement": 0,
+      "text_image_complementary": 44,
+      "text_sufficient": 0
+    },
+    "train": {
+      "continuation_not_worthwhile": 326,
+      "preparation_required": 326,
+      "selective_refinement": 326,
+      "text_image_complementary": 326,
+      "text_sufficient": 326
+    }
+  },
+  "family_source_group_counts": {
+    "confirmation": {
+      "continuation_not_worthwhile": 68,
+      "preparation_required": 68,
+      "selective_refinement": 68,
+      "text_image_complementary": 68,
+      "text_sufficient": 68
+    },
+    "development": {
+      "continuation_not_worthwhile": 54,
+      "preparation_required": 54,
+      "selective_refinement": 54,
+      "text_image_complementary": 54,
+      "text_sufficient": 54
+    },
+    "retention_test": {
+      "continuation_not_worthwhile": 0,
+      "preparation_required": 0,
+      "selective_refinement": 0,
+      "text_image_complementary": 27,
+      "text_sufficient": 0
+    },
+    "retention_validation": {
+      "continuation_not_worthwhile": 0,
+      "preparation_required": 0,
+      "selective_refinement": 0,
+      "text_image_complementary": 27,
+      "text_sufficient": 0
+    },
+    "train": {
+      "continuation_not_worthwhile": 97,
+      "preparation_required": 97,
+      "selective_refinement": 97,
+      "text_image_complementary": 97,
+      "text_sufficient": 97
+    }
+  },
+  "independent_task_domains": "NOT_ESTABLISHED",
+  "input_bindings": {
+    "catalog": {
+      "bytes": 2301398,
+      "sha256": "f0deac7e195f51b06fcdeab740671618922619c754b2bb2503485d86d43fd991",
+      "stable_read": true
+    },
+    "exposure": {
+      "bytes": 3231,
+      "sha256": "6722edfc88e1089bcaf0fba9727c233416830fdc6682b461422d26bdfd4cb6af",
+      "stable_read": true
+    },
+    "registration": {
+      "bytes": 2086,
+      "sha256": "d00ee37beea3e3e027fcb8eb302adc6bc3210d5ebcb27320bda2d2cf61309e40",
+      "stable_read": true
+    },
+    "registry": {
+      "bytes": 2006360,
+      "sha256": "09d5f57c5c4c5f421f16c51febd048b7746d5d52723d825240f8655bf7fbdd07",
+      "stable_read": true
+    },
+    "selected_sources": {
+      "bytes": 247741,
+      "sha256": "bf743708f668815f907ee7e574e4b90d8ef82aa98318eef2210a3505faccc4ca",
+      "stable_read": true
+    }
+  },
+  "issues": [],
+  "limits": [
+    "Metadata source groups do not prove causal or statistical independence.",
+    "All five workflow labels can belong to one source domain.",
+    "A preallocated retention panel is not evidence that historic abilities were retained.",
+    "Exposure counters are declarations, not authenticated actor or evaluator access logs.",
+    "Shared instruction text is not treated as an independent source or as a source-content alias.",
+    "No power, model quality, native owner authority, or confirmation admission is established."
+  ],
+  "metadata_consistent": true,
+  "native_owner_authentication": "SEPARATE_REQUIRED",
+  "quarantine_source_groups_by_role": {
+    "confirmation": 1,
+    "development": 1,
+    "retention_test": 0,
+    "retention_validation": 0,
+    "train": 0
+  },
+  "read_scope": "Pinned metadata only; no reference contents, answers, task packets, images, or weights",
+  "registered_cases": 3548,
+  "registered_sources": 286,
+  "requested_scope_complete": false,
+  "schema": "ndu.real.material-coverage.v1",
+  "scientific_admission": "HOLD",
+  "selected_source_group_counts": {
+    "pilot_new": 20,
+    "pilot_retention": 20,
+    "training": 40,
+    "tuning": 8
+  },
+  "shared_instruction_hashes_across_sources": 8,
+  "source_family_counts": {
+    "SROIE_real_retail_receipts": 286
+  },
+  "source_group_counts": {
+    "confirmation": 68,
+    "development": 54,
+    "retention_test": 27,
+    "retention_validation": 27,
+    "train": 97
+  },
+  "status": "METADATA_CONSISTENT_SCOPE_INCOMPLETE",
+  "text_alias_scope": "Registry v2 residual transcripts and text_sufficient case inputs checked; shared instruction-only hashes disclosed separately"
+}
