@@ -1,0 +1,101 @@
+{
+  "full_workspace_validation": false,
+  "request_id": "ndu-gen-986c-persistent-gradient-20261108-v2",
+  "runner_exit_code": 0,
+  "schema": "ndu-cloud-wrapper-v1",
+  "scientific_task_evidence": false,
+  "source_payload_sha256": "1d57f8292f58042932b8c840c2731272ad5f81daa2a08c79e850b2497322af0c",
+  "status": "PASS",
+  "validation": {
+    "adoption_authorized": false,
+    "attempt_id": "ndu-gen-986c-persistent-gradient-20261108-v2",
+    "checks": [
+      {
+        "exit_code": 0,
+        "name": "python-dependencies",
+        "required": true,
+        "status": "PASS",
+        "stderr": "python-dependencies.stderr.log",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "python-dependencies.stdout.log",
+        "stdout_sha256": "c4a7961c7b9d49f2904bc32ca776cbd286988c6b2622f5f09545f6052ae9f472",
+        "wall_seconds": 4.631953645999943
+      },
+      {
+        "exit_code": 0,
+        "name": "python-pure-tests",
+        "required": true,
+        "status": "PASS",
+        "stderr": "python-pure-tests.stderr.log",
+        "stderr_sha256": "131f8240e921730a1639975eabb676a9d76cdfaa5fe02847fcbf3206acb1f2f4",
+        "stdout": "python-pure-tests.stdout.log",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wall_seconds": 1.6963504610000655
+      },
+      {
+        "exit_code": 0,
+        "name": "recursive-gradient-check",
+        "required": true,
+        "status": "PASS",
+        "stderr": "recursive-gradient-check.stderr.log",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "recursive-gradient-check.stdout.log",
+        "stdout_sha256": "1714e6d98e0d1648ccbee198eeb0b80639967e3d6bbdde797d3be352ae075edd",
+        "wall_seconds": 9.247075200999916
+      },
+      {
+        "missing": [
+          "rustc",
+          "just"
+        ],
+        "name": "rust-standalone-tests",
+        "required": false,
+        "status": "MISSING_TOOLCHAIN"
+      },
+      {
+        "exit_code": 0,
+        "name": "joint-v4-tests",
+        "required": true,
+        "status": "PASS",
+        "stderr": "joint-v4-tests.stderr.log",
+        "stderr_sha256": "86b6f20dc63693a96e4743704deaff2b7b498a218e59e5188b0eff4111d1150b",
+        "stdout": "joint-v4-tests.stdout.log",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wall_seconds": 2.2100054500000397
+      }
+    ],
+    "full_workspace_validation": false,
+    "justfile_sha256": "1db50d7bcc771ebde6d000bce7bb75922df111c4b14acde72c4fe26156c805b6",
+    "mode": "kaggle",
+    "production_model_training": false,
+    "runner_sha256": "e43c4fbcd06936b5d70d40280a204ef1c58bca61913ef2c2ab86b1882ba77b39",
+    "runtime": {
+      "device": "cpu",
+      "joint_v4_native_selected": false,
+      "machine": "x86_64",
+      "packages": {
+        "Pillow": "13.0.0",
+        "cuda_available": false,
+        "numpy": "2.1.3",
+        "torch": "2.11.0+cpu",
+        "torch_interop_threads": 1,
+        "torch_threads": 1
+      },
+      "python": "3.13.18",
+      "rust_tools": {
+        "just_present": false,
+        "rustc_present": false
+      },
+      "system": "Linux",
+      "thread_limit": 1
+    },
+    "schema": "ndu-source-pinned-qualification-v1",
+    "scientific_task_evidence": false,
+    "scope": "standalone generation kernels and small numerical fixtures",
+    "source_files_verified": 63,
+    "source_manifest_sha256": "68995febfabc88c63d3f0b7551cf6547070746eaf80601b8d6d28038df369d4e",
+    "source_payload_sha256": "1d57f8292f58042932b8c840c2731272ad5f81daa2a08c79e850b2497322af0c",
+    "status": "PASS",
+    "wall_seconds": 17.80641003400001
+  }
+}

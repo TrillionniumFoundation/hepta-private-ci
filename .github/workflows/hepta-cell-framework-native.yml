@@ -9,6 +9,9 @@ on:
       - codex/neuron-normal-entry-20261106-734df8
       - codex/neuron-v13-runtime-20261106-734df8
       - fix/codex-v13-same-model-next-task-20261106
+      - research/cell-rsi-p0p2-20261108-858e
+      - engineering/training-result-bridge-858e
+      - engineering/cell-integrated-20261108-08b6
   workflow_dispatch:
 
 permissions:
@@ -31,6 +34,90 @@ env:
   CARGO_PROFILE_DEV_DEBUG: "0"
 
 jobs:
+  python-runtime:
+    name: Cell configuration and actor recovery
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts:.
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      VECLIB_MAXIMUM_THREADS: "1"
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.16"
+      - name: Bind source and install explicit CPU test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/cell-runtime-records"
+          mkdir -p "$records"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree} > "$records/source-identity.txt"
+          python --version > "$records/python-version.txt"
+          python -m pip install --disable-pip-version-check \
+            --report "$records/torch-install.json" \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.1+cpu'
+          python -m pip install --disable-pip-version-check \
+            --report "$records/numeric-install.json" 'numpy==1.26.4' 'Pillow==12.0.0'
+          python -m pip check > "$records/dependency-check.txt"
+          python -m pip freeze --all > "$records/installed-versions.txt"
+      - name: Check complete candidate and successor bindings
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 23 \
+            --output "$RUNNER_TEMP/cell-runtime-records/joint-config-tests.json" \
+            -- python -B -m unittest discover -s scripts \
+            -p test_hepta_cell_joint_config.py -v
+      - name: Check neural state and cold process recovery
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 300 --minimum-tests 6 \
+            --output "$RUNNER_TEMP/cell-runtime-records/state-codec-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_state_codec
+      - name: Check bounded trainer supervision and result recovery
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 18 \
+            --output "$RUNNER_TEMP/cell-runtime-records/training-job-result-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_subprocess_supervisor \
+            ndu_real_runtime.test_training_job_result
+      - name: Check complete source archive integrity controls
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 13 \
+            --output "$RUNNER_TEMP/cell-runtime-records/source-archive-tests.json" \
+            -- python -B -m unittest -v test_hepta_source_archive
+      - name: Check training-only diagnosis and consumed-fit accounting
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 14 \
+            --output "$RUNNER_TEMP/cell-runtime-records/pred1-diagnostic-tests.json" \
+            -- python -B -m unittest -v hepta_pred1.test_diagnose_training
+      - name: Retain final source state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/cell-runtime-records"
+          mkdir -p "$records"
+          git rev-parse HEAD > "$records/source-after.txt"
+          git status --porcelain > "$records/source-status-after.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Retain recovery and dependency evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-runtime-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cell-runtime-records
+          if-no-files-found: error
+          retention-days: 14
+
   native:
     name: Cell framework (${{ matrix.owner }})
     runs-on: ubuntu-24.04
@@ -43,6 +130,7 @@ jobs:
             helper_packages: --package codex-hepta-infer-worker-host
             packages: >-
               -p codex-hepta-neuron -p codex-hepta-learning-artifacts
+              -p codex-hepta-ndu -p codex-hepta-plasticity
               -p codex-hepta-automation -p codex-hepta-runtime
               -p codex-hepta-control-plane
               -p codex-hepta-context-compiler -p codex-utils-pty
@@ -122,7 +210,7 @@ jobs:
             -- python3 -m unittest discover -s scripts -p 'test_hepta_cell_test_helpers.py'
       - name: Verify joint configuration integrity gates
         run: |
-          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 15 \
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 23 \
             --output "$RUNNER_TEMP/cell-framework-records/joint-config-tests.json" \
             -- python3 -B -m unittest discover -s scripts \
             -p test_hepta_cell_joint_config.py -v

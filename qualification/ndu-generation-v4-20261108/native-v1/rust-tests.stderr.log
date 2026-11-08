@@ -1,0 +1,21 @@
+warning: associated function `read` is never used
+  --> codex-rs/hepta-infer-worker-host/src/bin/../joint_generation/decoder.rs:25:19
+   |
+24 | impl Prefixes {
+   | ------------- associated function in this implementation
+25 |     pub(crate) fn read(prefix: &[u8]) -> Result<Self> {
+   |                   ^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `required_complete` is never used
+   --> codex-rs/hepta-infer-worker-host/src/bin/../joint_generation/observation.rs:127:19
+    |
+ 97 | impl DeliveryObservation {
+    | ------------------------ method in this implementation
+...
+127 |     pub(crate) fn required_complete(&self) -> bool {
+    |                   ^^^^^^^^^^^^^^^^^
+
+warning: 2 warnings emitted
+

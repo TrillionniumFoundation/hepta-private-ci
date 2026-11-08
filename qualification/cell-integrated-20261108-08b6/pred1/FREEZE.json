@@ -1,0 +1,149 @@
+{
+  "analysis": "All 16 new paired training seeds, mean net-utility difference, exact paired sign-flip statistic and descriptive seed bootstrap as in archived runner. No dropping seed 202 analogues, no early stopping, no seed deletion after failures.",
+  "claimed_independence": "Prospective new simulator training/confirmation seeds; no empirical independence or real-task qualification claimed before execution.",
+  "config": {
+    "path": "registered_config.json",
+    "sha256": "c3574166b2043e3e4b4ac167e35f81a1003ff8d916a4f446010bf6a94ec77667"
+  },
+  "confirmation_boundary": "Freeze all checkpoints and source/config manifests before generation. New task owner must verify all source bytes and expected development selector immediately before crossing that boundary. Existing runner has checkpoint freezing; no confirmation run is launched by this design artifact.",
+  "confirmation_generated": false,
+  "confirmation_scored": false,
+  "cost_reporting": "Retain all attempt identities and consumed counts, train, development, generation, search/planning, confirmation, failure, exact recovery and audit durations; keep reused-selector fit costs separate. Report available energy/pricing or unknown explicitly. Host compute is not monetized by existing simulator utility; measured timings alone cannot establish positive all-in net benefit.",
+  "diagnostic_basis": {
+    "path": "/workspace/scratch/08b6dd5f2d10/negative-review/train-dev-diagnostic-002/DIAGNOSTIC.json",
+    "scope": "post-hoc original training/development records only",
+    "sha256": "3379e8295293f4967d05a1d19dd8b52dde88885e48bdc86c3cd710415b028b9b"
+  },
+  "excluded_old_evaluation_training_seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "expected_family_from_original_development": "gru",
+  "family_rule": "Original frozen development rule only; never select/reselect a family from any confirmation result. An unexpected development selector result requires a source/determinism discrepancy report before new confirmation generation, not a new family selection.",
+  "frozen_at_utc": "2026-11-08T17:27:54.748487+00:00",
+  "id": "PRED1-INDEPENDENT-002-20261108",
+  "intended_denominators": {
+    "confirmation_episode_units": 16384,
+    "confirmation_model_episode_evaluations": 98304,
+    "epochs_per_fit": 30,
+    "fits": 114,
+    "independent_primary_training_seeds": 16,
+    "new_training_seed_fits": 96,
+    "optimizer_steps_per_fit": 960,
+    "optimizer_steps_total": 109440,
+    "reused_selector_fits": 18,
+    "training_examples_total": 14008320
+  },
+  "later_crossed_seed_diagnosis": "If further diagnosis is undertaken, split data seed, initialization seed and batch-order seed in train/dev only with explicit crossed design. Any model/hyperparameter change requires a separately identified new confirmation design before looking at confirmation data; this design cannot be silently amended.",
+  "models": [
+    "single_step",
+    "gru",
+    "diag_ssm",
+    "dual_timescale",
+    "gru_reset",
+    "gru_no_action"
+  ],
+  "new_evaluation_training_seeds": [
+    3926890411,
+    727086859,
+    1852124203,
+    2302186560,
+    2281010178,
+    440845250,
+    3228430729,
+    3070568927,
+    952767533,
+    3178635790,
+    2295792649,
+    3109268547,
+    111838876,
+    2929527613,
+    2274992072,
+    995533690
+  ],
+  "original_qualification": "HOLD_UNCHANGED",
+  "primary_endpoint": "selected family minus single-step mean net utility including observed history, paired by independent training seed",
+  "recovery": "Only exact same source/config/seed/selected-checkpoint identity can reconcile an interrupted attempt. Retain original failures and charge recovery. Do not call a deterministic replay a new independent sample. No failed seed substitution.",
+  "reused_family_selection_training_seeds": [
+    11,
+    22,
+    33
+  ],
+  "schema": "pred1-independent-confirmation-design-v1",
+  "scope_limit": "Controlled simulator with fixed preparation options. Does not qualify owner runtime, real tools, autoregressive rollout, an integrated candidate, or complete physical costs.",
+  "secondary_endpoints": "Forecast/calibration metrics, reset and no-action ablations are descriptive, not additional primary winners.",
+  "seed_derivation": "For i=1..16: first 4 SHA256 bytes, big-endian integer, of UTF-8 hepta/PRED-1/independent-confirmation-002/2026-11-08/{i}. Fixed without looking at generated data.",
+  "selector_scope": "These three original train/dev selectors are known development data, are not independent new evidence, and retain the original family-selection rule. Their 18 repeated fits count as costs. No original confirmation data may be opened.",
+  "source": {
+    "directory": "/workspace/scratch/bdb11c6f9900/pred1_campaign_001/source",
+    "files": {
+      "__init__.py": {
+        "bytes": 75,
+        "sha256": "38cec1b3caecce48bd2a710e2e527eed5204888f5cec8867aa2c7aaea8b59ca0"
+      },
+      "contracts.py": {
+        "bytes": 12046,
+        "sha256": "9822cdf685b016b9b0dbf0a9fdde656fdc4d54237b0dd6ba7c71e404fd8b92e0"
+      },
+      "evaluation.py": {
+        "bytes": 11419,
+        "sha256": "934a5dd74ab3262f1732bf0f04c0ba21c971997512e3f6df235e1b3321c49fc7"
+      },
+      "models.py": {
+        "bytes": 12987,
+        "sha256": "1edb17c1d6a52dc8a0d0869657300a7620fb4502cec6eadd4ab19f2b4e5e3737"
+      },
+      "run.py": {
+        "bytes": 16353,
+        "sha256": "7ff055d3c281c4a30956650e4c42f5b06c8f3fa57e1537a0acd875c9b3ad4667"
+      },
+      "simulator.py": {
+        "bytes": 13005,
+        "sha256": "eef85855968f61c87e02c2e706b36fd7b3470bb588d790ead05371880b6237e7"
+      },
+      "test_contracts.py": {
+        "bytes": 8261,
+        "sha256": "bec621f7ccb6b7f5ed6deed5f4f266a4622d2436649255bebfc8fa3f17bbd261"
+      },
+      "test_evaluation.py": {
+        "bytes": 8952,
+        "sha256": "40a423d01bd51a3a8d4bf4950bd6372200d27654e48f7b26097b00673250676e"
+      },
+      "test_models.py": {
+        "bytes": 5428,
+        "sha256": "dc731cc9c32a8a980464501c9980f912ad773f9b089b855fb0de8772974441da"
+      },
+      "test_run.py": {
+        "bytes": 3159,
+        "sha256": "1911ee265aa640e6856a59f1309fe95176ac795f27a8c1d2d693194d7221389c"
+      },
+      "test_simulator.py": {
+        "bytes": 3490,
+        "sha256": "0d89de0a1f376760705f237ead12423e331a674af3bc17677e9124a0b75dd9dd"
+      }
+    },
+    "integration_candidate_qualified": false,
+    "kind": "exact_original_archived_python_source",
+    "manifest_sha256": "dbf82bbd1f829c9281342add90b0bf5b968c10d40fa76cfa433a155875231ba4"
+  },
+  "status": "DESIGN_FROZEN_NOT_EXECUTED",
+  "success_criterion": {
+    "assumption": "Independent seed units and paired sign-exchangeability under the null. Episode-level counts do not replace independent training seeds.",
+    "minimum_mean_net_utility_gain": 0.02,
+    "one_sided_exact_paired_seed_signflip_p_at_most": 0.05
+  },
+  "unchanged_training": {
+    "batch_size": 128,
+    "checkpoint_selection": "minimum development observed-label NLL",
+    "confirm_episodes": 1024,
+    "dev_episodes": 512,
+    "epochs": 30,
+    "history_length": 16,
+    "learning_rate": 0.003,
+    "target_parameters": 3000,
+    "train_episodes": 4096
+  }
+}
