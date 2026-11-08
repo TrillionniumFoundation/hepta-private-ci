@@ -77,7 +77,7 @@ enum AutomationEffectHostFile {
     Http(AutomationEffectHostFileV1),
     Hcsn(hcsn::HcsnHostFileV2),
     #[cfg(target_os = "linux")]
-    HcsnPq(hcsn_pq::HcsnPqHostFileV3),
+    HcsnPq(Box<hcsn_pq::HcsnPqHostFileV3>),
 }
 
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
@@ -148,7 +148,7 @@ impl AgentdAutomationEffectHost {
             AutomationEffectHostFile::Hcsn(config) => return Self::open_hcsn(identity, config),
             #[cfg(target_os = "linux")]
             AutomationEffectHostFile::HcsnPq(config) => {
-                return Self::open_hcsn_pq(identity, config);
+                return Self::open_hcsn_pq(identity, *config);
             }
         };
         if config.schema_version != AUTOMATION_EFFECT_HOST_SCHEMA_VERSION {
