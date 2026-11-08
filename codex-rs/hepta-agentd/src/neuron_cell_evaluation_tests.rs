@@ -115,12 +115,14 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
         digest("binding"),
         Some(anchor),
     ));
+    let (store, holdout) = observed_holdout(store);
     let owner = checked(FencedFinalHoldoutOwnerV1::recover(
         store,
         digest("binding"),
         fence(),
     ));
     fixture.runner = CellEvaluationRunnerV1::new(ProductEvaluationRunnerV1::new(owner));
+    fixture.holdout = holdout;
     // A replenished provider must not make a recovered consumption reusable.
     fixture.provider.inputs = inputs;
     assert!(matches!(

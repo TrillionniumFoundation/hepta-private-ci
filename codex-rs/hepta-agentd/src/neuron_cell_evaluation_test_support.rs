@@ -9,6 +9,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::Weak;
 
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_neuron::*;
@@ -259,10 +260,20 @@ impl FinalHoldoutProviderV1 for Provider {
     }
 }
 
-// Both views delegate to the same real locked CAS owner. Only this fixture
-// retains observation custody; the product runner and its fence are unchanged.
-#[derive(Clone)]
+// The runner owns the real locked CAS store. The fixture observes it weakly so
+// dropping the runner still releases the original owner before a cold reopen.
 pub(super) struct ObservedHoldoutStore(Arc<Mutex<LockedFileFinalHoldoutCasStoreV1>>);
+
+pub(super) fn observed_holdout(
+    store: LockedFileFinalHoldoutCasStoreV1,
+) -> (
+    ObservedHoldoutStore,
+    Weak<Mutex<LockedFileFinalHoldoutCasStoreV1>>,
+) {
+    let store = Arc::new(Mutex::new(store));
+    let observation = Arc::downgrade(&store);
+    (ObservedHoldoutStore(store), observation)
+}
 
 impl FinalHoldoutCasStoreV1 for ObservedHoldoutStore {
     fn load(
@@ -289,7 +300,7 @@ impl FinalHoldoutCasStoreV1 for ObservedHoldoutStore {
 }
 
 pub(super) struct Fixture {
-    holdout: Arc<Mutex<LockedFileFinalHoldoutCasStoreV1>>,
+    pub(super) holdout: Weak<Mutex<LockedFileFinalHoldoutCasStoreV1>>,
     pub(super) candidate: Journal,
     pub(super) fixed: Journal,
     pub(super) runner: CellEvaluationRunnerV1<ObservedHoldoutStore>,
@@ -309,9 +320,9 @@ impl Fixture {
             file(&path),
             digest("binding"),
         ));
-        let holdout = Arc::new(Mutex::new(store));
+        let (store, holdout) = observed_holdout(store);
         let owner = checked(FencedFinalHoldoutOwnerV1::initialize(
-            ObservedHoldoutStore(Arc::clone(&holdout)),
+            store,
             digest("binding"),
             fence(),
         ));
@@ -369,6 +380,10 @@ impl Fixture {
         )
     }
     pub(super) fn holdout_bytes(&self) -> Vec<u8> {
-        checked(checked(self.holdout.lock()).retained_bytes())
+        let Some(owner) = self.holdout.upgrade() else {
+            panic!("fixture holdout owner was dropped");
+        };
+        let mut owner = checked(owner.lock());
+        checked(owner.retained_bytes())
     }
 }
