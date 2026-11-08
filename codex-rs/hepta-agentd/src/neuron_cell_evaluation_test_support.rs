@@ -7,6 +7,8 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_neuron::*;
@@ -257,10 +259,40 @@ impl FinalHoldoutProviderV1 for Provider {
     }
 }
 
+// Both views delegate to the same real locked CAS owner. Only this fixture
+// retains observation custody; the product runner and its fence are unchanged.
+#[derive(Clone)]
+pub(super) struct ObservedHoldoutStore(Arc<Mutex<LockedFileFinalHoldoutCasStoreV1>>);
+
+impl FinalHoldoutCasStoreV1 for ObservedHoldoutStore {
+    fn load(
+        &mut self,
+        binding: Digest32,
+    ) -> Result<Option<FinalHoldoutCasRecordV1>, FinalHoldoutCasStoreError> {
+        self.0
+            .lock()
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
+            .load(binding)
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        binding: Digest32,
+        expected: Option<Digest32>,
+        next: &FinalHoldoutCasRecordV1,
+    ) -> Result<(), FinalHoldoutCasStoreError> {
+        self.0
+            .lock()
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
+            .compare_and_swap(binding, expected, next)
+    }
+}
+
 pub(super) struct Fixture {
+    holdout: Arc<Mutex<LockedFileFinalHoldoutCasStoreV1>>,
     pub(super) candidate: Journal,
     pub(super) fixed: Journal,
-    pub(super) runner: CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>,
+    pub(super) runner: CellEvaluationRunnerV1<ObservedHoldoutStore>,
     pub(super) registration: CellEvaluationRegistrationV1,
     pub(super) candidate_temporal: TemporalEvaluationPlan,
     pub(super) baseline_temporal: TemporalEvaluationPlan,
@@ -277,8 +309,9 @@ impl Fixture {
             file(&path),
             digest("binding"),
         ));
+        let holdout = Arc::new(Mutex::new(store));
         let owner = checked(FencedFinalHoldoutOwnerV1::initialize(
-            store,
+            ObservedHoldoutStore(Arc::clone(&holdout)),
             digest("binding"),
             fence(),
         ));
@@ -287,6 +320,7 @@ impl Fixture {
         let (registration, candidate_temporal, baseline_temporal, inputs) =
             observations::observations();
         Self {
+            holdout,
             candidate,
             fixed,
             runner,
@@ -335,6 +369,6 @@ impl Fixture {
         )
     }
     pub(super) fn holdout_bytes(&self) -> Vec<u8> {
-        checked(fs::read(self.directory.path().join("holdout")))
+        checked(checked(self.holdout.lock()).retained_bytes())
     }
 }

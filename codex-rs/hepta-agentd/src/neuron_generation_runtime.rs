@@ -82,6 +82,8 @@ pub(crate) enum GenerationCommand {
         response: Response<()>,
     },
     Snapshot(Response<CellRuntimeSnapshotV2>),
+    #[cfg(test)]
+    RetainedBytes(Response<Vec<u8>>),
     ObserveGeneration(Response<CellGenerationObservationV1>),
     #[cfg(unix)]
     LearningRead {
@@ -121,6 +123,13 @@ pub struct NeuronGenerationRuntimeHandleV2 {
 }
 
 impl NeuronGenerationRuntimeHandleV2 {
+    // Test custody observation shares the real service queue and owner guards.
+    // It is not a transport method or a product-facing readback capability.
+    #[cfg(test)]
+    pub(crate) async fn retained_bytes_for_test(&self) -> Result<Vec<u8>, CellGenerationErrorV2> {
+        self.call(GenerationCommand::RetainedBytes).await
+    }
+
     pub async fn step(
         &self,
         request: CellGenerationRequestV2,

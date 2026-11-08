@@ -35,7 +35,7 @@ async fn real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome() 
     let ledger_fixture = LedgerFixture::new();
     let mut writer = ledger_fixture.writer(false);
     let decision = append_decision(&mut writer, &frozen);
-    let ledger_before = ledger_fixture.bytes();
+    let ledger_before = LedgerFixture::bytes(&mut writer);
     let (handle, bootstrap) = checked(neuron_generation_channel_v2(
         &fixture.identity,
         fixture.journal(),
@@ -62,7 +62,7 @@ async fn real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome() 
             "generation not settled and delivered"
         ))
     ));
-    assert_eq!(ledger_fixture.bytes(), ledger_before);
+    assert_eq!(LedgerFixture::bytes(&mut writer), ledger_before);
     let chunk = checked(undelivered.pending_output().cloned().ok_or("outbox"));
     let ack_cost = checked(CellTaskCostV2::new(undelivered.cost().identity()));
     checked(handle.acknowledge(chunk, [91; 32], ack_cost).await);
@@ -76,10 +76,8 @@ async fn real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome() 
     );
     assert_eq!(appended.disposition, AppendDisposition::Appended);
     assert_eq!(checked(writer.records()).len(), 2);
-    let ledger_after = ledger_fixture.bytes();
-    let generation_after = checked(std::fs::read(
-        fixture.directory.path().join("generation-journal"),
-    ));
+    let ledger_after = LedgerFixture::bytes(&mut writer);
+    let generation_after = checked(handle.retained_bytes_for_test().await);
     tasks.shutdown().await;
     drop(handle);
     drop(writer);
@@ -106,11 +104,9 @@ async fn real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome() 
     assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(replay.chain_digest, appended.chain_digest);
     assert_eq!(checked(writer.records()).len(), 2);
-    assert_eq!(ledger_fixture.bytes(), ledger_after);
+    assert_eq!(LedgerFixture::bytes(&mut writer), ledger_after);
     assert_eq!(
-        checked(std::fs::read(
-            fixture.directory.path().join("generation-journal")
-        )),
+        checked(handle.retained_bytes_for_test().await),
         generation_after
     );
     assert_eq!(control.calls.load(Ordering::SeqCst), 1);
@@ -153,7 +149,7 @@ async fn fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation() 
     );
     let sampled = checked(handle.observe_generation().await);
     let stale = signed_request(&writer, &frozen, Some(&sampled), decision.chain_digest);
-    let ledger_before = ledger_fixture.bytes();
+    let ledger_before = LedgerFixture::bytes(&mut writer);
     let head_before = checked(writer.snapshot());
     checked(
         handle
@@ -177,7 +173,7 @@ async fn fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation() 
         ))
     ));
     assert_eq!(checked(writer.snapshot()), head_before);
-    assert_eq!(ledger_fixture.bytes(), ledger_before);
+    assert_eq!(LedgerFixture::bytes(&mut writer), ledger_before);
     let valid = signed_request(&writer, &frozen, Some(&current), decision.chain_digest);
     let mut bad_signature = valid.clone();
     bad_signature.evidence.signature[0] ^= 1;
@@ -187,7 +183,7 @@ async fn fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation() 
             .is_err()
     );
     assert_eq!(checked(writer.snapshot()), head_before);
-    assert_eq!(ledger_fixture.bytes(), ledger_before);
+    assert_eq!(LedgerFixture::bytes(&mut writer), ledger_before);
     let receipt = checked(
         append_neuron_generation_outcome_v1(&handle, &mut writer, &frozen, valid, 50).await,
     );

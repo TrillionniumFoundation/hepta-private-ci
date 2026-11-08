@@ -3,6 +3,8 @@
 
 use std::fs;
 use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::Weak;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
@@ -47,7 +49,7 @@ impl CellGenerationWorkerV2 for UnknownWorker {
 }
 
 struct ObservedPort {
-    inner: ControlledCellGenerationPortV2,
+    inner: Arc<Mutex<ControlledCellGenerationPortV2>>,
     contacts: Arc<AtomicUsize>,
 }
 
@@ -58,21 +60,64 @@ impl CellGenerationControlPortV2 for ObservedPort {
         request: &CellGenerationRequestV2,
     ) -> Result<CellGenerationProposalV2, CellGenerationErrorV2> {
         self.contacts.fetch_add(1, Ordering::SeqCst);
-        self.inner.execute_generation(manifest, request)
+        checked(self.inner.lock()).execute_generation(manifest, request)
     }
 
     fn read_generation(
         &mut self,
         request: &CellGenerationRequestV2,
     ) -> Result<Option<CellGenerationProposalV2>, CellGenerationErrorV2> {
-        self.inner.read_generation(request)
+        checked(self.inner.lock()).read_generation(request)
     }
 
     fn cancel_generation(
         &mut self,
         request: &CellGenerationRequestV2,
     ) -> Result<(), CellGenerationErrorV2> {
-        self.inner.cancel_generation(request)
+        checked(self.inner.lock()).cancel_generation(request)
+    }
+}
+
+// Delegates every witness operation to the same original file owner. The
+// observation view is weak, so it cannot prolong locks after service retirement.
+struct ObservedWitness(Arc<Mutex<FileAnchorWitnessStore>>);
+
+impl AnchorWitnessStore for ObservedWitness {
+    fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
+        self.0
+            .lock()
+            .map_err(|_| WitnessStoreError::Poisoned)?
+            .current()
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        expected: Option<JournalAnchor>,
+        next: JournalAnchor,
+    ) -> Result<(), WitnessStoreError> {
+        self.0
+            .lock()
+            .map_err(|_| WitnessStoreError::Poisoned)?
+            .compare_and_swap(expected, next)
+    }
+}
+
+struct CustodyObservation {
+    witness: Weak<Mutex<FileAnchorWitnessStore>>,
+    control: Weak<Mutex<ControlledCellGenerationPortV2>>,
+}
+
+impl CustodyObservation {
+    fn control_bytes(&self) -> Vec<u8> {
+        let owner = checked(self.control.upgrade().ok_or("live control owner"));
+        checked(checked(owner.lock()).retained_bytes())
+    }
+
+    async fn bytes(&self, handle: &NeuronGenerationRuntimeHandleV2) -> [Vec<u8>; 3] {
+        let journal = checked(handle.retained_bytes_for_test().await);
+        let owner = checked(self.witness.upgrade().ok_or("live witness owner"));
+        let witness = checked(checked(owner.lock()).retained_bytes());
+        [journal, witness, self.control_bytes()]
     }
 }
 
@@ -136,7 +181,11 @@ async fn start(
     clock: Clock,
     worker: Arc<UnknownWorker>,
     contacts: Arc<AtomicUsize>,
-) -> (NeuronGenerationRuntimeHandleV2, RuntimeTasks) {
+) -> (
+    NeuronGenerationRuntimeHandleV2,
+    RuntimeTasks,
+    CustodyObservation,
+) {
     let port = checked(ControlledCellGenerationPortV2::spawn(
         open_control(fixture).await,
         ControlledCellGenerationConfigV2 {
@@ -149,9 +198,21 @@ async fn start(
         worker,
         Arc::clone(&clock),
     ));
+    let port = Arc::new(Mutex::new(port));
+    let mut witness = Weak::new();
+    let journal =
+        fixture.journal_with_mapped_witness("generation", fixture.config.clone(), |owner| {
+            let owner = Arc::new(Mutex::new(owner));
+            witness = Arc::downgrade(&owner);
+            ObservedWitness(owner)
+        });
+    let custody = CustodyObservation {
+        witness,
+        control: Arc::downgrade(&port),
+    };
     let (handle, bootstrap) = checked(neuron_generation_channel_v2(
         &fixture.identity,
-        fixture.journal(),
+        journal,
         ObservedPort {
             inner: port,
             contacts,
@@ -166,7 +227,7 @@ async fn start(
         Arc::clone(fixture.state()),
         lifetime,
     ));
-    (handle, tasks)
+    (handle, tasks, custody)
 }
 
 fn original(fixture: &Fixture, clock: &Clock) -> CellGenerationRequestV2 {
@@ -176,7 +237,8 @@ fn original(fixture: &Fixture, clock: &Clock) -> CellGenerationRequestV2 {
     original
 }
 
-fn durable_bytes(fixture: &Fixture) -> [Vec<u8>; 3] {
+// Called only after the original explicit runtime drain has retired the owners.
+fn retired_bytes(fixture: &Fixture) -> [Vec<u8>; 3] {
     ["generation-journal", "generation-witness", CONTROL_FILE]
         .map(|name| checked(fs::read(fixture.directory.path().join(name))))
 }
@@ -188,14 +250,14 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     let changing_clock = boundary_clock(&fixture, Arc::clone(&clock), PrecontactBoundary::Drain);
     let worker = Arc::new(UnknownWorker::default());
     let contacts = Arc::new(AtomicUsize::new(0));
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, custody) = start(
         &fixture,
         changing_clock,
         Arc::clone(&worker),
         Arc::clone(&contacts),
     )
     .await;
-    let control_before = checked(fs::read(fixture.directory.path().join(CONTROL_FILE)));
+    let control_before = custody.control_bytes();
     let original = original(&fixture, &clock);
     let receipt = checked(handle.step(original.clone()).await);
     assert_eq!(receipt.disposition, CellGenerationDispositionV2::Rejected);
@@ -225,9 +287,9 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     let mut expected = fixture.config.initial.clone();
     expected.revision = 1;
     assert_eq!(checked(handle.snapshot().await), expected);
-    let bytes = durable_bytes(&fixture);
+    let bytes = custody.bytes(&handle).await;
     assert_eq!(checked(handle.step(original.clone()).await), receipt);
-    assert_eq!(durable_bytes(&fixture), bytes);
+    assert_eq!(custody.bytes(&handle).await, bytes);
     assert!(checked(handle.drain().await));
     assert_eq!(
         checked(fixture.state().neuron_generation_drain_blockers()),
@@ -240,12 +302,12 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
         )
         .await,
     ));
-    let drained_bytes = durable_bytes(&fixture);
+    let drained_bytes = retired_bytes(&fixture);
     tasks.shutdown().await;
     drop(handle);
 
     fixture.reopen_state().await;
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, custody) = start(
         &fixture,
         Arc::clone(&clock),
         Arc::clone(&worker),
@@ -256,11 +318,8 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     assert_eq!(checked(handle.task_cost().await), receipt.cost);
     assert_eq!(checked(handle.snapshot().await), expected);
     assert!(checked(handle.drain().await));
-    assert_eq!(durable_bytes(&fixture), drained_bytes);
-    assert_eq!(
-        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
-        control_before
-    );
+    assert_eq!(custody.bytes(&handle).await, drained_bytes);
+    assert_eq!(custody.control_bytes(), control_before);
     assert_eq!(contacts.load(Ordering::SeqCst), 0);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
     tasks.shutdown().await;
@@ -273,7 +332,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
     let changing_clock = boundary_clock(&fixture, Arc::clone(&clock), PrecontactBoundary::Fence);
     let worker = Arc::new(UnknownWorker::default());
     let contacts = Arc::new(AtomicUsize::new(0));
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, _custody) = start(
         &fixture,
         changing_clock,
         Arc::clone(&worker),
@@ -299,14 +358,14 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
     }
 
     fixture.reopen_state().await;
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, custody) = start(
         &fixture,
         Arc::clone(&clock),
         Arc::clone(&worker),
         Arc::clone(&contacts),
     )
     .await;
-    let bytes = durable_bytes(&fixture);
+    let bytes = custody.bytes(&handle).await;
     assert_eq!(
         handle.reconcile(checked(original.digest())).await,
         Err(CellGenerationErrorV2::Pending)
@@ -315,7 +374,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
         handle.step(original.clone()).await,
         Err(CellGenerationErrorV2::Pending)
     );
-    assert_eq!(durable_bytes(&fixture), bytes);
+    assert_eq!(custody.bytes(&handle).await, bytes);
     assert_eq!(
         handle.cancel(checked(original.digest())).await,
         Err(CellGenerationErrorV2::Conflict)
@@ -336,7 +395,7 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     let clock = clock();
     let worker = Arc::new(UnknownWorker::default());
     let contacts = Arc::new(AtomicUsize::new(0));
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, _custody) = start(
         &fixture,
         Arc::clone(&clock),
         Arc::clone(&worker),
@@ -378,9 +437,9 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     }
 
     fixture.reopen_state().await;
-    let (handle, mut tasks) =
+    let (handle, mut tasks, custody) =
         start(&fixture, clock, Arc::clone(&worker), Arc::clone(&contacts)).await;
-    let bytes = durable_bytes(&fixture);
+    let bytes = custody.bytes(&handle).await;
     assert_eq!(
         handle.reconcile(digest).await,
         Err(CellGenerationErrorV2::Pending)
@@ -391,7 +450,7 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     );
     assert_eq!(checked(handle.pending_request().await), Some(original));
     assert!(!checked(handle.drain().await));
-    assert_eq!(durable_bytes(&fixture), bytes);
+    assert_eq!(custody.bytes(&handle).await, bytes);
     assert_eq!(contacts.load(Ordering::SeqCst), 1);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 1);
     assert!(checked(handle.pending_output().await).is_none());

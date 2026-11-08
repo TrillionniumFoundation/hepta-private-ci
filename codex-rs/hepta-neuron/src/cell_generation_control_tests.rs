@@ -247,7 +247,7 @@ fn independent_worker_does_not_block_durable_cancellation_or_exact_readback() {
             .iter()
             .all(|entry| entry.metrics.cpu_micros.is_none())
     );
-    let bytes = checked(fs::read(fixture.path()));
+    let bytes = checked(port.retained_bytes());
     assert_eq!(
         port.read_generation(&fixture.request),
         Ok(Some(proposal.clone()))
@@ -256,7 +256,7 @@ fn independent_worker_does_not_block_durable_cancellation_or_exact_readback() {
         port.read_generation(&fixture.request),
         Ok(Some(proposal.clone()))
     );
-    assert_eq!(checked(fs::read(fixture.path())), bytes);
+    assert_eq!(checked(port.retained_bytes()), bytes);
     checked(port.shutdown());
     let control = checked(DurableInferenceControl::open(
         fixture.path(),
@@ -299,7 +299,7 @@ fn terminal_control_reopen_reads_original_bytes_without_running_another_worker()
         Ok(proposal)
     );
     assert_eq!(worker.calls.load(Ordering::Acquire), 1);
-    assert_eq!(checked(fs::read(fixture.path())), bytes);
+    assert_eq!(checked(reopened.retained_bytes()), bytes);
     checked(reopened.shutdown());
 }
 
@@ -342,7 +342,7 @@ fn lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch() {
         port.execute_generation(&fixture.config.manifest, &fixture.request),
         Ok(proposal)
     );
-    let bytes = checked(fs::read(fixture.path()));
+    let bytes = checked(port.retained_bytes());
     let mut changed = fixture.request.clone();
     changed.input.push(8);
     assert_eq!(
@@ -354,7 +354,7 @@ fn lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch() {
         Err(CellGenerationErrorV2::Conflict)
     );
     assert_eq!(worker.calls.load(Ordering::Acquire), 1);
-    assert_eq!(checked(fs::read(fixture.path())), bytes);
+    assert_eq!(checked(port.retained_bytes()), bytes);
     checked(port.shutdown());
 }
 
@@ -436,7 +436,7 @@ fn invalid_scope_and_invalid_worker_proposals_never_become_terminal_records() {
             port.execute_generation(&fixture.config.manifest, &wrong),
             Err(CellGenerationErrorV2::InvalidBinding)
         );
-        assert_eq!(checked(fs::read(fixture.path())), Vec::<u8>::new());
+        assert_eq!(checked(port.retained_bytes()), Vec::<u8>::new());
         assert_eq!(worker.calls.load(Ordering::Acquire), 0);
         assert_eq!(
             port.execute_generation(&fixture.config.manifest, &fixture.request),

@@ -139,6 +139,11 @@ where
                 });
                 respond(state, response, result)
             }
+            #[cfg(test)]
+            GenerationCommand::RetainedBytes(response) => {
+                let result = self.owner.journal_mut().retained_bytes();
+                respond(state, response, result)
+            }
             GenerationCommand::Snapshot(response) => {
                 respond(state, response, self.owner.journal().snapshot().cloned())
             }
