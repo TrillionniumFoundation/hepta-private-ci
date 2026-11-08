@@ -1,0 +1,28 @@
+{
+  "packets": [
+    {
+      "packet_id": "ce754c3-native-compile-failure",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/common-owner-scope-ce754c3-compile-failure.tar.gz",
+      "bytes": 3251260,
+      "sha256": "d01d3c7bf04403d7793da5fa5d39ad04edfc08da4d6cc45e58d610df816dd2d1",
+      "compression": "gzip",
+      "scope": "Original clean ce754c3 native build/list failed with three test observer type errors; no selected Rust test or strict lint ran. Source and locks unchanged."
+    },
+    {
+      "packet_id": "v3-native-original-artifacts",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/native-ci-v3-artifacts-sealed-v1/native-ci-v3-original-artifacts-v1.tar.gz",
+      "bytes": 5283391,
+      "sha256": "88ece7e53f630054126416f10b1b9824ac7fa35dd7ba31a149eba42afc568993",
+      "compression": "gzip",
+      "scope": "Original09f native CI four exact artifacts: complete default workspace20562 executed passes/139 skipped; subset7910 and1214 overlap, original ignored HostCAS1 separate; Python23+6 separate. All receipt/JUnit/raw/source bindings verified."
+    },
+    {
+      "packet_id": "zsh-old-new-actual-abi",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/zsh-abi-sealed-supplement-v1/zsh-old-new-abi-supplement-v1.tar.gz",
+      "bytes": 1729832,
+      "sha256": "ec633d21d56a9960737d430018d65ff3e62fd714b2d6e10b65b724acfdc2b9e8",
+      "compression": "gzip",
+      "scope": "Actual published/new and pinned/original Linux archives and binaries: dynamic glibc in both generations, same loader/NEEDED/GLIBC symbol version set through2.38; no musl or complete ABI equivalence claim."
+    }
+  ]
+}

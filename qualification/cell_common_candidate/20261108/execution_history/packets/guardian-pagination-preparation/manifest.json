@@ -1,0 +1,995 @@
+{
+  "packet_id": "guardian-pagination-preparation",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-core-fixes-history-import-v1.tar.xz",
+  "bytes": 1153044,
+  "sha256": "88cacaabab2f879fe088c8ed5b7aeacbf92618371e66088642201500c846c01e",
+  "compression": "xz",
+  "scope": "Original preparation failures, final four native passes and scoped lint on prep57556e; not final common source.",
+  "file_members": [
+    {
+      "path": "records/run_windows_core_fixes_diagnostic_v3.console.log",
+      "bytes": 18022,
+      "sha256": "ba910d8295549686d08a6fd68a923c5b294c645cad5171d52573258833ff2d15"
+    },
+    {
+      "path": "records/run_windows_core_fixes_diagnostic_v3.py",
+      "bytes": 6039,
+      "sha256": "1ad51fc549bf43dcd4dc5dbede45f01f4b051f1ffa31a1e645b55f671bbe82fc"
+    },
+    {
+      "path": "records/run_windows_core_fixes_native_v1.py",
+      "bytes": 6180,
+      "sha256": "dd9f357568a4233b12558023e633fb6e2e98adec626b03aadfff633452f1983c"
+    },
+    {
+      "path": "records/run_windows_core_fixes_native_v1.py.console.log",
+      "bytes": 32909,
+      "sha256": "cb726cbed833d1841645d6e62eb06b9918c18ed9a6fbeb17b4ed8a166792c306"
+    },
+    {
+      "path": "records/run_windows_core_fixes_native_v2.py",
+      "bytes": 6180,
+      "sha256": "ce4e8b9e7cb64de720b55383900d121b4e429b7e6740d4501669ad3fda568577"
+    },
+    {
+      "path": "records/run_windows_core_fixes_native_v2.py.console.log",
+      "bytes": 18128,
+      "sha256": "b59712a6d246c923da4de2eb403aaaa7b1236b2bc8975b27a3a14b77b7b9b2c0"
+    },
+    {
+      "path": "records/run_windows_core_fixes_native_v4.console.log",
+      "bytes": 18688,
+      "sha256": "7fc14147b93c9387d3beb4bb55504b5194115792425b546250f2d8d13ebca123"
+    },
+    {
+      "path": "records/run_windows_core_fixes_native_v4.py",
+      "bytes": 6304,
+      "sha256": "1b93a9db9bc7c8044556867728810a33d159687f42663b26a56637c0fd639e42"
+    },
+    {
+      "path": "records/run_windows_core_scoped_fix.console.log",
+      "bytes": 47291,
+      "sha256": "2af95d60f6c38c4931683b4f1d82181a993fde07bd3dc6325852eab295f63144"
+    },
+    {
+      "path": "records/run_windows_core_scoped_fix.py",
+      "bytes": 11490,
+      "sha256": "6e352213f0551fb556c9e5241e5f2a6282c74954dbb3cd14718c1c70e21d8cd6"
+    },
+    {
+      "path": "records/windows-core-fixes-delta-v2/after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-delta-v2/after.files.json",
+      "bytes": 5655870,
+      "sha256": "25825119ebed03803149b94688be8f01702dc80e2ab9c5ab4b10bbb313ad61ef"
+    },
+    {
+      "path": "records/windows-core-fixes-delta-v2/after.json",
+      "bytes": 837,
+      "sha256": "5ea2e749877a9fda656855c841b9a0856cb929ae264833b46c6805ff7f8b5b08"
+    },
+    {
+      "path": "records/windows-core-fixes-delta-v2/before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-delta-v2/before.files.json",
+      "bytes": 5655870,
+      "sha256": "6702bdb594bbf66db46046336c4616a6239b68bee8230c9162d70e72bfea75d1"
+    },
+    {
+      "path": "records/windows-core-fixes-delta-v2/before.json",
+      "bytes": 838,
+      "sha256": "9a798aabbcb84e60d52e4c197373ae8758ff554b5e3745010fe376b5f1adce54"
+    },
+    {
+      "path": "records/windows-core-fixes-delta-v2/commit.log",
+      "bytes": 169,
+      "sha256": "2b7b6ac8cb453438819d48c6b830a2d1e09dbee340d00c89d43261c290a90a62"
+    },
+    {
+      "path": "records/windows-core-fixes-delta-v2/fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-delta-v2/preparation.json",
+      "bytes": 2742,
+      "sha256": "11f8210d2696e4dc62dd9dd1c5dc55a9b5c8c2e03a46a12551defce8e4fde953"
+    },
+    {
+      "path": "records/windows-core-fixes-delta-v2/stage.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/collect-core-junit.json",
+      "bytes": 1919,
+      "sha256": "b06b5f34f9daeb49a607144a7146f659ab326df9178ebb1ab243814c068ecb4a"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/collect-core-junit.json.927e825b82234a5eb4f7a61aba0cae18.log",
+      "bytes": 1187,
+      "sha256": "bd4de9ec5173711c3df83bc734589b5d0b158be214712e9b0bbfb0c3184a24a7"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/core-tests-junit.summary.json",
+      "bytes": 1311,
+      "sha256": "628f3bc6dd5dc4fec89f31069e8978467c57fd9065f196f5f03ef7de7b3b5c39"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/core-tests-junit.xml",
+      "bytes": 4867,
+      "sha256": "699c1598ffed4b0a52970459261ff026cdee31c90cbae5176426f66707fe68d1"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/core-tests.json",
+      "bytes": 1983,
+      "sha256": "b0cda6b04a7dd5a34c639945fdad3bb943de90c23c4c94fa5175e26b19cfb77b"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/core-tests.json.e5e066cb0bd1476d99de30e40f5ad9d7.log",
+      "bytes": 5409,
+      "sha256": "34d3595dfa245fd33b85c828eaa03fd8fd4d2c7346f1e72140dfa26d44a5de04"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/frozen-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/frozen-after.files.json",
+      "bytes": 5655869,
+      "sha256": "7055e3b422c93ae567f36f13688a30965b57c9af956524c3ae0941884ecd78d8"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/frozen-after.json",
+      "bytes": 861,
+      "sha256": "d13bf40a6762400586caa464d7674988f8bf408ffd2d410e6408bb819ab886ce"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/nextest-store/local/junit.xml",
+      "bytes": 4867,
+      "sha256": "699c1598ffed4b0a52970459261ff026cdee31c90cbae5176426f66707fe68d1"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/nextest.toml",
+      "bytes": 119,
+      "sha256": "94ff4cf5485a406b7f7934c9582467e116b21a5e66129ec9d9b77b4749824510"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/observation.json",
+      "bytes": 7228,
+      "sha256": "d5f3d24f7da0ec5c3402703a1acca594bc62e07126ebc475ffb621bfc792786e"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/source-after.files.json",
+      "bytes": 5655870,
+      "sha256": "cbf7ee825d7822bc2b4833140ca8a26c7dd43c0660812aee7caf9aa97212eb8d"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/source-after.json",
+      "bytes": 859,
+      "sha256": "0028e41c9c248d464181609e2fcf661007b74416e22c4d446f53f9494ce51f67"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/source-before.files.json",
+      "bytes": 5655870,
+      "sha256": "cbf7ee825d7822bc2b4833140ca8a26c7dd43c0660812aee7caf9aa97212eb8d"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/source-before.json",
+      "bytes": 862,
+      "sha256": "51829288a543d83a8c6069999b3758b3d4a9b28d30639b4d10e87613c978f689"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/v8.env",
+      "bytes": 295,
+      "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/v8.json",
+      "bytes": 1491,
+      "sha256": "53747c1e33f7dda2f93362a44bed0685ba560696d77b9879b1cdb58607ec543c"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3/v8.json.a37845e8b7e0468782b0ab033c7d5692.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3-preparation/add.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3-preparation/commit.log",
+      "bytes": 167,
+      "sha256": "32d953a9dacd82e4944d556c19c8225f7a5c26b70ef17c0d3d9f221cf7fd42eb"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3-preparation/fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3-preparation/observation.json",
+      "bytes": 2606,
+      "sha256": "272fb651eaa8ac1cd2cc6bee33f73796397160ee7e0b48d64361fe0efa4fd186"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3-preparation/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3-preparation/source-after.files.json",
+      "bytes": 5655870,
+      "sha256": "cbf7ee825d7822bc2b4833140ca8a26c7dd43c0660812aee7caf9aa97212eb8d"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3-preparation/source-after.json",
+      "bytes": 884,
+      "sha256": "961dce87a91fb9fc0615b6a62e2ce37bb2d898b247d787d22fe28ca9715fc3be"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3-preparation/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3-preparation/source-before.files.json",
+      "bytes": 5655870,
+      "sha256": "25825119ebed03803149b94688be8f01702dc80e2ab9c5ab4b10bbb313ad61ef"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3-preparation/source-before.json",
+      "bytes": 886,
+      "sha256": "1c06db2289eeaafa5b8d47cbc6b4767f165d34cb608135cdf00e0664c509fda1"
+    },
+    {
+      "path": "records/windows-core-fixes-diagnostic-v3-preparation/source.patch",
+      "bytes": 2135,
+      "sha256": "37065db6b75bdfbdbdb36be2f3a29524f7e46380ce61309bb4590e3b85026d1f"
+    },
+    {
+      "path": "records/windows-core-fixes-final-delivery/DELIVERY.json",
+      "bytes": 1707,
+      "sha256": "b46bd02003ae2958903563368fb3bd808bcb30c6270ecb8f57726b3678bc57be"
+    },
+    {
+      "path": "records/windows-core-fixes-final-delivery/frozen-after-lint.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-final-delivery/frozen-after-lint.files.json",
+      "bytes": 5655869,
+      "sha256": "7055e3b422c93ae567f36f13688a30965b57c9af956524c3ae0941884ecd78d8"
+    },
+    {
+      "path": "records/windows-core-fixes-final-delivery/frozen-after-lint.json",
+      "bytes": 872,
+      "sha256": "9bd6694758cae5c650dbe72c700f28768e0873ecea915313205858a4b1dce817"
+    },
+    {
+      "path": "records/windows-core-fixes-final-delivery/git-log.txt",
+      "bytes": 1440,
+      "sha256": "fe96a122971afabaf2a3907fafc3b6c159d39159d5daca7bbae6ca5d3949f56c"
+    },
+    {
+      "path": "records/windows-core-fixes-final-delivery/windows-core-fixes-final.patch",
+      "bytes": 14567,
+      "sha256": "c23a5dd79007f42bec8202234c3a40a4bcbff9f5ed42e1f6bcb80ca31f66289d"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/add-guardian.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/add-memory.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/commit-guardian.log",
+      "bytes": 165,
+      "sha256": "693df4d1794d782ba46918837a39a81b1307f097893db7f5306f6b089bbe4260"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/commit-memory.log",
+      "bytes": 177,
+      "sha256": "95a5aaca0963f0520c5451ee8b4ba2018e21b78c5b5902305ccf9792b738cad7"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/memory-apply-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/memory-apply.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/memory-expiry-clock-fixture.patch",
+      "bytes": 2185,
+      "sha256": "35e10e17c27ef0a6677c5c6db86e96401fa1f9141fa65f1d7ee29f8ef9a7d1d6"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/observation.json",
+      "bytes": 3738,
+      "sha256": "5535027135d7b901582e9e8e0ad53e696180eb9d9e25c84a46286c3568d33b6b"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/source-after.files.json",
+      "bytes": 5655870,
+      "sha256": "b4a57ac75ac23191571a1430b137dcbc4beec50a5da68b019c1438918c4d5193"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/source-after.json",
+      "bytes": 875,
+      "sha256": "340a06007f56e850c865afb38d47e40e981c880aea4a553ba55b154c55a888db"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/source-before.files.json",
+      "bytes": 5655870,
+      "sha256": "cbf7ee825d7822bc2b4833140ca8a26c7dd43c0660812aee7caf9aa97212eb8d"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/source-before.json",
+      "bytes": 877,
+      "sha256": "bbcef95c05d7d4220c663367661c934b7f290bce8b57c167f087b395b4e9ceb2"
+    },
+    {
+      "path": "records/windows-core-fixes-final-v4-preparation/source.patch",
+      "bytes": 4869,
+      "sha256": "c619300afa9fee2616146619b51fce152c5a9e1adf12d955613fe88ab3642295"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/collect-core-junit.json",
+      "bytes": 1907,
+      "sha256": "e6c904e9ba2224270ef002388c449758975f569399a1847bee33f7cc80f16cfe"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/collect-core-junit.json.52ff4acf66414a9babbdcc0df50e297a.log",
+      "bytes": 1296,
+      "sha256": "8c384bd30afe4bd93b75855f6196c59fbbdd64e06864a60e1bf3213c392bc12b"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/core-tests-junit.summary.json",
+      "bytes": 1408,
+      "sha256": "d5fa348ae951a91529c957c0fbf427590d671ee88ab7d5f107e72976de7e3cf7"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/core-tests.json",
+      "bytes": 2154,
+      "sha256": "c4cd2aa7b956054259013a6ac902393eb063fbb72793cb264deddc3a94b43f86"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/core-tests.json.e2a48ce0af93457189c93b86f55885bb.log",
+      "bytes": 20101,
+      "sha256": "e2df04dd1a560c0c5cd77c91cdc29247b0190fbd3a5a956ae3f065a2d761ca5c"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/frozen-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/frozen-after.files.json",
+      "bytes": 5655869,
+      "sha256": "7055e3b422c93ae567f36f13688a30965b57c9af956524c3ae0941884ecd78d8"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/frozen-after.json",
+      "bytes": 852,
+      "sha256": "1ee6bf859209405902d52122c4a57ac597594880a3d7913b2d4cd3bb95946442"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/nextest.toml",
+      "bytes": 115,
+      "sha256": "0c9aaa0525c16fa2459eaceef6f1c6c69f06c77298fe298276851fbe98372b3e"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/observation.json",
+      "bytes": 7111,
+      "sha256": "9391594af54e646f2259f690f13b6113ed15991f81a50afe1c0b7c8e4f88f115"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/source-after.files.json",
+      "bytes": 5655870,
+      "sha256": "6702bdb594bbf66db46046336c4616a6239b68bee8230c9162d70e72bfea75d1"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/source-after.json",
+      "bytes": 853,
+      "sha256": "01517dedb423aef3f13a0f0fa6b27cf49a2dfb870a4a5e6a6e5c55e986cfbc3d"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/source-before.files.json",
+      "bytes": 5655870,
+      "sha256": "6702bdb594bbf66db46046336c4616a6239b68bee8230c9162d70e72bfea75d1"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/source-before.json",
+      "bytes": 854,
+      "sha256": "65c476d8ddba1d6cdd86d2fb47d53c13f4b690f4073d6c50a2c5c39ac453e061"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/v8.env",
+      "bytes": 295,
+      "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/v8.json",
+      "bytes": 1491,
+      "sha256": "ca5d2f71052e592f55e258ecace61cd891bc8e1dee05fb58416fb6e4a051163f"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v1/v8.json.9ffb9192a32f40b29f52cb3253658645.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/collect-core-junit.json",
+      "bytes": 1906,
+      "sha256": "9494928cf9f4413fe88e889f8980f3a9cdf40825c99e087a43cf46b3d921e2de"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/collect-core-junit.json.a558670463e14892a61f9208ec5572f9.log",
+      "bytes": 1352,
+      "sha256": "e3f7f4774a362ef19af7da12055557158564d8a1db5b98e3c47420a1c8893566"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/core-tests-junit.summary.json",
+      "bytes": 1476,
+      "sha256": "86c2a3ae271c3a967e4fb3fa6957c5db33b1a675db7056444cb2492ab250dfd3"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/core-tests-junit.xml",
+      "bytes": 2444,
+      "sha256": "6878f41738add99f3c4f8cbf9bbb1b4cb355b0e3ad5b9353ec6b948535f97c93"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/core-tests.json",
+      "bytes": 2152,
+      "sha256": "cd9c78ea0a75524042da208baac6d05e4e270280ba839c4da5240283e56beba8"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/core-tests.json.31c326dd71504f4f8886e4b968801cc1.log",
+      "bytes": 4325,
+      "sha256": "159b00f1f50815c9c714082ef51f17f531ef7c682256baf03c2a812a95c53527"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/frozen-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/frozen-after.files.json",
+      "bytes": 5655869,
+      "sha256": "7055e3b422c93ae567f36f13688a30965b57c9af956524c3ae0941884ecd78d8"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/frozen-after.json",
+      "bytes": 851,
+      "sha256": "db758fb302db71079dc8cc5a5b3c38d057f989a51a5e12c8c5660c08ad9b4760"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/nextest-store/local/junit.xml",
+      "bytes": 2444,
+      "sha256": "6878f41738add99f3c4f8cbf9bbb1b4cb355b0e3ad5b9353ec6b948535f97c93"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/nextest.toml",
+      "bytes": 115,
+      "sha256": "3aaed2631e6fd4b3afd18d8fa79229a1a488eb00182c8a08adf21454d064abf3"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/observation.json",
+      "bytes": 8201,
+      "sha256": "2517db90b1dc062347ea6d942985827e069e81f786d4adcf1acedbac40fa9ef8"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/source-after.files.json",
+      "bytes": 5655870,
+      "sha256": "25825119ebed03803149b94688be8f01702dc80e2ab9c5ab4b10bbb313ad61ef"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/source-after.json",
+      "bytes": 851,
+      "sha256": "526af4f0c0e7b61a182ef91b62a38b93fd7c5809d00aabe5a3cee8b23574a9b5"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/source-before.files.json",
+      "bytes": 5655870,
+      "sha256": "25825119ebed03803149b94688be8f01702dc80e2ab9c5ab4b10bbb313ad61ef"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/source-before.json",
+      "bytes": 855,
+      "sha256": "3fa175eff9b434160d650e735dfb9d1907bc91be951b1a6ca6221483afc52619"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/v8.env",
+      "bytes": 295,
+      "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/v8.json",
+      "bytes": 1491,
+      "sha256": "91c548aa418abe60d86e03c065e2628527fcb6adecf280eb79ecacbe08622187"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v2/v8.json.e84ac770a4264060a92c48abe6ba0eda.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/collect-core-junit.json",
+      "bytes": 1907,
+      "sha256": "8525a75f789ebe178c5785577bb54052b8d54411286c6b2049aa5ca8f67d7407"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/collect-core-junit.json.7443fa7ab5e4454196cd6f5426a41c3f.log",
+      "bytes": 1476,
+      "sha256": "b39cdd9a076ede2dbd116db5103a93f3d934ffb103ea3017e309aeab67b00165"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/core-tests-junit.summary.json",
+      "bytes": 1608,
+      "sha256": "cc6eb0760d31d99c35acd202a5fb2a8bdb112026ad63c1f4861065c546f0f140"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/core-tests-junit.xml",
+      "bytes": 1281,
+      "sha256": "7ca23c38f3e7df3ee1ccc6228c32739e399d0bdf07b807ad8b6a5770e6fead69"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/core-tests.json",
+      "bytes": 2232,
+      "sha256": "191e0392d66fe1c35b8e0b4c9439235b57d4fff35f6d0cf22ce743ba44d580c1"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/core-tests.json.32ec75bc10964b3790158e89020111b2.log",
+      "bytes": 4791,
+      "sha256": "9af6a5f0a0ddadeccb01173e95366dde66610b79bb0c4cf5042c9853cef81ec3"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/frozen-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/frozen-after.files.json",
+      "bytes": 5655869,
+      "sha256": "7055e3b422c93ae567f36f13688a30965b57c9af956524c3ae0941884ecd78d8"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/frozen-after.json",
+      "bytes": 851,
+      "sha256": "8d2093a2c2b036015bba35d8870e6a4beb061d26db4ba722074d95f114c2b275"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/nextest-store/local/junit.xml",
+      "bytes": 1281,
+      "sha256": "7ca23c38f3e7df3ee1ccc6228c32739e399d0bdf07b807ad8b6a5770e6fead69"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/nextest.toml",
+      "bytes": 115,
+      "sha256": "89fb1e72345e63ba706ef6932a692034ca629af06c2cbf9bd23dc0a5a12b226c"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/observation.json",
+      "bytes": 8164,
+      "sha256": "6fac9537f90c7c5ba9fc49892a46f01796ed687cca7d9004963bb37c28103a78"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/source-after.files.json",
+      "bytes": 5655870,
+      "sha256": "b4a57ac75ac23191571a1430b137dcbc4beec50a5da68b019c1438918c4d5193"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/source-after.json",
+      "bytes": 853,
+      "sha256": "3bd42be6f259c7bc9ef47839b3c7da9435eae4180205de5ffab6cbe5071359a6"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/source-before.files.json",
+      "bytes": 5655870,
+      "sha256": "b4a57ac75ac23191571a1430b137dcbc4beec50a5da68b019c1438918c4d5193"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/source-before.json",
+      "bytes": 854,
+      "sha256": "b9895b09f528a6ef5a1387d6d0a5745d827a571ddd95a007cfddaa79f65cae99"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/v8.env",
+      "bytes": 295,
+      "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/v8.json",
+      "bytes": 1491,
+      "sha256": "f62c10ee05221185618192245f11d54e1c16dfe116f3142fb09e701991a01138"
+    },
+    {
+      "path": "records/windows-core-fixes-native-v4/v8.json.afb6dbcb89c24b7892c15fba2116e80c.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/__pycache__/snapshot_helper.cpython-314.pyc",
+      "bytes": 20603,
+      "sha256": "1d2bf9e38c040ca6dae6987be8a93f2a1bdcb3f1262ad7f7d2b53594475230de"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/apply-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/apply.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/commit-source.log",
+      "bytes": 326,
+      "sha256": "3b5a5063cd290409f2aa31a15ceaa8e59ddfb22086fafdda3938a062b618cd92"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/create-worktree.log",
+      "bytes": 166,
+      "sha256": "3bb8db5df4c429ea54d90cfb6f2296a6fe92b799706aa33d4d256f61a57c828c"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/frozen-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/frozen-after.files.json",
+      "bytes": 5655869,
+      "sha256": "7055e3b422c93ae567f36f13688a30965b57c9af956524c3ae0941884ecd78d8"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/frozen-after.json",
+      "bytes": 863,
+      "sha256": "7f973b8b9de4511090211629155cf16bfe947caca123f4a5aca6f39a6ef0083d"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/frozen-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/frozen-before.files.json",
+      "bytes": 5655869,
+      "sha256": "7055e3b422c93ae567f36f13688a30965b57c9af956524c3ae0941884ecd78d8"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/frozen-before.json",
+      "bytes": 864,
+      "sha256": "a9441642ffa115e156b3db65dd957e5344e732232c709b508121b4d05f08019d"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/guardian-followup-finish-fence-v2.patch",
+      "bytes": 3836,
+      "sha256": "2df8265b7583b77d6c0b497d71aa6efd162abc46b5b5eeb9712e8c852f8201cf"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/just-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/paginated-resume-idle-fixture.patch",
+      "bytes": 2809,
+      "sha256": "37b413ed51028189ac370b6afffa1451d6af85303f9dd43952bb266c629be85a"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/prep-formatted.diff.patch",
+      "bytes": 13460,
+      "sha256": "82fcf38882cfb05ced9191acc2abd2b9dde3e82e8de9c02527a0eee17d44c1b2"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/prep-formatted.files.json",
+      "bytes": 5655870,
+      "sha256": "2913a530eb59ead8ad823afc61861fbacfc5cafd1e9cd3fabbc7a4de02d0e86a"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/prep-formatted.json",
+      "bytes": 1007,
+      "sha256": "4310bd739b55b6193d57e7c8eca62a42461f4e5aca41b28842a368336ccaeea1"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/prep-original.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/prep-original.files.json",
+      "bytes": 5655869,
+      "sha256": "7055e3b422c93ae567f36f13688a30965b57c9af956524c3ae0941884ecd78d8"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/prep-original.json",
+      "bytes": 864,
+      "sha256": "ca49a5da2e1aa53f3f7f221d60f7ba42d12dc6a2e4892471e4a31ef1fc7d698a"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/prep-patched.diff.patch",
+      "bytes": 13447,
+      "sha256": "b77dcafbf235c373f1fd57d0052aa5f2f2eafb03180e8b5bf48aecba719cf3e3"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/prep-patched.files.json",
+      "bytes": 5655870,
+      "sha256": "8e14d4beb71eeb387bdc531c247870975452dc6bdb3f1718b468429648d2e349"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/prep-patched.json",
+      "bytes": 1003,
+      "sha256": "525e6125e22050440335b236d49fe4c60016b2c3401a69400344136121b65a5b"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/preparation.json",
+      "bytes": 8087,
+      "sha256": "cf97580343b85c8772c09452a9698cc5717394ca3a67f7a878029d6c8ade9f72"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/prepare.py",
+      "bytes": 3680,
+      "sha256": "8f3f13052d77cf790a2a4d40c1a5a4be098c33f3ff7b5eec14fb658a9a86d5ab"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/prepare.py.console.log",
+      "bytes": 4697,
+      "sha256": "ad897c65be1fe1a47ab81f3b4b207e51a8dfa67f9b2a4aff5c2aa3e8dcbb9e0f"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/snapshot_helper.py",
+      "bytes": 11294,
+      "sha256": "334097dc31329e2abc2b5415cbb886a8d6cead3b35f752a2220b26e68dae0a15"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/stage-source.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v1/windows-exec-server-admission.patch",
+      "bytes": 5548,
+      "sha256": "dac1e49cd5f3ef59da944a14742758e21f8cad43fc691cf6960f8b27aae99173"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v2/after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v2/after.files.json",
+      "bytes": 5655870,
+      "sha256": "6702bdb594bbf66db46046336c4616a6239b68bee8230c9162d70e72bfea75d1"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v2/after.json",
+      "bytes": 849,
+      "sha256": "3a37db2295bc4d222d550c840bc03c5909bc6c03196b8fd5bc8873134fe19f46"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v2/before.diff.patch",
+      "bytes": 13460,
+      "sha256": "82fcf38882cfb05ced9191acc2abd2b9dde3e82e8de9c02527a0eee17d44c1b2"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v2/before.files.json",
+      "bytes": 5655870,
+      "sha256": "6702bdb594bbf66db46046336c4616a6239b68bee8230c9162d70e72bfea75d1"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v2/before.json",
+      "bytes": 992,
+      "sha256": "6d5fa04d2435b700207f1728e0498a84a13fc19f594a7317666f4bc240c1b3ac"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v2/commit.log",
+      "bytes": 177,
+      "sha256": "d7772a54efaacaf0e9264ac909def9e9f9d1b2d020c0c78ea2f4bb98678c6ec6"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v2/frozen-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v2/frozen-after.files.json",
+      "bytes": 5655869,
+      "sha256": "7055e3b422c93ae567f36f13688a30965b57c9af956524c3ae0941884ecd78d8"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v2/frozen-after.json",
+      "bytes": 862,
+      "sha256": "ef80bd42f95ffbc34ee9d649846747adec6f1f717413f44a276fd8286f271017"
+    },
+    {
+      "path": "records/windows-core-fixes-preparation-v2/preparation.json",
+      "bytes": 3879,
+      "sha256": "1f9d52bb7dcc8ecf285c19a84356a25a5f7af4bf4ac5ffb83a8c044000a935c5"
+    },
+    {
+      "path": "records/windows-core-fixes-resume-preparation-v2.py",
+      "bytes": 2699,
+      "sha256": "cb6f153fee38fcf3d6241654416958a43af8e728de8f7fe8c69c17e41a731b39"
+    },
+    {
+      "path": "records/windows-core-fixes-resume-preparation-v2.py.log",
+      "bytes": 3594,
+      "sha256": "ed64aefc531832a66564bbb429e6e5b11c0cd943d98f664a396bc7f549c99679"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/driver.py",
+      "bytes": 11490,
+      "sha256": "6e352213f0551fb556c9e5241e5f2a6282c74954dbb3cd14718c1c70e21d8cd6"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/preparation.json",
+      "bytes": 3625,
+      "sha256": "a9d7c51e21657121404a6130c34b3c2343a1b3aa7a8e92c1fdb7e1ad378f36e6"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/scoped-just-fix.json",
+      "bytes": 1579,
+      "sha256": "ede7f514219ce1b608cc587a166dff2b77fdf1e9d594de5222cae32c11b4d27f"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/scoped-just-fix.json.c3c1573dbb3449a6b03f5594754913f5.log",
+      "bytes": 40680,
+      "sha256": "59efd533e8ae6c46b652fcec120d591cacf4f7a581249653fdbfcf5d4227eb5f"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/source-after.files.json",
+      "bytes": 5655870,
+      "sha256": "b4a57ac75ac23191571a1430b137dcbc4beec50a5da68b019c1438918c4d5193"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/source-after.json",
+      "bytes": 860,
+      "sha256": "7575725d5f5b284cbeb7f0e1eb6a781d5f3510ae64af38064e5a371df4675b8e"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/source-before.files.json",
+      "bytes": 5655870,
+      "sha256": "b4a57ac75ac23191571a1430b137dcbc4beec50a5da68b019c1438918c4d5193"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/source-before.json",
+      "bytes": 863,
+      "sha256": "ca09d3611e36d95803d152cd30cec042e60688c1dba73db5b52b3737c58253d7"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/v8.env",
+      "bytes": 295,
+      "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/v8.json",
+      "bytes": 1490,
+      "sha256": "ca1da47c6775a11f610e28710f3ad605efbccd425a9b6ca55814dafea11427b0"
+    },
+    {
+      "path": "records/windows-core-fixes-scoped-fix-v1/v8.json.74fd8e963fd34d299b23c654032c3397.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SETTLEMENTS.json",
+      "bytes": 1448,
+      "sha256": "9d1b76690ac0b7b47cdabf935b5c23b565058771c71b5f995757b15c7ea5fb27"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 71622,
+      "sha256": "6c9eaee56b1cc95ecbe769a836a8f47fbb6f2567883177da7d3763c7e5f57f1b"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/guardian-pagination-preparation/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "04369bca81f88ed5a18a43a3409f1c2cbe8cca49a209162f9f2c6895c9f36539"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/guardian-pagination-preparation/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "dc4caaa694a80e708e271c2757371237144e12c8a57aa39b634d2c99d782ced9"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/guardian-pagination-preparation/archive.part003",
+      "offset": 980000,
+      "bytes": 173044,
+      "sha256": "3d94f57ed82be734009d1fae59f4528391fdb4dba12b9cd12271e9ec276db75c"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true
+}

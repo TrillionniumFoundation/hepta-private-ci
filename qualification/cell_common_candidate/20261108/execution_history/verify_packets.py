@@ -1,7 +1,5 @@
 """Verify original archives and members without extracting or running them."""
 
-from __future__ import annotations
-
 import argparse
 import hashlib
 import io

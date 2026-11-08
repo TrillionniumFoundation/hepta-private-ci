@@ -1,0 +1,221 @@
+{
+  "packet_id": "zsh-macos-c-preparation",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/mac-zsh-c-preparation-history-import-v1.tar.gz",
+  "bytes": 432631,
+  "sha256": "fd4aed8f42caba64c09a7dbffcafc43870a4ff35991ca0bb194170f753bbf1e6",
+  "compression": "gzip",
+  "scope": "Native macOS C build and original failure history; baseline real exit1 and final pass; no Rust gate claim.",
+  "file_members": [
+    {
+      "path": "POSTVALIDATION.json",
+      "bytes": 1603,
+      "sha256": "c0015239f77096b6ef317b6b03e5535955d145d5abe9b25d680e0fdd2b582293"
+    },
+    {
+      "path": "acl-probe-003/RESULT.json",
+      "bytes": 1309,
+      "sha256": "f723b47b73bf6f536bc12acdc081b672973e27ebe2fd2e030432dbb5dace29da"
+    },
+    {
+      "path": "acl-probe-004/RESULT.json",
+      "bytes": 1395,
+      "sha256": "304b76ef032013e100e91118e5bc9b9bf08e0b1a4e400e69dddd434f8167fb30"
+    },
+    {
+      "path": "c-build-smoke-001-console.log",
+      "bytes": 190,
+      "sha256": "a5e6f202eae33e3c3ec87946b73665c961efc8f01a9bd04a0f8a7bd33328ad77"
+    },
+    {
+      "path": "c-build-smoke-001/SUMMARY.json",
+      "bytes": 6541,
+      "sha256": "e39dd9b0b3d4ab3846005cb22e5d705be7f41edacbb07da6032a336a217e1257"
+    },
+    {
+      "path": "c-build-smoke-001/admission.json",
+      "bytes": 1043,
+      "sha256": "481197c31dc17d333e8536341ae774342833866959813987840a94922ffa7032"
+    },
+    {
+      "path": "c-build-smoke-001/baseline/RESULT.json",
+      "bytes": 2586,
+      "sha256": "3ae4f38d440ef13e0ba073d56fd6b675a0fbc40d57d64ab99d99f94952ea3c82"
+    },
+    {
+      "path": "c-build-smoke-001/baseline/build-and-smoke.log",
+      "bytes": 78929,
+      "sha256": "19686829d81808fd4d1d3c5c831e0af65bc8228583bf1134679c549a7785070b"
+    },
+    {
+      "path": "c-build-smoke-001/baseline/workspace/.github/scripts/build-zsh-release-artifact.sh",
+      "bytes": 5137,
+      "sha256": "d62aeb16f2fcaadec78bcfe63d63cf9f3559a70b425e5db5c6d7799668c3fa1b"
+    },
+    {
+      "path": "c-build-smoke-001/baseline/workspace/codex-rs/shell-escalation/patches/zsh-exec-wrapper.patch",
+      "bytes": 998,
+      "sha256": "696b7d923b8071554d00e811afb9a08fcad4baada796f7314d12ecd72d06152c"
+    },
+    {
+      "path": "c-build-smoke-001/patched/RESULT.json",
+      "bytes": 2858,
+      "sha256": "a9f358b828837a463f2a949554cf7d0cd1ba390de6a7fee452e8186c83f0718c"
+    },
+    {
+      "path": "c-build-smoke-001/patched/build-and-smoke.log",
+      "bytes": 79670,
+      "sha256": "eef618a4bdf022f922583df98c3f75abd49e1402466d1733c00e55483b343a50"
+    },
+    {
+      "path": "c-build-smoke-001/patched/workspace/.github/scripts/build-zsh-release-artifact.sh",
+      "bytes": 5137,
+      "sha256": "d62aeb16f2fcaadec78bcfe63d63cf9f3559a70b425e5db5c6d7799668c3fa1b"
+    },
+    {
+      "path": "c-build-smoke-001/patched/workspace/codex-rs/shell-escalation/patches/zsh-exec-wrapper.patch",
+      "bytes": 1476,
+      "sha256": "374edec5d53ac49851c273d81bb1becbf3fd16a68726aa10b118a4d6ca8c393a"
+    },
+    {
+      "path": "c-build-smoke-001/patched/workspace/dist/codex-zsh-arm64-darwin-local-preparation.tar.gz",
+      "bytes": 360036,
+      "sha256": "f8522d6f0e17dcd15cff426a0dfff8fee38a423f671e9d6fd0c24fbb2b88c7b2"
+    },
+    {
+      "path": "control/initial-terminal-output.log",
+      "bytes": 5266,
+      "sha256": "c15d517869624b9b3c71f8ca93ba414b6eefc81a914e1b2ee083426844210445"
+    },
+    {
+      "path": "gnu-build-tools-001/RESULT.json",
+      "bytes": 10506,
+      "sha256": "d988be193a9ac520148a14d9b8252c1ceff186afac46db0f730cdbb638045a71"
+    },
+    {
+      "path": "gnu-build-tools-001/autoconf-configure.log",
+      "bytes": 3360,
+      "sha256": "515c539702b75440d8dcd526c8cd846a4cd8996e4a35e5a204562ed6e3f2f969"
+    },
+    {
+      "path": "gnu-build-tools-001/autoconf-download.log",
+      "bytes": 871,
+      "sha256": "5568c6d6f7b364ded23d9b3777d8b9607eab33d205db3a43debacbae71a54ff3"
+    },
+    {
+      "path": "gnu-build-tools-001/autoconf-formula.json",
+      "bytes": 4989,
+      "sha256": "d488c18dc293deb794c562dd07bd54f9aa35661ec2c182b0f741e33cf724e181"
+    },
+    {
+      "path": "gnu-build-tools-001/autoconf-install.log",
+      "bytes": 8328,
+      "sha256": "967d3796e961486af1dd9d742540a5fc93c79a7ba6654ce0b25ec863e4fd5b28"
+    },
+    {
+      "path": "gnu-build-tools-001/autoconf-make.log",
+      "bytes": 18006,
+      "sha256": "40b0ef1be3345794715236cb551a554066389be3a71898a5db5b8ddca22aa1f5"
+    },
+    {
+      "path": "gnu-build-tools-001/autoconf-metadata.log",
+      "bytes": 317,
+      "sha256": "86f6eb79900f941c0dafc241751e00ae73d53cf3867b634c8bf2a0163f503eca"
+    },
+    {
+      "path": "gnu-build-tools-001/autoconf-version.log",
+      "bytes": 382,
+      "sha256": "08270e0feabe33a76d15544a266f0536db02fc108b40a37478f8f031b9a2f486"
+    },
+    {
+      "path": "gnu-build-tools-001/m4-configure.log",
+      "bytes": 31149,
+      "sha256": "53535a769b6c7d6c3fa32a7451741c5deb603e8d4e74cdfea3ee009fc39f85cd"
+    },
+    {
+      "path": "gnu-build-tools-001/m4-download.log",
+      "bytes": 792,
+      "sha256": "bf847ecdfe748a18a5f66e368135def789d21a1d97ee52d20ad302896ca728ad"
+    },
+    {
+      "path": "gnu-build-tools-001/m4-formula.json",
+      "bytes": 4689,
+      "sha256": "8a5aeaa513eac035dd8b267e7164c8981b68b7d75b36c864b4a4f25b24171981"
+    },
+    {
+      "path": "gnu-build-tools-001/m4-install.log",
+      "bytes": 2623,
+      "sha256": "b5eb3d1f76e5708bd723ef72f0ef67cbd72fc4b9d3ebe7c2a00debe2fbe15721"
+    },
+    {
+      "path": "gnu-build-tools-001/m4-make.log",
+      "bytes": 42148,
+      "sha256": "497561b9fae61672f6421aaf37175a4ca264bb52207f851e735f6e08850eb752"
+    },
+    {
+      "path": "gnu-build-tools-001/m4-metadata.log",
+      "bytes": 396,
+      "sha256": "cf987413af8a1867243a6cf8e996ec3986019e73496f1330bbff7efd5b9b15e1"
+    },
+    {
+      "path": "gnu-build-tools-001/m4-version.log",
+      "bytes": 297,
+      "sha256": "7a623f0c369d7a69b8b9ef675c3bc3f187fefabe4f305f48b6f5ed771a5cbb7c"
+    },
+    {
+      "path": "run-mac-zsh-preparation.py",
+      "bytes": 5926,
+      "sha256": "197cfaab52633331ea99bc747220e46b80ffc9be993dc82cf3f24bee760b87a3"
+    },
+    {
+      "path": "task-drivers/prepare-zsh-local-gnu-tools.py",
+      "bytes": 5164,
+      "sha256": "b6358e6f03e5f5a56fd925f489ac4197920d4fe46f25240646cd716b5acfdb21"
+    },
+    {
+      "path": "task-drivers/probe-macos-acl-002.py",
+      "bytes": 1934,
+      "sha256": "1964bd765fb22ae781df7fccd77ff6ead215e9187ac73f2fe1fe4543eb2e0c4c"
+    },
+    {
+      "path": "task-drivers/probe-macos-acl-003.py",
+      "bytes": 1937,
+      "sha256": "c5100da65a22623389b221e47d4e34f313294249e880ffefc89e710f6b04e5df"
+    },
+    {
+      "path": "task-drivers/probe-macos-acl-004.py",
+      "bytes": 2050,
+      "sha256": "4665c6c634b922b51f18ea3851beaac1d72c3a59ff4b9e970863518b9a3d6446"
+    },
+    {
+      "path": "task-drivers/seal-mac-zsh-history.py",
+      "bytes": 8330,
+      "sha256": "a146fb58c25e70c7327320c41750ab31a46e91dd311297d369986bd9dc9d148a"
+    },
+    {
+      "path": "task-drivers/zsh-local-tools-console.log",
+      "bytes": 194,
+      "sha256": "92fb83243ee5dc561bf82106918b915b4fde1955201aa5b965297668affc4b26"
+    },
+    {
+      "path": "zsh-build-inputs-v4.json",
+      "bytes": 10596,
+      "sha256": "c663a6714a189ff0c7c0eeee4cec6aaa02d8b827da009435288ee77c46deef50"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 13433,
+      "sha256": "9e4ccb35743d3a1ff93b696350d32124e4482631a09f7f96ccef51523ffa9a5b"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/zsh-macos-c-preparation/archive.part001",
+      "offset": 0,
+      "bytes": 432631,
+      "sha256": "fd4aed8f42caba64c09a7dbffcafc43870a4ff35991ca0bb194170f753bbf1e6"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "hepta.bounded-publication-pattern-review.v1",
+  "scope": "Only explicitly selected task evidence; nested ZIP and tar contents inspected without execution.",
+  "input_sha256": "ed8df638bafa49e339497b42f5453e599fe88ab85d5ba7cdb2d1d896dc407f94",
+  "inspected_member_count_with_overlap": 1237,
+  "patterns": [
+    "github_token_shape",
+    "openai_token_shape",
+    "private_key_block",
+    "aws_access_key_shape"
+  ],
+  "findings": [],
+  "not_a_complete_secret_detection_claim": true
+}

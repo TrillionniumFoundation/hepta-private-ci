@@ -92,6 +92,222 @@
       "file_member_count": 105,
       "manifest_path": "packets/native-v3-history/manifest.json",
       "manifest_sha256": "0ba56440b6c49485514f3d5272aec82ab1c496dbb6d7ed8e7a5e63f6691fbbed"
+    },
+    {
+      "packet_id": "v3-ui-original-gates",
+      "scope": "Original UI source-head 09f and explicit base-merge e422: SDK, all browser cases and pixel reports; not v4.",
+      "archive_bytes": 5380830,
+      "archive_sha256": "dd14f5f3bf26f6ff79ee6382e899e91d27793619f9aa3350edba3e4f1be64563",
+      "file_member_count": 22,
+      "manifest_path": "packets/v3-ui-original-gates/manifest.json",
+      "manifest_sha256": "93fcd29142a7e7fa1a30b951bc834c1e6132a49e3debe7a75e525226be55fd18"
+    },
+    {
+      "packet_id": "v3-windows-shards-234",
+      "scope": "Original Windows Bazel failures; actual synthetic merge checkout f7fca4fe on common v3 tree9be.",
+      "archive_bytes": 437782,
+      "archive_sha256": "f935d75898b727603746a14a4271f2e9a5efd64afd437a7830531385d86151ce",
+      "file_member_count": 22,
+      "manifest_path": "packets/v3-windows-shards-234/manifest.json",
+      "manifest_sha256": "f8fceaf41c2b224e038f864d2293babb3b8d14b2813476a9f322d2bedc027a50"
+    },
+    {
+      "packet_id": "guardian-pagination-preparation",
+      "scope": "Original preparation failures, final four native passes and scoped lint on prep57556e; not final common source.",
+      "archive_bytes": 1153044,
+      "archive_sha256": "88cacaabab2f879fe088c8ed5b7aeacbf92618371e66088642201500c846c01e",
+      "file_member_count": 192,
+      "manifest_path": "packets/guardian-pagination-preparation/manifest.json",
+      "manifest_sha256": "6ceea72d42bda15b9a67c34583611e85b9243a5ba214cf8084b293174b94f42a"
+    },
+    {
+      "packet_id": "zsh-linux-c-preparation",
+      "scope": "Linux original C baseline failure, intermediate and final guarded wrapper builds; published artifact preparation.",
+      "archive_bytes": 955743,
+      "archive_sha256": "402fda317d277ea724c36fddc96db95abdfc665d7904bf34511e492fc3fac858",
+      "file_member_count": 118,
+      "manifest_path": "packets/zsh-linux-c-preparation/manifest.json",
+      "manifest_sha256": "26e07c70030ea631fdbb0c152b0581a4ee9e39bb646784d47a47364ac70a6a3e"
+    },
+    {
+      "packet_id": "zsh-macos-c-preparation",
+      "scope": "Native macOS C build and original failure history; baseline real exit1 and final pass; no Rust gate claim.",
+      "archive_bytes": 432631,
+      "archive_sha256": "fd4aed8f42caba64c09a7dbffcafc43870a4ff35991ca0bb194170f753bbf1e6",
+      "file_member_count": 40,
+      "manifest_path": "packets/zsh-macos-c-preparation/manifest.json",
+      "manifest_sha256": "0eaef9c93482c481834a16dce3a1606d05bd5d49fe480ea6ae5584d124fec3fb"
+    },
+    {
+      "packet_id": "notes-macos-peer-lifetime",
+      "scope": "Native macOS exact-body diagnostic: original peer-close EINVAL and held-peer1024 passes; not whole crate qualification.",
+      "archive_bytes": 9170,
+      "archive_sha256": "48e92d84e5e9ce9f369d5276eaef2333e73f4ef91a8229227b83663f133d3c78",
+      "file_member_count": 12,
+      "manifest_path": "packets/notes-macos-peer-lifetime/manifest.json",
+      "manifest_sha256": "74546243941044659d2818830bcda071a1792f3e2827e1fb6745466e43c72c72"
+    },
+    {
+      "packet_id": "zsh-published-v012-and-consumption",
+      "scope": "Original failed v0.1.1 Mac runner admission, real v0.1.2 four-platform build/release, byte-pinned Python consumption and native DotSlash Linux/macOS executions, including rejected first attempts. No Rust gate claim.",
+      "archive_bytes": 5241099,
+      "archive_sha256": "239d7536c4edbddbdde73860552ccaf8afcb2b40e90dcc4630bda41d3c18bc66",
+      "file_member_count": 215,
+      "manifest_path": "packets/zsh-published-v012-and-consumption/manifest.json",
+      "manifest_sha256": "d7b78ecd9186065253d899ddcd881bfe1cb69388c8b58942e7962f8e3f740fa6"
+    },
+    {
+      "packet_id": "v3-late-platform-originals",
+      "scope": "Original Windows shard1/native and both macOS failing jobs on v3; source head and actual merge checkout remain distinct.",
+      "archive_bytes": 1918587,
+      "archive_sha256": "00cbd37cd789fa60007477d00f56b9ed05be658222b798e1c86b03409378da31",
+      "file_member_count": 22,
+      "manifest_path": "packets/v3-late-platform-originals/manifest.json",
+      "manifest_sha256": "0266277284fa370e12a012cecedeae64878e740999238e96f8f61f578c9a4726"
+    },
+    {
+      "packet_id": "v3-native-terminal-originals",
+      "scope": "All three original native CI jobs on source09f completed successfully, including the default workspace; original job logs and metadata, not v4 qualification.",
+      "archive_bytes": 1919536,
+      "archive_sha256": "9c37875081b3deaac3e8f7ac402aa55ed267500876d3ae1e141503eb82801119",
+      "file_member_count": 19,
+      "manifest_path": "packets/v3-native-terminal-originals/manifest.json",
+      "manifest_sha256": "a2efcc0559dfefc365ba5ecc92ae6ff567bc2e63365ff0ccad0331043183d81b"
+    },
+    {
+      "packet_id": "v4-common-preparation",
+      "scope": "Exact preparation, canonical formatting, source commits and owner-observer correction records; no test acceptance is inferred from preparation.",
+      "archive_bytes": 1336806,
+      "archive_sha256": "2656fe251cdd319c8bd9421cd6ca9b5b9ab0889931e10d358fdd66638303e8cc",
+      "file_member_count": 134,
+      "manifest_path": "packets/v4-common-preparation/manifest.json",
+      "manifest_sha256": "7eef5fe3339bd396a06978a6636c4e370f2fade9508e8e192a97af03520c47a4"
+    },
+    {
+      "packet_id": "v4-python-ce754c3",
+      "scope": "Clean ce754c3 source: 130 independent Python fixtures, full caller scan under original600s, and unchanged CURRENT bytes; not successor5fd0247 execution.",
+      "archive_bytes": 40928,
+      "archive_sha256": "f443cc94f0f2134dc3a494249e59a769dbc8cf4a10d816fe74bb09a38f8d8d49",
+      "file_member_count": 42,
+      "manifest_path": "packets/v4-python-ce754c3/manifest.json",
+      "manifest_sha256": "ce749edea4148059dd4c3f716b70ee0c93a288176fbb1990021df64f2c5db298"
+    },
+    {
+      "packet_id": "ce754c3-native-compile-failure",
+      "scope": "Original clean ce754c3 native build/list failed with three test observer type errors; no selected Rust test or strict lint ran. Source and locks unchanged.",
+      "archive_bytes": 3251260,
+      "archive_sha256": "d01d3c7bf04403d7793da5fa5d39ad04edfc08da4d6cc45e58d610df816dd2d1",
+      "file_member_count": 27,
+      "manifest_path": "packets/ce754c3-native-compile-failure/manifest.json",
+      "manifest_sha256": "bbc007d092b666233138715bd9d8e7cf92ae59894215bb65bf8f504504809e42"
+    },
+    {
+      "packet_id": "v3-native-original-artifacts",
+      "scope": "Original09f native CI four exact artifacts: complete default workspace20562 executed passes/139 skipped; subset7910 and1214 overlap, original ignored HostCAS1 separate; Python23+6 separate. All receipt/JUnit/raw/source bindings verified.",
+      "archive_bytes": 5283391,
+      "archive_sha256": "88ece7e53f630054126416f10b1b9824ac7fa35dd7ba31a149eba42afc568993",
+      "file_member_count": 30,
+      "manifest_path": "packets/v3-native-original-artifacts/manifest.json",
+      "manifest_sha256": "12c234abe3f1f7f1491ccf9f37364ca0c593b776da19911eb8ac7a7787cf45dc"
+    },
+    {
+      "packet_id": "zsh-old-new-actual-abi",
+      "scope": "Actual published/new and pinned/original Linux archives and binaries: dynamic glibc in both generations, same loader/NEEDED/GLIBC symbol version set through2.38; no musl or complete ABI equivalence claim.",
+      "archive_bytes": 1729832,
+      "archive_sha256": "ec633d21d56a9960737d430018d65ff3e62fd714b2d6e10b65b724acfdc2b9e8",
+      "file_member_count": 48,
+      "manifest_path": "packets/zsh-old-new-actual-abi/manifest.json",
+      "manifest_sha256": "1d2370bee5eb54604faa20d32a54b121ad2c18876fd33d4ec1e9276f65bacf91"
+    },
+    {
+      "packet_id": "5fd0247-owner-native-pass",
+      "scope": "Clean5fd0247 actual23 owner cases and five owning-package strict lint passes, original raw/freshJUnit/source snapshots; not relabeled as finalba4 execution.",
+      "archive_bytes": 4892441,
+      "archive_sha256": "3a6ba309c979fae0993c4719515fba76506a5aa34e3d64410e069f53c4d89042",
+      "file_member_count": 41,
+      "manifest_path": "packets/5fd0247-owner-native-pass/manifest.json",
+      "manifest_sha256": "e577f5a03ec0503484ef1b18d82d0b319dfcb80f93913c03bf1ddab4bdc07965"
+    },
+    {
+      "packet_id": "ba4e-original-quality-history",
+      "scope": "Cleanba4e original Codespell/format/blob policy passes, with first missing-UV PATH failure retained and same-source recovery; no Rust invocation.",
+      "archive_bytes": 145299,
+      "archive_sha256": "2d4792fc681b08c1b2c2915f2e098524ea3cdbe6ed3ce8e54547a8dc077cde38",
+      "file_member_count": 22,
+      "manifest_path": "packets/ba4e-original-quality-history/manifest.json",
+      "manifest_sha256": "750f36e6ef5be09bc0262fd5b1cbb48296f2625c51fd97318dc6452e004187f9"
+    },
+    {
+      "packet_id": "windows-original-probe-contrasts",
+      "scope": "Original separate probe9624484 retained31/33 and16 fixture contrasts; subsequentcf858 Python-only22x2 environment observations isolate ProgramData. No prior failure is overwritten.",
+      "archive_bytes": 174264,
+      "archive_sha256": "723dc89c6f3f2d2f6a4fd516e26bcd41c83daf924dc0b77ac015d1f443db4136",
+      "file_member_count": 250,
+      "manifest_path": "packets/windows-original-probe-contrasts/manifest.json",
+      "manifest_sha256": "0b94a8aa93d5cb948fdeb79a3c8cee00eda191f2639aae80f4cab1e9a1cf9484"
+    },
+    {
+      "packet_id": "windows-probe-preparation",
+      "scope": "Independent Windows observation preparation, formatting/setup failures, exact branch code and source bundles; no production authority.",
+      "archive_bytes": 59928,
+      "archive_sha256": "010922e402a57b99ff526e8c3b63b19777103cf49a98952947a4346c88c76aea",
+      "file_member_count": 38,
+      "manifest_path": "packets/windows-probe-preparation/manifest.json",
+      "manifest_sha256": "d83e62e0a88fac18aab53742614516830979efcf3b228b63ece9cb74f7afd1ad"
+    },
+    {
+      "packet_id": "queue-post-admission-lease-preparation",
+      "scope": "Originala849168 preparation executed four exact queue lease cases and owning strict lint with unchanged source, before final common integration.",
+      "archive_bytes": 1053288,
+      "archive_sha256": "a54fd3085c8ad3cd388413af710c80434394222f491a069393295ad968c47e99",
+      "file_member_count": 44,
+      "manifest_path": "packets/queue-post-admission-lease-preparation/manifest.json",
+      "manifest_sha256": "84ea0371abba9ef4a8b99361cda4610cb3c47e318ba3b325c3d32ffd6c986035"
+    },
+    {
+      "packet_id": "ba4e-original-windows-33",
+      "scope": "Actual Windows source/testedba4e with observer2fcc separately bound: original33/33PASS, zero failure/skip/retry; Windows owning strict lint0, both checkouts clean, no source edits. Original CI did not upload native test executable.",
+      "archive_bytes": 88920,
+      "archive_sha256": "09c0599d509b98ac81776c884b47484fdfc91932ff9ffdc23ad95d6fbd149b89",
+      "file_member_count": 43,
+      "manifest_path": "packets/ba4e-original-windows-33/manifest.json",
+      "manifest_sha256": "d6f6a37895fb33b37a02e65e9ddc2691d108be6c19c5ba329d8e3c7c71029c3c"
+    },
+    {
+      "packet_id": "ba4e-python-source-publication-and-lock-timeouts",
+      "scope": "Original130 Python passes/caller scan375.202s and unchanged CURRENT; exact source preparation and publication; two unchanged-budget300s Bazel resolution timeouts. Initial new CI API snapshot is nonterminal observation only.",
+      "archive_bytes": 153266,
+      "archive_sha256": "c3e71f9f5dc7e48dea256d132f5889a64c9501368aff77d7f4d9f8c9f28b8db9",
+      "file_member_count": 93,
+      "manifest_path": "packets/ba4e-python-source-publication-and-lock-timeouts/manifest.json",
+      "manifest_sha256": "eea8dc117d627aaecc67fccfa84814cf7677c91d76d6faa9800d8c7df7e3e2c6"
+    },
+    {
+      "packet_id": "ba4e-native-chain-and-changed-scopes",
+      "scope": "Exact clean ba4e native original chain 701 core-family/729 agentd/one ignored HostCAS, actual discovery-to-fresh-JUnit coverage, and separate core-memory 4 and queue 4 passes. Original driver/budgets/retries and all raw/source snapshots retained; complete history cost not inferred.",
+      "archive_bytes": 1847624,
+      "archive_sha256": "10cf70767c305648a7bea6992fe0cc2c9ee77fda39c6084131e10bcfde5388e1",
+      "file_member_count": 126,
+      "manifest_path": "packets/ba4e-native-chain-and-changed-scopes/manifest.json",
+      "manifest_sha256": "e811f1e1093512b0ab2aa5cefe2132171b7bdfe165fb0544e40810950c250c02"
+    },
+    {
+      "packet_id": "ba4e-final-acceptance-readonly",
+      "scope": "Source-bound read-only final audit: unchanged CURRENT flags/HOLD, 49 of original 51 source paths unchanged and two narrowly reviewed changes, exact ordinary daemon/checkpoint/publication/bundle gaps. No new tests, authority, stage advancement or cost claim.",
+      "archive_bytes": 214652,
+      "archive_sha256": "b2b41ba9df235851ea73b773b096a0a7ae5d96192be3901ee0dbbc367228ecfe",
+      "file_member_count": 75,
+      "manifest_path": "packets/ba4e-final-acceptance-readonly/manifest.json",
+      "manifest_sha256": "b72b01dcb8aa5a1308a84d1dbc42520fa58e324886dfa0a2ffebf7d9c157d29d"
+    },
+    {
+      "packet_id": "ba4e-current-ci-nonterminal-snapshot",
+      "scope": "Non-atomic 2026-11-08T23:28:37\u201323:28:48Z API metadata snapshot for 18 workflows associated with ba4e: 8 success, 7 in progress, 3 skipped and zero completed failures. Actual tested merge remains unverified. No waiting, rerun, cancellation or product/scientific qualification inference.",
+      "archive_bytes": 20376,
+      "archive_sha256": "d7330a39cf8f6f5ccb300a47afccb7a364ad543de92ac85bca5afde3f3137102",
+      "file_member_count": 21,
+      "manifest_path": "packets/ba4e-current-ci-nonterminal-snapshot/manifest.json",
+      "manifest_sha256": "00dd294c0072cafb5665cc6ea6de208c2dbfc999c7ffe2ba5601810b8a7aed01"
     }
   ],
   "max_chunk_bytes": 490000,
@@ -112,5 +328,8 @@
   "stage_advancement_claimed": false,
   "publication_commit_location": "external_git_readback_receipt",
   "source_branch_mutated_by_publication": false,
-  "counts_and_wall_times_must_not_be_added_across_packets": true
+  "counts_and_wall_times_must_not_be_added_across_packets": true,
+  "preceding_evidence_commit": "61b43ccabaaf47b93ed0d2c2cb48f7c6cc26ecde",
+  "latest_reviewed_common_source_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1",
+  "latest_reviewed_common_source_tree": "d2f261084bad25c230b95835e9a589fe7b866be1"
 }

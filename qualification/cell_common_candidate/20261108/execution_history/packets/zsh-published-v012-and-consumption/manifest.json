@@ -1,0 +1,1166 @@
+{
+  "packet_id": "zsh-published-v012-and-consumption",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/zsh-release-sealed-history-v012/zsh-release-and-consumption-v012.tar.gz",
+  "bytes": 5241099,
+  "sha256": "239d7536c4edbddbdde73860552ccaf8afcb2b40e90dcc4630bda41d3c18bc66",
+  "compression": "gzip",
+  "scope": "Original failed v0.1.1 Mac runner admission, real v0.1.2 four-platform build/release, byte-pinned Python consumption and native DotSlash Linux/macOS executions, including rejected first attempts. No Rust gate claim.",
+  "file_members": [
+    {
+      "path": "artifact-source/.github/scripts/build-zsh-release-artifact.sh",
+      "bytes": 5137,
+      "sha256": "d62aeb16f2fcaadec78bcfe63d63cf9f3559a70b425e5db5c6d7799668c3fa1b"
+    },
+    {
+      "path": "artifact-source/.github/workflows/rust-release-zsh.yml",
+      "bytes": 5644,
+      "sha256": "24a2b3003a6d694e48bbb29a7b8a66d9caa516f13f6866964975b677c2f3650e"
+    },
+    {
+      "path": "artifact-source/codex-rs/shell-escalation/patches/zsh-exec-wrapper.patch",
+      "bytes": 1476,
+      "sha256": "374edec5d53ac49851c273d81bb1becbf3fd16a68726aa10b118a4d6ca8c393a"
+    },
+    {
+      "path": "collector/seal-zsh-release-history.py",
+      "bytes": 9889,
+      "sha256": "dfd8b145c4eabafab6be9cb6c8ae4156f0b7495f5c15daecebdc7c740adf9b73"
+    },
+    {
+      "path": "consume-published-zsh-v2.py",
+      "bytes": 9374,
+      "sha256": "4c704b588b4e992fe8407fa481367e1666d3b5495bdb7701f135ba6025d9c366"
+    },
+    {
+      "path": "consume-published-zsh.py",
+      "bytes": 8237,
+      "sha256": "189d388f642cf9241ce7e6126a9c354d851318a40658e3a314d596ba91c5f53e"
+    },
+    {
+      "path": "mac-published-dotslash-v012-import.tar.gz",
+      "bytes": 727915,
+      "sha256": "8e124242cfe9de3e261784c077fe4e312a96b2aed665ddd587f148a1c05d4008"
+    },
+    {
+      "path": "observe-zsh-release-v2.py",
+      "bytes": 3801,
+      "sha256": "12334ebddc5b78df02e3ff696ea47a20200fac04d0348b63d65188e3fff9ace9"
+    },
+    {
+      "path": "observe-zsh-release.py",
+      "bytes": 3801,
+      "sha256": "b5d9a28c6c2252bb7a9a15490af97fba48df99ad2c0f1ae3d51c74d89c1153d2"
+    },
+    {
+      "path": "prepare-zsh-standard-runners.py",
+      "bytes": 4199,
+      "sha256": "b15c30b47a3db9498bc5f1e07e6ba913c6855e796381b4b936a3cc200f27372d"
+    },
+    {
+      "path": "run-published-zsh-dotslash-v2.py",
+      "bytes": 5878,
+      "sha256": "2a918297ca0b7f3a2ddeb8132bfdfaee50d0541f643fe5fb0fb316232a563799"
+    },
+    {
+      "path": "run-published-zsh-dotslash.py",
+      "bytes": 5882,
+      "sha256": "bcb96b56db57296cee84201fbfab24e629814dde67fd877ae4894688b6a153b6"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/changed-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/changed-paths.stdout",
+      "bytes": 103,
+      "sha256": "f4e26c15a8f5f2a0e0475fdb539f4e94dbeef1a189df1729c555ac39e0f5a671"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/head.stdout",
+      "bytes": 41,
+      "sha256": "29c885c27d8ff726c285e25bc577ed38e6896b9612cd0f1b6fa93156e4b70ce7"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/local-tag-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/local-tag-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/publication.json",
+      "bytes": 3571,
+      "sha256": "99282a25f953cd97da7b9c95c481caf32a98578d4befeb5a84656860e4bc41d9"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/push-source.stderr",
+      "bytes": 678,
+      "sha256": "565922d9ad0045f0dcbf72642f44beb92ae7970fe511f4995b0c8cb73dff12e5"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/push-source.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/push-tag.stderr",
+      "bytes": 132,
+      "sha256": "6da4ee8383e70c7fe5e3774d0c3230c207d1575d638ab90972bb1fa3a3e4a37c"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/push-tag.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/release-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/release-before.stdout",
+      "bytes": 10284,
+      "sha256": "32fbfa49d17db5b065a51a2b6fb60bb93e71cb456a3782242c7eb5c457f8d1c1"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/remote-readback.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/remote-readback.stdout",
+      "bytes": 229,
+      "sha256": "fff448c153de71b1b937c6da4a7333f4ddf7dbff9a7b1133de7ca6ec1a055d7b"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/remote-tag-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/remote-tag-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/tag.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v1/tag.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/changed-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/changed-paths.stdout",
+      "bytes": 39,
+      "sha256": "4955500815cf294c6637f407a9ab81d664125d827b127c3989582b585c56e439"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/head.stdout",
+      "bytes": 41,
+      "sha256": "7a73800d53d10adbd5d336bfc23c436b70c61b4314527f263c3a6a52a2f81517"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/local-tag-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/local-tag-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/parent.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/parent.stdout",
+      "bytes": 41,
+      "sha256": "29c885c27d8ff726c285e25bc577ed38e6896b9612cd0f1b6fa93156e4b70ce7"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/publication.json",
+      "bytes": 4333,
+      "sha256": "83311520035f182f3511689d766bdfeb58cf811c54a1efcd9677b34c217c49f2"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/push-source.stderr",
+      "bytes": 437,
+      "sha256": "914e872fae3ef8573f10f127cbcaacec091c8261a00d5805dbde7807e8dba980"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/push-source.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/push-tag.stderr",
+      "bytes": 132,
+      "sha256": "d04906e5b6a15510ca31bbc00e995c794681aad32edac49777cc12ad596b7e10"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/push-tag.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/release-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/release-before.stdout",
+      "bytes": 10284,
+      "sha256": "32fbfa49d17db5b065a51a2b6fb60bb93e71cb456a3782242c7eb5c457f8d1c1"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/remote-readback.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/remote-readback.stdout",
+      "bytes": 300,
+      "sha256": "d4d982f4211d78f342c5dcd61e63b758d2b3b2306ff9223b232622edd169fe22"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/remote-tag-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/remote-tag-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/tag.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-publication-v2/tag.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1-console.log",
+      "bytes": 228,
+      "sha256": "e079748e2323a2804c79374584fa028e7a11807955af3e9859e5c05e36889e1a"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/RESULT.json",
+      "bytes": 10135,
+      "sha256": "ff1886e4eee2f3b02e9a77a737a4fe413bc3df537333b050607b61c9abfdb5c6"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/changed-files.json",
+      "bytes": 727,
+      "sha256": "b49718d5c9bea05d8791c52fdb99f1dfe28a0ead12076977ad35e33652f34a42"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/changed-files.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/changed-files.stdout",
+      "bytes": 39,
+      "sha256": "4955500815cf294c6637f407a9ab81d664125d827b127c3989582b585c56e439"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/commit.json",
+      "bytes": 760,
+      "sha256": "ab893cc58197e22e062fa3da0e8add50bd6dfda45d2fe243dc55faf5c76f13f8"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/commit.stdout",
+      "bytes": 148,
+      "sha256": "0154306d03e330dc26ee332aafe13a7683a2363d7e54886c1afbd2f06808ff4a"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/diff-check.json",
+      "bytes": 715,
+      "sha256": "76423c0a2bcb53c9cf4f459eb120a53566c49e51102d5c522909331d81698964"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/diff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/diff-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/dirty-after.json",
+      "bytes": 755,
+      "sha256": "8fbf9be506964f3e58726dcc164a6631db17fd3c4097f20f3e336b9e18020281"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/dirty-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/dirty-after.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/dirty-before.json",
+      "bytes": 757,
+      "sha256": "0a07193c1471dc00272269fe81038a28b706a209e1ea79005a3cdcf4c099c561"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/dirty-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/dirty-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/parent-after.json",
+      "bytes": 725,
+      "sha256": "8d7a4f92b6086dc2ca04c67e3ceac233cd71daf9538505a9d05d4c491fa2f408"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/parent-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/parent-after.stdout",
+      "bytes": 41,
+      "sha256": "29c885c27d8ff726c285e25bc577ed38e6896b9612cd0f1b6fa93156e4b70ce7"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/review-diff.json",
+      "bytes": 720,
+      "sha256": "d841fd5495aab1e0451b0c87974bae33d950120999b7c3d29a4fc627ba52a123"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/review-diff.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/review-diff.stdout",
+      "bytes": 719,
+      "sha256": "62bb5640d2a05f24a386fb30d8bf09dcc1f57503aa67491b9176005106f009f5"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/source-after.json",
+      "bytes": 724,
+      "sha256": "24641967a30bebd501aaf86dc4bcede5c07ef760e10900c2167571ba73b1771f"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/source-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/source-after.stdout",
+      "bytes": 41,
+      "sha256": "7a73800d53d10adbd5d336bfc23c436b70c61b4314527f263c3a6a52a2f81517"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/source-before.json",
+      "bytes": 726,
+      "sha256": "fd742a57bda919b3ba5dbb904fb77c2341a73bc7d689949319c96df2fd6f5728"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/source-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/source-before.stdout",
+      "bytes": 41,
+      "sha256": "29c885c27d8ff726c285e25bc577ed38e6896b9612cd0f1b6fa93156e4b70ce7"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/stage-workflow.json",
+      "bytes": 763,
+      "sha256": "d5e2799d53f167398f6673f1460254a5e0beee6c1431862f5109f2ff905c2125"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/stage-workflow.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/stage-workflow.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/tree-after.json",
+      "bytes": 726,
+      "sha256": "b5198eafb0c3316cfe947687ec9e777afeadfdf84f5f0e5a38b2a40c0db192de"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/tree-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-artifact-runner-label-preparation-v1/tree-after.stdout",
+      "bytes": 41,
+      "sha256": "c1e98d9a3c98ec2d86f6efcd6da1ba39016a978449f120e9843b5a59fa44ee01"
+    },
+    {
+      "path": "zsh-published-v012-pins.patch",
+      "bytes": 9557,
+      "sha256": "c1356e24bd55f7821e63dfe7778ea50d6721e30dbecacfcdf32e8c7b800a1de6"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012-console.log",
+      "bytes": 162,
+      "sha256": "ff029146253aa160a6b72bc6d03dd2d4099508c5f68112646f47b054a25bc7ba"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/ADMISSION.json",
+      "bytes": 1770,
+      "sha256": "dbad91dda29d88f95f2746270c3f39f4de9f46ab07d2bbeccddc545a3c929b93"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/CONSUMPTION.json",
+      "bytes": 5127,
+      "sha256": "51fb0ed105dd54b94b3d7ef1d788918f72ae71b307e0141fd5d9ef0cb63880dc"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/RESULT.json",
+      "bytes": 1463,
+      "sha256": "45fea86bfe23e7eae23b717afb6c064fe55f35d13fee9e8c6f42bdf8f0f30386"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/codex-zsh",
+      "bytes": 2702,
+      "sha256": "f9374bd9434680fa5ec64cc8387ee1ba74b7d843a1fbbd25131b17687b65250d"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/consumer.log",
+      "bytes": 350,
+      "sha256": "d74f73543d91acbdbe1349efc803f2fe95cceba530b58adf1de8ea610bc8f36f"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/release-metadata.json",
+      "bytes": 10660,
+      "sha256": "ccfb4bb00b54d801e06bdf7a05aaf21a063a64e845efa334ed97fc4451e953d3"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/temporary/codex-package/aarch64-apple-darwin-zsh/codex-zsh-aarch64-apple-darwin.tar.gz",
+      "bytes": 358832,
+      "sha256": "c90afc01dca1880787815bc6b211563a188c86fce90ead76ffd89d07e95937ea"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/temporary/codex-package/aarch64-apple-darwin-zsh/zsh",
+      "bytes": 737520,
+      "sha256": "97c20f7ebe18953acd4dd3510977884abb922ba47f53161c8b2d587207408e1f"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/temporary/codex-package/aarch64-unknown-linux-musl-zsh/codex-zsh-aarch64-unknown-linux-musl.tar.gz",
+      "bytes": 412448,
+      "sha256": "64f75ce5725d70e56ff942822c14750e361ad9a63bbe92be394a790846cba650"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/temporary/codex-package/aarch64-unknown-linux-musl-zsh/zsh",
+      "bytes": 878056,
+      "sha256": "b44f896c4dec681e1db538c309a2ffdbdc0f1cfbc3085506f900bcdb79607ad4"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/temporary/codex-package/x86_64-apple-darwin-zsh/codex-zsh-x86_64-apple-darwin.tar.gz",
+      "bytes": 391225,
+      "sha256": "fa20fa3d9f33e6446eb1138cf1746f460afd62eae211722abb265ca533c8f1cd"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/temporary/codex-package/x86_64-apple-darwin-zsh/zsh",
+      "bytes": 740016,
+      "sha256": "4342cb759071b504e80b8d5fa8687cdd356328d75234de4801d40129d539362d"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/temporary/codex-package/x86_64-unknown-linux-musl-zsh/codex-zsh-x86_64-unknown-linux-musl.tar.gz",
+      "bytes": 434188,
+      "sha256": "bf3efa0215ea97b2e9d00529d698c83962d80a9b92a1b9fd44492812095734bd"
+    },
+    {
+      "path": "zsh-release-anonymous-consumption-v012/temporary/codex-package/x86_64-unknown-linux-musl-zsh/zsh",
+      "bytes": 898480,
+      "sha256": "879d802d05b2a58dc7262932f3fbc3c429015b829e53d3c0993445efe57e02cc"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-console.log",
+      "bytes": 299,
+      "sha256": "d2cfa5e4f4ed2d8d476dd4ee3fc53fa97f29f0b51250917eb7ed4b7aafedcba1"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2-console.log",
+      "bytes": 788,
+      "sha256": "713521b37ebf831c5b271806765a1d6c88c4c4f2be8b56ef0250703cd2ae4bfe"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/ADMISSION.json",
+      "bytes": 1028,
+      "sha256": "0d3829913accdb2a2e74c88c16d56cc5714441cf0fff771f771c2d46d93ba125"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/RESULT.json",
+      "bytes": 4963,
+      "sha256": "e73d193856757423a14e3e4208eb12ece0177f0aecb5c0301c71c55c67a18431"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/cache-dir.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/cache-dir.stdout",
+      "bytes": 96,
+      "sha256": "08d4174a3b470a20433cde883bca10cedf7274ce7181e495791a9b9272a7c311"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/cache/8d/.tmp6XsWas",
+      "bytes": 434188,
+      "sha256": "bf3efa0215ea97b2e9d00529d698c83962d80a9b92a1b9fd44492812095734bd"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/cache/8d/c936d066fafcf8d2709252adbc3239b5d0db08/codex-zsh/bin/zsh",
+      "bytes": 898480,
+      "sha256": "879d802d05b2a58dc7262932f3fbc3c429015b829e53d3c0993445efe57e02cc"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/cache/locks/8d/c936d066fafcf8d2709252adbc3239b5d0db08",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/codex-zsh",
+      "bytes": 2702,
+      "sha256": "f9374bd9434680fa5ec64cc8387ee1ba74b7d843a1fbbd25131b17687b65250d"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/resolved-path.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/resolved-path.stdout",
+      "bytes": 156,
+      "sha256": "95d0a1cf49eb7c7c8d6d9ca26e7902983d3c78dfe950584941742465d8101684"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/tool-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/tool-version.stdout",
+      "bytes": 15,
+      "sha256": "d62e4d46227f770dbc76773a911ac0e35137a848c99a2fca4f7ed70124319ff7"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/zsh-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012-r2/zsh-version.stdout",
+      "bytes": 39,
+      "sha256": "f67ba4da8276cc6b99adbd067b737089262d6be9d47655b6673721bb87207451"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012/ADMISSION.json",
+      "bytes": 1025,
+      "sha256": "ad9e25fdd7f96ec174d6c474fade310bdecf4bf9ffe751c69679b3fa9cef013f"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012/RESULT.json",
+      "bytes": 2559,
+      "sha256": "b017ba988e64f9ae8eb6b035feb4aa29bbe56fb292720613b5c068375a6fbe91"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012/cache-dir.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012/cache-dir.stdout",
+      "bytes": 30,
+      "sha256": "80ee32e29fee92c8e3ad5c197858b44969b9360f6a0dbf5dc83af8a219cd3ab5"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012/tool-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-dotslash-linux-v012/tool-version.stdout",
+      "bytes": 15,
+      "sha256": "d62e4d46227f770dbc76773a911ac0e35137a848c99a2fca4f7ed70124319ff7"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/RESULT.json",
+      "bytes": 7219,
+      "sha256": "9b48501cf83de00f90911a738179126b5b259cb209f8efed72db0844cf127130"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/job-128882269268-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/job-128882269268-raw.stdout",
+      "bytes": 3866,
+      "sha256": "785eeee656d5eef49961687c5e048f7f0904f5285a6ca37bf39bfb82a06a3880"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/job-128882294656-raw.stderr",
+      "bytes": 13,
+      "sha256": "6c5ec582d3b25e97273d17fd4088d0e13837c8384ee94aba555afc35856ec3ae"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/job-128882294656-raw.stdout",
+      "bytes": 215,
+      "sha256": "6bbf8a32b767a6ff827f74f0cb09c3c3029622071508ca06b82348b52bb20e28"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/job-128882294751-raw.stderr",
+      "bytes": 13,
+      "sha256": "6c5ec582d3b25e97273d17fd4088d0e13837c8384ee94aba555afc35856ec3ae"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/job-128882294751-raw.stdout",
+      "bytes": 215,
+      "sha256": "18cc8bfebb3166b9ae0edac8c607cf3c4889dc8397db85e819c3a91a387ce449"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/release.stderr",
+      "bytes": 25,
+      "sha256": "d2c8985c89b29a842ac4946d13bdbc297709f44f20bb968faf9682664b211db6"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/release.stdout",
+      "bytes": 133,
+      "sha256": "010563d2cfb8f1e87f700936ce59ee3a33364da46e3db41b0049227918ece74d"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/run-42530129742-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/run-42530129742-jobs.stdout",
+      "bytes": 8208,
+      "sha256": "d9d15cc25a238e905f615cf0d4a4c52fe42c6d0f13f158235621608a4f3a0f52"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/runs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T222638169018Z/runs.stdout",
+      "bytes": 14295,
+      "sha256": "3f75131a9aa1f8eb1e1ef7e487e5f6a0ffff84b8f08efdc75eccad9576314149"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/RESULT.json",
+      "bytes": 10153,
+      "sha256": "d4debfc994f031bbb4b94904ca387b5cb5e1f758b93dfed552412ac58ba92fba"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/job-128882269268-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/job-128882269268-raw.stdout",
+      "bytes": 3866,
+      "sha256": "785eeee656d5eef49961687c5e048f7f0904f5285a6ca37bf39bfb82a06a3880"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/job-128882294656-raw.stderr",
+      "bytes": 13,
+      "sha256": "6c5ec582d3b25e97273d17fd4088d0e13837c8384ee94aba555afc35856ec3ae"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/job-128882294656-raw.stdout",
+      "bytes": 215,
+      "sha256": "b665dcc8aa4e841cffd1476d48b3046718f9837879c7cbf4be10b165371fd0f8"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/job-128882294678-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/job-128882294678-raw.stdout",
+      "bytes": 254006,
+      "sha256": "e49184ff1d92bce41337352ca8e3f2fb863198e8e5ad74c49cacbc6a345260b9"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/job-128882294716-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/job-128882294716-raw.stdout",
+      "bytes": 253631,
+      "sha256": "5b1ff9d7c4ff6182b99387d680788e0ee580366bf53d26aae6efe5cf34e583e4"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/job-128882294751-raw.stderr",
+      "bytes": 13,
+      "sha256": "6c5ec582d3b25e97273d17fd4088d0e13837c8384ee94aba555afc35856ec3ae"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/job-128882294751-raw.stdout",
+      "bytes": 215,
+      "sha256": "7c58b32b29630306ec824fc586fbced7e395bad0bcc1e7ed3d812a6774a00025"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/job-128882945160-raw.stderr",
+      "bytes": 13,
+      "sha256": "6c5ec582d3b25e97273d17fd4088d0e13837c8384ee94aba555afc35856ec3ae"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/job-128882945160-raw.stdout",
+      "bytes": 215,
+      "sha256": "2d6da981f3732eca5721d48fc7731483377d4fb48699fd6aeac14d772edb0a21"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/release.stderr",
+      "bytes": 25,
+      "sha256": "d2c8985c89b29a842ac4946d13bdbc297709f44f20bb968faf9682664b211db6"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/release.stdout",
+      "bytes": 133,
+      "sha256": "010563d2cfb8f1e87f700936ce59ee3a33364da46e3db41b0049227918ece74d"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/run-42530129742-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/run-42530129742-jobs.stdout",
+      "bytes": 9810,
+      "sha256": "10b915248aaec564c2fb2acf5ec8c1c3f4f14a7c3cf8fb95af4bc604f99f32e3"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/runs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v1/capture-20261108T223030546252Z/runs.stdout",
+      "bytes": 14298,
+      "sha256": "11b846a2463a9e15e4455fcc6546a675e7e3d75a565bd17b3ef75fe2bc06aed8"
+    },
+    {
+      "path": "zsh-release-observation-v1/macos-runner-admission-001/128882294656-annotations.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v1/macos-runner-admission-001/128882294656-annotations.stdout",
+      "bytes": 456,
+      "sha256": "7560bc1f6dfae044a9ca05dbac4eca1456cca85c5e45db1badd7c78d88b8cc3f"
+    },
+    {
+      "path": "zsh-release-observation-v1/macos-runner-admission-001/128882294656-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v1/macos-runner-admission-001/128882294656-check.stdout",
+      "bytes": 3176,
+      "sha256": "bf8d09ca0e8b2f9c3fbd06aa60c39b79846b24ec491a3b5880f013ecf954124f"
+    },
+    {
+      "path": "zsh-release-observation-v1/macos-runner-admission-001/128882294751-annotations.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v1/macos-runner-admission-001/128882294751-annotations.stdout",
+      "bytes": 835,
+      "sha256": "4b0d6c9f5187c9f894fa43c4272e8cc75cd4e6afeeb26b9637586bfb8c3a6b34"
+    },
+    {
+      "path": "zsh-release-observation-v1/macos-runner-admission-001/128882294751-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v1/macos-runner-admission-001/128882294751-check.stdout",
+      "bytes": 3177,
+      "sha256": "c9dfd42fd952b9594aec4b554c7cf148ac9463b7860a521441fc87ce0e15c466"
+    },
+    {
+      "path": "zsh-release-observation-v1/macos-runner-admission-001/RESULT.json",
+      "bytes": 1582,
+      "sha256": "413a33fd343a52052721e6b92210d56d12b2527b4ad73ce953e7e37b75dfa875"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223229806354Z/RESULT.json",
+      "bytes": 5369,
+      "sha256": "ab90edf3ff293c3354d453a0f41cb3ed74ff4e4be0643cdfca6735ac46712211"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223229806354Z/job-128883852338-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223229806354Z/job-128883852338-raw.stdout",
+      "bytes": 3863,
+      "sha256": "d31e8721ddcf5c9e514119c4a6e37306dd2ea3f023ef7a6673922d4976facfb6"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223229806354Z/release.stderr",
+      "bytes": 25,
+      "sha256": "d2c8985c89b29a842ac4946d13bdbc297709f44f20bb968faf9682664b211db6"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223229806354Z/release.stdout",
+      "bytes": 133,
+      "sha256": "010563d2cfb8f1e87f700936ce59ee3a33364da46e3db41b0049227918ece74d"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223229806354Z/run-42530642021-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223229806354Z/run-42530642021-jobs.stdout",
+      "bytes": 10279,
+      "sha256": "6e108b0aca4c2c9fde85012b62ce3b9d8a5ad4c4527a78e179750b48c70bb9de"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223229806354Z/runs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223229806354Z/runs.stdout",
+      "bytes": 28516,
+      "sha256": "7e3321d64d2c1a393a102765a994914f12f4d46ed15351e2031a35ec35ecaec7"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/RESULT.json",
+      "bytes": 8151,
+      "sha256": "dee0ef70da9956fabb9fc189610138fdaad8ae5bd57df1cdb71a2675ffdbfce9"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/job-128883852338-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/job-128883852338-raw.stdout",
+      "bytes": 3863,
+      "sha256": "d31e8721ddcf5c9e514119c4a6e37306dd2ea3f023ef7a6673922d4976facfb6"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/job-128883876178-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/job-128883876178-raw.stdout",
+      "bytes": 143198,
+      "sha256": "a17f7bdd5e295985c56b81eef98430bab5de9705a0d9ba92f82999d22d426fa6"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/job-128883876243-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/job-128883876243-raw.stdout",
+      "bytes": 254511,
+      "sha256": "dca8f58d180ac523d466a3d2eafbaea863e029e89b1e4dae00e7dd747f4917a3"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/job-128883876262-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/job-128883876262-raw.stdout",
+      "bytes": 253985,
+      "sha256": "af633d4da86dcff0844d2aad4072bb029bd9a8ef264e5d63906ca719afbb87e0"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/release.stderr",
+      "bytes": 25,
+      "sha256": "d2c8985c89b29a842ac4946d13bdbc297709f44f20bb968faf9682664b211db6"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/release.stdout",
+      "bytes": 133,
+      "sha256": "010563d2cfb8f1e87f700936ce59ee3a33364da46e3db41b0049227918ece74d"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/run-42530642021-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/run-42530642021-jobs.stdout",
+      "bytes": 11211,
+      "sha256": "3bc2b214a79aff24c746207b283cfb07bd6aa1f3c170162825acbdf7ccb185c3"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/runs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223445225366Z/runs.stdout",
+      "bytes": 28516,
+      "sha256": "7e3321d64d2c1a393a102765a994914f12f4d46ed15351e2031a35ec35ecaec7"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/RESULT.json",
+      "bytes": 11886,
+      "sha256": "0f172f116894d76accfccf7f29f01325904a68d6b24dbc80c975afad0ab7bd18"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/job-128883852338-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/job-128883852338-raw.stdout",
+      "bytes": 3863,
+      "sha256": "d31e8721ddcf5c9e514119c4a6e37306dd2ea3f023ef7a6673922d4976facfb6"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/job-128883876178-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/job-128883876178-raw.stdout",
+      "bytes": 143198,
+      "sha256": "a17f7bdd5e295985c56b81eef98430bab5de9705a0d9ba92f82999d22d426fa6"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/job-128883876243-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/job-128883876243-raw.stdout",
+      "bytes": 254511,
+      "sha256": "dca8f58d180ac523d466a3d2eafbaea863e029e89b1e4dae00e7dd747f4917a3"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/job-128883876262-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/job-128883876262-raw.stdout",
+      "bytes": 253985,
+      "sha256": "af633d4da86dcff0844d2aad4072bb029bd9a8ef264e5d63906ca719afbb87e0"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/job-128883876269-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/job-128883876269-raw.stdout",
+      "bytes": 142159,
+      "sha256": "2ac5dbbb94e3f5643324cfd4fdcf59c8cac83b570785789ecb22dd9e6f080eac"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/job-128884821615-raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/job-128884821615-raw.stdout",
+      "bytes": 153007,
+      "sha256": "2c509ec832a9b08cad1c25929896aecabff37dd541587f41d993491c66dd1d90"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/release.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/release.stdout",
+      "bytes": 10660,
+      "sha256": "ccfb4bb00b54d801e06bdf7a05aaf21a063a64e845efa334ed97fc4451e953d3"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/run-42530642021-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/run-42530642021-jobs.stdout",
+      "bytes": 13873,
+      "sha256": "a1ce1ea882597b3a9a462cd7b6bf2e01ef755e6726e7e7dad10069fd47256966"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/runs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zsh-release-observation-v2/capture-20261108T223703260841Z/runs.stdout",
+      "bytes": 28519,
+      "sha256": "debe53b10721a4690a66bf35f3b7ae1b47504835c5f29827de2c2728e80a2ffa"
+    },
+    {
+      "path": "zsh-standard-native-macos-runners.patch",
+      "bytes": 675,
+      "sha256": "9491d7345b0d787c83938ac7818828e6aab2c79140a3359729c9839209df7fdf"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 70723,
+      "sha256": "9185f91a07abe9141215670cd17402ac566389429047f4be4602d7a113c6c31a"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/zsh-published-v012-and-consumption/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "720f89618cbd9b6157926339c55f6372b033f06024ddd0892955cb9faf0ec8d5"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/zsh-published-v012-and-consumption/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "ed288dd61240761f713e6b4d747e2e98480c0136845d7af11e78560a35c29d39"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/zsh-published-v012-and-consumption/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "daebed58858a269199b545f684756ed3bf4ac2a0743f16b52b80b9f0537604d2"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/zsh-published-v012-and-consumption/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "55180de78f251a35f90f1e46837f199d53b6f1e11633137b4656a31876825585"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/zsh-published-v012-and-consumption/archive.part005",
+      "offset": 1960000,
+      "bytes": 490000,
+      "sha256": "71978659661eb8fdcf64c9ea774270e3e36091dc2993192cacf4049ed62e7b9f"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/zsh-published-v012-and-consumption/archive.part006",
+      "offset": 2450000,
+      "bytes": 490000,
+      "sha256": "b91f7fb5e57d96b6ec36e1043b6b2a74a13d4ee49bed8aaed9132866d7d8f886"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/zsh-published-v012-and-consumption/archive.part007",
+      "offset": 2940000,
+      "bytes": 490000,
+      "sha256": "3945f7e8779d0c1620465d020cf250b5338d4075b215184617c121a196a67ec6"
+    },
+    {
+      "sequence": 8,
+      "path": "packets/zsh-published-v012-and-consumption/archive.part008",
+      "offset": 3430000,
+      "bytes": 490000,
+      "sha256": "5ebbd75a95c878dcf0dc77337d0cbb2ce41a1f0032fcf2e1b1c5349a454dac10"
+    },
+    {
+      "sequence": 9,
+      "path": "packets/zsh-published-v012-and-consumption/archive.part009",
+      "offset": 3920000,
+      "bytes": 490000,
+      "sha256": "938511e0bba535b57eec3f1bea6b873ffd331a278e1330f7717ea73f03fdcc5a"
+    },
+    {
+      "sequence": 10,
+      "path": "packets/zsh-published-v012-and-consumption/archive.part010",
+      "offset": 4410000,
+      "bytes": 490000,
+      "sha256": "0a76eccae0959693721b79aa0a65d5fb65d22074876c70ba7ea2fb851a12b1eb"
+    },
+    {
+      "sequence": 11,
+      "path": "packets/zsh-published-v012-and-consumption/archive.part011",
+      "offset": 4900000,
+      "bytes": 341099,
+      "sha256": "91082d3f165c4c2b54bd5c17c1042694f7a4f70bd23102a741f5a0d0e2bac728"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true
+}

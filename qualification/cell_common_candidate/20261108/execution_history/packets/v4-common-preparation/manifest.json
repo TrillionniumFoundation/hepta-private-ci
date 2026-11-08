@@ -1,0 +1,705 @@
+{
+  "packet_id": "v4-common-preparation",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment-002-sealing-v1/v4-common-preparation.tar.gz",
+  "bytes": 1336806,
+  "sha256": "2656fe251cdd319c8bd9421cd6ca9b5b9ab0889931e10d358fdd66638303e8cc",
+  "compression": "gzip",
+  "scope": "Exact preparation, canonical formatting, source commits and owner-observer correction records; no test acceptance is inferred from preparation.",
+  "file_members": [
+    {
+      "path": "v4-common-format-preparation-v1/after.diff",
+      "bytes": 106221,
+      "sha256": "9282126fdcb31e9656d8f3aa83d8e55497cd43bcc596d9e1f49c6d1c7e323261"
+    },
+    {
+      "path": "v4-common-format-preparation-v1/before.diff",
+      "bytes": 106241,
+      "sha256": "f46e08a94a727c925256072784db1b15e339065e49618f0b8d8a238f8266568f"
+    },
+    {
+      "path": "v4-common-format-preparation-v1/canonical-prettier.log",
+      "bytes": 308,
+      "sha256": "e131edd2228f4d805a7967ef3ccab62658b935d469df94cb10a83e1599555b14"
+    },
+    {
+      "path": "v4-common-format-preparation-v1/diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-common-format-preparation-v1/just-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-common-format-preparation-v1/result.json",
+      "bytes": 12554,
+      "sha256": "c19f7f3805475bf76adc85b75a5305412a90c02ba64ce095f36ed34c9a7ebeea"
+    },
+    {
+      "path": "v4-doc-canonical-preparation/node-version.log",
+      "bytes": 9,
+      "sha256": "2266957ed9a639bd7264d714bfa798a961510bf2e50695c668ab8fc0c3f4e906"
+    },
+    {
+      "path": "v4-doc-canonical-preparation/pnpm-install.log",
+      "bytes": 43735,
+      "sha256": "e4d82ed641c03761045cecc8c2faf7d415c9d62e4e95fa6ec0b9d6abd42724a6"
+    },
+    {
+      "path": "v4-doc-canonical-preparation/pnpm-version.log",
+      "bytes": 8,
+      "sha256": "a82028df3ca327b7e19f23fbc0121aec7763353c7dc0c816422db7f52f6365bc"
+    },
+    {
+      "path": "v4-doc-canonical-preparation/preparation.json",
+      "bytes": 1451,
+      "sha256": "c63c6c1f4cea64250d1c900b2275ce73038c0d8851e1fd04895a6dfae53dfe7e"
+    },
+    {
+      "path": "v4-doc-final-preparation/canonical-prettier.log",
+      "bytes": 225,
+      "sha256": "ccaa7595949bf07c6449645497cf186f0b17cba5fbc260ceef1898044a898828"
+    },
+    {
+      "path": "v4-doc-final-preparation/diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-doc-final-preparation/format-only.patch",
+      "bytes": 1774,
+      "sha256": "86bc8d879436c5132eedbcd2dc5dab3d8c05af447e782e4e2d5e06c5375a1f85"
+    },
+    {
+      "path": "v4-doc-final-preparation/just-fmt.log",
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "path": "v4-doc-final-preparation/pnpm-install.log",
+      "bytes": 17745,
+      "sha256": "3db5e052b3b4f4219b94575d704a3565f53564ae321ec1c13aaee390463e533f"
+    },
+    {
+      "path": "v4-doc-final-preparation/preparation.json",
+      "bytes": 2499,
+      "sha256": "6c52d52f5d2f0cd45baafba5bf880d9c9b5a328e403ada940d158ac01422a19a"
+    },
+    {
+      "path": "v4-doc-final-preparation/process-observation.json",
+      "bytes": 1016,
+      "sha256": "0cf4e69846ada4d35f4b8bc1cc1bb6692f2e9cef37e559a4e4cd1ffbbf9bae04"
+    },
+    {
+      "path": "v4-doc-final-preparation/task-pnpm-shim.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-doc-preparation/format-one-doc.log",
+      "bytes": 49,
+      "sha256": "1354205e71f43eef4dde8df1cd86a34dc2285dcbc269adc4d91096e6f80d6398"
+    },
+    {
+      "path": "v4-doc-preparation/full-root-prettier-check.log",
+      "bytes": 1629,
+      "sha256": "59d6650581ca04fdd3371c61f43a65e6618112c1a1f3e72237160e73fe712a5c"
+    },
+    {
+      "path": "v4-doc-preparation/original.md",
+      "bytes": 8000,
+      "sha256": "90ea8fefc2beef682d7da903d8200eb3788d083f8dd50f0cb99ca6d51ba75fe0"
+    },
+    {
+      "path": "v4-doc-preparation/preparation-closed-failure.json",
+      "bytes": 466,
+      "sha256": "fe1a2a9bf3d4d646b73c17430af9e6e898ad3ebaa535507e0353abf00efb97c6"
+    },
+    {
+      "path": "v4-doc-preparation/preparation.json",
+      "bytes": 7369,
+      "sha256": "b2b62ee296de4d4b8b0740d58aca5e5d59f899fd9401cde760d4498afe5ccfa8"
+    },
+    {
+      "path": "v4-integration/fixture-integration.json",
+      "bytes": 1918,
+      "sha256": "a13352daab81275be80e376e436460dd732396d69636a31dd0be08c6b02d067e"
+    },
+    {
+      "path": "v4-integration/fixtures-with-doc.patch",
+      "bytes": 15799,
+      "sha256": "536f0c83593064f3c5678964de75d695a66dc42ea82bc668a1769af8954156a0"
+    },
+    {
+      "path": "v4-integration/memory-expiry-fixture.json",
+      "bytes": 527,
+      "sha256": "c3639b7a7c4c1d7acadd0ee982ee818170252d3a61f8d8f839884285cbf8edbd"
+    },
+    {
+      "path": "v4-integration/notes-fixture.json",
+      "bytes": 424,
+      "sha256": "3334c02f7e9a254a7fb75e112fbe365f71e903ea6d2e8e7a792cb3ebf417aa37"
+    },
+    {
+      "path": "v4-integration/queue-post-admission-lease.json",
+      "bytes": 387,
+      "sha256": "1d5b476169c0da9aa64ea9b64c5433606a5e171a0d565452fdd950017584b6b3"
+    },
+    {
+      "path": "v4-integration/windows-test-isolation.json",
+      "bytes": 448,
+      "sha256": "a4e84fa6263c196f2c04b8c54e3454fffa6ca6852a72a39950c0f5e68560d52f"
+    },
+    {
+      "path": "v4-local-commits-v1/1-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/1-commit.stdout",
+      "bytes": 157,
+      "sha256": "b2c1217fbb886d86ed898c79ce52c2654fb89233c8a6c2d17e5be00a70452ee0"
+    },
+    {
+      "path": "v4-local-commits-v1/1-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/1-head.stdout",
+      "bytes": 41,
+      "sha256": "ae45e80785f1ccff78c7abd4e13ad8287171e4c5cd7921622f198f435cbb3858"
+    },
+    {
+      "path": "v4-local-commits-v1/1-stage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/1-stage.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/1-staged-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/1-staged-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/1-staged-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/1-staged-numstat.stdout",
+      "bytes": 96,
+      "sha256": "39d3175e14a623640e12c7c457d77c7ea6328b1412df1788d4d52079ffb5e3ae"
+    },
+    {
+      "path": "v4-local-commits-v1/1-staged-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/1-staged-paths.stdout",
+      "bytes": 86,
+      "sha256": "00122f281abc961cd9b071124cf97254c6d5ae61b0382de68eea51b38c74f95c"
+    },
+    {
+      "path": "v4-local-commits-v1/1-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/1-tree.stdout",
+      "bytes": 41,
+      "sha256": "a7a93bc9c9b7397089a8446791d3c33bc99126cef722128ff230887704870f52"
+    },
+    {
+      "path": "v4-local-commits-v1/2-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/2-commit.stdout",
+      "bytes": 173,
+      "sha256": "ad2b99564d24fdd22a80ff041d72a06e27354e226b9348c6e44f835eecd42a31"
+    },
+    {
+      "path": "v4-local-commits-v1/2-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/2-head.stdout",
+      "bytes": 41,
+      "sha256": "83b0d7d58b2c9bae82867decaf6716b46a6cc6e9f8cd8b908c3ac5f4dd4bf7d4"
+    },
+    {
+      "path": "v4-local-commits-v1/2-stage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/2-stage.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/2-staged-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/2-staged-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/2-staged-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/2-staged-numstat.stdout",
+      "bytes": 716,
+      "sha256": "eec50c43dd382eadd7451bc39401678edf227c6ee354f6e65da69cebfd611fcc"
+    },
+    {
+      "path": "v4-local-commits-v1/2-staged-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/2-staged-paths.stdout",
+      "bytes": 659,
+      "sha256": "c9a234c15c61582d43eb64de42c488977b3593819708ccc559c5b9dc070ef313"
+    },
+    {
+      "path": "v4-local-commits-v1/2-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/2-tree.stdout",
+      "bytes": 41,
+      "sha256": "63722bc7cb68bc0b762dcb86998a572a0ad89395902b3534c7c9da5e4eacbab2"
+    },
+    {
+      "path": "v4-local-commits-v1/3-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/3-commit.stdout",
+      "bytes": 150,
+      "sha256": "e9ff9a53892dd0fbce3a593d1056fc6413403ba0307b90082d72426ba6d5b2c5"
+    },
+    {
+      "path": "v4-local-commits-v1/3-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/3-head.stdout",
+      "bytes": 41,
+      "sha256": "8bb21050b73b936c257f3996f5644de198c7d236ba1d717d9d6e9c6f0a9ce51f"
+    },
+    {
+      "path": "v4-local-commits-v1/3-stage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/3-stage.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/3-staged-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/3-staged-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/3-staged-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/3-staged-numstat.stdout",
+      "bytes": 494,
+      "sha256": "cf4bed220713e8c12c4f42446147c40c8007bc2b652ae9a1f3d73a7241b8a2d6"
+    },
+    {
+      "path": "v4-local-commits-v1/3-staged-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/3-staged-paths.stdout",
+      "bytes": 450,
+      "sha256": "ae7169c422bfd925ffacf36e4b6732502e70c93a458133ef1438a579bfcbf1ed"
+    },
+    {
+      "path": "v4-local-commits-v1/3-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/3-tree.stdout",
+      "bytes": 41,
+      "sha256": "395e13a666d0d3084ce606d8cdfdd2808d5d11bffe0606626c451939b9d2e79d"
+    },
+    {
+      "path": "v4-local-commits-v1/4-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/4-commit.stdout",
+      "bytes": 168,
+      "sha256": "06760f6fc725c5000a22ee524174db8a8a10672898ebe1300625dd2442313afc"
+    },
+    {
+      "path": "v4-local-commits-v1/4-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/4-head.stdout",
+      "bytes": 41,
+      "sha256": "ac1cf54e8efb4fce0ee1f177ffaacc89f650e74e8b394c763f480e1fda2f20b4"
+    },
+    {
+      "path": "v4-local-commits-v1/4-stage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/4-stage.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/4-staged-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/4-staged-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/4-staged-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/4-staged-numstat.stdout",
+      "bytes": 714,
+      "sha256": "b0a78fb1582876e9c8f23d32e09de84397f8b19a887f8039565a0692d4f7a80a"
+    },
+    {
+      "path": "v4-local-commits-v1/4-staged-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/4-staged-paths.stdout",
+      "bytes": 662,
+      "sha256": "f820fb5441912af1f0519b3b48ae8c972cc0e7befde0ad01e5a9ce88494d19dd"
+    },
+    {
+      "path": "v4-local-commits-v1/4-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/4-tree.stdout",
+      "bytes": 41,
+      "sha256": "09810c8fd6c807df71a9cad1570a0a9737866786f73bfcca0b78c24f54d038dd"
+    },
+    {
+      "path": "v4-local-commits-v1/5-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/5-commit.stdout",
+      "bytes": 161,
+      "sha256": "ad92c7dc4f6eaf0645b69a952d793683dd80e9245356ee6eccfc5f55c39072ff"
+    },
+    {
+      "path": "v4-local-commits-v1/5-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/5-head.stdout",
+      "bytes": 41,
+      "sha256": "7e8222e8038ecf0e32769f9f6aadf8f28613e12f3c8d7321d54844aba06f1d68"
+    },
+    {
+      "path": "v4-local-commits-v1/5-stage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/5-stage.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/5-staged-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/5-staged-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/5-staged-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/5-staged-numstat.stdout",
+      "bytes": 276,
+      "sha256": "4a2c21c25d8530b51be5f4c97da76faf765817404b9248b6f87a223b8856f479"
+    },
+    {
+      "path": "v4-local-commits-v1/5-staged-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/5-staged-paths.stdout",
+      "bytes": 245,
+      "sha256": "116aae873bd512018f3bcecd57a7a043c48c8116033f393c55b7e7fcf53a07d2"
+    },
+    {
+      "path": "v4-local-commits-v1/5-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/5-tree.stdout",
+      "bytes": 41,
+      "sha256": "4fc0a7d1e5160e688f41875c5fa9236952c231b62cad6e014d351dd84c79de62"
+    },
+    {
+      "path": "v4-local-commits-v1/clean-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/clean-after.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/common-v4-preparation.bundle",
+      "bytes": 48706,
+      "sha256": "f478c6ed376c4b676f51812ef72e357df83976d0d39db4cc142a909b70e82888"
+    },
+    {
+      "path": "v4-local-commits-v1/diff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/diff-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/index-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/index-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/paths-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/paths-before.stdout",
+      "bytes": 2102,
+      "sha256": "a2f191b6a7a02594e03217514c4b08af005561bed4537c31ffe3b0a26b03fbe9"
+    },
+    {
+      "path": "v4-local-commits-v1/result.json",
+      "bytes": 19336,
+      "sha256": "dbb6a102f719a8034f0995d7c954d4567db1de513927707ddbb84c7403535be5"
+    },
+    {
+      "path": "v4-local-commits-v1/source-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/source-before.stdout",
+      "bytes": 41,
+      "sha256": "0bdcb1aa9847a195170d835babecd0659f0845ed93d10891f1a6b5c5c803c0bc"
+    },
+    {
+      "path": "v4-local-commits-v1/source-bundle.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/source-bundle.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/untracked-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-local-commits-v1/untracked-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-owner-observer-followup-v1/add.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-owner-observer-followup-v1/apply-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-owner-observer-followup-v1/apply.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-owner-observer-followup-v1/bundle.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-owner-observer-followup-v1/commit.log",
+      "bytes": 170,
+      "sha256": "253e218e28d3204f6ea3a9198e6da330f21cdabfa0bad0b665b09e418787b062"
+    },
+    {
+      "path": "v4-owner-observer-followup-v1/common-owner-followup.bundle",
+      "bytes": 53130,
+      "sha256": "9efb8b2df20790620efe12c219121102d6b6a23cc7d0648656cd283ee7e239d1"
+    },
+    {
+      "path": "v4-owner-observer-followup-v1/diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-owner-observer-followup-v1/final.patch",
+      "bytes": 4178,
+      "sha256": "c8c16e661db554ab754aa882213da1a2d658573e796d328ff60c6e4605dc0ac7"
+    },
+    {
+      "path": "v4-owner-observer-followup-v1/just-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-owner-observer-followup-v1/result.json",
+      "bytes": 3800,
+      "sha256": "3072d0f91c2d0a5f90ff0df19b44e5116f8cbd2791ffca3f2941a4adb432a3b3"
+    },
+    {
+      "path": "v4-perception-fixture-line-ending/original.index",
+      "bytes": 2118568,
+      "sha256": "d61036d7567ddcfe5853dac43416ed830df32012f8e7fa8b3012c631774a5c97"
+    },
+    {
+      "path": "v4-perception-fixture-line-ending/original.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-perception-fixture-line-ending/original.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-perception-fixture-line-ending/patched.index",
+      "bytes": 2118568,
+      "sha256": "07d8456c4ff8af49488466db729b5a4ac44734aed63a2607364a2781bfa2eefa"
+    },
+    {
+      "path": "v4-perception-fixture-line-ending/patched.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-perception-fixture-line-ending/patched.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v4-perception-fixture-line-ending/perception-fixture-lf.patch",
+      "bytes": 594,
+      "sha256": "adf95fa5e0bfdde8eeca6802f4dec8930d0eba54c982d003e3707d8fc9a27935"
+    },
+    {
+      "path": "v4-perception-fixture-line-ending/result.json",
+      "bytes": 1224,
+      "sha256": "a7334954d98f60284ebc32597480f41255b98a86c8ac72386c2ed3cbce169a37"
+    },
+    {
+      "path": "PACKET_MANIFEST.json",
+      "bytes": 23581,
+      "sha256": "84312fd3eeb4bd1bf8df1196c320dd43e03706a85da5af5c75982c66f37fcc8c"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/v4-common-preparation/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "ae49f657607096cc213cbee8148bce53e6e0de99339f869bcb8248502b03c692"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/v4-common-preparation/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "7c846daa9ae05128a060d7bc8bd280e8721dee47d236a0e22013454caf827f30"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/v4-common-preparation/archive.part003",
+      "offset": 980000,
+      "bytes": 356806,
+      "sha256": "a55dd3eb05d2e5c58807e411fea48185689f6ecd018072c4a82022417d2cf74a"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true
+}
