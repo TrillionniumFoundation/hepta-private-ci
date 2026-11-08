@@ -134,7 +134,8 @@ async fn create_run(
     definition: &BoundedCircuitDefinitionV2,
 ) -> (tempfile::TempDir, AutomationStore, CircuitDispatchV2) {
     let directory = tempfile::tempdir().expect("private owner fixture");
-    let layout = checked(HeptaFleetRoot::parse(directory.path().join("fleet")))
+    let root = checked(directory.path().canonicalize());
+    let layout = checked(HeptaFleetRoot::parse(root.join("fleet")))
         .layout()
         .agent(&fence().owner_agent_id);
     let store = checked(AutomationStore::open(&layout).await);
