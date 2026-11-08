@@ -1,0 +1,354 @@
+{
+  "schema": "ctrl1.native-validation.v1",
+  "base_sha": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.006607625167816877,
+      "stdout": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.005513832904398441,
+      "stdout": "research/ctrl1-decision-cell-20261108\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.007951833307743073,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/__init__.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.006193374749273062,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/budget_sensitivity.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.006133709102869034,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/evaluation.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.006083416752517223,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/learning.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.006110750138759613,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/model.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.006239917129278183,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/oracle.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.006058374885469675,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/policies.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.006047457922250032,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/routing.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.006088499911129475,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/run.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.005971583072096109,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/sensitivity_run.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.005889959167689085,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/test_ctrl1_evidence.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.00594462500885129,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/test_ctrl1_learning.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.0057530831545591354,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/test_ctrl1_model.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.005891541950404644,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/test_ctrl1_policies.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.005960458889603615,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/test_ctrl1_profiles.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.005879083648324013,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/test_ctrl1_routing.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.005823374725878239,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/verify.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.00570324994623661,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        "scripts/ndu_ctrl1/README.md"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.0058302502147853374,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "--",
+        ".github/workflows/hepta-ndu-recursion.yml"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.006107749883085489,
+      "stdout": "100644 blob 2d4d44b3e920bc0e025704ddae82054103a8688f\t.github/workflows/hepta-ndu-recursion.yml\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/2d4d44b3e920bc0e025704ddae82054103a8688f"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 3.580364292021841,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "update-index",
+        "--no-skip-worktree",
+        "--",
+        ".github/workflows/hepta-ndu-recursion.yml"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.021272874902933836,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--numstat",
+        "--",
+        ".github/workflows/hepta-ndu-recursion.yml"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "elapsed_seconds": 0.012030957732349634,
+      "stdout": "6\t0\t.github/workflows/hepta-ndu-recursion.yml\n",
+      "stderr": ""
+    }
+  ],
+  "stages": [],
+  "imported_files": 19,
+  "status": "failed",
+  "error_type": "TimeoutExpired",
+  "error": "Command '['/opt/homebrew/bin/just', 'fmt']' timed out after 300 seconds",
+  "pushed": false
+}

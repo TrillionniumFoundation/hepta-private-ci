@@ -1,0 +1,58 @@
+{
+  "schema": "ctrl1-native-readonly-preflight-v1",
+  "host": "mac",
+  "job_id": "1a1bb12bfb3-13c47-69",
+  "idempotency_key": "ctrl1-mac-sealed-evidence-readonly-preflight-20261108-v1",
+  "scope": "Read-only local freeze verification and attempted remote ref verification. This is preparation evidence, not a scientific trial.",
+  "raw_stdout": "{\"argv\": [\"/usr/bin/git\", \"rev-parse\", \"HEAD\"], \"returncode\": 0, \"stdout\": \"368ef32be4388d47f3faddf0ac78806e33d680cd\", \"stderr\": \"\"}\n{\"argv\": [\"/usr/bin/git\", \"rev-parse\", \"HEAD^{tree}\"], \"returncode\": 0, \"stdout\": \"69a0af67501f43d637e840ddbc6f223f1547f6c9\", \"stderr\": \"\"}\n{\"argv\": [\"/usr/bin/git\", \"status\", \"--porcelain\"], \"returncode\": 0, \"stdout\": \"\", \"stderr\": \"\"}\n{\"argv\": [\"/opt/homebrew/bin/gh\", \"api\", \"repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/research/ndu-generation-v4-20261108-986c\", \"--jq\", \".object.sha\"], \"returncode\": 1, \"stdout\": \"{\\n\\t\\\"message\\\": \\\"API rate limit exceeded for user ID 102159240. If you reach out to GitHub Support for help, please include the request ID EAAA:FF034:5B2B:12F00:6AF06727 and timestamp 2026-11-08 12:12:25 UTC. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https:\\\\/\\\\/docs.github.com\\\\/en\\\\/site-policy\\\\/github-terms\\\\/github-terms-of-service)\\\",\\n\\t\\\"documentation_url\\\": \\\"https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api#rate-limiting\\\",\\n\\t\\\"status\\\": \\\"403\\\"\\n}\", \"stderr\": \"gh: API rate limit exceeded for user ID 102159240. If you reach out to GitHub Support for help, please include the request ID EAAA:FF034:5B2B:12F00:6AF06727 and timestamp 2026-11-08 12:12:25 UTC. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/github-terms/github-terms-of-service) (HTTP 403)\"}\n{\"argv\": [\"/opt/homebrew/bin/gh\", \"api\", \"repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/research/ctrl1-decision-cell-20261108\", \"--jq\", \".object.sha\"], \"returncode\": 1, \"stdout\": \"{\\n\\t\\\"message\\\": \\\"API rate limit exceeded for user ID 102159240. If you reach out to GitHub Support for help, please include the request ID EAAD:1AA390:1031C:35568:6AF0672B and timestamp 2026-11-08 12:12:27 UTC. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https:\\\\/\\\\/docs.github.com\\\\/en\\\\/site-policy\\\\/github-terms\\\\/github-terms-of-service)\\\",\\n\\t\\\"documentation_url\\\": \\\"https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api#rate-limiting\\\",\\n\\t\\\"status\\\": \\\"403\\\"\\n}\", \"stderr\": \"gh: API rate limit exceeded for user ID 102159240. If you reach out to GitHub Support for help, please include the request ID EAAD:1AA390:1031C:35568:6AF0672B and timestamp 2026-11-08 12:12:27 UTC. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/github-terms/github-terms-of-service) (HTTP 403)\"}\n{\"source_manifest_unchanged\": true, \"source_manifest_digest\": \"f9ed764f50edfc4a6a6e1408eeba964f7a0c75e11a5d2a5621f9f9bf185b30ee\", \"source_manifest_entries\": 20}\n{\"path\": \"qualification/ctrl1-decision-cell-20261108/audit_primary.py\", \"sha256\": \"f052f179fc498d391670c903931cd28224a9c23e2b30db21ce707194906cd7eb\"}\n{\"path\": \"qualification/ctrl1-decision-cell-20261108/audit_cpu.py\", \"sha256\": \"184c4c368328dc7e7e916f26ccc35bd8cd825f5f4a40e5c31d82eaab6281007b\"}\n",
+  "raw_stderr": "",
+  "stdout_bytes": 3136,
+  "stderr_bytes": 0,
+  "process_status": {
+    "at_unix_ms": 1794139947081,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1bb12bfb3-13c47-69",
+    "launch_nonce": "bfd8c4967b967055ad5d91fc9d8603d8",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 3136,
+        "stored": 3136
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "observations": {
+    "local_head": "368ef32be4388d47f3faddf0ac78806e33d680cd",
+    "local_tree": "69a0af67501f43d637e840ddbc6f223f1547f6c9",
+    "working_tree_clean": true,
+    "source_manifest_unchanged": true,
+    "source_manifest_digest": "f9ed764f50edfc4a6a6e1408eeba964f7a0c75e11a5d2a5621f9f9bf185b30ee",
+    "remote_ref_checks": "Both failed with HTTP 403 API rate limit exceeded; neither result establishes a remote branch state.",
+    "repository_mutations": false,
+    "pushed": false
+  }
+}
