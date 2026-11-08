@@ -6,6 +6,7 @@ use crate::TERMINAL_LEARNING_JOB_RECORD_BYTES_V1;
 use codex_hepta_contracts::HostAuthorityFrontierStore;
 use codex_hepta_contracts::RootAuthorityDirectory;
 use codex_hepta_learning_ledger::LedgerWitnessStore;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 #[ignore = "requires root and root-owned /root; explicitly qualifies the original protected backend"]

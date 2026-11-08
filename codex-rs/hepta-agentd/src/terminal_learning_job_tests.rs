@@ -17,6 +17,7 @@ use crate::TerminalLearningJobOwnerV1;
 use crate::TerminalLearningJobRecordV1;
 use codex_hepta_contracts::AuthorityFrontierStore;
 use codex_hepta_contracts::AuthorityTrustError;
+use pretty_assertions::assert_eq;
 
 const OWNER: &str = "terminal-test-owner";
 
