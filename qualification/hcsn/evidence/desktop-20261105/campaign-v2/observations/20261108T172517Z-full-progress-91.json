@@ -1,0 +1,310 @@
+{
+  "schema": "hcsn-cuda-campaign-v2-observation-v7",
+  "observed_utc": "2026-11-08T17:25:17.936Z",
+  "evidence_branch": "research/hcsn-desktop-evidence-20261105",
+  "expected_branch_head_before_publication": "f5d70c1153ba57ac2eb31a5a76b21058ef184202",
+  "research_source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "frozen_pins": {
+    "candidate_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "campaign_archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a"
+  },
+  "pin_verification": {
+    "research_source_commit_resolved": true,
+    "campaign_claim_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "campaign_claim_matches_frozen_manifest": true,
+    "campaign_script_sha256": "07241e2eac7ab06b41625dcb71b8216408af3d9f5bcb5710a3df51525f881a97",
+    "campaign_script_matches_bundle_manifest": true,
+    "bundle_manifest_candidate_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "bundle_manifest_baseline_source_map_sha256": "13860b933a93966e880e64840efa0ac26b70ab62cbe7e38bf71587575d9831a3",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "interpretation": "Stage receipt expected_source_map_sha256=13860... matches the manifest's baseline source map; candidate source map remains the distinct 415f... pin. No candidate source-map mismatch observed.",
+    "campaign_archive_local_reverified": false
+  },
+  "campaign": {
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "process_state": "running",
+    "systemd_active_state": "active",
+    "systemd_sub_state": "running",
+    "systemd_result": "success",
+    "active_stage": "full",
+    "active_stage_started_utc": "2026-11-06T08:08:57.361720+00:00",
+    "progress_path_relative": "campaigns/full-v2/progress.json",
+    "progress_sha256": "436fdd99e56d4fe6d1a73ddeadfefacff061f95a5f250d8a606e9d4f109424e1",
+    "progress_updated_utc": "2026-11-08T17:25:03.762419+00:00",
+    "progress_reported_completed_cuda_runs": 91,
+    "requested_cuda_runs": 170,
+    "registered_run_indexes_observed": {
+      "completed": 91,
+      "failed": 0,
+      "unavailable": 0
+    },
+    "count_scope": "Controller progress count derived from full.runs JSON index statuses. It is not yet an independent audit of every checkpoint, weight hash, immutable attempt receipt and training budget.",
+    "global_qualification": "open",
+    "no_automatic_training_retries": true,
+    "budget_change_permitted": false
+  },
+  "frozen_training_matrix": {
+    "models": 17,
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "identities": 170,
+    "batch_size": 64,
+    "sequence_length": 64,
+    "hidden_size": 64,
+    "train_steps": 400,
+    "train_count": 4096,
+    "validation_count": 512,
+    "test_count": 1024,
+    "data_seed": 271828,
+    "learning_rate": 0.001,
+    "dtype": "float32",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a"
+  },
+  "strict_tests": {
+    "baseline": {
+      "status": "passed",
+      "discovered": 95,
+      "run": 95,
+      "passed": 95,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "02a5d1263744cbae6e2f60b64452b13dc5c1b9bd0353968b62b2d423a68144b8"
+    },
+    "candidate": {
+      "status": "passed",
+      "discovered": 109,
+      "run": 109,
+      "passed": 109,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "cf42cc90b6dbaf9755c554a118ad1eca38b8fca476515fa44075e43ee66093b0"
+    }
+  },
+  "policy_selection": {
+    "selected_policy": 1,
+    "execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "population_checkpoint_steps": 1,
+    "cuda_memory_fraction": 0.5,
+    "uniform_for_all_20_b_identities": true,
+    "selection_basis": "Original full-shape B CUDA graph OOM; both fixed 16-case CPU and CUDA one-update parity receipts passed; both candidate B full-shape one-step probes completed. No held-out-quality selection."
+  },
+  "stage_receipts": {
+    "original_a_fullshape": {
+      "status": "completed",
+      "sha256": "3bf0eb469933b80dfc2535882f135091509a600ed383373fad68a4e0eb9a6e98",
+      "optimizer_steps_completed": 1,
+      "counts_toward_170_runs": false,
+      "peak_allocated_bytes": 778152960,
+      "peak_reserved_bytes": 799014912,
+      "physical_gpu_energy_joules": null
+    },
+    "original_b_fullshape": {
+      "status": "failed",
+      "sha256": "30b72b62cbd462109bdd7179fd22ad855f8e537f78799235d7fc1b6e103a11a1",
+      "failure_stage": "forward",
+      "oom": true,
+      "attempted_allocation_bytes": 16777216,
+      "reported_free_at_failure_bytes": 2300903424,
+      "optimizer_steps_completed": 0,
+      "counts_toward_170_runs": false,
+      "peak_allocated_bytes": 4068922368,
+      "peak_reserved_bytes": 4091543552,
+      "failure_preserved": true,
+      "physical_gpu_energy_joules": null
+    },
+    "parity_cpu": {
+      "status": "passed",
+      "sha256": "191e8d9eafadf7e25500c6ad291cbf1ec8358c62faccb611e478f5d309b779b6",
+      "records": 16,
+      "shape": [
+        2,
+        9,
+        2
+      ],
+      "hidden_size": 3,
+      "bins": 32,
+      "scope": "One-update parity fixture; not full-budget qualification."
+    },
+    "parity_cuda": {
+      "status": "passed",
+      "sha256": "12941e9cbb2524686e54241993dca35b3ffab64acdcd88282fac4e305751b0b2",
+      "records": 16,
+      "shape": [
+        2,
+        9,
+        2
+      ],
+      "hidden_size": 3,
+      "bins": 32,
+      "scope": "One-update parity fixture; not full-budget qualification."
+    },
+    "candidate_b_fullshape_probes": [
+      {
+        "model": "population_flux",
+        "status": "completed",
+        "sha256": "807585f80f04ab933bc599c0c1b87014faaa5dbc29c4fa6cf2317e71eaa21ad0",
+        "optimizer_steps_completed": 1,
+        "counts_toward_170_runs": false,
+        "peak_allocated_bytes": 833757184,
+        "peak_reserved_bytes": 857735168,
+        "physical_gpu_energy_joules": null
+      },
+      {
+        "model": "population_flux_no_recovery",
+        "status": "completed",
+        "sha256": "8a023efca7a6329ec08e25277f4a5e5c46e33edd32559c6b14792a62a4d3effd",
+        "optimizer_steps_completed": 1,
+        "counts_toward_170_runs": false,
+        "peak_allocated_bytes": 833757184,
+        "peak_reserved_bytes": 857735168,
+        "physical_gpu_energy_joules": null
+      }
+    ],
+    "original_mamba2_fullshape": {
+      "status": "completed",
+      "sha256": "80e4c5619488bae114595ddacba6867ff4b66f9938e1f8f095dc841f6f712a00",
+      "optimizer_steps_completed": 1,
+      "counts_toward_170_runs": false,
+      "peak_allocated_bytes": 150528512,
+      "peak_reserved_bytes": 165675008,
+      "physical_gpu_energy_joules": null
+    },
+    "legacy_smoke_separable": {
+      "status": "completed",
+      "sha256": "baf59095ebba3adb2d45526be7d43cf9a54d6af8c3dbbd45463374590b13a649",
+      "device": "cpu",
+      "training_steps_performed": 0,
+      "candidate_selection_performed": false,
+      "research_qualification_pass": null,
+      "retained_adverse_result": "Filtered hidden-trace RMS .1660–.1977; not final readout prediction RMS and not evidence of resolution independence or task superiority."
+    },
+    "full": {
+      "status": "running",
+      "started_utc": "2026-11-06T08:08:57.361720+00:00",
+      "started_receipt_sha256": "e18169e0cc1514f8c214c21fa04a289a028b0d88cb2d8fb27fa0a466d95635ad"
+    }
+  },
+  "runtime": {
+    "profile_path_relative": "campaigns/full-v2/full.runtime.json",
+    "profile_sha256": "21a9ca457133123d674a41721c3ecb904477efc42953ab51bf03ae66eacbb3e8",
+    "execution_config_path_relative": "campaigns/full-v2/execution-config.json",
+    "execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "gpu_model": "NVIDIA GeForce RTX 4060",
+    "driver_version": "580.178.04",
+    "cuda_runtime": "12.8",
+    "torch": "2.8.0+cu128",
+    "mamba_ssm": "2.3.1",
+    "dtype": "float32",
+    "allocator_fraction": 0.5,
+    "deterministic_algorithms": true,
+    "deterministic_warn_only": true,
+    "float32_matmul_precision": "highest",
+    "cuda_matmul_allow_tf32": false,
+    "cudnn_allow_tf32": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "cublas_workspace_config": ":4096:8",
+    "measurement_scope": "Shared physical GPU; allocator fraction is per-process and not a device reservation."
+  },
+  "dependency_receipts": {
+    "original_torch_job": {
+      "job_id": "1a1aca78192-fc05-562f",
+      "state": "failed",
+      "exit_code": 1,
+      "error": "wheel METADATA identity is ambiguous"
+    },
+    "mamba_wheels_job": {
+      "job_id": "1a1aca7f6ba-fc05-5631",
+      "state": "succeeded",
+      "exit_code": 0,
+      "interpretation": "Wheel/file verification only; not proof of installation."
+    },
+    "original_mamba_waiter_job": {
+      "job_id": "1a1acadd69c-fc05-5654",
+      "state": "failed",
+      "exit_code": 1,
+      "error": "Torch owned job did not succeed; no automatic retry or installation"
+    },
+    "torch_recovery_job": {
+      "job_id": "1a1afd5eec2-fc05-6c0f",
+      "state": "succeeded",
+      "exit_code": 0,
+      "automatic_retry": false
+    },
+    "mamba_recovery_job": {
+      "job_id": "1a1afd9a386-fc05-6c2c",
+      "state": "succeeded",
+      "exit_code": 0,
+      "automatic_retry": false
+    },
+    "torch_ready_receipt_sha256": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+    "mamba_ready_receipt_sha256": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76",
+    "torch_ready_state": "ready",
+    "mamba_ready_state": "imports_ready"
+  },
+  "physical_gpu_energy": {
+    "joules": null,
+    "status": "NVML NVMLError_NotSupported; CPU RAPL counters returned PermissionError.",
+    "imputation": false
+  },
+  "ci": {
+    "run_id": 42078258351,
+    "job_id": 127424159520,
+    "head_sha": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "run_conclusion": "success",
+    "job_conclusion": "success",
+    "steps_passed": 10,
+    "steps_total": 10,
+    "artifact_id": 13461093202,
+    "artifact_digest_sha256": "346701d50b0f09927b59a62116ab85937168243dd68e991f3f04b25726b9b431",
+    "scope": "Hosted CI CPU strict tests and CPU smoke; not the desktop 170-run CUDA campaign."
+  },
+  "trusted_main_gpu_probe": {
+    "run_id": 39526325715,
+    "job_id": 127299267982,
+    "status": "completed",
+    "conclusion": "cancelled"
+  },
+  "pr_4873": {
+    "lookup": "404 Not Found through current repository connection",
+    "modified": false
+  },
+  "qualification": {
+    "full_170_run": "open",
+    "progress_count": "91/170; 79 remaining by progress count only",
+    "checkpoint_weight_attempt_budget_audit": "open",
+    "full_b_audit": "open; all 20 B identities remain in denominator",
+    "mamba2_full_matrix": "open; only one-step CUDA probe verified",
+    "complete_shape_cpu_cuda_parity": "open; only fixed 16-case one-update fixtures passed",
+    "physical_gpu_energy": "open; joules null"
+  },
+  "not_yet_present_at_observation": {
+    "campaigns/full-v2/full.json": true,
+    "campaigns/full-v2/terminal.json": true,
+    "campaigns/full-v2/full.runtime-manifest.json": true,
+    "campaigns/full-v2/full-b-audit.json": true
+  },
+  "safety": {
+    "this_followup_started_or_retried_training": false,
+    "model_budget_changed": false,
+    "research_source_branch_modified": false,
+    "campaign_outputs_modified": false,
+    "unrelated_processes_stopped": false,
+    "files_deleted": false,
+    "driver_or_system_services_changed": false,
+    "credentials_or_signed_urls_published": false
+  }
+}
