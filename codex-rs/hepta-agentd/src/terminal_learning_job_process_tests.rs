@@ -7,6 +7,7 @@ use codex_hepta_contracts::HostAuthorityFrontierStore;
 use codex_hepta_contracts::RootAuthorityDirectory;
 use codex_hepta_learning_ledger::LedgerWitnessStore;
 use pretty_assertions::assert_eq;
+use std::os::unix::fs::PermissionsExt;
 
 #[tokio::test]
 #[ignore = "requires root and root-owned /root; explicitly qualifies the original protected backend"]
@@ -16,6 +17,13 @@ async fn durable_native_job_with_original_host_cas() {
         .prefix("terminal-job-")
         .tempdir_in("/root")
         .unwrap();
+    // TempDir follows the process umask; only this newly created fixture
+    // directory is tightened to the original Root owner contract.
+    std::fs::set_permissions(
+        directory.path(),
+        std::fs::Permissions::from_mode(/*mode*/ 0o700),
+    )
+    .unwrap();
     let root = RootAuthorityDirectory::open(directory.path()).unwrap();
     let vacant = TerminalLearningJobRecordV1::vacant(
         &fixtures.request,
