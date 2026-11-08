@@ -1,0 +1,58 @@
+{
+  "schema": "hcsn-historical-evidence-lint-followup-v1",
+  "base": "dd03c0cbe08cc4dd01726ac8df5b165bc019b163",
+  "original_ci_job": 128813068017,
+  "original_ci_run": 42507457236,
+  "original_ci_exit": "failure",
+  "original_log_sha256": "fc3d5673eced6324f5893fb627815cbe7322adca53958be972d88ad98da77edd",
+  "retained_log_gzip_sha256": "ba78833564e0bd8d78e197660a70d7470ccd203aabd4075ac669ce72fc059104",
+  "retained_log_gzip_bytes": 7258,
+  "repair": "Exclude the exact immutable diagnostic JSON and exact binary archive fragment from spelling; recognize the valid possessive of the HTTP method in the word dictionary. Preserve all original evidence and implementation bytes.",
+  "excluded_paths": [
+    "./qualification/hcsn_differentiable/ci_baseline.json",
+    "./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006"
+  ],
+  "preserved_sha256": {
+    "qualification/hcsn_differentiable/ci_baseline.json": "9788b360050963ea0aee86fb825335fa45cdb4f32e0db60adfdf25812c9c4db2",
+    "qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006": "52b9528eca2cc975e042768ce12dea0ac518f78528c74f38396cda0c23a5f082",
+    "qualification/hcsn_regenerative/studies/s81-cpu-v1-20261107/FORMAL_HALT_20261108.md": "cc43a28375a41dd9becf396cb7d64eb51e814478a16f7e78377e2d66104966db",
+    "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+    "proposals/localization-v2/models.py": "59ddde881490a1c99572e645f9b6ef31b27b8164175934877de2a87430e8d877",
+    "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+    "proposals/localization-v2/capacity.py": "f20dffe0929972ea2f7ca19430be3e86f36c8b258fedcd84ecd89e36c395ec3d",
+    "proposals/localization-v2/episodes.py": "adbb0d370c946c8efa883b19b69507d954da878625455a66678552e0d2e2c95b",
+    "proposals/localization-v2/train_development.py": "4d081f50a9f11c452990c76adab29610c71d20af8c613fa09ef531c32c8b96e0",
+    "proposals/localization-v2/test_capacity.py": "6e09cb95672c961f2804a91624d923d6db6179b2e585aa50ebdf22722806fe6c",
+    "proposals/localization-v2/test_episodes.py": "dc1dc47e854c86c833b6fa497ec29d9642808b307b2a8b3a3736acdaaeeec4c2",
+    "proposals/localization-v2/audit_training.py": "2a745a7821d65e3b33c0d81a7b383fe2d1924fa8eedc0759fc71c477a835200d",
+    "scripts/check_blob_size.py": "eb7a9eab936b7c7948ed13fbd6d6aca09aa38997c20685a8ee12d72e388d52c3",
+    "scripts/tests/test_blob_size_policy.py": "f5017bd436f694f25b3d605fd247d34b47d3b4aa73a2c3c3c9539c39e8348231"
+  },
+  "command": [
+    "uv",
+    "tool",
+    "run",
+    "--from",
+    "codespell==2.4.3",
+    "codespell",
+    "--ignore-words",
+    ".codespellignore",
+    "--skip",
+    "./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006"
+  ],
+  "codespell_version": "2.4.3",
+  "codespell_exit": 0,
+  "scope": "clean tracked-file export, including the two lint configuration edits",
+  "tracked_files": 10192,
+  "first_local_attempt": {
+    "exit_code": 65,
+    "cause": "The formatter-created, ignored scripts virtual environment was accidentally included in the local whole-directory spelling scope; CI uses a clean checkout.",
+    "stdout_sha256": "c49a7f2ff31638ddf35201ddc0da715a12db010a0330a13b1bc8bc83de1ab923",
+    "stderr_sha256": "759fd7af152f586b73f3d37a9119feed05e5d57e829207f60045eaeb024935a8"
+  },
+  "formatter_exit": 0,
+  "new_training_runs": 0,
+  "tests_rerun": false,
+  "scientific_admission": "HOLD",
+  "recorded_utc": "2026-11-08T18:12:49.747098+00:00"
+}

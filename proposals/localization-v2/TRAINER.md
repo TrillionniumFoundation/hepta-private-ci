@@ -128,3 +128,13 @@ was frozen. They do not relabel the historical run as execution of a later full
 commit. Formal work still needs full-context HCSN numerical admission, qualified
 trainable physics, real ablations, complete resource accounting, sufficient
 training/tuning and independent confirmation. `formal_fits_started` remains 0.
+
+## Publication identity
+
+The [qualification manifest](../../qualification/hcsn-localization-trainer-20261108/MANIFEST.json)
+binds the retained native archive to the four functional source commits and the
+separately tested blob-policy backport. Publication applies repository-pinned
+Ruff layout changes; FORMATTING.json records the original and formatted hashes
+and exact Python AST equality, including the test sources. The native training
+archive and separately executed auditor remain their own execution identities.
+No training or completed tests were rerun after final formatting.
