@@ -15,7 +15,7 @@ use crate::circuit_cell_route_policy_digest_v1;
 use crate::circuit_cell_scope_digest_v1;
 
 #[path = "circuit_cell_test_support.rs"]
-mod support;
+pub(crate) mod support;
 use support::Encoder;
 use support::Model;
 use support::checked;
@@ -25,6 +25,8 @@ use support::id;
 use support::input;
 use support::scope;
 
+#[path = "circuit_cell_clock_tests.rs"]
+mod clock_tests;
 #[path = "circuit_credit_tests.rs"]
 mod credit_tests;
 
@@ -38,7 +40,7 @@ fn fence() -> TaskFlowFence {
     ))
 }
 
-fn configuration() -> (BoundedCircuitDefinitionV2, Vec<CircuitCellBindingV1>) {
+pub(crate) fn configuration() -> (BoundedCircuitDefinitionV2, Vec<CircuitCellBindingV1>) {
     let cell = cell_definition();
     let bindings = vec![CircuitCellBindingV1 {
         program_id: "root".to_string(),
