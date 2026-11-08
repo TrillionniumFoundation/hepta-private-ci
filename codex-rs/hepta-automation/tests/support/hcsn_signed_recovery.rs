@@ -211,7 +211,7 @@ pub(super) async fn recover(
             .read_authorized_taskflow_effect_receipt(&record.intent, "signed-worker-dispatch")
             .await
             .expect("owner terminal receipt readback"),
-        Some(receipt.clone()),
+        Some(receipt.as_ref().clone()),
     );
     settled.close().await;
     write_new(

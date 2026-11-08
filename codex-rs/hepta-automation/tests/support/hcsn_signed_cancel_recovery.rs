@@ -292,7 +292,7 @@ pub(super) async fn recover(
                 .read_authorized_taskflow_effect_receipt(&record.intent, &dispatch_command(record))
                 .await
                 .expect("exact terminal readback"),
-            Some(receipt.clone())
+            Some(receipt.as_ref().clone())
         );
     }
     settled.close().await;
