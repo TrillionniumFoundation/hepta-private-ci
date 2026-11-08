@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 from environment import OUTPUTS, WIDTH, panels, schedule
+from audit_truth import audit_truth
 
 ARMS = {
     "rag",
@@ -289,9 +290,13 @@ def audit_run(folder, manifest, result, events, frozen_input):
     pool_lower_bound = max(pool_sizes)
     if capacity["pool_payload_bytes"] < pool_lower_bound:
         raise ValueError("reported pool peak is below a retained snapshot")
+    truth_queries = audit_truth(
+        events, frozen_input, owner_change=manifest["owner_change"]
+    )
     return {
         "arm": arm,
         "seed": seed,
+        "truth_queries": truth_queries,
         "recomputed": recomputed,
         "pool_payload_observed_lower_bound": pool_lower_bound,
         "reported_only": {
