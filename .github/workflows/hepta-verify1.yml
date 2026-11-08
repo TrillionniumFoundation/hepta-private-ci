@@ -31,8 +31,6 @@ jobs:
         os: [ubuntu-24.04, macos-15, windows-2025]
     env:
       PYTHONDONTWRITEBYTECODE: "1"
-      VERIFY1_RECORDS: ${{ runner.temp }}/verify1-records
-      VERIFY1_OUTPUT: ${{ runner.temp }}/verify1-experiment
     defaults:
       run:
         shell: bash
@@ -45,6 +43,12 @@ jobs:
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.12"
+      - name: Prepare bounded experiment dependencies and output paths
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'numpy==2.4.2'
+          printf 'VERIFY1_RECORDS=%s/verify1-records\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'VERIFY1_OUTPUT=%s/verify1-experiment\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
       - name: Bind source and execute counterexamples
         run: |
           set -euo pipefail
