@@ -306,10 +306,22 @@ pub struct RoomScreen {
 }
 impl Widget for RoomScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        let mut composition_commit = None;
         if let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() {
             let input = self.view.text_input(cx, ids!(message_input));
             self.composer_transaction
                 .checkpoint(&input, workspace, self.active_key);
+            // A full-state commit can end preedit without changing its text,
+            // so the pinned SDK emits no Changed action for that transition.
+            if input.is_composing()
+                && input.area().is_valid(cx)
+                && cx.key_focus() == input.area()
+                && matches!(event, Event::TextInput(event)
+                    if event.full_state_sync.as_ref().is_some_and(|state|
+                        state.composition.is_none() && state.text == input.text()))
+            {
+                composition_commit = self.active_key.map(|key| (key, input.widget_uid()));
+            }
         }
         self.view.handle_event(cx, event, scope);
         let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() else {
@@ -319,6 +331,17 @@ impl Widget for RoomScreen {
             return;
         };
         let input = self.view.text_input(cx, ids!(message_input));
+        if composition_commit == Some((source, input.widget_uid()))
+            && input.area().is_valid(cx)
+            && cx.key_focus() == input.area()
+            && !input.is_composing()
+        {
+            // Publish the SDK's accepted final text through the existing owner
+            // transaction, including RoomKey validation and rejection rollback.
+            self.composer_transaction
+                .edit(cx, &input, workspace, source, input.text());
+            self.view.redraw(cx);
+        }
         let follow_latest = workspace
             .timeline()
             .is_none_or(|timeline| timeline.scroll.at_end);
@@ -929,3 +952,7 @@ impl Widget for RoomScreen {
         DrawStep::done()
     }
 }
+
+#[cfg(test)]
+#[path = "room_ime_commit_tests.rs"]
+mod ime_commit_tests;
