@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.semantic-runtime-evidence.v1",
+  "source": "heptaruntime configured host main; authoritative process_status and process_read",
+  "model_download_terminal_status": {
+    "at_unix_ms": 1794159542461,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1bc3b666a-138b0-105",
+    "launch_nonce": "d8f757c5a404de1569a3d2a0036a5d48",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 4623,
+        "stored": 4623
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "model_smoke_terminal_status": {
+    "at_unix_ms": 1794159961040,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1bc443ba0-138b0-141",
+    "launch_nonce": "102f81693f837648d6ffdcf872dafb40",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 657,
+        "stored": 657
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "model_smoke_stdout": "{\"checks\": {\"active_head_digests_unchanged\": true, \"all_four_private_candidates_updated\": true, \"frozen_parameter_values_unchanged\": true, \"independent_retrieval_views_preserved\": true, \"independent_state_preserved\": true, \"one_model_load\": true, \"source_files_unchanged\": true}, \"error\": null, \"metal_memory\": {\"measurement_scope\": \"MLX Metal allocator; excludes other processes and non-MLX allocations\", \"mlx_active_bytes\": 78111368, \"mlx_cached_bytes\": 16729440, \"mlx_peak_active_bytes\": 119981920}, \"model_load_count\": 1, \"output\": \"/Users/qianqi/work/cell-stem-routes-20261108-5e692/semantic-serving/run-v1\", \"stage\": \"completed\", \"status\": \"success\"}\n",
+  "model_smoke_stderr": "",
+  "initial_metadata_attempt_stdout": "{\"error\": \"HTTPError: HTTP Error 401: Unauthorized\", \"schema\": \"hepta.semantic-model-metadata.v1\", \"source\": \"https://huggingface.co/api/models/mlx-community/SmolLM2-135M-Instruct-4bit?blobs=true\", \"started_unix\": 1794159284.309459, \"status\": \"failure\"}\n{\"packages\": {\"huggingface-hub\": \"1.11.0\", \"mlx\": \"0.31.1\", \"mlx-lm\": \"0.31.2\", \"numpy\": \"2.4.2\", \"safetensors\": \"0.7.0\", \"tokenizers\": \"0.22.2\", \"transformers\": \"5.5.4\"}, \"platform\": \"macOS-26.6.2-arm64-arm-64bit-Mach-O\", \"python\": \"3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]\"}\n"
+}
