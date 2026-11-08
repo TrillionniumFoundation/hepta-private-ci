@@ -10,6 +10,7 @@ use sqlx::Sqlite;
 use sqlx::Transaction;
 
 use crate::BoundedCircuitDefinitionV2;
+use crate::CircuitActivationStatusV2;
 use crate::CircuitCommandReceiptV2;
 use crate::CircuitCommandStatusV2;
 use crate::CircuitEventV2;
@@ -356,6 +357,34 @@ pub(crate) async fn persist_transition(
         return Err(invalid("circuit recovery history bound reached"));
     }
     let (run, dispatches) = event.replay(Some(&history.run), &history.definition, owner)?;
+    if matches!(
+        event,
+        CircuitLedgerEventV2::Claimed { .. }
+            | CircuitLedgerEventV2::Applied {
+                event: CircuitEventV2::Advance { .. } | CircuitEventV2::Cancel,
+                ..
+            }
+    ) {
+        // Legacy histories may already contain stopped polls. Reserve from the
+        // actual successor, not only the lease counter: an expired claim turns
+        // in-flight work indeterminate and therefore needs fewer future slots.
+        let settlement_slots: u64 = run.activations.values().map(|activation| {
+            match activation.status {
+                CircuitActivationStatusV2::InFlight => {
+                    if activation.execution_request_digest.is_none() { 3 } else { 2 }
+                }
+                CircuitActivationStatusV2::Indeterminate => 1,
+                CircuitActivationStatusV2::Ready
+                | CircuitActivationStatusV2::Joining
+                | CircuitActivationStatusV2::ChildRunning
+                | CircuitActivationStatusV2::Completed
+                | CircuitActivationStatusV2::Cancelled => 0,
+            }
+        }).sum();
+        if maximum - run.revision < settlement_slots {
+            return Err(invalid("circuit maintenance would consume reconciliation slots"));
+        }
+    }
     let state_json = encode(&run)?;
     if state_json.len() > 8_388_608 {
         return Err(invalid("circuit state exceeds byte bound"));

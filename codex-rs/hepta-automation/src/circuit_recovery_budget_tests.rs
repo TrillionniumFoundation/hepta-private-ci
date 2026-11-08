@@ -9,6 +9,9 @@ use crate::circuit_runtime_tests::fence;
 use crate::circuit_runtime_tests::start;
 use crate::*;
 
+#[path = "circuit_legacy_recovery_tests.rs"]
+mod legacy;
+
 fn command(
     run: &CircuitRunV2,
     id: &str,
