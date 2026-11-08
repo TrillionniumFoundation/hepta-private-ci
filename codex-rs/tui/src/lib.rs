@@ -3262,7 +3262,10 @@ mod tests {
             .and_then(|err| err.downcast_ref::<LocalStateDbStartupError>())
             .expect("state db startup failure should retain its typed context");
 
-        assert_eq!(startup_error.database_path(), logs_db_path.as_path());
+        assert_eq!(
+            startup_error.database_path(),
+            logs_db_path.canonicalize()?.as_path()
+        );
         assert!(
             codex_state::sqlite_error_detail_is_corruption(startup_error.detail()),
             "startup error should preserve the SQLite corruption cause, got: {}",

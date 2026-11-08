@@ -206,6 +206,8 @@ struct PairFleet {
 
 impl PairFleet {
     fn new(count: usize) -> Result<Self> {
+        let setup_started = Instant::now();
+        eprintln!("paired-stage fixture_begin count={count}");
         // The child fixtures bind the same compact control sockets as the
         // product.  Keep the synthetic fleet under a short root so Darwin's
         // SUN_LEN limit is exercised against production geometry, not the
@@ -226,15 +228,23 @@ impl PairFleet {
                 ResourceBudget::local_default(),
             )?)?;
             agents.push(agent_id);
+            eprintln!(
+                "paired-stage agent_registered index={index} elapsed={:?}",
+                setup_started.elapsed()
+            );
         }
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
-        let fixture_binary = std::env::current_exe()?;
+        let fixture_binary = std::env::current_exe()?.canonicalize()?;
         let child_args = vec![
             "--exact".to_string(),
             "paired_child_process".to_string(),
             "--ignored".to_string(),
             "--nocapture".to_string(),
         ];
+        eprintln!(
+            "paired-stage release_install_begin elapsed={:?}",
+            setup_started.elapsed()
+        );
         registry.install_release_bundle(
             release_id.clone(),
             &fixture_binary,
@@ -242,9 +252,17 @@ impl PairFleet {
             Some(&fixture_binary),
             child_args,
         )?;
+        eprintln!(
+            "paired-stage release_installed elapsed={:?}",
+            setup_started.elapsed()
+        );
         for agent_id in &agents {
             registry.allow_release(agent_id, &release_id)?;
             write_binding(&registry, agent_id)?;
+            eprintln!(
+                "paired-stage release_allowed elapsed={:?}",
+                setup_started.elapsed()
+            );
         }
         let (supervisor, report) = Supervisor::recover(
             registry.clone(),
@@ -253,6 +271,10 @@ impl PairFleet {
             Instant::now(),
         )?;
         assert!(report.faults.is_empty());
+        eprintln!(
+            "paired-stage fixture_recovered elapsed={:?}",
+            setup_started.elapsed()
+        );
         Ok(Self {
             _temp: temp,
             registry,
