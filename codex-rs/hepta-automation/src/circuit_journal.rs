@@ -269,8 +269,8 @@ pub(crate) async fn load(
                 return Err(corrupt("circuit event or state digest mismatch"));
             }
             if let CircuitLedgerEventV2::Applied {
-                event: CircuitEventV2::Complete { completion }
-                    | CircuitEventV2::Reconcile { completion },
+                event:
+                    CircuitEventV2::Complete { completion } | CircuitEventV2::Reconcile { completion },
                 ..
             } = &payload
             {
@@ -349,7 +349,9 @@ pub(crate) async fn persist_transition(
             }
         )
     {
-        return Err(invalid("stopped circuit requires readback or reconciliation"));
+        return Err(invalid(
+            "stopped circuit requires readback or reconciliation",
+        ));
     }
     // Beyond the normal horizon, each activation needs at most a first claim,
     // an unknown marker, and a terminal receipt. Of the 64 maintenance slots,
@@ -380,10 +382,16 @@ pub(crate) async fn persist_transition(
         // Legacy histories may already contain stopped polls. Reserve from the
         // actual successor, not only the lease counter: an expired claim turns
         // in-flight work indeterminate and therefore needs fewer future slots.
-        let settlement_slots: u64 = run.activations.values().map(|activation| {
-            match activation.status {
+        let settlement_slots: u64 = run
+            .activations
+            .values()
+            .map(|activation| match activation.status {
                 CircuitActivationStatusV2::InFlight => {
-                    if activation.execution_request_digest.is_none() { 3 } else { 2 }
+                    if activation.execution_request_digest.is_none() {
+                        3
+                    } else {
+                        2
+                    }
                 }
                 CircuitActivationStatusV2::Indeterminate => 1,
                 CircuitActivationStatusV2::Ready
@@ -391,10 +399,12 @@ pub(crate) async fn persist_transition(
                 | CircuitActivationStatusV2::ChildRunning
                 | CircuitActivationStatusV2::Completed
                 | CircuitActivationStatusV2::Cancelled => 0,
-            }
-        }).sum();
+            })
+            .sum();
         if maximum - run.revision < settlement_slots {
-            return Err(invalid("circuit maintenance would consume reconciliation slots"));
+            return Err(invalid(
+                "circuit maintenance would consume reconciliation slots",
+            ));
         }
     }
     let state_json = encode(&run)?;

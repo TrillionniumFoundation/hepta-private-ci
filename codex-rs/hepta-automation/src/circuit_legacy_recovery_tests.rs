@@ -28,10 +28,15 @@ async fn legacy_stopped_history_reserves_actual_pending_settlement_slots() {
         // and the final projection. The reducer intentionally still accepts
         // these historical events; the new live polling gate must not rewrite
         // them or make an otherwise verifiable database unreadable.
-        let mut tx = store.taskflow_pool().begin_with("BEGIN IMMEDIATE")
-            .await.expect("legacy transaction");
+        let mut tx = store
+            .taskflow_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .expect("legacy transaction");
         let history = circuit_journal::load(&mut tx, store.owner_agent_id(), "run-1")
-            .await.expect("verified initial history").expect("run");
+            .await
+            .expect("verified initial history")
+            .expect("run");
         let mut run = history.run;
         let mut previous = history.last_digest;
         for index in 0..63 {
@@ -52,7 +57,9 @@ async fn legacy_stopped_history_reserves_actual_pending_settlement_slots() {
                 &format!("legacy-poll-{index}"),
                 &event,
                 &previous,
-            ).await.expect("canonical historical event");
+            )
+            .await
+            .expect("canonical historical event");
             run = next;
         }
         let updated = sqlx::query(
@@ -67,14 +74,24 @@ async fn legacy_stopped_history_reserves_actual_pending_settlement_slots() {
         .bind(store.owner_agent_id().as_str())
         .bind(run.run_id())
         .bind(i64::try_from(stopped.run.revision()).expect("previous revision"))
-        .bind(stopped.run.state_digest().expect("previous digest").as_str())
+        .bind(
+            stopped
+                .run
+                .state_digest()
+                .expect("previous digest")
+                .as_str(),
+        )
         .execute(&mut *tx)
-        .await.expect("historical projection");
+        .await
+        .expect("historical projection");
         assert_eq!(updated.rows_affected(), 1);
         tx.commit().await.expect("durable historical fixture");
         let store = reopen(store).await;
         assert_eq!(
-            store.bounded_circuit_run("run-1").await.expect("legacy canonical replay"),
+            store
+                .bounded_circuit_run("run-1")
+                .await
+                .expect("legacy canonical replay"),
             Some(run.clone())
         );
         assert_eq!((run.revision(), run.unresolved()), (66, 1));
@@ -99,7 +116,10 @@ async fn legacy_stopped_history_reserves_actual_pending_settlement_slots() {
                         if message == "circuit maintenance would consume reconciliation slots"
                 ));
                 assert_eq!(
-                    store.bounded_circuit_run("run-1").await.expect("atomic rejection"),
+                    store
+                        .bounded_circuit_run("run-1")
+                        .await
+                        .expect("atomic rejection"),
                     Some(run.clone())
                 );
                 let unknown = store
@@ -112,12 +132,15 @@ async fn legacy_stopped_history_reserves_actual_pending_settlement_slots() {
                         },
                         /*now_ms*/ 16,
                     ))
-                    .await.expect("the original unknown marker retains its slot");
+                    .await
+                    .expect("the original unknown marker retains its slot");
                 (unknown.run, 17)
             }
             RecoveryCase::ExpiredTakeover => {
-                let takeover = store.claim_bounded_circuit_run(&claim)
-                    .await.expect("expired claim itself makes the original work unknown");
+                let takeover = store
+                    .claim_bounded_circuit_run(&claim)
+                    .await
+                    .expect("expired claim itself makes the original work unknown");
                 assert!(takeover.dispatches.is_empty());
                 (takeover.run, 111)
             }
@@ -139,8 +162,10 @@ async fn legacy_stopped_history_reserves_actual_pending_settlement_slots() {
             receipt_time,
         );
         terminal.fence = claim.fence;
-        let finished = store.apply_bounded_circuit_command(&terminal)
-            .await.expect("the original receipt fits exactly at the history bound");
+        let finished = store
+            .apply_bounded_circuit_command(&terminal)
+            .await
+            .expect("the original receipt fits exactly at the history bound");
         assert_eq!(
             (
                 finished.run.revision(),
@@ -152,11 +177,17 @@ async fn legacy_stopped_history_reserves_actual_pending_settlement_slots() {
         );
         let store = reopen(store).await;
         assert_eq!(
-            store.bounded_circuit_run("run-1").await.expect("terminal historical replay"),
+            store
+                .bounded_circuit_run("run-1")
+                .await
+                .expect("terminal historical replay"),
             Some(finished.run.clone())
         );
         assert_eq!(
-            store.apply_bounded_circuit_command(&terminal).await.expect("terminal ACK retry"),
+            store
+                .apply_bounded_circuit_command(&terminal)
+                .await
+                .expect("terminal ACK retry"),
             CircuitCommandReceiptV2 {
                 status: CircuitCommandStatusV2::AlreadyApplied,
                 run: finished.run,

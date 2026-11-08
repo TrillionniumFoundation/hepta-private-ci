@@ -331,9 +331,8 @@ impl CellStateOwnerV1 for UncertainOwner {
         request_digest: Digest32,
         host_queue_age_micros: u64,
     ) -> Result<(), CellExecutionError> {
-        self.inner.record_host_queue_age(
-            scope, operation_id, request_digest, host_queue_age_micros,
-        )
+        self.inner
+            .record_host_queue_age(scope, operation_id, request_digest, host_queue_age_micros)
     }
     fn pending_inference(
         &self,

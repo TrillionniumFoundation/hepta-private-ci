@@ -6,9 +6,9 @@ use codex_hepta_contracts::Sha256Digest;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::BoundedCircuitDefinitionV2;
 use crate::CircuitBudgetV2;
 use crate::CircuitExitV2;
-use crate::BoundedCircuitDefinitionV2;
 use crate::CircuitNodeKindV2;
 use crate::TaskFlowError;
 use crate::TaskFlowFence;
@@ -186,11 +186,14 @@ impl CircuitRunV2 {
         definition: &BoundedCircuitDefinitionV2,
     ) -> Result<Vec<CircuitDispatchV2>, TaskFlowError> {
         if definition.definition_digest()? != self.definition_digest {
-            return Err(crate::circuit_profile::invalid("circuit definition mismatch"));
+            return Err(crate::circuit_profile::invalid(
+                "circuit definition mismatch",
+            ));
         }
         let mut dispatches = Vec::new();
         for activation in self.activations.values() {
-            let program = definition.program(&self.instances[&activation.instance_id].program_id)?;
+            let program =
+                definition.program(&self.instances[&activation.instance_id].program_id)?;
             if activation.status == CircuitActivationStatusV2::Completed
                 && matches!(
                     program.node(&activation.node_id)?.kind,

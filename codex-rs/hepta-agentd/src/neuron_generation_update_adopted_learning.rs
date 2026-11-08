@@ -287,8 +287,16 @@ fn validate_manifest_contract(
     manifest: &CellBackendManifestV2,
 ) -> Result<(), AgentdError> {
     for (field, expected, actual) in [
-        ("state schema", bundle.components.state_schema, manifest.state_schema),
-        ("output schema", bundle.components.output_schema, manifest.output_schema),
+        (
+            "state schema",
+            bundle.components.state_schema,
+            manifest.state_schema,
+        ),
+        (
+            "output schema",
+            bundle.components.output_schema,
+            manifest.output_schema,
+        ),
     ] {
         if actual != expected.into_array() {
             return Err(invalid(format!(

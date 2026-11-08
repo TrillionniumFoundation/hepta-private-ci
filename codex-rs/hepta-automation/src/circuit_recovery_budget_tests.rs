@@ -12,12 +12,7 @@ use crate::*;
 #[path = "circuit_legacy_recovery_tests.rs"]
 mod legacy;
 
-fn command(
-    run: &CircuitRunV2,
-    id: &str,
-    event: CircuitEventV2,
-    now_ms: u64,
-) -> CircuitCommandV2 {
+fn command(run: &CircuitRunV2, id: &str, event: CircuitEventV2, now_ms: u64) -> CircuitCommandV2 {
     CircuitCommandV2 {
         run_id: run.run_id().to_string(),
         command_id: id.to_string(),
@@ -113,9 +108,12 @@ async fn stopped_polling_preserves_original_reconciliation_and_idempotent_retry(
         ),
         (Some(CircuitStopReasonV2::EventLimit), None, 1, 5)
     );
-    for (index, event) in [CircuitEventV2::Advance { quantum: 1 }, CircuitEventV2::Cancel]
-        .into_iter()
-        .enumerate()
+    for (index, event) in [
+        CircuitEventV2::Advance { quantum: 1 },
+        CircuitEventV2::Cancel,
+    ]
+    .into_iter()
+    .enumerate()
     {
         assert!(matches!(
             store
@@ -134,7 +132,10 @@ async fn stopped_polling_preserves_original_reconciliation_and_idempotent_retry(
         Some(stopped.run.clone())
     );
     assert_eq!(
-        store.apply_bounded_circuit_command(&stop).await.expect("lost ACK retry"),
+        store
+            .apply_bounded_circuit_command(&stop)
+            .await
+            .expect("lost ACK retry"),
         CircuitCommandReceiptV2 {
             status: CircuitCommandStatusV2::AlreadyApplied,
             run: stopped.run.clone(),
@@ -165,12 +166,19 @@ async fn stopped_polling_preserves_original_reconciliation_and_idempotent_retry(
         .await
         .expect("late original work remains settleable");
     assert_eq!(
-        (finished.run.outcome(), finished.run.budget().spent(), finished.run.budget().reserved()),
+        (
+            finished.run.outcome(),
+            finished.run.budget().spent(),
+            finished.run.budget().reserved()
+        ),
         (Some(CircuitExitV2::Failed), 7, 0)
     );
     let reopened = reopen(store).await;
     assert_eq!(
-        reopened.bounded_circuit_run("run-1").await.expect("canonical replay"),
+        reopened
+            .bounded_circuit_run("run-1")
+            .await
+            .expect("canonical replay"),
         Some(finished.run)
     );
     reopened.close().await;
@@ -217,7 +225,10 @@ async fn lease_churn_cannot_spend_pending_receipt_slots_across_reopen() {
     }
     let store = reopen(store).await;
     assert_eq!(
-        store.bounded_circuit_run("run-1").await.expect("history after reopen"),
+        store
+            .bounded_circuit_run("run-1")
+            .await
+            .expect("history after reopen"),
         Some(run.clone())
     );
     assert!(matches!(
@@ -234,7 +245,10 @@ async fn lease_churn_cannot_spend_pending_receipt_slots_across_reopen() {
         Err(TaskFlowError::Invalid(_))
     ));
     assert_eq!(
-        store.bounded_circuit_run("run-1").await.expect("failed renewal is atomic"),
+        store
+            .bounded_circuit_run("run-1")
+            .await
+            .expect("failed renewal is atomic"),
         Some(run.clone())
     );
     let mut actual = completion(&dispatch, &["done"], "original-overrun");
@@ -261,11 +275,17 @@ async fn lease_churn_cannot_spend_pending_receipt_slots_across_reopen() {
     );
     let reopened = reopen(store).await;
     assert_eq!(
-        reopened.bounded_circuit_run("run-1").await.expect("terminal replay"),
+        reopened
+            .bounded_circuit_run("run-1")
+            .await
+            .expect("terminal replay"),
         Some(finished.run.clone())
     );
     assert_eq!(
-        reopened.apply_bounded_circuit_command(&terminal).await.expect("terminal ACK retry"),
+        reopened
+            .apply_bounded_circuit_command(&terminal)
+            .await
+            .expect("terminal ACK retry"),
         CircuitCommandReceiptV2 {
             status: CircuitCommandStatusV2::AlreadyApplied,
             run: finished.run,
@@ -281,12 +301,19 @@ fn historical_stopped_scheduling_events_retain_their_canonical_replay_semantics(
     let run = CircuitRunV2::prepare(&definition, &start(), &fence(/*generation*/ 1))
         .expect("initial state");
     let (run, _) = run
-        .reduce(&definition, &CircuitEventV2::Advance { quantum: 1 }, /*now_ms*/ 10)
+        .reduce(
+            &definition,
+            &CircuitEventV2::Advance { quantum: 1 },
+            /*now_ms*/ 10,
+        )
         .expect("original dispatch");
     let (mut run, _) = run
         .reduce(&definition, &CircuitEventV2::Cancel, /*now_ms*/ 11)
         .expect("stopped with an unresolved original computation");
-    for event in [CircuitEventV2::Advance { quantum: 1 }, CircuitEventV2::Cancel] {
+    for event in [
+        CircuitEventV2::Advance { quantum: 1 },
+        CircuitEventV2::Cancel,
+    ] {
         let recorded = CircuitLedgerEventV2::Applied {
             fence: CircuitFenceIdentityV2::from_fence(&fence(/*generation*/ 1)).expect("identity"),
             expected_revision: run.revision(),
@@ -294,12 +321,26 @@ fn historical_stopped_scheduling_events_retain_their_canonical_replay_semantics(
             event,
         };
         let (next, dispatches) = recorded
-            .replay(Some(&run), &definition, &fence(/*generation*/ 1).owner_agent_id)
+            .replay(
+                Some(&run),
+                &definition,
+                &fence(/*generation*/ 1).owner_agent_id,
+            )
             .expect("previously persisted events are not rejected by the new admission gate");
         assert!(dispatches.is_empty());
         assert_eq!(
-            (next.activations(), next.budget(), next.stop_reason(), next.outcome()),
-            (run.activations(), run.budget(), run.stop_reason(), run.outcome())
+            (
+                next.activations(),
+                next.budget(),
+                next.stop_reason(),
+                next.outcome()
+            ),
+            (
+                run.activations(),
+                run.budget(),
+                run.stop_reason(),
+                run.outcome()
+            )
         );
         assert_eq!(next.revision(), run.revision() + 1);
         run = next;

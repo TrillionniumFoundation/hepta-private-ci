@@ -9,7 +9,6 @@ use crate::BoundedCircuitDefinitionV2;
 use crate::CircuitCommandReceiptV2;
 use crate::CircuitCommandStatusV2;
 use crate::CircuitCommandV2;
-use crate::circuit_state::CircuitCommittedTraceV2;
 use crate::CircuitLeaseClaimV2;
 use crate::CircuitRunV2;
 use crate::CircuitStartV2;
@@ -22,6 +21,7 @@ use crate::circuit_journal::encode;
 use crate::circuit_journal::unavailable;
 use crate::circuit_profile::hash;
 use crate::circuit_profile::text;
+use crate::circuit_state::CircuitCommittedTraceV2;
 
 impl AutomationStore {
     /// Register immutable bytes under the new explicit profile. Old versions

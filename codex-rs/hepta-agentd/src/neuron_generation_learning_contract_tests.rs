@@ -100,10 +100,13 @@ async fn published_contract_mismatch_cannot_become_selection_or_recovered_next_u
             let expected = format!("learning {field_name} differs from the published runtime");
             let previous_manifest = f.publication.old_config.manifest.clone();
             let selection_coordinator = f.coordinator.clone();
-            assert!(matches!(
-                f.ready.read_learning_updated_selection(&f.coordinator, &previous_manifest),
-                Err(AgentdError::Invalid(message)) if message == expected
-            ), "{side:?} {field:?}");
+            assert!(
+                matches!(
+                    f.ready.read_learning_updated_selection(&f.coordinator, &previous_manifest),
+                    Err(AgentdError::Invalid(message)) if message == expected
+                ),
+                "{side:?} {field:?}"
+            );
 
             let control = support::Control::default();
             let mut runtime = f.ready.into_runtime(
@@ -126,7 +129,8 @@ async fn published_contract_mismatch_cannot_become_selection_or_recovered_next_u
                 candidate_bundle: f.coordinator.next_task_bundle().unwrap().digest()?,
                 selection_digest: runtime.publication.selection_observation_digest(),
             };
-            f.coordinator.record(learning_test_receipt(&f.coordinator, selection), 20)?;
+            f.coordinator
+                .record(learning_test_receipt(&f.coordinator, selection), 20)?;
             let request = support::request(
                 &f.publication.target_config,
                 runtime.handle.snapshot().await?,
@@ -144,11 +148,14 @@ async fn published_contract_mismatch_cannot_become_selection_or_recovered_next_u
             std::fs::write(&output_path, &chunk.bytes)?;
             std::fs::File::open(&output_path)?.sync_all()?;
             std::fs::File::open(f.host.directory.path())?.sync_all()?;
-            runtime.handle.acknowledge(
-                chunk.clone(),
-                Digest32::of_bytes(&chunk.bytes).into_array(),
-                CellTaskCostV2::new(observed.cost().identity())?,
-            ).await?;
+            runtime
+                .handle
+                .acknowledge(
+                    chunk.clone(),
+                    Digest32::of_bytes(&chunk.bytes).into_array(),
+                    CellTaskCostV2::new(observed.cost().identity())?,
+                )
+                .await?;
             assert!(runtime.handle.drain().await?);
             let retained = (
                 f.publication.bytes("current.json")?,
@@ -161,15 +168,17 @@ async fn published_contract_mismatch_cannot_become_selection_or_recovered_next_u
             tasks.shutdown().await;
             drop(runtime);
             drop(tasks);
-            f.coordinator = LearningIterationCoordinatorV1::from_snapshot(
-                f.coordinator.snapshot().clone(),
-            )?;
+            f.coordinator =
+                LearningIterationCoordinatorV1::from_snapshot(f.coordinator.snapshot().clone())?;
             let ready = recover_agentd_generation_update_v1(
                 f.publication.reopen_current()?,
                 f.publication.authorities()?,
                 f.publication.selection()?,
                 f.publication.target_reopen()?,
-                AgentdGenerationUpdateRecoveryV1 { operation_id, intent_digest },
+                AgentdGenerationUpdateRecoveryV1 {
+                    operation_id,
+                    intent_digest,
+                },
             )?;
             assert!(matches!(
                 ready.read_learning_updated_selection(&selection_coordinator, &previous_manifest),

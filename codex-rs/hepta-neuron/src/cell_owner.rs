@@ -102,7 +102,9 @@ impl CellPartitionOwnerV1 {
             .map_err(|_| CellExecutionError::InvalidInput)?;
         if &pending.operation_id != operation_id
             || expected != request_digest
-            || pending.host_queue_age_micros.is_some_and(|age| age != host_queue_age_micros)
+            || pending
+                .host_queue_age_micros
+                .is_some_and(|age| age != host_queue_age_micros)
         {
             return Err(CellExecutionError::OperationConflict);
         }

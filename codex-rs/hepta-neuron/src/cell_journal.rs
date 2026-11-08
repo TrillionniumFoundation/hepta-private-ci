@@ -304,7 +304,8 @@ impl<W: AnchorWitnessStore> CellStateOwnerV1 for CellOwnerJournalV1<W> {
         validate_admission_model(&self.specs[index].definition, &admission.model_request)?;
         let payload = encode_admission(index, &admission);
         let reservations = self.owner.pending_record_reservations()
-            + 1 + usize::from(admission.host_queue_age_micros.is_none());
+            + 1
+            + usize::from(admission.host_queue_age_micros.is_none());
         self.check_reserved_capacity(payload.len(), reservations)?;
         self.persist(payload)?;
         if let Err(error) = self.owner.admit_inference(admission) {
@@ -331,18 +332,22 @@ impl<W: AnchorWitnessStore> CellStateOwnerV1 for CellOwnerJournalV1<W> {
     ) -> Result<(), CellExecutionError> {
         self.require_healthy()?;
         let index = self.partition_index(scope)?;
-        if self.owner.check_host_queue_age(
-            scope, operation_id, request_digest, host_queue_age_micros,
-        )?.is_some() {
+        if self
+            .owner
+            .check_host_queue_age(scope, operation_id, request_digest, host_queue_age_micros)?
+            .is_some()
+        {
             return Ok(());
         }
-        let payload = encode_host_queue_age(
-            index, operation_id, request_digest, host_queue_age_micros,
-        );
+        let payload =
+            encode_host_queue_age(index, operation_id, request_digest, host_queue_age_micros);
         self.check_reserved_capacity(payload.len(), self.owner.pending_record_reservations() - 1)?;
         self.persist(payload)?;
         if let Err(error) = self.owner.record_host_queue_age(
-            scope, operation_id, request_digest, host_queue_age_micros,
+            scope,
+            operation_id,
+            request_digest,
+            host_queue_age_micros,
         ) {
             self.healthy = false;
             return Err(error);

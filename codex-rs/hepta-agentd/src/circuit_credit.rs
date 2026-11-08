@@ -97,15 +97,23 @@ impl CircuitCreditSupportV1 {
     /// Structural preflight before independent signing. Authentication,
     /// terminality, conservation and episode/correction lineage remain ledger
     /// checks; this method neither assigns credit nor rewrites signed bytes.
-    pub fn validate_credit(&self, credit: &CreditAllocationBatchV1) -> Result<(), CircuitCreditErrorV1> {
+    pub fn validate_credit(
+        &self,
+        credit: &CreditAllocationBatchV1,
+    ) -> Result<(), CircuitCreditErrorV1> {
         if credit.support_digest != self.digest
             || credit.allocations.is_empty()
             || credit.allocations.len() > self.targets.len()
             || credit.allocations.iter().any(|allocation| {
-                !self.targets.iter().any(|target| target.target_id == allocation.target_id)
+                !self
+                    .targets
+                    .iter()
+                    .any(|target| target.target_id == allocation.target_id)
             })
         {
-            return Err(CircuitCreditErrorV1::Binding("credit support or unexecuted target"));
+            return Err(CircuitCreditErrorV1::Binding(
+                "credit support or unexecuted target",
+            ));
         }
         Ok(())
     }
@@ -126,7 +134,9 @@ where
         run_id: &str,
         inputs: &BTreeMap<u64, CellStepInputV1>,
     ) -> Result<CircuitCreditSupportV1, CircuitCreditErrorV1> {
-        let trace = circuit.bounded_circuit_committed_trace(run_id).await?
+        let trace = circuit
+            .bounded_circuit_committed_trace(run_id)
+            .await?
             .ok_or(CircuitCreditErrorV1::Binding("unknown circuit run"))?;
         let run = trace.run();
         if run.outcome().is_none() || run.unresolved() != 0 {
@@ -134,7 +144,9 @@ where
         }
         let dispatches = run.completed_computation_dispatches(self.registry().definition())?;
         if inputs.len() != dispatches.len() || inputs.is_empty() {
-            return Err(CircuitCreditErrorV1::Binding("incomplete executed input set"));
+            return Err(CircuitCreditErrorV1::Binding(
+                "incomplete executed input set",
+            ));
         }
         let mut bytes = b"hepta.agentd.circuit-credit-support.v1\0".to_vec();
         bytes.extend_from_slice(trace.history_digest().as_str().as_bytes());
@@ -142,36 +154,49 @@ where
         for dispatch in dispatches {
             let activation_id = dispatch.activation_id;
             let activation = &run.activations()[&activation_id];
-            let input = inputs.get(&activation_id)
+            let input = inputs
+                .get(&activation_id)
                 .ok_or(CircuitCreditErrorV1::Binding("missing executed input"))?;
             let binding = self.registry().bind_input(&dispatch, input)?;
             let request_digest = canonical_cell_step_request_digest_v1(&binding.cell, input)?;
             if input.scope.agent_id.as_str() != circuit.owner_agent_id().as_str()
-                || activation.execution_request_digest()
+                || activation
+                    .execution_request_digest()
                     .is_none_or(|digest| digest.as_str() != request_digest.to_string())
             {
                 return Err(CircuitCreditErrorV1::Binding("original computation claim"));
             }
-            let decision = self.state_owner()
+            let decision = self
+                .state_owner()
                 .lookup(&input.scope, &input.operation_id, request_digest)?
-                .ok_or(CircuitCreditErrorV1::Binding("missing committed Cell decision"))?;
+                .ok_or(CircuitCreditErrorV1::Binding(
+                    "missing committed Cell decision",
+                ))?;
             let execution = finish(binding, &dispatch, input, decision)?;
             if trace.completions().get(&activation_id) != Some(&execution.completion) {
-                return Err(CircuitCreditErrorV1::Binding("Cell/Circuit completion mismatch"));
+                return Err(CircuitCreditErrorV1::Binding(
+                    "Cell/Circuit completion mismatch",
+                ));
             }
             let definition_digest = binding.cell.semantic_digest()?;
             let target_id = StableId::new(format!("circuit-cell-version:{definition_digest}"))
                 .map_err(|_| CircuitCreditErrorV1::Binding("target identity"))?;
-            targets.entry(target_id.clone()).or_insert_with(|| CircuitCreditTargetV1 {
-                target_id,
-                cell_id: execution.decision.scope.cell_id.clone(),
-                bundle_digest: execution.decision.bundle_digest,
-                definition_digest,
-                activation_ids: Vec::new(),
-            }).activation_ids.push(activation_id);
+            targets
+                .entry(target_id.clone())
+                .or_insert_with(|| CircuitCreditTargetV1 {
+                    target_id,
+                    cell_id: execution.decision.scope.cell_id.clone(),
+                    bundle_digest: execution.decision.bundle_digest,
+                    definition_digest,
+                    activation_ids: Vec::new(),
+                })
+                .activation_ids
+                .push(activation_id);
             bytes.extend_from_slice(&activation_id.to_be_bytes());
             bytes.extend_from_slice(definition_digest.as_array());
-            bytes.extend_from_slice(Digest32::of_bytes(&encode_receipt(&execution.decision)?).as_array());
+            bytes.extend_from_slice(
+                Digest32::of_bytes(&encode_receipt(&execution.decision)?).as_array(),
+            );
         }
         Ok(CircuitCreditSupportV1 {
             digest: Digest32::of_bytes(&bytes),
@@ -191,14 +216,27 @@ where
         request: OutcomeCreditClosureRequestV2,
         now: u64,
     ) -> Result<OutcomeCreditClosureReceiptV2, CircuitCreditErrorV1> {
-        if request.outcome.run_id != circuit_learning_run_id_v1(
-            ledger, circuit.owner_agent_id(), &request.outcome.outcome.episode_id,
-        )? {
-            return Err(CircuitCreditErrorV1::Binding("ledger/owner/episode execution identity"));
+        if request.outcome.run_id
+            != circuit_learning_run_id_v1(
+                ledger,
+                circuit.owner_agent_id(),
+                &request.outcome.outcome.episode_id,
+            )?
+        {
+            return Err(CircuitCreditErrorV1::Binding(
+                "ledger/owner/episode execution identity",
+            ));
         }
-        let support = self.terminal_credit_support(circuit, request.outcome.run_id.as_str(), inputs).await?;
-        if inputs.values().any(|input| input.objective_digest != ledger.verifier().objective_digest()) {
-            return Err(CircuitCreditErrorV1::Binding("executed objective differs from ledger"));
+        let support = self
+            .terminal_credit_support(circuit, request.outcome.run_id.as_str(), inputs)
+            .await?;
+        if inputs
+            .values()
+            .any(|input| input.objective_digest != ledger.verifier().objective_digest())
+        {
+            return Err(CircuitCreditErrorV1::Binding(
+                "executed objective differs from ledger",
+            ));
         }
         support.validate_credit(&request.credit)?;
         Ok(append_outcome_credit_v2(ledger, request, now)?)

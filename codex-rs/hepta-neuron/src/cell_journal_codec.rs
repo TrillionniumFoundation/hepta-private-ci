@@ -196,7 +196,10 @@ pub(crate) fn apply_record(
         let host_queue_age_micros = read.u64()?;
         read.finish()?;
         return owner.record_host_queue_age(
-            &spec.scope, &operation_id, request_digest, host_queue_age_micros,
+            &spec.scope,
+            &operation_id,
+            request_digest,
+            host_queue_age_micros,
         );
     }
     if tag == 2 || tag == 3 {

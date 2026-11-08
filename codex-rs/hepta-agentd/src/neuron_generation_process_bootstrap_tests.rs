@@ -208,13 +208,23 @@ fn actual_opened_files_reject_raced_aliases_and_non_regular_assets() -> Result<(
     fs::set_permissions(&descriptor.public.path, fs::Permissions::from_mode(0o600))?;
     fs::remove_file(&descriptor.control_path)?;
     fs::hard_link(&descriptor.public.path, &descriptor.control_path)?;
-    let error = files::open_owners(&descriptor, &[
-        &descriptor_file, &assets.executable, &assets.weights, &assets.public,
-    ]).err();
-    assert!(matches!(
-        &error,
-        Some(AgentdError::Invalid(message)) if message.contains("alias the same inode")
-    ), "unexpected owner-open result: {error:?}");
+    let error = files::open_owners(
+        &descriptor,
+        &[
+            &descriptor_file,
+            &assets.executable,
+            &assets.weights,
+            &assets.public,
+        ],
+    )
+    .err();
+    assert!(
+        matches!(
+            &error,
+            Some(AgentdError::Invalid(message)) if message.contains("alias the same inode")
+        ),
+        "unexpected owner-open result: {error:?}"
+    );
     assert_eq!(fs::read(&descriptor.public.path)?, public_before);
     assert_eq!(fs::read(&descriptor.journal_path)?, b"existing owner bytes");
     assert_eq!(fs::read(&descriptor.witness_path)?, b"existing owner bytes");

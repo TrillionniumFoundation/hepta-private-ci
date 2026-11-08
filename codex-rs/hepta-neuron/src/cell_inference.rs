@@ -125,7 +125,8 @@ pub fn recover_cell_inference(
     let mut output = InferenceControlModelPort::new(&mut receipt_port)
         .execute(&prepared.model_request)
         .map_err(CellExecutionError::Backend)?;
-    output.queue_age_micros = output.queue_age_micros
+    output.queue_age_micros = output
+        .queue_age_micros
         .checked_add(host_queue_age_micros)
         .ok_or(CellExecutionError::CapacityExceeded)?;
     validate_model_output(&prepared.definition.runtime, &output)

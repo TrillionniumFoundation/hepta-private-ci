@@ -12,10 +12,10 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
-#[path = "cell_queue_cost_journal_tests.rs"]
-mod queue_cost;
 #[path = "cell_batch_cost_recovery_tests.rs"]
 mod batch_cost_recovery;
+#[path = "cell_queue_cost_journal_tests.rs"]
+mod queue_cost;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
@@ -761,7 +761,10 @@ fn batch_dispatch_filters_expired_members_and_counts_durable_admission_queue_tim
             ));
         } else {
             assert_eq!(result.scope, scope("run2"));
-            let proposed = checked(decide_cell(checked(result.result), clock.load(Ordering::SeqCst)));
+            let proposed = checked(decide_cell(
+                checked(result.result),
+                clock.load(Ordering::SeqCst),
+            ));
             assert_eq!(proposed.receipt().cost.queue_age_micros, 102);
             assert_eq!(proposed.receipt().cost.model_latency_micros, 20);
             assert!(!proposed.receipt().deadline_exceeded);

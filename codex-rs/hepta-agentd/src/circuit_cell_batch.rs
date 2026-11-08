@@ -62,7 +62,11 @@ where
         if !(1..=64).contains(&items.len()) {
             return Err(CellExecutionError::CapacityExceeded.into());
         }
-        let clock = RefCell::new(BatchClock { clock, last: None, failed: false });
+        let clock = RefCell::new(BatchClock {
+            clock,
+            last: None,
+            failed: false,
+        });
         let mut queue = CellBatchQueueV1::new(items.len(), items.len())?;
         let mut bindings = vec![None; items.len()];
         let mut results = vec![None; items.len()];
@@ -70,7 +74,10 @@ where
         let mut deadlines = Vec::new();
         for (index, (admission, input)) in items.iter().enumerate() {
             let entry = (|| {
-                if items[..index].iter().any(|(_, previous)| previous.scope == input.scope) {
+                if items[..index]
+                    .iter()
+                    .any(|(_, previous)| previous.scope == input.scope)
+                {
                     return Err(CellExecutionError::OperationConflict.into());
                 }
                 let binding = self.registry.bind_input(admission.dispatch(), input)?;
@@ -83,7 +90,8 @@ where
                 let request = canonical_cell_step_request_digest_v1(&binding.cell, input)?;
                 if admission.owner_agent_id().as_str() != input.scope.agent_id.as_str()
                     || admission.definition_digest() != self.registry.definition_digest()
-                    || admission.execution_request_digest()
+                    || admission
+                        .execution_request_digest()
                         .is_none_or(|digest| digest.as_str() != request.to_string())
                 {
                     return Err(CircuitCellErrorV1::ScopeMismatch);
@@ -92,26 +100,41 @@ where
                 if now.circuit_millis < admission.observed_at_ms() {
                     return Err(CircuitCellErrorV1::ReconciliationRequired);
                 }
-                match self.state_owner.lookup(&input.scope, &input.operation_id, request) {
+                match self
+                    .state_owner
+                    .lookup(&input.scope, &input.operation_id, request)
+                {
                     Ok(Some(receipt)) => return Ok(BatchEntry::Committed(Box::new(receipt))),
                     Ok(None) | Err(CellExecutionError::InferencePending) => {}
                     Err(error) => return Err(error.into()),
                 }
                 if self.state_owner.pending_inference(&input.scope)?.is_some() {
                     let inferred = recover_cell_inference(
-                        &binding.cell, &self.state_owner, &self.encoder, input.clone(),
-                        &mut self.inference_control, now.cell_micros,
+                        &binding.cell,
+                        &self.state_owner,
+                        &self.encoder,
+                        input.clone(),
+                        &mut self.inference_control,
+                        now.cell_micros,
                     )?;
                     return settle(&mut self.state_owner, inferred, &clock)
-                        .map(Box::new).map(BatchEntry::Committed);
+                        .map(Box::new)
+                        .map(BatchEntry::Committed);
                 }
                 if admission.reconciliation_only()
-                    || now.circuit_millis >= admission.lease_expires_at_ms().min(admission.run_deadline_ms())
+                    || now.circuit_millis
+                        >= admission
+                            .lease_expires_at_ms()
+                            .min(admission.run_deadline_ms())
                 {
                     return Err(CircuitCellErrorV1::ReconciliationRequired);
                 }
                 match enter_cell_step(
-                    &binding.cell, &self.state_owner, &self.encoder, input.clone(), now.cell_micros,
+                    &binding.cell,
+                    &self.state_owner,
+                    &self.encoder,
+                    input.clone(),
+                    now.cell_micros,
                 )? {
                     CellStepEntryV1::Ready(prepared) => Ok(BatchEntry::Ready(prepared)),
                     CellStepEntryV1::Replayed(receipt) => Ok(BatchEntry::Committed(receipt)),
@@ -120,18 +143,26 @@ where
             match entry {
                 Ok(BatchEntry::Ready(prepared)) => {
                     let request_id = prepared.model_request_id().clone();
-                    let enqueued = clock.borrow_mut().read()
-                        .and_then(|now| queue.enqueue(*prepared, now.cell_micros)
-                            .map(|()| now).map_err(Into::into));
+                    let enqueued = clock.borrow_mut().read().and_then(|now| {
+                        queue
+                            .enqueue(*prepared, now.cell_micros)
+                            .map(|()| now)
+                            .map_err(Into::into)
+                    });
                     match enqueued {
                         Ok(now) => {
                             queued.push(index);
                             deadlines.push(BatchDeadline {
                                 request_id,
-                                circuit_millis: admission.lease_expires_at_ms().min(admission.run_deadline_ms()),
+                                circuit_millis: admission
+                                    .lease_expires_at_ms()
+                                    .min(admission.run_deadline_ms()),
                                 cell_micros: input.deadline_micros,
                                 enqueued_micros: now.cell_micros,
-                                max_queue_age_micros: bindings[index].ok_or(CircuitCellErrorV1::InvalidBinding)?.cell.max_queue_age_micros,
+                                max_queue_age_micros: bindings[index]
+                                    .ok_or(CircuitCellErrorV1::InvalidBinding)?
+                                    .cell
+                                    .max_queue_age_micros,
                             });
                         }
                         Err(error) => results[index] = Some(Err(error)),
@@ -140,7 +171,9 @@ where
                 Ok(BatchEntry::Committed(receipt)) => {
                     results[index] = Some(finish(
                         bindings[index].ok_or(CircuitCellErrorV1::InvalidBinding)?,
-                        admission.dispatch(), input, *receipt,
+                        admission.dispatch(),
+                        input,
+                        *receipt,
                     ));
                 }
                 Err(error) => results[index] = Some(Err(error)),
@@ -149,11 +182,15 @@ where
         while !queued.is_empty() {
             let batch = {
                 let mut guarded = GuardedBatch {
-                    control: &mut self.inference_control, clock: &clock,
+                    control: &mut self.inference_control,
+                    clock: &clock,
                     deadlines: &deadlines,
                 };
                 queue.dispatch_next(&mut self.state_owner, &mut guarded, || {
-                    clock.borrow_mut().read().map_or(u64::MAX, |now| now.cell_micros)
+                    clock
+                        .borrow_mut()
+                        .read()
+                        .map_or(u64::MAX, |now| now.cell_micros)
                 })
             };
             if batch.is_empty() {
@@ -163,20 +200,34 @@ where
                 break;
             }
             for item in batch {
-                let position = queued.iter().position(|index| {
-                    item.scope == items[*index].1.scope && item.operation_id == items[*index].1.operation_id
-                }).ok_or(CircuitCellErrorV1::InvalidReceipt)?;
+                let position = queued
+                    .iter()
+                    .position(|index| {
+                        item.scope == items[*index].1.scope
+                            && item.operation_id == items[*index].1.operation_id
+                    })
+                    .ok_or(CircuitCellErrorV1::InvalidReceipt)?;
                 let index = queued.remove(position);
                 let (admission, input) = &items[index];
-                results[index] = Some(item.result.map_err(Into::into)
-                    .and_then(|inferred| settle(&mut self.state_owner, inferred, &clock))
-                    .and_then(|receipt| finish(
-                        bindings[index].ok_or(CircuitCellErrorV1::InvalidBinding)?,
-                        admission.dispatch(), input, receipt,
-                    )));
+                results[index] = Some(
+                    item.result
+                        .map_err(Into::into)
+                        .and_then(|inferred| settle(&mut self.state_owner, inferred, &clock))
+                        .and_then(|receipt| {
+                            finish(
+                                bindings[index].ok_or(CircuitCellErrorV1::InvalidBinding)?,
+                                admission.dispatch(),
+                                input,
+                                receipt,
+                            )
+                        }),
+                );
             }
         }
-        Ok(results.into_iter().map(|result| result.unwrap_or(Err(CircuitCellErrorV1::InvalidReceipt))).collect())
+        Ok(results
+            .into_iter()
+            .map(|result| result.unwrap_or(Err(CircuitCellErrorV1::InvalidReceipt)))
+            .collect())
     }
 }
 
@@ -189,9 +240,11 @@ struct BatchClock<C> {
 impl<C: FnMut() -> CircuitCellTimeV1> BatchClock<C> {
     fn read(&mut self) -> Result<CircuitCellTimeV1, CircuitCellErrorV1> {
         let now = (self.clock)();
-        if self.failed || self.last.is_some_and(|last| {
-            now.circuit_millis < last.circuit_millis || now.cell_micros < last.cell_micros
-        }) {
+        if self.failed
+            || self.last.is_some_and(|last| {
+                now.circuit_millis < last.circuit_millis || now.cell_micros < last.cell_micros
+            })
+        {
             self.failed = true;
             return Err(CircuitCellErrorV1::ReconciliationRequired);
         }
@@ -232,15 +285,30 @@ impl<P: CellMicrobatchInferenceControlPortV1, C: FnMut() -> CircuitCellTimeV1>
         &mut self,
         requests: &[NeuronFeatureRequestV1],
     ) -> Result<Vec<NeuronFeatureReceiptV1>, NeuronModelError> {
-        let now = self.clock.borrow_mut().read().map_err(|_| NeuronModelError::Rejected)?;
-        if requests.is_empty() || requests.len() > 64 || requests.iter().any(|request| {
-            let mut matched = self.deadlines.iter().filter(|item| item.request_id == request.request_id);
-            let Some(deadline) = matched.next() else { return true; };
-            matched.next().is_some() || now.circuit_millis >= deadline.circuit_millis
-                || now.cell_micros >= deadline.cell_micros
-                || now.cell_micros.checked_sub(deadline.enqueued_micros)
-                    .is_none_or(|age| age > deadline.max_queue_age_micros)
-        }) {
+        let now = self
+            .clock
+            .borrow_mut()
+            .read()
+            .map_err(|_| NeuronModelError::Rejected)?;
+        if requests.is_empty()
+            || requests.len() > 64
+            || requests.iter().any(|request| {
+                let mut matched = self
+                    .deadlines
+                    .iter()
+                    .filter(|item| item.request_id == request.request_id);
+                let Some(deadline) = matched.next() else {
+                    return true;
+                };
+                matched.next().is_some()
+                    || now.circuit_millis >= deadline.circuit_millis
+                    || now.cell_micros >= deadline.cell_micros
+                    || now
+                        .cell_micros
+                        .checked_sub(deadline.enqueued_micros)
+                        .is_none_or(|age| age > deadline.max_queue_age_micros)
+            })
+        {
             return Err(NeuronModelError::Rejected);
         }
         self.control.execute_feature_batch(requests)
