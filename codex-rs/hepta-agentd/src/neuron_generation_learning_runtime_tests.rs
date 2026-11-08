@@ -22,6 +22,7 @@ use crate::NeuronGenerationLearningReadErrorV1;
 use crate::learning_retained_task_operation_id_v1;
 use crate::neuron_generation_channel_v2;
 use crate::neuron_generation_current::test_support::Fixture;
+use crate::neuron_generation_runtime::verify_learning_use_readback_test_bytes;
 use crate::neuron_generation_service::spawn_neuron_generation_service;
 use crate::neuron_generation_update_bootstrap::learning_test_baseline;
 use crate::neuron_generation_update_bootstrap::learning_test_decision;
@@ -132,6 +133,13 @@ async fn ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution()
             AgentdError::Invalid(_)
         ))
     ));
+    assert!(
+        f.runtime
+            .handle
+            .read_learning_next_use_readback(&f.coordinator, &intent)
+            .await
+            .is_err()
+    );
     let receipt = f.runtime.handle.step(request.clone()).await?;
     assert!(matches!(
         f.runtime
@@ -141,6 +149,18 @@ async fn ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution()
         LearningIterationObservationV1::RetainedModelNextUse { .. }
     ));
     let observed = f.runtime.handle.observe_generation().await?;
+    let pending = f
+        .runtime
+        .handle
+        .read_learning_next_use_readback(&f.coordinator, &intent)
+        .await?;
+    verify_learning_use_readback_test_bytes(
+        &pending,
+        &f.publication.target_config.manifest,
+        &receipt,
+        &observed,
+        "retained_pending",
+    )?;
     let chunk = observed
         .pending_output()
         .cloned()
@@ -163,6 +183,19 @@ async fn ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution()
         .handle
         .read_learning_next_use(&f.coordinator, &intent)
         .await?;
+    let exported = f
+        .runtime
+        .handle
+        .read_learning_next_use_readback(&f.coordinator, &intent)
+        .await?;
+    verify_learning_use_readback_test_bytes(
+        &exported,
+        &f.publication.target_config.manifest,
+        &receipt,
+        &f.runtime.handle.observe_generation().await?,
+        "retained_acked",
+    )?;
+    assert_ne!(pending, exported);
     let retained = (
         f.publication.bytes("current.json")?,
         f.publication.bytes("target-journal")?,
@@ -199,6 +232,13 @@ async fn ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution()
             .await?,
         first
     );
+    assert_eq!(
+        f.runtime
+            .handle
+            .read_learning_next_use_readback(&f.coordinator, &intent)
+            .await?,
+        exported
+    );
     assert_eq!(f.runtime.handle.step(request).await?, receipt);
     let mut wrong = intent;
     wrong.task_digest = f.publication.old_config.task_digest;
@@ -206,6 +246,13 @@ async fn ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution()
         f.runtime
             .handle
             .read_learning_next_use(&f.coordinator, &wrong)
+            .await
+            .is_err()
+    );
+    assert!(
+        f.runtime
+            .handle
+            .read_learning_next_use_readback(&f.coordinator, &wrong)
             .await
             .is_err()
     );
@@ -233,39 +280,69 @@ async fn ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution()
 
 #[tokio::test]
 async fn running_actor_refuses_current_withdrawal_and_revocation() -> anyhow::Result<()> {
-    for change in ["current", "withdrawal", "revocation"] {
-        let mut f = LearningRuntime::new().await?;
-        let (mut tasks, _lifetime) = support::start(&mut f.runtime, &f.host)?;
-        assert_eq!(
-            f.runtime
-                .handle
-                .read_learning_selection(&f.coordinator)
-                .await?,
-            f.selection
-        );
-        match change {
-            "current" => f.publication.advance_artifact_current()?,
-            "withdrawal" => f.publication.withdraw()?,
-            "revocation" => {
-                let mut head = f.publication.authority.revocation_head()?;
-                head.revision += 1;
-                head.revoked_grant_ids
-                    .insert(f.runtime.publication.signed_grant().grant.grant_id.clone());
-                f.publication.authority.update_revocations(head)?;
+    for phase in ["before_use", "after_use"] {
+        for change in ["current", "withdrawal", "revocation"] {
+            let mut f = LearningRuntime::new().await?;
+            let (mut tasks, _lifetime) = support::start(&mut f.runtime, &f.host)?;
+            assert_eq!(
+                f.runtime
+                    .handle
+                    .read_learning_selection(&f.coordinator)
+                    .await?,
+                f.selection
+            );
+            let mut use_coordinator = f.coordinator.clone();
+            use_coordinator.record(
+                learning_test_receipt(&use_coordinator, f.selection.clone()),
+                20,
+            )?;
+            let request = support::request(
+                &f.publication.target_config,
+                f.runtime.handle.snapshot().await?,
+            );
+            let intent = request.intent()?;
+            if phase == "after_use" {
+                f.runtime.handle.step(request).await?;
+                f.runtime
+                    .handle
+                    .read_learning_next_use_readback(&use_coordinator, &intent)
+                    .await?;
             }
-            _ => anyhow::bail!("unknown mutation"),
+            match change {
+                "current" => f.publication.advance_artifact_current()?,
+                "withdrawal" => f.publication.withdraw()?,
+                "revocation" => {
+                    let mut head = f.publication.authority.revocation_head()?;
+                    head.revision += 1;
+                    head.revoked_grant_ids
+                        .insert(f.runtime.publication.signed_grant().grant.grant_id.clone());
+                    f.publication.authority.update_revocations(head)?;
+                }
+                _ => anyhow::bail!("unknown mutation"),
+            }
+            assert!(
+                f.runtime
+                    .handle
+                    .read_learning_selection(&f.coordinator)
+                    .await
+                    .is_err(),
+                "{change}"
+            );
+            assert!(
+                f.runtime
+                    .handle
+                    .read_learning_next_use_readback(&use_coordinator, &intent)
+                    .await
+                    .is_err(),
+                "{change}"
+            );
+            assert_eq!(
+                f.control.executions.load(Ordering::SeqCst),
+                usize::from(phase == "after_use")
+            );
+            assert_eq!(f.publication.authority.capacity()?.used_nonces, 1);
+            tasks.shutdown().await;
         }
-        assert!(
-            f.runtime
-                .handle
-                .read_learning_selection(&f.coordinator)
-                .await
-                .is_err(),
-            "{change}"
-        );
-        assert_eq!(f.control.executions.load(Ordering::SeqCst), 0);
-        assert_eq!(f.publication.authority.capacity()?.used_nonces, 1);
-        tasks.shutdown().await;
     }
     Ok(())
 }
@@ -281,7 +358,12 @@ async fn unpublished_actor_refuses_learning_readback_and_keeps_transport_errors(
         f.host.clock(),
         /*capacity*/ 1,
     )?;
-    let first = handle.read_learning_selection(&f.coordinator);
+    let intent = support::request(
+        &f.publication.target_config,
+        f.publication.target_config.initial.clone(),
+    )
+    .intent()?;
+    let first = handle.read_learning_next_use_readback(&f.coordinator, &intent);
     tokio::pin!(first);
     host::poll_pending(first.as_mut());
     assert!(matches!(
