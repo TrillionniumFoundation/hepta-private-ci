@@ -1,0 +1,37 @@
+{
+  "campaign": "/workspace/scratch/eb987333a9b4/memory-cell/native-evidence/extracted/evidence/campaign-dynamic-v1",
+  "inputs_sha256": "073e2abc0e8d57c9b69d3e77f50904a150678e2826530b41e267841af3213e5a",
+  "native_binary_executed": false,
+  "receipts": [
+    {
+      "accepted": false,
+      "attack": "forged_probe_expected_and_output",
+      "error": "expected differs from frozen owner truth",
+      "forged_label": [
+        7
+      ],
+      "frozen_label": [
+        6
+      ],
+      "source": [
+        "A:0"
+      ]
+    },
+    {
+      "accepted": false,
+      "attack": "forged_non_b_correct_flag",
+      "error": "correct differs from frozen owner truth",
+      "original_correct": false,
+      "source": [
+        "A:6"
+      ]
+    }
+  ],
+  "source_sha256": {
+    "audit_evidence.py": "75893c202c214f8bf03d1dc19401e7623055521c76d0cd11d122f4649b3ed345",
+    "audit_truth.py": "2f49acd4776fe37ddedadf0be2363a434ce583195508aa6d7f7392290617de58",
+    "environment.py": "fddc89c1d3536ed5712d034d8551819658800aff655b0683a4af2301e5136039",
+    "verify_results.py": "250d7866624f280e27712d5b1b47faf987d22d7b8532dd82fb7b2a78d4ab73d2"
+  },
+  "target_sha256_before_and_after": "ea29e1902d7ee5c3058b8e68fb4ab96e4e74336b12ae748131c6e1a1849e38d3"
+}
