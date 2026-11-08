@@ -154,6 +154,40 @@
       "outcome": "passed",
       "reason": "19 existing Rust tests, fmt, scoped Clippy, canonical inverse rename, actual build, and exact unchanged caller-boundary slice passed.",
       "record": "POST_CI_QUALIFICATION.json"
+    },
+    {
+      "id": "ci-head-4f32-full-caller",
+      "kind": "github_ci",
+      "outcome": "passed",
+      "reason": "Full caller proof scanned 5433 Rust files and passed before the downstream formatter failure.",
+      "record": "post-format/full-caller-and-format-ci.json"
+    },
+    {
+      "id": "ci-head-4f32-python-format",
+      "kind": "github_ci",
+      "outcome": "failed",
+      "reason": "Locked Ruff requires formatting 41 research and 5 target-baseline files; repaired as disjoint proposals.",
+      "record": "POST_FORMAT_QUALIFICATION.json"
+    },
+    {
+      "id": "ci-head-4f32-blob-fence",
+      "kind": "github_ci",
+      "outcome": "not_run_setup_failed",
+      "reason": "Fence unsupported_resolver_layout before checkout; no blob-size verdict was produced.",
+      "record": "post-format/blob-setup-diagnosis.json"
+    },
+    {
+      "id": "ci-head-4f32-blob-single-retry",
+      "kind": "github_api",
+      "outcome": "rejected",
+      "reason": "GitHub returned HTTP403 because the containing workflow run was still running; no retry execution was started."
+    },
+    {
+      "id": "locked-ruff-41-and-5",
+      "kind": "format_and_source_review",
+      "outcome": "passed_with_explicit_docstring_changes",
+      "reason": "Research: 40 strict AST equals plus one docstring-only file; all41 non-docstring ASTs equal. Baseline:5 strict AST equals.",
+      "record": "POST_FORMAT_QUALIFICATION.json"
     }
   ],
   "schema": "hepta.ndu.generation-attempts.v1"

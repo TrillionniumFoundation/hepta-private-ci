@@ -29,6 +29,256 @@
       "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/observation_tests.rs"
     }
   ],
+  "format_followup_parent": "4f32a14e12ccb738c65a511d05b36ac388fc328b",
+  "format_followup_record": "POST_FORMAT_QUALIFICATION.json",
+  "format_source_deltas": [
+    {
+      "after_sha256": "59f67ccaa36c4938d0fd9eeb4423c83409c2827af0a84b817bdeb3766d049e19",
+      "ast_equal": true,
+      "before_sha256": "2bba4d5b8e774f883b6acdca135058639f0e7e4cfb213cb54b4787adb24038ce",
+      "path": "scripts/joint_generation_v4_codecs.py"
+    },
+    {
+      "after_sha256": "2109d2e803e196dea1ee3d187d6eb537af59b1f6b4b77e3723ec907628018d38",
+      "ast_equal": true,
+      "before_sha256": "a58bdc13b92b7699aa9dfdc2987d46013f2f3129235e85b8596d278b7db14268",
+      "path": "scripts/joint_generation_v4_diagnostic.py"
+    },
+    {
+      "after_sha256": "a8258200343ab4d210143590e5cef483504c4650f45cb6c4a3fb65a6ab0b7abd",
+      "ast_equal": true,
+      "before_sha256": "c1267b67798bc9777bfe8bfc4e28ce37ab64368ebac05792b14d2b3df266f5f9",
+      "path": "scripts/joint_generation_v4_gradients.py"
+    },
+    {
+      "after_sha256": "f2d67927c9f2c7dbf729ff30d9d0c5b5b3477d4a0ff59c148348e45aae6b4fcf",
+      "ast_equal": true,
+      "before_sha256": "65ff7fb09b8439304e794642987f20e1acfb8c42a2ae42c1730708437875ed8c",
+      "path": "scripts/joint_generation_v4_io.py"
+    },
+    {
+      "after_sha256": "f200835d4d41327000af69f3f9b6d53d746a2efad545bec5b1364414485b77a2",
+      "ast_equal": true,
+      "before_sha256": "01ea458fac536c183a871d80d476393b5295af71057f61c2d49eecf98b32bb27",
+      "path": "scripts/joint_generation_v4_model.py"
+    },
+    {
+      "after_sha256": "f991fc3da99e2b526ab01ab51653a3e710efa8d1f5d11dcddac6a4dcecaf8d0f",
+      "ast_equal": false,
+      "before_sha256": "44fa140799a57cee3731e045529c07de54e8fd9a695efca3defe181a1988fa55",
+      "path": "scripts/joint_generation_v4_ndu.py"
+    },
+    {
+      "after_sha256": "0dac9af6017cef053b117d5c9f72c264fd01412c4bff1816694c502eb35c7d6d",
+      "ast_equal": true,
+      "before_sha256": "e27b2bf1cdb2a012790fb868fb9d0cce93d8718a8deedda61c81cdcc8fd75de6",
+      "path": "scripts/ndu_real_materials/acquire.py"
+    },
+    {
+      "after_sha256": "85a70ee45bfdea796f5ddf632aa7c6a93e60ccf3ca75e8925fd76e8b07cf2ce0",
+      "ast_equal": true,
+      "before_sha256": "2f08fb8c73be5783552c02168acceb702149c2c5db510539e0b51b2578744ca6",
+      "path": "scripts/ndu_real_materials/common.py"
+    },
+    {
+      "after_sha256": "f164e862dc5c9c48bcc5eab732e8e0dbbd0f375610b1c64ed201434394259796",
+      "ast_equal": true,
+      "before_sha256": "8b37fd61e272d8b5be04fe1ee7aabe9f9707911faf54c14df5e96e90e2f3caea",
+      "path": "scripts/ndu_real_materials/coverage.py"
+    },
+    {
+      "after_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+      "ast_equal": true,
+      "before_sha256": "6c79c906eb021069f8e3df36dc2029909d2dd152a47dbc30ad64b1391ba59cfd",
+      "path": "scripts/ndu_real_materials/evaluator.py"
+    },
+    {
+      "after_sha256": "60ed62f2df57cfbfc7441f5504ad39cfcebe4bb3114e2cedd55ca80dc213b3fa",
+      "ast_equal": true,
+      "before_sha256": "7427dc672eb40f99fbf8cc5d6633324195a7abe097cebc4b8ce328ee1cd9d121",
+      "path": "scripts/ndu_real_materials/groups.py"
+    },
+    {
+      "after_sha256": "03e23e125465984d794b011eab2ecf82a84a8b0f6b91ec6ef670fcd421652354",
+      "ast_equal": true,
+      "before_sha256": "3e9d5c07a72257c3411d5ceff0f7d923f9f85bd2e9cd112ed9b496eb77d44ace",
+      "path": "scripts/ndu_real_materials/isolate.py"
+    },
+    {
+      "after_sha256": "f2c7cc52ccffb8bba27082c0ffbb9b80d1b4d3488ce835b8c4c2c0c903b1acac",
+      "ast_equal": true,
+      "before_sha256": "460bcd50909d496a3c0074229bbaf12991256f471b5c53566b9b84a5e1900f38",
+      "path": "scripts/ndu_real_materials/isolation_probe.py"
+    },
+    {
+      "after_sha256": "85383349aec4388756f9a96755611c94e78cf756fa2ae3ea5a061ca78c9228e0",
+      "ast_equal": true,
+      "before_sha256": "6254f04844546ac4c5ff6402f217b119f55f6af54e1d83aca0570e73386496b3",
+      "path": "scripts/ndu_real_materials/register.py"
+    },
+    {
+      "after_sha256": "2bdf0c7b805e5a6c0b6c03c015adc8edfb9cbfb4243fbcc82a02cc3ffde492e3",
+      "ast_equal": true,
+      "before_sha256": "bbcb2351cedcb1cae7f850e48a0157d6b2929fec60f7d7a9ffdd823b5ed6d7bf",
+      "path": "scripts/ndu_real_materials/test_coverage.py"
+    },
+    {
+      "after_sha256": "14a368da5cfb218c99ec4eb390aee2c2a386ebac45c362b3f483f8995fad999b",
+      "ast_equal": true,
+      "before_sha256": "99ece9c4887e6970def002086362acdbf55746694fce3a8e900433862dce4fb5",
+      "path": "scripts/ndu_real_runtime/actor.py"
+    },
+    {
+      "after_sha256": "0cd9c8da5122d6b7940e322382e9118607d54b14246ee3449feb05904728824b",
+      "ast_equal": true,
+      "before_sha256": "32a5c663fc860302e47a85365a405b6e12044ebf49b3a41d7d3e66713eb0217c",
+      "path": "scripts/ndu_real_runtime/controllers.py"
+    },
+    {
+      "after_sha256": "77876e8b3321276d9e1efca13fad7dada14f338aec93412d4f421d19871af468",
+      "ast_equal": true,
+      "before_sha256": "ae3229379e03751116f9d33f5340f78b48cd8cc2a5f6159a854804d5af225937",
+      "path": "scripts/ndu_real_runtime/episode.py"
+    },
+    {
+      "after_sha256": "4d777b2bd3a50a2750cda2d949f1c8abf4832e9eacd6dc1092c640e6d7fb7cc8",
+      "ast_equal": true,
+      "before_sha256": "f315c980dee4f89e669d2f154b566d2cccd46cfd452203c440627292d1d40788",
+      "path": "scripts/ndu_real_runtime/fit_loop.py"
+    },
+    {
+      "after_sha256": "0311796a3f37654fe53e8c1d8d6141b95381787d0f84b0699477889d60a6732e",
+      "ast_equal": true,
+      "before_sha256": "ca4b74ec21f4a8853a5036ff57cfffffc13bb1c9cfc7208dd4a002c07158cf29",
+      "path": "scripts/ndu_real_runtime/gradient_check.py"
+    },
+    {
+      "after_sha256": "47e5aeba99a3d7763d607f2a796937ceda4e429ab72b0e41909ce78a8ee3828c",
+      "ast_equal": true,
+      "before_sha256": "0ba74ec18979fc4f13facdaefe880796f7e81fd33937aa0bf02df7990487ed90",
+      "path": "scripts/ndu_real_runtime/interval_costs.py"
+    },
+    {
+      "after_sha256": "664b9eb244a9ddcc9e33e02c2a41eb0367020d027e84196f4738c92b61b16915",
+      "ast_equal": true,
+      "before_sha256": "d0dc089178096bc9753cd6347f78251acae3915a9b84133435fcabdc55b75c17",
+      "path": "scripts/ndu_real_runtime/matrix.py"
+    },
+    {
+      "after_sha256": "0d2c0a6a1e1df89b28351f22a759470078a30bc9df559f6c4b26859671a57670",
+      "ast_equal": true,
+      "before_sha256": "118c5e38046f83eefd4aa52d23fb0d4fd29639eb5907e3a0e69d3edd7d6e794b",
+      "path": "scripts/ndu_real_runtime/meter_diagnostic.py"
+    },
+    {
+      "after_sha256": "268966957ddf16d9824e08041c63f09cb14f6f3e6e14a11aceaf104857089226",
+      "ast_equal": true,
+      "before_sha256": "48c78da966e6902b840c65f2024d9302f90623a486fbfc17471b3ed40265b869",
+      "path": "scripts/ndu_real_runtime/metering.py"
+    },
+    {
+      "after_sha256": "566e4cd00294998923a08675f90640bfae1ea63c5d540390bdd22e712dbada76",
+      "ast_equal": true,
+      "before_sha256": "7d17b79fd33a79d8d2306055e5774bc909f907f0bc3288eb4c8c6e6179656ce5",
+      "path": "scripts/ndu_real_runtime/native_worker.py"
+    },
+    {
+      "after_sha256": "816cf398cb8fa76e13bec7f699a1bf56324788de99c400c9c0a96d2a9484b6f4",
+      "ast_equal": true,
+      "before_sha256": "58989ece2e8f60beb65fe8cc8f6736042b739ed77cf561437a7fdcb72bbe9f2a",
+      "path": "scripts/ndu_real_runtime/neural.py"
+    },
+    {
+      "after_sha256": "cb3194011908ac46c20bedb8833e18a606709debbb051291360648ec2b869edd",
+      "ast_equal": true,
+      "before_sha256": "232077c1579713356cd13604530b71cca2dc798b20f5faae911235fa1e0d82a3",
+      "path": "scripts/ndu_real_runtime/objective.py"
+    },
+    {
+      "after_sha256": "5cbcaca04a4843b51379bbcc3911ae4453c25b3f0585970ae4d9d414624a47f1",
+      "ast_equal": true,
+      "before_sha256": "1c0d5b47dafd9a797257e8ec59be08da5d6f9bc2abfb0512716b13ab295ff14f",
+      "path": "scripts/ndu_real_runtime/ocr.py"
+    },
+    {
+      "after_sha256": "b8949120cfa13b1ca10d46955e2c990e673820f7096e0eb909540c51efafbbc5",
+      "ast_equal": true,
+      "before_sha256": "f0751cccef18b6e8e40ecf0b0cbd7bc727eed11f60d5ad647123407559b583b2",
+      "path": "scripts/ndu_real_runtime/pipeline.py"
+    },
+    {
+      "after_sha256": "c811ddff6f4bb31aeae28a47b23265fb7b0255a8a1cc7250a5ff591e96f946f9",
+      "ast_equal": true,
+      "before_sha256": "2ab0f7dfd9194205c2da6e4155fdc379586b81892edf1b86790965f03c056265",
+      "path": "scripts/ndu_real_runtime/recursive_objective.py"
+    },
+    {
+      "after_sha256": "e40818170025960efd7a45fbc3dd8beba45cdaa872de0bd37038dcaeb626f887",
+      "ast_equal": true,
+      "before_sha256": "64551bd3d3f6c22d63312dc70d7af8e3b985c1797734e0b1142a0af1ab2f762a",
+      "path": "scripts/ndu_real_runtime/score_worker.py"
+    },
+    {
+      "after_sha256": "3ef63104c27aeb2ee64478ad7461f579dd5f06be05aa4f4c9bcc709e8826a70b",
+      "ast_equal": true,
+      "before_sha256": "7b3417caabbd952ae77f743593db15820c1fbf7afb9f6d3dcd2327fe34a03372",
+      "path": "scripts/ndu_real_runtime/span_meter.py"
+    },
+    {
+      "after_sha256": "3c475c7c36927819b646df001399c68fd30dc03541c355f1f20e55c8c2cbfdd0",
+      "ast_equal": true,
+      "before_sha256": "348b8b4b5239e298fea71eb846a3366b81f38e9756ed0a8c4d5b3a14e7ccb0e4",
+      "path": "scripts/ndu_real_runtime/study.py"
+    },
+    {
+      "after_sha256": "3b736f76be2dad446140b69d5b6290c5fd3fe07e9a8fe0e88758ea91451291a6",
+      "ast_equal": true,
+      "before_sha256": "17c1b419c537e51684304fddaf2c477b5548656a935b6ad144de61838a9e235f",
+      "path": "scripts/ndu_real_runtime/test_interval_costs.py"
+    },
+    {
+      "after_sha256": "c18220a057ff07fb847fb63cdb6acf67da7353b327ee56560124ab9dacf1cfa1",
+      "ast_equal": true,
+      "before_sha256": "de36ce00c0afb8d6853ae7ccd6e0e7d1bbe3d3c3fefbdbb8f36d6573976a78a7",
+      "path": "scripts/ndu_real_runtime/test_recursive_contract.py"
+    },
+    {
+      "after_sha256": "940d909eedeb1c6d3ab24fa9f39247288b54f9319c4a7b9b849f90d1902942f6",
+      "ast_equal": true,
+      "before_sha256": "15cdcdc8903d164c8b048671660619ef6a50efeb29e49cace31c1812e72440a5",
+      "path": "scripts/ndu_real_runtime/test_span_meter.py"
+    },
+    {
+      "after_sha256": "c25c3c4af3596baad7367e9ce1e4d902149e7cf5c3b7ef913da093209acfb07d",
+      "ast_equal": true,
+      "before_sha256": "d6cc3d6a0f69d3a07054993730379330e750aa936098d2512f395d98644b6a48",
+      "path": "scripts/ndu_real_runtime/training.py"
+    },
+    {
+      "after_sha256": "fa3e0d54a3df044e24b4caad55e5334d770990c6c3331d088c460e1bd4845792",
+      "ast_equal": true,
+      "before_sha256": "5ef5c4fbc9ddedc319770a0690d04311e8c8f98565c9e305a05fe9e4319754a1",
+      "path": "scripts/ndu_real_runtime/training_grid.py"
+    },
+    {
+      "after_sha256": "700a66b30d24dbe39d75c2cd1293cd0ae2719526695a3fa71e725eb56670320e",
+      "ast_equal": true,
+      "before_sha256": "660386ea9562ce3b973f6ad978d3f04e4d2219ef9c6333d4bee4f53949ad07e9",
+      "path": "scripts/ndu_real_runtime/trajectory.py"
+    },
+    {
+      "after_sha256": "07f430b2cefdd04560b38855434b0802db617b77c2f125e29b9468832b333016",
+      "ast_equal": true,
+      "before_sha256": "2fab91739e0da2c8b784ba994d69fa25968f0fd9dbe5a3a39e6762b37eb04a55",
+      "path": "scripts/test_joint_generation_v4.py"
+    },
+    {
+      "after_sha256": "86896cb86dfdd6db6ac6d048d4759cde3667f4dd4d04d34638e62bf99f3251e6",
+      "ast_equal": true,
+      "before_sha256": "4b653efd022279b86cd00571213ddb5ce46801305fbf43a30999b01461f0cdf1",
+      "path": "scripts/test_joint_generation_v4_ndu.py"
+    }
+  ],
   "host_final": {
     "files": 7,
     "mismatches": []

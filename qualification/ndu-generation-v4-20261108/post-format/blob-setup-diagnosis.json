@@ -1,0 +1,63 @@
+{
+  "run_id": 42454774746,
+  "job_id": 128651462699,
+  "head_sha": "4f32a14e12ccb738c65a511d05b36ac388fc328b",
+  "job_conclusion": "failure",
+  "primary_cause": "Fence setup failed before checkout: resident error unsupported_resolver_layout.",
+  "secondary_failures": [
+    "Local clean-worktree action missing because checkout was skipped.",
+    "Fence post-job active Action mount evidence unavailable."
+  ],
+  "blob_size_policy_execution": "NOT_RUN_SETUP_FAILED",
+  "steps": [
+    {
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "conclusion": "failure"
+    },
+    {
+      "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Determine comparison range",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Test blob size policy",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Check changed blob sizes",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Check for a clean worktree",
+      "conclusion": "failure"
+    },
+    {
+      "name": "Post Run openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "conclusion": "failure"
+    },
+    {
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ],
+  "exact_head_policy_max_bytes": 512000,
+  "followup_largest_blob": {
+    "path": "qualification/ndu-generation-v4-20261108/post-ci/caller-original-job.log",
+    "bytes": 53896,
+    "sha256": "2e952da948e029ad8dcd9c672f9dab30059f519991f9bcbf3a3562f61b2bf28e",
+    "stage": "qualification: bind CI repairs to original numerical and new native evidence"
+  },
+  "followup_package_sha256": "77a44fe45ad67baa218d7f3eedae170ba59a73b7deebf861231287e1ad5b38e4",
+  "source_or_evidence_shrinking_indicated": false,
+  "raw_log_sha256": "d651f45fc56500b83a5cae1b3a4a4c1e98cdb9a30d3ad1a287957f74e26ea349",
+  "candidate_modified": false,
+  "workflow_rerun": false,
+  "first_metadata_transport_error_retained": true
+}
