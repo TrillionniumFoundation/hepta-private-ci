@@ -45,6 +45,7 @@ pub(crate) fn admission_for_step(
         model_request: prepared.model_request.clone(),
         deadline_micros: prepared.input.deadline_micros,
         admitted_at_micros: now_micros,
+        host_queue_age_micros: Some(0),
     })
 }
 
@@ -76,6 +77,8 @@ pub fn infer_cell(
 /// supplied by its fact owner. Re-encoding is checked against the persisted full
 /// feature request; it cannot change the request or dispatch another computation.
 /// After the deadline, decide/commit force abstention while retaining actual cost.
+/// Missing host queue measurements retain pending state without reading or
+/// repeating native work. Recovery time is never substituted for actual usage.
 pub fn recover_cell_inference(
     definition: &CellDefinitionV1,
     owner: &impl CellStateOwnerV1,
@@ -110,15 +113,22 @@ pub fn recover_cell_inference(
     {
         return Err(CellExecutionError::OperationConflict);
     }
+    let host_queue_age_micros = pending
+        .host_queue_age_micros
+        .ok_or(CellExecutionError::UnmeasuredQueueCost)?;
     let request = feature_request(&prepared.model_request);
     let receipt = readback
         .read_feature(&request)
         .map_err(CellExecutionError::Backend)?
         .ok_or(CellExecutionError::InferencePending)?;
     let mut receipt_port = ReceiptPort(receipt);
-    let output = InferenceControlModelPort::new(&mut receipt_port)
+    let mut output = InferenceControlModelPort::new(&mut receipt_port)
         .execute(&prepared.model_request)
         .map_err(CellExecutionError::Backend)?;
+    output.queue_age_micros = output
+        .queue_age_micros
+        .checked_add(host_queue_age_micros)
+        .ok_or(CellExecutionError::CapacityExceeded)?;
     validate_model_output(&prepared.definition.runtime, &output)
         .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
     Ok(InferredCellStepV1 {

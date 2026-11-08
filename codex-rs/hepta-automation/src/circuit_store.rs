@@ -21,6 +21,7 @@ use crate::circuit_journal::encode;
 use crate::circuit_journal::unavailable;
 use crate::circuit_profile::hash;
 use crate::circuit_profile::text;
+use crate::circuit_state::CircuitCommittedTraceV2;
 
 impl AutomationStore {
     /// Register immutable bytes under the new explicit profile. Old versions
@@ -150,6 +151,23 @@ impl AutomationStore {
         let history = circuit_journal::load(&mut tx, self.owner_agent_id(), run_id).await?;
         tx.commit().await.map_err(unavailable)?;
         Ok(history.map(|history| history.run))
+    }
+
+    /// Read the complete consumed computation receipts and their replayed run
+    /// under the same SQLite snapshot. This never admits or repeats work.
+    pub async fn bounded_circuit_committed_trace(
+        &self,
+        run_id: &str,
+    ) -> Result<Option<CircuitCommittedTraceV2>, TaskFlowError> {
+        text(run_id)?;
+        let mut tx = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let history = circuit_journal::load(&mut tx, self.owner_agent_id(), run_id).await?;
+        tx.commit().await.map_err(unavailable)?;
+        Ok(history.map(|history| CircuitCommittedTraceV2 {
+            run: history.run,
+            completions: history.completions,
+            history_digest: history.last_digest,
+        }))
     }
 
     fn circuit_fence_identity(

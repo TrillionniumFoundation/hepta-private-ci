@@ -1,7 +1,10 @@
 //! Learning readback of an actual task-boundary model replacement.
 //! This supports the generation owner's published reset only. It neither
 //! executes a generic CellBundleCutoverPlan nor claims preserved/migrated state.
+//! Shared schema and declared encoder pins must match the learning bundles;
+//! effective base/adapter loading remains the backend/artifact owner's contract.
 
+use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
 use codex_hepta_learning_artifacts::CellStatePartitionV1;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
@@ -83,7 +86,8 @@ struct PublishedLearningGenerationResetV1 {
 impl<W: AnchorWitnessStore> ReadyAgentdGenerationUpdateV1<W> {
     /// Observe a selected candidate from this original publication.
     /// The old manifest is data: its complete digest must match the published
-    /// predecessor, and its bundle must be the learning request's baseline.
+    /// predecessor. Both bundles must match their manifest's shared schema and
+    /// declared encoder pins, including the learning request's baseline.
     pub fn read_learning_updated_selection(
         &self,
         coordinator: &LearningIterationCoordinatorV1,
@@ -199,11 +203,10 @@ impl<W: AnchorWitnessStore> GenerationLearningReadbackV1<'_, W> {
         }
         let operation = learning_updated_task_operation_id_v1(coordinator)?;
         let request = &coordinator.snapshot().request;
-        let bundle = coordinator
+        let candidate = coordinator
             .next_task_bundle()
-            .ok_or_else(|| invalid("updated learning decision has no candidate"))?
-            .digest()
-            .map_err(invalid)?;
+            .ok_or_else(|| invalid("updated learning decision has no candidate"))?;
+        let bundle = candidate.digest().map_err(invalid)?;
         let previous = self.publication.previous();
         let target = self.publication.target();
         let scope = target.scope();
@@ -241,6 +244,8 @@ impl<W: AnchorWitnessStore> GenerationLearningReadbackV1<'_, W> {
                 "learning candidate differs from the published model replacement",
             ));
         }
+        validate_manifest_contract(&request.selected_bundle, previous_manifest)?;
+        validate_manifest_contract(candidate, self.journal.manifest())?;
         // Ready creation/recovery authenticates the original durable publication
         // and exclusively held initialized journal. Publication required the old
         // ACK/drain and fences it. This final live check also rejects withdrawal,
@@ -271,6 +276,43 @@ impl<W: AnchorWitnessStore> GenerationLearningReadbackV1<'_, W> {
             receipt,
         })
     }
+}
+
+/// Check only pins with the same meaning in both contracts. An absent encoder
+/// retains the backend's explicit optional-component semantics. Aggregate heads,
+/// base/adapter composition and effective weights have no defined projection
+/// here; neither this check nor a changed weights digest proves their loading.
+fn validate_manifest_contract(
+    bundle: &CellCompatibilityBundleV1,
+    manifest: &CellBackendManifestV2,
+) -> Result<(), AgentdError> {
+    for (field, expected, actual) in [
+        (
+            "state schema",
+            bundle.components.state_schema,
+            manifest.state_schema,
+        ),
+        (
+            "output schema",
+            bundle.components.output_schema,
+            manifest.output_schema,
+        ),
+    ] {
+        if actual != expected.into_array() {
+            return Err(invalid(format!(
+                "learning {field} differs from the published runtime"
+            )));
+        }
+    }
+    if manifest
+        .encoder
+        .is_some_and(|encoder| encoder != bundle.components.encoder.into_array())
+    {
+        return Err(invalid(
+            "learning encoder differs from the published runtime",
+        ));
+    }
+    Ok(())
 }
 
 fn invalid(error: impl std::fmt::Display) -> AgentdError {

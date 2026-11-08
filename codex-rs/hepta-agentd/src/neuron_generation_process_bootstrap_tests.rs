@@ -189,11 +189,14 @@ fn paths_reject_aliases_and_reopen_never_falls_back_to_creation() -> Result<()> 
 #[test]
 fn actual_opened_files_reject_raced_aliases_and_non_regular_assets() -> Result<()> {
     use std::os::unix::ffi::OsStrExt;
+    use std::os::unix::fs::PermissionsExt;
 
     let mut f = Fixture::new()?;
     f.descriptor["mode"] = Value::String("reopen".into());
     for name in ["cell.journal", "independent.witness", "control.journal"] {
-        fs::write(f.directory.path().join(name), b"existing owner bytes")?;
+        let path = f.directory.path().join(name);
+        fs::write(&path, b"existing owner bytes")?;
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o600))?;
     }
     fixture::write_descriptor(&f.path, &f.descriptor)?;
     let descriptor: linux::Descriptor = serde_json::from_value(f.descriptor.clone())?;
@@ -201,20 +204,34 @@ fn actual_opened_files_reject_raced_aliases_and_non_regular_assets() -> Result<(
     let (_, descriptor_file) = files::read_bounded(&f.path, 262_144)?;
     let assets = files::open_assets(&descriptor)?;
     let public_before = fs::read(&descriptor.public.path)?;
+    // Reach inode validation regardless of the runner's file-creation umask.
+    fs::set_permissions(&descriptor.public.path, fs::Permissions::from_mode(0o600))?;
     fs::remove_file(&descriptor.control_path)?;
     fs::hard_link(&descriptor.public.path, &descriptor.control_path)?;
-    assert!(matches!(
-        files::open_owners(&descriptor, &[
-            &descriptor_file, &assets.executable, &assets.weights, &assets.public,
-        ]),
-        Err(AgentdError::Invalid(message)) if message.contains("alias the same inode")
-    ));
+    let error = files::open_owners(
+        &descriptor,
+        &[
+            &descriptor_file,
+            &assets.executable,
+            &assets.weights,
+            &assets.public,
+        ],
+    )
+    .err();
+    assert!(
+        matches!(
+            &error,
+            Some(AgentdError::Invalid(message)) if message.contains("alias the same inode")
+        ),
+        "unexpected owner-open result: {error:?}"
+    );
     assert_eq!(fs::read(&descriptor.public.path)?, public_before);
     assert_eq!(fs::read(&descriptor.journal_path)?, b"existing owner bytes");
     assert_eq!(fs::read(&descriptor.witness_path)?, b"existing owner bytes");
 
     fs::remove_file(&descriptor.control_path)?;
     fs::write(&descriptor.control_path, b"existing owner bytes")?;
+    fs::set_permissions(&descriptor.control_path, fs::Permissions::from_mode(0o600))?;
     files::validate_paths(&f.path, &descriptor)?;
     fs::remove_file(&descriptor.weights.path)?;
     let fifo = std::ffi::CString::new(descriptor.weights.path.as_os_str().as_bytes())?;

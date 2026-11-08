@@ -2,6 +2,9 @@
 //! Cell pipeline, then returns a completion only after the Cell owner commits.
 //! This computation facility never invokes tools or publishes external effects.
 
+#[path = "circuit_cell_batch.rs"]
+mod batch;
+
 use std::error::Error;
 use std::fmt;
 
@@ -225,7 +228,7 @@ where
     }
 }
 
-fn finish(
+pub(crate) fn finish(
     binding: &CircuitCellBindingV1,
     dispatch: &codex_hepta_automation::CircuitDispatchV2,
     input: &CellStepInputV1,
