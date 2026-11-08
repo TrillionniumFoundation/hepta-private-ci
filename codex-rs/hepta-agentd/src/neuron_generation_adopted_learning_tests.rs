@@ -5,6 +5,7 @@
 use std::sync::atomic::Ordering;
 
 use codex_hepta_learning_artifacts::*;
+use codex_hepta_neuron::CellGenerationConfigV2;
 use codex_hepta_neuron::CellGenerationIntentV2;
 use codex_hepta_neuron::CellTaskCostV2;
 use codex_hepta_types::Digest32;
@@ -25,6 +26,9 @@ use crate::neuron_generation_update_bootstrap::learning_test_receipt;
 use crate::prepare_agentd_generation_update_v1;
 use crate::recover_agentd_generation_update_v1;
 
+#[path = "neuron_generation_learning_contract_tests.rs"]
+mod contract;
+
 fn d(label: &str) -> Digest32 {
     Digest32::of_bytes(label.as_bytes())
 }
@@ -34,6 +38,9 @@ fn candidate(baseline: &CellCompatibilityBundleV1) -> anyhow::Result<CellCompati
     candidate.artifact_id = StableId::new("fixture-selected-trained-candidate")?;
     candidate.generation = baseline.generation.next()?;
     candidate.components.cell_adapter = Some(d("different trained adapter"));
+    candidate.components.encoder = d("candidate encoder");
+    candidate.components.state_schema = d("candidate state schema");
+    candidate.components.output_schema = d("candidate output schema");
     candidate.rollback_predecessor = Some(baseline.digest()?);
     candidate.training_lineage = Some(CellTrainingLineageV1 {
         source_bundle: baseline.digest()?,
@@ -42,6 +49,19 @@ fn candidate(baseline: &CellCompatibilityBundleV1) -> anyhow::Result<CellCompati
         evaluation_profile: d("evaluation"),
     });
     Ok(candidate)
+}
+
+// Explicit shared pins, not a claim that the synthetic backend loads adapters.
+fn bind_test_contract(
+    config: &mut CellGenerationConfigV2,
+    bundle: &CellCompatibilityBundleV1,
+) -> anyhow::Result<()> {
+    config.manifest.bundle_digest = bundle.digest()?.into_array();
+    config.manifest.encoder = Some(bundle.components.encoder.into_array());
+    config.manifest.state_schema = bundle.components.state_schema.into_array();
+    config.manifest.output_schema = bundle.components.output_schema.into_array();
+    config.initial.manifest_digest = config.manifest.digest()?;
+    Ok(())
 }
 
 fn decision(
@@ -122,15 +142,13 @@ impl UpdatedRuntime {
         let mut host = host::Fixture::new().await;
         let baseline = learning_test_baseline()?;
         let candidate = candidate(&baseline)?;
-        host.config.manifest.bundle_digest = baseline.digest()?.into_array();
-        host.config.initial.manifest_digest = host.config.manifest.digest()?;
+        bind_test_contract(&mut host.config, &baseline)?;
         let mut next = host.config.clone();
         next.initial.scope.run_id.push_str("-updated-learning-next");
         next.initial.generation += 1;
         next.initial.writer_epoch += 1;
         next.task_digest = d("updated learning next task").into_array();
-        next.manifest.bundle_digest = candidate.digest()?.into_array();
-        next.initial.manifest_digest = next.manifest.digest()?;
+        bind_test_contract(&mut next, &candidate)?;
         let publication = Fixture::new_with_target(host.config.clone(), next)?;
         let coordinator = decision(&publication, candidate, d("proposal composition"))?;
         let operation_id = learning_updated_task_operation_id_v1(&coordinator)?.to_string();
