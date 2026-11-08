@@ -50,6 +50,43 @@ This entry point reviews reproducibility and descriptive numerical consistency.
 false; independent owner authentication, scientific acceptance and adoption
 remain outside its authority. This inventory introduces no numerical thresholds.
 
+## Common binding and successor readback follow-through
+
+The follow-through imports the exact joint-configuration v2 implementation and
+regressions from `b040333617ed493944ae028bfb502c94d3b10991`. Incumbent and
+candidate model roles, state schema, encoder, backend, state transfer policy,
+the complete bundle digest and the declared consumer task are bound explicitly.
+This source reuse does not transfer earlier CI or scientific qualification.
+
+Partial evidence must also agree: foundation, protocol and experiment documents
+cannot declare conflicting configuration or protocol hashes just because the
+top-level originals are absent. The report separates `declared_bindings` from
+identities verified using supplied originals.
+
+Foundation v2 adds `declared_successor: {task_id, model_role}` to the existing
+five artifact bindings. Its successor artifact is strict JSON using
+`hepta.cell-consumption-readback.v1` with `task_id`, `model_role`,
+`bundle_sha256`, `model_sha256`, `state_schema_sha256`, `encoder_sha256` and
+`backend_sha256`. A verified v2 configuration must match every field. A missing
+or legacy configuration leaves the v2 foundation mechanically unready. Legacy
+v1 remains readable with its original opaque-artifact integrity semantics.
+
+Consistent readback bytes only establish declared binding integrity. They do
+not authenticate the declared task, evaluator, execution or actual successor
+consumption. These authority fields remain false, including when every digest
+matches. The actual-consumption blocker remains explicit.
+
+`followthrough-20261108/README.zh-CN.md` explains the current source map, retained
+native VERIFY-1 evidence and independent audit. The inventory includes the
+immutable audit archive, original observations and before/after regressions.
+These observations retain their distinct experiment/source/budget scopes.
+`CURRENT_INPUT.json` still has absent common inputs; the added inventory does
+not promote separate historical runs into one prospectively frozen experiment.
+
+The dedicated source-head CI executes 19 gate tests, 23 configuration tests and
+8 successor tests. It also regenerates the actual current review and compares
+the complete JSON with `CURRENT_RESULT.json`, retaining all receipts on failure.
+
 ## Validation history and CI repairs
 
 `VALIDATION.json` and its original receipts describe the initial gate delivery.
