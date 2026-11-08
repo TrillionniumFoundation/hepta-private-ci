@@ -131,7 +131,8 @@ def execute_one(request_path):
     receipt = {"schema": "ndu.real.original-attempt.v1", "original_operation_id": request["profile"]["original_operation_id"],
                "request_sha256": file_sha(request_path), "result_sha256": file_sha(output / "result.json"),
                "started_at": started_at, "finished_at": now(), "wall_seconds": time.perf_counter()-started_wall,
-               "cpu_seconds": _usage()-started_cpu, "terminal_status": result["terminal_status"],
+               "cpu_seconds": _usage()-started_cpu, "cpu_scope": "task_process_and_reaped_children",
+               "terminal_status": result["terminal_status"],
                "retry_of": request["profile"].get("retry_of"), "process_id": os.getpid(),
                "deployment_included": True, "external_evaluation_included": True,
                "energy_joules": None, "provider_charges": None, "native_owner_authentication": "SEPARATE_REQUIRED"}

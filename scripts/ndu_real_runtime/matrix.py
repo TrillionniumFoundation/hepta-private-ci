@@ -180,6 +180,13 @@ def compact_row(row):
     compact = {key: row.get(key) for key in keys}
     meter, score = row.get("deployment_meter", {}), row.get("score_components", {})
     compact.update(costs_by_category=meter.get("costs"), cpu_seconds=meter.get("cpu_seconds"),
+                   cost_schema=meter.get("schema"), cost_cpu_scope=meter.get("cpu_scope"),
+                   cost_subcategory_status=meter.get("subcategory_status"),
+                   cost_unclassified_seconds=meter.get("observed_unclassified_overhead_seconds"),
+                   cost_raw_spans_sha256=meter.get("raw_spans_sha256"),
+                   cost_actor_record_sha256s=meter.get("actor_record_sha256s"),
+                   cost_interval_reconciliation=meter.get("interval_reconciliation"),
+                   cost_unclosed_actor_subcategories=meter.get("unclosed_actor_subcategories"),
                    evaluator_sha256=score.get("evaluator_source_sha256"), rubric_sha256=score.get("rubric_sha256"),
                    score_components={key: score.get(key) for key in ("text_quality", "image_quality", "committed_output_preserved")},
                    started_at=row.get("original_attempt", {}).get("started_at"),

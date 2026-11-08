@@ -21,7 +21,8 @@ from PIL import Image
 from ndu_real_materials.common import read_bound, strict_json
 from ndu_real_materials.isolate import run_actor
 from .controllers import ACTIONS
-from .metering import CATEGORIES, Meter, atomic_json, canonical_sha, file_sha
+from .metering import Meter, atomic_json, canonical_sha, file_sha
+from .interval_costs import actor_receipts, reconcile
 
 
 def bootstrap(config, module):
@@ -55,7 +56,7 @@ class EpisodeHost:
         if training and case["role"] != "train":
             raise PermissionError("Training exploration accepts registered train sources only")
         self.operation_id = profile["original_operation_id"]
-        self.meter = Meter(self.operation_id)
+        self.meter = Meter(self.operation_id, journal_path=self.output / "deployment.meter.jsonl")
         self.started = time.perf_counter()
         with self.meter.stage("sync", "copy exact registered public packet"):
             packet_bytes = read_bound(self.root, case["packet"])
@@ -220,27 +221,15 @@ class EpisodeHost:
                     raise RuntimeError("Actor exited before a terminal action or bounded budget stop")
         except BaseException as exception:
             error = {"type": type(exception).__name__, "message": str(exception), "traceback": traceback.format_exc()}
-        measured = self.meter.finish()
-        # The enclosing host measured all process startup/waiting. Replace only
-        # its embedded actor intervals with their disjoint stage breakdown.
-        actor_meters = [step["meter"] for step in self.steps]
-        failure_path = self.actor_output / "actor-failure.json"
-        if failure_path.exists():
-            failure = strict_json(failure_path.read_bytes())
-            extra = failure.get("meter")
-            if extra is not None and extra["operation_id"] not in {value["operation_id"] for value in actor_meters}:
-                actor_meters.append(extra)
-        embedded = {key: sum(value["costs"][key] for value in actor_meters) for key in CATEGORIES}
-        if sum(embedded.values()) > measured["costs"]["sync"] + 0.01:
-            error = {"type": "MeterReconciliationError", "message": "Embedded actor intervals exceed host synchronization"}
-        else:
-            measured["costs"]["sync"] -= sum(embedded.values())
-            for key, amount in embedded.items():
-                measured["costs"][key] += amount
-        measured["unclosed_actor_subcategories"] = bool(error and not failure_path.exists())
-        if measured["unclosed_actor_subcategories"]:
-            measured["subcategory_status"] = "KNOWN_LOWER_BOUNDS; unobserved failed actor work remains in measured host envelope"
-            measured["subcategory_upper_bounds"] = {key: None for key in CATEGORIES}
+        measured = self.meter.finish("FAILED" if error else "BUDGET_STOP" if self.budget_stop else "SUCCEEDED")
+        try:
+            observed = actor_receipts([step["meter"] for step in self.steps], self.actor_output)
+            measured = reconcile(measured, observed)
+        except (ValueError, KeyError, OSError) as exception:
+            measured["interval_reconciliation"] = "FAILED; raw evidence retained"
+            measured["costs"] = {key: None for key in measured["costs"]}
+            measured["observed_unclassified_overhead_seconds"] = measured["wall_seconds"]
+            error = {"type": "MeterReconciliationError", "message": str(exception), "original_error": error}
         atomic_json(self.output / "launch.json", launch)
         atomic_json(self.output / "trajectory.json", {"steps": self.steps})
         result = {"schema": "ndu.real.episode-result.v1", **self.profile,
@@ -270,8 +259,10 @@ class EpisodeHost:
         return result
 
     def score(self):
-        meter = Meter(self.operation_id + "/external-evaluation")
+        meter = Meter(self.operation_id + "/external-evaluation",
+                      journal_path=self.output / "evaluation.meter.jsonl")
         scores = []
+        meter_status = "FAILED"
         directories = self.snapshots if self.training else self.snapshots[-1:]
         try:
             for directory in directories:
@@ -283,20 +274,23 @@ class EpisodeHost:
                 try:
                     with meter.stage("critic", "independent post-actor reference scorer"):
                         run = subprocess.run(command, capture_output=True, timeout=30, check=False)
+                        if run.returncode != 0:
+                            write_bytes_once(directory / "evaluation.stdout", run.stdout)
+                            write_bytes_once(directory / "evaluation.stderr", run.stderr)
+                            raise RuntimeError(f"External scorer exited {run.returncode}")
                 except subprocess.TimeoutExpired as error:
                     write_bytes_once(directory / "evaluation.stdout", error.stdout or b"")
                     write_bytes_once(directory / "evaluation.stderr", error.stderr or b"")
                     raise
                 write_bytes_once(directory / "evaluation.stdout", run.stdout)
                 write_bytes_once(directory / "evaluation.stderr", run.stderr)
-                if run.returncode != 0:
-                    raise RuntimeError(f"External scorer exited {run.returncode}")
                 score = strict_json(output.read_bytes())
                 if score["evaluator_source_sha256"] != self.config["evaluator_sha256"]:
                     raise ValueError("External scorer source differs from the predeclared pin")
                 scores.append(score)
+            meter_status = "SUCCEEDED"
         finally:
-            self.evaluation_meter = meter.finish()
+            self.evaluation_meter = meter.finish(meter_status)
             atomic_json(self.output / "evaluation-meter.json", self.evaluation_meter)
         return scores, self.evaluation_meter
 

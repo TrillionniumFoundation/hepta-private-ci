@@ -363,7 +363,8 @@ def _residuals(model, rows, deadline):
 
 def _source_pins():
     root = Path(__file__).resolve().parents[2]
-    paths = [Path(__file__), *[Path(__file__).with_name(n + ".py") for n in ("neural", "ocr", "controllers")],
+    paths = [Path(__file__), *[Path(__file__).with_name(n + ".py") for n in
+             ("neural", "ocr", "controllers", "metering", "span_meter")],
              root / "scripts/ndu_real_materials/evaluator.py",
              root / "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py"]
     return {str(p.relative_to(root)): file_sha(p) for p in paths}
@@ -382,7 +383,7 @@ def run(args):
                        args.lr, args.latency_weight, args.max_wall_seconds)
     output = Path(args.output); output.mkdir(parents=True, mode=0o700, exist_ok=False)
     identity = args.run_id or "fit-" + uuid.uuid4().hex
-    meter = Meter(identity)
+    meter = Meter(identity, journal_path=output / "training.meter.jsonl")
     stage = "bootstrap" if args.bootstrap else "content" if args.content_only else "fit"
     report = {"schema": "ndu.real.training-receipt.v1", "run_id": identity, "runtime_job_id": args.runtime_job_id,
               "status": "STARTED", "stage": stage, "core": args.core, "regime": args.regime,
@@ -488,7 +489,7 @@ def run(args):
         if model is not None:
             report["failed_weights_sha256"] = _save_weights(model, output / "failed-weights.pt")
     finally:
-        report["meter"] = meter.finish()
+        report["meter"] = meter.finish("FAILED" if report["status"] == "FAILED" else "SUCCEEDED")
         report["max_rss_bytes"] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * (1 if sys.platform == "darwin" else 1024)
         report["cost_scope"] = "Meter excludes interpreter startup and final receipt serialization; outer supervisor owns the full child envelope. Collection/acquisition/prior fits remain separately charged."
         atomic_json(output / "receipt.json", report)

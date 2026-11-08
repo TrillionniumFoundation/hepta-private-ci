@@ -132,7 +132,8 @@ def run():
         if (set(state) != required or state["schema"] != "ndu.real.actor-step.v1"
                 or state["case_id"] != packet["case_id"] or state["step"] != sequence):
             raise ValueError("Unexpected episode input, label or future field")
-        meter = Meter(f"{args.operation_id}/decision/{sequence:02d}")
+        meter = Meter(f"{args.operation_id}/decision/{sequence:02d}",
+                      journal_path=Path.cwd() / f"decision-{sequence:02d}.meter.jsonl")
         _active_meter = meter
         if not args.training_exploration and (args.controller == "initial"
                 or (args.controller == "tuned_fixed" and sequence >= len(fixed_schedule))):
