@@ -3,6 +3,7 @@
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD_NO_PAD;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
+use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_neuron::CellBackendManifestV2;
 use codex_hepta_neuron::CellGenerationObservationV1;
 use codex_hepta_neuron::CellGenerationReceiptV2;
@@ -81,6 +82,74 @@ pub(crate) fn verify_original_bytes(
                 "current_permission": "NOT_EXPORTED",
                 "production_qualification": "HOLD_NO_GO",
                 "pins_are_fixture_derived": true,
+            })
+        );
+    }
+    Ok(())
+}
+
+/// Export the terminal coordinator's exact production-codec bytes after the
+/// original actor's acknowledged use and cold recovery. This remains a local
+/// engineering fixture, independent of model training, STOP, or host authority.
+pub(crate) fn verify_completed_bytes(
+    readback: &AgentdGenerationLearningUseReadbackV1,
+    coordinator: &LearningIterationCoordinatorV1,
+    phase: &str,
+) -> anyhow::Result<()> {
+    assert_eq!(coordinator.next_stage(), None);
+    assert_eq!(readback.authority(), AuthorityPosture::DENY_ALL);
+    let snapshot = coordinator.snapshot();
+    let mut selection = snapshot.clone();
+    let next_use = selection
+        .receipts
+        .pop()
+        .ok_or_else(|| anyhow::anyhow!("missing completed next-use receipt"))?;
+    selection.head_digest = next_use.predecessor;
+    assert_eq!(
+        LearningIterationCoordinatorV1::from_snapshot(selection)?.next_stage(),
+        Some(LearningIterationStageV1::NextUse)
+    );
+    let payload: serde_json::Value = serde_json::from_str(readback.payload_json())?;
+    assert_eq!(
+        payload["learning_head"],
+        serde_json::to_value(next_use.predecessor.into_array())?
+    );
+    let observation: serde_json::Value = serde_json::from_str(
+        payload["generation_observation_json"]
+            .as_str()
+            .ok_or_else(|| anyhow::anyhow!("missing original generation observation"))?,
+    )?;
+    assert_eq!(
+        observation["pending_request_digest"],
+        serde_json::Value::Null
+    );
+    assert_eq!(observation["pending_output"], serde_json::Value::Null);
+    let checkpoint = checkpoint_codec::encode(snapshot)?;
+    let decoded = checkpoint_codec::decode(&checkpoint)?;
+    assert_eq!(decoded, *snapshot);
+    assert_eq!(
+        LearningIterationCoordinatorV1::from_snapshot(decoded)?.next_stage(),
+        None
+    );
+    let initial =
+        LearningIterationCoordinatorV1::new(snapshot.request.clone(), snapshot.owners.clone())?;
+    if std::env::var_os("HEPTA_GENERATION_LEARNING_READBACK_STDOUT").is_some() {
+        println!(
+            "HEPTA_LEARNING_COMPLETION_V1 {phase} {}",
+            serde_json::json!({
+                "schema": "hepta.learning.completed-checkpoint.fixture.v1",
+                "initial_head": initial.snapshot().head_digest.to_string(),
+                "selection_head": next_use.predecessor.to_string(),
+                "checkpoint_sha256": Digest32::of_bytes(&checkpoint).to_string(),
+                "checkpoint_base64": STANDARD_NO_PAD.encode(&checkpoint),
+                "learning_head": snapshot.head_digest.to_string(),
+                "evaluation_profile": snapshot.request.evaluation_profile.to_string(),
+                "readback_sha256": Digest32::of_bytes(&serde_json::to_vec(readback)?).to_string(),
+                "authority": "DENY_ALL",
+                "current_permission": "NOT_EXPORTED",
+                "production_qualification": "HOLD_NO_GO",
+                "pins_are_fixture_derived": true,
+                "actual_model_execution_accepted": false,
             })
         );
     }

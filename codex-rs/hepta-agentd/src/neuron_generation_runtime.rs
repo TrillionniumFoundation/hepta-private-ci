@@ -38,6 +38,8 @@ mod learning_readback;
 #[cfg(unix)]
 pub use learning_readback::AgentdGenerationLearningUseReadbackV1;
 #[cfg(all(test, unix))]
+pub(crate) use learning_readback::test_support::verify_completed_bytes as verify_completed_learning_readback_test_bytes;
+#[cfg(all(test, unix))]
 pub(crate) use learning_readback::test_support::verify_original_bytes as verify_learning_use_readback_test_bytes;
 
 #[cfg(unix)]
