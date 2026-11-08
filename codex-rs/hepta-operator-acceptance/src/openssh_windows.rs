@@ -355,6 +355,29 @@ pub(crate) fn verify(
         .system_directory
         .parent()
         .ok_or_else(|| invalid("Windows system directory has no root"))?;
+    #[cfg(test)]
+    eprintln!(
+        "HEPTA_OPENSSH_VERIFIER_BEGIN {}",
+        serde_json::json!({
+            "fixed_binary": &verifier.path,
+            "binary_file_id": [verifier.id.volume, verifier.id.index],
+            "allowed_path": &inputs.allowed.owned.path,
+            "allowed_file_id": [inputs.allowed.owned.id.volume, inputs.allowed.owned.id.index],
+            "signature_path": &inputs.signature.owned.path,
+            "signature_file_id": [inputs.signature.owned.id.volume, inputs.signature.owned.id.index],
+            "statement_bytes": statement.len(),
+            "signature_bytes": signature.len(),
+            "allowed_bytes": allowed_signers.len(),
+            "principal": principal,
+            "namespace": namespace,
+            "env_clear": {"SystemRoot": system_root, "LANG": "C", "LC_ALL": "C"},
+            "cwd": &verifier.system_directory,
+            "child_stdin": "piped",
+            "child_stdout_stderr": "unchanged test inherit",
+            "parent_stdout_is_terminal": std::io::IsTerminal::is_terminal(&std::io::stdout()),
+            "parent_stderr_is_terminal": std::io::IsTerminal::is_terminal(&std::io::stderr()),
+        })
+    );
     let mut child = Command::new(&verifier.path)
         // Diagnose the same original verifier child in tests; production stays quiet.
         .args(if cfg!(test) { &["-vvv"][..] } else { &[][..] })
@@ -392,10 +415,14 @@ pub(crate) fn verify(
         })
         .spawn()
         .map_err(|error| {
+            #[cfg(test)]
+            eprintln!("HEPTA_OPENSSH_VERIFIER_SPAWN_ERROR {error:?}");
             invalid(format!(
                 "failed to start trusted Windows ssh-keygen: {error}"
             ))
         })?;
+    #[cfg(test)]
+    eprintln!("HEPTA_OPENSSH_VERIFIER_CHILD_PID {}", child.id());
     let write_result = match child.stdin.take() {
         Some(mut stdin) => stdin.write_all(statement),
         None => Err(std::io::Error::other(
@@ -405,6 +432,8 @@ pub(crate) fn verify(
     let status = match child.wait() {
         Ok(status) => status,
         Err(error) => {
+            #[cfg(test)]
+            eprintln!("HEPTA_OPENSSH_VERIFIER_WAIT_UNKNOWN {error:?}");
             // Keep the original Child and its pins in the single process slot.
             // Later calls can only reconcile it until termination is observed.
             *pending = Some(ActiveVerifier {
@@ -415,6 +444,17 @@ pub(crate) fn verify(
             return Err(error.into());
         }
     };
+    #[cfg(test)]
+    eprintln!(
+        "HEPTA_OPENSSH_VERIFIER_TERMINAL {}",
+        serde_json::json!({
+            "child_pid": child.id(),
+            "exit_code": status.code(),
+            "status_debug": format!("{status:?}"),
+            "stdin_write_result": format!("{write_result:?}"),
+            "stdout_stderr_location": "original inherited streams between BEGIN and TERMINAL",
+        })
+    );
     write_result?;
     inputs.verify()?;
     if identity(&verifier.file, Kind::File)? != verifier.id {
