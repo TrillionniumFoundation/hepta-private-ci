@@ -1,4 +1,7 @@
 use std::sync::Arc;
+
+#[path = "circuit_task_ingress_tests.rs"]
+mod circuit_task_ingress;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -138,6 +141,14 @@ async fn attach_runtime_prerequisites(fixture: &RuntimeFixture) {
 async fn drain_runtime_keeps_control_reconciliation_live_until_terminal_observation() {
     let fixture = runtime_fixture();
     attach_runtime_prerequisites(&fixture).await;
+    fixture
+        .state
+        .attach_automation_store(
+            AutomationStore::open(&fixture.identity.layout)
+                .await
+                .expect("real empty automation owner"),
+        )
+        .expect("attach automation owner for verified drain");
     fixture
         .registry
         .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)

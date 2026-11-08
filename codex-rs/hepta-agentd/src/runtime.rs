@@ -48,6 +48,7 @@ pub async fn run_with_shutdown(
     arg0_paths: Arg0DispatchPaths,
     shutdown: impl Future<Output = Result<(), AgentdError>> + Send,
 ) -> Result<(), AgentdError> {
+    let circuit_task = config.take_circuit_task_bootstrap()?;
     let production_operations = config.take_production_operations();
     let sockets = config.take_socket_inputs();
     #[cfg(target_os = "linux")]
@@ -144,6 +145,19 @@ pub async fn run_with_shutdown(
         registry,
         EVENT_CAPACITY,
     )?);
+    let circuit_task = if let Some((bootstrap, invocation)) = circuit_task {
+        state
+            .circuit_task
+            .set(bootstrap.handle())
+            .map_err(|_| AgentdError::Invalid("Circuit task owner already attached".into()))?;
+        state
+            .circuit_task_invocation
+            .set(invocation)
+            .map_err(|_| AgentdError::Invalid("Circuit task invocation already attached".into()))?;
+        Some(bootstrap)
+    } else {
+        None
+    };
     if let Some(bootstrap) = &neuron_generation {
         bootstrap.attach(&state)?;
     }
@@ -349,6 +363,12 @@ pub async fn run_with_shutdown(
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
+        if let Some(owner) = circuit_task {
+            tasks.spawn_required(
+                "circuit-task-owner",
+                owner.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
         if let Some((host, interval)) = production_operations {
             tasks.spawn_required(
                 "production-operation-reconciler",
@@ -693,7 +713,10 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
     let drain_deadline = Instant::now() + RUN_DRAIN_GRACE;
     loop {
         state.expire_run_deadlines()?;
-        if state.active_run_count()? == 0 && state.neuron_generation_drain_blockers()? == 0 {
+        if state.active_run_count()? == 0
+            && state.neuron_generation_drain_blockers()? == 0
+            && state.circuit_task_drain_blockers().await? == 0
+        {
             return Ok(());
         }
         if Instant::now() >= drain_deadline {
@@ -705,7 +728,10 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
     state.mark_unresolved_runs_indeterminate("shutdown_drain_timeout")?;
     let reconcile_deadline = Instant::now() + RUN_RECONCILE_GRACE;
     loop {
-        if state.unresolved_run_count()? == 0 && state.neuron_generation_drain_blockers()? == 0 {
+        if state.unresolved_run_count()? == 0
+            && state.neuron_generation_drain_blockers()? == 0
+            && state.circuit_task_drain_blockers().await? == 0
+        {
             return Ok(());
         }
         if Instant::now() >= reconcile_deadline {
@@ -716,11 +742,12 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
 
     let unresolved = state.unresolved_run_count()?;
     let generation_blockers = state.neuron_generation_drain_blockers()?;
-    if unresolved == 0 && generation_blockers == 0 {
+    let circuit_blockers = state.circuit_task_drain_blockers().await?;
+    if unresolved == 0 && generation_blockers == 0 && circuit_blockers == 0 {
         Ok(())
     } else {
         Err(AgentdError::Protocol(format!(
-            "agentd shutdown left {unresolved} indeterminate run(s) and {generation_blockers} generation service blocker(s); owner recovery is required"
+            "agentd shutdown left {unresolved} indeterminate run(s), {generation_blockers} generation service blocker(s) and {circuit_blockers} Circuit blocker(s); owner recovery is required"
         )))
     }
 }
