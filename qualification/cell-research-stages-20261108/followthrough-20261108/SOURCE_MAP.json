@@ -1,0 +1,332 @@
+{
+  "entries": [
+    {
+      "claims": {
+        "native_fixture_tests": 48,
+        "native_trajectories": 120,
+        "neural_model_calls": 0,
+        "scientific_admission": "HOLD"
+      },
+      "execution_generation": "historical_phase1_fixture",
+      "experiment": "VERIFY-1",
+      "id": "verify1-published-phase1",
+      "identity_kind": "published_snapshot",
+      "publication": {
+        "base_branch": "fix/codex-v13-same-model-next-task-20261106",
+        "base_sha": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+        "draft": true,
+        "head_branch": "research/verify1-risk-cell-20261108-771b",
+        "head_sha": "6eb0f8d717cfd1234bbbe385d5d5fb99bde5c521",
+        "merged": false,
+        "observed_record": {
+          "bytes": 7696,
+          "path": "verify1-live/observations/github-pr-5351.json",
+          "sha256": "45fb4947db2c08d515936b0f1bc4cbea88270b6dbf599217b2d28183e54982f7"
+        },
+        "pr": 5351,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5351"
+      },
+      "separate_from": [
+        "verify1-native-model-run-v2"
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/6eb0f8d717cfd1234bbbe385d5d5fb99bde5c521/experiments/verification_cell_verify1",
+      "stage": "S1"
+    },
+    {
+      "evidence": {
+        "bytes": 2535,
+        "path": "verify1-live/CURRENT.json",
+        "sha256": "2d72973f5aeaadf4bb7a27881c4af0a7099b9e1d2fef672f0c469c60175ff4f6"
+      },
+      "experiment": "VERIFY-1",
+      "facts": {
+        "controlled_synthetic_trajectories": 108,
+        "diagnostic_only_seed": 43,
+        "independent_audit_checks_passed": 43,
+        "input_tokens": 88151,
+        "intervention_trajectories": 24,
+        "model_forwards": 652,
+        "operation_failures": 0,
+        "primary_readout_seeds": [
+          17,
+          29
+        ],
+        "primary_trajectories": 84,
+        "real_frozen_feature_readouts": 3,
+        "scientific_admission": "HOLD",
+        "sqlite_states_independently_checked": 132
+      },
+      "id": "verify1-native-model-run-v2",
+      "identity_kind": "live_native_exported_candidate",
+      "limits": [
+        "synthetic_templates",
+        "uncalibrated_scores",
+        "actual_costs_unequal",
+        "full_physical_cost_unknown",
+        "native_product_and_successor_consumption_unproved"
+      ],
+      "publication": {
+        "not_present_in_observed_pr_head": "6eb0f8d717cfd1234bbbe385d5d5fb99bde5c521",
+        "source_commit": null,
+        "state": "not_bound_to_a_published_commit"
+      },
+      "separate_from": [
+        "verify1-published-phase1"
+      ],
+      "source": {
+        "archive_sha256": "567746d6842545e264617fa62a772aed3e5ed48547fde86c5d9562b52e065796",
+        "asset_manifest_sha256": "cd66fdf58653d1cf5ee52f4b596debc75fececb0684eeb3ec8f4085d28fde8fc",
+        "frozen_phase1_sha256": {
+          "contracts": "60a38923c46e3df3ad4ec357cbe0287062986e84aa8123267b5ef2954062730d",
+          "metrics": "3e0a9a996ad62a0feae24a9905c7885352917b195146564b04ac6b15771b302d",
+          "runtime": "af8b6cf4ed31cb6024c536771f056c5a3481902e011990ab70d43b8e961079a4"
+        },
+        "native_job_id": "1a1bb3d51b5-13c47-15f",
+        "native_run": "/Users/qianqi/work/verification-cell-verify1-20261108-771b/model-pilot/run-v2",
+        "protocol_snapshot_sha256": "3cc0d85a1bedbcf0985be2cf7893455711a09e87695da93188da524c55852bf8",
+        "source_capsule_sha256": "a3f87c341f5b0acbd58af4719eda440bed7e6ffd762634601c8732bd81eafed3",
+        "source_manifest_sha256": "ad3ebffe2c6cf39f4c9158901a2b626d1d20c5c206498f0642a8cf50aea9f02d",
+        "tested_source_files": 15
+      },
+      "stage": "S1"
+    },
+    {
+      "evidence_commit": "9aa9fa75f74ad7a15c3a3db36586502f0215aff0",
+      "exact_parent": "bb048cb811c2b755b7e54e97d24c63ec7ec8d1b7",
+      "executed_source_commit": "d967d91c177f413d6962fe8526976680618c441e",
+      "experiments": [
+        "CREDIT-1",
+        "HCSN-1",
+        "STABILITY-1"
+      ],
+      "facts": {
+        "learned_temporal_kernel_parameters": 0,
+        "same_seeds_reused_across_environments": [
+          11,
+          29,
+          47
+        ],
+        "scientific_admission": "HOLD",
+        "slots_per_environment": 54,
+        "task_targets_censored": 18,
+        "tests_per_environment": 68,
+        "trainable_head_parameters": 10
+      },
+      "github_archive_sha256": "4f28d61f3cca089ee6a388cfb3281f811abdf01e6fa0079bbe6f63af3ac416e0",
+      "id": "s3-common-foundations",
+      "identity_kind": "published_snapshot",
+      "limits": [
+        "diffusion_not_superior",
+        "frozen_HCSN_GRU_accuracy_0.5",
+        "no_time_to_target_advantage",
+        "unmeasured_energy"
+      ],
+      "native_archive_sha256": "e139686bb247c245215f6fa2211a31cfeb16deca12c3a9019cebcd326f6c1fd5",
+      "publication": {
+        "base_branch": "codex/hcsn-diff-07-evidence-20261108",
+        "base_sha": "bb048cb811c2b755b7e54e97d24c63ec7ec8d1b7",
+        "draft": true,
+        "head_branch": "research/cell-common-foundations-20261108-ab8f",
+        "head_sha": "9aa9fa75f74ad7a15c3a3db36586502f0215aff0",
+        "merged": false,
+        "observed_record": {
+          "bytes": 8321,
+          "path": "verify1-live/observations/github-pr-5347.json",
+          "sha256": "a7cabffba91bf8be5cf7e6e53d745a3cea57fa5abf0f1f66ee105e4534c6fa23"
+        },
+        "pr": 5347,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5347"
+      },
+      "results_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9aa9fa75f74ad7a15c3a3db36586502f0215aff0/qualification/cell_common_foundations/evidence/20261108/RESULTS.md",
+      "stage": "S3"
+    },
+    {
+      "ci": {
+        "bytes": 1739,
+        "path": "verify1-live/observations/github-workflows-hcsn-03a90226.json",
+        "sha256": "e708f560a64153887ced3d2108f69f6925a85a51acb335385c82dbe5e7b1a44e"
+      },
+      "experiment": "HCSN-1",
+      "facts": {
+        "declared_budget_fixtures": 4,
+        "formal_real_task_comparative_fits": 0,
+        "historical_64_cell_failure_retained": true,
+        "native_cpu_fp64_tests": 71,
+        "scientific_admission": "HOLD"
+      },
+      "id": "s3-hcsn-math-published",
+      "identity_kind": "published_snapshot",
+      "latest_observed_qualification_run": {
+        "conclusion": null,
+        "id": 42482701474,
+        "status": "queued"
+      },
+      "publication": {
+        "base_branch": "codex/hcsn-math-06-ci-and-semantics-20261108-v1",
+        "base_sha": "b4866a2db3c1d5d8c729ef31bf943dd2c7bce606",
+        "draft": true,
+        "head_branch": "codex/hcsn-math-07-evidence-20261108-v1",
+        "head_sha": "03a9022619072a943e37c82c8c97600c5c4d2285",
+        "merged": false,
+        "observed_record": {
+          "bytes": 2712,
+          "path": "verify1-live/observations/github-pr-5368.json",
+          "sha256": "d78c1d6c80393ae7c1a47ebf4908e9052a011cecedebe94f2cb21f1eccb0af67"
+        },
+        "pr": 5368,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5368"
+      },
+      "separate_from": [
+        "s3-hcsn-local-followup"
+      ],
+      "stage": "S3"
+    },
+    {
+      "evidence": {
+        "bytes": 9763,
+        "path": "verify1-live/source-map-originals/hcsn-local-followup-CURRENT.md",
+        "sha256": "7a23d12a528d9c2fe78ba7250d3cea07cfa79d05513ac5945894b4129b840757"
+      },
+      "experiment": "HCSN-1",
+      "facts": {
+        "declared_tests": 75,
+        "formal_comparative_fits": 0,
+        "optimizer_updates": 72,
+        "real_interface_smoke_fits": 18,
+        "scientific_admission": "HOLD"
+      },
+      "id": "s3-hcsn-local-followup",
+      "identity_kind": "local_candidate_snapshot",
+      "limits": [
+        "unequal_model_capacity",
+        "class_skewed_short_windows",
+        "energy_and_full_runtime_cost_unknown"
+      ],
+      "publication": {
+        "source_commit": null,
+        "state": "not_bound_to_a_published_commit_in_this_review"
+      },
+      "separate_from": [
+        "s3-hcsn-math-published"
+      ],
+      "stage": "S3"
+    },
+    {
+      "executed_B_source_commit": "1e9c2890fef92ea63dab472e1bdb0c444c9656b5",
+      "experiment": "ORG-1",
+      "facts": {
+        "real_D_paired_execution_observed": false,
+        "scientific_admission": "HOLD"
+      },
+      "id": "s4-causal-d-contracts",
+      "identity_kind": "published_contracts_with_historical_B_execution",
+      "limits": [
+        "A_C_D_E_real_causal_experiments_unexecuted",
+        "producer_source_composition_not_native_product_consumption",
+        "organization_migration_relearning_cost_unproved"
+      ],
+      "publication": {
+        "base_branch": "research/ndu-generation-v4-20261108-986c",
+        "base_sha": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+        "draft": true,
+        "head_branch": "research/cell-causal-abcde-20261108-cf0",
+        "head_sha": "6736d8acaf3f8c69288ce6c59a7d5246ea00448f",
+        "merged": false,
+        "observed_record": {
+          "bytes": 7744,
+          "path": "verify1-live/observations/github-pr-5345.json",
+          "sha256": "191911a927c6ac0f8e413a26a66ecc4e6d563f382b819a8eae885b68487ccfb3"
+        },
+        "pr": 5345,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5345"
+      },
+      "raw_arm_ids": [
+        "fixed_graph_adaptive_scheduler",
+        "dynamic_graph_same_scheduler"
+      ],
+      "required_global_baseline_id": "fixed_graph_strong_scheduler",
+      "retained_implementation_state": {
+        "bytes": 18302,
+        "path": "verify1-live/source-map-originals/learning-plasticity-CURRENT_STATE.json",
+        "sha256": "7dc60179c5a525ee1ed7364cb893783148c2297b7df77c42708982efbb0f23b7"
+      },
+      "retained_manifest": {
+        "bytes": 5319,
+        "path": "verify1-live/source-map-originals/cell-causal-qualification-manifest.json",
+        "sha256": "9a65b9737b4b62c4ad9c5d3520ebda217398200555ea11d608d62e31ab3a9a6f"
+      },
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6736d8acaf3f8c69288ce6c59a7d5246ea00448f/scripts/ndu_real_runtime/causal_topology.py",
+      "stage": "S4"
+    },
+    {
+      "executed_source_commit": "b83de1a192a4c35c12563d8856ffded238469a21",
+      "experiment": "IMPROVER-1",
+      "facts": {
+        "broader_blocking_CI": "failure",
+        "dedicated_CI": "success",
+        "final_attempts": 72,
+        "fully_qualified_runs": 0,
+        "independent_lineages": 3,
+        "native_successor_consumption_verified": false,
+        "scientific_admission": "HOLD",
+        "separate_history_trials": 24,
+        "synthetic_final_runs": 12,
+        "tests": 41,
+        "unresolved_full_cost_runs": 12
+      },
+      "fresh_ci_observation": {
+        "bytes": 1758,
+        "path": "verify1-live/observations/github-workflows-evolve-c600204c.json",
+        "sha256": "6b1c6d7f7d31b42a6d8c128321b9148afc78b69b289260799badc296a91d4f83"
+      },
+      "id": "s5-evolve1",
+      "identity_kind": "published_snapshot_plus_live_CI_observation",
+      "label_namespace_note": "EVOLVE S0/S1 denote initial/descendant solver axes, not roadmap stages S0/S1.",
+      "limits": [
+        "descendant_tradeoff_not_superiority",
+        "synthetic_reference",
+        "independent_native_evaluator_unproved",
+        "full_construction_and_runtime_cost_unknown"
+      ],
+      "native_experiment_name": "EVOLVE-1",
+      "publication": {
+        "base_branch": "research/cell-causal-abcde-20261108-cf0",
+        "base_sha": "6736d8acaf3f8c69288ce6c59a7d5246ea00448f",
+        "draft": true,
+        "head_branch": "research/evolve1-replay-transfer-20261108",
+        "head_sha": "c600204c6095b438746e7efd8a098bc38e1d8613",
+        "merged": false,
+        "observed_record": {
+          "bytes": 3392,
+          "path": "verify1-live/observations/github-pr-5348.json",
+          "sha256": "57943717a1be3df6ee0589c5529f9636278492309ead373608f3b2716d3c3074"
+        },
+        "pr": 5348,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5348"
+      },
+      "retained_execution_freeze": {
+        "bytes": 9354,
+        "path": "verify1-live/source-map-originals/evolve1-native-freeze-CURRENT.json",
+        "sha256": "ef165a9726f8144faef334da72c80e49376a66f43ed929cc738e018d3850a756"
+      },
+      "stage": "S5"
+    }
+  ],
+  "global_status": {
+    "authority_granted": false,
+    "production_qualification": false,
+    "research_advancement": false,
+    "same_joint_configuration_established": false
+  },
+  "integration_rules": [
+    "Use explicit experiment and evidence-scope mappings; never infer roadmap stage from EVOLVE solver labels.",
+    "Keep published head, executed source, evidence commit, archive hash and current CI observation separate.",
+    "Raw asset-manifest bytes and equal parsed journal copies have different hashes.",
+    "Engineering mechanisms, mathematical qualification, real-model interface execution and scientific comparative qualification remain separate gates.",
+    "Do not total repeated environments, bootstrap readout seeds, interface fits or reconstructed fits as independent confirmation lineages."
+  ],
+  "observed_at_utc": "2026-11-08T13:26:15.740873+00:00",
+  "path_base": "this evidence directory",
+  "schema": "hepta.stage-evidence-source-map.v1",
+  "scope": "Source/evidence identity review; this map does not compose or freeze one cross-stage executable candidate."
+}
