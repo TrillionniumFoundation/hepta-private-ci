@@ -265,6 +265,9 @@ impl LearningIterationOwnerPortsV1 for IterationPorts {
 #[path = "learning_iteration_recovery_tests.rs"]
 mod recovery_tests;
 
+#[path = "learning_iteration_profile_tests.rs"]
+mod profile_tests;
+
 fn iteration_request(daemon: &AgentdFixture) -> LearningIterationRequestV1 {
     LearningIterationRequestV1 {
         operation_id: id("proposal:agentd-lifetime"),
@@ -274,6 +277,7 @@ fn iteration_request(daemon: &AgentdFixture) -> LearningIterationRequestV1 {
         source_run_id: id("run:source"),
         completed_task_receipt: digest("completed-task"),
         selected_artifact_digest: digest("selected-artifact:lifetime"),
+        evaluation_profile: digest("frozen-evaluation"),
         selected_bundle: CellCompatibilityBundleV1 {
             artifact_id: id("artifact:baseline"),
             generation: generation(1),
