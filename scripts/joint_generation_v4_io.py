@@ -69,7 +69,7 @@ def read_packet(data):
         nonlocal offset
         if length < 0 or offset + length > len(data) - 64:
             raise ValueError("Truncated packet")
-        value = data[offset:offset + length]
+        value = data[offset : offset + length]
         offset += length
         return value
 
@@ -125,19 +125,37 @@ class DeliveryObservation:
     committed: tuple = (b"", b"", b"", b"")
 
     def __post_init__(self):
-        if (any(type(value) is not int for value in (self.required_mask, self.optional_mask,
-                                                    self.budget_total, self.budget_remaining, *self.cursors))
-                or type(self.task_digest) is not bytes or any(type(data) is not bytes for data in self.committed)):
+        if (
+            any(
+                type(value) is not int
+                for value in (
+                    self.required_mask,
+                    self.optional_mask,
+                    self.budget_total,
+                    self.budget_remaining,
+                    *self.cursors,
+                )
+            )
+            or type(self.task_digest) is not bytes
+            or any(type(data) is not bytes for data in self.committed)
+        ):
             raise ValueError("Owner observation types")
         selected = self.required_mask | self.optional_mask
-        if (self.required_mask & self.optional_mask or not 0 < selected < 16
-                or not 0 < self.budget_total < 2**64
-                or not 0 <= self.budget_remaining <= self.budget_total
-                or len(self.task_digest) != 32 or not any(self.task_digest)
-                or len(self.cursors) != 4 or len(self.committed) != 4
-                or sum(map(len, self.committed)) > 262144):
+        if (
+            self.required_mask & self.optional_mask
+            or not 0 < selected < 16
+            or not 0 < self.budget_total < 2**64
+            or not 0 <= self.budget_remaining <= self.budget_total
+            or len(self.task_digest) != 32
+            or not any(self.task_digest)
+            or len(self.cursors) != 4
+            or len(self.committed) != 4
+            or sum(map(len, self.committed)) > 262144
+        ):
             raise ValueError("Invalid owner observation")
-        for index, (cursor, total) in enumerate(zip(self.cursors, TOTAL_UNITS, strict=True)):
+        for index, (cursor, total) in enumerate(
+            zip(self.cursors, TOTAL_UNITS, strict=True)
+        ):
             if not 0 <= cursor <= total or (cursor and not selected & (1 << index)):
                 raise ValueError("Prefix contradicts obligations")
 
@@ -152,27 +170,51 @@ class DeliveryObservation:
             required = bool(self.required_mask & (1 << index))
             optional = bool(self.optional_mask & (1 << index))
             mean = sum(value / 255 for value in data) / max(1, len(data))
-            variance = sum((value / 255 - mean)**2 for value in data) / max(1, len(data))
+            variance = sum((value / 255 - mean) ** 2 for value in data) / max(
+                1, len(data)
+            )
             checksum = 2166136261
             for byte in data:
-                checksum = ((checksum ^ byte) * 16777619) & 0xffffffff
-            result.extend((self.cursors[index] / TOTAL_UNITS[index], float(required), float(optional),
-                           len(data) / 262144, mean, variance, checksum / 0xffffffff if data else 0,
-                           float(bool(data))))
+                checksum = ((checksum ^ byte) * 16777619) & 0xFFFFFFFF
+            result.extend(
+                (
+                    self.cursors[index] / TOTAL_UNITS[index],
+                    float(required),
+                    float(optional),
+                    len(data) / 262144,
+                    mean,
+                    variance,
+                    checksum / 0xFFFFFFFF if data else 0,
+                    float(bool(data)),
+                )
+            )
             suffix = data[-8:]
-            result.extend([0.] * (8 - len(suffix)))
+            result.extend([0.0] * (8 - len(suffix)))
             result.extend(value / 255 for value in suffix)
             if required:
                 required_units += TOTAL_UNITS[index]
                 required_remaining += TOTAL_UNITS[index] - self.cursors[index]
-        result.extend((self.remaining_fraction, 1 - self.remaining_fraction,
-                       math.log1p(self.budget_total) / math.log1p(2**64 - 1),
-                       required_remaining / max(1, required_units)))
+        result.extend(
+            (
+                self.remaining_fraction,
+                1 - self.remaining_fraction,
+                math.log1p(self.budget_total) / math.log1p(2**64 - 1),
+                required_remaining / max(1, required_units),
+            )
+        )
         return result
 
     def wire(self):
-        return struct.pack("<BBQQ", self.required_mask, self.optional_mask,
-                           self.budget_total, self.budget_remaining) + self.task_digest
+        return (
+            struct.pack(
+                "<BBQQ",
+                self.required_mask,
+                self.optional_mask,
+                self.budget_total,
+                self.budget_remaining,
+            )
+            + self.task_digest
+        )
 
 
 def request_bytes(weights, public, state, prefix, command, observation):
@@ -198,26 +240,35 @@ def read_response(data):
         offset += 4
         if length > 65536 or offset + length > len(data) - 64:
             raise ValueError("Response blob bound")
-        blobs.append(data[offset:offset + length])
+        blobs.append(data[offset : offset + length])
         offset += length
     if offset != len(data) - 64 or data[40] not in (0, 1):
         raise ValueError("Response trailing bytes or disposition")
-    return {"state": blobs[0], "delta": blobs[1], "stopped": bool(data[40]),
-            "phase_micros": struct.unpack_from("<4Q", data, 41)}
+    return {
+        "state": blobs[0],
+        "delta": blobs[1],
+        "stopped": bool(data[40]),
+        "phase_micros": struct.unpack_from("<4Q", data, 41),
+    }
 
 
 def framed_media(prefix):
     """Read v4 frames; concatenate each modality into its standard media file."""
     offset, cursors, content = 0, [0] * 4, [bytearray() for _ in range(4)]
     while offset < len(prefix):
-        if prefix[offset:offset + 4] != b"HGC2" or offset + 17 > len(prefix):
+        if prefix[offset : offset + 4] != b"HGC2" or offset + 17 > len(prefix):
             raise ValueError("Frame format")
         modality, start, units, length = struct.unpack_from("<BIII", prefix, offset + 4)
         offset += 17
-        if (modality >= 4 or not units or start != cursors[modality]
-                or start + units > TOTAL_UNITS[modality] or offset + length > len(prefix)):
+        if (
+            modality >= 4
+            or not units
+            or start != cursors[modality]
+            or start + units > TOTAL_UNITS[modality]
+            or offset + length > len(prefix)
+        ):
             raise ValueError("Frame range")
-        content[modality].extend(prefix[offset:offset + length])
+        content[modality].extend(prefix[offset : offset + length])
         cursors[modality] += units
         offset += length
     return tuple(cursors), tuple(bytes(data) for data in content)

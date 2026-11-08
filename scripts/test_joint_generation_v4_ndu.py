@@ -21,13 +21,25 @@ class FiniteV4Tests(unittest.TestCase):
             first = choose(self.generator, state, self.owner, self.public)
             second = choose(self.generator, state, self.owner, self.public)
             torch.testing.assert_close(first.scores, second.scores, rtol=0, atol=0)
-            self.assertEqual((first.action, first.trace_sha256), (second.action, second.trace_sha256))
+            self.assertEqual(
+                (first.action, first.trace_sha256), (second.action, second.trace_sha256)
+            )
             self.assertTrue(all(first.scored))
             self.assertLessEqual(first.forecasts, 32)
             self.assertTrue(first.exhausted)
             with self.assertRaisesRegex(ValueError, "No affordable"):
-                choose(self.generator, state, replace(self.owner, budget_remaining=999), self.public)
-            bounded = choose(self.generator, state, replace(self.owner, budget_remaining=1000), self.public)
+                choose(
+                    self.generator,
+                    state,
+                    replace(self.owner, budget_remaining=999),
+                    self.public,
+                )
+            bounded = choose(
+                self.generator,
+                state,
+                replace(self.owner, budget_remaining=1000),
+                self.public,
+            )
             self.assertEqual(bounded.forecasts, 7)
             self.assertTrue(all(bounded.scored))
 
@@ -45,13 +57,28 @@ class FiniteV4Tests(unittest.TestCase):
     def test_frozen_evaluator_retains_live_core_and_text_gradients(self):
         reference = frozen_copy(self.generator)
         terms, _ = loss_terms(self.generator, reference, self.public, self.owner)
-        parameters = (self.generator.core.layers[0].drift_bias, self.generator.text_recurrent.weight,
-                      self.generator.token_encoder.weight)
+        parameters = (
+            self.generator.core.layers[0].drift_bias,
+            self.generator.text_recurrent.weight,
+            self.generator.token_encoder.weight,
+        )
         for name in ("recursive", "policy"):
-            derivatives = torch.autograd.grad(terms[name], parameters, retain_graph=True)
-            self.assertTrue(all(bool(torch.isfinite(value).all()) and float(value.abs().max()) > 1e-12
-                                for value in derivatives))
-        self.assertTrue(all(parameter.grad is None and not parameter.requires_grad for parameter in reference.parameters()))
+            derivatives = torch.autograd.grad(
+                terms[name], parameters, retain_graph=True
+            )
+            self.assertTrue(
+                all(
+                    bool(torch.isfinite(value).all())
+                    and float(value.abs().max()) > 1e-12
+                    for value in derivatives
+                )
+            )
+        self.assertTrue(
+            all(
+                parameter.grad is None and not parameter.requires_grad
+                for parameter in reference.parameters()
+            )
+        )
 
 
 if __name__ == "__main__":

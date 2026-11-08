@@ -18,9 +18,14 @@ def main():
     parser.add_argument("--rubric-sha256", required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    result = evaluate(args.root, args.case_id, args.delivery_root, args.delivery,
-                      expected_index_sha256=args.reference_index_sha256,
-                      expected_rubric_sha256=args.rubric_sha256)
+    result = evaluate(
+        args.root,
+        args.case_id,
+        args.delivery_root,
+        args.delivery,
+        expected_index_sha256=args.reference_index_sha256,
+        expected_rubric_sha256=args.rubric_sha256,
+    )
     write_json(args.output, result)
     print(json.dumps(result, sort_keys=True), flush=True)
     return 0

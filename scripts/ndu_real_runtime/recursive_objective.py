@@ -28,7 +28,10 @@ def torch_certainty_equivalent(values, probabilities, risk):
     if bool(centered.abs().max() <= 1e-3):
         return mean - torch.log1p((probabilities * torch.expm1(centered)).sum()) / risk
     minimum = values.min()
-    return minimum - torch.logsumexp(probabilities.log() - risk * (values - minimum), 0) / risk
+    return (
+        minimum
+        - torch.logsumexp(probabilities.log() - risk * (values - minimum), 0) / risk
+    )
 
 
 def exact_policy_objective(logits, action_values):
@@ -52,10 +55,20 @@ class DifferentiablePlanner:
             self.exhausted = True
             return None
         self.calls += 1
-        features, duration, following_legal = forecast_tensors(self.reference, state, action,
-            self.plan.particles, forecast_seed(self.seed, step, action), step, remaining, legal,
-            self.plan.memory_mode)
-        if not bool(torch.isfinite(duration)) or not bool(torch.isfinite(features).all()):
+        features, duration, following_legal = forecast_tensors(
+            self.reference,
+            state,
+            action,
+            self.plan.particles,
+            forecast_seed(self.seed, step, action),
+            step,
+            remaining,
+            legal,
+            self.plan.memory_mode,
+        )
+        if not bool(torch.isfinite(duration)) or not bool(
+            torch.isfinite(features).all()
+        ):
             raise ValueError("Nonfinite recursive forecast")
         if bool(duration > remaining):
             return None
@@ -64,9 +77,19 @@ class DifferentiablePlanner:
     def backup(self, predicted, step, remaining, depth):
         features, duration, legal = predicted
         following_budget = (remaining - duration).clamp(min=0)
-        values = torch.stack([edge_value(duration, self.value(x, step + 1, following_budget, legal, depth), self.plan)
-                              for x in features])
-        return torch_certainty_equivalent(values, values.new_full(values.shape, 1 / len(values)), self.plan.risk)
+        values = torch.stack(
+            [
+                edge_value(
+                    duration,
+                    self.value(x, step + 1, following_budget, legal, depth),
+                    self.plan,
+                )
+                for x in features
+            ]
+        )
+        return torch_certainty_equivalent(
+            values, values.new_full(values.shape, 1 / len(values)), self.plan.risk
+        )
 
     def value(self, state, step, remaining, legal, depth):
         candidates = [self.terminal(state)]
@@ -75,7 +98,9 @@ class DifferentiablePlanner:
                 if action != "STOP":
                     prediction = self.forecast(state, action, step, remaining, legal)
                     if prediction is not None:
-                        candidates.append(self.backup(prediction, step, remaining, depth - 1))
+                        candidates.append(
+                            self.backup(prediction, step, remaining, depth - 1)
+                        )
         return torch.stack(candidates).max()
 
     def action_values(self, state, *, step, remaining_seconds, legal_actions):
@@ -86,27 +111,46 @@ class DifferentiablePlanner:
         if remaining_seconds <= 0 or len(roots) > self.plan.max_forecasts:
             self.exhausted = bool(roots)
             return scores
-        predictions = {action: self.forecast(state, action, step, remaining, legal_actions) for action in roots}
+        predictions = {
+            action: self.forecast(state, action, step, remaining, legal_actions)
+            for action in roots
+        }
         extra = self.plan.max_forecasts - self.calls
         for index, action in enumerate(roots):
             if predictions[action] is not None:
-                self.limit = self.calls + extra // max(1, len(roots)) + int(index < extra % max(1, len(roots)))
-                scores[action] = self.backup(predictions[action], step, remaining, self.plan.horizon - 1)
+                self.limit = (
+                    self.calls
+                    + extra // max(1, len(roots))
+                    + int(index < extra % max(1, len(roots)))
+                )
+                scores[action] = self.backup(
+                    predictions[action], step, remaining, self.plan.horizon - 1
+                )
         return scores
 
 
 def recursive_terms(model, reference, state, row, plan, seed):
     planner = DifferentiablePlanner(reference, plan, seed)
-    scores = planner.action_values(state, step=row["episode_step"],
-        remaining_seconds=row["remaining_seconds"], legal_actions=row["legal_actions"])
+    scores = planner.action_values(
+        state,
+        step=row["episode_step"],
+        remaining_seconds=row["remaining_seconds"],
+        legal_actions=row["legal_actions"],
+    )
     names = tuple(scores)
     values = torch.stack([scores[name] for name in names])
     logits = model.light_head(state)[[ACTIONS.index(name) for name in names]]
     # Unit coefficients are part of this training profile. Report both terms
     # separately; an auxiliary prediction gradient cannot satisfy their checks.
-    return -values.max(), -exact_policy_objective(logits, values), {
-        "forecast_calls": planner.calls, "planner_budget_exhausted": planner.exhausted,
-        "action_support": names}
+    return (
+        -values.max(),
+        -exact_policy_objective(logits, values),
+        {
+            "forecast_calls": planner.calls,
+            "planner_budget_exhausted": planner.exhausted,
+            "action_support": names,
+        },
+    )
 
 
 def observed_states(model, groups, memory_mode, *, include_successors=True):
@@ -115,7 +159,9 @@ def observed_states(model, groups, memory_mode, *, include_successors=True):
     for sequence in groups:
         memory, states = None, []
         for row in sequence:
-            current = model.public_state_step(row["features"], row["meta"], memory=memory, memory_mode=memory_mode)
+            current = model.public_state_step(
+                row["features"], row["meta"], memory=memory, memory_mode=memory_mode
+            )
             memory = current[3]
             states.append(current[:3])
         for index, (row, state) in enumerate(zip(sequence, states)):
@@ -123,9 +169,13 @@ def observed_states(model, groups, memory_mode, *, include_successors=True):
             if include_successors and row["next_features"] is not None:
                 if memory_mode == "persistent":
                     if index + 1 >= len(states):
-                        raise ValueError("Truncated persistent episode would reset its successor")
+                        raise ValueError(
+                            "Truncated persistent episode would reset its successor"
+                        )
                     following = states[index + 1][0]
                 else:
-                    following = model.public_state(row["next_features"], row["next_meta"])[0]
+                    following = model.public_state(
+                        row["next_features"], row["next_meta"]
+                    )[0]
             result.append((row, state, following))
     return result

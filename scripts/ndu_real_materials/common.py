@@ -12,13 +12,19 @@ def digest(data):
 
 
 def json_bytes(value):
-    return (json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode()
+    return (
+        json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
+    ).encode()
 
 
 def binding(path, root):
     path = Path(path)
     data = path.read_bytes()
-    return {"path": path.relative_to(root).as_posix(), "sha256": digest(data), "bytes": len(data)}
+    return {
+        "path": path.relative_to(root).as_posix(),
+        "sha256": digest(data),
+        "bytes": len(data),
+    }
 
 
 def write_json(path, value):
@@ -32,18 +38,26 @@ def read_relative(root, relative, limit=32 * 1024 * 1024):
     if not isinstance(relative, str):
         raise ValueError("Artifact path must be text")
     path = PurePosixPath(relative)
-    if ("\\" in relative or path.is_absolute()
-            or str(path) != relative or any(part in {".", ".."} for part in path.parts)):
+    if (
+        "\\" in relative
+        or path.is_absolute()
+        or str(path) != relative
+        or any(part in {".", ".."} for part in path.parts)
+    ):
         raise ValueError("Noncanonical or escaping artifact path")
     if not path.parts:
         raise ValueError("Empty artifact path")
     fd = os.open(Path(root).resolve(strict=True), os.O_RDONLY | os.O_DIRECTORY)
     try:
         for part in path.parts[:-1]:
-            child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+            child = os.open(
+                part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd
+            )
             os.close(fd)
             fd = child
-        data_fd = os.open(path.parts[-1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=fd)
+        data_fd = os.open(
+            path.parts[-1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=fd
+        )
     finally:
         os.close(fd)
     with os.fdopen(data_fd, "rb") as stream:
@@ -52,8 +66,11 @@ def read_relative(root, relative, limit=32 * 1024 * 1024):
             raise ValueError("Artifact is not a bounded regular file")
         raw = stream.read(limit + 1)
         after = os.fstat(stream.fileno())
-    if ((before.st_size, before.st_mtime_ns, before.st_ctime_ns) !=
-            (after.st_size, after.st_mtime_ns, after.st_ctime_ns)):
+    if (before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (
+        after.st_size,
+        after.st_mtime_ns,
+        after.st_ctime_ns,
+    ):
         raise ValueError("Artifact changed while being read")
     if len(raw) > limit:
         raise ValueError("Artifact grew past its byte bound")
@@ -79,6 +96,8 @@ def strict_json(raw):
                 raise ValueError("Duplicate JSON key")
             value[key] = item
         return value
+
     def reject(value):
         raise ValueError("Nonfinite JSON number")
+
     return json.loads(raw, object_pairs_hook=pairs, parse_constant=reject)

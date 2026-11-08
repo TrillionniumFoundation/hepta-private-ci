@@ -10,7 +10,7 @@ import sys
 from .common import write_json
 from .isolate import run_actor
 
-ATTACKER = r'''
+ATTACKER = r"""
 import ctypes, errno, hashlib, json, os, pathlib, socket, subprocess, sys
 request = json.load(sys.stdin)
 results = {}
@@ -58,9 +58,9 @@ results["child_inherits_boundary"] = {"outcome": "DENIED" if child.returncode !=
 results["clean_environment"] = {"outcome": "CLEAN" if not
     ({"HF_TOKEN", "GITHUB_TOKEN", "AWS_SECRET_ACCESS_KEY"} & set(os.environ)) else "LEAKED"}
 print(json.dumps(results, sort_keys=True))
-'''
+"""
 
-TORCH = r'''
+TORCH = r"""
 import hashlib, io, json, pathlib, sys
 sys.path.insert(0, sys.argv[1])
 import numpy as np
@@ -77,9 +77,9 @@ pathlib.Path("torch-pillow.png").write_bytes(buffer.getvalue())
 print(json.dumps({"torch": torch.__version__, "numpy": np.__version__,
     "pillow": Image.__version__, "matrix": result.tolist(),
     "png_sha256": hashlib.sha256(buffer.getvalue()).hexdigest()}))
-'''
+"""
 
-DUPLEX = r'''
+DUPLEX = r"""
 import json, os, sys
 print(json.dumps({"type": "ready", "pid": os.getpid()}), flush=True)
 count = 0
@@ -92,16 +92,24 @@ for raw in sys.stdin:
     if count == 2:
         print(json.dumps({"type": "STOP", "count": count, "pid": os.getpid()}), flush=True)
         break
-'''
+"""
 
 
 def probe(output, data_root, torch_python, torch_prefix, torch_base, pillow_root):
     import os
+
     root, dataset = Path(output), Path(data_root)
     root.mkdir(parents=True, exist_ok=False)
     public, private, other = root / "public", root / "private", root / "other-episode"
-    for directory in (public, private, other, root / "attack-output", root / "torch-output",
-                      root / "duplex-output", root / "callback-error-output"):
+    for directory in (
+        public,
+        private,
+        other,
+        root / "attack-output",
+        root / "torch-output",
+        root / "duplex-output",
+        root / "callback-error-output",
+    ):
         directory.mkdir(mode=0o700)
     token = secrets.token_hex(32)
     (private / "canary.json").write_text(json.dumps({"hidden_target": token}))
@@ -110,42 +118,87 @@ def probe(output, data_root, torch_python, torch_prefix, torch_base, pillow_root
     (public / "attacker.py").write_text(ATTACKER)
     (public / "torch_probe.py").write_text(TORCH)
     (public / "duplex.py").write_text(DUPLEX)
-    common_runtime = [path for path in ("/usr", "/lib", "/lib64", "/etc/ld.so.cache",
-                                       "/proc/cpuinfo", "/dev/urandom") if Path(path).exists()]
-    request = {"public": str(public / "current.txt"), "private": str(private / "canary.json"),
-               "other_episode": str(other / "future.txt"),
-               "source_archive": str(dataset / "private/upstream/data/train-00000-of-00001.parquet"),
-               "parent_pid": os.getpid()}
-    attack = run_actor([sys.executable, "-I", str(public / "attacker.py")],
-        public_root=public, output_root=root / "attack-output",
+    common_runtime = [
+        path
+        for path in (
+            "/usr",
+            "/lib",
+            "/lib64",
+            "/etc/ld.so.cache",
+            "/proc/cpuinfo",
+            "/dev/urandom",
+        )
+        if Path(path).exists()
+    ]
+    request = {
+        "public": str(public / "current.txt"),
+        "private": str(private / "canary.json"),
+        "other_episode": str(other / "future.txt"),
+        "source_archive": str(
+            dataset / "private/upstream/data/train-00000-of-00001.parquet"
+        ),
+        "parent_pid": os.getpid(),
+    }
+    attack = run_actor(
+        [sys.executable, "-I", str(public / "attacker.py")],
+        public_root=public,
+        output_root=root / "attack-output",
         runtime_roots=common_runtime + [sys.prefix, sys.base_prefix],
         private_roots=[private, other, dataset / "private"],
-        input_bytes=json.dumps(request).encode(), timeout_seconds=30)
+        input_bytes=json.dumps(request).encode(),
+        timeout_seconds=30,
+    )
     write_json(root / "attack-execution.json", attack)
     if attack["exit_code"] != 0 or not attack["enforced_before_actor_exec"]:
-        raise RuntimeError("Actor boundary probe could not execute under mandatory isolation")
+        raise RuntimeError(
+            "Actor boundary probe could not execute under mandatory isolation"
+        )
     observed = json.loads(attack["stdout"])
-    expected_denials = {"private_absolute", "private_dotdot", "other_episode", "real_source_archive",
-                       "parent_environment", "parent_file_descriptor", "symlink_to_private",
-                       "hardlink_private", "chmod_private", "network_socket", "process_memory_read",
-                       "pidfd_getfd", "child_inherits_boundary"}
-    if (observed["public_current"]["outcome"] != "READ" or
-            any(observed[key]["outcome"] != "DENIED" for key in expected_denials) or
-            observed["clean_environment"]["outcome"] != "CLEAN"):
-        raise AssertionError("A real actor probe crossed the intended isolation boundary")
-    if observed["process_memory_read"]["errno"] != 1 or observed["pidfd_getfd"]["errno"] != 1:
+    expected_denials = {
+        "private_absolute",
+        "private_dotdot",
+        "other_episode",
+        "real_source_archive",
+        "parent_environment",
+        "parent_file_descriptor",
+        "symlink_to_private",
+        "hardlink_private",
+        "chmod_private",
+        "network_socket",
+        "process_memory_read",
+        "pidfd_getfd",
+        "child_inherits_boundary",
+    }
+    if (
+        observed["public_current"]["outcome"] != "READ"
+        or any(observed[key]["outcome"] != "DENIED" for key in expected_denials)
+        or observed["clean_environment"]["outcome"] != "CLEAN"
+    ):
+        raise AssertionError(
+            "A real actor probe crossed the intended isolation boundary"
+        )
+    if (
+        observed["process_memory_read"]["errno"] != 1
+        or observed["pidfd_getfd"]["errno"] != 1
+    ):
         raise AssertionError("Process access was not rejected by the seccomp policy")
     if token in attack["stdout"] + attack["stderr"]:
         raise AssertionError("Private canary appeared in actor output")
-    runtime = run_actor([torch_python, "-I", str(public / "torch_probe.py"), pillow_root],
-        public_root=public, output_root=root / "torch-output",
+    runtime = run_actor(
+        [torch_python, "-I", str(public / "torch_probe.py"), pillow_root],
+        public_root=public,
+        output_root=root / "torch-output",
         runtime_roots=common_runtime + [torch_prefix, torch_base, pillow_root],
         private_roots=[private, other, dataset / "private"],
-        timeout_seconds=60)
+        timeout_seconds=60,
+    )
     write_json(root / "torch-pillow-execution.json", runtime)
     if runtime["exit_code"] != 0 or not runtime["enforced_before_actor_exec"]:
-        raise RuntimeError("Torch/Pillow did not execute successfully inside the actor boundary")
+        raise RuntimeError(
+            "Torch/Pillow did not execute successfully inside the actor boundary"
+        )
     events = []
+
     def callback(event):
         events.append(event)
         if event["type"] == "ready":
@@ -153,38 +206,73 @@ def probe(output, data_root, torch_python, torch_prefix, torch_base, pillow_root
         if event["type"] == "observation" and event["step"] == 0:
             return b'{"step":1}\n'
         return None
-    duplex = run_actor([sys.executable, "-I", str(public / "duplex.py")],
-        public_root=public, output_root=root / "duplex-output",
+
+    duplex = run_actor(
+        [sys.executable, "-I", str(public / "duplex.py")],
+        public_root=public,
+        output_root=root / "duplex-output",
         runtime_roots=common_runtime + [sys.prefix, sys.base_prefix],
-        private_roots=[private, other, dataset / "private"], timeout_seconds=30,
-        host_callback=callback)
+        private_roots=[private, other, dataset / "private"],
+        timeout_seconds=30,
+        host_callback=callback,
+    )
     write_json(root / "duplex-execution.json", duplex)
-    if (duplex["exit_code"] != 0 or duplex["callback_error"] is not None
-            or len({event["pid"] for event in events}) != 1
-            or [event["type"] for event in events] != ["ready", "observation", "observation", "STOP"]):
-        raise AssertionError("Interactive host exchange did not preserve one isolated actor process")
+    if (
+        duplex["exit_code"] != 0
+        or duplex["callback_error"] is not None
+        or len({event["pid"] for event in events}) != 1
+        or [event["type"] for event in events]
+        != ["ready", "observation", "observation", "STOP"]
+    ):
+        raise AssertionError(
+            "Interactive host exchange did not preserve one isolated actor process"
+        )
+
     def failing_callback(event):
         raise RuntimeError("intentional host callback failure")
-    failed = run_actor([sys.executable, "-I", str(public / "duplex.py")],
-        public_root=public, output_root=root / "callback-error-output",
+
+    failed = run_actor(
+        [sys.executable, "-I", str(public / "duplex.py")],
+        public_root=public,
+        output_root=root / "callback-error-output",
         runtime_roots=common_runtime + [sys.prefix, sys.base_prefix],
-        private_roots=[private, other, dataset / "private"], timeout_seconds=30,
-        host_callback=failing_callback)
+        private_roots=[private, other, dataset / "private"],
+        timeout_seconds=30,
+        host_callback=failing_callback,
+    )
     write_json(root / "callback-error-execution.json", failed)
-    if (failed["exit_code"] == 0 or failed["callback_error"] is None
-            or not failed["stdout"] or not failed["enforced_before_actor_exec"]):
-        raise AssertionError("Callback error did not kill/reap actor and preserve original diagnostics")
-    result = {"schema": "ndu.real.isolation-probe.v1", "status": "PASS",
-              "probe_count": len(expected_denials), "denied": sorted(expected_denials),
-              "clean_environment": True, "private_canary_unchanged":
-                  json.loads((private / "canary.json").read_text())["hidden_target"] == token,
-              "actual_torch_pillow": json.loads(runtime["stdout"]),
-              "interactive_single_actor_process": True, "interactive_events": len(events),
-              "callback_failure_killed_and_reaped": True,
-              "actor_kernel_enforcement": attack["launch_receipt"],
-              "attack_receipt_sha256": hashlib.sha256((root / "attack-execution.json").read_bytes()).hexdigest(),
-              "torch_receipt_sha256": hashlib.sha256((root / "torch-pillow-execution.json").read_bytes()).hexdigest(),
-              "scope": "Actual OS denial and runtime compatibility; no efficacy or native owner authentication"}
+    if (
+        failed["exit_code"] == 0
+        or failed["callback_error"] is None
+        or not failed["stdout"]
+        or not failed["enforced_before_actor_exec"]
+    ):
+        raise AssertionError(
+            "Callback error did not kill/reap actor and preserve original diagnostics"
+        )
+    result = {
+        "schema": "ndu.real.isolation-probe.v1",
+        "status": "PASS",
+        "probe_count": len(expected_denials),
+        "denied": sorted(expected_denials),
+        "clean_environment": True,
+        "private_canary_unchanged": json.loads((private / "canary.json").read_text())[
+            "hidden_target"
+        ]
+        == token,
+        "actual_torch_pillow": json.loads(runtime["stdout"]),
+        "interactive_single_actor_process": True,
+        "interactive_events": len(events),
+        "callback_failure_killed_and_reaped": True,
+        "actor_kernel_enforcement": attack["launch_receipt"],
+        "attack_receipt_sha256": hashlib.sha256(
+            (root / "attack-execution.json").read_bytes()
+        ).hexdigest(),
+        "torch_receipt_sha256": hashlib.sha256(
+            (root / "torch-pillow-execution.json").read_bytes()
+        ).hexdigest(),
+        "scope": "Actual OS denial and runtime compatibility; no efficacy or native owner authentication",
+    }
     write_json(root / "isolation-report.json", result)
     print(json.dumps(result, sort_keys=True), flush=True)
     return result
@@ -199,4 +287,11 @@ if __name__ == "__main__":
     parser.add_argument("--torch-base", required=True)
     parser.add_argument("--pillow-root", required=True)
     args = parser.parse_args()
-    probe(args.output, args.data_root, args.torch_python, args.torch_prefix, args.torch_base, args.pillow_root)
+    probe(
+        args.output,
+        args.data_root,
+        args.torch_python,
+        args.torch_prefix,
+        args.torch_base,
+        args.pillow_root,
+    )
