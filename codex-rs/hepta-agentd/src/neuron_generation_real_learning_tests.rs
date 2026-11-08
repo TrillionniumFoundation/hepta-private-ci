@@ -124,7 +124,7 @@ struct ResearchPorts {
     publication: Arc<Fixture>,
     old: Mutex<Option<Journal>>,
     config: Mutex<Option<AgentdConfig>>,
-    state: Arc<AgentdState>,
+    state: Mutex<Option<Arc<AgentdState>>>,
     control: ProcessControl,
     checkpoint: Mutex<LearningIterationCheckpointOwnerV1>,
     receipts: Mutex<Vec<(LearningIterationReceiptV1, Value)>>,
@@ -283,7 +283,11 @@ impl ResearchPorts {
                 spawn_neuron_generation_service(
                     &mut tasks,
                     bootstrap,
-                    Arc::clone(&self.state),
+                    self.state
+                        .lock()
+                        .map_err(|_| anyhow::anyhow!("research state poisoned"))?
+                        .take()
+                        .ok_or_else(|| anyhow::anyhow!("research state already handed off"))?,
                     lifetime.clone(),
                 )?;
                 let observation = runtime.handle.read_learning_selection(&coordinator).await?;
@@ -843,7 +847,7 @@ async fn actual_smollm_training_no_update_native_next_use_and_cold_readback() ->
         publication: publication.clone(),
         old: Mutex::new(Some(old)),
         config: Mutex::new(Some(config)),
-        state: Arc::clone(host.state()),
+        state: Mutex::new(Some(Arc::clone(host.state()))),
         control: control.clone(),
         checkpoint: Mutex::new(checkpoint),
         receipts: Mutex::new(Vec::new()),
