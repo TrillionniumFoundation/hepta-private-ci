@@ -2,7 +2,7 @@ name: Memory cell V12 cross-runner serving and fencing
 
 on:
   push:
-    branches: [research/memory-cell-v12-20261030]
+    branches: [research/memory-cell-v12-20261030, audit/memory-v12-fed-artifact-root-e747-20261031]
     paths:
       - 'qualification/memory-cell-v12/federation.py'
       - 'qualification/memory-cell-v12/federation_experiment.py'
@@ -67,8 +67,7 @@ jobs:
           sparse-checkout: qualification/memory-cell-v12
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          artifact-ids: ${{ needs.source.outputs.artifact_id }}
-          merge-multiple: true
+          name: memory-v12-fed-source-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/federation-input
       - name: Independently load the actual checkpoint on this runner
         run: python3 qualification/memory-cell-v12/federation_experiment.py replica --input "$RUNNER_TEMP/federation-input" --out "$RUNNER_TEMP/federation-replica" --node '${{ matrix.node }}'
@@ -98,8 +97,7 @@ jobs:
           sparse-checkout: qualification/memory-cell-v12
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          artifact-ids: ${{ needs.source.outputs.artifact_id }}
-          merge-multiple: true
+          name: memory-v12-fed-source-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/federation-input/source
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
@@ -140,8 +138,7 @@ jobs:
           sparse-checkout: qualification/memory-cell-v12
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          artifact-ids: ${{ needs.controller.outputs.artifact_id }}
-          merge-multiple: true
+          name: memory-v12-fed-migrate-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/federation-input
       - name: Cold-restore owner or read-only replica and compute epoch-2 outputs
         run: python3 qualification/memory-cell-v12/federation_experiment.py readback --input "$RUNNER_TEMP/federation-input" --out "$RUNNER_TEMP/federation-readback" --node '${{ matrix.node }}'
@@ -168,13 +165,11 @@ jobs:
           sparse-checkout: qualification/memory-cell-v12
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          artifact-ids: ${{ needs.source.outputs.artifact_id }}
-          merge-multiple: true
+          name: memory-v12-fed-source-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/federation-input/source
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          artifact-ids: ${{ needs.controller.outputs.artifact_id }}
-          merge-multiple: true
+          name: memory-v12-fed-migrate-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/federation-input/migrate
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
