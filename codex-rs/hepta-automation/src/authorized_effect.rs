@@ -410,12 +410,11 @@ where
                     None => AuthorizedProviderEffectLookup::Unresolved,
                 }
             }
-            ProviderEffectLookup::NotFound => AuthorizedProviderEffectLookup::ProvenAbsent {
-                proof_digest: provider_lookup_digest(&provider_intent, b"not_found"),
-            },
-            ProviderEffectLookup::Conflict { .. } | ProviderEffectLookup::Unknown => {
-                AuthorizedProviderEffectLookup::Unresolved
-            }
+            // Key/status support does not fence an in-flight or late commit.
+            // An empty query cannot grant a new physical dispatch attempt.
+            ProviderEffectLookup::NotFound
+            | ProviderEffectLookup::Conflict { .. }
+            | ProviderEffectLookup::Unknown => AuthorizedProviderEffectLookup::Unresolved,
         }
     }
 }

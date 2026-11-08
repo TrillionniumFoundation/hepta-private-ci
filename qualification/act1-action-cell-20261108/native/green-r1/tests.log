@@ -1,0 +1,22 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+    Blocking waiting for file lock on build directory
+   Compiling codex-hepta-automation v0.0.0 (/home/qian-qi/work/act1-action-cell-20261108-r1/source/codex-rs/hepta-automation)
+error[E0618]: expected function, found `JobFacts`
+   --> hepta-automation/tests/action_skill_support/destination.rs:329:21
+    |
+282 |         let facts = facts(&self.pool, &intent.key).await.expect("accepted facts");
+    |             ----- `facts` has type `JobFacts`
+...
+329 |         let facts = facts(&self.pool, &intent.key).await.expect("final destination facts");
+    |                     ^^^^^-------------------------
+    |                     |
+    |                     call expression requires function
+...
+334 | pub async fn facts(pool: &SqlitePool, key: &ProviderEffectKey) -> Option<JobFacts> {
+    | ---------------------------------------------------------------------------------- this function of the same name is available here, but it's shadowed by the local binding
+
+For more information about this error, try `rustc --explain E0618`.
+error: could not compile `codex-hepta-automation` (test "action_skill_act1") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: command `/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-automation --lib --tests --locked` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101
