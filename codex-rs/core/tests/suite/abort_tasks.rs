@@ -9,11 +9,14 @@ use codex_history::RolloutLine;
 use std::sync::Arc;
 use std::time::Duration;
 
+use codex_protocol::protocol::EnvironmentConfigState;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::Op;
 use codex_protocol::protocol::SessionSource;
 use codex_protocol::protocol::SubAgentSource;
+use codex_protocol::protocol::TurnEnvironmentSelection;
 use codex_protocol::user_input::UserInput;
+use codex_utils_path_uri::PathUri;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_function_call;
 use core_test_support::responses::ev_response_created;
@@ -185,6 +188,32 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         Some(turn_id.as_str()),
         "the closed rollout must retain the original bound recovery candidate"
     );
+    // Reconstruct target-native URI selections from the closed rollout, not
+    // from the previous runtime. The caller supplies them to Core's resume API;
+    // Core must still match them against the persisted recovery binding.
+    let persisted_environments = items
+        .iter()
+        .rev()
+        .find_map(|item| match item {
+            RolloutItem::TurnRecoveryRequestBinding(binding) if binding.turn_id == turn_id => {
+                binding.replay.as_ref().map(|replay| &replay.environments)
+            }
+            _ => None,
+        })
+        .expect("closed rollout must retain replay environment selections")
+        .iter()
+        .map(|selection| TurnEnvironmentSelection {
+            environment_id: selection.environment_id.clone(),
+            cwd: PathUri::parse(&selection.cwd).expect("persisted target-native cwd URI"),
+            workspace_roots: selection
+                .workspace_roots
+                .iter()
+                .map(|root| PathUri::parse(root).expect("persisted target-native root URI"))
+                .collect(),
+            config: EnvironmentConfigState::FromThread,
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(persisted_environments, original_environments);
     test.thread_manager
         .remove_thread(&test.session_configured.thread_id)
         .await
@@ -200,7 +229,9 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
     )
     .await;
     let original_config = test.config.clone();
-    let mut resume_builder = test_codex().with_config(move |config| *config = original_config);
+    let mut resume_builder = test_codex()
+        .with_config(move |config| *config = original_config)
+        .with_resume_environments(persisted_environments);
     if let Some(exec_server_url) = test.executor_environment().exec_server_url() {
         resume_builder = resume_builder.with_exec_server_url(exec_server_url);
     }
