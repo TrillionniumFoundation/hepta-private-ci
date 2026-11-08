@@ -250,14 +250,224 @@ class OperatorNumericalTests(unittest.TestCase):
         torch.testing.assert_close(a.matrix[:grid.active_count, absorbed], a.rewards[:grid.active_count, 0],
                                    atol=3e-14, rtol=2e-13)
 
+    def _gradient_fixture(self, grid):
+        operator = DifferentiableDistributionOperator(grid)
+        initial_absolute = math.exp(0.29)
+        base = torch.tensor([0.02, -0.25, 0.45, math.exp(0.18)], dtype=torch.float64)
+        records = []
+        self.numerical_evidence = {
+            "grid": {"active": grid.active_cells, "phase": grid.phase_cells,
+                     "K": grid.state_count, "quadrature": grid.quadrature_order},
+            "physical_values": dict(zip(("log_boundary", "mu", "sigma", "absolute_reset"), base.tolist())),
+            "dt": 0.08, "gradients": records, "old_S81_pass_credit": 0,
+        }
 
+        def loss(values):
+            params = PhysicalParameters(values[0], values[1], values[2], values[3], values.new_tensor(0.2))
+            prior = operator.initial_probability(values.new_tensor([initial_absolute]), params.log_boundary)
+            phase = torch.zeros_like(prior)
+            phase[0, grid.active_count] = 1.0
+            # A valid mixed initial law exercises both active and immediate
+            # refractory-release paths, including unquantized reset gradients.
+            p = 0.65 * prior + 0.35 * phase
+            weight = torch.linspace(-0.3, 0.9, grid.state_count, dtype=torch.float64)
+            content = p[..., None] * torch.stack((weight, weight.square()), dim=-1)[None, ...]
+            receipt = operator.advance(p, content, 0.08, params)
+            return ((receipt.probability * weight).sum()
+                    + 0.33 * (receipt.content_mass[..., 0] * weight).sum()
+                    + 0.29 * receipt.expected_events.sum() + 0.41 * receipt.call.sum())
 
+        differentiable = base.clone().requires_grad_()
+        value = loss(differentiable)
+        self.numerical_evidence["synthetic_loss"] = float(value.detach())
+        ad = torch.autograd.grad(value, differentiable)[0].detach()
+        self.numerical_evidence["all_ad_values"] = ad.tolist()
+        for i, name in enumerate(("log_boundary", "mu", "sigma", "absolute_reset")):
+            step = 2e-6 * max(1.0, abs(float(base[i])))
+            plus, minus = base.clone(), base.clone()
+            plus[i] += step
+            minus[i] -= step
+            with torch.no_grad():
+                fd = float((loss(plus) - loss(minus)) / (2.0 * step))
+            actual = float(ad[i])
+            error = abs(actual - fd)
+            relative = error / max(abs(actual), abs(fd), 1e-12)
+            records.append({"parameter": name, "ad": actual, "central_fd": fd,
+                            "fd_step": step, "absolute_error": error, "relative_error": relative})
+        # Retain *all* measured AD/FD values before testing any numerical gate.
+        for row in records:
+            actual, fd, error, name = row["ad"], row["central_fd"], row["absolute_error"], row["parameter"]
+            self.assertTrue(math.isfinite(actual))
+            self.assertGreater(abs(actual), 1e-6, msg=f"{name} path must be materially exercised")
+            self.assertLess(error, 2e-7 + 2e-5 * max(abs(actual), abs(fd)), msg=name)
+        return self.numerical_evidence
 
+    def test_all_four_physical_parameter_gradients_against_fd(self):
+        self.numerical_evidence = self._gradient_fixture(GridSpec())
 
+    def test_81_state_physical_gradient_fixture_is_new_evidence(self):
+        self.numerical_evidence = self._gradient_fixture(GridSpec(active_cells=64, phase_cells=16,
+                                                                 quadrature_order=16))
+        self.numerical_evidence["old_S81_pass_credit"] = 0
 
+    def test_quadrature_refinement_records_actual_table_discrepancy(self):
+        records, tables = [], []
+        # The continuous reset point is deliberately off the active-cell grid.
+        params = _params(mu=-0.15, sigma=0.4, absolute_reset=math.exp(0.237))
+        for order in (16, 32, 64):
+            operator = DifferentiableDistributionOperator(GridSpec(quadrature_order=order))
+            tables.append(self._table(operator, params=params, dt=0.073))
+        for lo, hi, first, second in zip((16, 32), (32, 64), tables[:-1], tables[1:]):
+            records.append({"orders": [lo, hi],
+                            "max_row_l1": float((first.matrix - second.matrix).abs().sum(-1).max()),
+                            "maximum_reward_difference": float((first.rewards - second.rewards).abs().max())})
+        self.numerical_evidence = {"refinement": records, "claim": "observed quadrature agreement, not a certified error bound"}
+        self.assertLess(records[-1]["max_row_l1"], 5e-4)
+        self.assertLess(records[-1]["maximum_reward_difference"], 2e-5)
 
+    def test_spatial_refinement_against_continuum_first_hit(self):
+        mean, std, dt, steps = 0.25, 0.08, 0.075, 4
+        params = _params(log_boundary=0.0, mu=-0.2, sigma=0.4)
+        reference = _prior_hit_reference(mean, std, steps * dt, -0.2, 0.4)
+        records = []
+        for cells in (16, 32, 64):
+            grid = GridSpec(active_cells=cells, phase_cells=16, quadrature_order=32, initial_log_std=std)
+            operator = DifferentiableDistributionOperator(grid, reset_enabled=False)
+            state = operator.initial_probability(torch.tensor(math.exp(mean), dtype=torch.float64), params.log_boundary)
+            table = self._table(operator, params=params, dt=dt)
+            for _ in range(steps):
+                state = state @ table.matrix
+            observed = float(state[grid.active_count])
+            records.append({"active_cells": cells, "expected_first_hits": observed,
+                            "absolute_error": abs(observed - reference)})
+        self.numerical_evidence = {"continuum_reference": reference, "mu": -0.2, "sigma": 0.4,
+                                   "initial_log_mean": mean, "initial_log_std": std,
+                                   "elapsed": steps * dt, "steps": steps, "refinement": records}
+        self.assertLess(records[-1]["absolute_error"], records[0]["absolute_error"])
+        self.assertLess(records[-1]["absolute_error"], 0.01)
 
+    def test_phase_projection_early_release_and_refinement_are_disclosed(self):
+        # Start from one identical physical uniform remaining-time law [.06,.08]
+        # at every resolution. Large reset distance makes another hit negligible.
+        params = _params(log_boundary=0.0, mu=-0.1, sigma=0.15, absolute_reset=math.exp(1.0))
+        dt, steps, lo, hi = 0.013, 6, 0.06, 0.08
+        records = []
+        for phases in (10, 20, 40, 80):
+            grid = GridSpec(phase_cells=phases, quadrature_order=32)
+            operator = DifferentiableDistributionOperator(grid)
+            state = torch.zeros(grid.state_count, dtype=torch.float64)
+            for j, (left, right) in enumerate(zip(grid.phase_edges[:-1], grid.phase_edges[1:])):
+                state[grid.active_count + j] = max(0.0, min(hi, right) - max(lo, left)) / (hi - lo)
+            table = self._table(operator, params=params, dt=dt)
+            curve, errors = [], []
+            for step in range(1, steps + 1):
+                state = state @ table.matrix
+                observed = float(state[:grid.active_count].sum())
+                reference = max(0.0, min(1.0, (step * dt - lo) / (hi - lo)))
+                curve.append({"elapsed": step * dt, "active_probability": observed,
+                              "deterministic_release_reference": reference})
+                errors.append(abs(observed - reference))
+            records.append({"phase_cells": phases, "maximum_release_error": max(errors),
+                            "early_release_at_0.052": curve[3]["active_probability"], "curve": curve})
+        self.numerical_evidence = {"phase_projection": records,
+                                   "warning": "QPR can release earlier through repeated phase projection; it is not exact per-path delay"}
+        self.assertGreater(records[0]["early_release_at_0.052"], 0.0)
+        self.assertLess(records[-1]["early_release_at_0.052"], 1e-12)
+        self.assertLess(records[-1]["maximum_release_error"], records[0]["maximum_release_error"])
+        self.assertLess(records[-1]["maximum_release_error"], 0.025)
 
+    def test_stationary_rate_against_negative_drift_renewal_mean(self):
+        params = _params(log_boundary=0.0, mu=-0.5, sigma=0.3, absolute_reset=math.exp(0.3))
+        dt = 0.025
+        reference = 1.0 / (0.1 + 0.3 / 0.5)
+        records = []
+        self.numerical_evidence = {"deterministic_renewal_reference": reference,
+                                   "mu": -0.5, "sigma": 0.3, "reset_margin": 0.3,
+                                   "fixed_delay": 0.1, "dt": dt, "refinement": records}
+        for cells, phases in ((16, 8), (64, 16)):
+            grid = GridSpec(active_cells=cells, phase_cells=phases, quadrature_order=32)
+            operator = DifferentiableDistributionOperator(grid)
+            table = self._table(operator, params=params, dt=dt)
+            system = table.matrix.T - torch.eye(grid.state_count, dtype=torch.float64)
+            system = system.clone()
+            system[-1] = 1.0
+            target = torch.zeros(grid.state_count, dtype=torch.float64)
+            target[-1] = 1.0
+            stationary = torch.linalg.solve(system, target)
+            rate = float(stationary @ table.rewards[:, 0] / dt)
+            balance = float((stationary @ table.matrix - stationary).abs().max())
+            records.append({"active_cells": cells, "phase_cells": phases, "K": grid.state_count,
+                            "rate": rate, "absolute_error": abs(rate - reference),
+                            "relative_error": abs(rate - reference) / reference,
+                            "stationarity_residual": balance,
+                            "minimum_stationary_mass": float(stationary.min()),
+                            "refractory_probability": float(stationary[grid.active_count:].sum())})
+        for row in records:
+            self.assertLess(row["stationarity_residual"], 2e-11)
+            self.assertGreater(row["minimum_stationary_mass"], -1e-11)
+        self.assertLess(records[-1]["relative_error"], 0.03)
+        self.assertLess(records[-1]["absolute_error"], records[0]["absolute_error"] + 2e-4)
+
+    def test_long_fixed_operator_conserves_mass_and_signed_content(self):
+        # Numerical foundation only: no training, changing physics, observation
+        # updates, or inference about a long-sequence neural-network advantage.
+        grid = GridSpec(quadrature_order=32)
+        operator = DifferentiableDistributionOperator(grid)
+        params = _params(log_boundary=0.0, mu=-0.5, sigma=0.3, absolute_reset=math.exp(0.3))
+        dt, count = 0.025, 4096
+        checkpoints = []
+        self.numerical_evidence = {"steps": count, "dt": dt, "elapsed": count * dt,
+                                   "grid_K": grid.state_count, "checkpoints": checkpoints,
+                                   "scope": "fixed numerical propagation only; no neural long-horizon superiority claim"}
+        with torch.no_grad():
+            table = self._table(operator, params=params, dt=dt)
+            state = operator.initial_probability(torch.tensor(math.exp(0.35), dtype=torch.float64), params.log_boundary)
+            coordinate = torch.linspace(0.0, 1.0, grid.state_count, dtype=torch.float64)
+            signed_values = torch.stack((torch.sin(19.0 * coordinate),
+                                         torch.cos(31.0 * coordinate),
+                                         coordinate - 0.15), dim=-1)
+            content = state[:, None] * signed_values
+            initial_mass, initial_content = state.sum().clone(), content.sum(0).clone()
+            cumulative_events = state.new_zeros(())
+            maximum_mass_drift = 0.0
+            maximum_content_error = 0.0
+            for step in range(1, count + 1):
+                cumulative_events = cumulative_events + state @ table.rewards[:, 0]
+                state = state @ table.matrix
+                content = table.matrix.T @ content
+                if step in (1, 16, 256, 1024, count):
+                    mass_drift = float((state.sum() - initial_mass).abs())
+                    content_error = float((content.sum(0) - initial_content).abs().max())
+                    maximum_mass_drift = max(maximum_mass_drift, mass_drift)
+                    maximum_content_error = max(maximum_content_error, content_error)
+                    checkpoints.append({"step": step, "mass_drift": mass_drift,
+                                        "maximum_signed_content_total_error": content_error,
+                                        "M_expected_cumulative_events": float(cumulative_events),
+                                        "minimum_probability": float(state.min())})
+            self.numerical_evidence.update(
+                maximum_recorded_mass_drift=maximum_mass_drift,
+                maximum_recorded_signed_content_total_error=maximum_content_error,
+                initial_signed_content_totals=initial_content.tolist(),
+                final_signed_content_totals=content.sum(0).tolist(),
+                M_expected_cumulative_events=float(cumulative_events),
+                average_event_rate_per_time_unit=float(cumulative_events) / (count * dt),
+                final_minimum_probability=float(state.min()),
+            )
+        self.assertLess(maximum_mass_drift, 5e-10)
+        self.assertLess(maximum_content_error, 5e-10)
+        self.assertGreater(float(cumulative_events), 1.0)
+        self.assertGreaterEqual(float(state.min()), 0.0)
+        self.assertTrue(bool(torch.isfinite(content).all()))
+
+    def test_projected_operator_does_not_claim_exact_semigroup(self):
+        operator = DifferentiableDistributionOperator(GridSpec(quadrature_order=32))
+        whole = self._table(operator, dt=0.08)
+        half = self._table(operator, dt=0.04)
+        error = float((whole.matrix - half.matrix @ half.matrix).abs().sum(-1).max())
+        self.numerical_evidence = {"one_0.08_vs_two_0.04_max_row_l1": error,
+                                   "interpretation": "finite-basis projection error, not an exact continuum semigroup"}
+        self.assertTrue(math.isfinite(error))
+        self.assertGreater(error, 1e-5)
 
 
 if __name__ == "__main__":
