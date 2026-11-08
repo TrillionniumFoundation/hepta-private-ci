@@ -14,6 +14,7 @@ from .controllers import ControlPlan
 from .metering import canonical_sha
 from .objective import utility_profile
 from .span_meter import verify_record
+from .subprocess_supervisor import supervision_policy
 from .training import FitConfig, SCHEMA, _source_pins, parse_args, validate_record
 from .trajectory import (
     V2_SCHEMA,
@@ -164,6 +165,16 @@ def admit(job, config, started_at):
         ),
         "Source changed during admission",
     )
+    # Parent supervision changes must not invalidate trainer/model lineage.
+    supervision_sources = {
+        str(Path(__file__).with_name(name)): bounded(Path(__file__).with_name(name))[1]
+        for name in (
+            "pipeline.py",
+            "subprocess_supervisor.py",
+            "training_job_result.py",
+        )
+    }
+    inputs.update(supervision_sources)
     if args.control_plan:
         require(args.control_plan.is_absolute(), "Control plan path must be absolute")
         control, inputs[str(args.control_plan)] = document(args.control_plan)
@@ -301,6 +312,10 @@ def admit(job, config, started_at):
         "records": records,
         "pretrained_lineage": lineage,
         "input_files": inputs,
+        "supervision": {
+            "policy": supervision_policy(),
+            "source_files": supervision_sources,
+        },
         "budget": {
             "child_fit_limit_seconds": fit.max_wall_seconds,
             "supervisor_limit_seconds": OUTER_SECONDS,
@@ -479,9 +494,20 @@ def reconcile(directory, expected_admission_sha256):
         and result.get("native_owner_authentication") == AUTHORITY,
         "Original supervisor result binding differs",
     )
+    log_limit = 16 * 1024 * 1024
+    if "supervision" in admission:
+        require(
+            result.get("supervision") == admission["supervision"],
+            "Supervisor admission binding differs",
+        )
+        log_limit = admission["supervision"]["policy"]["stream_limit_bytes"]
+        require(
+            type(log_limit) is int and 0 < log_limit <= 16 * 1024 * 1024,
+            "Invalid retained log limit",
+        )
     for name in ("stdout", "stderr"):
         require(
-            bounded(directory / (name + ".log"), 16 * 1024 * 1024)[1]["sha256"]
+            bounded(directory / (name + ".log"), log_limit)[1]["sha256"]
             == result[name + "_sha256"],
             "Retained log differs",
         )
@@ -501,6 +527,27 @@ def reconcile(directory, expected_admission_sha256):
         result.get("error") is None,
         "Completed label conflicts with retained supervisor error",
     )
+    if "supervision" in admission:
+        report = result.get("process_supervision") or {}
+        require(
+            report.get("schema") == "ndu.real.subprocess-supervision.v1"
+            and report.get("policy") == admission["supervision"]["policy"]
+            and report.get("returncode") == result["exit_code"]
+            and report.get("error") is None
+            and not report.get("cleanup_errors")
+            and report.get("cleanup_complete") is True
+            and report.get("child_reaped") is True
+            and report.get("logs_fsynced") is True
+            and all(
+                report.get("streams", {}).get(name, {}).get("eof") is True
+                and report["streams"][name].get("truncated") is False
+                and report["streams"][name].get("observed_bytes")
+                == report["streams"][name].get("retained_bytes")
+                == (directory / (name + ".log")).stat().st_size
+                for name in ("stdout", "stderr")
+            ),
+            "Completed label conflicts with supervisor evidence",
+        )
     observed = validate_output(
         admission,
         exit_code=result["exit_code"],

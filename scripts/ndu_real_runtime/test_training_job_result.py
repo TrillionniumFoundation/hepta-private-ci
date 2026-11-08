@@ -4,10 +4,11 @@ import copy
 import json
 import os
 from pathlib import Path
+import shutil
+import signal
 import subprocess
 import sys
 import tempfile
-from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -101,20 +102,26 @@ class ResultAdmissionTests(unittest.TestCase):
         atomic_json(output / "receipt.json", receipt)
         return receipt
 
-    def test_actual_pipeline_callsite_and_readonly_reconciliation(self):
-        def child(command, **kwargs):
-            self.assertEqual(
-                command,
-                [self.job["command"]["executable"], *self.job["command"]["args"]],
-            )
-            self.assertGreater(kwargs["timeout"], 0)
-            self.assertLessEqual(kwargs["timeout"], 660)
-            self.fixture_output(self.admission())
-            return SimpleNamespace(returncode=0, stdout=b"fixture stdout", stderr=b"")
+    def fixture_executable(self, source):
+        """Real child executable; its output is explicitly a protocol fixture."""
+        executable = self.root / "fixture-python"
+        executable.write_text("#!" + sys.executable + "\n" + source)
+        executable.chmod(0o700)
+        self.config["python"] = self.job["command"]["executable"] = str(executable)
 
+    def test_actual_pipeline_callsite_and_readonly_reconciliation(self):
         logs = self.root / "jobs"
-        with patch.object(pipeline.subprocess, "run", child):
-            result = pipeline.run_training_job(self.job, self.config, logs)
+        directory = logs / canonical_sha(self.job["job_id"])[:32]
+        self.fixture_executable(
+            "import json\nfrom pathlib import Path\n"
+            "from ndu_real_runtime.test_training_job_result import ResultAdmissionTests\n"
+            f"admitted = json.loads(Path({str(directory / 'admission.json')!r}).read_text())\n"
+            "ResultAdmissionTests().fixture_output(admitted)\n"
+            "print('explicit protocol fixture stdout', flush=True)\n"
+        )
+        result = pipeline.run_training_job(self.job, self.config, logs)
+        self.assertGreater(result["process_supervision"]["pid"], 0)
+        self.assertTrue(result["process_supervision"]["cleanup_complete"])
         self.assertEqual(result["status"], "completed")
         self.assertEqual(
             result["artifact_validation"]["state"], "VALIDATED_UNAUTHENTICATED"
@@ -123,8 +130,8 @@ class ResultAdmissionTests(unittest.TestCase):
         directory = logs / canonical_sha(self.job["job_id"])[:32]
         before = {str(p): file_sha(p) for p in self.root.rglob("*") if p.is_file()}
         with patch.object(
-            subprocess,
-            "run",
+            pipeline,
+            "run_logged",
             side_effect=AssertionError("reconciliation must not dispatch"),
         ):
             for _ in range(2):
@@ -164,6 +171,31 @@ class ResultAdmissionTests(unittest.TestCase):
         self.assertEqual(
             before, {str(p): file_sha(p) for p in self.root.rglob("*") if p.is_file()}
         )
+        legacy = self.root / "legacy-v2"
+        legacy.mkdir()
+        original = json.loads((directory / "admission.json").read_text())
+        removed = original.pop("supervision")
+        for name in removed["source_files"]:
+            original["input_files"].pop(name)
+        legacy_result = copy.deepcopy(result)
+        legacy_result.pop("supervision")
+        legacy_result.pop("process_supervision")
+        legacy_result["admission_sha256"] = atomic_json(
+            legacy / "admission.json", original
+        )
+        for name in ("stdout.log", "stderr.log"):
+            shutil.copyfile(directory / name, legacy / name)
+        atomic_json(legacy / "result.json", legacy_result)
+        self.assertEqual(
+            bridge.reconcile(legacy, legacy_result["admission_sha256"])["state"],
+            "VALIDATED_UNAUTHENTICATED",
+        )
+        for field, value in (("cleanup_complete", False), ("returncode", None)):
+            changed = copy.deepcopy(result)
+            changed["process_supervision"][field] = value
+            (directory / "result.json").write_text(json.dumps(changed))
+            with self.assertRaisesRegex(ValueError, "conflicts with supervisor"):
+                bridge.reconcile(directory, result["admission_sha256"])
         retained = json.loads((directory / "result.json").read_text())
         retained["error"] = {"type": "retained original failure"}
         (directory / "result.json").write_text(json.dumps(retained))
@@ -198,8 +230,8 @@ class ResultAdmissionTests(unittest.TestCase):
                 del self.job[field]
         self.job["command"]["args"] += ["--max-wall-seconds", "601"]
         with patch.object(
-            pipeline.subprocess,
-            "run",
+            pipeline,
+            "run_logged",
             side_effect=AssertionError("invalid budget must not launch"),
         ):
             result = pipeline.run_training_job(
@@ -212,10 +244,15 @@ class ResultAdmissionTests(unittest.TestCase):
     def test_verification_time_is_charged_before_completed_status(self):
         def child(*args, **kwargs):
             self.fixture_output(self.admission())
-            return SimpleNamespace(returncode=0, stdout=b"", stderr=b"")
+            return {
+                "returncode": 0,
+                "error": None,
+                "cleanup_complete": True,
+                "policy": bridge.supervision_policy(),
+            }
 
         with (
-            patch.object(pipeline.subprocess, "run", child),
+            patch.object(pipeline, "run_logged", child),
             patch.object(pipeline.time, "perf_counter", side_effect=[0, 1, 659, 661]),
         ):
             result = pipeline.run_training_job(
@@ -224,6 +261,61 @@ class ResultAdmissionTests(unittest.TestCase):
         self.assertEqual(result["status"], "failed")
         self.assertEqual(result["wall_seconds"], 661)
         self.assertIsNone(result["weights_sha256"])
+
+    def test_real_child_zero_exit_does_not_bypass_artifact_validation(self):
+        self.fixture_executable("print('partial stdout', flush=True)\n")
+        result = pipeline.run_training_job(self.job, self.config, self.root / "jobs")
+        self.assertEqual(result["exit_code"], 0)
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["error"]["type"], "FileNotFoundError")
+        self.assertIsNone(result["artifact_validation"])
+
+    def test_detached_pipe_holder_remains_unresolved_without_replaying_operation(self):
+        self.fixture_executable(
+            "import subprocess,sys\n"
+            "child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'], start_new_session=True)\n"
+            "print(child.pid, flush=True)\n"
+        )
+        logs = self.root / "jobs"
+        directory = logs / canonical_sha(self.job["job_id"])[:32]
+        try:
+            result = pipeline.run_training_job(self.job, self.config, logs)
+            self.assertEqual(result["exit_code"], 0)
+            self.assertEqual(result["status"], "unresolved")
+            self.assertEqual(
+                bridge.reconcile(directory, result["admission_sha256"])["state"],
+                "UNRESOLVED",
+            )
+            with self.assertRaises(FileExistsError):
+                pipeline.run_training_job(self.job, self.config, logs)
+        finally:
+            # This explicitly detached test child is outside supervisor scope.
+            pid = int((directory / "stdout.log").read_text())
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+
+    def test_parent_supervision_is_bound_outside_model_lineage(self):
+        admission = self.admission()
+        supervision = admission["supervision"]
+        self.assertLessEqual(
+            supervision["policy"]["stream_limit_bytes"], 16 * 1024 * 1024
+        )
+        for name, pin in supervision["source_files"].items():
+            self.assertEqual(pin, admission["input_files"][name])
+            self.assertNotIn(
+                str(Path(name).relative_to(self.config["repository_root"])),
+                admission["expected_receipt"]["source_pins"],
+            )
+        self.fixture_output(admission)
+        changed = copy.deepcopy(admission)
+        name = next(iter(supervision["source_files"]))
+        changed["input_files"][name]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(
+            ValueError, "Admitted source/data/control/lineage changed"
+        ):
+            bridge.validate_output(changed, exit_code=0, supervisor_wall_seconds=1)
 
     def test_same_weights_cannot_hide_foreign_receipt_or_profile(self):
         admission = self.admission()

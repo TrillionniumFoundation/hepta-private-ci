@@ -5,7 +5,6 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import json
 import os
 from pathlib import Path
-import subprocess
 import time
 import traceback
 
@@ -13,6 +12,7 @@ from ndu_real_materials.common import strict_json
 from .matrix import pilot, tune
 from .metering import _usage, atomic_json, canonical_sha, file_sha
 from .study import collect, freeze, now, verify_plan
+from .subprocess_supervisor import run_logged
 from .training import FitConfig
 from .training_grid import fit_grid, model_index
 from .training_job_result import OUTER_SECONDS, admit, validate_output
@@ -43,41 +43,41 @@ def run_training_job(job, config, log_root):
         "retry_of": None,
     }
     admission_sha = None
-    error, code, stdout, stderr = None, None, b"", b""
-    try:
-        admitted = admit(job, config, started_at)
-        admission_sha = atomic_json(directory / "admission.json", admitted)
-        if Path(job["output"]).exists():
-            raise RuntimeError(
-                "Original training output already exists; never implicitly rerun"
+    error, code, supervision = None, None, None
+    # Exclusive, unbuffered logs retain partial output without accumulating it.
+    with (
+        (directory / "stdout.log").open("xb", buffering=0) as stdout,
+        (directory / "stderr.log").open("xb", buffering=0) as stderr,
+    ):
+        try:
+            admitted = admit(job, config, started_at)
+            admission_sha = atomic_json(directory / "admission.json", admitted)
+            if Path(job["output"]).exists():
+                raise RuntimeError(
+                    "Original training output already exists; never implicitly rerun"
+                )
+            remaining = OUTER_SECONDS - (time.perf_counter() - started)
+            supervision = run_logged(
+                command,
+                stdout=stdout,
+                stderr=stderr,
+                timeout=remaining,
+                env=environment,
             )
-        remaining = OUTER_SECONDS - (time.perf_counter() - started)
-        if remaining <= 0:
-            raise TimeoutError("Supervisor budget exhausted during admission")
-        run = subprocess.run(
-            command,
-            capture_output=True,
-            timeout=remaining,
-            env=environment,
-            check=False,
-        )
-        code, stdout, stderr = run.returncode, run.stdout, run.stderr
-    except subprocess.TimeoutExpired as exception:
-        stdout, stderr = exception.stdout or b"", exception.stderr or b""
-        error = {"type": "TimeoutExpired", "message": str(exception)}
-    except BaseException as exception:
-        error = {
-            "type": type(exception).__name__,
-            "message": str(exception),
-            "traceback": traceback.format_exc(),
-        }
-    (directory / "stdout.log").write_bytes(stdout)
-    (directory / "stderr.log").write_bytes(stderr)
+            code, error = supervision["returncode"], supervision["error"]
+        except BaseException as exception:
+            error = {
+                "type": type(exception).__name__,
+                "message": str(exception),
+                "traceback": traceback.format_exc(),
+            }
     if admission_sha is None:
         atomic_json(directory / "admission-rejected.json", dict(admitted, error=error))
     artifact_validation, success = None, False
     try:
         if code == 0 and error is None:
+            if supervision["policy"] != admitted["supervision"]["policy"]:
+                raise ValueError("Executed supervisor policy differs from admission")
             artifact_validation = validate_output(
                 admitted,
                 exit_code=code,
@@ -98,13 +98,18 @@ def run_training_job(job, config, log_root):
             "type": "TimeoutError",
             "message": "Supervisor budget exhausted during result verification",
         }
+    unresolved = admission_sha is not None and (
+        code is None
+        or (supervision is not None and not supervision["cleanup_complete"])
+    )
     result = {
         **admitted,
         "schema": "ndu.real.training-job-result.v2",
         "admission_sha256": admission_sha,
         "finished_at": now(),
         "exit_code": code,
-        "status": "completed" if success else "failed",
+        "status": "completed" if success else "unresolved" if unresolved else "failed",
+        "process_supervision": supervision,
         "error": error,
         "wall_seconds": wall_seconds,
         "cpu_seconds": _usage() - cpu,
