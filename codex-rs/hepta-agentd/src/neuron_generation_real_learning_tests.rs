@@ -494,11 +494,31 @@ impl LearningIterationOwnerPortsV1 for ResearchPorts {
         snapshot: &'a LearningIterationSnapshotV1,
     ) -> LearningIterationOwnerFutureV1<'a, Digest32> {
         Box::pin(async move {
-            self.checkpoint
+            let head = self
+                .checkpoint
                 .lock()
                 .map_err(unavailable)?
                 .checkpoint(expected, snapshot)
-                .map_err(unavailable)
+                .map_err(unavailable)?;
+            // Read the exact bytes just acknowledged by the original CAS owner.
+            // Preserve initial/Selection/final cuts; collectors never re-encode
+            // or truncate a completed snapshot into purported earlier evidence.
+            let bytes = self
+                .publication
+                .bytes("learning-checkpoint")
+                .map_err(unavailable)?;
+            let path = self.driver.evidence.join(format!(
+                "native-checkpoint-{}-owner.json",
+                snapshot.receipts.len()
+            ));
+            if path.exists() {
+                if fs::read(&path).map_err(unavailable)? != bytes {
+                    return Err(LearningIterationRuntimeErrorV1::CommitUncertain);
+                }
+            } else {
+                persist(&path, &bytes).map_err(unavailable)?;
+            }
+            Ok(head)
         })
     }
     fn execute_stage<'a>(
