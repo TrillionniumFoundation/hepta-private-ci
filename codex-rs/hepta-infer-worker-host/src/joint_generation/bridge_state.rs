@@ -7,6 +7,8 @@ use crate::decoder::Prefixes;
 use crate::model::MODALITIES;
 use crate::model::Model;
 use crate::model::State;
+use crate::observation::DeliveryObservation;
+use crate::observation::OwnerContext;
 use crate::protocol::EmissionLaw;
 use crate::protocol::MAX_STATE_BYTES;
 use crate::protocol::Sampler;
@@ -15,6 +17,8 @@ pub(crate) struct BridgeState {
     pub(crate) model: State,
     pub(crate) law: EmissionLaw,
     pub(crate) prefixes: Prefixes,
+    pub(crate) owner: Option<OwnerContext>,
+    pub(crate) planning: Option<crate::planner::PlanningReceipt>,
 }
 
 impl BridgeState {
@@ -32,7 +36,13 @@ impl BridgeState {
                 seed: packet.text("seed")?.parse().map_err(|_| "invalid seed")?,
                 sampler: Sampler::parse(packet.text("sampler")?)?,
             },
-            prefixes: Prefixes::read(prefix)?,
+            prefixes: Prefixes::read_for_model(prefix, model)?,
+            owner: if model.is_observed() {
+                Some(OwnerContext::read_packet(&packet)?)
+            } else {
+                None
+            },
+            planning: crate::planner::PlanningReceipt::read(&packet)?,
         };
         // Rebuild the entire inventory and compare canonical bytes, rather than
         // trusting self-asserted prefix hashes, cursor fields or extra tensors.
@@ -48,18 +58,57 @@ impl BridgeState {
         input_hash: &str,
         prefix: &[u8],
     ) -> Result<Vec<u8>> {
-        if Prefixes::read(prefix)? != self.prefixes {
+        if Prefixes::read_profile(prefix, self.prefixes.observed)? != self.prefixes {
             return Err("prefix projection mismatch".into());
+        }
+        if self.prefixes.observed != self.owner.is_some()
+            || self.prefixes.observed != self.model.text.is_some()
+        {
+            return Err("inconsistent bridge observation profile".into());
+        }
+        if self.owner.is_none() && self.planning.is_some() {
+            return Err("legacy state cannot contain a v4 planning receipt".into());
+        }
+        if let Some(owner) = &self.owner {
+            let totals = [16, 1024, 4, crate::text_codec::TEXT_SCALAR_LIMIT];
+            let observation = DeliveryObservation::new(owner, &self.prefixes, totals)?;
+            if self.model.stopped && !observation.required_complete() {
+                return Err("stopped state has incomplete required delivery".into());
+            }
+            let text = self
+                .model
+                .text
+                .as_ref()
+                .ok_or("missing byte decoder state")?;
+            if text.units != self.prefixes.cursors[3]
+                || text.bytes as usize != self.prefixes.bytes[3].len()
+            {
+                return Err("text decoder/prefix cursor mismatch".into());
+            }
         }
         let mut packet = self.model.packet();
         packet.meta.extend([
-            ("kind".into(), "joint-generation-proposal-state-v1".into()),
+            (
+                "kind".into(),
+                if self.owner.is_some() {
+                    "joint-generation-proposal-state-v2"
+                } else {
+                    "joint-generation-proposal-state-v1"
+                }
+                .into(),
+            ),
             ("weights".into(), weights_hash.into()),
             ("input".into(), input_hash.into()),
             ("seed".into(), self.law.seed.to_string()),
             ("sampler".into(), self.law.sampler.name().into()),
             ("bridge.prefix_sha256".into(), sha256(prefix)),
         ]);
+        if let Some(owner) = &self.owner {
+            owner.write_packet(&mut packet);
+        }
+        if let Some(planning) = &self.planning {
+            planning.write_packet(&mut packet);
+        }
         for (index, modality) in MODALITIES.iter().enumerate() {
             packet.meta.insert(
                 format!("cursor.{modality}"),

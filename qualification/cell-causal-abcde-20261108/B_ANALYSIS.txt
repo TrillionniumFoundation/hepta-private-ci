@@ -1,0 +1,41 @@
+B 配对描述性分析：科学结论 HOLD；不授权 adoption。
+
+训练完整：True；constructor 初始化配对完整：True
+选中 profile 完整：True；全部调参尝试完整：True
+训练原始分母：56/56；状态：{'completed': 56}
+原始部署状态：{'Completed': 916, 'BudgetStop': 44}；缺少绑定原始评分：0
+统计终态：{'Completed': 960}；BudgetStop 原始 44，可计算 44，仍未知 0。
+预先展开 33 种 contrast；逐 regime、split、三种指标保留完整分母。
+
+score 为已知失败取 -1 的评分；utility 另扣部署延迟，失败时可使用原 outer wall；两者均不是完整改进成本收益。
+原始 gross_score 另列于 JSON；未观察到独立评分的失败不补零。
+BudgetStop 仅在绑定评分与实际部署延迟齐全时进入统计 Completed；原状态不变，也不表示执行成功或质量达标。
+
+以下固定列出主要对照；其余 fixed/VOI/MPC 与全部状态对照见 JSON：
+frozen | development | ndu_in_ordinary/reset: score +0.000191; utility -0.019259
+frozen | development | ndu_in_hepta/reset: score +0.000191; utility -0.018274
+frozen | development | kernel_controller_interaction/persistent: score -0.000000; utility +0.000717
+frozen | development | persistent_minus_reset/ordinary/ndu: score +0.000003; utility -0.009048
+frozen | development | persistent_minus_reset/hepta/ndu: score +0.000003; utility -0.009167
+frozen | development | three_way_interaction: score +0.000000; utility -0.000269
+frozen | retention_validation | ndu_in_ordinary/reset: score +0.000000; utility -0.009974
+frozen | retention_validation | ndu_in_hepta/reset: score +0.000000; utility -0.011914
+frozen | retention_validation | kernel_controller_interaction/persistent: score +0.000000; utility +0.001168
+frozen | retention_validation | persistent_minus_reset/ordinary/ndu: score +0.000000; utility -0.000524
+frozen | retention_validation | persistent_minus_reset/hepta/ndu: score +0.000000; utility +0.003493
+frozen | retention_validation | three_way_interaction: score +0.000000; utility +0.003108
+joint | development | ndu_in_ordinary/reset: score +0.005591; utility -0.016418
+joint | development | ndu_in_hepta/reset: score +0.006107; utility -0.011754
+joint | development | kernel_controller_interaction/persistent: score +0.000028; utility +0.008759
+joint | development | persistent_minus_reset/ordinary/ndu: score -0.005235; utility -0.018106
+joint | development | persistent_minus_reset/hepta/ndu: score -0.005722; utility -0.013771
+joint | development | three_way_interaction: score -0.000488; utility +0.004095
+joint | retention_validation | ndu_in_ordinary/reset: score +0.000000; utility -0.012109
+joint | retention_validation | ndu_in_hepta/reset: score +0.000000; utility -0.011384
+joint | retention_validation | kernel_controller_interaction/persistent: score +0.000000; utility +0.000284
+joint | retention_validation | persistent_minus_reset/ordinary/ndu: score +0.000000; utility +0.000475
+joint | retention_validation | persistent_minus_reset/hepta/ndu: score +0.000000; utility +0.000395
+joint | retention_validation | three_way_interaction: score +0.000000; utility -0.000441
+
+初始化结论限于预训练前 constructor；不能解释为同一 checkpoint 的纯部署状态效应。
+所有区间仅为描述性结果，未经功效保证或多重比较校正；完整训练/搜索门槛不通过时不得视为匹配实验已闭合。

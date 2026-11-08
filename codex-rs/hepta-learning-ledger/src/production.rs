@@ -235,6 +235,12 @@ impl LedgerWriter {
         self.trust.verifier()
     }
 
+    /// Immutable host-authorized domain shared by this ledger and its witness.
+    /// It identifies a logical ledger, not a file path or its current head.
+    pub fn binding_digest(&self) -> Digest32 {
+        self.backend.binding()
+    }
+
     #[must_use]
     pub fn trust_distribution_digest(&self) -> Digest32 {
         self.trust.distribution_digest()

@@ -1,0 +1,251 @@
+{
+  "adoption_authorized": false,
+  "hosted_ci_checker_local_exit": 0,
+  "operations": {
+    "merge": {
+      "arms": {
+        "dynamic": {
+          "completed_pairs": 33,
+          "edges_after": 1,
+          "edges_before": 2,
+          "injected_failure": "migration",
+          "key_values_preserved_at_install": true,
+          "messages": 36,
+          "nodes_after": 2,
+          "nodes_before": 3,
+          "rollback_exact_bytes": true,
+          "score_sum": 33.0,
+          "successor_dispatches": 72,
+          "training_steps": 0,
+          "unique_key_owners": true
+        },
+        "fixed": {
+          "completed_pairs": 33,
+          "edges_after": 2,
+          "edges_before": 2,
+          "injected_failure": "dispatch",
+          "key_values_preserved_at_install": true,
+          "messages": 36,
+          "nodes_after": 3,
+          "nodes_before": 3,
+          "rollback_exact_bytes": true,
+          "score_sum": 33.0,
+          "successor_dispatches": 72,
+          "training_steps": 0,
+          "unique_key_owners": true
+        }
+      },
+      "cost_totals": {
+        "dynamic_graph_same_scheduler": {
+          "accelerator_seconds": 0.0,
+          "cpu_seconds": 0.013382434000000012,
+          "resident_byte_seconds": null,
+          "transferred_bytes": 21640.0
+        },
+        "fixed_graph_adaptive_scheduler": {
+          "accelerator_seconds": 0.0,
+          "cpu_seconds": 0.007296628999999999,
+          "resident_byte_seconds": null,
+          "transferred_bytes": 5979.0
+        }
+      },
+      "decision": "NoUpdate",
+      "hold_reasons": [
+        "NET_GAIN_UNRESOLVED",
+        "TOPOLOGY_EVIDENCE_BLOCKED",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:communication:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:evaluation:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:inference:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:loading:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:maintenance:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:migration:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:recovery:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:relearning:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:search:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:training:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:communication:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:evaluation:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:inference:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:loading:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:maintenance:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:migration:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:recovery:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:relearning:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:search:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:training:resident_byte_seconds"
+      ],
+      "mean_net_gain": null,
+      "observed_pairs": 33,
+      "planned_pairs": 33,
+      "protocol_sha256": "24259a57ffcc8dbf4767fdc933d83103ae7ff569072ba47e8dbed64f2f69b3d0",
+      "source_sha256": "dd95bd5c578d04f262ae66d9ce8a9c29a91b3ab99cbd34c726884724fec6b2f0",
+      "status": "HOLD",
+      "verified_reference_count": 108
+    },
+    "rewire": {
+      "arms": {
+        "dynamic": {
+          "completed_pairs": 33,
+          "edges_after": 2,
+          "edges_before": 1,
+          "injected_failure": "migration",
+          "key_values_preserved_at_install": true,
+          "messages": 69,
+          "nodes_after": 2,
+          "nodes_before": 2,
+          "rollback_exact_bytes": true,
+          "score_sum": 33.0,
+          "successor_dispatches": 72,
+          "training_steps": 0,
+          "unique_key_owners": true
+        },
+        "fixed": {
+          "completed_pairs": 33,
+          "edges_after": 1,
+          "edges_before": 1,
+          "injected_failure": "dispatch",
+          "key_values_preserved_at_install": true,
+          "messages": 36,
+          "nodes_after": 2,
+          "nodes_before": 2,
+          "rollback_exact_bytes": true,
+          "score_sum": 33.0,
+          "successor_dispatches": 72,
+          "training_steps": 0,
+          "unique_key_owners": true
+        }
+      },
+      "cost_totals": {
+        "dynamic_graph_same_scheduler": {
+          "accelerator_seconds": 0.0,
+          "cpu_seconds": 0.008182422999999994,
+          "resident_byte_seconds": null,
+          "transferred_bytes": 7636.0
+        },
+        "fixed_graph_adaptive_scheduler": {
+          "accelerator_seconds": 0.0,
+          "cpu_seconds": 0.0068645340000000055,
+          "resident_byte_seconds": null,
+          "transferred_bytes": 5223.0
+        }
+      },
+      "decision": "NoUpdate",
+      "hold_reasons": [
+        "NET_GAIN_UNRESOLVED",
+        "TOPOLOGY_EVIDENCE_BLOCKED",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:communication:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:evaluation:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:inference:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:loading:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:maintenance:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:migration:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:recovery:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:relearning:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:search:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:training:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:communication:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:evaluation:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:inference:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:loading:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:maintenance:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:migration:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:recovery:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:relearning:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:search:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:training:resident_byte_seconds"
+      ],
+      "mean_net_gain": null,
+      "observed_pairs": 33,
+      "planned_pairs": 33,
+      "protocol_sha256": "3c97f4f20bf68d48643f0fd20ac3ce09dbc5bac8c6e408ac8df948171ddaee56",
+      "source_sha256": "dd95bd5c578d04f262ae66d9ce8a9c29a91b3ab99cbd34c726884724fec6b2f0",
+      "status": "HOLD",
+      "verified_reference_count": 108
+    },
+    "split": {
+      "arms": {
+        "dynamic": {
+          "completed_pairs": 33,
+          "edges_after": 2,
+          "edges_before": 1,
+          "injected_failure": "migration",
+          "key_values_preserved_at_install": true,
+          "messages": 36,
+          "nodes_after": 3,
+          "nodes_before": 2,
+          "rollback_exact_bytes": true,
+          "score_sum": 33.0,
+          "successor_dispatches": 72,
+          "training_steps": 0,
+          "unique_key_owners": true
+        },
+        "fixed": {
+          "completed_pairs": 33,
+          "edges_after": 1,
+          "edges_before": 1,
+          "injected_failure": "dispatch",
+          "key_values_preserved_at_install": true,
+          "messages": 36,
+          "nodes_after": 2,
+          "nodes_before": 2,
+          "rollback_exact_bytes": true,
+          "score_sum": 33.0,
+          "successor_dispatches": 72,
+          "training_steps": 0,
+          "unique_key_owners": true
+        }
+      },
+      "cost_totals": {
+        "dynamic_graph_same_scheduler": {
+          "accelerator_seconds": 0.0,
+          "cpu_seconds": 0.015093961000000017,
+          "resident_byte_seconds": null,
+          "transferred_bytes": 22942.0
+        },
+        "fixed_graph_adaptive_scheduler": {
+          "accelerator_seconds": 0.0,
+          "cpu_seconds": 0.006141878000000003,
+          "resident_byte_seconds": null,
+          "transferred_bytes": 5223.0
+        }
+      },
+      "decision": "NoUpdate",
+      "hold_reasons": [
+        "NET_GAIN_UNRESOLVED",
+        "TOPOLOGY_EVIDENCE_BLOCKED",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:communication:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:evaluation:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:inference:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:loading:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:maintenance:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:migration:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:recovery:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:relearning:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:search:resident_byte_seconds",
+        "UNKNOWN_COST:dynamic_graph_same_scheduler:training:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:communication:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:evaluation:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:inference:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:loading:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:maintenance:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:migration:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:recovery:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:relearning:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:search:resident_byte_seconds",
+        "UNKNOWN_COST:fixed_graph_adaptive_scheduler:training:resident_byte_seconds"
+      ],
+      "mean_net_gain": null,
+      "observed_pairs": 33,
+      "planned_pairs": 33,
+      "protocol_sha256": "21ddd8d6a574e84226afdbb756dcafe077966cbfc91d95f1a6e0ad5818f296dd",
+      "source_sha256": "dd95bd5c578d04f262ae66d9ce8a9c29a91b3ab99cbd34c726884724fec6b2f0",
+      "status": "HOLD",
+      "verified_reference_count": 108
+    }
+  },
+  "python_version": "3.12.14",
+  "schema": "hepta.org1.final-reference-summary.v1",
+  "scientific_acceptance": "HOLD",
+  "task_executions": 198,
+  "task_pairs": 99
+}

@@ -3,6 +3,12 @@ use crate::codec::Packet;
 use crate::codec::Result;
 use crate::model::Model;
 #[derive(Clone, Debug, PartialEq)]
+pub struct ByteTextState {
+    pub hidden: Vec<f64>,
+    pub units: u32,
+    pub bytes: u32,
+}
+#[derive(Clone, Debug, PartialEq)]
 pub struct State {
     pub context: Vec<f64>,
     pub shared: Vec<f64>,
@@ -14,12 +20,20 @@ pub struct State {
     pub verified: bool,
     pub content_revision: usize,
     pub verified_revision: i64,
+    pub text: Option<ByteTextState>,
 }
 impl State {
     pub fn packet(&self) -> Packet {
         let mut p = Packet::default();
-        p.meta
-            .insert("kind".into(), "joint-generator-state-v3".into());
+        p.meta.insert(
+            "kind".into(),
+            if self.text.is_some() {
+                "joint-generator-state-v4"
+            } else {
+                "joint-generator-state-v3"
+            }
+            .into(),
+        );
         for (k, v) in [
             ("steps", self.steps.to_string()),
             ("stopped", self.stopped.to_string()),
@@ -45,9 +59,28 @@ impl State {
                 p.vector(&format!("core.{l}.{name}"), state[i].clone());
             }
         }
+        if let Some(text) = &self.text {
+            p.vector("text.hidden", text.hidden.clone());
+            p.meta.insert("text.units".into(), text.units.to_string());
+            p.meta.insert("text.bytes".into(), text.bytes.to_string());
+        }
         p
     }
     pub fn read(p: &Packet, model: &Model) -> Result<Self> {
+        let kinds = if model.is_observed() {
+            [
+                "joint-generator-state-v4",
+                "joint-generation-proposal-state-v2",
+            ]
+        } else {
+            [
+                "joint-generator-state-v3",
+                "joint-generation-proposal-state-v1",
+            ]
+        };
+        if !kinds.contains(&p.text("kind")?) {
+            return Err("model/state profile mismatch".into());
+        }
         let vector = |name: &str, n: usize| -> Result<Vec<f64>> {
             let x = p.get(name)?;
             if x.len() != n {
@@ -94,6 +127,26 @@ impl State {
         {
             return Err("invalid content/verification revision".into());
         }
+        let text = if model.is_observed() {
+            let units = p
+                .text("text.units")?
+                .parse::<u32>()
+                .map_err(|error| error.to_string())?;
+            let bytes = p
+                .text("text.bytes")?
+                .parse::<u32>()
+                .map_err(|error| error.to_string())?;
+            if units > crate::text_codec::TEXT_SCALAR_LIMIT || bytes < units || bytes > 4 * units {
+                return Err("text decoder cursor bound".into());
+            }
+            Some(ByteTextState {
+                hidden: vector("text.hidden", model.width)?,
+                units,
+                bytes,
+            })
+        } else {
+            None
+        };
         Ok(Self {
             context: vector("context", model.width)?,
             shared: vector("shared", model.width)?,
@@ -105,6 +158,7 @@ impl State {
             verified,
             content_revision,
             verified_revision,
+            text,
         })
     }
 }

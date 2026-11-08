@@ -8,6 +8,9 @@ use crate::math::passage;
 use crate::math::sigmoid;
 use crate::math::softplus;
 use crate::math::tanh;
+use crate::observation::DeliveryObservation;
+use crate::observation::OBSERVATION_FEATURES;
+use crate::state::ByteTextState;
 pub const ACTIONS: [&str; 7] = [
     "shared", "image", "audio", "video", "text", "verify", "stop",
 ];
@@ -21,12 +24,31 @@ pub struct Model {
     pub boundary: String,
     pub initial_stop: bool,
     pub suppress_verify: bool,
+    pub(crate) observed: bool,
+    pub(crate) reset_core: bool,
 }
 impl Model {
     pub fn new(weights: Packet) -> Result<Self> {
-        if weights.text("kind")? != "joint-generator-weights-v3" {
-            return Err("wrong weight packet".into());
-        }
+        let observed = match weights.text("kind")? {
+            "joint-generator-weights-v3" => false,
+            "joint-generator-weights-v4" => true,
+            _ => return Err("wrong weight packet".into()),
+        };
+        let reset_core = if observed {
+            if weights.text("observation_profile")? != crate::observation::OBSERVATION_PROFILE
+                || weights.text("text_profile")? != crate::text_codec::TEXT_PROFILE
+                || weights.text("media_profile")? != crate::media_codec::MEDIA_PROFILE
+            {
+                return Err("unsupported v4 observation or codec profile".into());
+            }
+            match weights.text("core_state_profile")? {
+                "persistent-v1" => false,
+                "reset-each-action-v1" => true,
+                _ => return Err("unsupported core state profile".into()),
+            }
+        } else {
+            false
+        };
         let width = weights
             .text("width")?
             .parse::<usize>()
@@ -64,6 +86,8 @@ impl Model {
             boundary,
             initial_stop,
             suppress_verify,
+            observed,
+            reset_core,
         };
         model.validate_weights()?;
         Ok(model)
@@ -82,14 +106,28 @@ impl Model {
             ("initial_slots", 4 * w, w, true),
             ("feedback_projection", w, 3, true),
             ("transition_input", w, 3 * w, true),
-            ("emissions.text", 80, 2 * w, true),
+            (
+                "emissions.text",
+                if self.observed { 256 } else { 80 },
+                2 * w,
+                true,
+            ),
         ] {
             add(format!("{name}.weight"), vec![o, i]);
             if bias {
                 add(format!("{name}.bias"), vec![o]);
             }
         }
-        add("token_encoder.weight".into(), vec![128, w]);
+        add(
+            "token_encoder.weight".into(),
+            vec![if self.observed { 256 } else { 128 }, w],
+        );
+        if self.observed {
+            add("text_recurrent.weight".into(), vec![w, w]);
+            add("text_recurrent.bias".into(), vec![w]);
+            add("text_condition.weight".into(), vec![w, 2 * w]);
+            add("text_condition.bias".into(), vec![w]);
+        }
         add("action_embedding.weight".into(), vec![5, w]);
         for m in MODALITIES {
             add(format!("adapters.{m}.0.weight"), vec![w, 3 * w]);
@@ -102,7 +140,19 @@ impl Model {
             add(format!("emissions.{m}.2.bias"), vec![o]);
         }
         for name in ["actor", "critic", "delivery_critic"] {
-            add(format!("{name}.0.weight"), vec![w, 2 * w + 5]);
+            add(
+                format!("{name}.0.weight"),
+                vec![
+                    w,
+                    2 * w
+                        + 5
+                        + if self.observed {
+                            OBSERVATION_FEATURES
+                        } else {
+                            0
+                        },
+                ],
+            );
             add(format!("{name}.0.bias"), vec![w]);
             let o = if name == "actor" { 7 } else { 1 };
             add(format!("{name}.2.weight"), vec![o, w]);
@@ -159,7 +209,12 @@ impl Model {
         Ok(())
     }
     pub fn validate_input(&self, p: &Packet) -> Result<()> {
-        if p.text("kind")? != "joint-generator-public-v3" || p.tensors.len() != 7 {
+        let kind = if self.observed {
+            "joint-generator-public-v4"
+        } else {
+            "joint-generator-public-v3"
+        };
+        if p.text("kind")? != kind || p.tensors.len() != 7 {
             return Err("public schema mismatch".into());
         }
         for (name, shape) in [
@@ -180,13 +235,19 @@ impl Model {
         }
         let tokens = p.get("tokens")?;
         if p.tensors["tokens"].shape != vec![1, tokens.len()]
-            || tokens.is_empty()
+            || (!self.observed && tokens.is_empty())
             || tokens.len() > 4096
-            || tokens
-                .iter()
-                .any(|v| *v < 0.0 || *v >= 128.0 || v.fract() != 0.0)
+            || tokens.iter().any(|v| {
+                *v < 0.0 || *v >= if self.observed { 256.0 } else { 128.0 } || v.fract() != 0.0
+            })
         {
             return Err("token domain".into());
+        }
+        if self.observed
+            && std::str::from_utf8(&tokens.iter().map(|value| *value as u8).collect::<Vec<_>>())
+                .is_err()
+        {
+            return Err("input tokens are not UTF-8 bytes".into());
         }
         Ok(())
     }
@@ -226,6 +287,9 @@ impl Model {
                 text[j] += table[i * w + j] / tokens.len() as f64;
             }
         }
+        if self.observed {
+            text = self.ordered_text(tokens)?;
+        }
         let context = tanh(linear(
             &self.weights,
             "encoder_fusion.0",
@@ -234,6 +298,11 @@ impl Model {
         let slots = tanh(linear(&self.weights, "initial_slots", &context)?);
         let mut core = vec![[vec![0.0; w], vec![0.0; w], vec![0.0; w], vec![0.0; w]]; self.depth];
         core[0][0] = tanh(context.clone());
+        let text = self.observed.then(|| ByteTextState {
+            hidden: context.clone(),
+            units: 0,
+            bytes: 0,
+        });
         Ok(State {
             shared: context.clone(),
             context,
@@ -245,12 +314,18 @@ impl Model {
             verified: false,
             content_revision: 0,
             verified_revision: -1,
+            text,
         })
     }
     pub fn outputs(&self, s: &State) -> Result<Vec<Vec<f64>>> {
         let mut result = Vec::new();
         for (i, m) in MODALITIES.iter().enumerate() {
-            let input = cat(&[&s.shared, &s.slots[i * self.width..(i + 1) * self.width]]);
+            let slot = if *m == "text" && self.observed {
+                &s.text.as_ref().ok_or("missing byte decoder state")?.hidden
+            } else {
+                &s.slots[i * self.width..(i + 1) * self.width]
+            };
+            let input = cat(&[&s.shared, slot]);
             result.push(if *m == "text" {
                 linear(&self.weights, "emissions.text", &input)?
             } else {
@@ -278,24 +353,41 @@ impl Model {
         ])
     }
     pub fn inspect(&self, s: &State, remaining: f64) -> Result<Packet> {
+        if self.observed {
+            return Err("v4 inspection requires owner delivery observation".into());
+        }
         if !remaining.is_finite() || !(0.0..=1.0).contains(&remaining) {
             return Err("remaining budget fraction".into());
         }
+        self.inspect_features(s, &self.features(s, remaining), None)
+    }
+    pub(crate) fn inspect_features(
+        &self,
+        s: &State,
+        x: &[f64],
+        observed: Option<&DeliveryObservation>,
+    ) -> Result<Packet> {
         let mut p = s.packet();
         let outputs = self.outputs(s)?;
         for (m, x) in MODALITIES.iter().zip(outputs) {
             p.vector(&format!("output.{m}"), x);
         }
-        let x = self.features(s, remaining);
         for name in ["actor", "critic", "delivery_critic"] {
             let mut y = linear(
                 &self.weights,
                 &format!("{name}.2"),
-                &tanh(linear(&self.weights, &format!("{name}.0"), &x)?),
+                &tanh(linear(&self.weights, &format!("{name}.0"), x)?),
             )?;
             if name == "actor" {
                 p.vector("actor.logits", y.clone());
                 let mut legal = [true; 7];
+                if let Some(observation) = observed {
+                    for index in 0..4 {
+                        legal[index + 1] = observation.modality_allowed(index)
+                            && observation.cursors[index] < observation.totals[index];
+                    }
+                    legal[0] = legal[1..5].iter().any(|allowed| *allowed);
+                }
                 if s.steps == 0 && !self.initial_stop {
                     legal[6] = false;
                 }
@@ -304,6 +396,12 @@ impl Model {
                 }
                 if s.steps >= 6 || s.stopped {
                     legal = [false, false, false, false, false, false, true];
+                }
+                if observed.is_some() {
+                    p.vector(
+                        "policy.legal_mask",
+                        legal.map(|allowed| f64::from(u8::from(allowed))).to_vec(),
+                    );
                 }
                 let max = y
                     .iter()
@@ -388,7 +486,23 @@ impl Model {
             signal[i] += feedback[i];
         }
         for l in 0..self.depth {
-            let (x, state) = self.layer(l, &signal, &s.core[l])?;
+            let reset;
+            let prior = if self.reset_core {
+                reset = [
+                    if l == 0 {
+                        tanh(s.context.clone())
+                    } else {
+                        vec![0.0; w]
+                    },
+                    vec![0.0; w],
+                    vec![0.0; w],
+                    vec![0.0; w],
+                ];
+                &reset
+            } else {
+                &s.core[l]
+            };
+            let (x, state) = self.layer(l, &signal, prior)?;
             signal = x;
             next.core[l] = state;
         }

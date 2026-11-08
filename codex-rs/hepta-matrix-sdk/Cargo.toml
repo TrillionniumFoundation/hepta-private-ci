@@ -30,6 +30,7 @@ tokio-util = { workspace = true, features = ["rt"] }
 url = { workspace = true }
 
 [dev-dependencies]
+matrix-sdk-crypto = { version = "=0.19.1", default-features = false }
 pretty_assertions = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 tempfile = { workspace = true }

@@ -6,8 +6,10 @@ use codex_hepta_contracts::Sha256Digest;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::BoundedCircuitDefinitionV2;
 use crate::CircuitBudgetV2;
 use crate::CircuitExitV2;
+use crate::CircuitNodeKindV2;
 use crate::TaskFlowError;
 use crate::TaskFlowFence;
 use crate::circuit_profile::hash;
@@ -76,6 +78,17 @@ pub struct CircuitActivationV2 {
     pub(crate) execution_request_digest: Option<Sha256Digest>,
 }
 
+impl CircuitActivationV2 {
+    pub fn execution_request_digest(&self) -> Option<&Sha256Digest> {
+        self.execution_request_digest.as_ref()
+    }
+
+    /// Wake-up deadline for an activation still waiting for join quorum.
+    pub fn join_deadline_ms(&self) -> Option<u64> {
+        self.join_deadline_ms
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub(crate) struct CircuitNodeProgressV2 {
     pub last_output: Sha256Digest,
@@ -130,6 +143,10 @@ pub struct CircuitRunV2 {
     pub(crate) last_observed_ms: u64,
     pub(crate) revision: u64,
     pub(crate) writer: CircuitWriterV2,
+    /// Revision installing the current settlement-only writer. Omission keeps
+    /// canonical state digests from before this recovery mode unchanged.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) settlement_fence_revision: Option<u64>,
     pub(crate) instances: BTreeMap<u64, CircuitInstanceV2>,
     pub(crate) activations: BTreeMap<u64, CircuitActivationV2>,
     pub(crate) next_activation: u64,
@@ -170,6 +187,34 @@ impl CircuitRunV2 {
             })
             .count()
     }
+
+    /// Reconstruct completed computation identities under the exact frozen
+    /// definition. These readback DTOs never grant execution authority.
+    pub fn completed_computation_dispatches(
+        &self,
+        definition: &BoundedCircuitDefinitionV2,
+    ) -> Result<Vec<CircuitDispatchV2>, TaskFlowError> {
+        if definition.definition_digest()? != self.definition_digest {
+            return Err(crate::circuit_profile::invalid(
+                "circuit definition mismatch",
+            ));
+        }
+        let mut dispatches = Vec::new();
+        for activation in self.activations.values() {
+            let program =
+                definition.program(&self.instances[&activation.instance_id].program_id)?;
+            if activation.status == CircuitActivationStatusV2::Completed
+                && matches!(
+                    program.node(&activation.node_id)?.kind,
+                    CircuitNodeKindV2::Compute { .. } | CircuitNodeKindV2::Decide { .. }
+                )
+            {
+                dispatches.push(self.dispatch(definition, activation.activation_id)?);
+            }
+        }
+        Ok(dispatches)
+    }
+
     pub(crate) fn state_digest(&self) -> Result<Sha256Digest, TaskFlowError> {
         hash("hepta.circuit.state.v2", self)
     }
@@ -206,6 +251,27 @@ pub struct CircuitCompletionV2 {
     pub actual_work: u64,
     pub outcome: CircuitExitV2,
     pub selected_edges: Vec<String>,
+}
+
+/// Read only by AutomationStore from one verified SQLite snapshot. The event
+/// digest commits complete observed costs/outcomes as well as the final state.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CircuitCommittedTraceV2 {
+    pub(crate) run: CircuitRunV2,
+    pub(crate) completions: BTreeMap<u64, CircuitCompletionV2>,
+    pub(crate) history_digest: Sha256Digest,
+}
+
+impl CircuitCommittedTraceV2 {
+    pub fn run(&self) -> &CircuitRunV2 {
+        &self.run
+    }
+    pub fn completions(&self) -> &BTreeMap<u64, CircuitCompletionV2> {
+        &self.completions
+    }
+    pub fn history_digest(&self) -> &Sha256Digest {
+        &self.history_digest
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

@@ -2,14 +2,22 @@
 
 use crate::codec::Result;
 use crate::codec::sha256;
+use crate::observation::OwnerContext;
 
 pub(crate) const MAX_STATE_BYTES: usize = 65_536;
 pub(crate) const MAX_DELTA_BYTES: usize = 65_536;
 pub(crate) const MAX_PREFIX_BYTES: usize = 262_144;
 const MAX_WEIGHTS_BYTES: usize = 8 * 1024 * 1024;
 const MAX_PUBLIC_BYTES: usize = 1024 * 1024;
-pub(crate) const MAX_REQUEST_BYTES: usize =
-    8 + 32 + 16 + MAX_WEIGHTS_BYTES + MAX_PUBLIC_BYTES + MAX_STATE_BYTES + MAX_PREFIX_BYTES + 10;
+pub(crate) const MAX_REQUEST_BYTES: usize = 8
+    + 32
+    + 50
+    + 16
+    + MAX_WEIGHTS_BYTES
+    + MAX_PUBLIC_BYTES
+    + MAX_STATE_BYTES
+    + MAX_PREFIX_BYTES
+    + 10;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum Sampler {
@@ -54,6 +62,7 @@ pub(crate) struct Request<'a> {
     pub(crate) state: &'a [u8],
     pub(crate) prefix: &'a [u8],
     pub(crate) command: Command,
+    pub(crate) owner: Option<OwnerContext>,
 }
 
 pub(crate) fn parse(bytes: &[u8]) -> Result<Request<'_>> {
@@ -61,9 +70,11 @@ pub(crate) fn parse(bytes: &[u8]) -> Result<Request<'_>> {
         return Err("request too large".into());
     }
     let mut reader = Reader::new(bytes);
-    if reader.take(8)? != b"HJREQV01" {
-        return Err("unknown request ABI".into());
-    }
+    let observed = match reader.take(8)? {
+        b"HJREQV01" => false,
+        b"HJREQV02" => true,
+        _ => return Err("unknown request ABI".into()),
+    };
     let digest = reader
         .take(32)?
         .try_into()
@@ -71,6 +82,22 @@ pub(crate) fn parse(bytes: &[u8]) -> Result<Request<'_>> {
     if digest == [0; 32] {
         return Err("empty request digest".into());
     }
+    let owner = if observed {
+        let owner = OwnerContext {
+            required_mask: reader.byte()?,
+            optional_mask: reader.byte()?,
+            budget_total: reader.u64()?,
+            budget_remaining: reader.u64()?,
+            task_digest: reader
+                .take(32)?
+                .try_into()
+                .map_err(|_| "task digest width")?,
+        };
+        owner.validate()?;
+        Some(owner)
+    } else {
+        None
+    };
     let weights = reader.blob(MAX_WEIGHTS_BYTES)?;
     let public = reader.blob(MAX_PUBLIC_BYTES)?;
     let state = reader.blob(MAX_STATE_BYTES)?;
@@ -97,6 +124,13 @@ pub(crate) fn parse(bytes: &[u8]) -> Result<Request<'_>> {
             if remaining > 1_000_000 {
                 return Err("remaining budget fraction".into());
             }
+            if let Some(owner) = &owner
+                && u128::from(remaining)
+                    != u128::from(owner.budget_remaining) * 1_000_000
+                        / u128::from(owner.budget_total)
+            {
+                return Err("command budget disagrees with owner".into());
+            }
             Command::Auto(remaining)
         }
         3 => {
@@ -119,6 +153,7 @@ pub(crate) fn parse(bytes: &[u8]) -> Result<Request<'_>> {
         state,
         prefix,
         command,
+        owner,
     })
 }
 
@@ -177,6 +212,11 @@ impl<'a> Reader<'a> {
     pub(crate) fn u32(&mut self) -> Result<u32> {
         Ok(u32::from_le_bytes(
             self.take(4)?.try_into().map_err(|_| "u32 width")?,
+        ))
+    }
+    pub(crate) fn u64(&mut self) -> Result<u64> {
+        Ok(u64::from_le_bytes(
+            self.take(8)?.try_into().map_err(|_| "u64 width")?,
         ))
     }
     fn blob(&mut self, maximum: usize) -> Result<&'a [u8]> {

@@ -132,11 +132,10 @@ impl ObjectiveRuntimeHost {
                 continue;
             }
             if authentication_is_current(record, &trust, agentd.identity(), now_ms)? {
-                if agentd.canonical_intelligence_enabled() {
-                    // A RunStart publication predates the seven-owner handoff.
-                    // Until that exact handoff is durably recovered, startup
-                    // must wait for the authenticated ObjectiveStart retry
-                    // rather than silently entering the compatibility path.
+                if agentd.canonical_intelligence_enabled() || agentd.circuit_task_enabled() {
+                    // An execution-profile handoff must be recovered through
+                    // its original owners on authenticated ObjectiveStart retry.
+                    // Never project it as an unrelated App Server run.
                     continue;
                 }
                 agentd.start_current_run_start(&state.journal, &record.snapshot.run_id)?;

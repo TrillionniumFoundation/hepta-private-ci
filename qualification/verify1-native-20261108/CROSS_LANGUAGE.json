@@ -1,0 +1,59 @@
+{
+  "cases": [
+    {
+      "accepted_rows": 0,
+      "fault": "clean",
+      "native_verdict": "proved",
+      "physical_effect_operations": 3,
+      "record_sha256": "3078a8c972a3e4f363f1caf738a33276a2c189d6abe43724336f42ffe4e700d0",
+      "value_error": false
+    },
+    {
+      "accepted_rows": 0,
+      "fault": "stale_read",
+      "native_verdict": "refuted",
+      "physical_effect_operations": 3,
+      "record_sha256": "6964f8a3e00e0f9f27b183810ea2f0b3b2ce7a2f239d671153c92a88716cb87e",
+      "value_error": true
+    },
+    {
+      "accepted_rows": 0,
+      "after_owner_readback": "proved",
+      "fault": "missing_receipt",
+      "native_verdict": "unknown",
+      "physical_effect_operations": 3,
+      "record_sha256": "cfd56c07716497c64af64f4bcd7b53d2130f557c0c61c478d1b28e4f63778a14",
+      "value_error": false
+    },
+    {
+      "accepted_rows": 0,
+      "fault": "semantic_error",
+      "native_verdict": "refuted",
+      "physical_effect_operations": 3,
+      "record_sha256": "38888d3d7ef049272f63bc66329638a0e08eb2b42c1f5e5542200ae07f8c3570",
+      "value_error": true
+    },
+    {
+      "accepted_rows": 0,
+      "fault": "partial_success",
+      "native_verdict": "refuted",
+      "physical_effect_operations": 3,
+      "record_sha256": "34786b04a11ff3e1d51c21d3949bfb98671580fc5e44a7afe7c0f662308dde7d",
+      "value_error": true
+    },
+    {
+      "accepted_rows": 0,
+      "fault": "common_misjudgment",
+      "native_verdict": "refuted",
+      "physical_effect_operations": 3,
+      "record_sha256": "2420b2f4ef22f35db66ff3395c01967cccb95e40ccc72f64e661992593855e3f",
+      "value_error": true
+    }
+  ],
+  "frozen_source_unchanged": true,
+  "model_inference": false,
+  "production_acceptance": false,
+  "scope": "frozen Python worker effects to native read-only fixture checker",
+  "signature_authentication": false,
+  "status": "PASSED"
+}

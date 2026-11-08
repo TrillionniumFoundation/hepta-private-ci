@@ -4,6 +4,7 @@ codex_rust_crate(
     name = "hepta-neuron",
     compile_data = [
         "tests/fixtures/joint-synthetic-v1.json",
+        "tests/fixtures/perception-bytes-v1.json",
         "tests/support/joint_synthetic.rs",
     ],
     crate_name = "codex_hepta_neuron",

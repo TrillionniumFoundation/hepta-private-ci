@@ -93,7 +93,7 @@ impl AgentdState {
         self.check_notes_organ_authority()?;
         self.refresh_generation()?;
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
-        if !runtime.critical_stores_ready || runtime.fenced {
+        if !runtime.critical_stores_ready || runtime.fenced || runtime.drain_requested {
             return Err(AgentdError::GenerationFenced(
                 "Notes Organ prerequisites are unavailable".into(),
             ));

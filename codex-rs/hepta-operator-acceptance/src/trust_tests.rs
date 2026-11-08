@@ -4,6 +4,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+#[cfg(unix)]
 use std::process::Command;
 
 use crate::test_support::PrivateTempDir;
@@ -19,7 +20,7 @@ use super::TrustPolicy;
 use super::validate_ed25519_blob;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
-use crate::test_support::openssh_keygen;
+use crate::test_support::openssh_command;
 use crate::test_support::private_tempdir;
 
 #[test]
@@ -130,7 +131,7 @@ impl TrustFixture {
             .canonicalize()
             .expect("canonical trust root");
         let key = root.join("operator-key");
-        let generated = Command::new(openssh_keygen())
+        let generated = openssh_command()
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
             .stdin(std::process::Stdio::inherit())
@@ -138,9 +139,10 @@ impl TrustFixture {
             .expect("start ssh-keygen");
         assert!(
             generated.status.success(),
-            "generate test-only Ed25519 key at {}: status={:?}, stderr={}",
+            "generate test-only Ed25519 key at {}: status={:?}, stdout={}, stderr={}",
             key.display(),
             generated.status,
+            String::from_utf8_lossy(&generated.stdout),
             String::from_utf8_lossy(&generated.stderr),
         );
 
@@ -154,7 +156,7 @@ impl TrustFixture {
             format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
         );
 
-        let fingerprint_output = Command::new(openssh_keygen())
+        let fingerprint_output = openssh_command()
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -223,7 +225,7 @@ impl TrustFixture {
     fn sign_hash(&self, statement: &[u8], namespace: &str, name: &str, hash: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
-        let signed = Command::new(openssh_keygen())
+        let signed = openssh_command()
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", namespace, "-O", &format!("hashalg={hash}")])

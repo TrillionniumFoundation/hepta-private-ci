@@ -1,0 +1,87 @@
+{
+  "collection": {
+    "controller_matches_training_except_memory_mode": true,
+    "energy_joules": null,
+    "independent_training_fits": 0,
+    "observed_episodes": 20,
+    "original_host": "ai395",
+    "original_job_id": "1a1ba616330-12894-1a37",
+    "provider_charges": null,
+    "raw_rows": 50,
+    "source_groups": 2,
+    "wall_seconds": 34.734491037903354
+  },
+  "evidence_scope": "engineering tests plus real train-only v2 two-seed development training smoke",
+  "inputs": [
+    {
+      "name": "training.jsonl",
+      "path": "/workspace/scratch/cf0b0141e32e/execution/training-common-v2.jsonl",
+      "sha256": "6d33792df24a44865b95e0b867f18b9faa5753ab9a86f5cd88a861fdfbf03b14"
+    },
+    {
+      "name": "design.json",
+      "path": "/workspace/scratch/cf0b0141e32e/cloud/B_SMOKE_DESIGN.json",
+      "sha256": "531111210a93c91e12a37e6e3c5fa84281dc1f3b5df74235c199874060dd313d"
+    },
+    {
+      "name": "COLLECTION_RESULT.json",
+      "path": "/workspace/scratch/cf0b0141e32e/execution/COLLECTION_RESULT.json",
+      "sha256": "ddd45e1018fbce025bde9a1e01e101b37561e73ca97431d217672dcfc048164f"
+    },
+    {
+      "name": "collector-design.json",
+      "path": "/workspace/scratch/cf0b0141e32e/execution/collector-design.json",
+      "sha256": "aba4b57a562131f719a650bbf185440490afe6a5227f3bbe9a77fb99617a88dc"
+    }
+  ],
+  "provider_seconds": 1200,
+  "request_id": "cell-causal-cf0-b-train-20261108-v1",
+  "runner_seconds": 1100,
+  "schema": "cell-causal-cloud-plan-v1",
+  "source_identity": {
+    "base_commit": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+    "base_tree": "023c017618563a08fe5043551e26f89efd313fa6",
+    "candidate_status": "ROOT_RUFF_FORMATTED_SOURCE_FROZEN",
+    "exact_changed_bytes": "source-manifest.json at capsule build",
+    "format_receipt_sha256": "a124ea5434d5827c1eebf759243f0012695ef5d9661bbc82a16aba9b3ba070c8"
+  },
+  "steps": [
+    {
+      "args": [
+        "-v",
+        "ndu_real_runtime.test_causal_protocol",
+        "ndu_real_runtime.test_causal_b",
+        "ndu_real_runtime.test_causal_ace",
+        "ndu_real_runtime.test_causal_topology",
+        "ndu_real_runtime.test_recursive_contract",
+        "ndu_real_runtime.test_span_meter",
+        "ndu_real_runtime.test_interval_costs"
+      ],
+      "id": "causal-and-runtime-tests",
+      "maximum_skipped_tests": 0,
+      "minimum_tests": 25,
+      "module": "unittest",
+      "role": "test",
+      "seconds": 90
+    },
+    {
+      "args": [
+        "--training-only",
+        "--config",
+        "{runtime_config}",
+        "--design",
+        "{input:design.json}",
+        "--root",
+        "{output}/b",
+        "--records",
+        "{input:training.jsonl}",
+        "--records-sha256",
+        "6d33792df24a44865b95e0b867f18b9faa5753ab9a86f5cd88a861fdfbf03b14"
+      ],
+      "id": "b-real-v2-training",
+      "module": "ndu_real_runtime.causal_b",
+      "role": "training",
+      "seconds": 960
+    }
+  ]
+}

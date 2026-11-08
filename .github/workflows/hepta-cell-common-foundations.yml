@@ -1,0 +1,57 @@
+name: Hepta Cell common foundations
+
+on:
+  push:
+    branches: [research/cell-common-foundations-20261108-ab8f]
+    paths:
+      - qualification/cell_common_foundations/*.py
+      - qualification/cell_common_foundations/requirements.txt
+      - qualification/hcsn_differentiable/*.py
+      - .github/workflows/hepta-cell-common-foundations.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cell-common-foundations-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bounded-reference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out the exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install the declared CPU dependencies and locked formatter
+        run: |
+          python3 -m venv "$RUNNER_TEMP/cell-common-venv"
+          echo "$RUNNER_TEMP/cell-common-venv/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/cell-common-venv/bin/python" -m pip install numpy==2.3.5 ruff==0.15.13
+          "$RUNNER_TEMP/cell-common-venv/bin/python" -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify the affected Python files
+        run: |
+          ruff format --check qualification/cell_common_foundations
+          ruff check qualification/cell_common_foundations
+      - name: Run the complete bounded research roster
+        run: |
+          python -m qualification.cell_common_foundations.run_reference --output "$RUNNER_TEMP/cell-common-results/reference.json"
+      - name: Retain plans, started attempts, original outcomes and source identities
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-common-foundations-${{ github.sha }}
+          path: ${{ runner.temp }}/cell-common-results/
+          if-no-files-found: warn
+      - name: Verify that the checkout was unchanged
+        if: always()
+        run: git diff --exit-code

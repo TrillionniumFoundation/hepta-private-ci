@@ -414,6 +414,11 @@ impl AgentdAutomationEffectHost {
                 "automation effect wire payload digest mismatch".to_string(),
             ));
         }
+        if crate::automation_effect_payload::requires_action_skill_host(wire_payload) {
+            return Err(AgentdError::Invalid(
+                "action skill invocation requires a registered goal-checking host".to_string(),
+            ));
+        }
         Ok(())
     }
 
@@ -676,6 +681,10 @@ mod tests {
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
+    use codex_hepta_automation::ACTION_SKILL_SCHEMA_VERSION;
+    use codex_hepta_automation::ActionSkillBudgetV1;
+    use codex_hepta_automation::ActionSkillContractV1;
+    use codex_hepta_automation::ActionSkillRecoveryV1;
     use codex_hepta_automation::AuthorizedEffectIntent;
     use codex_hepta_automation::TaskFlowCommand;
     use codex_hepta_automation::TaskFlowDefinition;
@@ -695,6 +704,7 @@ mod tests {
     use codex_model_provider::PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
+    use pretty_assertions::assert_eq;
     use wiremock::Mock;
     use wiremock::MockServer;
     use wiremock::ResponseTemplate;
@@ -765,6 +775,84 @@ mod tests {
                 identity,
                 store,
             }
+        }
+
+        fn open_effect_host(
+            &self,
+            server: &MockServer,
+            scope: &Sha256Digest,
+        ) -> (AgentdAutomationEffectHost, SigningKey, PathBuf) {
+            let contract_signer = SigningKey::from_bytes(&[23_u8; 32]);
+            let final_use_signer = SigningKey::from_bytes(&[29_u8; 32]);
+            let unsigned_provider_config = HttpProviderEffectConfig {
+                dispatch_url: format!("{}/dispatch", server.uri()),
+                lookup_url_template: format!("{}/status/{{key}}", server.uri()),
+                headers: HeaderMap::new(),
+                timeout: Duration::from_secs(2),
+                contract_id: "agentd-product-effect-contract".to_string(),
+                attestation: None,
+            };
+            let contract_digest = unsigned_provider_config
+                .contract_sha256()
+                .unwrap_or_else(|_| panic!("contract digest"));
+            let statement = HttpProviderEffectContractAttestation::statement_for(
+                "agentd-product-effect-contract",
+                &contract_digest,
+                1,
+            );
+            let contract_signature = contract_signer.sign(&statement).to_bytes();
+            let revocations_file = self
+                .identity
+                .layout
+                .automation_root()
+                .join("effect-revocations.json");
+            fs::write(
+                &revocations_file,
+                serde_json::to_vec(&FinalUseRevocations {
+                    authority_epoch: 9,
+                    revision: 1,
+                    revoked_grant_ids: BTreeSet::new(),
+                })
+                .unwrap_or_else(|_| panic!("revocations json")),
+            )
+            .unwrap_or_else(|_| panic!("write revocations file"));
+            fs::set_permissions(&revocations_file, fs::Permissions::from_mode(0o600))
+                .unwrap_or_else(|_| panic!("revocations file permissions"));
+
+            let host_file = self
+                .identity
+                .layout
+                .automation_root()
+                .join("effect-host.json");
+            let host_json = serde_json::json!({
+                "schema_version": 1,
+                "provider_scope": "provider/fixture-v1",
+                "destination_id": "provider:fixture",
+                "final_use_scope_sha256": scope.as_str(),
+                "dispatch_url": format!("{}/dispatch", server.uri()),
+                "lookup_url_template": format!("{}/status/{{key}}", server.uri()),
+                "headers": {},
+                "timeout_ms": 2000,
+                "contract_id": "agentd-product-effect-contract",
+                "contract_sha256": contract_digest.as_str(),
+                "contract_authority_epoch": 1,
+                "contract_signature_hex": hex(&contract_signature),
+                "contract_verifying_key_hex": hex(&contract_signer.verifying_key().to_bytes()),
+                "final_use_signer_id": "automation-security-owner",
+                "final_use_verifying_key_hex": hex(&final_use_signer.verifying_key().to_bytes()),
+                "final_use_revocations_file": revocations_file
+            });
+            fs::write(
+                &host_file,
+                serde_json::to_vec(&host_json).unwrap_or_else(|_| panic!("host json")),
+            )
+            .unwrap_or_else(|_| panic!("write host file"));
+            fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
+                .unwrap_or_else(|_| panic!("host file permissions"));
+
+            let host = AgentdAutomationEffectHost::open(&self.identity, &host_file)
+                .unwrap_or_else(|_| panic!("effect host"));
+            (host, final_use_signer, host_file)
         }
     }
 
@@ -933,6 +1021,22 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn host_dispatches_exact_wire_payload_once() {
+        check_plain_host_dispatch(WIRE).await;
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn host_preserves_ordinary_opaque_and_non_skill_json_payloads() {
+        for wire in [
+            b"ordinary opaque provider bytes".as_slice(),
+            br#"{"contract_digest":"ordinary-business-field"}"#.as_slice(),
+            br#"{"destination_id":"business-destination","body":"ordinary"}"#.as_slice(),
+            br#"{"metadata":{"contract_digest":"nested","destination_id":"nested"}}"#.as_slice(),
+        ] {
+            check_plain_host_dispatch(wire).await;
+        }
+    }
+
+    async fn check_plain_host_dispatch(wire: &[u8]) {
         let fixture = Fixture::new().await;
         let now_ms = u64::try_from(
             SystemTime::now()
@@ -942,7 +1046,8 @@ mod tests {
         )
         .unwrap_or_else(|_| panic!("millis"));
         let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
-        let intent = effect_intent(&scope);
+        let mut intent = effect_intent(&scope);
+        intent.payload_digest = Sha256Digest::for_bytes(wire);
         prepare_effect(&fixture, now_ms, &intent).await;
 
         let server = MockServer::start().await;
@@ -965,88 +1070,19 @@ mod tests {
                 PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER,
                 provider_key.as_str(),
             ))
-            .and(body_bytes(WIRE.to_vec()))
+            .and(body_bytes(wire.to_vec()))
             .respond_with(ResponseTemplate::new(200).set_body_json(ack))
             .expect(1)
             .mount(&server)
             .await;
 
-        let contract_signer = SigningKey::from_bytes(&[23_u8; 32]);
-        let final_use_signer = SigningKey::from_bytes(&[29_u8; 32]);
-        let unsigned_provider_config = HttpProviderEffectConfig {
-            dispatch_url: format!("{}/dispatch", server.uri()),
-            lookup_url_template: format!("{}/status/{{key}}", server.uri()),
-            headers: HeaderMap::new(),
-            timeout: Duration::from_secs(2),
-            contract_id: "agentd-product-effect-contract".to_string(),
-            attestation: None,
-        };
-        let contract_digest = unsigned_provider_config
-            .contract_sha256()
-            .unwrap_or_else(|_| panic!("contract digest"));
-        let statement = HttpProviderEffectContractAttestation::statement_for(
-            "agentd-product-effect-contract",
-            &contract_digest,
-            1,
-        );
-        let contract_signature = contract_signer.sign(&statement).to_bytes();
-        let revocations_file = fixture
-            .identity
-            .layout
-            .automation_root()
-            .join("effect-revocations.json");
-        fs::write(
-            &revocations_file,
-            serde_json::to_vec(&FinalUseRevocations {
-                authority_epoch: 9,
-                revision: 1,
-                revoked_grant_ids: BTreeSet::new(),
-            })
-            .unwrap_or_else(|_| panic!("revocations json")),
-        )
-        .unwrap_or_else(|_| panic!("write revocations file"));
-        fs::set_permissions(&revocations_file, fs::Permissions::from_mode(0o600))
-            .unwrap_or_else(|_| panic!("revocations file permissions"));
-
-        let host_file = fixture
-            .identity
-            .layout
-            .automation_root()
-            .join("effect-host.json");
-        let host_json = serde_json::json!({
-            "schema_version": 1,
-            "provider_scope": "provider/fixture-v1",
-            "destination_id": "provider:fixture",
-            "final_use_scope_sha256": scope.as_str(),
-            "dispatch_url": format!("{}/dispatch", server.uri()),
-            "lookup_url_template": format!("{}/status/{{key}}", server.uri()),
-            "headers": {},
-            "timeout_ms": 2000,
-            "contract_id": "agentd-product-effect-contract",
-            "contract_sha256": contract_digest.as_str(),
-            "contract_authority_epoch": 1,
-            "contract_signature_hex": hex(&contract_signature),
-            "contract_verifying_key_hex": hex(&contract_signer.verifying_key().to_bytes()),
-            "final_use_signer_id": "automation-security-owner",
-            "final_use_verifying_key_hex": hex(&final_use_signer.verifying_key().to_bytes()),
-            "final_use_revocations_file": revocations_file
-        });
-        fs::write(
-            &host_file,
-            serde_json::to_vec(&host_json).unwrap_or_else(|_| panic!("host json")),
-        )
-        .unwrap_or_else(|_| panic!("write host file"));
-        fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
-            .unwrap_or_else(|_| panic!("host file permissions"));
-
-        let host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
-            .unwrap_or_else(|_| panic!("effect host"));
+        let (host, final_use_signer, _host_file) = fixture.open_effect_host(&server, &scope);
         let grant = signed_final_use(&intent, now_ms, &final_use_signer);
         let receipt = host
             .execute(
                 &fixture.store,
                 &intent,
-                WIRE,
+                wire,
                 &grant,
                 "agentd-product-effect-dispatch",
                 now_ms + 5,
@@ -1062,7 +1098,7 @@ mod tests {
             .execute(
                 &fixture.store,
                 &intent,
-                WIRE,
+                wire,
                 &grant,
                 "agentd-product-effect-dispatch",
                 now_ms + 6,
@@ -1078,7 +1114,7 @@ mod tests {
             host.execute(
                 &fixture.store,
                 &substituted,
-                WIRE,
+                wire,
                 &grant,
                 "agentd-product-effect-dispatch",
                 now_ms + 7
@@ -1090,7 +1126,7 @@ mod tests {
             host.execute(
                 &fixture.store,
                 &intent,
-                WIRE,
+                wire,
                 &grant,
                 "different-command",
                 now_ms + 7
@@ -1111,5 +1147,207 @@ mod tests {
             .is_err()
         );
         server.verify().await;
+    }
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn plain_host_rejects_skill_envelopes_before_claim_or_provider_contact() {
+        let contract = ActionSkillContractV1 {
+            schema_version: ACTION_SKILL_SCHEMA_VERSION,
+            skill_id: "act1-host-rejection".to_string(),
+            version: 1,
+            destination_id: "provider:fixture".to_string(),
+            observer_id: "owner-goal-observer".to_string(),
+            initiation_digest: Sha256Digest::for_bytes(b"initiation"),
+            policy_digest: Sha256Digest::for_bytes(b"policy"),
+            termination_digest: Sha256Digest::for_bytes(b"termination"),
+            goal_digest: Sha256Digest::for_bytes(b"goal"),
+            budget: ActionSkillBudgetV1 {
+                max_wire_bytes: 16_384,
+                provider_timeout_ms: 2_000,
+                observer_timeout_ms: 1_000,
+            },
+            recovery: ActionSkillRecoveryV1::ReconcileOriginalIdentity,
+        };
+        let wire = contract
+            .encode_invocation(WIRE.to_vec())
+            .expect("typed invocation");
+        let value: serde_json::Value = serde_json::from_slice(&wire).expect("invocation JSON");
+        let mut variants = vec![("typed_v1", wire.clone())];
+        for (name, field, replacement) in [
+            ("future_version", "schema_version", serde_json::json!(2)),
+            (
+                "wrong_version_type",
+                "schema_version",
+                serde_json::json!("1"),
+            ),
+            (
+                "invalid_contract_digest",
+                "contract_digest",
+                serde_json::Value::Null,
+            ),
+            (
+                "invalid_destination_type",
+                "destination_id",
+                serde_json::json!(7),
+            ),
+            ("invalid_body_type", "body", serde_json::json!("opaque")),
+        ] {
+            let mut changed = value.clone();
+            changed[field] = replacement;
+            variants.push((
+                name,
+                serde_json::to_vec(&changed).expect("changed invocation"),
+            ));
+        }
+        for (name, field) in [
+            ("missing_version", "schema_version"),
+            ("missing_body", "body"),
+        ] {
+            let mut changed = value.clone();
+            changed.as_object_mut().expect("object").remove(field);
+            variants.push((
+                name,
+                serde_json::to_vec(&changed).expect("incomplete invocation"),
+            ));
+        }
+        let mut extra = value.clone();
+        extra["extra"] = serde_json::json!(true);
+        variants.push((
+            "unknown_field",
+            serde_json::to_vec(&extra).expect("extra field"),
+        ));
+        let encoded = String::from_utf8(wire).expect("JSON UTF-8");
+        variants.push((
+            "duplicate_field",
+            format!(r#"{{"body":[],{}"#, &encoded[1..]).into_bytes(),
+        ));
+        variants.push((
+            "truncated_after_skill_identity",
+            format!(
+                r#"{{"contract_digest":"{}","destination_id":"{}","body":["#,
+                contract.digest().expect("contract digest").as_str(),
+                contract.destination_id
+            )
+            .into_bytes(),
+        ));
+
+        for (name, wire) in variants {
+            let fixture = Fixture::new().await;
+            let now_ms = u64::try_from(
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .expect("wall clock")
+                    .as_millis(),
+            )
+            .expect("millis");
+            let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
+            let mut intent = effect_intent(&scope);
+            intent.payload_digest = Sha256Digest::for_bytes(&wire);
+            prepare_effect(&fixture, now_ms, &intent).await;
+            let run_before = fixture
+                .store
+                .taskflow_run(&intent.run_id)
+                .await
+                .expect("run");
+            let server = MockServer::start().await;
+            let key = ProviderEffectKey::for_operation(
+                "provider/fixture-v1",
+                &intent.run_id,
+                &intent.step_id,
+            )
+            .expect("provider key");
+            Mock::given(method("POST")).and(path("/dispatch"))
+                .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                    "effect_key": key.as_str(),
+                    "payload_sha256": intent.payload_digest.as_str(),
+                    "provider_operation_id_sha256": Sha256Digest::for_bytes(b"unchecked-goal").as_str(),
+                    "status": "completed"
+                }))).expect(0).mount(&server).await;
+            let (host, signer, host_file) = fixture.open_effect_host(&server, &scope);
+            let before_capacity = host.authority.capacity().expect("authority capacity");
+            let before_frontier = host.authority.frontier().expect("authority frontier");
+            let grant = signed_final_use(&intent, now_ms, &signer);
+            let result = host
+                .execute(
+                    &fixture.store,
+                    &intent,
+                    &wire,
+                    &grant,
+                    "agentd-product-effect-dispatch",
+                    now_ms + 5,
+                )
+                .await;
+            assert!(
+                matches!(result, Err(AgentdError::Invalid(ref reason))
+                    if reason == "action skill invocation requires a registered goal-checking host"),
+                "{name}: {result:?}"
+            );
+            assert_eq!(
+                host.authority.capacity().expect("capacity after rejection"),
+                before_capacity,
+                "{name}"
+            );
+            assert_eq!(
+                host.authority.frontier().expect("frontier after rejection"),
+                before_frontier,
+                "{name}"
+            );
+            assert_eq!(
+                fixture
+                    .store
+                    .taskflow_run(&intent.run_id)
+                    .await
+                    .expect("run after rejection"),
+                run_before,
+                "{name}"
+            );
+            assert_eq!(
+                fixture
+                    .store
+                    .authorized_taskflow_effect_attempt(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt
+                    )
+                    .await
+                    .expect("durable attempt"),
+                None,
+                "{name}"
+            );
+            assert_eq!(
+                fixture
+                    .store
+                    .read_authorized_taskflow_effect_receipt(
+                        &intent,
+                        "agentd-product-effect-dispatch"
+                    )
+                    .await
+                    .expect("terminal receipt"),
+                None,
+                "{name}"
+            );
+            assert_eq!(
+                server
+                    .received_requests()
+                    .await
+                    .expect("HTTP requests")
+                    .len(),
+                0,
+                "{name}"
+            );
+            server.verify().await;
+            drop(host);
+            let reopened = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+                .expect("reopen original authority");
+            assert_eq!(
+                reopened.authority.capacity().expect("reopened capacity"),
+                before_capacity,
+                "{name}"
+            );
+            assert_eq!(
+                reopened.authority.frontier().expect("reopened frontier"),
+                before_frontier,
+                "{name}"
+            );
+        }
     }
 }

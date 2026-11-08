@@ -32,6 +32,8 @@ mod cell_inference;
 #[cfg(target_os = "linux")]
 mod cell_joint_generation;
 #[cfg(target_os = "linux")]
+mod cell_joint_observed;
+#[cfg(target_os = "linux")]
 mod cell_joint_process;
 #[cfg(target_os = "linux")]
 mod cell_joint_protocol;
@@ -55,6 +57,12 @@ mod deletion;
 mod inference_control;
 mod journal;
 mod journal_lock;
+mod perception;
+mod perception_encoder;
+mod perception_proposal;
+mod perception_source;
+#[cfg(test)]
+mod perception_test_support;
 mod plasticity;
 mod population_v2;
 mod protocol;
@@ -98,6 +106,7 @@ pub use cell_generation_types::CellOutputChunkV2;
 pub use cell_generation_types::CellRuntimeSnapshotV2;
 pub use cell_inference::CellInferenceReadbackPortV1;
 pub use cell_inference::infer_cell;
+pub use cell_inference::infer_cell_with_clock;
 pub use cell_inference::recover_cell_inference;
 #[cfg(target_os = "linux")]
 pub use cell_joint_generation::JointGenerationProcessConfigV1;
@@ -105,6 +114,12 @@ pub use cell_joint_generation::JointGenerationProcessConfigV1;
 pub use cell_joint_generation::JointGenerationProcessFilesV1;
 #[cfg(target_os = "linux")]
 pub use cell_joint_generation::JointGenerationProcessWorkerV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_observed::JointGenerationCommandV2;
+#[cfg(target_os = "linux")]
+pub use cell_joint_observed::JointGenerationDeliveryContractV2;
+#[cfg(target_os = "linux")]
+pub use cell_joint_observed::JointGenerationInputV2;
 #[cfg(target_os = "linux")]
 pub use cell_joint_protocol::JointGenerationActionV1;
 #[cfg(target_os = "linux")]
@@ -177,6 +192,23 @@ pub use journal::JournalAnchor;
 pub use journal::JournalError;
 pub use journal::JournalScope;
 pub use journal::SparseJournal;
+pub use perception::PerceptionEncoderBindingV1;
+pub use perception::PerceptionLatentV1;
+pub use perception::PerceptionObservationV1;
+pub use perception::PerceptionRepresentationV1;
+pub use perception_encoder::PerceptionCellEncoderV1;
+pub use perception_proposal::PerceptionObservationProposalV1;
+pub use perception_proposal::PerceptionObservationTargetV1;
+pub use perception_proposal::PerceptionProposalAssessmentV1;
+pub use perception_proposal::PerceptionProposalDispositionV1;
+pub use perception_proposal::PerceptionProposalErrorV1;
+pub use perception_proposal::PerceptionProposalPolicyV1;
+pub use perception_source::PerceptionActorSourceV1;
+pub use perception_source::PerceptionCoordinatesV1;
+pub use perception_source::PerceptionErrorV1;
+pub use perception_source::PerceptionEvidenceV1;
+pub use perception_source::PerceptionSourceLayoutV1;
+pub use perception_source::PerceptionSourcePinV1;
 pub use plasticity::EligibilityTraceSampleV1;
 pub use plasticity::IndependentModulatorV1;
 pub use plasticity::ParameterGroupDeltaV1;
