@@ -951,10 +951,18 @@ use event_buffer::EventBuffer;
 use state::AgentdState;
 
 mod terminal_learning;
+#[cfg(unix)]
+mod terminal_learning_job;
 mod terminal_learning_runtime;
 mod terminal_learning_types;
 
 pub use terminal_learning::AgentdTerminalLearningOwnerV1;
+#[cfg(unix)]
+pub use terminal_learning_job::TERMINAL_LEARNING_JOB_RECORD_BYTES_V1;
+#[cfg(unix)]
+pub use terminal_learning_job::TerminalLearningJobOwnerV1;
+#[cfg(unix)]
+pub use terminal_learning_job::TerminalLearningJobRecordV1;
 pub use terminal_learning_runtime::TerminalLearningHandleV1;
 pub use terminal_learning_runtime::TerminalLearningRuntimeBootstrapV1;
 pub use terminal_learning_runtime::terminal_learning_channel_v1;

@@ -2,8 +2,9 @@
 //!
 //! Reuses one existing shared LedgerWriter and Memory owner. It creates no
 //! ledger, signer, database, parameter proposal or selected model. The bounded
-//! job cache reconciles acknowledgement loss within this owner lifetime; it is
-//! not the missing durable generic-iteration checkpoint owner.
+//! cache reconciles acknowledgement loss within this owner lifetime. A host may
+//! attach its original protected terminal-job registration for durable recovery;
+//! this is not the generic iteration's evaluation, adoption or next-use owner.
 
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -52,6 +53,8 @@ pub struct AgentdTerminalLearningOwnerV1 {
     jobs: Arc<Mutex<BTreeMap<StableId, Job>>>,
     compute: Arc<Semaphore>,
     maximum_jobs: usize,
+    #[cfg(unix)]
+    durable: Option<Arc<crate::TerminalLearningJobOwnerV1>>,
 }
 
 impl AgentdTerminalLearningOwnerV1 {
@@ -78,7 +81,31 @@ impl AgentdTerminalLearningOwnerV1 {
             jobs: Arc::new(Mutex::new(BTreeMap::new())),
             compute: Arc::new(Semaphore::new(/*permits*/ 1)),
             maximum_jobs,
+            #[cfg(unix)]
+            durable: None,
         })
+    }
+
+    /// Recover one operation through the host's original protected registration.
+    /// Only committed native results survive restart; unfinished work is unknown.
+    #[cfg(unix)]
+    pub fn from_registered_job(
+        agent_id: AgentId,
+        producer_id: StableId,
+        ledger: Arc<Mutex<LedgerWriter>>,
+        replay: Arc<AgentdSharedReplayHostV1>,
+        durable: crate::TerminalLearningJobOwnerV1,
+    ) -> Result<Self, TerminalLearningErrorV1> {
+        durable.check_scope(&agent_id, &producer_id)?;
+        let mut owner = Self::new(
+            agent_id,
+            producer_id,
+            ledger,
+            replay,
+            /*maximum_jobs*/ 1,
+        )?;
+        owner.durable = Some(Arc::new(durable));
+        Ok(owner)
     }
 
     pub(crate) fn agent_id(&self) -> &AgentId {
@@ -126,7 +153,16 @@ impl AgentdTerminalLearningOwnerV1 {
         now: u64,
         mode: TerminalLearningModeV1,
     ) -> JobResult {
+        let admitted_at = Instant::now();
         let digest = request.job_digest(&self.agent_id, &self.producer_id)?;
+        #[cfg(unix)]
+        if let Some(durable) = &self.durable
+            && let Some(receipt) = durable.restore(&self.replay, &request, now).await?
+        {
+            return self
+                .verify_readback(Ok(receipt), &request, projected_now(now, admitted_at))
+                .await;
+        }
         let state = {
             let mut jobs = self
                 .jobs
@@ -144,7 +180,7 @@ impl AgentdTerminalLearningOwnerV1 {
                 if jobs.len() >= self.maximum_jobs {
                     return Err(TerminalLearningErrorV1::Capacity);
                 }
-                check_deadline(&request, now)?;
+                check_work_budget(&request, now, admitted_at)?;
                 jobs.insert(
                     request.operation_id.clone(),
                     Job {
@@ -157,7 +193,9 @@ impl AgentdTerminalLearningOwnerV1 {
         };
         match state {
             JobState::Computed(result) => {
-                return self.verify_readback(*result, &request, now).await;
+                return self
+                    .verify_readback(*result, &request, projected_now(now, admitted_at))
+                    .await;
             }
             JobState::Computing => return Err(TerminalLearningErrorV1::CommitUncertain),
             JobState::Admitted if matches!(mode, TerminalLearningModeV1::Readback) => {
@@ -165,8 +203,7 @@ impl AgentdTerminalLearningOwnerV1 {
             }
             JobState::Admitted => {}
         }
-        check_deadline(&request, now)?;
-        let admitted_at = Instant::now();
+        check_work_budget(&request, now, admitted_at)?;
         let source = self
             .replay
             .training_source(&request.source_policy_id)
@@ -194,6 +231,10 @@ impl AgentdTerminalLearningOwnerV1 {
                     let permit = Arc::clone(&self.compute)
                         .try_acquire_owned()
                         .map_err(|_| TerminalLearningErrorV1::Busy)?;
+                    #[cfg(unix)]
+                    if let Some(durable) = &self.durable {
+                        durable.claim()?;
+                    }
                     job.state = JobState::Computing;
                     Ok(permit)
                 }
@@ -212,6 +253,8 @@ impl AgentdTerminalLearningOwnerV1 {
         let ledger = Arc::clone(&self.ledger);
         let jobs = Arc::clone(&self.jobs);
         let native_request = request.clone();
+        #[cfg(unix)]
+        let durable = self.durable.clone();
         let (ready, waiting) = oneshot::channel();
         let (authorize, authorization) = std::sync::mpsc::sync_channel::<
             Result<SharedExperienceUseV1, TerminalLearningErrorV1>,
@@ -235,6 +278,11 @@ impl AgentdTerminalLearningOwnerV1 {
                         })??;
                 fit_native(&ledger, &native_request, digest, source, now, admitted_at)
             })();
+            #[cfg(unix)]
+            let result = match (&durable, result) {
+                (Some(durable), Ok(receipt)) => durable.complete(&receipt).map(|()| receipt),
+                (None, result) | (Some(_), result @ Err(_)) => result,
+            };
             let mut jobs = jobs
                 .lock()
                 .map_err(|_| TerminalLearningErrorV1::CommitUncertain)?;
@@ -243,6 +291,13 @@ impl AgentdTerminalLearningOwnerV1 {
                 .ok_or(TerminalLearningErrorV1::CommitUncertain)?;
             if entry.digest != digest {
                 return Err(TerminalLearningErrorV1::CommitUncertain);
+            }
+            #[cfg(unix)]
+            if durable.is_some() && result.is_err() {
+                // Neither an interrupted fit nor uncertain CAS is retried. A
+                // lost acknowledgement is reconciled from durable CURRENT.
+                entry.state = JobState::Computing;
+                return result;
             }
             entry.state = if matches!(result, Err(TerminalLearningErrorV1::Busy)) {
                 // try_lock proved no ledger read or fit occurred.
