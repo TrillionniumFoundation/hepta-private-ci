@@ -19,6 +19,9 @@ use crate::JournalError;
 use crate::SparseConfig;
 use crate::SparseSignalReceipt;
 
+#[path = "runtime_binding.rs"]
+mod binding;
+
 const Q24: i64 = 1 << 24;
 const H_Q24: i64 = 8 * Q24;
 const MAX_PREDICTION_ERROR_Q24: i64 = 16 * Q24;
