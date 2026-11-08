@@ -26,6 +26,7 @@ mod circuit_progress;
 mod circuit_runtime;
 mod circuit_state;
 mod circuit_store;
+mod circuit_task_readback;
 mod dispatch_recovery;
 mod effect_dispatch_ledger;
 mod lifecycle;
