@@ -9,6 +9,7 @@ on:
       - codex/neuron-normal-entry-20261106-734df8
       - codex/neuron-v13-runtime-20261106-734df8
       - fix/codex-v13-same-model-next-task-20261106
+      - codex/cell-s0-common-20261108-898e
       - research/cell-rsi-p0p2-20261108-858e
   workflow_dispatch:
 
@@ -110,6 +111,7 @@ jobs:
             helper_packages: --package codex-hepta-infer-worker-host
             packages: >-
               -p codex-hepta-neuron -p codex-hepta-learning-artifacts
+              -p codex-hepta-learning-ledger
               -p codex-hepta-ndu -p codex-hepta-plasticity
               -p codex-hepta-automation -p codex-hepta-runtime
               -p codex-hepta-control-plane
@@ -258,6 +260,50 @@ jobs:
           helper_result=$?
           python3 scripts/hepta_ci_junit.py --execution "$records/scoped-tests.json" \
             --junit "$junit" --output "$records/junit-scoped.xml"
+          junit_result=$?
+          set -e
+          if [[ "$result" -ne 0 ]]; then exit "$result"; fi
+          if [[ "$helper_result" -ne 0 ]]; then exit "$helper_result"; fi
+          exit "$junit_result"
+      - name: Run isolated protected HostCAS recovery engineering regression
+        if: matrix.owner == 'agentd-composition' && runner.os == 'Linux'
+        env:
+          # Cargo and nextest remain ordinary-user processes. Only the selected
+          # test binary (including its test-list query) uses the existing sudo runner.
+          CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUNNER: "sudo -n --"
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/cell-framework-records"
+          junit="codex-rs/target/nextest/local/junit.xml"
+          # The preceding same-source scoped suite already built the agentd
+          # library as the ordinary runner user with the pinned V8 artifacts.
+          build_uid="$(id -u)"
+          sudo_probe_uid="$(sudo -n -- id -u)"
+          test "$build_uid" -ne 0
+          test "$sudo_probe_uid" -eq 0
+          printf 'scope=engineering-only\nbuild_uid=%s\nsudo_probe_uid=%s\ntarget_runner=%s\n' \
+            "$build_uid" "$sudo_probe_uid" "$CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUNNER" \
+            > "$records/hostcas-execution-context.txt"
+          if [[ -f "$junit" ]]; then
+            mv "$junit" "$records/hostcas-prior-junit-excluded.xml"
+          fi
+          # Select only the parent test. It supplies the original owner paths
+          # to its child; selecting the child entry independently is invalid.
+          # This exercises protected backend recovery, not production authority
+          # or scientific improvement, and it does not measure full history cost.
+          set +e
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 600 --minimum-tests 1 \
+            --output "$records/hostcas-tests.json" \
+            -- just test --locked -p codex-hepta-agentd --lib \
+            --run-ignored only --retries 0 --no-tests fail --test-threads 1 \
+            -E 'test(=plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::process_tests::durable_native_job_with_original_host_cas)'
+          result=$?
+          python3 scripts/hepta_cell_test_helpers.py --output-dir "$records/helpers" \
+            --verify-only > "$records/helpers-after-hostcas.json"
+          helper_result=$?
+          python3 scripts/hepta_ci_junit.py --execution "$records/hostcas-tests.json" \
+            --junit "$junit" --output "$records/junit-hostcas.xml"
           junit_result=$?
           set -e
           if [[ "$result" -ne 0 ]]; then exit "$result"; fi

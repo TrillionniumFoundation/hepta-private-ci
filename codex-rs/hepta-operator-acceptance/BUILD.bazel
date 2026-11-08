@@ -1,4 +1,5 @@
 load("@crates//:defs.bzl", "all_crate_deps")
+load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 
 rust_library(
@@ -14,6 +15,9 @@ rust_library(
 rust_test(
     name = "hepta-operator-acceptance-tests",
     crate = ":hepta-operator-acceptance-lib",
+    # no-remote also makes this target's compile actions run on the native host.
+    # Keep its execution tools native while target dependencies may use RBE.
+    exec_compatible_with = HOST_CONSTRAINTS,
     rustc_flags = select({
         "@platforms//os:windows": [
             "-Aunused-imports",
@@ -23,7 +27,7 @@ rust_test(
     }),
     # The original system OpenSSH executable is a runtime dependency. Results
     # must not be reused across hosts that provide different OpenSSH packages.
-    tags = ["no-remote-cache"],
+    tags = ["no-remote"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
