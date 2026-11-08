@@ -1,0 +1,81 @@
+{
+  "analysis": {
+    "aggregate_script": "analysis/analyze_campaigns.py",
+    "descriptive_aggregate": "analysis/aggregate.json",
+    "independent_review": "analysis/independent-review.json"
+  },
+  "binary_sha256": "59ea51c0c495a473a6cefc8c2a3649fc3d2263fa9d5c395e3d59982e5c1b0474",
+  "campaigns": {
+    "dynamic": {
+      "completed": 35,
+      "directory": "evidence/campaign-dynamic-v1",
+      "failed": 0,
+      "locally_verified": 35
+    },
+    "stationary": {
+      "completed": 35,
+      "directory": "evidence/campaign-stationary-v1",
+      "failed": 0,
+      "locally_verified": 35
+    }
+  },
+  "executed_date_utc": "2026-11-08",
+  "final_job_id": "1a1bac88e51-12894-1d39",
+  "native_host": "rog",
+  "native_validation": {
+    "initial_wrapper_error": "no fresh JUnit",
+    "initial_wrapper_result": "evidence/build-v1/result.json",
+    "junit_gate": "NOT_COMPLETE",
+    "just_fix_exit": 0,
+    "just_fmt_exit": 0,
+    "new_tests_passed": 7,
+    "nextest_run_id": "6bd99144-a8f5-4ccf-81d3-f09e246934e4",
+    "passed": 53,
+    "post_maintenance_example_build_exit": 0,
+    "skipped_existing": 2,
+    "test_log": "evidence/build-v1/core-tests.log",
+    "tests_rerun_after_maintenance": false
+  },
+  "original_native_archive": {
+    "bytes": 2031228,
+    "compiled_elf_included": true,
+    "remote_path": "/home/qian-qi/work/memory-cell-mem1-20261108-r1/evidence-package-v1.tar.xz",
+    "sha256": "2ff160bce4f9ec4a248fad6ee6aea10eecc679be30e581070233170d2156a359"
+  },
+  "raw_event_counts": {
+    "prequential": 16800,
+    "probe": 4200,
+    "recovery": 210,
+    "sleep_candidate": 80,
+    "update": 19760
+  },
+  "raw_package": {
+    "bytes": 1765660,
+    "compiled_elf_included": false,
+    "file_entries": 994,
+    "manifest": "archive-index.json",
+    "path": "raw-evidence-v1.tar.xz",
+    "sha256": "df21f41c562a695cf76419521a6c73a99539571ee40b1b7b4315323ce38c6d15"
+  },
+  "schema": "hepta-mem1-evidence-v1",
+  "scope": "three-crate source projection and synthetic reference; not full workspace or production",
+  "source_sha256": {
+    "codex-rs/hepta-memory-retrieval/examples/mem1_fast_memory.rs": "17f13eb54d25f2b5ffc083b9151bab5132fabf6084e80184d139c6e1a41d6acc",
+    "codex-rs/hepta-memory-retrieval/src/fast_memory.rs": "bc77da0ebde6c00b200115b3baad7445ad7d3edfd4a1557f6cfc22a1d5c391b7",
+    "codex-rs/hepta-memory-retrieval/src/fast_memory_tests.rs": "268795fa81d2b49f5dd998614f7576cd86177cdd7126aedd5c1c8d7c13ab278f",
+    "codex-rs/hepta-memory-retrieval/src/lib.rs": "00be67ec578e5fbcef84448abd215e1bf916ac3e220587ea0a3cb2e3530847f6",
+    "qualification/memory-cell-mem1/PROTOCOL.md": "06397bd596508b656fda805704cc608b12b0d00d181a5edeb31e53a76693eee7",
+    "scripts/memory_cell_mem1/environment.py": "fddc89c1d3536ed5712d034d8551819658800aff655b0683a4af2301e5136039",
+    "scripts/memory_cell_mem1/native.py": "6b40597a7852c0a77863cc4d99d1eff332c78feb9f60cfd26ee44dc7072b1eee",
+    "scripts/memory_cell_mem1/run.py": "a262813350583507bb01fe8210423d0076e9f0ea5b105058077440cf23a05e13",
+    "scripts/memory_cell_mem1/test_environment.py": "a03b14babce1b5c281e30e50329f4d6ff40c8619a2ba30fb0f0be6e537f31cd9",
+    "scripts/memory_cell_mem1/verify_results.py": "30e2daeeb133e211f41cd1a98d8ea1598221904c86d90096dbaa3284e34527a2"
+  },
+  "upstream_commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "verdict": {
+    "production": "HOLD",
+    "reference_execution": "COMPLETED_WITH_DOCUMENTED_JUNIT_LIMITATION",
+    "scientific": "HOLD",
+    "shared_model_adoption": "NoUpdate"
+  }
+}
