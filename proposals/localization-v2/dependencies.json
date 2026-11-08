@@ -1,0 +1,53 @@
+{
+  "schema": "hcsn-localization-v2-official-dependencies-v1",
+  "execution_scope": "CPU FP64 interface check only; no installers or training launched by this file",
+  "isolation": "Use the new v2 virtual environment and independent source checkouts; do not alter the old study environment",
+  "required_all": ["torch>=2.0"],
+  "ncps": {
+    "distribution": "ncps==1.0.1",
+    "repository": "https://github.com/mlech26l/ncps",
+    "reference_commit": "695ec22d7d1831f2ced67346ef7d2f08c525bd47",
+    "cpu_import_dependencies": ["torch", "numpy"],
+    "api": "ncps.torch.CfC(input_size=25, units=4, proj_size=11, backbone_units=16)",
+    "time_handling": "Actual dt passed as timespans; explicit FP64 h0; dispatch one sample through official CfC at a time to avoid upstream squeeze broadcasting",
+    "verification": "Require installed version; hash actual loaded module files. A version string alone does not certify equality to the reference commit."
+  },
+  "spikingjelly": {
+    "distribution": "spikingjelly==0.0.0.0.14",
+    "repository": "https://github.com/fangwei123456/spikingjelly",
+    "reference_branch": "0.0.0.0.14",
+    "reference_commit": "294133011f4897756db6d1cd4a617a00bfb8d7f8",
+    "cpu_import_dependencies": ["torch", "numpy"],
+    "distribution_declared_dependencies": ["torch", "matplotlib", "numpy", "tqdm", "torchvision", "scipy"],
+    "api": "activation_based.neuron.ParametricLIFNode; surrogate.ATan; functional.reset_net",
+    "configuration": "Recurrent width 4, learned tau initialized at 2, soft reset, detach_reset=true, step_mode=s, backend=torch",
+    "time_handling": "Event-indexed PLIF; real dt supplied in common input, no continuous-time neuron-decay claim",
+    "training_limit": "Four updates only check the interface. Report spike fraction; no claim that this is a sufficiently trained SNN.",
+    "verification": "Require installed version and record actual loaded source hashes; the reference is a release branch, not an asserted PyPI wheel commit."
+  },
+  "s4d": {
+    "repository": "https://github.com/state-spaces/s4",
+    "commit": "e757cef57d89e448c413de7325ed5601aceaac13",
+    "required_cli": "--s4-repo ABSOLUTE_CHECKOUT_PATH",
+    "cpu_import_dependencies": ["torch", "einops"],
+    "source_files_checked_against_git_commit": [
+      "models/s4/s4d.py",
+      "src/models/nn/__init__.py",
+      "src/models/nn/linear.py",
+      "src/models/nn/activation.py",
+      "src/models/nn/normalization.py",
+      "src/models/nn/dropout.py"
+    ],
+    "configuration": "Official minimal S4D-Lin, d_model=4, d_state=16, dropout=0, transposed=false; no fake DropoutNd or module stubs",
+    "time_handling": "Event-indexed causal FFT convolution with real-dt input feature",
+    "identity": "SSM/S4D-Lin; not Mamba, and not a replacement implementation labeled Mamba",
+    "state_limit": "Upstream FFT forward returns no recurrent state; this adapter makes no streaming-state-memory claim"
+  },
+  "torch_adapters": {
+    "gru": "nn.GRU(25,4,batch_first=true) plus 4-to-11 classifier",
+    "attention": "Causal TransformerEncoder: width 8, 2 heads, feedforward 32, one layer, dropout 0, sinusoidal event-position encoding, Boolean future mask",
+    "verification": "Record actual Torch version/git version and Python module hashes"
+  },
+  "installation_policy": "Inspect existing v2 environment first. If using --no-deps for pinned official source installs, explicitly verify the selected CPU import path and record the installed packages. Missing imports remain blocked; never substitute a different model.",
+  "formal_comparison_pending": ["matching capacity", "development-only tuning", "convergence checks", "sufficient SNN optimization", "complete training costs", "multiple independent training seeds"]
+}
