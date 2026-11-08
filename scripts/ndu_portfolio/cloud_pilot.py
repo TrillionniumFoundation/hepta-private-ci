@@ -95,7 +95,13 @@ def gpu_check(output, dtype):
 
 
 def transfer_images(
-    pool, output, *, prior_transfer_receipt, prior_transfer_receipt_sha256
+    pool,
+    output,
+    *,
+    prior_transfer_receipt,
+    prior_transfer_receipt_sha256,
+    material_ledger_chain,
+    material_ledger_chain_sha256,
 ):
     from ndu_semantic_state.acquire_vizwiz import (
         CAP,
@@ -105,6 +111,7 @@ def transfer_images(
     )
     from ndu_semantic_state.materials import check_file
     from .pilot_data import CASE_IDS, HISTORY_SHA, MANIFEST_SHA, load_pool
+    from .material_budget import advance_material_budget
     import zipfile
 
     pool, output = Path(pool), Path(output)
@@ -116,6 +123,7 @@ def transfer_images(
         "full_annotation_archive_present": False,
         "original_metadata_regenerated": False,
         "scientific_acceptance": False,
+        "cumulative_budget_verified": False,
         "images": [],
     }
     download = DownloadBudget(output)
@@ -162,6 +170,7 @@ def transfer_images(
             or counts[3] != CAP
             or carry.get("kind") != report["kind"]
             or carry.get("status") not in ("completed", "failed")
+            or carry.get("cumulative_budget_verified", True) is not True
         ):
             raise ValueError("Cumulative shared material budget differs")
         admission = carry.get("admission", carry.get("source_pins", {}))
@@ -177,12 +186,22 @@ def transfer_images(
             raise ValueError("Completed cumulative receipt image roster differs")
         # The floor is the already-spent, published CPU transfer, not a new allowance.
         # The dispatcher must serialize consumers and pin the latest receipt.
-        download.bytes_read = carry["cumulative_body_bytes"]
+        spent, material_head, chain_bytes = advance_material_budget(
+            carry,
+            prior_transfer_receipt_sha256,
+            material_ledger_chain,
+            material_ledger_chain_sha256,
+        )
+        download.bytes_read = spent
         (output / "PRIOR_TRANSFER.json").write_bytes(carry_bytes)
+        (output / "MATERIAL_LEDGER_CHAIN.json").write_bytes(chain_bytes)
         report.update(
+            cumulative_budget_verified=True,
             prior_body_bytes=download.bytes_read,
             shared_cap_bytes=CAP,
             prior_transfer_receipt_sha256=prior_transfer_receipt_sha256,
+            material_ledger_chain_sha256=material_ledger_chain_sha256,
+            prior_material_head_sha256=material_head,
             source_pins={
                 "manifest_sha256": MANIFEST_SHA,
                 "history_sha256": HISTORY_SHA,
@@ -377,6 +396,10 @@ def run(args):
                 args.prior_transfer_receipt,
                 "--prior-transfer-receipt-sha256",
                 args.prior_transfer_receipt_sha256,
+                "--material-ledger-chain",
+                args.material_ledger_chain,
+                "--material-ledger-chain-sha256",
+                args.material_ledger_chain_sha256,
             ],
         )
         plan = evidence / "PLAN.json"
@@ -512,6 +535,8 @@ def main():
         "request-id",
         "prior-transfer-receipt",
         "prior-transfer-receipt-sha256",
+        "material-ledger-chain",
+        "material-ledger-chain-sha256",
     ):
         execute.add_argument("--" + field, required=True)
     execute.add_argument("--budget-seconds", type=float, default=1740)
@@ -525,6 +550,8 @@ def main():
     transfer.add_argument("--output", required=True)
     transfer.add_argument("--prior-transfer-receipt", required=True)
     transfer.add_argument("--prior-transfer-receipt-sha256", required=True)
+    transfer.add_argument("--material-ledger-chain", required=True)
+    transfer.add_argument("--material-ledger-chain-sha256", required=True)
     args = parser.parse_args()
     if args.command == "run":
         return run(args)
@@ -536,6 +563,8 @@ def main():
             args.output,
             prior_transfer_receipt=args.prior_transfer_receipt,
             prior_transfer_receipt_sha256=args.prior_transfer_receipt_sha256,
+            material_ledger_chain=args.material_ledger_chain,
+            material_ledger_chain_sha256=args.material_ledger_chain_sha256,
         )
     return 0
 

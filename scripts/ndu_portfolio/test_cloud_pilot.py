@@ -248,6 +248,46 @@ class CloudPilotContracts(unittest.TestCase):
                 },
             }
             write(carry, carry_data)
+            ledger = root / "LEDGER.json"
+            body_sha = hashlib.sha256(b"x" * 23181).hexdigest()
+            increment = json.dumps(
+                {
+                    "schema": "hepta.bounded-material-increment.v1",
+                    "status": "completed",
+                    "prior_receipt_sha256": sha(carry),
+                    "prior_body_bytes": 17669796,
+                    "new_body_bytes": 23181,
+                    "cumulative_body_bytes": 17692977,
+                    "shared_cap_bytes": 26214400,
+                    "reservation_bytes": 262144,
+                    "attempts": [
+                        {
+                            "status": "completed",
+                            "bytes_read": 23181,
+                            "sha256": body_sha,
+                            "body": {"bytes": 23181, "sha256": body_sha},
+                        }
+                    ],
+                },
+                sort_keys=True,
+            )
+            increment_sha = hashlib.sha256(increment.encode()).hexdigest()
+            write(
+                ledger,
+                {
+                    "schema": "hepta.material-ledger-chain.v1",
+                    "anchor_sha256": sha(carry),
+                    "receipts": [
+                        {
+                            "receipt_utf8": increment,
+                            "sha256": increment_sha,
+                            "bytes": len(increment.encode()),
+                        }
+                    ],
+                    "head_receipt_sha256": increment_sha,
+                    "cumulative_body_bytes": 17692977,
+                },
+            )
             archive = io.BytesIO()
             with zipfile.ZipFile(archive, "w") as stream:
                 for name in pilot_data.CASE_IDS:
@@ -255,7 +295,7 @@ class CloudPilotContracts(unittest.TestCase):
             archive_bytes = archive.getvalue()
 
             def remote(download, url):
-                self.assertEqual(download.bytes_read, 17669796)
+                self.assertEqual(download.bytes_read, 17692977)
                 self.assertEqual(url, acquire_vizwiz.IMAGES)
                 download.bytes_read += len(archive_bytes)
                 return io.BytesIO(archive_bytes)
@@ -275,12 +315,17 @@ class CloudPilotContracts(unittest.TestCase):
                     root / "transfer",
                     prior_transfer_receipt=carry,
                     prior_transfer_receipt_sha256=sha(carry),
+                    material_ledger_chain=ledger,
+                    material_ledger_chain_sha256=sha(ledger),
                 )
             receipt = json.loads((root / "transfer/TRANSFER.json").read_text())
             self.assertEqual(
-                receipt["cumulative_body_bytes"], 17669796 + len(archive_bytes)
+                receipt["cumulative_body_bytes"], 17692977 + len(archive_bytes)
             )
             self.assertEqual(receipt["prior_transfer_receipt_sha256"], sha(carry))
+            self.assertEqual(receipt["material_ledger_chain_sha256"], sha(ledger))
+            self.assertEqual(receipt["prior_material_head_sha256"], increment_sha)
+            self.assertTrue(receipt["cumulative_budget_verified"])
             self.assertEqual(
                 (root / "transfer/PRIOR_TRANSFER.json").read_bytes(), carry.read_bytes()
             )
@@ -320,6 +365,8 @@ class CloudPilotContracts(unittest.TestCase):
                             root / f"rejected-{i}",
                             prior_transfer_receipt=carry,
                             prior_transfer_receipt_sha256=sha(carry),
+                            material_ledger_chain=ledger,
+                            material_ledger_chain_sha256=sha(ledger),
                         )
                     no_download.assert_not_called()
             write(carry, carry_data)
@@ -334,8 +381,29 @@ class CloudPilotContracts(unittest.TestCase):
                     root / "rejected-hash",
                     prior_transfer_receipt=carry,
                     prior_transfer_receipt_sha256="0" * 64,
+                    material_ledger_chain=ledger,
+                    material_ledger_chain_sha256=sha(ledger),
                 )
             no_download.assert_not_called()
+            with (
+                patch.object(pilot_data, "MANIFEST_SHA", manifest_pin),
+                patch.object(pilot_data, "HISTORY_SHA", history_pin),
+                patch.object(acquire_vizwiz, "RangeArchive") as no_download,
+                self.assertRaisesRegex(ValueError, "ledger index hash"),
+            ):
+                transfer_images(
+                    pool,
+                    root / "rejected-ledger-hash",
+                    prior_transfer_receipt=carry,
+                    prior_transfer_receipt_sha256=sha(carry),
+                    material_ledger_chain=ledger,
+                    material_ledger_chain_sha256="0" * 64,
+                )
+            no_download.assert_not_called()
+            rejected = json.loads(
+                (root / "rejected-ledger-hash/TRANSFER.json").read_text()
+            )
+            self.assertFalse(rejected["cumulative_budget_verified"])
 
 
 if __name__ == "__main__":
