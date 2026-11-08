@@ -1,0 +1,128 @@
+{
+  "authority_granted": false,
+  "experiments": {},
+  "inventory": {
+    "ace_current_byte_binding_20261108": {
+      "bytes": 5711,
+      "path": "evidence/ace_current_byte_binding_20261108.json",
+      "sha256": "ee7ffc1ffcd00c187be785365ad1fbf79c232c6f76bfb8a30b0458d9e3bda9ce"
+    },
+    "github_state_20261108": {
+      "bytes": 4852,
+      "path": "evidence/github_state_20261108.json",
+      "sha256": "2af56221f49b0988f371566bf6fbff02e21e50d3bbbb25db4494acc85e541eb9"
+    },
+    "hcsn_mechanism_summary_20261108": {
+      "bytes": 13721,
+      "path": "evidence/hcsn_mechanism_summary_20261108.json",
+      "sha256": "465f4438490d6603db96c6d6a36745ab0bd8723b5552e355b28ab5742ce1f0b4"
+    },
+    "previous_compute_and_science_6ddfca24": {
+      "bytes": 61787,
+      "path": "evidence/previous_compute_and_science_6ddfca24.json",
+      "sha256": "fdc286c72d17c54b669f81e739087e28deb31df23d66591cdbc553d6788cfd46"
+    }
+  },
+  "joint_configuration_sha256": null,
+  "manifest_sha256": "049d67ad86a4df2f45f0eeaacda3696ae5c564e1aa159bac76fcd90e4261820c",
+  "preregistration_verified": false,
+  "production_qualification": false,
+  "protocol_sha256": null,
+  "research_advancement": false,
+  "schema": "hepta.cell-research-review-result.v1",
+  "source": null,
+  "stages": {
+    "S0": {
+      "blocked_by_prior_stage": [],
+      "blockers": [
+        "MISSING_JOINT_CONFIGURATION",
+        "MISSING_PROTOCOL",
+        "MISSING_FOUNDATION_EVIDENCE",
+        "OWNER_AUTHENTICATION_ADAPTER_UNSUPPORTED",
+        "RECOVERY_ADAPTER_UNSUPPORTED",
+        "SUCCESSOR_ADAPTER_UNSUPPORTED"
+      ],
+      "mechanical_ready": false,
+      "numerical_screen_ready": false,
+      "substantive_evidence_ready": false,
+      "trusted_review_required": true
+    },
+    "S1": {
+      "blocked_by_prior_stage": [
+        "S0"
+      ],
+      "blockers": [
+        "MISSING_EXPERIMENT:MEM-1",
+        "MISSING_EXPERIMENT:CTRL-1",
+        "MISSING_EXPERIMENT:VERIFY-1"
+      ],
+      "mechanical_ready": false,
+      "numerical_screen_ready": false,
+      "substantive_evidence_ready": false,
+      "trusted_review_required": true
+    },
+    "S2": {
+      "blocked_by_prior_stage": [
+        "S0",
+        "S1"
+      ],
+      "blockers": [
+        "MISSING_EXPERIMENT:PERC-1",
+        "MISSING_EXPERIMENT:PRED-1",
+        "MISSING_EXPERIMENT:ACT-1"
+      ],
+      "mechanical_ready": false,
+      "numerical_screen_ready": false,
+      "substantive_evidence_ready": false,
+      "trusted_review_required": true
+    },
+    "S3": {
+      "blocked_by_prior_stage": [
+        "S0",
+        "S1",
+        "S2"
+      ],
+      "blockers": [
+        "MISSING_EXPERIMENT:CREDIT-1",
+        "MISSING_EXPERIMENT:HCSN-1",
+        "MISSING_EXPERIMENT:STABILITY-1"
+      ],
+      "mechanical_ready": false,
+      "numerical_screen_ready": false,
+      "substantive_evidence_ready": false,
+      "trusted_review_required": true
+    },
+    "S4": {
+      "blocked_by_prior_stage": [
+        "S0",
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "blockers": [
+        "MISSING_EXPERIMENT:ORG-1"
+      ],
+      "mechanical_ready": false,
+      "numerical_screen_ready": false,
+      "substantive_evidence_ready": false,
+      "trusted_review_required": true
+    },
+    "S5": {
+      "blocked_by_prior_stage": [
+        "S0",
+        "S1",
+        "S2",
+        "S3",
+        "S4"
+      ],
+      "blockers": [
+        "MISSING_EXPERIMENT:IMPROVER-1"
+      ],
+      "mechanical_ready": false,
+      "numerical_screen_ready": false,
+      "substantive_evidence_ready": false,
+      "trusted_review_required": true
+    }
+  },
+  "trusted_review_required": true
+}
