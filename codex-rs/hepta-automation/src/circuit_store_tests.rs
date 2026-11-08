@@ -11,7 +11,11 @@ use crate::*;
 async fn store() -> (tempfile::TempDir, AutomationStore) {
     let directory = tempfile::tempdir().expect("private temporary owner");
     let store = AutomationStore::open_root(
-        directory.path().join("automation"),
+        directory
+            .path()
+            .canonicalize()
+            .expect("canonical temporary owner")
+            .join("automation"),
         fence(/*generation*/ 1).owner_agent_id,
     )
     .await
@@ -278,7 +282,11 @@ async fn separate_agent_partitions_can_use_the_same_run_id_without_state_bleed()
     second_fence.owner_agent_id =
         AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13").expect("second agent");
     let second = AutomationStore::open_root(
-        second_directory.path().join("automation"),
+        second_directory
+            .path()
+            .canonicalize()
+            .expect("canonical temporary owner")
+            .join("automation"),
         second_fence.owner_agent_id.clone(),
     )
     .await
