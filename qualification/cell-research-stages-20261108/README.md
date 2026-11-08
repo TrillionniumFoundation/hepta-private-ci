@@ -21,8 +21,9 @@ in its blockers. Output files are create-only.
 
 ## Evidence and its scope
 
-The four files in `evidence/` are byte-for-byte copies. Their sizes and SHA256
-values are bound in the input; the original records retain their own identities.
+The four inventory files listed below are byte-for-byte copies. Their sizes and
+SHA256 values are bound in the input; the original records retain their own
+identities. Additional source provenance is recorded separately in that directory.
 
 | Evidence | Use in this review |
 | --- | --- |
@@ -48,6 +49,30 @@ This entry point reviews reproducibility and descriptive numerical consistency.
 `research_advancement`, `production_qualification` and `authority_granted` remain
 false; independent owner authentication, scientific acceptance and adoption
 remain outside its authority. This inventory introduces no numerical thresholds.
+
+## Validation history and CI repairs
+
+`VALIDATION.json` and its original receipts describe the initial gate delivery.
+Their source hashes and failed attempts are retained as historical evidence.
+They do not qualify a later commit merely because it descends from that source.
+
+`validation/ci-review-b86dcb2a.json` records the exact `b86dcb2a` CI observations:
+the dedicated gate tests passed, the architecture source lane passed, and the
+broader blocking workflow failed. It preserves the distinction between the
+source head and GitHub's merge checkout, including checks that never executed.
+
+The follow-up repairs address inherited Python formatting, the actual `inout`
+crate name in the spelling dictionary, and three groups of test fixtures:
+reading locked state through the original file handle, reconstructing cold
+resume environments from the persisted rollout, and resolving the bubblewrap
+fixture through the existing Cargo/Bazel binary resolver. Original assertions,
+trust checks and dependency advisories retain their force.
+
+`FOLLOWUP_VALIDATION.json` indexes the repair inputs, individual native attempts,
+formatting and their scope. A native Linux pass does not establish Windows or
+musl behavior. A recorded CI failure remains a failure even if a later bounded
+attempt passes. None of these implementation checks supplies the missing
+matched-budget scientific experiments or advances an S0–S5 stage.
 
 ## Original copy sources
 
