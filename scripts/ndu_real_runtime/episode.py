@@ -22,7 +22,7 @@ from ndu_real_materials.common import read_bound, strict_json
 from ndu_real_materials.isolate import run_actor
 from .controllers import ACTIONS
 from .metering import Meter, atomic_json, canonical_sha, file_sha
-from .interval_costs import actor_receipts, reconcile
+from .interval_costs import actor_receipts, close_observer_tail, reconcile
 
 
 def bootstrap(config, module):
@@ -230,6 +230,7 @@ class EpisodeHost:
             measured["costs"] = {key: None for key in measured["costs"]}
             measured["observed_unclassified_overhead_seconds"] = measured["wall_seconds"]
             error = {"type": "MeterReconciliationError", "message": str(exception), "original_error": error}
+        measured = close_observer_tail(measured)
         atomic_json(self.output / "launch.json", launch)
         atomic_json(self.output / "trajectory.json", {"steps": self.steps})
         result = {"schema": "ndu.real.episode-result.v1", **self.profile,

@@ -16,7 +16,7 @@ import numpy as np
 import torch
 
 from .controllers import ACTIONS, ControlPlan, Controller, PublicState
-from .metering import Meter, atomic_json, file_sha
+from .metering import Meter, atomic_json, file_sha, transport_receipt
 from .neural import FittedPredictor, ReceiptPortfolioModel
 from .ocr import FIELDS, candidate_features, extract_ocr, requested_field
 
@@ -75,7 +75,7 @@ _last_meter_receipt = None
 
 def finish_meter(meter):
     global _last_meter_receipt
-    _last_meter_receipt = meter.finish()
+    _last_meter_receipt = transport_receipt(meter.finish())
     return _last_meter_receipt
 
 

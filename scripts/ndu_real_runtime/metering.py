@@ -56,6 +56,14 @@ def _usage():
     return own.ru_utime + own.ru_stime + child.ru_utime + child.ru_stime
 
 
+def transport_receipt(receipt):
+    """Send bounded summary metadata; the raw journal remains independently bound."""
+    if receipt.get("schema") != "ndu-real-exclusive-meter-v2":
+        raise ValueError("Compact transport requires a v2 receipt")
+    return {**{key: value for key, value in receipt.items() if key not in {"raw_spans", "stages"}},
+            "span_transport": "sha256_bound_create_only_journal"}
+
+
 class Meter:
     """Runtime adapter for raw v2 spans; gaps and child CPU remain explicit."""
 

@@ -29,6 +29,9 @@ def main():
         parser.add_argument("--" + name.replace("_", "-") + "-sha256", required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--run-id", required=True)
+    parser.add_argument("--predecessor-result", type=Path)
+    parser.add_argument("--predecessor-result-sha256")
+    parser.add_argument("--predecessor-native-job-id")
     args = parser.parse_args()
     plan = pinned(args.plan, args.plan_sha256)
     selected = pinned(args.selected, args.selected_sha256)
@@ -71,17 +74,44 @@ def main():
         if (file_sha(profile["weights"]) != profile["model_sha256"]
                 or file_sha(profile["control_plan"]) != profile["control_plan_sha256"]):
             raise ValueError("Original model/control plan bytes changed")
+    predecessors, previous = {}, None
+    if any((args.predecessor_result, args.predecessor_result_sha256, args.predecessor_native_job_id)):
+        if not all((args.predecessor_result, args.predecessor_result_sha256, args.predecessor_native_job_id)):
+            raise ValueError("Every predecessor binding is required")
+        previous = pinned(args.predecessor_result, args.predecessor_result_sha256)
+        if (previous["run_id"] == args.run_id or previous["source_group_id"] != source
+                or previous["fit_id"] != fit_id or previous["original_plan_sha256"] != args.plan_sha256
+                or previous["original_lock_sha256"] != args.lock_sha256
+                or previous["original_selected_sha256"] != args.selected_sha256):
+            raise ValueError("Predecessor is not the same diagnostic roster")
+        for binding in previous["bindings"]:
+            relative = Path(binding["relative_output"])
+            if relative.is_absolute() or ".." in relative.parts:
+                raise ValueError("Unsafe predecessor artifact path")
+            result = pinned(args.predecessor_result.parent / relative / "result.json", binding["result_sha256"])
+            key = (result["regime"], result["arm"], result["task_family"])
+            expected_id = "meter-v2-" + canonical_sha([previous["run_id"], *key])[:32]
+            if key in predecessors or result["original_operation_id"] != expected_id:
+                raise ValueError("Duplicate or incorrectly bound predecessor operation")
+            predecessors[key] = result
+        if set(predecessors) != {(regime, arm, family) for regime, arm in expected for family in families}:
+            raise ValueError("Predecessor attempt inventory is incomplete")
     args.output.mkdir(mode=0o700, parents=True, exist_ok=False)
     requests = []
     for profile in sorted(profiles, key=lambda value: (value["regime"], value["arm"])):
         for case in sorted(candidates, key=lambda value: value["task_family"]):
             identity = "meter-v2-" + canonical_sha([args.run_id, profile["regime"], profile["arm"], case["task_family"]])[:32]
             current = copy.deepcopy(profile)
+            predecessor = predecessors.get((profile["regime"], profile["arm"], case["task_family"]))
             current.update(original_operation_id=identity, retry_of=None,
                            original_policy_sha256=profile["policy_sha256"],
                            policy_sha256=canonical_sha({"controller": profile["controller"],
                                "control_plan_sha256": profile["control_plan_sha256"],
                                "diagnostic_code_manifest_sha256": args.code_manifest_sha256}))
+            if predecessor is not None:
+                current["instrumentation_predecessor_operation_id"] = predecessor["original_operation_id"]
+                if predecessor["terminal_status"] == "Failed":
+                    current["retry_of"] = predecessor["original_operation_id"]
             requests.append({"config": config, "case": case, "profile": current,
                              "output": str(args.output / "episodes" / f"{len(requests):04d}"), "training": False})
     contract = {"schema": "ndu.real.meter-diagnostic.v2", "run_id": args.run_id,
@@ -94,6 +124,12 @@ def main():
                 "scientific_admission": "HOLD", "confirmation_access_authorized": False,
                 "adoption_authorized": False, "native_owner_authentication": "SEPARATE_REQUIRED",
                 "statistical_use": "integration diagnostic only; already observed development source"}
+    contract.update(predecessor_result_sha256=args.predecessor_result_sha256,
+                    predecessor_native_job_id=args.predecessor_native_job_id,
+                    predecessor_run_id=None if previous is None else previous["run_id"],
+                    retry_of_failed_predecessor_count=sum(r["profile"]["retry_of"] is not None for r in requests),
+                    revalidation_predecessor_count=sum("instrumentation_predecessor_operation_id" in r["profile"]
+                                                      and r["profile"]["retry_of"] is None for r in requests))
     atomic_json(args.output / "DIAGNOSTIC_CONTRACT.json", contract)
     phase = run_requests(args.output, "qualification", requests, plan["design"]["budgets"]["max_workers"],
                          plan["design"]["budgets"]["phase_wall_seconds"])

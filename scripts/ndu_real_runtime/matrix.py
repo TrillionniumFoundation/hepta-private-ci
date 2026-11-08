@@ -184,6 +184,8 @@ def compact_row(row):
                    cost_subcategory_status=meter.get("subcategory_status"),
                    cost_unclassified_seconds=meter.get("observed_unclassified_overhead_seconds"),
                    cost_raw_spans_sha256=meter.get("raw_spans_sha256"),
+                   cost_observer_tail_sha256=meter.get("observer_tail_sha256"),
+                   cost_deployment_latency_scope=meter.get("deployment_latency_scope"),
                    cost_actor_record_sha256s=meter.get("actor_record_sha256s"),
                    cost_interval_reconciliation=meter.get("interval_reconciliation"),
                    cost_unclosed_actor_subcategories=meter.get("unclosed_actor_subcategories"),

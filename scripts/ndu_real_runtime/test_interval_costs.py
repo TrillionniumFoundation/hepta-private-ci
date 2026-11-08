@@ -7,8 +7,8 @@ import sys
 import tempfile
 import unittest
 
-from .interval_costs import actor_receipts, reconcile, replay_receipt
-from .metering import Meter
+from .interval_costs import actor_receipts, close_observer_tail, reconcile, replay_receipt
+from .metering import Meter, transport_receipt
 from .span_meter import MeterError, record_from_jsonl, verify_record
 
 
@@ -161,6 +161,40 @@ class IntervalIntegrationTests(unittest.TestCase):
         result = reconcile(failed.finish(), [])
         self.assertTrue(result["unclosed_actor_subcategories"])
         self.assertEqual(result["observed_unclassified_overhead_seconds"], result["wall_seconds"])
+
+    def test_compact_transport_requires_exact_durable_raw_journal(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            host, full = self.run_pair(directory)
+            compact = transport_receipt(full)
+            self.assertNotIn("raw_spans", compact)
+            self.assertNotIn("stages", compact)
+            self.assertLess(len(json.dumps(compact)), 4096)
+            recovered = actor_receipts([compact], directory)
+            self.assertEqual(recovered[0]["raw_spans"], full["raw_spans"])
+            self.assertEqual(reconcile(host, recovered)["costs"], reconcile(host, [full])["costs"])
+            compact["wall_seconds"] += 0.01
+            with self.assertRaisesRegex(MeterError, "SUMMARY_DIFFERS"):
+                actor_receipts([compact], directory)
+            compact = transport_receipt(full)
+            compact["raw_spans_sha256"] = "0" * 64
+            with self.assertRaisesRegex(MeterError, "JOURNAL_RECEIPT_MISMATCH"):
+                actor_receipts([compact], directory)
+
+    def test_observer_tail_is_charged_once_with_raw_clock_endpoints(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            host, full = self.run_pair(directory)
+            reconciled = reconcile(host, actor_receipts([transport_receipt(full)], directory))
+            final = close_observer_tail(reconciled)
+            tail = final["observer_tail"]
+            expected = (tail["end_monotonic_ns"] - tail["start_monotonic_ns"]) / 1e9
+            self.assertGreater(expected, 0)
+            self.assertAlmostEqual(final["wall_seconds"] - reconciled["wall_seconds"], expected)
+            self.assertAlmostEqual(sum(final["costs"].values()) + final["observed_unclassified_overhead_seconds"],
+                                   final["wall_seconds"], places=9)
+            with self.assertRaisesRegex(MeterError, "ALREADY_RECORDED"):
+                close_observer_tail(final)
 
 
 if __name__ == "__main__":
