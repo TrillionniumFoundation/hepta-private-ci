@@ -74,6 +74,26 @@ pub(crate) fn request_bytes(
     prefix: &[u8],
     command: &JointGenerationCommandV1,
 ) -> Result<Vec<u8>, CellGenerationErrorV2> {
+    request_bytes_with_text_limit(
+        request_digest,
+        weights,
+        public,
+        state,
+        prefix,
+        command,
+        /*text_limit*/ 2,
+    )
+}
+
+pub(crate) fn request_bytes_with_text_limit(
+    request_digest: [u8; 32],
+    weights: &[u8],
+    public: &[u8],
+    state: &[u8],
+    prefix: &[u8],
+    command: &JointGenerationCommandV1,
+    text_limit: u32,
+) -> Result<Vec<u8>, CellGenerationErrorV2> {
     let mut bytes = b"HJREQV01".to_vec();
     bytes.extend(request_digest);
     for (part, maximum) in [
@@ -126,7 +146,7 @@ pub(crate) fn request_bytes(
                 JointGenerationModalityV1::Image => (0, 16),
                 JointGenerationModalityV1::Audio => (1, 1024),
                 JointGenerationModalityV1::Video => (2, 4),
-                JointGenerationModalityV1::Text => (3, 2),
+                JointGenerationModalityV1::Text => (3, text_limit),
             };
             if *units == 0 || *units > maximum {
                 return Err(CellGenerationErrorV2::InvalidBinding);
