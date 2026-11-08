@@ -1,0 +1,50 @@
+# Independent localization v2: real interfaces and the formal comparison
+
+This stage uses the existing user authorization and its own directory, dependencies, receipts and limits. It does not change the frozen v1 candidate or overwrite v1 failures. `run_interface.py` executes only the bounded three-seed interface study. `formal_protocol.json` fixes the larger training procedure and lists the gates still missing; it is not a claim that the formal study is already runnable or complete.
+
+## Data and the corrected clock measurement
+
+The archived official [UCI dataset](https://archive.ics.uci.edu/dataset/196/localization), its text and description are pinned by the hashes in `data.py`. Attribution: Vidulin, Lustrek, Kaluza, Piltaver and Krivec (2010), DOI [10.24432/C57G8X](https://doi.org/10.24432/C57G8X), CC BY 4.0.
+
+The retained v1 attempt parsed all 164,860 events but rejected a maximum adjacent-date residual of 3.1652 ms against 2 ms. Independent whole-file diagnostics subsequently found that **every record** is reproduced by one fixed measurement model: interpret the integer as 100 ns ticks from year 1, add two hours, round to the nearest 1/300 second and then to a displayed integer millisecond. Every displayed millisecond ends in 0, 3 or 7; all 25 sequences share the same offset. The author's description does not identify SQL or .NET, so this establishes numerical compatibility, not the author's software stack.
+
+The model is independently documented by Microsoft's [DateTime tick definition](https://learn.microsoft.com/en-us/dotnet/api/system.datetime.ticks) and [SQL datetime precision](https://learn.microsoft.com/en-us/sql/t-sql/data-types/datetime-transact-sql). The [official conversion implementation](https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Data.Common/src/System/Data/SQLTypes/SQLDateTime.cs) uses 300 SQL ticks per second. Its maximum single-record display error is 1/600 + 1/3000 = 1/500 second. A difference of two displayed times can therefore have twice that error. V1 applied a single-record-sized tolerance to adjacent differences; its failed receipt remains unchanged.
+
+V2 requires **zero residual from the complete declared integer display transformation on every record**, plus the derived 2 ms single-record bound. It does not merely widen the old observed-difference threshold. It preserves all original ticks, all rows, the 12 source-order inversions and the one duplicate timestamp in its audit. Sequence ordering is integer timestamp followed by source row; no event or long gap is discarded.
+
+The exact A01 first 128 / D01 first 64 selections remain fixed. A01 has one 0.1081168-second gap, so it cannot enter the original 0.1-second model. V2 declares a **different refractory model, 0.2 seconds**, before new execution. The whole dataset maximum gap is 0.162175 seconds. This permits direct existing operator calls without subdivisions; it does not inherit any 0.1-second numerical qualification. E is used only for file/schema/clock integrity and never for fitting, selected inputs or model evaluation.
+
+## Running the interface stage
+
+Keep the real official checkouts and dependencies in the new v2 environment described by `dependencies.json`. Reusing read-only installed Torch libraries does not reuse prior study evidence or compute credit. The source package root must contain the unchanged qualified Python modules under `qualification/hcsn_differentiable/`.
+
+```sh
+python proposals/localization-v2/run_interface.py --archive /path/to/official-localization.zip --output /new/v2/data-only
+python proposals/localization-v2/run_interface.py --archive /path/to/official-localization.zip --output /new/v2/interfaces --run --s4-repo /path/to/pinned-s4 --hcsn-qualification /path/to/new-numerical-result.json
+```
+
+All output paths must be new. The first command uses only the standard library and saves the actual source, clock, frontend and fixed input manifests. The second launches fresh processes for six declared arms and three independent seeds, 20261108/09/10. Every fit gets at most four Adam updates on the same four consecutive 32-event windows and a single 64-event D01 forward check. Each training forward starts a fresh episode; the original inter-event gaps are retained, and optimization is never performed inside a retained HCSN episode.
+
+Limits are one CPU thread, no GPU, 180 seconds per arm/seed and 1,800 seconds for the suite. The caller supplies the 2 GiB hard memory envelope; the worker also checks measured RSS at operation boundaries. A CUDA-enabled Torch build does not authorize CUDA use. Dependencies, setup, failed attempts and shared data work need their own recorded costs. Parent timeouts kill unfinished workers; durable events distinguish a completed optimizer step from an unresolved in-flight step instead of fabricating zero work.
+
+GRU, official CfC, official recurrent PLIF, official S4D-Lin and causal attention are implemented in `models.py`. CfC receives real timespans; PLIF and S4D are explicitly event-indexed models with the same real-time input feature. S4D is the SSM arm and is never labeled Mamba. All models consume identical frozen 25-dimensional inputs. Their tiny interface widths are deliberately recorded as unequal; this stage makes no capacity-controlled quality comparison. Four PLIF updates do not establish that an SNN was adequately trained.
+
+HCSN requires the exact new profile receipt, matching source hashes, fixed source rows, gap ticks and instantiated physical FP64 values. Missing or failed numerical qualification is `blocked_numeric`, with zero HCSN fits. The other five families can still produce their independently labeled interface records. The new profile covers frozen default physics and its tested grid/windows only; it does not certify learned physics or arbitrary observation-conditioned rollouts.
+
+## Formal experiment: a concrete procedure with explicit missing gates
+
+The machine-readable formal recipe uses complete A/B/C sequences for training, D for tuning and calibration, and keeps E sealed for confirmation. Split subjects before constructing windows. Its optional small development subset uses first/middle/last windows selected solely from sequence lengths and source-row order; freeze those identities before scoring labels. Such a subset remains a pilot and cannot replace confirmation on all events.
+
+For a formal run, first choose widths by effective trainable parameter counts, targeting the admitted HCSN within 5%. Dead parameters and masked-out weights cannot pad that count. Use the same deterministic frontend and episode lengths. The plain dual-gate control additionally needs the same number of memory slots and content width, with actual retained-state bytes reported. Current width-4 adapters are interface fixtures and need configurable constructors before this gate can pass.
+
+Every arm receives the same twelve allowed combinations of learning rate, weight decay and clipping threshold, evaluated using three independent tuning seeds on D. Honor S4's documented optimizer parameter groups instead of silently weakening its training recipe. Retain all failures and costs. Then freeze the selected configuration and refit five fresh confirmation seeds. Class weights come only from A/B/C; temperature calibration uses D. Training requires finite gradients, a nontrivial training-only memorization check, full learning curves and a development plateau, with minimum/maximum epochs and patience fixed in the JSON. Hitting a wall-time cap is not evidence of convergence. Silent PLIF neurons, unstable learned tau or unfinished optimization are inadequacy findings, not HCSN wins.
+
+Report macro-F1 and calibration together with per-seed and per-sequence outcomes. Seed-paired uncertainty is based on independently trained models. Clustered data uncertainty uses whole sequences, and a single held-out subject limits population claims. Episodes and events never inflate the independent training sample count. Resource reports include persistent state, peak memory, throughput, p99, wall time and complete measured energy; unmeasured energy remains null with its scope and reason.
+
+## Why the requested ablations need real implementation work
+
+The current network supplies five physical readouts to several neural paths; `risk` and `expected_events` duplicate the single-step expected event count. Call-only, risk-only and true dual-channel models should have genuinely pruned input/readout dimensions. Simply zeroing columns leaves structurally unused weights and can falsify a same-capacity comparison. An ordinary dual-gate control needs an explicit neural memory-bank update, not a renamed HCSN or two extra scalar parameters.
+
+Content-only must remove all five direct physical readouts from likelihood, write gate, proposal, inter-layer messages and final readout. Retaining probability-weighted content transport isolates readout contribution; deleting that transport is a separate nonphysical memory control. Neither can silently stand in for the other. A mean-state approximation must specify an actual closed update, and independent generators require separately retained laws, parameters and accounting. The existing `reset_enabled=False` killed control is reusable but needs its declared state semantics and its own qualification.
+
+The 0.2-second profile freezes physics. Jointly learning drift, diffusion, boundary and reset needs predeclared numerical-domain coverage and trajectory checks; a differentiable tensor or a few passing fixtures does not supply that coverage. Maintenance/rollover coupling has no implemented dynamics in this candidate. Its policy, state, costs and generator changes must be defined before an on/off ablation can exist. The formal protocol therefore remains blocked on those implementations, a qualified full-context profile, sufficient training and an independently quantified full-study resource ledger. Existing user authorization is not the missing item.
