@@ -88,7 +88,9 @@ def main():
         root.mkdir(mode=0o700, exist_ok=False)
         previous_result = json.loads((previous / "training-result.json").read_bytes())
         previous_plan = json.loads((previous / "frozen-plan.json").read_bytes())
-        parent_index, dataset_index = (1, 0) if profile == "external-trained-artifact-v1" else (0, 1)
+        parent_index, dataset_index = (
+            (1, 0) if profile == "external-trained-artifact-v1" else (0, 1)
+        )
         parent_ref = previous_result["stages"][parent_index]["parent_material"]
         assert sha(parent_ref["path"]) == parent_ref["sha256"]
         parent = json.loads(Path(parent_ref["path"]).read_bytes())
@@ -98,9 +100,13 @@ def main():
         rows = json.loads(raw_data)["records"]
         base_config = json.loads((previous / "model-generation-1.json").read_bytes())
         if profile == "external-trained-artifact-v1":
-            base_config.update(parent_dir=parent["directory"], parent_contract=parent["contract"],
-                               parent_adapter=parent["adapter"], parent_file_sha256=parent["file_sha256"],
-                               generation=parent["generation"])
+            base_config.update(
+                parent_dir=parent["directory"],
+                parent_contract=parent["contract"],
+                parent_adapter=parent["adapter"],
+                parent_file_sha256=parent["file_sha256"],
+                generation=parent["generation"],
+            )
         evaluation = [
             dict(row, request_id=config["operation"] + f"-eval-{i}")
             for i, row in enumerate(previous_plan["evaluation"])
@@ -217,7 +223,9 @@ def main():
                     schema="hepta.research.smollm.training-start.v1",
                     operation=config["operation"],
                     started_unix_ns=started_unix_ns,
-                    native_admission_sha256=sha(root / "native-training-admission.json"),
+                    native_admission_sha256=sha(
+                        root / "native-training-admission.json"
+                    ),
                     frozen_sha256=sha(root / "frozen.json"),
                 ),
             )
@@ -340,13 +348,18 @@ def main():
             material = parent
             if profile == "external-trained-artifact-v1":
                 assert inputs["request_id"] in (
-                    config["operation"] + "-source-task", frozen["next_request_id"]
+                    config["operation"] + "-source-task",
+                    frozen["next_request_id"],
                 )
                 if inputs["request_id"] == frozen["next_request_id"]:
-                    evaluation = json.loads((root / "evaluate-result.json").read_bytes())
+                    evaluation = json.loads(
+                        (root / "evaluate-result.json").read_bytes()
+                    )
                     assert evaluation["frozen_sha256"] == sha(root / "frozen.json")
                     if evaluation["disposition"] == "Qualified":
-                        material = json.loads((root / "training/worker/parent-material.json").read_bytes())
+                        material = json.loads(
+                            (root / "training/worker/parent-material.json").read_bytes()
+                        )
                         assert evaluation["candidate"] == material
                     else:
                         assert evaluation["disposition"] == "NoUpdate"

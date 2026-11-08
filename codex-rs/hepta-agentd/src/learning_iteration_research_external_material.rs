@@ -677,7 +677,7 @@ fn tensors(raw: &[u8]) -> anyhow::Result<BTreeMap<String, Tensor<'_>>> {
         if dtype == "F32" {
             ensure!(
                 raw.chunks_exact(4)
-                    .all(|b| f32::from_le_bytes(b.try_into().expect("four bytes")).is_finite()),
+                    .all(|b| f32::from_le_bytes([b[0], b[1], b[2], b[3]]).is_finite()),
                 "nonfinite tensor"
             );
         }

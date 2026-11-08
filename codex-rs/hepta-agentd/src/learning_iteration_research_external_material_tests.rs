@@ -6,12 +6,12 @@ use super::*;
 use std::fs;
 use std::os::unix::fs::symlink;
 
-fn tensor_file(header: &Value, payload: &[u8]) -> Vec<u8> {
-    let header = canonical(header).expect("test header");
+fn tensor_file(header: &Value, payload: &[u8]) -> anyhow::Result<Vec<u8>> {
+    let header = canonical(header)?;
     let mut bytes = (header.len() as u64).to_le_bytes().to_vec();
     bytes.extend_from_slice(&header);
     bytes.extend_from_slice(payload);
-    bytes
+    Ok(bytes)
 }
 
 #[test]
@@ -40,24 +40,25 @@ fn research_material_canonicalization_sorts_every_object_level() {
 }
 
 #[test]
-fn research_material_tensors_reject_overlap_holes_trailing_and_nonfinite() {
+fn research_material_tensors_reject_overlap_holes_trailing_and_nonfinite() -> anyhow::Result<()> {
     let header = json!({"a":{"dtype":"F32","shape":[1],"data_offsets":[0,4]},
         "b":{"dtype":"I64","shape":[1],"data_offsets":[4,12]}});
     let mut payload = 1f32.to_le_bytes().to_vec();
     payload.extend_from_slice(&7i64.to_le_bytes());
-    let raw = tensor_file(&header, &payload);
+    let raw = tensor_file(&header, &payload)?;
     assert_eq!(tensors(&raw).unwrap()["a"].raw, 1f32.to_le_bytes());
     let mut overlap = header.clone();
     overlap["b"]["data_offsets"] = json!([0, 8]);
-    assert!(tensors(&tensor_file(&overlap, &payload)).is_err());
+    assert!(tensors(&tensor_file(&overlap, &payload)?).is_err());
     let mut hole = header.clone();
     hole["b"]["data_offsets"] = json!([5, 13]);
     let mut extended = payload.clone();
     extended.push(0);
-    assert!(tensors(&tensor_file(&hole, &extended)).is_err());
-    assert!(tensors(&tensor_file(&header, &extended)).is_err());
+    assert!(tensors(&tensor_file(&hole, &extended)?).is_err());
+    assert!(tensors(&tensor_file(&header, &extended)?).is_err());
     payload[..4].copy_from_slice(&f32::INFINITY.to_le_bytes());
-    assert!(tensors(&tensor_file(&header, &payload)).is_err());
+    assert!(tensors(&tensor_file(&header, &payload)?).is_err());
+    Ok(())
 }
 
 #[test]
