@@ -18,17 +18,40 @@ pub(crate) const TOTAL_UNITS: [u32; 4] = [16, 1024, 4, 2];
 pub(crate) struct Prefixes {
     pub(crate) cursors: [u32; 4],
     pub(crate) bytes: [Vec<u8>; 4],
+    pub(crate) observed: bool,
 }
 
 impl Prefixes {
     pub(crate) fn read(prefix: &[u8]) -> Result<Self> {
+        Self::read_profile(prefix, false)
+    }
+
+    pub(crate) fn for_model(model: &Model) -> Self {
+        Self {
+            observed: model.is_observed(),
+            ..Self::default()
+        }
+    }
+
+    pub(crate) fn read_for_model(prefix: &[u8], model: &Model) -> Result<Self> {
+        if model.is_observed() {
+            Self::read_profile(prefix, true)
+        } else {
+            Self::read(prefix)
+        }
+    }
+
+    pub(crate) fn read_profile(prefix: &[u8], observed: bool) -> Result<Self> {
         if prefix.len() > MAX_PREFIX_BYTES {
             return Err("prefix too large".into());
         }
         let mut reader = Reader::new(prefix);
-        let mut parsed = Self::default();
+        let mut parsed = Self {
+            observed,
+            ..Self::default()
+        };
         while !reader.is_empty() {
-            if reader.take(4)? != b"HGC1" {
+            if reader.take(4)? != if observed { b"HGC2" } else { b"HGC1" } {
                 return Err("unknown output frame".into());
             }
             let modality = reader.byte()?;
@@ -43,17 +66,26 @@ impl Prefixes {
 
     fn append(&mut self, modality: u8, start: u32, units: u32, payload: &[u8]) -> Result<()> {
         let index = usize::from(modality);
-        let total = *TOTAL_UNITS.get(index).ok_or("unknown output modality")?;
+        let totals = if self.observed {
+            [16, 1024, 4, crate::text_codec::TEXT_SCALAR_LIMIT]
+        } else {
+            TOTAL_UNITS
+        };
+        let total = *totals.get(index).ok_or("unknown output modality")?;
         let end = start.checked_add(units).ok_or("output range overflow")?;
         if units == 0 || start != self.cursors[index] || end > total {
             return Err("noncontiguous output range".into());
         }
-        match modality {
-            0 if payload.len() == units as usize * 48 => {}
-            1 if payload.len() == units as usize * 2 => {}
-            2 if payload.len() == units as usize * 768 => {}
-            3 => validate_text(payload, start, units)?,
-            _ => return Err("output payload length".into()),
+        if self.observed {
+            crate::media_codec::validate_chunk(modality, start, units, payload)?;
+        } else {
+            match modality {
+                0 if payload.len() == units as usize * 48 => {}
+                1 if payload.len() == units as usize * 2 => {}
+                2 if payload.len() == units as usize * 768 => {}
+                3 => validate_text(payload, start, units)?,
+                _ => return Err("output payload length".into()),
+            }
         }
         self.bytes[index].extend(payload);
         self.cursors[index] = end;
@@ -66,7 +98,7 @@ impl Prefixes {
             .get(usize::from(modality))
             .ok_or("unknown output modality")?;
         self.append(modality, start, units, payload)?;
-        let mut frame = b"HGC1".to_vec();
+        let mut frame = if self.observed { b"HGC2" } else { b"HGC1" }.to_vec();
         frame.push(modality);
         for value in [start, units, payload.len() as u32] {
             frame.extend(value.to_le_bytes());
@@ -74,6 +106,37 @@ impl Prefixes {
         frame.extend(payload);
         Ok(frame)
     }
+}
+
+/// Commit codecs advance only the separate byte decoder state. Continuous core
+/// state and every already committed byte are retained across content actions.
+pub(crate) fn commit_chunk(
+    model: &Model,
+    state: &mut State,
+    modality: u8,
+    start: u32,
+    units: u32,
+    law: EmissionLaw,
+) -> Result<Vec<u8>> {
+    if !model.is_observed() {
+        return chunk(model, state, modality, start, units, law);
+    }
+    let index = usize::from(modality);
+    let total = *model.total_units().get(index).ok_or("unknown modality")?;
+    if units == 0 || start.checked_add(units).is_none_or(|end| end > total) {
+        return Err("commit exceeds remaining output".into());
+    }
+    if modality == 3 {
+        return crate::text_codec::generate(model, state, start, units, law);
+    }
+    let all = sample_bytes(model, state, modality, law)?;
+    let unit_bytes = [48, 2, 768][index];
+    crate::media_codec::encode_chunk(
+        modality,
+        start,
+        units,
+        &all[start as usize * unit_bytes..(start + units) as usize * unit_bytes],
+    )
 }
 
 fn validate_text(bytes: &[u8], start: u32, units: u32) -> Result<()> {
@@ -106,6 +169,9 @@ pub(crate) fn chunk(
     units: u32,
     law: EmissionLaw,
 ) -> Result<Vec<u8>> {
+    if model.is_observed() {
+        return Err("v4 requires the stateful commit codec".into());
+    }
     let index = usize::from(modality);
     let total = *TOTAL_UNITS.get(index).ok_or("unknown modality")?;
     if units == 0 || start.checked_add(units).is_none_or(|end| end > total) {

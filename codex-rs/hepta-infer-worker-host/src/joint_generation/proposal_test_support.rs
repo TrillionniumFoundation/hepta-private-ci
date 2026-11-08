@@ -249,3 +249,76 @@ pub(super) fn weights() -> Packet {
     }
     packet
 }
+
+pub(super) fn observed_weights() -> Packet {
+    let mut packet = weights();
+    for (key, value) in [
+        ("kind", "joint-generator-weights-v4"),
+        ("observation_profile", "owner-prefix-budget-v1"),
+        ("text_profile", "utf8-byte256-scalar128-v1"),
+        ("media_profile", "ppm-wav16000-y4m4-v1"),
+        ("core_state_profile", "persistent-v1"),
+        ("inference_profile", "ndu-finite-deterministic-v1"),
+        ("ndu.risk", "0.25"),
+        ("ndu.discount_per_second", "1"),
+        ("ndu.latency_weight", "0.01"),
+        ("ndu.horizon", "2"),
+        ("ndu.max_forecasts", "32"),
+        ("ndu.action_micros", "1000,1000,1000,1000,1000,1000,1000"),
+        ("ndu.critic_output", "sigmoid-quality-v1"),
+    ] {
+        packet.meta.insert(key.into(), value.into());
+    }
+    for (name, shape) in [
+        ("token_encoder.weight", vec![256, 32]),
+        ("emissions.text.weight", vec![256, 64]),
+        ("emissions.text.bias", vec![256]),
+        ("text_recurrent.weight", vec![32, 32]),
+        ("text_recurrent.bias", vec![32]),
+        ("text_condition.weight", vec![32, 64]),
+        ("text_condition.bias", vec![32]),
+        (
+            "actor.0.weight",
+            vec![32, 69 + crate::observation::OBSERVATION_FEATURES],
+        ),
+        (
+            "critic.0.weight",
+            vec![32, 69 + crate::observation::OBSERVATION_FEATURES],
+        ),
+        (
+            "delivery_critic.0.weight",
+            vec![32, 69 + crate::observation::OBSERVATION_FEATURES],
+        ),
+    ] {
+        add(&mut packet, name, shape, /*value*/ 0.0);
+    }
+    packet
+}
+
+pub(super) fn observed_fixture(weights: Packet) -> Result<Fixture> {
+    let mut fixture = Fixture::from_weights(weights)?;
+    let mut public = Packet::decode(&fixture.public)?;
+    public
+        .meta
+        .insert("kind".into(), "joint-generator-public-v4".into());
+    fixture.public = public.encode()?;
+    Ok(fixture)
+}
+
+pub(super) fn request_observed(
+    fixture: &Fixture,
+    state: &[u8],
+    prefix: &[u8],
+    command: Command,
+    owner: &crate::observation::OwnerContext,
+) -> Vec<u8> {
+    let legacy = request(&fixture.weights, &fixture.public, state, prefix, command);
+    let mut bytes = b"HJREQV02".to_vec();
+    bytes.extend(&legacy[8..40]);
+    bytes.extend([owner.required_mask, owner.optional_mask]);
+    bytes.extend(owner.budget_total.to_le_bytes());
+    bytes.extend(owner.budget_remaining.to_le_bytes());
+    bytes.extend(owner.task_digest);
+    bytes.extend(&legacy[40..]);
+    bytes
+}
