@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.current-smithy-pin-backport.v1",
+  "crate": "aws-smithy-types",
+  "version": "1.8.1",
+  "original_registry_checksum": "69bb407740a197147da48238ecc94498493c9e85445732360cec180296ca45f1",
+  "official_archive_url": "https://static.crates.io/crates/aws-smithy-types/aws-smithy-types-1.8.1.crate",
+  "official_source_commit": "9a67dfe11f42cafab121082f4e0d87d278418d1d",
+  "upstream_fix_reference": "https://github.com/smithy-lang/smithy-rs/pull/2410",
+  "reason": "Remove the unmaintained pin-utils parent dependency while retaining the current Smithy schema compatibility line",
+  "license_sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+  "edits": [
+    {
+      "path": "Cargo.toml",
+      "before_sha256": "1b1d9f6d302b4b200b483ee0b039823d3fdef5cc781ec0ab8c70a44fb2dcb01d",
+      "after_sha256": "73e27c0e0d351a0e7f1ed6896131d4f0c2c4c0c08418367d09b18065d28fe8fd"
+    },
+    {
+      "path": "Cargo.toml.orig",
+      "before_sha256": "02ce62c16ea241dd001dfa7168b36b84f6f03d46323fe457aa9ffe945524ab7d",
+      "after_sha256": "546f27765180acdc100a7630dbb866a89af2b635896cc48448b540559fe2e2ef"
+    },
+    {
+      "path": "src/byte_stream.rs",
+      "before_sha256": "299ad8361e0227face7a0fbe42fab58996c8104c1cbf3b3917463d319eb075a1",
+      "after_sha256": "7ceb533292355efe81435e4820739c7d8ab9787782f3b4f1152c4a27c9938265"
+    }
+  ],
+  "minimal_patch_sha256": "9c811d708d9375487c98b3d5f7bcb9b171cbc7da5be6e193a86bfcc48afc84a0",
+  "all_other_archive_files_unchanged": true,
+  "historical_vendor_lock_is_not_workspace_dependency_authority": true,
+  "formatting": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "9a67dfe11f42cafab121082f4e0d87d278418d1d"
+    ],
+    "base": "9a67dfe11f42cafab121082f4e0d87d278418d1d",
+    "formatter_only_files": [
+      "src/byte_stream.rs"
+    ]
+  }
+}
