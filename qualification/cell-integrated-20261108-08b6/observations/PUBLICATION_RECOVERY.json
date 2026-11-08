@@ -1,0 +1,60 @@
+{
+  "request": {
+    "host": "mac",
+    "helper": "recovery_call39.py",
+    "helper_sha256": "071a9e3c1f560fe7f64ec9da5b78ba17ab7e65534d8fdbc6fdf1be1af9575bfa",
+    "idempotency_key": "cell-08b6-recover-call39-exact-blob-once-001"
+  },
+  "job_id": "1a1bc6bf78c-138b0-25e",
+  "status": {
+    "at_unix_ms": 1794162573009,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1bc6bf78c-138b0-25e",
+    "launch_nonce": "78ca5a4842b4beabad661b712dd0220a",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 460,
+        "stored": 460
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "observation": {
+    "additional_post_attempted": true,
+    "creating_attempt": "not_attributed",
+    "ending_call_count": 45,
+    "expected_blob": "7d26dc86fb86d677ea4d85eff76efc853b2dd84f",
+    "name": "call0039-blob-7d26dc86-connect-timeout-001",
+    "original_records_unchanged": true,
+    "original_unknown_preserved": true,
+    "preflight_blob_status": 404,
+    "preflight_source_ref_status": 404,
+    "reference_mutations": 0,
+    "starting_call_count": 39,
+    "state": "RESOLVED_PRESENT"
+  }
+}

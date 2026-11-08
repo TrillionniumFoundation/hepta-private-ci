@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.exact-head-ci-observation.v1",
+  "observed_at_utc": "2026-11-08T18:51:08.560455+00:00",
+  "source": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+  "run_count": 5,
+  "runs": [
+    {
+      "id": 42511784190,
+      "name": "v8-canary",
+      "event": "pull_request",
+      "head_sha": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+      "head_branch": "engineering/cell-integrated-20261108-08b6",
+      "path": ".github/workflows/v8-canary.yml",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42511784190",
+      "created_at": "2026-11-08T18:48:00Z",
+      "updated_at": "2026-11-08T18:50:25Z"
+    },
+    {
+      "id": 42511784219,
+      "name": "Rust UI product foundation",
+      "event": "pull_request",
+      "head_sha": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+      "head_branch": "engineering/cell-integrated-20261108-08b6",
+      "path": ".github/workflows/ui-product-foundation.yml",
+      "run_attempt": 1,
+      "status": "queued",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42511784219",
+      "created_at": "2026-11-08T18:48:00Z",
+      "updated_at": "2026-11-08T18:48:00Z"
+    },
+    {
+      "id": 42511784181,
+      "name": "blocking-ci",
+      "event": "pull_request",
+      "head_sha": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+      "head_branch": "engineering/cell-integrated-20261108-08b6",
+      "path": ".github/workflows/blocking-ci.yml",
+      "run_attempt": 1,
+      "status": "queued",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42511784181",
+      "created_at": "2026-11-08T18:48:00Z",
+      "updated_at": "2026-11-08T18:48:00Z"
+    },
+    {
+      "id": 42511784155,
+      "name": "Hepta architecture convergence",
+      "event": "pull_request",
+      "head_sha": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+      "head_branch": "engineering/cell-integrated-20261108-08b6",
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "run_attempt": 1,
+      "status": "queued",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42511784155",
+      "created_at": "2026-11-08T18:48:00Z",
+      "updated_at": "2026-11-08T18:48:00Z"
+    },
+    {
+      "id": 42511643474,
+      "name": "Hepta Cell framework native validation",
+      "event": "push",
+      "head_sha": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+      "head_branch": "engineering/cell-integrated-20261108-08b6",
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "run_attempt": 1,
+      "status": "queued",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42511643474",
+      "created_at": "2026-11-08T18:46:16Z",
+      "updated_at": "2026-11-08T18:46:16Z",
+      "jobs": [
+        {
+          "id": 128825784185,
+          "name": "Cell configuration and actor recovery",
+          "status": "queued",
+          "conclusion": null,
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42511643474/job/128825784185",
+          "started_at": "2026-11-08T18:46:17Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 128825784271,
+          "name": "Cell framework (agentd-composition)",
+          "status": "queued",
+          "conclusion": null,
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42511643474/job/128825784271",
+          "started_at": "2026-11-08T18:46:17Z",
+          "completed_at": null,
+          "steps": []
+        },
+        {
+          "id": 128825784431,
+          "name": "Cell framework (mechanisms)",
+          "status": "queued",
+          "conclusion": null,
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42511643474/job/128825784431",
+          "started_at": "2026-11-08T18:46:17Z",
+          "completed_at": null,
+          "steps": []
+        }
+      ]
+    }
+  ],
+  "pr": 5395,
+  "pr_repository_head_and_base_verified": true,
+  "qualification": "pending or unobserved required gates are not pass"
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.exact-source-publication.v1",
+  "job_id": "1a1bc790f40-138b0-2b3",
+  "status": {
+    "at_unix_ms": 1794163576781,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1bc790f40-138b0-2b3",
+    "launch_nonce": "1e738675f735f567bdf2100c7c326020",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 525,
+        "stored": 525
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "publication": {
+    "capsule_sha256": "b9f96030150efb3fe38a272be061cb712115f7febadf6745e178482948fe20e1",
+    "head": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+    "tree": "e411d25b47c166f35783a27054adb6a3f6682594",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "branch": "engineering/cell-integrated-20261108-08b6",
+    "state": "PUBLISHED_EXACT_HEAD",
+    "capsule_limit_bytes": 8388608,
+    "capsule_bytes": 283675,
+    "capsule_uncompressed_bytes": 635341,
+    "ci_qualified": false,
+    "scientific_qualified": false,
+    "calls": 266
+  },
+  "publisher_sha256": "aa29200938ad622518f361e378afbffeb3d5f1799fdb0bc0c2501e0f69ce29a6",
+  "readback_wrapper_sha256": "be865ea937548d62dc05fbaf645baad8b4e09fa735adafcc3926bff9498d8e2e",
+  "original_publisher_sha256": "386e1e95a448a91a11bbe4962d3d7f2be16682f8d74851c890e72530f9f0a16e",
+  "reference_update_policy": "create only: beforeOid zero, force false; exact head/tree GET readback"
+}

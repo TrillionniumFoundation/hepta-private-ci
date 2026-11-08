@@ -1,0 +1,62 @@
+{
+  "job_id": "1a1bc7cfa71-138b0-2c7",
+  "status": {
+    "at_unix_ms": 1794163681000,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1bc7cfa71-138b0-2c7",
+    "launch_nonce": "302765e8247c9d16b0b9be817ecc9f71",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 697,
+        "stored": 697
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "result": {
+    "state": "DRAFT_PR_READBACK_VERIFIED",
+    "number": 5395,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5395",
+    "head": "b839558b26c2e5b667055ca4af4ad749ae41c043",
+    "tree": "e411d25b47c166f35783a27054adb6a3f6682594",
+    "base": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+    "draft": true,
+    "create_exit_code": 0,
+    "body_sha256": "46b2c87f9075d1a952e2e7208be5fb70549ec14ee43bcc557fab5799ebb02239",
+    "comparison": {
+      "status": "ahead",
+      "ahead_by": 33,
+      "behind_by": 0,
+      "total_commits": 33,
+      "merge_base": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+      "returned_changed_files": 225
+    },
+    "ci_qualified": false,
+    "production_qualified": false
+  },
+  "helper_sha256": "9d03780c947a33dde3a7dc0f875c0fd087b16834f4aaadbc789cd85fc548f925"
+}
