@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.ctrl1.failed-retention-verification.v1",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "ndu_ctrl1.verify",
+    "/workspace/scratch/839e1cbe28dd/hepta-private-ci/qualification/ctrl1-decision-cell-20261108/primary"
+  ],
+  "returncode": 1,
+  "elapsed_wall_seconds": 1.1328201880096458,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/workspace/scratch/839e1cbe28dd/hepta-private-ci/scripts/ndu_ctrl1/verify.py\", line 783, in <module>\n    verify(args.directory, check_source=not args.historical_source),\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/839e1cbe28dd/hepta-private-ci/scripts/ndu_ctrl1/verify.py\", line 767, in verify\n    return _verify(Path(directory).resolve(strict=True), check_source)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/839e1cbe28dd/hepta-private-ci/scripts/ndu_ctrl1/verify.py\", line 616, in _verify\n    raise ValueError(\"Comparison denominator differs from the frozen roster\")\nValueError: Comparison denominator differs from the frozen roster\n",
+  "status": "REJECTED_INCOMPLETE_ORIGINALS",
+  "reported_comparisons": 864,
+  "retained_comparisons": 860,
+  "action": "Preserve all first-attempt originals unchanged. Repeat whole campaign with identical sources, plan and seeds in a distinct absent directory; do not reconstruct missing originals."
+}
