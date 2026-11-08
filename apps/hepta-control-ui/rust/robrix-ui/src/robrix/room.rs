@@ -306,10 +306,13 @@ pub struct RoomScreen {
 }
 impl Widget for RoomScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        let mut commits_unchanged_preedit = false;
         if let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() {
             let input = self.view.text_input(cx, ids!(message_input));
             self.composer_transaction
                 .checkpoint(&input, workspace, self.active_key);
+            commits_unchanged_preedit =
+                ComposerTransaction::commits_unchanged_preedit(&input, event);
         }
         self.view.handle_event(cx, event, scope);
         let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() else {
@@ -319,6 +322,13 @@ impl Widget for RoomScreen {
             return;
         };
         let input = self.view.text_input(cx, ids!(message_input));
+        if commits_unchanged_preedit && !input.is_composing() {
+            // Read the SDK's accepted state after dispatch. Keep the ordinary
+            // RoomKey, draft-limit and rollback checks on this commit edge.
+            self.composer_transaction
+                .edit(cx, &input, workspace, source, input.text());
+            self.view.redraw(cx);
+        }
         let follow_latest = workspace
             .timeline()
             .is_none_or(|timeline| timeline.scroll.at_end);

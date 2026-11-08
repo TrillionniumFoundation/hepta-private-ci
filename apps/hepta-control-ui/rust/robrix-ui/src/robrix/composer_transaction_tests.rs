@@ -1,6 +1,8 @@
 use super::*;
 use makepad_widgets::makepad_draw::text::selection::Cursor;
 use makepad_widgets::makepad_draw::text::selection::Selection;
+use makepad_widgets::makepad_platform::event::CharOffset;
+use makepad_widgets::makepad_platform::event::FullTextState;
 use makepad_widgets::text_input::TextInputAction;
 use makepad_widgets::text_input::UndoGroup;
 
@@ -233,4 +235,138 @@ fn actual_sdk_cancel_preserves_committed_draft_after_ignored_previews() {
         ActionResult::Applied
     );
     assert_eq!(workspace.draft(), &committed);
+}
+
+fn full_state_event(text: &str, composition: Option<std::ops::Range<usize>>) -> Event {
+    let end = CharOffset(text.chars().count());
+    Event::TextInput(TextInputEvent {
+        full_state_sync: Some(FullTextState {
+            text: text.to_owned(),
+            selection: end..end,
+            composition: composition.map(|range| CharOffset(range.start)..CharOffset(range.end)),
+        }),
+        ..Default::default()
+    })
+}
+
+fn sdk_full_state_event(cx: &mut Cx, input: &TextInputRef, event: &Event) -> Option<String> {
+    let actions = cx.capture_actions(|cx| {
+        input
+            .borrow_mut()
+            .unwrap()
+            .handle_event(cx, event, &mut Scope::empty());
+    });
+    input.changed(&actions)
+}
+
+#[test]
+fn actual_sdk_full_state_same_text_commit_reaches_owner_without_changed_action() {
+    let (mut cx, input, mut workspace, room) = editor("base ");
+    let _surface = focused_surface(&mut cx, &input);
+    let mut transaction = ComposerTransaction::default();
+    transaction.checkpoint(&input, &workspace, Some(room));
+    let committed = workspace.draft().clone();
+    let checkpoint = format!("{:?}", transaction.saved);
+    let preview = full_state_event("base 中文🚀", Some(5..8));
+    assert!(!ComposerTransaction::commits_unchanged_preedit(
+        &input, &preview
+    ));
+    let changed = sdk_full_state_event(&mut cx, &input, &preview)
+        .expect("the actual SDK emits Changed for new preedit text");
+    assert!(input.is_composing());
+    assert_eq!(
+        transaction.edit(&mut cx, &input, &mut workspace, room, changed),
+        ActionResult::Ignored
+    );
+    transaction.checkpoint(&input, &workspace, Some(room));
+    assert_eq!(workspace.draft(), &committed);
+    assert_eq!(format!("{:?}", transaction.saved), checkpoint);
+
+    // Firefox's native commit uses the same text as the last preedit. The
+    // real SDK clears composition but deliberately emits no text-change action.
+    let commit = full_state_event("base 中文🚀", None);
+    let needs_commit = ComposerTransaction::commits_unchanged_preedit(&input, &commit);
+    assert!(needs_commit);
+    assert_eq!(sdk_full_state_event(&mut cx, &input, &commit), None);
+    assert!(!input.is_composing());
+    assert_eq!(workspace.draft(), &committed);
+    assert_eq!(
+        transaction.edit(&mut cx, &input, &mut workspace, room, input.text()),
+        ActionResult::Applied
+    );
+    assert_eq!(workspace.draft().text, "base 中文🚀");
+    assert_eq!(workspace.draft().title, "base 中文🚀");
+    assert_eq!(
+        format!("{:?}", transaction.saved.as_ref().unwrap().1),
+        format!("{:?}", input.save_state())
+    );
+    // A duplicate final full-state packet is neither a commit edge nor Changed.
+    assert!(!ComposerTransaction::commits_unchanged_preedit(
+        &input, &commit
+    ));
+    assert_eq!(sdk_full_state_event(&mut cx, &input, &commit), None);
+    assert!(!ComposerTransaction::commits_unchanged_preedit(
+        &input,
+        &Event::Draw(DrawEvent::default())
+    ));
+}
+
+#[test]
+fn actual_sdk_full_state_cancel_does_not_commit_the_ignored_preview() {
+    let (mut cx, input, mut workspace, room) = editor("retained draft");
+    let _surface = focused_surface(&mut cx, &input);
+    let mut transaction = ComposerTransaction::default();
+    transaction.checkpoint(&input, &workspace, Some(room));
+    let committed = workspace.draft().clone();
+    let checkpoint = format!("{:?}", transaction.saved);
+    let preview = full_state_event("retained draft你好", Some(14..16));
+    let changed = sdk_full_state_event(&mut cx, &input, &preview).unwrap();
+    assert!(input.is_composing());
+    assert_eq!(
+        transaction.edit(&mut cx, &input, &mut workspace, room, changed),
+        ActionResult::Ignored
+    );
+    let cancel = full_state_event("retained draft", None);
+    assert!(!ComposerTransaction::commits_unchanged_preedit(
+        &input, &cancel
+    ));
+    let changed = sdk_full_state_event(&mut cx, &input, &cancel)
+        .expect("cancelling preedit changes the SDK text back to the committed draft");
+    assert!(!input.is_composing());
+    assert_eq!(changed, committed.text);
+    assert_eq!(workspace.draft(), &committed);
+    assert_eq!(format!("{:?}", transaction.saved), checkpoint);
+    assert_eq!(
+        transaction.edit(&mut cx, &input, &mut workspace, room, changed),
+        ActionResult::Applied
+    );
+    assert_eq!(workspace.draft(), &committed);
+}
+
+#[test]
+fn actual_sdk_full_state_commit_retains_the_original_room_guard() {
+    let (mut cx, input, mut workspace, room) = editor("private ");
+    let _surface = focused_surface(&mut cx, &input);
+    let mut transaction = ComposerTransaction::default();
+    transaction.checkpoint(&input, &workspace, Some(room));
+    let preview = full_state_event("private 中文", Some(8..10));
+    let changed = sdk_full_state_event(&mut cx, &input, &preview).unwrap();
+    assert_eq!(
+        transaction.edit(&mut cx, &input, &mut workspace, room, changed),
+        ActionResult::Ignored
+    );
+    let commit = full_state_event("private 中文", None);
+    assert!(ComposerTransaction::commits_unchanged_preedit(
+        &input, &commit
+    ));
+    assert!(workspace.new_draft());
+    let current = workspace.draft().clone();
+    assert_eq!(sdk_full_state_event(&mut cx, &input, &commit), None);
+    assert!(!input.is_composing());
+    assert_eq!(
+        transaction.edit(&mut cx, &input, &mut workspace, room, input.text()),
+        ActionResult::Stale
+    );
+    assert_eq!(workspace.draft(), &current);
+    assert_eq!(workspace.draft().text, "");
 }

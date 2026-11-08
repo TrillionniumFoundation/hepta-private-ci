@@ -205,6 +205,16 @@ def _bindings(
 def has_authority_call(
     code: str, target: str, method: str, fields: AuthorityFields
 ) -> bool:
+    # Alias normalization only introduces the target name. A different plain
+    # identifier absent from the original source cannot appear afterwards.
+    # Keep other spellings on the original path: raw identifiers and qualified
+    # queries can contain an alias that normalization replaces with the target.
+    if (
+        re.fullmatch(r"[A-Za-z_]\w*", method)
+        and method != target
+        and method not in code
+    ):
+        return False
     code = _normalize_aliases(code, target, fields.aliases)
     # The field index is derived from type declarations, including declarations
     # in a parent module. A typed variable/impl must name either the authority

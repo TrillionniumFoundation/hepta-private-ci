@@ -77,6 +77,24 @@ class TypedAuthorityCallTests(unittest.TestCase):
         child = "use parent::Chained; fn f(any_name: &Chained) { any_name.enter(); }"
         self.assertTrue(self.match(child, {"parent": parent, "child": child}))
 
+    def test_imported_alias_can_introduce_a_method_named_like_the_target(self):
+        parent = "use module::Gate as Renamed;"
+        child = "fn f() { Renamed::Renamed(); }"
+        fields = authority_fields({"parent": parent, "child": child}, "Gate")
+        self.assertTrue(has_authority_call(child, "Gate", "Gate", fields))
+
+    def test_imported_alias_can_introduce_a_raw_receiver_method(self):
+        parent = "use module::Gate as Renamed;"
+        child = "fn f(x: &Gate) { x.r#Renamed(); }"
+        fields = authority_fields({"parent": parent, "child": child}, "Gate")
+        self.assertTrue(has_authority_call(child, "Gate", "r#Gate", fields))
+
+    def test_imported_alias_can_introduce_a_raw_associated_method(self):
+        parent = "use module::Gate as Renamed;"
+        child = "fn f() { Renamed::r#Renamed(); }"
+        fields = authority_fields({"parent": parent, "child": child}, "Gate")
+        self.assertTrue(has_authority_call(child, "Gate", "r#Gate", fields))
+
     def test_explicit_unrelated_type_does_not_manufacture_authority(self):
         self.assertFalse(
             self.match("fn f(known: &Gate, other: &Other) { other.enter(); }")
