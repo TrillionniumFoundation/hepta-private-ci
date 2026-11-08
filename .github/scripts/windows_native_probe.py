@@ -10,6 +10,7 @@ import ctypes
 from ctypes import wintypes
 from datetime import datetime, timezone
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -335,11 +336,32 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--expected-head", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--source-root", type=Path)
+    parser.add_argument("--expected-observer-head")
+    parser.add_argument("--original-only", action="store_true")
     args = parser.parse_args()
-    root, output = Path(__file__).resolve().parents[2], args.output.resolve()
+    observer_root = Path(__file__).resolve().parents[2]
+    root = args.source_root.resolve(strict=True) if args.source_root else observer_root
+    output = args.output.resolve()
     if sys.platform != "win32" or not re.fullmatch(r"[0-9a-f]{40}", args.expected_head):
         raise ValueError("requires actual Windows and a full source SHA")
-    if output.is_relative_to(root):
+    observer_head = args.expected_observer_head or args.expected_head
+    if not re.fullmatch(r"[0-9a-f]{40}", observer_head):
+        raise ValueError("requires the full observer source SHA")
+    if args.original_only and (
+        args.source_root is None
+        or args.expected_observer_head is None
+        or any(
+            os.environ.get(key) != args.expected_head
+            for key in ("SOURCE_SHA", "TESTED_SHA")
+        )
+    ):
+        raise ValueError(
+            "original-only requires explicit matching source/observer bindings"
+        )
+    if root != observer_root and not args.original_only:
+        raise ValueError("an independent source checkout requires original-only mode")
+    if output.is_relative_to(root) or output.is_relative_to(observer_root):
         raise ValueError("records must stay outside checkout")
     output.mkdir(parents=True, exist_ok=False)
     started = time.monotonic()
@@ -347,7 +369,11 @@ def main() -> int:
         "schema": "hepta.windows-probe.v1",
         "status": "running",
         "sourceSha": args.expected_head,
+        "testedSha": args.expected_head,
+        "observerSha": observer_head,
+        "originalOnly": args.original_only,
         "originalOperatorScope": "not_run",
+        "owningPackageLint": {"status": "not_run"},
         "fixtureContrasts": "not_run",
         "productionAuthorityGranted": False,
         "finalProductQualification": False,
@@ -358,10 +384,44 @@ def main() -> int:
     write_json(output / "started.json", receipt)
     exit_code = 1
     try:
+        observer_before = source(observer_root)
+        write_json(output / "observer-before.json", observer_before)
+        if observer_before["head"] != observer_head or observer_before["allChanges"]:
+            raise ValueError("observer differs from the requested clean head")
         before = source(root)
         write_json(output / "source-before.json", before)
         if before["head"] != args.expected_head or before["allChanges"]:
             raise ValueError("requested source is not the complete clean checkout")
+        # The original command builder and assessor belong to the tested source,
+        # even when this separately recorded observer schedules the execution.
+        runner_path = root / ".github/scripts/windows_current_ci.py"
+        spec = importlib.util.spec_from_file_location(
+            "tested_windows_current_ci", runner_path
+        )
+        if spec is None or spec.loader is None:
+            raise ValueError("tested source command builder cannot be loaded")
+        native_runner = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(native_runner)
+        write_json(
+            output / "execution-sources.json",
+            {
+                "sourceRoot": str(root),
+                "observerRoot": str(observer_root),
+                "sourceSha": args.expected_head,
+                "testedSha": args.expected_head,
+                "observerSha": observer_head,
+                "files": [
+                    fingerprint(path)
+                    for path in (
+                        Path(__file__),
+                        observer_root / ".github/scripts/windows_current_ci.py",
+                        runner_path,
+                        root / ".github/fixtures/windows-current-ci-scope.json",
+                        root / "scripts/hepta_ci_junit.py",
+                    )
+                ],
+            },
+        )
         compiler = subprocess.check_output(
             ["rustc", "--version", "--verbose"], text=True
         )
@@ -375,12 +435,24 @@ def main() -> int:
         try:
             facts, system = host_facts()
             write_json(output / "host.json", facts)
-            receipt["tokenObservation"] = capture(
-                output, "token-whoami", [str(system / "whoami.exe"), "/all"], cwd=system
+            receipt["fixedBinaryBefore"] = fingerprint(
+                system / "OpenSSH/ssh-keygen.exe"
             )
-            contrasts = fixture_contrasts(output, fixture, system)
-            receipt["fixtureContrasts"] = contrasts
-            write_json(output / "fixture-contrasts.json", contrasts)
+            if args.original_only:
+                receipt["fixtureContrasts"] = {
+                    "status": "not_run",
+                    "reason": "original_native_scope_only",
+                }
+            else:
+                receipt["tokenObservation"] = capture(
+                    output,
+                    "token-whoami",
+                    [str(system / "whoami.exe"), "/all"],
+                    cwd=system,
+                )
+                contrasts = fixture_contrasts(output, fixture, system)
+                receipt["fixtureContrasts"] = contrasts
+                write_json(output / "fixture-contrasts.json", contrasts)
         except Exception as error:
             receipt["fixtureContrasts"] = {
                 "error": f"{type(error).__name__}: {error}",
@@ -449,7 +521,7 @@ def main() -> int:
                 "utf-8", errors="replace"
             )
 
-        results = original.execute_groups(root, output, groups, invoke=invoke)
+        results = native_runner.execute_groups(root, output, groups, invoke=invoke)
         receipt["originalOperatorScope"] = results
         junit = retain_junit(
             root,
@@ -459,18 +531,72 @@ def main() -> int:
             invocation["finishedUnix"],
         )
         write_json(output / "original-junit.json", junit)
+        if args.original_only:
+            lint = {
+                "status": "running",
+                "command": [
+                    "just",
+                    "fix",
+                    "--locked",
+                    "-p",
+                    "codex-hepta-operator-acceptance",
+                    "--",
+                    "-D",
+                    "warnings",
+                ],
+                "startedAt": datetime.now(timezone.utc).isoformat(),
+                "exitCode": None,
+            }
+            receipt["owningPackageLint"] = lint
+            write_json(output / "package-lint-started.json", lint)
+            lint_started = time.monotonic()
+            with (
+                (output / "package-lint.stdout.bin").open("xb") as out,
+                (output / "package-lint.stderr.bin").open("xb") as err,
+            ):
+                process = subprocess.run(
+                    lint["command"],
+                    cwd=root / "codex-rs",
+                    stdout=out,
+                    stderr=err,
+                    check=False,
+                )
+            lint.update(
+                status="completed",
+                exitCode=process.returncode,
+                wallSeconds=time.monotonic() - lint_started,
+                finishedAt=datetime.now(timezone.utc).isoformat(),
+            )
+            write_json(output / "package-lint.json", lint)
+            # A fixer mutation invalidates the candidate binding. Never rerun the
+            # tests on that dirty source or relabel their earlier source SHA.
+            (output / "source-after-lint.diff").write_bytes(
+                subprocess.check_output(
+                    ["git", "--no-pager", "diff", "--binary", "HEAD"], cwd=root
+                )
+            )
         after = source(root)
         write_json(output / "source-after.json", after)
+        observer_after = source(observer_root)
+        write_json(output / "observer-after.json", observer_after)
         intact = (
-            original.valid_source(args.expected_head, before, after)
+            native_runner.valid_source(args.expected_head, before, after)
             and not after["allChanges"]
+            and original.valid_source(observer_head, observer_before, observer_after)
+            and not observer_after["allChanges"]
         )
         receipt.update(sourceUnchanged=intact, originalJunit=junit)
         passed = intact and all(row["passed"] for row in results) and junit["passed"]
         receipt["originalOperatorPassed"] = passed
-        # Contrast exit codes may be the subject of diagnosis; they never rescue
-        # a failed native oracle. Incomplete observation also cannot yield green.
-        exit_code = 0 if passed and receipt["fixtureContrasts"].get("complete") else 1
+        # Contrasts never rescue a failed native oracle. Original-only mode
+        # requires the owning-package strict lint instead of fixture contrasts.
+        auxiliaries_passed = (
+            receipt["owningPackageLint"].get("status") == "completed"
+            and receipt["owningPackageLint"].get("exitCode") == 0
+            if args.original_only
+            else receipt["fixtureContrasts"].get("complete")
+        )
+        exit_code = 0 if passed and auxiliaries_passed else 1
         receipt["status"] = (
             "original_operator_passed_observation_only"
             if exit_code == 0
@@ -486,6 +612,11 @@ def main() -> int:
                 write_json(output / "source-after.json", source(root))
             except Exception as error:
                 receipt["sourceAfterError"] = f"{type(error).__name__}: {error}"
+        if not (output / "observer-after.json").exists():
+            try:
+                write_json(output / "observer-after.json", source(observer_root))
+            except Exception as error:
+                receipt["observerAfterError"] = f"{type(error).__name__}: {error}"
         receipt.update(exitCode=exit_code, wallSeconds=time.monotonic() - started)
         write_json(output / "receipt.json", receipt)
         write_json(

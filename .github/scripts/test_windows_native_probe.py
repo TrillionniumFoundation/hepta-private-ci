@@ -5,6 +5,7 @@ from pathlib import Path
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 import windows_current_ci
 import windows_native_probe as probe
@@ -83,6 +84,57 @@ class ObservationControls(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             probe.write_json(self.path, {"status": "passed"})
         self.assertEqual(json.loads(self.path.read_text()), {"status": "failed"})
+
+    def test_independent_source_requires_original_only_mode(self):
+        argv = [
+            "probe",
+            "--expected-head",
+            "a" * 40,
+            "--expected-observer-head",
+            "b" * 40,
+            "--source-root",
+            str(self.path.parent),
+            "--output",
+            str(self.path.parent / "output"),
+        ]
+        with (
+            mock.patch.object(probe.sys, "argv", argv),
+            mock.patch.object(probe.sys, "platform", "win32"),
+            self.assertRaises(ValueError),
+        ):
+            probe.main()
+        self.assertFalse((self.path.parent / "output").exists())
+
+    def test_original_only_rejects_missing_or_mixed_source_bindings_before_execution(
+        self,
+    ):
+        argv = [
+            "probe",
+            "--original-only",
+            "--expected-head",
+            "a" * 40,
+            "--source-root",
+            str(self.path.parent),
+            "--output",
+            str(self.path.parent / "output"),
+        ]
+        for extra, environment in (
+            ([], {"SOURCE_SHA": "a" * 40, "TESTED_SHA": "a" * 40}),
+            (
+                ["--expected-observer-head", "b" * 40],
+                {"SOURCE_SHA": "a" * 40, "TESTED_SHA": "c" * 40},
+            ),
+            (["--expected-observer-head", "b" * 40], {}),
+        ):
+            with (
+                self.subTest(environment=environment),
+                mock.patch.object(probe.sys, "argv", argv + extra),
+                mock.patch.object(probe.sys, "platform", "win32"),
+                mock.patch.object(probe.os, "environ", environment),
+                self.assertRaises(ValueError),
+            ):
+                probe.main()
+        self.assertFalse((self.path.parent / "output").exists())
 
 
 if __name__ == "__main__":
