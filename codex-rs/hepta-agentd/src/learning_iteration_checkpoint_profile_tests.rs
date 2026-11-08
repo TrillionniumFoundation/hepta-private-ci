@@ -9,6 +9,10 @@ use pretty_assertions::assert_eq;
 
 use super::*;
 
+#[allow(
+    clippy::duplicate_mod,
+    reason = "This test-only module reuses the original fsync CAS fixture without widening its visibility"
+)]
 #[path = "learning_iteration_checkpoint_test_support.rs"]
 mod support;
 use support::Decision;

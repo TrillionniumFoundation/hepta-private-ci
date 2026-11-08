@@ -14,6 +14,10 @@ use super::AgentdGenerationLearningUseReadbackV1;
 use crate::LearningIterationCheckpointErrorV1;
 
 // Exercise the exact production codec without widening its production API.
+#[allow(
+    clippy::duplicate_mod,
+    reason = "This test-only exporter reuses the private production codec without widening its API"
+)]
 #[path = "learning_iteration_checkpoint_codec.rs"]
 mod checkpoint_codec;
 
