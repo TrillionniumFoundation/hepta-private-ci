@@ -3,6 +3,7 @@ use std::os::unix::fs::PermissionsExt;
 
 use std::path::Path;
 use std::path::PathBuf;
+use std::process::Command;
 use std::sync::OnceLock;
 
 #[cfg(windows)]
@@ -44,6 +45,21 @@ pub(crate) fn openssh_keygen() -> &'static Path {
         eprintln!("HEPTA_FIXTURE_OPENSSH_KEYGEN={}", resolved.display());
         resolved
     })
+}
+
+pub(crate) fn openssh_command() -> Command {
+    let command = Command::new(openssh_keygen());
+    #[cfg(windows)]
+    let command = {
+        let mut command = command;
+        command.env(
+            "ProgramData",
+            crate::openssh_windows::program_data_directory()
+                .expect("resolve system ProgramData for OpenSSH fixture"),
+        );
+        command
+    };
+    command
 }
 
 #[cfg(not(windows))]
