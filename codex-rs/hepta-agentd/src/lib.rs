@@ -306,6 +306,10 @@ mod learning_iteration_auth;
 mod learning_iteration_checkpoint;
 mod learning_iteration_ports;
 mod learning_iteration_proposal;
+#[cfg(all(test, unix))]
+mod learning_iteration_research_external;
+#[cfg(all(test, unix))]
+mod learning_iteration_research_external_material;
 mod neuron_cell_evaluation;
 mod neuron_generation;
 #[cfg(unix)]

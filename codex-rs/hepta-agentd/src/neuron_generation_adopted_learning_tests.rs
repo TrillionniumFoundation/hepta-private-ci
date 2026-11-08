@@ -19,6 +19,7 @@ use crate::AgentdGenerationUpdateRuntimeOptionsV1;
 use crate::AgentdGenerationUpdateRuntimeV1;
 use crate::learning_updated_task_operation_id_v1;
 use crate::neuron_generation_current::test_support::Fixture;
+use crate::neuron_generation_runtime::verify_completed_learning_readback_test_bytes;
 use crate::neuron_generation_runtime::verify_learning_use_readback_test_bytes;
 use crate::neuron_generation_update_bootstrap::learning_test_baseline;
 use crate::neuron_generation_update_bootstrap::learning_test_decision;
@@ -411,6 +412,7 @@ async fn updated_candidate_uses_original_actor_and_recovers_without_another_rese
         completed.disposition(),
         LearningIterationDispositionV1::UsedByNextTask
     );
+    verify_completed_learning_readback_test_bytes(&exported, &completed, "adopted_acked")?;
     assert_eq!(
         learning_updated_task_operation_id_v1(&completed)?,
         operation

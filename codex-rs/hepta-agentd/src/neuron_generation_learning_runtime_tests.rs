@@ -22,6 +22,7 @@ use crate::NeuronGenerationLearningReadErrorV1;
 use crate::learning_retained_task_operation_id_v1;
 use crate::neuron_generation_channel_v2;
 use crate::neuron_generation_current::test_support::Fixture;
+use crate::neuron_generation_runtime::verify_completed_learning_readback_test_bytes;
 use crate::neuron_generation_runtime::verify_learning_use_readback_test_bytes;
 use crate::neuron_generation_service::spawn_neuron_generation_service;
 use crate::neuron_generation_update_bootstrap::learning_test_baseline;
@@ -242,7 +243,7 @@ async fn ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution()
         exported
     );
     assert_eq!(f.runtime.handle.step(request).await?, receipt);
-    let mut wrong = intent;
+    let mut wrong = intent.clone();
     wrong.task_digest = f.publication.old_config.task_digest;
     assert!(
         f.runtime
@@ -275,6 +276,18 @@ async fn ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution()
             f.publication.bytes("final-use/authority.claims")?,
         ),
         retained
+    );
+    f.coordinator
+        .record(learning_test_receipt(&f.coordinator, first), 20)?;
+    let completed =
+        LearningIterationCoordinatorV1::from_snapshot(f.coordinator.snapshot().clone())?;
+    verify_completed_learning_readback_test_bytes(&exported, &completed, "retained_acked")?;
+    assert!(
+        f.runtime
+            .handle
+            .read_learning_next_use_readback(&completed, &intent)
+            .await
+            .is_err()
     );
     tasks.shutdown().await;
     Ok(())
