@@ -1,0 +1,141 @@
+{
+  "schema": "hcsn-cuda-campaign-v2-child-output-reconcile-v1",
+  "observed_utc": "2026-11-08T21:19:52.831Z",
+  "evidence_branch": "research/hcsn-desktop-evidence-20261105",
+  "expected_branch_head_before_publication": "04338d5b9af9d35c02d706feaf1da02886f69906",
+  "prior_block_observation": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/observations/20261108T192611Z-campaign-blocked-control-filesystem.json",
+  "research_source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "campaign": {
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "process_status": {
+      "state": "failed",
+      "exit_code": 2,
+      "cancelled": false,
+      "timed_out": false,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "automatic_retry": false,
+      "at_unix_ms": 1794165971849
+    },
+    "stdout_terminal": {
+      "status": "blocked",
+      "reason": "ValueError: runtime control filesystem below 1 GiB reserve: 460763136 bytes free"
+    },
+    "progress": {
+      "updated_utc": "2026-11-08T19:26:11.539132+00:00",
+      "completed_cuda_runs_registered": 92,
+      "requested_cuda_runs": 170,
+      "failed_registered": 0,
+      "unavailable_registered": 0,
+      "global_qualification": "open",
+      "control_filesystem_free_bytes_snapshot": 286027776,
+      "task_volume_free_bytes_snapshot": 86222520320,
+      "full_stage_status_snapshot": "running"
+    },
+    "child_liveness": {
+      "child_pid": 3244204,
+      "child_process_group": 3244204,
+      "observed_utc": "2026-11-08T21:19:52.831Z",
+      "matching_processes_in_process_group": 0,
+      "method": "read-only ps process-group query",
+      "conclusion": "No process in the recorded child process group was present at observation time; this does not establish the child's exit code or successful completion."
+    },
+    "files": {
+      "terminal_json": {
+        "exists": true,
+        "bytes": 15257,
+        "sha256": "8a12d9a595e3d6398c21c17f1921d06e558ed75aa38dcb8562c84be1cfc75fa1"
+      },
+      "progress_json": {
+        "exists": true,
+        "bytes": 15257,
+        "sha256": "8a12d9a595e3d6398c21c17f1921d06e558ed75aa38dcb8562c84be1cfc75fa1"
+      },
+      "terminal_equals_progress_byte_for_byte": true,
+      "full_json": {
+        "exists": false
+      },
+      "full_runtime_manifest_json": {
+        "exists": false
+      },
+      "full_b_audit_json": {
+        "exists": false
+      },
+      "full_runtime_profile_json": {
+        "exists": true,
+        "sha256": "21a9ca457133123d674a41721c3ecb904477efc42953ab51bf03ae66eacbb3e8"
+      },
+      "runs_directories": {
+        "found_within_task_root_max_depth_6": 0
+      },
+      "checkpoint_attempt_index_scan": {
+        "root_max_depth": 4,
+        "matching_checkpoint_or_attempt_index_files_found": 0,
+        "note": "The scan found older envsetup attempt receipts and qualification/hcsn/attempts.py source, but no campaign .runs index."
+      }
+    },
+    "stage_receipt_sha256": {
+      "baseline-strict-tests.json": "02a5d1263744cbae6e2f60b64452b13dc5c1b9bd0353968b62b2d423a68144b8",
+      "candidate-strict-tests.json": "cf42cc90b6dbaf9755c554a118ad1eca38b8fca476515fa44075e43ee66093b0",
+      "original-a-fullshape.json": "3bf0eb469933b80dfc2535882f135091509a600ed383373fad68a4e0eb9a6e98",
+      "original-b-fullshape.json": "30b72b62cbd462109bdd7179fd22ad855f8e537f78799235d7fc1b6e103a11a1",
+      "parity-cpu.json": "191e8d9eafadf7e25500c6ad291cbf1ec8358c62faccb611e478f5d309b779b6",
+      "parity-cuda.json": "12941e9cbb2524686e54241993dca35b3ffab64acdcd88282fac4e305751b0b2",
+      "candidate-fullshape-population_flux.json": "807585f80f04ab933bc599c0c1b87014faaa5dbc29c4fa6cf2317e71eaa21ad0",
+      "candidate-fullshape-population_flux_no_recovery.json": "8a023efca7a6329ec08e25277f4a5e5c46e33edd32559c6b14792a62a4d3effd",
+      "original-mamba2-fullshape.json": "80e4c5619488bae114595ddacba6867ff4b66f9938e1f8f095dc841f6f712a00",
+      "legacy-smoke-separable.json": "baf59095ebba3adb2d45526be7d43cf9a54d6af8c3dbbd45463374590b13a649"
+    }
+  },
+  "runtime_receipts": {
+    "storage_observation_latest": {
+      "observed_utc": "2026-11-06T05:50:58.552901+00:00",
+      "control_filesystem_free_bytes": 30555836416,
+      "data_free_bytes": 22438989824,
+      "current_for_2026_11_08": false,
+      "note": "This is a stale Nov 6 observation and does not reconcile the Nov 8 reserve-gate readings."
+    },
+    "torch_ready": {
+      "exists": true,
+      "state": "ready",
+      "finished_at": "2026-11-06T07:52:35.038411+00:00",
+      "model_computation_performed": false
+    },
+    "mamba_ready": {
+      "exists": true,
+      "state": "imports_ready",
+      "finished_at": "2026-11-06T07:54:47.091033+00:00",
+      "model_computation_performed": false
+    }
+  },
+  "ci": {
+    "exact_source_run_id": 42078258351,
+    "exact_source_job_id": 127424159520,
+    "exact_source_job_conclusion": "success",
+    "exact_source_steps": "10/10 success",
+    "trusted_main_gpu_probe_run_id": 39526325715,
+    "trusted_main_gpu_probe_job_id": 127299267982,
+    "trusted_main_gpu_probe_conclusion": "cancelled"
+  },
+  "qualification": {
+    "full_170_run": "blocked; 92 progress-registered identities, not independently reconciled to weights/checkpoints/attempts/budgets",
+    "b_identity_audit": "open; all 20 B identities remain in denominator",
+    "mamba2_full_matrix": "open; only one-step CUDA probe",
+    "full_shape_parity": "open",
+    "physical_gpu_energy_joules": null,
+    "physical_gpu_energy_status": "previously measured NOT_SUPPORTED; no imputation"
+  },
+  "safety": {
+    "training_started_by_followup": false,
+    "model_budget_retried": false,
+    "model_budget_changed": false,
+    "campaign_files_modified": false,
+    "unrelated_processes_stopped": false,
+    "files_deleted": false,
+    "driver_or_system_services_changed": false,
+    "research_source_branch_modified": false,
+    "pr_4873_modified": false,
+    "credentials_or_signed_urls_included": false
+  }
+}
