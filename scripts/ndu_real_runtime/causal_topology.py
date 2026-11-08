@@ -300,6 +300,7 @@ def _validate(receipt, root, trusted_observer_sha256):
     return {
         "operation": kind,
         "before_graph_sha256": canonical_sha(before),
+        "before_state_sha256": canonical_sha(before_state),
         "after_graph_sha256": canonical_sha(after),
         "state_mode": migration["mode"],
         "cost_inventory": budget,
@@ -373,6 +374,11 @@ def validate_topology_pair(
             and reports[0]["before_graph_sha256"] != reports[1]["before_graph_sha256"]
         ):
             blockers.append("paired arms did not start with the same actual graph")
+        if (
+            not blockers
+            and reports[0]["before_state_sha256"] != reports[1]["before_state_sha256"]
+        ):
+            blockers.append("paired arms did not start with the same actual state")
     except (KeyError, TypeError, ValueError) as error:
         blockers.append(str(error))
     return {
