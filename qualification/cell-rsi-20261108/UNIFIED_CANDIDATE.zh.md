@@ -22,6 +22,18 @@
 
 状态恢复消费的是 host 提供的下一输入。checkpoint 记录 actor proposal，不证明 proposal 已由 host 提交；真实 journal ACK、单调时间预算、冷加载全成本、撤回和 FinalUse 仍由 host owner 执行。它不是跨模型状态迁移器，也不允许把旧 reset 训练权重称为 persistent 训练权重。
 
+## b040 之后的训练结果接缝
+
+独立分支 `engineering/training-result-bridge-858e` 以 `b040333617ed493944ae028bfb502c94d3b10991` 为唯一父版本，在已有 `pipeline.run_training_job` 接入实际参数、训练源码、数据、控制、memory 模式及训练记录/回执 schema、预训练 lineage、started/receipt、部署 profile、权重摘要和原始 meter 的交叉核验。索引中的 job 身份必须与真正执行的参数一致；同权重摘要不能掩盖不同的控制或部署 profile。该接缝不重新反序列化权重；完整张量状态结构仍需由真实 runtime 与已有 state codec 核验。
+
+现有 660 秒 supervisor 上限保持，超过 600 秒的 child fit 配置在启动前拒绝。准入和结果校验的时间进入实际外层观测；60 秒开销保留量不代表已经证明完整实验预算等价。只读恢复必须提供原 admission 摘要；缺少原外层终态、旧 v1 admission、保留错误或未知结果均不能凭可读权重升级为生产完成。
+
+准入成功只返回 `VALIDATED_UNAUTHENTICATED`，`native_owner_authentication` 仍为 `SEPARATE_REQUIRED`，没有产生签名阶段证据、采用决定或新任务消费。此后续只运行显式合成协议控制和独立的只读 CLI；没有启动真实训练、云 provider 或新科学 episode，没有将合成历史 admission 当作旧 pilot 原件。实际 native job 映射、独立评价与 owner 签名接线仍待实现。新的 7 项协议测试已接入该分支的 CI；新 HEAD 的 CI 结论必须由其自己的实际运行给出。
+
+## 旧 b040 原生测试的证据口径
+
+`b040333617ed493944ae028bfb502c94d3b10991` 的原 scoped nextest 执行了 374 项，全部在首轮通过；对应 JUnit 的 skipped 节点为 0。原 nextest 同时另报 736 项 skipped/filtered。该命令使用 `--lib` 和 `-E` 选择范围，因此不是完整 workspace 测试，“JUnit skipped 为 0”也不表示没有过滤项目。这是对旧 b040 证据口径的明确说明；这些旧运行不作为本后续新 HEAD 的验证结果。
+
 ## 六级验收状态
 
 | 门槛 | 本组合增加的具体能力 | 仍需取得的验收证据 |

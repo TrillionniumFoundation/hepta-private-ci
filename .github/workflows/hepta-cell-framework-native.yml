@@ -10,6 +10,7 @@ on:
       - codex/neuron-v13-runtime-20261106-734df8
       - fix/codex-v13-same-model-next-task-20261106
       - research/cell-rsi-p0p2-20261108-858e
+      - engineering/training-result-bridge-858e
   workflow_dispatch:
 
 permissions:
@@ -78,6 +79,11 @@ jobs:
           python scripts/hepta_ci_exec.py --timeout-seconds 300 --minimum-tests 6 \
             --output "$RUNNER_TEMP/cell-runtime-records/state-codec-tests.json" \
             -- python -B -m unittest -v ndu_real_runtime.test_state_codec
+      - name: Check trainer result admission and read-only recovery
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 7 \
+            --output "$RUNNER_TEMP/cell-runtime-records/training-job-result-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_training_job_result
       - name: Retain final source state
         if: always()
         shell: bash

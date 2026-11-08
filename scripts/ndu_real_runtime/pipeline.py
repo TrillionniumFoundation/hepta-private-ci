@@ -15,6 +15,7 @@ from .metering import _usage, atomic_json, canonical_sha, file_sha
 from .study import collect, freeze, now, verify_plan
 from .training import FitConfig
 from .training_grid import fit_grid, model_index
+from .training_job_result import OUTER_SECONDS, admit, validate_output
 
 
 def run_training_job(job, config, log_root):
@@ -34,22 +35,31 @@ def run_training_job(job, config, log_root):
         PYTHONDONTWRITEBYTECODE="1",
     )
     admitted = {
-        "schema": "ndu.real.training-job-admission.v1",
+        "schema": "ndu.real.training-job-admission.v2",
         "original_operation_id": job["job_id"],
         "started_at": started_at,
         "command": command,
         "output": job["output"],
         "retry_of": None,
     }
-    atomic_json(directory / "admission.json", admitted)
+    admission_sha = None
     error, code, stdout, stderr = None, None, b"", b""
     try:
+        admitted = admit(job, config, started_at)
+        admission_sha = atomic_json(directory / "admission.json", admitted)
         if Path(job["output"]).exists():
             raise RuntimeError(
                 "Original training output already exists; never implicitly rerun"
             )
+        remaining = OUTER_SECONDS - (time.perf_counter() - started)
+        if remaining <= 0:
+            raise TimeoutError("Supervisor budget exhausted during admission")
         run = subprocess.run(
-            command, capture_output=True, timeout=660, env=environment, check=False
+            command,
+            capture_output=True,
+            timeout=remaining,
+            env=environment,
+            check=False,
         )
         code, stdout, stderr = run.returncode, run.stdout, run.stderr
     except subprocess.TimeoutExpired as exception:
@@ -63,57 +73,17 @@ def run_training_job(job, config, log_root):
         }
     (directory / "stdout.log").write_bytes(stdout)
     (directory / "stderr.log").write_bytes(stderr)
-    output = Path(job["output"])
-    receipt_path, weights_path = output / "receipt.json", output / "weights.pt"
-    receipt, receipt_sha, weights_sha, success = None, None, None, False
+    if admission_sha is None:
+        atomic_json(directory / "admission-rejected.json", dict(admitted, error=error))
+    artifact_validation, success = None, False
     try:
-        receipt = (
-            strict_json(receipt_path.read_bytes()) if receipt_path.exists() else None
-        )
-        receipt_sha = file_sha(receipt_path) if receipt_path.exists() else None
-        weights_sha = file_sha(weights_path) if weights_path.exists() else None
-        expected_stage = (
-            "bootstrap"
-            if "--bootstrap" in command
-            else "content"
-            if "--content-only" in command
-            else "fit"
-        )
-        expected_status = {
-            "bootstrap": "BOOTSTRAP_READY_NOT_A_FIT",
-            "content": "CONTENT_PRETRAINED",
-            "fit": "FITTED_NOT_ADOPTED",
-        }[expected_stage]
-        expected_seed = int(command[command.index("--seed") + 1])
-        expected_core = command[command.index("--core") + 1]
-        expected_records = (
-            command[command.index("--expected-records-sha256") + 1]
-            if "--expected-records-sha256" in command
-            else None
-        )
-        success = bool(
-            code == 0
-            and receipt is not None
-            and receipt.get("status") == expected_status
-            and receipt.get("stage") == expected_stage
-            and receipt.get("run_id") == job["job_id"]
-            and receipt.get("seed") == expected_seed
-            and receipt.get("core") == expected_core
-            and (
-                expected_records is None
-                or receipt.get("records", {}).get("sha256") == expected_records
+        if code == 0 and error is None:
+            artifact_validation = validate_output(
+                admitted,
+                exit_code=code,
+                supervisor_wall_seconds=time.perf_counter() - started,
             )
-            and weights_sha is not None
-            and weights_sha == receipt.get("weights_sha256")
-        )
-        if success:
-            success = file_sha(output / "deployment-profile.json") == receipt.get(
-                "deployment_profile_sha256"
-            )
-        if code == 0 and not success:
-            raise ValueError(
-                "Child output did not bind its expected original training job, stage, data and model"
-            )
+            success = True
     except BaseException as exception:
         success = False
         error = {
@@ -121,17 +91,28 @@ def run_training_job(job, config, log_root):
             "message": str(exception),
             "traceback": traceback.format_exc(),
         }
+    wall_seconds = time.perf_counter() - started
+    if success and wall_seconds > OUTER_SECONDS:
+        success = False
+        error = {
+            "type": "TimeoutError",
+            "message": "Supervisor budget exhausted during result verification",
+        }
     result = {
         **admitted,
-        "schema": "ndu.real.training-job-result.v1",
+        "schema": "ndu.real.training-job-result.v2",
+        "admission_sha256": admission_sha,
         "finished_at": now(),
         "exit_code": code,
         "status": "completed" if success else "failed",
         "error": error,
-        "wall_seconds": time.perf_counter() - started,
+        "wall_seconds": wall_seconds,
         "cpu_seconds": _usage() - cpu,
-        "receipt_sha256": receipt_sha,
-        "weights_sha256": weights_sha if success else None,
+        "receipt_sha256": (artifact_validation or {}).get("receipt_sha256"),
+        "weights_sha256": (artifact_validation or {}).get("weights_sha256")
+        if success
+        else None,
+        "artifact_validation": artifact_validation,
         "stdout_sha256": file_sha(directory / "stdout.log"),
         "stderr_sha256": file_sha(directory / "stderr.log"),
         "energy_joules": None,
