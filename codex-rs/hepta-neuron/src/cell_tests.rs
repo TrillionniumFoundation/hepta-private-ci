@@ -429,6 +429,7 @@ impl CellUpdatePortV1 for Learner {
         Ok(CellUpdateOutcomeV1::Candidate(Box::new(
             CellUpdateCandidateV1 {
                 proposal_id: r.proposal_id.clone(),
+                request_digest: r.semantic_digest(),
                 base_bundle_digest: r.base_bundle_digest,
                 dataset_digest: r.dataset_digest,
                 credit_profile_digest: r.credit_profile_digest,

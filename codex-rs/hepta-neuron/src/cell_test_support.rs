@@ -105,6 +105,7 @@ pub(crate) fn definition() -> CellDefinitionV1 {
                 kind: CellCandidateKindV1::Abstain,
             },
         ],
+        trainable_parameters: vec![id("head.weight")],
         max_input_bytes: 64,
         max_queue_age_micros: 1000,
         max_resident_bytes: 16384,

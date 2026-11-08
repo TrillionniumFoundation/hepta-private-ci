@@ -21,6 +21,9 @@ impl CellScopeV1 {
 }
 
 impl CellDefinitionV1 {
+    /// V2 binds the host-registered training allowlist as well as runtime pins.
+    /// A V1 owner/journal requires explicit admission of the new definition;
+    /// missing policy must never be inferred from a caller's update mask.
     pub fn semantic_digest(&self) -> Result<Digest32, CellExecutionError> {
         self.runtime
             .validate_native(&self.native)
@@ -32,13 +35,14 @@ impl CellDefinitionV1 {
             || self.max_resident_bytes == 0
             || self.candidates.is_empty()
             || self.candidates.len() > 256
+            || self.trainable_parameters.len() > MAX_CELL_TRAINABLE_PARAMETERS
         {
             return Err(CellExecutionError::InvalidDefinition);
         }
         let mut ids = BTreeSet::new();
         let mut indices = BTreeSet::new();
         let mut abstain_count = 0;
-        let mut bytes = b"hepta.cell.definition.v1".to_vec();
+        let mut bytes = b"hepta.cell.definition.v2".to_vec();
         for id in [
             &self.cell_id,
             &self.runtime.config_id,
@@ -82,6 +86,15 @@ impl CellDefinitionV1 {
         }
         if abstain_count != 1 {
             return Err(CellExecutionError::InvalidDefinition);
+        }
+        let mut trainable = BTreeSet::new();
+        bytes.extend_from_slice(b"hepta.cell.training-policy.v1");
+        bytes.extend_from_slice(&(self.trainable_parameters.len() as u64).to_be_bytes());
+        for parameter in &self.trainable_parameters {
+            if !trainable.insert(parameter) {
+                return Err(CellExecutionError::InvalidDefinition);
+            }
+            push_id(&mut bytes, parameter);
         }
         Ok(Digest32::of_bytes(&bytes))
     }

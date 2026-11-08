@@ -15,6 +15,8 @@ use crate::SparseCheckpoint;
 use crate::SparseConfig;
 use crate::SparseTick;
 
+pub(crate) const MAX_CELL_TRAINABLE_PARAMETERS: usize = 1024;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CellScopeV1 {
     pub agent_id: StableId,
@@ -53,6 +55,9 @@ pub struct CellDefinitionV1 {
     pub runtime: NeuronRuntimeConfigV1,
     pub native: SparseConfig,
     pub candidates: Vec<CellCandidateV1>,
+    /// Allowlist registered by the trusted host and bound to this definition's
+    /// identity. Empty means inference-only; an update request cannot expand it.
+    pub trainable_parameters: Vec<StableId>,
     pub max_input_bytes: usize,
     pub max_queue_age_micros: u64,
     pub max_resident_bytes: u64,
