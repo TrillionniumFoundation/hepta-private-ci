@@ -1,0 +1,82 @@
+name: Hepta Cell research stage evidence
+
+on:
+  push:
+    branches: [research/cell-research-stages-20261108-304d]
+  pull_request:
+    paths:
+      - scripts/hepta_cell_research_gate.py
+      - scripts/test_hepta_cell_research_gate.py
+      - scripts/hepta_cell_research_foundation.py
+      - scripts/test_hepta_cell_research_successor.py
+      - scripts/hepta_cell_joint_config.py
+      - scripts/test_hepta_cell_joint_config.py
+      - qualification/cell-research-stages-20261108/**
+      - .github/workflows/hepta-cell-research-stages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cell-research-stage-evidence-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evidence-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HEPTA_CI_LANE: source-head
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Verify the actual source and evidence gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          records="$RUNNER_TEMP/cell-research-stages"
+          mkdir -p "$records"
+          git rev-parse HEAD HEAD^{tree} > "$records/source.txt"
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 19 \
+            --output "$records/research-gate.json" \
+            -- python3 -B -m unittest discover -s scripts \
+            -p test_hepta_cell_research_gate.py -v
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 23 \
+            --output "$records/joint-configuration.json" \
+            -- python3 -B -m unittest discover -s scripts \
+            -p test_hepta_cell_joint_config.py -v
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 8 \
+            --output "$records/successor-binding.json" \
+            -- python3 -B -m unittest discover -s scripts \
+            -p test_hepta_cell_research_successor.py -v
+          python3 -B scripts/hepta_cell_research_gate.py \
+            qualification/cell-research-stages-20261108/CURRENT_INPUT.json \
+            --source-root . \
+            --artifact-root qualification/cell-research-stages-20261108 \
+            --output "$records/current-review.json"
+          python3 - "$records/current-review.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          expected = Path("qualification/cell-research-stages-20261108/CURRENT_RESULT.json")
+          if json.loads(Path(sys.argv[1]).read_text()) != json.loads(expected.read_text()):
+              raise SystemExit("Current research review differs from its retained result")
+          PY
+          test -z "$(git status --porcelain)"
+      - name: Retain results for the exact source
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-research-stages-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cell-research-stages
+          if-no-files-found: error
+          retention-days: 14

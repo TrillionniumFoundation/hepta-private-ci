@@ -1,0 +1,67 @@
+{
+  "base": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+  "observed_utc": "2026-11-08T10:17:42.225165+00:00",
+  "queries": {
+    "joint_config_source": {
+      "bytes": 15041,
+      "git_blob": "7e939e1055d97b036209727b78daed582dce3c94",
+      "path": "scripts/hepta_cell_joint_config.py",
+      "sha256": "48f016c10bbf4301f0dc6357f40eca0628bdbad711c36c109cdd0d43c65b3e12"
+    },
+    "repo_agents": {
+      "error": "Get \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/AGENTS.md?ref=6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5\": net/http: TLS handshake timeout\n",
+      "returncode": 1
+    },
+    "source_ci_exec": {
+      "bytes": 12863,
+      "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "path": "scripts/hepta_ci_exec.py",
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+    },
+    "source_commit": {
+      "author": {
+        "date": "2026-11-08T06:18:03Z",
+        "email": "tomasbraynt@gmail.com",
+        "name": "Tomasrgbsf"
+      },
+      "committer": {
+        "date": "2026-11-08T06:18:03Z",
+        "email": "tomasbraynt@gmail.com",
+        "name": "Tomasrgbsf"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+      "message": "ci(cell): run joint configuration integrity regression tests\n\nRun the reviewed 15-test joint configuration gate in the native Cell workflow. This restores the previously reviewed workflow blob without changing runtime source; the complete tree matches the retained 3e76f921 execution tree.",
+      "node_id": "C_kwDOTrgxoNoAKDZkZGZjYTI0MDZlNGQwMTQxNmNkMmY3YWIxNjU1YTBkYzE2ZjhkYTU",
+      "parents": [
+        {
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/bf952042b3d31fc416f14adfea5c38181580498b",
+          "sha": "bf952042b3d31fc416f14adfea5c38181580498b",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/bf952042b3d31fc416f14adfea5c38181580498b"
+        }
+      ],
+      "sha": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+      "tree": {
+        "sha": "491eace326f335498334fb051c9e8f298ca7a04c",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/491eace326f335498334fb051c9e8f298ca7a04c"
+      },
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+      "verification": {
+        "payload": null,
+        "reason": "unsigned",
+        "signature": null,
+        "verified": false,
+        "verified_at": null
+      }
+    },
+    "source_ref": {
+      "node_id": "REF_kwDOTrgxoNoANnJlZnMvaGVhZHMvZml4L2NvZGV4LXYxMy1zYW1lLW1vZGVsLW5leHQtdGFzay0yMDI2MTEwNg",
+      "object": {
+        "sha": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+        "type": "commit",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5"
+      },
+      "ref": "refs/heads/fix/codex-v13-same-model-next-task-20261106",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/fix/codex-v13-same-model-next-task-20261106"
+    }
+  }
+}

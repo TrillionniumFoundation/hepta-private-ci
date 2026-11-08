@@ -78,6 +78,16 @@ jobs:
         shell: bash
         run: ./scripts/check-module-bazel-lock.sh
 
+      - name: Install OpenSSH for the native operator-acceptance test action
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends openssh-client
+          test -x /usr/bin/ssh-keygen
+          dpkg-query -W -f='${Package} ${Version}\n' openssh-client
+          sha256sum /usr/bin/ssh-keygen
+
       - name: bazel test //...
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
@@ -91,6 +101,11 @@ jobs:
             -//third_party/v8:all
             -//codex-rs/v8-poc:v8-poc-unit-tests
           )
+
+          if [[ "${RUNNER_OS}" == "Linux" ]]; then
+            # This target runs in the required native step immediately below.
+            bazel_targets+=(-//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests)
+          fi
 
           bazel_wrapper_args=(
             --print-failed-action-summary
@@ -108,6 +123,25 @@ jobs:
             "${bazel_test_args[@]}" \
             -- \
             "${bazel_targets[@]}"
+
+      - name: Run operator acceptance with native OpenSSH
+        if: ${{ !cancelled() && runner.os == 'Linux' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            -- \
+            test \
+            --strategy=TestRunner=linux-sandbox \
+            --test_tag_filters=-argument-comment-lint \
+            --nocache_test_results \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            --build_metadata=TAG_job=native-openssh-test \
+            -- \
+            //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()

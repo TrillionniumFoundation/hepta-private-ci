@@ -180,14 +180,14 @@ fn staged_genesis_is_synced_but_cannot_admit_resume_or_expose_active_snapshot() 
         admitted_at_micros: 10,
         deadline_micros: 100,
     };
-    let bytes = files.bytes();
+    let bytes = owner.locked_bytes_for_test();
     assert_eq!(
         owner.admit(request.clone(), /*now_micros*/ 10),
         Err(CellGenerationErrorV2::Pending)
     );
     assert_eq!(owner.resume(), Err(CellGenerationErrorV2::Pending));
     assert_eq!(owner.snapshot(), Err(CellGenerationErrorV2::Pending));
-    assert_eq!(files.bytes(), bytes);
+    assert_eq!(owner.locked_bytes_for_test(), bytes);
     *current.0.lock().unwrap() = (Some(binding), None);
     assert_eq!(owner.snapshot(), Ok(&config.initial));
     assert_eq!(owner.admit(request, /*now_micros*/ 10), Ok(None));
@@ -209,7 +209,7 @@ fn retired_guarded_journal_rejects_ordinary_open_and_live_recovery_without_chang
     )
     .unwrap();
     owner.drain().unwrap();
-    let bytes = files.bytes();
+    let bytes = owner.locked_bytes_for_test();
     *current.0.lock().unwrap() = (None, None);
     assert_eq!(owner.resume(), Err(CellGenerationErrorV2::InvalidBinding));
     assert_eq!(owner.recover(), Err(CellGenerationErrorV2::InvalidBinding));

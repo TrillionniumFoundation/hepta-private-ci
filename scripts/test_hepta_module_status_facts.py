@@ -38,7 +38,9 @@ class ModuleStatusFactsTests(unittest.TestCase):
                 by_document[module_id],
                 {
                     "source_root_present": implementation["sourceRootPresent"],
-                    "production_implementation": implementation["productionImplementation"],
+                    "production_implementation": implementation[
+                        "productionImplementation"
+                    ],
                 },
             ]
             self.assertTrue(

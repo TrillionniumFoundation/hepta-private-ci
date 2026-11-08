@@ -82,9 +82,9 @@ fn pending_cancel_reopen_stop_and_ack_gate_complete_task_cost() {
         before.manifest_digest(),
         checked(config().manifest.digest())
     );
-    let bytes = fixture.bytes();
+    let bytes = owner.locked_bytes_for_test();
     assert_eq!(owner.observe_generation(), Ok(before.clone()));
-    assert_eq!(fixture.bytes(), bytes);
+    assert_eq!(owner.locked_bytes_for_test(), bytes);
 
     let req = request(&owner, "uncertain");
     checked(owner.admit(req.clone(), /*now_micros*/ 11));
