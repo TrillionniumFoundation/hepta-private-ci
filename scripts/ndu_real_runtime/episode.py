@@ -7,6 +7,7 @@ runs after the actor exits; no score or future observation is returned to it.
 
 import argparse
 import copy
+from dataclasses import asdict
 import io
 import json
 from pathlib import Path
@@ -20,9 +21,11 @@ from PIL import Image
 
 from ndu_real_materials.common import read_bound, strict_json
 from ndu_real_materials.isolate import run_actor
-from .controllers import ACTIONS
+from .controllers import ACTIONS, ControlPlan
 from .metering import Meter, atomic_json, canonical_sha, file_sha
 from .interval_costs import actor_receipts, close_observer_tail, reconcile
+from .objective import utility_profile
+from .trajectory import V2_SCHEMA
 
 
 def bootstrap(config, module):
@@ -58,6 +61,25 @@ class EpisodeHost:
         self.operation_id = profile["original_operation_id"]
         self.meter = Meter(self.operation_id, journal_path=self.output / "deployment.meter.jsonl")
         self.started = time.perf_counter()
+        control_path = Path(profile["control_plan"])
+        control = strict_json(control_path.read_bytes())
+        self.control = ControlPlan(**control["control"])
+        if (self.control.latency_weight != config["latency_weight"]
+                or control["episode_wall_seconds"] != config["episode_wall_seconds"]
+                or profile.get("control_plan_sha256", file_sha(control_path)) != file_sha(control_path)):
+            raise ValueError("Host budget/objective differs from the frozen control plan")
+        self.utility_profile_sha256 = canonical_sha(utility_profile(self.control))
+        self.control_profile_sha256 = canonical_sha(asdict(self.control))
+        self.deployment_profile = Path(profile["weights"]).with_name("deployment-profile.json")
+        if self.deployment_profile.exists():
+            deployment = strict_json(self.deployment_profile.read_bytes())
+            if deployment.get("rubric_sha256") not in {None, config["rubric_sha256"]}:
+                raise ValueError("Training and independent terminal rubric revisions differ")
+        if self.deployment_profile.exists() and profile.get("training_receipt_sha256"):
+            receipt = Path(profile["weights"]).with_name("receipt.json")
+            if (file_sha(receipt) != profile["training_receipt_sha256"]
+                    or strict_json(receipt.read_bytes()).get("deployment_profile_sha256") != file_sha(self.deployment_profile)):
+                raise ValueError("Deployment profile differs from its pinned training receipt")
         with self.meter.stage("sync", "copy exact registered public packet"):
             packet_bytes = read_bound(self.root, case["packet"])
             self.packet = strict_json(packet_bytes)
@@ -121,12 +143,16 @@ class EpisodeHost:
                  "text_committed": self.packet["initial_delivery"]["text"] is not None,
                  "forced_action": forced}
         self.last_send = time.perf_counter()
+        self.last_public = value
         return (json.dumps(value, separators=(",", ":"), allow_nan=False) + "\n").encode()
 
     def callback(self, line):
         value = line if isinstance(line, dict) else strict_json(line.encode() if isinstance(line, str) else line)
         if value.get("schema") == "ndu.real.actor-ready.v1":
-            if self.ready or value["weights_sha256"] != self.profile["model_sha256"]:
+            if (self.ready or value["weights_sha256"] != self.profile["model_sha256"]
+                    or value.get("utility_profile_sha256") != self.utility_profile_sha256
+                    or value.get("control_profile_sha256") != self.control_profile_sha256
+                    or value.get("memory_mode") != self.control.memory_mode):
                 raise ValueError("Invalid actor readiness or actual model pin")
             self.ready = True
             self.ready_receipt = value
@@ -135,10 +161,21 @@ class EpisodeHost:
         if (not self.ready or self.stopped or value.get("schema") != "ndu.real.actor-observation.v1"
                 or value.get("case_id") != self.case["id"] or value.get("step") != len(self.steps)
                 or value.get("weights_sha256") != self.profile["model_sha256"]
+                or value.get("utility_profile_sha256") != self.utility_profile_sha256
+                or value.get("control_profile_sha256") != self.control_profile_sha256
+                or value.get("memory_mode") != self.control.memory_mode
                 or value.get("parameters_unchanged") is not True):
             raise ValueError("Unexpected actor message or model mutation")
         if self.training != ("candidate_features" in value and "candidate_metadata" in value):
             raise ValueError("Deployment/training feature disclosure differs from the locked phase")
+        if self.training:
+            legal = [action for action in ACTIONS
+                if not (action == "READ_ROI" and self.prepared is None)
+                and not (action == "WRITE_TEXT" and self.packet["initial_delivery"]["text"] is not None)
+                and not (action == "RENDER_IMAGE" and (not self.packet["requirements"]["image"]
+                         or self.packet["initial_delivery"]["image"] is not None))]
+            if value.get("legal_actions") != legal or value.get("remaining_seconds") != self.last_public["remaining_seconds"]:
+                raise ValueError("Actor changed public action support or budget")
         action = value["action"]
         if set(action) != {"schema", "action", "arguments"} or action["schema"] != "ndu.real.actor-action.v1":
             raise ValueError("Action is outside the frozen interface")
@@ -203,6 +240,8 @@ class EpisodeHost:
                     "--ocr-library-dir", self.config["ocr_library_dir"]]
         if self.training:
             command += ["--training-exploration"]
+        if self.deployment_profile.exists():
+            command += ["--deployment-profile", str(self.deployment_profile)]
         return command
 
     def run(self):
@@ -210,7 +249,8 @@ class EpisodeHost:
         try:
             with self.meter.stage("sync", "mandatory isolated actor lifetime"):
                 launch = run_actor(self.command(), public_root=self.public, output_root=self.actor_output,
-                    runtime_roots=[*self.config["runtime_roots"], self.profile["weights"], self.profile["control_plan"]],
+                    runtime_roots=[*self.config["runtime_roots"], self.profile["weights"], self.profile["control_plan"],
+                                   *([str(self.deployment_profile)] if self.deployment_profile.exists() else [])],
                     private_roots=[self.root / "private"], input_bytes=b"",
                     timeout_seconds=self.config["episode_wall_seconds"], max_output_bytes=4 * 1024 * 1024,
                     host_callback=self.callback)
@@ -234,6 +274,15 @@ class EpisodeHost:
         atomic_json(self.output / "launch.json", launch)
         atomic_json(self.output / "trajectory.json", {"steps": self.steps})
         result = {"schema": "ndu.real.episode-result.v1", **self.profile,
+            "utility_profile": utility_profile(self.control), "utility_profile_sha256": self.utility_profile_sha256,
+            "control_profile_sha256": self.control_profile_sha256,
+            "memory_mode": self.control.memory_mode, "rubric_sha256": self.config["rubric_sha256"],
+            "external_metric_profile": "ndu.real.observed-quality-minus-wall-cost.v1",
+            "external_metric_formula": "independent_quality - latency_weight * deployment_meter.wall_seconds",
+            "external_metric_latency_weight": self.control.latency_weight,
+            "external_metric_applies_duration_discount": False,
+            "single_episode_certainty_equivalent_observed": False,
+            "recursive_values_are_model_predictions": True,
             "case_id": self.case["id"], "source_group_id": self.case["source_id"],
             "episode_group": self.case["episode_group"], "split": self.case["role"],
             "task_family": self.case["task_family"], "source_sha256": self.source_binding["sha256"],
@@ -300,7 +349,7 @@ class EpisodeHost:
         for index, step in enumerate(self.steps):
             following = self.steps[min(index + 1, len(self.steps) - 1)]
             terminal = step["action"]["action"] == "STOP" or index + 1 == len(self.steps)
-            rows.append({"schema": "ndu.real.training-transition.v1",
+            rows.append({"schema": V2_SCHEMA,
                 "record_id": self.operation_id + f"/transition/{index:02d}", "episode_id": self.case["id"],
                 "source_group": self.case["source_id"], "split": "train", "origin_run_id": self.operation_id,
                 "candidate_features": step["candidate_features"],
@@ -313,8 +362,14 @@ class EpisodeHost:
                 "action": step["action"]["action"], "before_score": scores[index]["quality"],
                 "after_score": scores[index+1]["quality"], "duration_seconds": step["observed_action_seconds"],
                 "execution_status": "completed", "behavior_controller": "predeclared_exploration",
+                "episode_step": index, "previous_record_sha256": None if not rows else rows[-1]["record_sha256"],
+                "remaining_seconds": step["remaining_seconds"], "legal_actions": step["legal_actions"],
+                "memory_mode": self.control.memory_mode, "utility_profile_sha256": self.utility_profile_sha256,
+                "behavior_control_profile_sha256": self.control_profile_sha256,
+                "rubric_sha256": self.config["rubric_sha256"],
                 "terminal_reason": "actor_stop" if step["action"]["action"] == "STOP" else "budget_stop" if terminal else None,
                 "behavior_weights_sha256": self.profile["model_sha256"]})
+            rows[-1]["record_sha256"] = canonical_sha(rows[-1])
         with (self.output / "training-rows.jsonl").open("x") as stream:
             for row in rows:
                 stream.write(json.dumps(row, separators=(",", ":"), allow_nan=False) + "\n")

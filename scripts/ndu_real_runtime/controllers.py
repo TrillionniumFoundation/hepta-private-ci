@@ -7,12 +7,11 @@ from a fitted model, not a lookup of later evaluation outcomes.
 """
 
 from dataclasses import dataclass
-import hashlib
 import itertools
-import json
 import math
+import random
 
-import numpy as np
+from .objective import MEMORY_MODES, certainty_equivalent, edge_value, forecast_seed
 
 ACTIONS = ("PREPARE_ROI", "READ_ROI", "WRITE_TEXT", "RENDER_IMAGE", "STOP")
 
@@ -26,11 +25,14 @@ class ControlPlan:
     max_forecasts: int = 96
     max_sequences: int = 24
     particles: int = 4
+    memory_mode: str = "reset"
 
     def __post_init__(self):
         values = (self.risk, self.discount_per_second, self.latency_weight)
-        if not all(math.isfinite(x) for x in values) or min(self.risk, self.latency_weight) < 0:
+        if not all(type(x) in (int, float) and math.isfinite(x) for x in values) or min(self.risk, self.latency_weight) < 0:
             raise ValueError("Nonfinite or negative control objective")
+        if self.memory_mode not in MEMORY_MODES:
+            raise ValueError("Unknown episode memory profile")
         if not 0 < self.discount_per_second <= 1:
             raise ValueError("Invalid duration discount")
         for name, lower, upper in (("horizon", 1, 4), ("max_forecasts", 1, 512),
@@ -77,18 +79,6 @@ class Forecast:
     legal_actions: tuple
 
 
-def certainty_equivalent(values, probabilities, risk):
-    x, p = np.asarray(values, dtype=float), np.asarray(probabilities, dtype=float)
-    if (x.ndim != 1 or not len(x) or x.shape != p.shape or not np.isfinite(x).all()
-            or not np.isfinite(p).all() or (p < 0).any()
-            or not math.isclose(float(p.sum()), 1.0, abs_tol=1e-9)):
-        raise ValueError("Invalid predicted lottery")
-    if risk == 0:
-        return float(p @ x)
-    minimum = float(x.min())
-    return minimum - math.log(float(p @ np.exp(-risk * (x - minimum)))) / risk
-
-
 class Controller:
     """Bounded control policy; predictor is a separately pinned neural runtime.
 
@@ -98,7 +88,7 @@ class Controller:
     """
 
     def __init__(self, kind, predictor, plan, *, fixed_schedule=(), seed=0):
-        if kind not in {"light", "ndu", "initial", "tuned_fixed", "voi", "mpc"}:
+        if kind not in {"light", "ndu", "ndu_policy", "initial", "tuned_fixed", "voi", "mpc"}:
             raise ValueError("Unknown deployable controller")
         if set(fixed_schedule) - (set(ACTIONS) - {"STOP"}):
             raise ValueError("Invalid fixed schedule")
@@ -109,14 +99,17 @@ class Controller:
 
     def _forecast(self, state, action):
         key = (state, action)
-        if key in self.cache:
+        # NDU expands each branch under the same counted-work convention as
+        # its differentiable unroll. Equal feature values can have different
+        # input Jacobians and must not alias one autograd graph. Open-loop MPC
+        # retains its explicit shared-prefix cache.
+        if self.kind == "mpc" and key in self.cache:
             return self.cache[key]
         if self.calls >= self.call_limit:
             self.exhausted = True
             return ()
         self.calls += 1
-        material = json.dumps([self.seed, state.features, state.step, action], separators=(",", ":"))
-        seed = int.from_bytes(hashlib.sha256(material.encode()).digest()[:8], "big")
+        seed = forecast_seed(self.seed, state.step, action)
         rows = tuple(self.predictor.forecast(state, action, self.plan.particles, seed))
         if not rows or len(rows) > self.plan.particles:
             raise ValueError("Predictor exceeds the locked particle budget")
@@ -146,8 +139,7 @@ class Controller:
                            state.step + 1, row.legal_actions)
 
     def _edge(self, row, future):
-        return (-self.plan.latency_weight * row.duration_seconds
-                + self.plan.discount_per_second ** row.duration_seconds * future)
+        return edge_value(row.duration_seconds, future, self.plan)
 
     def _ndu_value(self, state, depth):
         best = self._terminal(state)
@@ -187,12 +179,33 @@ class Controller:
             action = self.fixed_schedule[state.step] if state.step < len(self.fixed_schedule) else "STOP"
             return (action if action in state.legal_actions else "STOP"), {
                 "forecast_calls": 0, "planner_budget_exhausted": False}
-        if self.kind == "light":
+        if self.kind in {"light", "ndu_policy"}:
             logits = dict(self.predictor.light_scores(state))
             if set(logits) != set(state.legal_actions) or not all(math.isfinite(x) for x in logits.values()):
                 raise ValueError("Light router produced invalid legal logits")
             action = max(state.legal_actions, key=lambda name: logits[name])
-            return action, {"forecast_calls": 0, "planner_budget_exhausted": False}
+            if self.kind == "ndu_policy":
+                roots = [name for name in state.legal_actions if name != "STOP"]
+                eligible = ["STOP"]
+                if len(roots) <= self.plan.max_forecasts:
+                    for name in roots:
+                        predictions = self._forecast(state, name)
+                        if predictions and all(row.duration_seconds <= state.remaining_seconds for row in predictions):
+                            eligible.append(name)
+                else:
+                    self.exhausted = True
+                maximum = max(logits[name] for name in eligible)
+                weights = [math.exp(logits[name] - maximum) for name in eligible]
+                probabilities = [value / sum(weights) for value in weights]
+                generator = random.Random(forecast_seed(self.seed, state.step, "POLICY"))
+                action = generator.choices(eligible, weights=probabilities, k=1)[0]
+                return action, {"forecast_calls": self.calls, "planner_budget_exhausted": self.exhausted,
+                    "policy_profile": "exact_frozen_recursive_Q_improvement",
+                    "policy_probabilities": dict(zip(eligible, probabilities)),
+                    "selected_action_probability": probabilities[eligible.index(action)],
+                    "prediction_is_external_evidence": False}
+            return action, {"forecast_calls": 0, "planner_budget_exhausted": False,
+                            "policy_profile": "observed_action_values"}
         scores = {"STOP": self._terminal(state)}
         if self.kind == "mpc":
             # Every continuation is considered at depth one before spending the

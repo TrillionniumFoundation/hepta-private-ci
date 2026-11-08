@@ -7,6 +7,7 @@ is required for every episode; hidden evaluator results never enter this stream.
 """
 
 import argparse
+from dataclasses import asdict
 import hashlib
 import json
 from pathlib import Path
@@ -16,8 +17,9 @@ import numpy as np
 import torch
 
 from .controllers import ACTIONS, ControlPlan, Controller, PublicState
-from .metering import Meter, atomic_json, file_sha, transport_receipt
+from .metering import Meter, atomic_json, file_sha, transport_receipt, canonical_sha
 from .neural import FittedPredictor, ReceiptPortfolioModel
+from .objective import utility_profile
 from .ocr import FIELDS, candidate_features, extract_ocr, requested_field
 
 
@@ -28,6 +30,17 @@ def parameter_sha(model):
         digest.update(name.encode())
         digest.update(str((str(tensor.dtype), tuple(tensor.shape))).encode())
         digest.update(tensor.numpy().tobytes())
+    return digest.hexdigest()
+
+
+def memory_sha(memory):
+    if memory is None:
+        return None
+    digest = hashlib.sha256()
+    for layer in memory:
+        for name, value in sorted(layer.items()):
+            digest.update(name.encode())
+            digest.update(value.detach().cpu().contiguous().numpy().tobytes())
     return digest.hexdigest()
 
 
@@ -86,8 +99,9 @@ def run():
     parser.add_argument("--weights", type=Path, required=True)
     parser.add_argument("--expected-weights-sha256", required=True)
     parser.add_argument("--core", choices=("ordinary", "hepta"), required=True)
-    parser.add_argument("--controller", choices=("initial", "light", "ndu", "tuned_fixed", "voi", "mpc"), required=True)
+    parser.add_argument("--controller", choices=("initial", "light", "ndu", "ndu_policy", "tuned_fixed", "voi", "mpc"), required=True)
     parser.add_argument("--control-plan", type=Path, required=True)
+    parser.add_argument("--deployment-profile", type=Path)
     parser.add_argument("--operation-id", required=True)
     parser.add_argument("--tesseract", default="tesseract")
     parser.add_argument("--tessdata-dir")
@@ -97,7 +111,8 @@ def run():
     parser.add_argument("--training-exploration", action="store_true")
     args = parser.parse_args()
     torch.set_num_threads(1)
-    torch.set_num_interop_threads(1)
+    if torch.get_num_interop_threads() != 1:
+        torch.set_num_interop_threads(1)
     torch.manual_seed(0)
     if file_sha(args.weights) != args.expected_weights_sha256:
         raise ValueError("Actor model bytes differ from the host pin")
@@ -105,6 +120,23 @@ def run():
     if set(plan_json) != {"control", "episode_wall_seconds", "fixed_schedule", "seed"}:
         raise ValueError("Unexpected public control-plan fields")
     plan = ControlPlan(**plan_json["control"])
+    profile_digest = canonical_sha(utility_profile(plan))
+    control_digest = canonical_sha(asdict(plan))
+    if args.deployment_profile:
+        deployment = json.loads(args.deployment_profile.read_text())
+        if (set(deployment) != {"schema", "weights_sha256", "core", "memory_mode", "utility_profile_sha256",
+                               "rubric_sha256", "recursive_policy_trained", "control_profile_sha256"}
+                or deployment.get("schema") != "ndu.real.deployment-profile.v1"
+                or deployment.get("weights_sha256") != args.expected_weights_sha256
+                or deployment.get("core") != args.core or deployment.get("memory_mode") != plan.memory_mode
+                or deployment.get("utility_profile_sha256") != profile_digest
+                or deployment.get("control_profile_sha256") != control_digest
+                or args.controller == "ndu_policy" and not deployment.get("recursive_policy_trained")):
+            raise ValueError("Training/deployment model or objective profile differs")
+    elif plan.memory_mode != "reset" or args.controller == "ndu_policy":
+        raise ValueError("Persistent or learned NDU policy requires its training deployment profile")
+    if plan.memory_mode == "persistent" and args.start_step != 0:
+        raise ValueError("Persistent actor cannot resume without its complete episode memory")
     root = args.public_dir.resolve(strict=True)
     packet = json.loads(public_path(root, "case.json").read_text())
     expected = {"schema", "case_id", "prompt", "public_text", "overview", "source_size", "initial_delivery", "requirements", "action_contract"}
@@ -116,13 +148,15 @@ def run():
     if not 0 <= args.start_step < 8 or not 1 <= args.max_decisions <= 8 - args.start_step:
         raise ValueError("Decision window exceeds the frozen episode bound")
     baseline_parameters = parameter_sha(model)
-    cache = {}
+    cache, memory = {}, None
     fixed_schedule = [action for action in plan_json["fixed_schedule"]
                       if not (action == "WRITE_TEXT" and packet["initial_delivery"]["text"] is not None)
                       and not (action == "RENDER_IMAGE" and (not packet["requirements"]["image"]
                                or packet["initial_delivery"]["image"] is not None))]
     print(json.dumps({"schema": "ndu.real.actor-ready.v1", "case_id": packet["case_id"],
                       "weights_sha256": args.expected_weights_sha256,
+                      "utility_profile_sha256": profile_digest, "memory_mode": plan.memory_mode,
+                      "control_profile_sha256": control_digest,
                       "parameters_sha256": baseline_parameters}), flush=True)
     for sequence, line in enumerate(sys.stdin, args.start_step):
         if len(line.encode()) > 131072 or sequence >= args.start_step + args.max_decisions:
@@ -142,6 +176,8 @@ def run():
             print(json.dumps({"schema": "ndu.real.actor-observation.v1", "case_id": packet["case_id"],
                 "step": sequence, "action": {"schema": "ndu.real.actor-action.v1", "action": "STOP", "arguments": {}},
                 "public_features": [], "public_metadata": [], "controller": {"forecast_calls": 0},
+                "utility_profile_sha256": profile_digest, "memory_mode": plan.memory_mode,
+                "control_profile_sha256": control_digest,
                 "meter": finish_meter(meter), "ocr": None, "weights_sha256": args.expected_weights_sha256,
                 "parameters_unchanged": parameter_sha(model) == baseline_parameters}, separators=(",", ":")), flush=True)
             break
@@ -166,7 +202,8 @@ def run():
         state["ocr_line_count"] = line_count
         meta = metadata(packet, state, plan_json["episode_wall_seconds"])
         with torch.inference_mode():
-            public, logits, delta = model.public_state(torch.from_numpy(features), meta, meter=meter)
+            public, logits, delta, memory = model.public_state_step(torch.from_numpy(features), meta,
+                memory=memory, memory_mode=plan.memory_mode, meter=meter)
             selected_index = int(logits.argmax().item())
         legal = tuple(action for action in ACTIONS
                       if not (action == "READ_ROI" and state["prepared_roi"] is None)
@@ -174,7 +211,7 @@ def run():
                       and not (action == "RENDER_IMAGE" and (not packet["requirements"]["image"]
                                or packet["initial_delivery"]["image"] is not None)))
         public_state = PublicState(tuple(float(v) for v in public.tolist()), state["remaining_seconds"], sequence, legal)
-        controller = Controller(args.controller, FittedPredictor(model, meter=meter), plan,
+        controller = Controller(args.controller, FittedPredictor(model, meter=meter, memory_mode=plan.memory_mode), plan,
                                 fixed_schedule=fixed_schedule, seed=plan_json["seed"])
         if state["forced_action"] is not None:
             if not args.training_exploration or state["forced_action"] not in legal:
@@ -190,6 +227,10 @@ def run():
         result = {"schema": "ndu.real.actor-observation.v1", "case_id": packet["case_id"], "step": sequence,
                   "action": output, "public_features": list(public_state.features),
                   "public_metadata": meta, "controller": details, "meter": finish_meter(meter),
+                  "remaining_seconds": state["remaining_seconds"], "legal_actions": list(legal),
+                  "memory_mode": plan.memory_mode, "memory_sha256": memory_sha(memory),
+                  "utility_profile_sha256": profile_digest,
+                  "control_profile_sha256": control_digest,
                   "ocr": ocr_record, "weights_sha256": args.expected_weights_sha256,
                   "parameters_unchanged": parameter_sha(model) == baseline_parameters}
         if args.training_exploration:

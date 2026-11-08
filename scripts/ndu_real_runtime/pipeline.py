@@ -59,6 +59,8 @@ def run_training_job(job, config, log_root):
             and receipt.get("seed") == expected_seed and receipt.get("core") == expected_core
             and (expected_records is None or receipt.get("records", {}).get("sha256") == expected_records)
             and weights_sha is not None and weights_sha == receipt.get("weights_sha256"))
+        if success:
+            success = file_sha(output / "deployment-profile.json") == receipt.get("deployment_profile_sha256")
         if code == 0 and not success:
             raise ValueError("Child output did not bind its expected original training job, stage, data and model")
     except BaseException as exception:
@@ -79,7 +81,9 @@ def run_training_job(job, config, log_root):
 def single_training(config, root, name, extra):
     output = Path(root) / "models" / name
     command = {"executable": config["python"], "args": ["-m", "ndu_real_runtime.training", "--output", str(output),
-        "--seed", "271828", "--core", "ordinary", "--replicate-role", "collector", "--run-id", name, *extra]}
+        "--seed", "271828", "--core", "ordinary", "--replicate-role", "collector", "--run-id", name,
+        "--control-plan", str(Path(root) / "collector-control-plan.json"),
+        "--latency-weight", str(config["latency_weight"]), *extra]}
     job = {"job_id": name, "command": command, "output": str(output)}
     result = run_training_job(job, config, Path(root) / "training-jobs")
     if result["status"] != "completed":
@@ -95,7 +99,8 @@ def run_grid(root, records):
     grid = fit_grid(str(records), file_sha(records), str(root / "models" / "independent"), python=config["python"],
         seeds=design["training_seeds"], head_lrs=training["head_learning_rates"],
         config=FitConfig(content_epochs=training["content_epochs"], fit_epochs=training["fit_epochs"],
-                         content_lr=training["content_learning_rate"], latency_weight=design["controller"]["latency_weight"]))
+                         content_lr=training["content_learning_rate"], latency_weight=design["controller"]["latency_weight"]),
+        control_plan=root / "collector-control-plan.json")
     atomic_json(root / "fit-plan.json", grid)
     atomic_json(root / "model-index.planned.json", model_index(grid))
     results = {}

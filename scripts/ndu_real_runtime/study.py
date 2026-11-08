@@ -76,6 +76,7 @@ def freeze(config, design_path, output):
     source_files = sorted([*[p for p in (code / "scripts/ndu_real_runtime").glob("*.py")
                             if "test" not in p.stem and p.stem != "pilot_analysis"],
                            *[p for p in (code / "scripts/ndu_real_materials").glob("*.py") if "test" not in p.stem],
+                           code / "scripts/ndu_real_runtime/finite_entropic_golden.json",
                            code / "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py"])
     pins = [{"path": str(path), "sha256": file_sha(path), "bytes": path.stat().st_size} for path in source_files]
     selected_pin = atomic_json(output / "selected-sources.json", selected)
