@@ -272,7 +272,8 @@ pub(crate) async fn load(
                 event:
                     CircuitEventV2::Complete { completion } | CircuitEventV2::Reconcile { completion },
                 ..
-            } = &payload
+            }
+            | CircuitLedgerEventV2::RecoverySettled { completion, .. } = &payload
             {
                 completions.insert(completion.activation_id, completion.clone());
             }

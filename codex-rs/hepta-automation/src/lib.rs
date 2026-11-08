@@ -65,6 +65,7 @@ pub use circuit_admission::CircuitComputationAdmissionV2;
 pub use circuit_admission::CircuitComputationClaimV2;
 pub use circuit_budget::CircuitBudgetV2;
 pub use circuit_history::CircuitLeaseClaimV2;
+pub use circuit_history::CircuitRecoverySettlementV2;
 pub use circuit_join::CircuitJoinEnvelopeV2;
 pub use circuit_join::circuit_join_output_schema_v2;
 pub use circuit_profile::BoundedCircuitDefinitionV2;

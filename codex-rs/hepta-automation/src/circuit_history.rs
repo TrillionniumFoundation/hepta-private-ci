@@ -7,6 +7,7 @@ use serde::Serialize;
 
 use crate::BoundedCircuitDefinitionV2;
 use crate::CircuitActivationStatusV2;
+use crate::CircuitCompletionV2;
 use crate::CircuitDispatchV2;
 use crate::CircuitEventV2;
 use crate::CircuitRunV2;
@@ -82,6 +83,13 @@ pub(crate) enum CircuitLedgerEventV2 {
         activation_id: u64,
         execution_request_digest: Sha256Digest,
     },
+    RecoverySettled {
+        fence: CircuitFenceIdentityV2,
+        expected_revision: u64,
+        now_ms: u64,
+        execution_request_digest: Sha256Digest,
+        completion: CircuitCompletionV2,
+    },
 }
 
 impl CircuitLedgerEventV2 {
@@ -128,7 +136,10 @@ impl CircuitLedgerEventV2 {
                 digest(execution_request_digest)?;
                 let run =
                     previous.ok_or_else(|| invalid("computation claim before run creation"))?;
-                if run.revision != *expected_revision || run.outcome().is_some() {
+                if run.revision != *expected_revision
+                    || run.outcome().is_some()
+                    || run.settlement_fence_revision.is_some()
+                {
                     return Err(TaskFlowError::Conflict(
                         "computation claim revision or terminal state".to_string(),
                     ));
@@ -174,7 +185,10 @@ impl CircuitLedgerEventV2 {
                 lease_duration_ms,
             } => {
                 let run = previous.ok_or_else(|| invalid("circuit claim before creation"))?;
-                if run.revision != *expected_revision || run.outcome().is_some() {
+                if run.revision != *expected_revision
+                    || run.outcome().is_some()
+                    || run.settlement_fence_revision.is_some()
+                {
                     return Err(TaskFlowError::Conflict(
                         "circuit claim revision or terminal state".to_string(),
                     ));
@@ -219,6 +233,77 @@ impl CircuitLedgerEventV2 {
                 }
                 Ok((next, Vec::new()))
             }
+            Self::RecoverySettled {
+                fence,
+                expected_revision,
+                now_ms,
+                execution_request_digest,
+                completion,
+            } => {
+                digest(execution_request_digest)?;
+                let run = previous.ok_or_else(|| invalid("recovery before run creation"))?;
+                if run.revision != *expected_revision || run.outcome().is_some() {
+                    return Err(TaskFlowError::Conflict(
+                        "recovery revision or terminal state".to_string(),
+                    ));
+                }
+                let same_settler =
+                    run.settlement_fence_revision.is_some() && fence.matches(&run.writer);
+                if *now_ms < run.last_observed_ms
+                    || *now_ms < run.writer.expires_at_ms
+                    || (!same_settler
+                        && (fence.generation <= run.writer.generation
+                            || fence.owner_epoch < run.writer.owner_epoch))
+                {
+                    return Err(TaskFlowError::StaleFence);
+                }
+                let activation = run
+                    .activations
+                    .get(&completion.activation_id)
+                    .ok_or_else(|| invalid("unknown recovery computation"))?;
+                if !matches!(
+                    activation.status,
+                    CircuitActivationStatusV2::InFlight | CircuitActivationStatusV2::Indeterminate
+                ) || activation.execution_request_digest.as_ref()
+                    != Some(execution_request_digest)
+                {
+                    return Err(invalid(
+                        "recovery must settle the original claimed computation",
+                    ));
+                }
+                let mut next = run.clone();
+                // This fence owns settlement only, never a renewed execution lease.
+                next.writer = CircuitWriterV2::new(&fence.to_fence(owner)?, *now_ms)?;
+                if !same_settler {
+                    next.settlement_fence_revision = Some(
+                        run.revision
+                            .checked_add(1)
+                            .ok_or_else(|| invalid("recovery revision overflow"))?,
+                    );
+                }
+                for activation in next
+                    .activations
+                    .values_mut()
+                    .filter(|activation| activation.status == CircuitActivationStatusV2::InFlight)
+                {
+                    activation.status = CircuitActivationStatusV2::Indeterminate;
+                }
+                next.stop(
+                    definition,
+                    if *now_ms - run.created_at_ms >= definition.limits.max_elapsed_ms {
+                        CircuitStopReasonV2::Deadline
+                    } else {
+                        CircuitStopReasonV2::Cancelled
+                    },
+                )?;
+                next.reduce(
+                    definition,
+                    &CircuitEventV2::Reconcile {
+                        completion: completion.clone(),
+                    },
+                    *now_ms,
+                )
+            }
         }
     }
 }
@@ -231,4 +316,18 @@ pub struct CircuitLeaseClaimV2 {
     pub expected_revision: u64,
     pub now_ms: u64,
     pub lease_duration_ms: u64,
+}
+
+/// Settle an original claimed computation after its writer lease expires.
+/// The first settlement requires a higher fence; that exact settlement-only
+/// fence can settle further original receipts without acquiring another lease.
+#[derive(Clone, Debug)]
+pub struct CircuitRecoverySettlementV2 {
+    pub run_id: String,
+    pub command_id: String,
+    pub fence: TaskFlowFence,
+    pub expected_revision: u64,
+    pub now_ms: u64,
+    pub execution_request_digest: Sha256Digest,
+    pub completion: CircuitCompletionV2,
 }
