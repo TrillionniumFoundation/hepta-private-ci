@@ -1,0 +1,149 @@
+{
+  "schema": "hcsn-desktop-campaign-v2-progress-observation-v1",
+  "observation": {
+    "source_progress_updated_utc": "2026-11-08T03:43:21.356643+00:00",
+    "source_progress_sha256": "5a8c40a53afd8086d412ff19f1ac2b59e31eba279550360d1dac5babd01e9b35",
+    "source_progress_size_bytes": 14151,
+    "campaign_job_id": "1a1acdd69f2-fc05-5757",
+    "campaign_process_state": "running",
+    "systemd": {
+      "active_state": "active",
+      "sub_state": "running",
+      "result": "success",
+      "exec_main_status": 0
+    },
+    "active_stage": "full",
+    "active_stage_child_state": "running",
+    "progress_run_index_counts": {
+      "completed": 44,
+      "failed": 0,
+      "unavailable": 0,
+      "requested": 170
+    },
+    "stage_child_receipts": [
+      {
+        "name": "baseline-strict-tests",
+        "status": "returned",
+        "exit_code": 0,
+        "result_sha256": "02a5d1263744cbae6e2f60b64452b13dc5c1b9bd0353968b62b2d423a68144b8",
+        "scope": "CPU strict-suite child exit only; detailed count receipt not re-read"
+      },
+      {
+        "name": "candidate-strict-tests",
+        "status": "returned",
+        "exit_code": 0,
+        "result_sha256": "cf42cc90b6dbaf9755c554a118ad1eca38b8fca476515fa44075e43ee66093b0",
+        "scope": "CPU strict-suite child exit only; detailed count receipt not re-read"
+      },
+      {
+        "name": "original-a-fullshape",
+        "status": "returned",
+        "exit_code": 0,
+        "result_sha256": "3bf0eb469933b80dfc2535882f135091509a600ed383373fad68a4e0eb9a6e98"
+      },
+      {
+        "name": "original-b-fullshape",
+        "status": "returned",
+        "exit_code": 1,
+        "result_sha256": "30b72b62cbd462109bdd7179fd22ad855f8e537f78799235d7fc1b6e103a11a1"
+      },
+      {
+        "name": "parity-cpu",
+        "status": "returned",
+        "exit_code": 0,
+        "result_sha256": "191e8d9eafadf7e25500c6ad291cbf1ec8358c62faccb611e478f5d309b779b6",
+        "scope": "child exit only; numerical parity result not re-read"
+      },
+      {
+        "name": "parity-cuda",
+        "status": "returned",
+        "exit_code": 0,
+        "result_sha256": "12941e9cbb2524686e54241993dca35b3ffab64acdcd88282fac4e305751b0b2",
+        "scope": "child exit only; numerical parity result not re-read"
+      },
+      {
+        "name": "candidate-fullshape-population_flux",
+        "status": "returned",
+        "exit_code": 0,
+        "result_sha256": "807585f80f04ab933bc599c0c1b87014faaa5dbc29c4fa6cf2317e71eaa21ad0"
+      },
+      {
+        "name": "candidate-fullshape-population_flux_no_recovery",
+        "status": "returned",
+        "exit_code": 0,
+        "result_sha256": "8a023efca7a6329ec08e25277f4a5e5c46e33edd32559c6b14792a62a4d3effd"
+      },
+      {
+        "name": "original-mamba2-fullshape",
+        "status": "returned",
+        "exit_code": 0,
+        "result_sha256": "80e4c5619488bae114595ddacba6867ff4b66f9938e1f8f095dc841f6f712a00"
+      },
+      {
+        "name": "legacy-smoke-separable",
+        "status": "returned",
+        "exit_code": 0,
+        "result_sha256": "baf59095ebba3adb2d45526be7d43cf9a54d6af8c3dbbd45463374590b13a649",
+        "scope": "diagnostic child only; not a CUDA matrix identity"
+      },
+      {
+        "name": "full",
+        "status": "running"
+      }
+    ],
+    "run_index_semantics": "44 is the progress-reported registered full.runs result-index count. It is not an independent audit of every identity, attempt, checkpoint bytes, weight hash or final summarize_matrix output.",
+    "global_qualification": "open",
+    "identity_level_audit_this_observation": {
+      "status": "not_performed",
+      "reason": "A direct-SSH admitted-capacity refusal occurred before a child read was submitted. No remote child was submitted and no retry was made.",
+      "implications": "No per-identity completion, attempt, checkpoint or weight-hash claims are added by this observation."
+    },
+    "source_binding_review": {
+      "status": "not_reconciled_from_current_desktop_read",
+      "prior_field_observation": "The prior desktop read reported SOURCE.json.base_commit as 28a61d14ea7d4c3b3c515ab57b29c98de22e5673.",
+      "bundle_semantics": "The pinned gated-campaign-v2 README explicitly defines 28a61d14ea7d4c3b3c515ab57b29c98de22e5673 as the original baseline commit and f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b as the execution candidate commit.",
+      "interpretation": "The base_commit field alone does not establish a candidate-source mismatch. The task-root SOURCE.json candidate field and archive-field semantics were not re-read in this observation; no fresh pin-equivalence claim is made."
+    }
+  },
+  "ci": {
+    "exact_source_run_id": 42078258351,
+    "exact_source_job_id": 127424159520,
+    "exact_source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "job_status": "completed",
+    "job_conclusion": "success",
+    "successful_steps": 10,
+    "total_steps": 10,
+    "trusted_main_gpu_probe_run_id": 39526325715,
+    "trusted_main_gpu_probe_job_id": 127299267982,
+    "trusted_main_gpu_probe_status": "completed",
+    "trusted_main_gpu_probe_conclusion": "cancelled",
+    "scope_note": "Exact-source CPU research CI success is not CUDA campaign qualification."
+  },
+  "frozen_pins": {
+    "source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "campaign_archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "verification_note": "Frozen values retained from the user-specified pins and prior evidence; the task-root pin files were not re-read in this observation because desktop direct-SSH capacity was exhausted."
+  },
+  "runtime_ready_receipt_hashes_progress_reported": {
+    "torch_ready": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+    "mamba_ready": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76"
+  },
+  "safety": {
+    "no_second_training_campaign_started": true,
+    "no_model_budget_retried": true,
+    "no_budget_seed_split_or_precision_change": true,
+    "research_source_branch_modified": false,
+    "unrelated_processes_stopped": false,
+    "files_deleted": false,
+    "driver_or_system_service_changed": false,
+    "physical_energy_imputed": false
+  },
+  "previous_observation": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/observations/20261107T221157Z-progress-38-and-ci-status.json",
+  "publication": {
+    "branch": "research/hcsn-desktop-evidence-20261105",
+    "expected_sha_lease_parent": "cf97a54554ea80a02a032e987c800c6c8e0da555",
+    "commit_scope": "New versioned progress and CI observation only; no existing evidence file replaced; no PR body update."
+  }
+}
