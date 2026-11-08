@@ -12,17 +12,22 @@ use sqlx::Transaction;
 use crate::BoundedCircuitDefinitionV2;
 use crate::CircuitCommandReceiptV2;
 use crate::CircuitCommandStatusV2;
+use crate::CircuitEventV2;
 use crate::CircuitRunV2;
 use crate::TaskFlowError;
 use crate::circuit_history::CircuitLedgerEventV2;
 use crate::circuit_profile::hash;
 use crate::circuit_profile::invalid;
 
+const RECOVERY_MAINTENANCE_EVENTS: u64 = 64;
+
 pub(crate) struct CircuitHistoryV2 {
     pub definition: BoundedCircuitDefinitionV2,
     pub run: CircuitRunV2,
     pub commands: BTreeMap<String, Sha256Digest>,
     pub last_digest: Sha256Digest,
+    // Derived from verified history, never a new serialized Run field.
+    recovery_lease_claims: u64,
 }
 
 pub(crate) fn encode<T: Serialize>(value: &T) -> Result<String, TaskFlowError> {
@@ -195,11 +200,12 @@ pub(crate) async fn load(
     }
     let max_events = u64::from(definition.limits.max_events)
         + 3 * u64::from(definition.limits.max_activations)
-        + 64;
+        + RECOVERY_MAINTENANCE_EVENTS;
     let mut run = None;
     let mut commands = BTreeMap::new();
     let mut previous = Sha256Digest::for_bytes(b"hepta.circuit.genesis.v2");
     let mut expected_seq = 0_u64;
+    let mut recovery_lease_claims = 0_u64;
     loop {
         // Bound memory independently of total run history. Keep the same SQLite
         // snapshot while replaying these pages; no observer can splice a tail.
@@ -258,6 +264,11 @@ pub(crate) async fn load(
             if stored_event != digest.as_str() || stored_state != next.state_digest()?.as_str() {
                 return Err(corrupt("circuit event or state digest mismatch"));
             }
+            if expected_seq > u64::from(definition.limits.max_events)
+                && matches!(&payload, CircuitLedgerEventV2::Claimed { .. })
+            {
+                recovery_lease_claims += 1;
+            }
             previous = digest;
             run = Some(next);
             expected_seq += 1;
@@ -283,6 +294,7 @@ pub(crate) async fn load(
         run,
         commands,
         last_digest: previous,
+        recovery_lease_claims,
     }))
 }
 
@@ -311,11 +323,35 @@ pub(crate) async fn persist_transition(
             dispatches: Vec::new(),
         });
     }
-    // Reserve claim/unknown/reconciliation slots for every admitted activation
-    // beyond the normal event horizon, plus a bounded lease-transition allowance.
+    // Live admission alone enforces this gate: existing canonical events must
+    // still replay unchanged. Exact command retries returned above stay valid.
+    // A stopped run is observed through readback; polling/cancelling it again
+    // must not spend the history reserved for original computation settlement.
+    if history.run.stop_reason().is_some()
+        && matches!(
+            event,
+            CircuitLedgerEventV2::Applied {
+                event: CircuitEventV2::Advance { .. } | CircuitEventV2::Cancel,
+                ..
+            }
+        )
+    {
+        return Err(invalid("stopped circuit requires readback or reconciliation"));
+    }
+    // Beyond the normal horizon, each activation needs at most a first claim,
+    // an unknown marker, and a terminal receipt. Of the 64 maintenance slots,
+    // retain one for the first stop and allow at most 63 lease transitions.
+    // Counting only these transitions prevents renewals from stealing the
+    // pending receipts' slots, including after a process restart.
+    if history.run.revision >= u64::from(history.definition.limits.max_events)
+        && matches!(event, CircuitLedgerEventV2::Claimed { .. })
+        && history.recovery_lease_claims >= RECOVERY_MAINTENANCE_EVENTS - 1
+    {
+        return Err(invalid("circuit recovery lease allowance reached"));
+    }
     let maximum = u64::from(history.definition.limits.max_events)
         + 3 * u64::from(history.definition.limits.max_activations)
-        + 64;
+        + RECOVERY_MAINTENANCE_EVENTS;
     if history.run.revision >= maximum {
         return Err(invalid("circuit recovery history bound reached"));
     }
@@ -351,3 +387,7 @@ pub(crate) async fn persist_transition(
         dispatches,
     })
 }
+
+#[cfg(test)]
+#[path = "circuit_recovery_budget_tests.rs"]
+mod tests;
