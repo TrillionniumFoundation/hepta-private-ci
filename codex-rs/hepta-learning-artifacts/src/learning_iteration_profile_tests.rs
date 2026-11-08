@@ -28,7 +28,7 @@ fn frozen_profile_is_required_and_committed_before_any_owner_work() {
     );
     let before = changed.snapshot().clone();
     assert_eq!(
-        changed.record(receipt(&original), 20),
+        changed.record(receipt(&original), /*now_unix_seconds*/ 20),
         Err(LearningIterationError::StalePredecessor)
     );
     assert_eq!(changed.snapshot(), &before);
@@ -44,7 +44,7 @@ fn trainer_and_evaluator_cannot_replace_the_frozen_profile() {
             LearningIterationCoordinatorV1::new(request(), owners()).fixture("freeze");
         for _ in 0..2 {
             coordinator
-                .record(receipt(&coordinator), 20)
+                .record(receipt(&coordinator), /*now_unix_seconds*/ 20)
                 .fixture("source");
         }
         let before_training = coordinator.snapshot().clone();
@@ -59,12 +59,12 @@ fn trainer_and_evaluator_cannot_replace_the_frozen_profile() {
             .fixture("lineage")
             .evaluation_profile = digest("post-training-profile");
         assert_eq!(
-            coordinator.record(drifted, 20),
+            coordinator.record(drifted, /*now_unix_seconds*/ 20),
             Err(LearningIterationError::ContextMismatch)
         );
         assert_eq!(coordinator.snapshot(), &before_training);
         coordinator
-            .record(receipt(&coordinator), 20)
+            .record(receipt(&coordinator), /*now_unix_seconds*/ 20)
             .fixture("training");
 
         let before_evaluation = coordinator.snapshot().clone();
@@ -80,7 +80,7 @@ fn trainer_and_evaluator_cannot_replace_the_frozen_profile() {
         *evaluation_profile = digest("post-training-profile");
         *observed_disposition = disposition;
         assert_eq!(
-            coordinator.record(evaluated, 20),
+            coordinator.record(evaluated, /*now_unix_seconds*/ 20),
             Err(LearningIterationError::ContextMismatch)
         );
         assert_eq!(coordinator.snapshot(), &before_evaluation);
@@ -94,7 +94,7 @@ fn trainer_and_evaluator_cannot_replace_the_frozen_profile() {
             *observed_disposition = disposition;
         }
         coordinator
-            .record(matching, 20)
+            .record(matching, /*now_unix_seconds*/ 20)
             .fixture("original evaluation");
         let recovered =
             LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())
