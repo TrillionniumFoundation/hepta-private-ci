@@ -451,3 +451,121 @@ pub(super) fn reopen_and_reject_restored_contexts(
     )?;
     Ok(())
 }
+
+/// Exercise the new material boundary with the genuine, already authenticated
+/// four-receipt prefix and concrete prepared payload. Original files are moved
+/// aside, never overwritten; every attempted fault is restored before checking
+/// the rejection, and the substituted bytes are retained as research evidence.
+pub(super) fn reject_external_material_faults(
+    ports: &ResearchPorts,
+    snapshot: &LearningIterationSnapshotV1,
+    proposal: &crate::learning_iteration_research_external::ResearchExternalTrainedArtifactProposalV1,
+) -> anyhow::Result<()> {
+    let owner = ports
+        .external_owner
+        .as_ref()
+        .ok_or_else(|| anyhow::anyhow!("research material owner absent"))?;
+    anyhow::ensure!(
+        snapshot.receipts.len() == 4
+            && LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage()
+                == Some(LearningIterationStageV1::Proposal),
+        "real authenticated proposal prefix required"
+    );
+    let before = original_owner_bytes(ports)?;
+    let faults = ports.driver.evidence.join("external-material-faults");
+    fs::create_dir(&faults)?;
+    let mut results = Vec::new();
+    for (case, relative, substitute) in [
+        (
+            "candidate-byte-substitution",
+            "training/worker/artifact.safetensors",
+            true,
+        ),
+        (
+            "missing-actual-training-start",
+            "training-start.json",
+            false,
+        ),
+    ] {
+        let path = ports.driver.output.join(relative);
+        let original = fs::read(&path)?;
+        let original_hash = d(&original);
+        let retained = path.with_file_name(format!(
+            "{}.research-retained-original",
+            path.file_name()
+                .and_then(|name| name.to_str())
+                .ok_or_else(|| anyhow::anyhow!("material filename"))?
+        ));
+        anyhow::ensure!(
+            !retained.exists(),
+            "fault control original already retained"
+        );
+        fs::rename(&path, &retained)?;
+        let attempted = (|| -> anyhow::Result<Option<LearningIterationRuntimeErrorV1>> {
+            if substitute {
+                let mut changed = original.clone();
+                anyhow::ensure!(changed.len() > 4, "actual candidate bytes required");
+                let at = changed.len() - 4;
+                changed[at] ^= 1;
+                persist(&path, &changed)?;
+            }
+            Ok(proposal.commit_for(snapshot, now()?).err())
+        })();
+        // Restore regardless of the owner result. A failed cleanup preserves the
+        // original under its explicit retained name and fails this whole run.
+        let substituted = faults.join(format!("{case}.bin"));
+        let substituted_hash = if path.exists() {
+            fs::rename(&path, &substituted)?;
+            Some(d(&fs::read(&substituted)?).to_string())
+        } else {
+            None
+        };
+        fs::rename(&retained, &path)?;
+        std::fs::File::open(
+            path.parent()
+                .ok_or_else(|| anyhow::anyhow!("material parent"))?,
+        )?
+        .sync_all()?;
+        anyhow::ensure!(
+            fs::read(&path)? == original,
+            "fault control did not restore exact original bytes"
+        );
+        let rejection = attempted?
+            .ok_or_else(|| anyhow::anyhow!("owner accepted external material fault {case}"))?;
+        anyhow::ensure!(
+            matches!(
+                &rejection,
+                LearningIterationRuntimeErrorV1::OwnerUnavailable(
+                    "research-external-trained-artifact-v1"
+                )
+            ),
+            "material fault did not reach the concrete research owner boundary"
+        );
+        anyhow::ensure!(
+            original_owner_bytes(ports)? == before,
+            "material rejection wrote reservation/CURRENT/checkpoint/nonce claims"
+        );
+        // This must reread the restored real materials successfully, rather than
+        // retaining a cached rejection or merely trusting the old payload.
+        owner.prepare(snapshot)?;
+        results.push(
+            json!({"case":case,"rejected":true,"error":rejection.to_string(),
+            "original_path":path,"original_sha256":original_hash.to_string(),
+            "substituted_sha256":substituted_hash,"original_bytes_restored":true,
+            "fresh_prepare_after_restore_succeeded":true}),
+        );
+    }
+    persist(
+        &ports
+            .driver
+            .evidence
+            .join("external-material-rejections.json"),
+        &serde_json::to_vec(
+            &json!({"schema":"hepta.research.external-material-rejections.v1",
+            "operation":snapshot.request.operation_id.to_string(),"original_four_receipt_head":snapshot.head_digest.to_string(),
+            "snapshot_and_prepared_payload_unchanged":true,"results":results,
+            "selection_current_checkpoint_nonce_and_proposal_store_unchanged":true,"qualification":"HOLD_NO_GO"}),
+        )?,
+    )?;
+    Ok(())
+}

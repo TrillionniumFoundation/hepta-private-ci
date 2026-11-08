@@ -225,7 +225,7 @@ impl ArtifactFiles {
             .create_new(true)
             .write(true)
             .open(self.root.join("research-selected.json"))?;
-        file.write_all(&serde_json::to_vec(&signed)?)?;
+        file.write_all(&research_selection_bytes(&signed)?)?;
         file.sync_all()?;
         File::open(&self.root)?.sync_all()?;
         Ok(selection)
@@ -236,11 +236,7 @@ impl ArtifactFiles {
         now: u64,
     ) -> anyhow::Result<AgentdSelectedGenerationV1> {
         let bytes = std::fs::read(self.root.join("research-selected.json"))?;
-        let selected: SignedArtifactSelectionV1 = serde_json::from_slice(&bytes)?;
-        anyhow::ensure!(
-            serde_json::to_vec(&selected)? == bytes,
-            "research selection changed encoding"
-        );
+        let selected = research_selection_from_bytes(&bytes)?;
         let owner = self
             .owner
             .lock()
@@ -453,4 +449,88 @@ fn publish_candidate(
 
 fn id(value: &str) -> anyhow::Result<StableId> {
     Ok(StableId::new(value.to_owned())?)
+}
+
+// The original SignedArtifactSelectionV1 intentionally has no Serde admission.
+// This test-only wire retains every original field, signing preimage and signed
+// bytes. Recovery reconstructs that unverified type and immediately calls the
+// original load_selection verifier; it never signs again or returns admission.
+fn research_selection_bytes(signed: &SignedArtifactSelectionV1) -> anyhow::Result<Vec<u8>> {
+    anyhow::ensure!(
+        signed.artifact_kind == ArtifactKind::Model,
+        "research selected payload must use the original Model kind"
+    );
+    Ok(serde_json::to_vec(&serde_json::json!({
+        "schema":"hepta.research.original-signed-selection.v1",
+        "selection_id":signed.selection_id.to_string(),"artifact_id":signed.artifact_id.to_string(),
+        "registry_id":signed.registry_id.to_string(),"withdrawal_scope_digest":signed.withdrawal_scope_digest.to_string(),
+        "registry_head_digest":signed.registry_head_digest.to_string(),"current_witness_digest":signed.current_witness_digest.to_string(),
+        "current_trust_digest":signed.current_trust_digest.to_string(),"artifact_kind":"model",
+        "artifact_generation":signed.artifact_generation.get(),"predecessor_id":signed.predecessor_id.as_ref().map(ToString::to_string),
+        "content_digest":signed.content_digest.to_string(),"objective_digest":signed.objective_digest.to_string(),
+        "support_digest":signed.support_digest.to_string(),"compatibility_digest":signed.compatibility_digest.to_string(),
+        "encoded_size_bytes":signed.encoded_size_bytes,"selector_id":signed.selector_id.to_string(),
+        "selector_credential_digest":signed.selector_credential_digest.to_string(),"signing_key_digest":signed.signing_key_digest.to_string(),
+        "authority_epoch":signed.authority_epoch,"issued_at":signed.issued_at,"expires_at":signed.expires_at,
+        "signature":signed.signature.as_slice(),"original_signing_bytes":signed.signing_bytes(),
+    }))?)
+}
+
+fn research_selection_from_bytes(bytes: &[u8]) -> anyhow::Result<SignedArtifactSelectionV1> {
+    anyhow::ensure!(bytes.len() <= 16384, "bounded retained research selection");
+    let value: serde_json::Value = serde_json::from_slice(bytes)?;
+    anyhow::ensure!(
+        value.as_object().is_some_and(|object| object.len() == 24)
+            && value["schema"] == "hepta.research.original-signed-selection.v1"
+            && value["artifact_kind"] == "model",
+        "closed research selection encoding"
+    );
+    let text = |field: &str| -> anyhow::Result<&str> {
+        value[field]
+            .as_str()
+            .ok_or_else(|| anyhow::anyhow!("research selection string {field}"))
+    };
+    let number = |field: &str| -> anyhow::Result<u64> {
+        value[field]
+            .as_u64()
+            .ok_or_else(|| anyhow::anyhow!("research selection number {field}"))
+    };
+    let signature: Vec<u8> = serde_json::from_value(value["signature"].clone())?;
+    let signature: [u8; 64] = signature
+        .try_into()
+        .map_err(|_| anyhow::anyhow!("original selection signature length"))?;
+    let selected = SignedArtifactSelectionV1 {
+        selection_id: StableId::new(text("selection_id")?)?,
+        artifact_id: StableId::new(text("artifact_id")?)?,
+        registry_id: StableId::new(text("registry_id")?)?,
+        withdrawal_scope_digest: text("withdrawal_scope_digest")?.parse()?,
+        registry_head_digest: text("registry_head_digest")?.parse()?,
+        current_witness_digest: text("current_witness_digest")?.parse()?,
+        current_trust_digest: text("current_trust_digest")?.parse()?,
+        artifact_kind: ArtifactKind::Model,
+        artifact_generation: Generation::new(number("artifact_generation")?)?,
+        predecessor_id: if value["predecessor_id"].is_null() {
+            None
+        } else {
+            Some(StableId::new(text("predecessor_id")?)?)
+        },
+        content_digest: text("content_digest")?.parse()?,
+        objective_digest: text("objective_digest")?.parse()?,
+        support_digest: text("support_digest")?.parse()?,
+        compatibility_digest: text("compatibility_digest")?.parse()?,
+        encoded_size_bytes: number("encoded_size_bytes")?,
+        selector_id: StableId::new(text("selector_id")?)?,
+        selector_credential_digest: text("selector_credential_digest")?.parse()?,
+        signing_key_digest: text("signing_key_digest")?.parse()?,
+        authority_epoch: number("authority_epoch")?,
+        issued_at: number("issued_at")?,
+        expires_at: number("expires_at")?,
+        signature,
+    };
+    let preimage: Vec<u8> = serde_json::from_value(value["original_signing_bytes"].clone())?;
+    anyhow::ensure!(
+        selected.signing_bytes() == preimage && research_selection_bytes(&selected)? == bytes,
+        "retained selection fields/signature/preimage encoding differ"
+    );
+    Ok(selected)
 }

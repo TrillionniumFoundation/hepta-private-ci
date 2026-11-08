@@ -695,6 +695,8 @@ impl LearningIterationOwnerPortsV1 for ResearchPorts {
             )?;
             let prepared = owner.prepare(snapshot)?;
             adoption::reject_prepared_contexts(self, snapshot, &prepared).map_err(unavailable)?;
+            adoption::reject_external_material_faults(self, snapshot, &prepared)
+                .map_err(unavailable)?;
             Ok(PreparedLearningIterationProposalV1 {
                 iteration_head: snapshot.head_digest,
                 candidate_bundle: candidate.digest().map_err(unavailable)?,

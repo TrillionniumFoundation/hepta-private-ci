@@ -29,6 +29,48 @@ use serde_json::json;
 
 const MAX_FILE: u64 = 16 * 1024 * 1024;
 const MAX_TOTAL: u64 = 64 * 1024 * 1024;
+const ORIGINAL_MODEL_SOURCE_PINS: [(&str, &str); 10] = [
+    (
+        "config/pon/devnet-v1.json",
+        "4491b96ead11a020e8d71f27713368b65e663eef5cfc6fd0800a166b0c2a20d4",
+    ),
+    (
+        "config/pon/ledger-v1.json",
+        "6755e36aab0ab9f4743da331a8dcd3374d657ff80f027ecf28db922e6d5ea39a",
+    ),
+    (
+        "config/pon/model-family-smollm2-135m-v1.json",
+        "0837bbfb31f3f2b9a8731545c9f742aee1ebd32daed392a936a3ec9719537e52",
+    ),
+    (
+        "config/pon/model-family-v1.json",
+        "30b250db074e7fbb5776c1474371258a6110cc1742e0e9970232a799ab790ca1",
+    ),
+    (
+        "config/pon/work-profile-v1.json",
+        "03f7537b2fc3fa0c2f7036dd73d7088ba1ce50eafe6f2c907087d30385320880",
+    ),
+    (
+        "formal/pon-nakamoto-v1/contract_wire.py",
+        "cbe45d72ad20ed5683d50dceaa97b93bc74cdafced7d0896386edf9cbe9f98f6",
+    ),
+    (
+        "formal/pon-nakamoto-v1/llm_adapter_contract.py",
+        "e46311a08584ad7becfc56cd0b699d9bc6921adcfe39319e50aa14faa984ced5",
+    ),
+    (
+        "scripts/llm_neural_read_worker.py",
+        "791fbe67ae7d2b2e0551e5f9f6fd77797ed9f8c210e7ca47f9acb6ac02895769",
+    ),
+    (
+        "scripts/llm_parent_material.py",
+        "5396d72c4730aea2d271b55a8404f6eaba64dc57f91343537710c28f7686b43c",
+    ),
+    (
+        "scripts/llm_runtime_pilot.py",
+        "65ccc6454befd96fa5ce1f5bdde2c56cb6cbb741cf495b8d24a758039f99f755",
+    ),
+];
 
 // Every component is opened relative to a held directory, with NOFOLLOW.
 // There is no canonicalize-then-open race, and a FIFO cannot block a read.
@@ -356,6 +398,7 @@ pub(super) fn freeze(
         "dataset_bytes",
         "model_config",
         "next_prompt",
+        "runtime_scripts",
     ] {
         ensure!(prepared[key] == frozen[key], "prepared/frozen field {key}");
     }
@@ -481,16 +524,59 @@ pub(super) fn freeze(
         !source.is_empty() && source.len() <= 256,
         "source closure bound"
     );
+    let runtime_scripts = frozen["runtime_scripts"]
+        .as_object()
+        .context("actual runtime script paths")?;
+    ensure!(
+        runtime_scripts.len() == 2,
+        "closed worker/helper runtime scripts"
+    );
+    for (role, expected_hash) in [
+        (
+            "worker",
+            "10c09efcb24d65ce850ccbee61f3034262fa026ee5d19adab90bc9eda67049c0",
+        ),
+        (
+            "helper",
+            "185e747bb90e4c793ea9c2bc0ce8606f88780d7154873e153a902f4da4e2ee4e",
+        ),
+    ] {
+        let reference = runtime_scripts
+            .get(role)
+            .context("missing actual runtime script")?;
+        ensure!(
+            reference
+                .as_object()
+                .context("runtime script reference")?
+                .len()
+                == 2
+                && reference["sha256"] == expected_hash
+                && source.get(text(&reference["path"])?) == Some(&reference["sha256"]),
+            "actual worker/helper absent from frozen source closure"
+        );
+        inputs.pinned(reference, MAX_FILE)?;
+    }
     for (path, hash) in source {
         ensure!(
             Digest32::of_bytes(&inputs.read(Path::new(path), MAX_FILE)?) == digest(hash)?,
             "frozen source changed"
         );
     }
-    for (relative, hash) in frozen["model_config"]["source_pins"]
+    let model_sources = frozen["model_config"]["source_pins"]
         .as_object()
-        .context("model source pins")?
-    {
+        .context("model source pins")?;
+    ensure!(
+        model_sources.len() == ORIGINAL_MODEL_SOURCE_PINS.len(),
+        "complete original model source roster"
+    );
+    for (relative, expected_hash) in ORIGINAL_MODEL_SOURCE_PINS {
+        let hash = model_sources
+            .get(relative)
+            .context("missing original model source")?;
+        ensure!(
+            hash == expected_hash,
+            "original fixed model source hash differs"
+        );
         let path = Path::new(text(&frozen["model_config"]["source_dir"])?).join(relative);
         ensure!(
             source.get(path.to_str().context("source pin path")?) == Some(hash),

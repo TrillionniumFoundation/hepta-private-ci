@@ -78,6 +78,12 @@ def main():
         for p in sorted(directory.rglob("*"))
         if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"
     }
+    runtime_scripts = dict(
+        worker=dict(path=str(worker), sha256=WORKER_SHA),
+        helper=dict(path=str(helper_path), sha256=HELPER_SHA),
+    )
+    if profile == "external-trained-artifact-v1":
+        before[str(helper_path)] = sha(helper_path)
     if action == "prepare":
         root.mkdir(mode=0o700, exist_ok=False)
         previous_result = json.loads((previous / "training-result.json").read_bytes())
@@ -125,6 +131,7 @@ def main():
         if profile == "external-trained-artifact-v1":
             frozen["research_profile"] = profile
             frozen["next_request_id"] = config["operation"] + "-next-task"
+            frozen["runtime_scripts"] = runtime_scripts
         frozen_ref = save(root / "frozen.json", frozen)
         assert (
             sha(Path(parent["directory"]) / "artifact.safetensors")
@@ -154,6 +161,7 @@ def main():
         )
         if profile == "external-trained-artifact-v1":
             result["research_profile"] = profile
+            result["runtime_scripts"] = runtime_scripts
     else:
         frozen = json.loads((root / "frozen.json").read_bytes())
         assert (
@@ -163,6 +171,8 @@ def main():
         assert request["frozen_sha256"] == sha(root / "frozen.json")
         assert request["deadline_unix_seconds"] == frozen["deadline_unix_seconds"]
         assert frozen.get("research_profile", "retained-no-update-v1") == profile
+        if profile == "external-trained-artifact-v1":
+            assert frozen["runtime_scripts"] == runtime_scripts
         parent = frozen["parent"]
         assert (
             sha(Path(parent["directory"]) / "artifact.safetensors")
