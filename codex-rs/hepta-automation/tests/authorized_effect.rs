@@ -677,7 +677,7 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
 }
 
 #[tokio::test]
-async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_absent() {
+async fn async_provider_unknown_is_quarantined_and_lookup_not_found_remains_unresolved() {
     let fixture = Fixture::new();
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
     let (authority, signed, _authority_dir) = final_use(expected.clone(), "async-unknown");
@@ -728,7 +728,7 @@ async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_ab
     assert_eq!(pending.len(), 1);
     assert!(matches!(
         driver.lookup(&pending[0]).await,
-        AuthorizedProviderEffectLookup::ProvenAbsent { .. }
+        AuthorizedProviderEffectLookup::Unresolved
     ));
 }
 
