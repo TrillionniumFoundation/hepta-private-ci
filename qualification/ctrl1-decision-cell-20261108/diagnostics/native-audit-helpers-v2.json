@@ -1,0 +1,222 @@
+{
+  "schema": "ctrl1.native-audit-helpers.v2",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "472c825a87220574acc5338afe59558e1ad2038f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/python3",
+        "-c",
+        "import json; from ndu_ctrl1.run import source_manifest; print(json.dumps(source_manifest(), sort_keys=True))"
+      ],
+      "returncode": 0,
+      "stdout": "{\"scripts/ndu_ctrl1/__init__.py\": {\"bytes\": 78, \"sha256\": \"1d30d626478e0655db28f9dbceefb6bfeaa1deaedde86a56218facd341f11b7c\"}, \"scripts/ndu_ctrl1/budget_sensitivity.py\": {\"bytes\": 12054, \"sha256\": \"7868f0da26447e3c1f631a3aeb09cef7b1fdf9cfb3d36847e676046bebca663e\"}, \"scripts/ndu_ctrl1/evaluation.py\": {\"bytes\": 8590, \"sha256\": \"15bdb99af470a20984e37c9a171432a80b2bac7aee563015bdc66d4a38dd6f3e\"}, \"scripts/ndu_ctrl1/learning.py\": {\"bytes\": 22484, \"sha256\": \"695784397aaa7d2cd7a0f3a9c3315d8aca414104448a42120731da2d3519f011\"}, \"scripts/ndu_ctrl1/model.py\": {\"bytes\": 10421, \"sha256\": \"6001a45f067a7f439a8ae930368baa5959ba3bf0f714d5e113a598147187173f\"}, \"scripts/ndu_ctrl1/oracle.py\": {\"bytes\": 4644, \"sha256\": \"0a07c19116253f34fda5cf2c0b2361756bbd424607bf0e2035d5d0de87256382\"}, \"scripts/ndu_ctrl1/policies.py\": {\"bytes\": 10920, \"sha256\": \"3f82b001f42ea528d70e64f1805586a494dd64d564c4a6a722f012e2850587f5\"}, \"scripts/ndu_ctrl1/routing.py\": {\"bytes\": 14426, \"sha256\": \"ad3d41c6f2d14560d5be8d7ee093c26c7d8673bbe66a2ee9fa99f7900f9cfea3\"}, \"scripts/ndu_ctrl1/run.py\": {\"bytes\": 23547, \"sha256\": \"bf220bfdd094613a1cacf32d045b9b29dc150fb3172484ed109b76acbc835933\"}, \"scripts/ndu_ctrl1/sensitivity_run.py\": {\"bytes\": 16318, \"sha256\": \"dfc31f265cf80e03d092d40b17fa27ccb8650ba6967c8bdf01f1d14c39a5a0a5\"}, \"scripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py\": {\"bytes\": 9585, \"sha256\": \"700461978110ac7b78d5ea879a4056a987fabc845ea7dd9aba777a4047710007\"}, \"scripts/ndu_ctrl1/test_ctrl1_evidence.py\": {\"bytes\": 11853, \"sha256\": \"f6eafac5965d920aa706cb3e38f55f7cfd855a09235254b2c1e3f6dca97efb0c\"}, \"scripts/ndu_ctrl1/test_ctrl1_learning.py\": {\"bytes\": 12957, \"sha256\": \"5e73edfaf25ffe1706d21eecece780047c2b8f49487fe0ca5de59629b7c62860\"}, \"scripts/ndu_ctrl1/test_ctrl1_model.py\": {\"bytes\": 8356, \"sha256\": \"d0ab9c3cd6681f7ebcf12690d29e69b08f6c83764bbad512d1db42d6244f0e56\"}, \"scripts/ndu_ctrl1/test_ctrl1_policies.py\": {\"bytes\": 7738, \"sha256\": \"96cda9dc2058b1a69f345b0d90be3596239c622e625ed73116a3215636ea75e4\"}, \"scripts/ndu_ctrl1/test_ctrl1_profiles.py\": {\"bytes\": 3078, \"sha256\": \"02fef20b3412b4ea159fcc0cbca3021cf2875a26fd30c1100b678eb32d3d536a\"}, \"scripts/ndu_ctrl1/test_ctrl1_routing.py\": {\"bytes\": 5543, \"sha256\": \"c1d93ef85192d309f0fa1069eea4d26ef2c74cc3d9864a1a7b76f087610737b3\"}, \"scripts/ndu_ctrl1/verify.py\": {\"bytes\": 31617, \"sha256\": \"a69fd54bf5b95f2c4f205d241c1b38adc1becc965d8fd87c7f213f831b59047e\"}, \"scripts/ndu_real_runtime/finite_entropic_golden.json\": {\"bytes\": 2076, \"sha256\": \"361f37baddd9bbcccbfa16f9b438e14707b22ae7c997863a13b19fe01def02cc\"}, \"scripts/ndu_real_runtime/objective.py\": {\"bytes\": 3377, \"sha256\": \"cb3194011908ac46c20bedb8833e18a606709debbb051291360648ec2b869edd\"}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "returncode": 0,
+      "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/uv",
+        "run",
+        "--locked",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "qualification/ctrl1-decision-cell-20261108/audit_primary.py",
+        "qualification/ctrl1-decision-cell-20261108/audit_cpu.py"
+      ],
+      "returncode": 0,
+      "stdout": "2 files left unchanged\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/uv",
+        "run",
+        "--locked",
+        "--project",
+        "scripts",
+        "ruff",
+        "check",
+        "qualification/ctrl1-decision-cell-20261108/audit_primary.py",
+        "qualification/ctrl1-decision-cell-20261108/audit_cpu.py"
+      ],
+      "returncode": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/python3",
+        "qualification/ctrl1-decision-cell-20261108/audit_primary.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "stdout": "usage: audit_primary.py [-h] [--skip-trajectories] directory\n\nReplay preserved CTRL-1 primary results with the exact frozen implementation.\nUsage: python3 qualification/ctrl1-decision-cell-20261108/audit_primary.py\nRUN_DIR Redirect stdout outside RUN_DIR, whose exact inventory must stay\nunchanged. This independent replay invocation is not external evaluator\nattestation. It does not retrain, tune, change selection rules, or grant\npromotion authority.\n\npositional arguments:\n  directory\n\noptions:\n  -h, --help           show this help message and exit\n  --skip-trajectories  Replay exact rows and development selection only\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/python3",
+        "qualification/ctrl1-decision-cell-20261108/audit_cpu.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "stdout": "usage: audit_cpu.py [-h] [--recompute-results] directory\n\nIndependently reconcile archived CTRL-1 CPU allowance evidence. Run with the\nfrozen experiment sources checked out: python3 qualification/ctrl1-decision-\ncell-20261108/audit_cpu.py RUN_DIRECTORY Add --recompute-results to replay\nevery available policy's exact evaluation. Embedded execution paths are\nprovenance only; reads stay inside the archive. Hashes prove retained-file\nconsistency, not independent execution attestation. This helper does not\ntrain, select checkpoints, or grant promotion authority.\n\npositional arguments:\n  directory\n\noptions:\n  -h, --help           show this help message and exit\n  --recompute-results\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/python3",
+        "-c",
+        "import json; from ndu_ctrl1.run import source_manifest; print(json.dumps(source_manifest(), sort_keys=True))"
+      ],
+      "returncode": 0,
+      "stdout": "{\"scripts/ndu_ctrl1/__init__.py\": {\"bytes\": 78, \"sha256\": \"1d30d626478e0655db28f9dbceefb6bfeaa1deaedde86a56218facd341f11b7c\"}, \"scripts/ndu_ctrl1/budget_sensitivity.py\": {\"bytes\": 12054, \"sha256\": \"7868f0da26447e3c1f631a3aeb09cef7b1fdf9cfb3d36847e676046bebca663e\"}, \"scripts/ndu_ctrl1/evaluation.py\": {\"bytes\": 8590, \"sha256\": \"15bdb99af470a20984e37c9a171432a80b2bac7aee563015bdc66d4a38dd6f3e\"}, \"scripts/ndu_ctrl1/learning.py\": {\"bytes\": 22484, \"sha256\": \"695784397aaa7d2cd7a0f3a9c3315d8aca414104448a42120731da2d3519f011\"}, \"scripts/ndu_ctrl1/model.py\": {\"bytes\": 10421, \"sha256\": \"6001a45f067a7f439a8ae930368baa5959ba3bf0f714d5e113a598147187173f\"}, \"scripts/ndu_ctrl1/oracle.py\": {\"bytes\": 4644, \"sha256\": \"0a07c19116253f34fda5cf2c0b2361756bbd424607bf0e2035d5d0de87256382\"}, \"scripts/ndu_ctrl1/policies.py\": {\"bytes\": 10920, \"sha256\": \"3f82b001f42ea528d70e64f1805586a494dd64d564c4a6a722f012e2850587f5\"}, \"scripts/ndu_ctrl1/routing.py\": {\"bytes\": 14426, \"sha256\": \"ad3d41c6f2d14560d5be8d7ee093c26c7d8673bbe66a2ee9fa99f7900f9cfea3\"}, \"scripts/ndu_ctrl1/run.py\": {\"bytes\": 23547, \"sha256\": \"bf220bfdd094613a1cacf32d045b9b29dc150fb3172484ed109b76acbc835933\"}, \"scripts/ndu_ctrl1/sensitivity_run.py\": {\"bytes\": 16318, \"sha256\": \"dfc31f265cf80e03d092d40b17fa27ccb8650ba6967c8bdf01f1d14c39a5a0a5\"}, \"scripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py\": {\"bytes\": 9585, \"sha256\": \"700461978110ac7b78d5ea879a4056a987fabc845ea7dd9aba777a4047710007\"}, \"scripts/ndu_ctrl1/test_ctrl1_evidence.py\": {\"bytes\": 11853, \"sha256\": \"f6eafac5965d920aa706cb3e38f55f7cfd855a09235254b2c1e3f6dca97efb0c\"}, \"scripts/ndu_ctrl1/test_ctrl1_learning.py\": {\"bytes\": 12957, \"sha256\": \"5e73edfaf25ffe1706d21eecece780047c2b8f49487fe0ca5de59629b7c62860\"}, \"scripts/ndu_ctrl1/test_ctrl1_model.py\": {\"bytes\": 8356, \"sha256\": \"d0ab9c3cd6681f7ebcf12690d29e69b08f6c83764bbad512d1db42d6244f0e56\"}, \"scripts/ndu_ctrl1/test_ctrl1_policies.py\": {\"bytes\": 7738, \"sha256\": \"96cda9dc2058b1a69f345b0d90be3596239c622e625ed73116a3215636ea75e4\"}, \"scripts/ndu_ctrl1/test_ctrl1_profiles.py\": {\"bytes\": 3078, \"sha256\": \"02fef20b3412b4ea159fcc0cbca3021cf2875a26fd30c1100b678eb32d3d536a\"}, \"scripts/ndu_ctrl1/test_ctrl1_routing.py\": {\"bytes\": 5543, \"sha256\": \"c1d93ef85192d309f0fa1069eea4d26ef2c74cc3d9864a1a7b76f087610737b3\"}, \"scripts/ndu_ctrl1/verify.py\": {\"bytes\": 31617, \"sha256\": \"a69fd54bf5b95f2c4f205d241c1b38adc1becc965d8fd87c7f213f831b59047e\"}, \"scripts/ndu_real_runtime/finite_entropic_golden.json\": {\"bytes\": 2076, \"sha256\": \"361f37baddd9bbcccbfa16f9b438e14707b22ae7c997863a13b19fe01def02cc\"}, \"scripts/ndu_real_runtime/objective.py\": {\"bytes\": 3377, \"sha256\": \"cb3194011908ac46c20bedb8833e18a606709debbb051291360648ec2b869edd\"}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--sparse",
+        "--",
+        "qualification/ctrl1-decision-cell-20261108/audit_primary.py",
+        "qualification/ctrl1-decision-cell-20261108/audit_cpu.py"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout": "qualification/ctrl1-decision-cell-20261108/audit_cpu.py\nqualification/ctrl1-decision-cell-20261108/audit_primary.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "commit",
+        "-m",
+        "ctrl1: replay retained policy outcomes and CPU campaign originals"
+      ],
+      "returncode": 0,
+      "stdout": "[research/ctrl1-decision-cell-20261108 368ef32] ctrl1: replay retained policy outcomes and CPU campaign originals\n 2 files changed, 1333 insertions(+)\n create mode 100644 qualification/ctrl1-decision-cell-20261108/audit_cpu.py\n create mode 100644 qualification/ctrl1-decision-cell-20261108/audit_primary.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "368ef32be4388d47f3faddf0ac78806e33d680cd\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "returncode": 0,
+      "stdout": "69a0af67501f43d637e840ddbc6f223f1547f6c9\n",
+      "stderr": ""
+    }
+  ],
+  "pushed": false,
+  "files": [
+    {
+      "path": "qualification/ctrl1-decision-cell-20261108/audit_primary.py",
+      "original_package_sha256": "7bcf15adbaaf267834c8db45be73c8baa7e2442130400da068844a51b289489a",
+      "before_lint_fix_sha256": "c64b4449163cb500b7255039e40ecdeb8c119c704ac58e4017faee71f2b44bd6",
+      "after_sha256": "f052f179fc498d391670c903931cd28224a9c23e2b30db21ce707194906cd7eb",
+      "after_bytes": 14668,
+      "intentional_ast_changes": [],
+      "executable_ast_equal_after_declared_change": true,
+      "docstring_cleandoc_equal": true
+    },
+    {
+      "path": "qualification/ctrl1-decision-cell-20261108/audit_cpu.py",
+      "original_package_sha256": "ffcbb133a291ed6c9bd2ba5a20e647bceeb40c119370f17ab847ea6b764dc945",
+      "before_lint_fix_sha256": "e5d2c477f81cdea60429cee45881e3deafed28a98a39c76e4e69e6600fb4ff3c",
+      "after_sha256": "184c4c368328dc7e7e916f26ccc35bd8cd825f5f4a40e5c31d82eaab6281007b",
+      "after_bytes": 37262,
+      "intentional_ast_changes": [
+        {
+          "kind": "remove_unused_import_alias",
+          "module": "ndu_ctrl1.model",
+          "name": "Profile",
+          "same_module_still_imported": true
+        }
+      ],
+      "executable_ast_equal_after_declared_change": true,
+      "docstring_cleandoc_equal": true
+    }
+  ],
+  "archive_path": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/formatted-audit-helpers-v2.tar.gz",
+  "archive_sha256": "a3c02230d488ed2381a576c9b141c01624f5e0cdc4aee12090ecca0e318d8923",
+  "archive_bytes": 12879,
+  "code_head": "472c825a87220574acc5338afe59558e1ad2038f",
+  "experiment_source_manifest_unchanged": true,
+  "lint_exception_reason": "Per-import E402 only, because standalone scripts bootstrap the local repository before importing ndu_ctrl1.",
+  "status": "succeeded",
+  "head": "368ef32be4388d47f3faddf0ac78806e33d680cd",
+  "tree": "69a0af67501f43d637e840ddbc6f223f1547f6c9"
+}

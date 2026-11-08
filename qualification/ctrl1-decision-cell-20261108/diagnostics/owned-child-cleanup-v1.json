@@ -1,0 +1,26 @@
+{
+  "schema": "ctrl1.native-dependency-recovery.v1",
+  "original_job_id": "1a1bacb065d-12894-1d4f",
+  "cancel_result": {
+    "result": "already_exited",
+    "termination_confirmed": false
+  },
+  "cleanup": [
+    {
+      "pid": 37404,
+      "ppid": 37399,
+      "pgid": 37283,
+      "comm": "uv",
+      "command_sha256": "dfa0cd5024895c72d3ca7fa6fa7dbdff7eefae8ddfa8f3a60222926696aa7a93",
+      "started": "Sun Nov  8 18:54:05 2026",
+      "cwd": [
+        "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo"
+      ],
+      "result": "verified_owned_worker_terminated"
+    }
+  ],
+  "commands": [],
+  "status": "failed",
+  "error_type": "CalledProcessError",
+  "error": "Command '['/bin/ps', '-p', '37399', '-o', 'lstart=']' returned non-zero exit status 1."
+}
