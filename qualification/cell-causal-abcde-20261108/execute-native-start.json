@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1-transfer/evaluate_b.py\",\n      \"execute\",\n      \"--root\",\n      \"/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1\",\n      \"--downloads\",\n      \"/home/qq/cell-causal-cf0-b-train-20261108-v1/artifacts\",\n      \"--prepare-receipt-sha256\",\n      \"7caae960338b444c31c1509ff0151643c905fa8142bf5d44e34a358f43ce68aa\",\n      \"--artifact-manifest-sha256\",\n      \"535894da37d67a7aedbdf29f25c7c230d48e68b0ba105e276f087c6a0a81871d\"\n    ],\n    \"created_unix_ms\": 1794131422411,\n    \"cwd\": \"/home/qq/cell-causal-abcde-20261108-cf0\",\n    \"env_keys\": [\n      \"MKL_NUM_THREADS\",\n      \"OMP_NUM_THREADS\",\n      \"OPENBLAS_NUM_THREADS\",\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1ba90eccb-12894-1ba3\",\n    \"idempotency_key\": \"cell-causal-b-eval-execute-20261108-cf0-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1ba90eccb-12894-1ba3\",\n    \"request_digest\": \"acbb7dbe9bef1d00d8b5791df19e8b3b27042b34ded9aec039200da3d06faead\",\n    \"request_fingerprint\": 12446680252781894912,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ba90eccb-12894-1ba3\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1ba90eccb-12894-1ba3\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.causal-b.retention-diagnostic-attempts.v1",
+  "original_evaluation_job_id": "1a1ba90eccb-12894-1ba3",
+  "episodes_rerun": false,
+  "original_results_changed": false,
+  "attempts": [
+    {
+      "version": 1,
+      "job_id": "1a1baafda8c-12894-1c87",
+      "idempotency_key": "cell-causal-b-retention-readonly-20261108-cf0-v1",
+      "status": {
+        "at_unix_ms": 1794133451590,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 1,
+        "job_id": "1a1baafda8c-12894-1c87",
+        "launch_nonce": "917a6a0bdb37282137a4dcb93bc85824",
+        "log_bytes": {
+          "stderr": {
+            "seen": 143,
+            "stored": 143
+          },
+          "stdout": {
+            "seen": 0,
+            "stored": 0
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "failed",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stderr": "Traceback (most recent call last):\n  File \"<stdin>\", line 21, in <module>\n  File \"<stdin>\", line 21, in <genexpr>\nKeyError: 'evaluator_sha256'\n",
+      "purpose": "Read-only action projection; failed before output directory creation because evaluator_sha256 belongs to compact metadata rather than raw episode result."
+    },
+    {
+      "version": 2,
+      "job_id": "1a1bab2f347-12894-1ca4",
+      "idempotency_key": "cell-causal-b-retention-readonly-20261108-cf0-v2",
+      "status": {
+        "at_unix_ms": 1794133664123,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1bab2f347-12894-1ca4",
+        "launch_nonce": "006ad99e1b488d77375888c74be262af",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1148,
+            "stored": 1148
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stderr": "",
+      "purpose": "Corrected projection; verifies each of 160 original result hashes, common raw fields, and evaluator binding in frozen compact metadata."
+    }
+  ],
+  "archive": {
+    "path": "retention-diagnostic.tar.gz",
+    "bytes": 20624,
+    "sha256": "4b6655e22340385538bf8da91c22c3eafeb197834391e17e5c7c1f438649e909"
+  },
+  "summary": {
+    "path": "RETENTION_ZERO_DIAGNOSTIC.json",
+    "bytes": 9094,
+    "sha256": "c79292f7eb2bd58601d598ea9b41fd9bd6196a29c9626acf9e4cb07f44aecc3c"
+  },
+  "interpretation_limit": "Recorded episode actions establish delivered-output behavior; they do not enumerate all internal execution or tool calls. No private/sealed reference files were read."
+}
