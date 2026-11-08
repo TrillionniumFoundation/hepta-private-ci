@@ -1,0 +1,126 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/control-ci-correction/work",
+      "exit_code": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "."
+      ],
+      "cwd": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/control-ci-correction/work",
+      "exit_code": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "user.name=S1 correction projection",
+        "-c",
+        "user.email=source-projection@localhost",
+        "commit",
+        "-q",
+        "-m",
+        "Pre-correction workflow snapshot"
+      ],
+      "cwd": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/control-ci-correction/work",
+      "exit_code": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/uv",
+        "venv",
+        "--python",
+        "/opt/homebrew/bin/python3",
+        "/Users/qianqi/hepta-s1-mdv-20261108-14afb/control-ci-correction/work/scripts/.venv"
+      ],
+      "cwd": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/control-ci-correction/work",
+      "exit_code": 0,
+      "stderr": "Using CPython 3.14.3 interpreter at: /opt/homebrew/opt/python@3.14/bin/python3.14\nCreating virtual environment at: scripts/.venv\nActivate with: source scripts/.venv/bin/activate\n",
+      "stderr_sha256": "4a5537e5b07eb04a93dc79ed7e3754b1b44b09f2f701e6312adbcd642f65841e",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/uv",
+        "pip",
+        "install",
+        "--python",
+        "/Users/qianqi/hepta-s1-mdv-20261108-14afb/control-ci-correction/work/scripts/.venv/bin/python",
+        "--no-index",
+        "--find-links",
+        "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/dependencies",
+        "--no-deps",
+        "ruff==0.15.13"
+      ],
+      "cwd": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/control-ci-correction/work",
+      "exit_code": 0,
+      "stderr": "Using Python 3.14.3 environment at: scripts/.venv\nResolved 1 package in 0.27ms\nInstalled 1 package in 1ms\n + ruff==0.15.13\n",
+      "stderr_sha256": "7b57d640d9499a5eaa0b3f12d5e1663bbd6d20eda81374dbb0cf6837ff66e9ca",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "cwd": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/control-ci-correction/work/codex-rs",
+      "exit_code": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+      "stdout_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/control-ci-correction/work",
+      "exit_code": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "component_tests_repeated": false,
+  "corrected_workflow_sha256": "4766d3c303b515ea5817e4261d9b4c4573c959088655ff26b1c5b1844738f921",
+  "full_workflow_execution_claimed": false,
+  "native_formatting_changed_yaml": false,
+  "one_line_only": true,
+  "original_workflow_sha256": "fc1f833652f5d9e400501a40bff27f85e92b8e6bff0e2e0d5222ea82dfa4d706",
+  "scaffold_sha256": {
+    "AGENTS.md": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "scripts/format.py": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+    "scripts/just-shell.py": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+    "scripts/pyproject.toml": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0",
+    "scripts/uv.lock": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c"
+  },
+  "schema": "hepta.control-workflow-format.v1",
+  "scope": "Linux static YAML review plus unchanged-byte native just fmt and whitespace check",
+  "state": "PASS"
+}
