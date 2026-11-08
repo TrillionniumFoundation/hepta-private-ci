@@ -1,0 +1,250 @@
+{
+  "schema": "hepta.verify1.decision-gate.patch.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "publication_parent": "0c81508e3cb9ea5c949c12a0c01c61c66e8d4df2",
+  "execution_source_commit": null,
+  "source_commit": null,
+  "publication_status": "unpublished isolated patch; root integrates and publishes",
+  "original_model_source": {
+    "source_commit": null,
+    "capsule_sha256": "a3f87c341f5b0acbd58af4719eda440bed7e6ffd762634601c8732bd81eafed3",
+    "manifest_sha256": "ad3ebffe2c6cf39f4c9158901a2b626d1d20c5c206498f0642a8cf50aea9f02d",
+    "protocol_sha256": "3cc0d85a1bedbcf0985be2cf7893455711a09e87695da93188da524c55852bf8",
+    "evidence_commit": "f25124815a9832af9b00652a4741d794a744df06",
+    "evidence_commit_is_execution_source": false
+  },
+  "import_stage": {
+    "instruction": "Import only exact capsule entries as a separate mechanical commit; it did not execute the historical run. Frozen phase1 dependencies already match publication_parent byte-for-byte.",
+    "files": [
+      {
+        "path": "experiments/verification_cell_verify1/MODEL_PILOT.md",
+        "sha256": "6b58d43d10a25c23a3372ffa2dab6fda045b8ce24b233844fae08cefe16805ed",
+        "bytes": 10987,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/MODEL_PILOT.md"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/__init__.py",
+        "sha256": "34501e640bd290f92ece01aa58b12eb587ec88589f3c6bd62ebb000704c92913",
+        "bytes": 74,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/__init__.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/model_audit.py",
+        "sha256": "a245eb86f080968fe8a8a5edc117ec3479be85f3eabc70a985723f4d362588df",
+        "bytes": 7273,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/model_audit.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/model_backend.py",
+        "sha256": "426cb259d8cb6bd74840460f281b4b7e238b9be689694290cf585e412136135c",
+        "bytes": 10667,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/model_backend.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/model_heads.py",
+        "sha256": "ee3f872a5d32c7723204f3bee1073b20b7d7e59e6f7775546be637be47c091bf",
+        "bytes": 5464,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/model_heads.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/model_policy.py",
+        "sha256": "7f14595ace200997498e20b020ce36e00d8c5c06585b9acfff85e8673d0a8e21",
+        "bytes": 13828,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/model_policy.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/model_protocol.py",
+        "sha256": "abc186c14d11cffbab2106eac44bd98a277c9900090902df01f80e32c6afc2d4",
+        "bytes": 9495,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/model_protocol.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/model_runner.py",
+        "sha256": "b8b6b915cf985b412ab96e17c1c7ef60067c54fb104ade084fa51755b2301df5",
+        "bytes": 4016,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/model_runner.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/model_summary.py",
+        "sha256": "9731dd77f9d318fac7d1b44f571bd85bf3e33bf6240f898af9757a8001afe386",
+        "bytes": 14360,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/model_summary.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_model_audit.py",
+        "sha256": "060d8e4b1e3a0cf959edc37b0d38c168abec635a021b85db8c280923eb332f52",
+        "bytes": 5444,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/test_model_audit.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_model_backend.py",
+        "sha256": "f1bfe598bc420ba9ca5c5f8a87299ab395466f56d01c702200ad99ca93c3458a",
+        "bytes": 2833,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/test_model_backend.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_model_heads.py",
+        "sha256": "c0e92b3bab6cf65ef198dd20683453997f84c096231818837d4d217d4f292bf2",
+        "bytes": 2748,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/test_model_heads.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_model_policy.py",
+        "sha256": "be685843857b272206f247502037bd3d07b809b4a59af1bd140fd81ccecb5c37",
+        "bytes": 3630,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/test_model_policy.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_model_protocol.py",
+        "sha256": "4b6189082f0894cc9ea55a6507df3f3d6ac1c08781aa240fcebf39da833f6fc6",
+        "bytes": 2118,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/test_model_protocol.py"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_model_runner.py",
+        "sha256": "26ba3dca8e882f277429b2238a97e4d58dc23b4040fcbb102c07e5e2e8d21ff6",
+        "bytes": 3347,
+        "source": "executed capsule",
+        "local_path": "/workspace/scratch/14afb8ae9d10/verify/baseline/experiments/verification_cell_verify1/test_model_runner.py"
+      }
+    ]
+  },
+  "files": [
+    {
+      "repository_path": "experiments/verification_cell_verify1/model_decisions.py",
+      "local_path": "/workspace/scratch/14afb8ae9d10/verify/source/experiments/verification_cell_verify1/model_decisions.py",
+      "baseline_sha256": null,
+      "candidate_sha256": "2c8700c5c9b2012d3cbb979e94ac27d42dad47e9834eaf16587096c1a5897dfb",
+      "operation": "create",
+      "lines": 156
+    },
+    {
+      "repository_path": "experiments/verification_cell_verify1/model_summary.py",
+      "local_path": "/workspace/scratch/14afb8ae9d10/verify/source/experiments/verification_cell_verify1/model_summary.py",
+      "baseline_sha256": "9731dd77f9d318fac7d1b44f571bd85bf3e33bf6240f898af9757a8001afe386",
+      "candidate_sha256": "cfc0315b031235b175f722ef98a3a4fa865c9822facb1da4093fb6222069902b",
+      "operation": "replace",
+      "lines": 177
+    },
+    {
+      "repository_path": "experiments/verification_cell_verify1/test_model_decisions.py",
+      "local_path": "/workspace/scratch/14afb8ae9d10/verify/source/experiments/verification_cell_verify1/test_model_decisions.py",
+      "baseline_sha256": null,
+      "candidate_sha256": "c51f3fa4a28331aac7a3c7c04d7d618f49d6fc855d7d3903278fe920cbd4b41c",
+      "operation": "create",
+      "lines": 231
+    }
+  ],
+  "patch_path": "/workspace/scratch/14afb8ae9d10/verify/changes.patch",
+  "patch_sha256": "e43bda61787b0269ab5223d960d95dead738667486d126f8b0a765a43741cf92",
+  "behavior": [
+    "Recompute plan-bound risk, cost, budget, selection and exact intervention at every reached decision frontier.",
+    "Require the complete planned trajectory roster and derive reached decision keys from recorded effects; no hardcoded trajectory or decision count.",
+    "Reject missing, duplicate, nonfinite, nonnumeric, unplanned or mismatched decisions and checks.",
+    "Keep inference lineage, mandatory host acceptance, source authenticity and scientific benefit as separate gates."
+  ],
+  "legacy_contract": "Exact verify1-mlx-ack-pilot-v1 scope declares intervention step2/budget1 and fixed_check at step3; any unrecognized scope/version fails closed.",
+  "validation": {
+    "working_directory": "/workspace/scratch/14afb8ae9d10/verify/source",
+    "model_tests_normal": {
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "experiments/verification_cell_verify1",
+        "-t",
+        ".",
+        "-p",
+        "test_model_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests": 29
+    },
+    "model_tests_optimized": {
+      "command": [
+        "python",
+        "-B",
+        "-O",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "experiments/verification_cell_verify1",
+        "-t",
+        ".",
+        "-p",
+        "test_model_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests": 29
+    },
+    "recorded_replays": [
+      {
+        "path": "/workspace/scratch/14afb8ae9d10/verify/replay-normal.json",
+        "sha256": "1b551ae47b174f03d57806effd6c09a1780fb9289122bfc97d6e70f0facee0c6",
+        "tests": 11,
+        "optimization": 0,
+        "trajectories": 108,
+        "decisions": 156,
+        "operations": 1966,
+        "originals_unchanged": true
+      },
+      {
+        "path": "/workspace/scratch/14afb8ae9d10/verify/replay-optimized.json",
+        "sha256": "f9c4843d242fadf5b9a1c54704b6c45712ae174e181c598b2801e35837153183",
+        "tests": 11,
+        "optimization": 1,
+        "trajectories": 108,
+        "decisions": 156,
+        "operations": 1966,
+        "originals_unchanged": true
+      }
+    ],
+    "replay_command": [
+      "python",
+      "-B",
+      "-m",
+      "experiments.verification_cell_verify1.test_model_decisions",
+      "--run-dir",
+      "<immutable run-v2>",
+      "--receipt",
+      "<new receipt path>"
+    ],
+    "local_original_run": "/workspace/scratch/771b9cd4d8d5/model-delivery-v2/extracted/run-v2",
+    "native_original_run": "/Users/qianqi/work/verification-cell-verify1-20261108-771b/model-pilot/run-v2",
+    "new_model_calls": 0
+  },
+  "formatting": {
+    "local_ruff": "not installed; python -m ruff returned module not found",
+    "native_just_fmt": "pending root integration; do not rewrite pristine capsule files or execution identity"
+  },
+  "ci": {
+    "workflow": ".github/workflows/hepta-verify1.yml",
+    "observed_at_commit": "0c81508e3cb9ea5c949c12a0c01c61c66e8d4df2",
+    "test_command": "python -B -m unittest discover -s experiments/verification_cell_verify1 -t . -v",
+    "new_tests_discovered": true,
+    "new_workflow_required": false,
+    "push_trigger": "only research/verify1-risk-cell-20261108-771b",
+    "pull_request_trigger": "experiments/verification_cell_verify1/**"
+  },
+  "full_production_or_scientific_qualification": false
+}
