@@ -1,0 +1,194 @@
+{
+  "final_binding": {
+    "independent_checks_rerun_after_followup": false,
+    "receipt_sha256": "ef46abdf5b4c0583672ca718288d659430f131fd383d8e41119b79b1053abfa8",
+    "reviewed_followup_delta": [
+      "derive candidate source lineage only from update events of kind sleep at the candidate step",
+      "require exactly 64 lineage entries"
+    ]
+  },
+  "final_regressions": {
+    "additional_case": "probe with kind=sleep cannot be counted as a training-lineage entry",
+    "normal_log": "tests-normal.log",
+    "optimized_log": "tests-optimized.log",
+    "test_count_per_mode": 27
+  },
+  "independent_corrected_checks": [
+    {
+      "accepted": true,
+      "case": "baseline",
+      "cost_audit": "PARTIAL",
+      "expected_acceptance": true,
+      "kernel_multiplications": 256000,
+      "passed": true,
+      "production_adoption": "NoUpdate",
+      "scientific_qualification": "HOLD",
+      "verified_runs": 1
+    },
+    {
+      "accepted": true,
+      "case": "stationary-baseline",
+      "cost_audit": "PARTIAL",
+      "expected_acceptance": true,
+      "kernel_multiplications": 252672,
+      "passed": true,
+      "production_adoption": "NoUpdate",
+      "scientific_qualification": "HOLD",
+      "verified_runs": 1
+    },
+    {
+      "accepted": false,
+      "case": "boundary_at_end",
+      "error": "ValueError('raw operation roster differs from the frozen plan')",
+      "expected_acceptance": false,
+      "passed": true
+    },
+    {
+      "accepted": false,
+      "case": "omit_rebuilds",
+      "error": "ValueError('raw operation roster differs from the frozen plan')",
+      "expected_acceptance": false,
+      "passed": true
+    },
+    {
+      "accepted": false,
+      "case": "move_B_sleep_to_A1",
+      "error": "ValueError('raw operation roster differs from the frozen plan')",
+      "expected_acceptance": false,
+      "passed": true
+    },
+    {
+      "accepted": false,
+      "case": "swap_rebuild_source_order",
+      "error": "ValueError('raw operation roster differs from the frozen plan')",
+      "expected_acceptance": false,
+      "passed": true
+    },
+    {
+      "accepted": false,
+      "case": "rebuild_after_boundary",
+      "error": "ValueError('raw operation roster differs from the frozen plan')",
+      "expected_acceptance": false,
+      "passed": true
+    },
+    {
+      "accepted": false,
+      "case": "recovery_before_online",
+      "error": "ValueError('raw operation roster differs from the frozen plan')",
+      "expected_acceptance": false,
+      "passed": true
+    },
+    {
+      "accepted": false,
+      "case": "forbidden_candidate_adoption",
+      "error": "ValueError('candidate bytes, receipt and event disagree')",
+      "expected_acceptance": false,
+      "passed": true
+    },
+    {
+      "accepted": false,
+      "case": "remove_forbidden_candidate_manifests",
+      "error": "ValueError('candidate artifact roster differs from the frozen plan')",
+      "expected_acceptance": false,
+      "passed": true
+    },
+    {
+      "accepted": false,
+      "case": "wrong_binary_bytes",
+      "error": "ValueError('native binary bytes differ from frozen manifest')",
+      "expected_acceptance": false,
+      "passed": true
+    }
+  ],
+  "independent_corrected_receipt_sha256": "2ee4aa2259c2323c0c47c008680ad7a9f6db7ef1ba27a6ba7e5ff9e8f32d8cf0",
+  "independent_failed_first_fix": {
+    "candidate_probes": [
+      {
+        "accepted": false,
+        "error": "ValueError('unqualified shared-model adoption')",
+        "mutation": "forbidden_candidate_adoption"
+      },
+      {
+        "accepted": true,
+        "mutation": "remove_forbidden_candidate_manifests",
+        "production_adoption": "NoUpdate",
+        "verified_runs": 1
+      }
+    ],
+    "probes": [
+      {
+        "accepted": true,
+        "kernel_multiplications": 256000,
+        "mutation": "baseline",
+        "scientific_qualification": "HOLD",
+        "underreported": 0,
+        "verified_runs": 1
+      },
+      {
+        "accepted": true,
+        "kernel_multiplications": 229376,
+        "mutation": "boundary_at_end",
+        "scientific_qualification": "HOLD",
+        "underreported": 26624,
+        "verified_runs": 1
+      },
+      {
+        "accepted": true,
+        "kernel_multiplications": 252672,
+        "mutation": "omit_rebuilds",
+        "scientific_qualification": "HOLD",
+        "underreported": 3328,
+        "verified_runs": 1
+      },
+      {
+        "accepted": true,
+        "kernel_multiplications": 247808,
+        "mutation": "move_B_sleep_to_A1",
+        "scientific_qualification": "HOLD",
+        "underreported": 8192,
+        "verified_runs": 1
+      }
+    ],
+    "receipt_sha256": "0b5023517d5cd2f91dc56164a340d1c79d64c891338e961fa40510cd4e53d022",
+    "source_sha256": {
+      "audit_evidence.py": "de850982f6b7cadab0f84e47d4aaf48a54e33b36ba352029f40c6c4d6cc95edb",
+      "environment.py": "fddc89c1d3536ed5712d034d8551819658800aff655b0683a4af2301e5136039",
+      "verify_results.py": "6734031c65885799155a5fc22026b59adc096ee42bf12d9b35ab9a7ec0a16113"
+    }
+  },
+  "original_verifier": {
+    "first_fix_green_receipt_sha256": "cc99900e9fb32d0526583259590bfe05dcf9c393a1b86b96dc5b80273371eece",
+    "first_fix_rejections": [
+      {
+        "error": "kernel_multiplications differs from retained event/state evidence",
+        "mutation": "zero_costs",
+        "rejected": true
+      },
+      {
+        "error": "native recovery summary must contain the exact nonempty roster",
+        "mutation": "empty_recoveries",
+        "rejected": true
+      },
+      {
+        "error": "native binary bytes differ from frozen manifest",
+        "mutation": "false_binary_hash",
+        "rejected": true
+      },
+      {
+        "error": "native binary bytes differ from frozen manifest",
+        "mutation": "all_three",
+        "rejected": true
+      }
+    ],
+    "red_accepted_mutations": [
+      "zero_costs",
+      "empty_recoveries",
+      "false_binary_hash",
+      "all_three"
+    ],
+    "red_receipt_sha256": "03d74726420055f86e11c3bf078e9c2d98606f85dbf40afbe6c12caedf2b679a",
+    "sha256": "30e2daeeb133e211f41cd1a98d8ea1598221904c86d90096dbaa3284e34527a2"
+  },
+  "schema": "hepta.mem1.verifier-attack-receipts.v1",
+  "scope": "retained-evidence copies and Python fixtures; no native model execution"
+}
