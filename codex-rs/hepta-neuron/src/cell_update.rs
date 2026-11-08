@@ -34,9 +34,53 @@ pub struct CellUpdateRequestV1 {
     pub budget: CellUpdateBudgetV1,
 }
 
+impl CellUpdateRequestV1 {
+    /// Bind every requested update input, including the Cell/principal scope,
+    /// source frontier and cost limits. This identity confers no authority and
+    /// does not replace admission against the host-registered definition.
+    pub fn semantic_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.cell.update-request.v1".to_vec();
+        for digest in [
+            self.scope.digest(),
+            self.base_bundle_digest,
+            self.source_frontier,
+            self.dataset_digest,
+            self.credit_profile_digest,
+            self.trainable_mask_digest,
+        ] {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        for number in [
+            self.dataset_bytes,
+            self.from_generation.get(),
+            self.candidate_generation.get(),
+            self.budget.maximum_dataset_bytes,
+            self.budget.maximum_steps,
+            self.budget.maximum_elapsed_micros,
+            self.budget.maximum_working_bytes,
+            self.trainable_parameters.len() as u64,
+        ] {
+            bytes.extend_from_slice(&number.to_be_bytes());
+        }
+        for id in std::iter::once(&self.proposal_id).chain(&self.trainable_parameters) {
+            bytes.extend_from_slice(&(id.as_str().len() as u32).to_be_bytes());
+            bytes.extend_from_slice(id.as_str().as_bytes());
+        }
+        Digest32::of_bytes(&bytes)
+    }
+}
+
+/// A candidate report whose actual artifact must be checked by the trusted
+/// learning/artifacts owner: its parameter diff must match `changed_parameters`
+/// and remain within the frozen training policy. Request correlation alone
+/// provides neither content proof against a dishonest port nor adoption rights.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CellUpdateCandidateV1 {
     pub proposal_id: StableId,
+    /// Correlation commitment to the exact admitted request, checked across
+    /// scopes, source frontiers and budgets even when bundle pins match.
+    /// This is neither artifact-content proof nor adoption authorization.
+    pub request_digest: Digest32,
     pub base_bundle_digest: Digest32,
     pub dataset_digest: Digest32,
     pub credit_profile_digest: Digest32,
@@ -58,6 +102,10 @@ pub enum CellUpdateOutcomeV1 {
 
 /// The learning owner consumes admitted immutable datasets and training budgets.
 /// It returns a bounded next-generation proposal, not a publication capability.
+/// Implementations are trusted owner adapters. The learning/artifacts owner must
+/// verify the actual candidate artifact's diff against `changed_parameters` and
+/// the frozen trainable range; checking `request_digest` only correlates reports
+/// with requests and cannot prove the content of a dishonest port's artifact.
 pub trait CellUpdatePortV1 {
     fn propose(
         &mut self,
@@ -95,14 +143,15 @@ pub fn propose_cell_update(
         || request.budget.maximum_elapsed_micros == 0
         || request.budget.maximum_working_bytes == 0
         || request.trainable_parameters.is_empty()
-        || request.trainable_parameters.len() > 1024
+        || request.trainable_parameters.len() > MAX_CELL_TRAINABLE_PARAMETERS
     {
         return Err(CellExecutionError::InvalidInput);
     }
+    let registered: BTreeSet<_> = definition.trainable_parameters.iter().collect();
     let mut allowed = BTreeSet::new();
     let mut mask_bytes = b"hepta.cell.trainable-mask.v1".to_vec();
     for parameter in &request.trainable_parameters {
-        if !allowed.insert(parameter) {
+        if !registered.contains(parameter) || !allowed.insert(parameter) {
             return Err(CellExecutionError::InvalidInput);
         }
         mask_bytes.extend_from_slice(&(parameter.as_str().len() as u32).to_be_bytes());
@@ -111,6 +160,7 @@ pub fn propose_cell_update(
     if Digest32::of_bytes(&mask_bytes) != request.trainable_mask_digest {
         return Err(CellExecutionError::InvalidInput);
     }
+    let request_digest = request.semantic_digest();
     let outcome = learner.propose(request)?;
     let after = owner.snapshot(&request.scope)?;
     if after.scope != before.scope
@@ -123,6 +173,7 @@ pub fn propose_cell_update(
     if let CellUpdateOutcomeV1::Candidate(candidate) = &outcome {
         let mut changed = BTreeSet::new();
         if candidate.proposal_id != request.proposal_id
+            || candidate.request_digest != request_digest
             || candidate.base_bundle_digest != request.base_bundle_digest
             || candidate.dataset_digest != request.dataset_digest
             || candidate.credit_profile_digest != request.credit_profile_digest
@@ -146,3 +197,7 @@ pub fn propose_cell_update(
     }
     Ok(outcome)
 }
+
+#[cfg(test)]
+#[path = "cell_update_tests.rs"]
+mod tests;

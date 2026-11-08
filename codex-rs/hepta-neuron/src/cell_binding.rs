@@ -21,6 +21,9 @@ impl CellScopeV1 {
 }
 
 impl CellDefinitionV1 {
+    /// V2 binds the host-registered training allowlist as well as runtime pins.
+    /// A V1 owner/journal requires explicit admission of the new definition;
+    /// missing policy must never be inferred from a caller's update mask.
     pub fn semantic_digest(&self) -> Result<Digest32, CellExecutionError> {
         self.runtime
             .validate_native(&self.native)
@@ -32,13 +35,14 @@ impl CellDefinitionV1 {
             || self.max_resident_bytes == 0
             || self.candidates.is_empty()
             || self.candidates.len() > 256
+            || self.trainable_parameters.len() > MAX_CELL_TRAINABLE_PARAMETERS
         {
             return Err(CellExecutionError::InvalidDefinition);
         }
         let mut ids = BTreeSet::new();
         let mut indices = BTreeSet::new();
         let mut abstain_count = 0;
-        let mut bytes = b"hepta.cell.definition.v1".to_vec();
+        let mut bytes = b"hepta.cell.definition.v2".to_vec();
         for id in [
             &self.cell_id,
             &self.runtime.config_id,
@@ -47,55 +51,18 @@ impl CellDefinitionV1 {
             push_id(&mut bytes, id);
         }
         let r = &self.runtime;
-        let c = &r.calibration;
-        for digest in [
-            self.bundle_digest,
-            self.state_schema_digest,
-            r.model_manifest_digest,
-            r.encoder_digest,
-            r.head_digest,
-            r.weights_digest,
-            r.tokenizer_digest,
-            r.preprocessor_digest,
-            r.quantization_digest,
-            r.runtime_digest,
-            r.device_digest,
-            r.normalization_digest,
-            r.native_config_digest,
-            c.calibration_artifact_digest,
-            c.ood_artifact_digest,
-        ] {
+        for digest in [self.bundle_digest, self.state_schema_digest]
+            .into_iter()
+            .chain(r.compatibility_digests())
+        {
             bytes.extend_from_slice(digest.as_array());
         }
-        for number in [
-            r.generation.get(),
-            r.input_feature_dimension as u64,
-            r.state_width as u64,
-            r.modulator_dimension as u64,
-            c.generation.get(),
-            c.valid_from_sequence,
-            c.expires_after_sequence,
-            c.zero_confidence_error_q24 as u64,
-            c.maximum_in_domain_error_q24 as u64,
-            u64::from(c.minimum_confidence_ppm),
-            u64::from(c.maximum_ood_ppm),
-            u64::from(c.minimum_active_ppm),
-            u64::from(c.maximum_active_ppm),
-            u64::from(c.maximum_projection_count),
-            u64::from(c.measured_ece_ppm),
-            u64::from(c.maximum_ece_ppm),
-            u64::from(c.measured_false_acceptance_ppm),
-            u64::from(c.maximum_false_acceptance_ppm),
-            r.resource_envelope.p95_latency_micros,
-            r.resource_envelope.p99_latency_micros,
-            r.resource_envelope.transient_allocation_bytes,
-            r.resource_envelope.checkpoint_bytes,
-            u64::from(r.resource_envelope.write_amplification_ppm),
+        for number in r.compatibility_numbers().into_iter().chain([
             self.max_input_bytes as u64,
             self.max_queue_age_micros,
             self.max_resident_bytes,
             self.candidates.len() as u64,
-        ] {
+        ]) {
             bytes.extend_from_slice(&number.to_be_bytes());
         }
         for candidate in &self.candidates {
@@ -119,6 +86,15 @@ impl CellDefinitionV1 {
         }
         if abstain_count != 1 {
             return Err(CellExecutionError::InvalidDefinition);
+        }
+        let mut trainable = BTreeSet::new();
+        bytes.extend_from_slice(b"hepta.cell.training-policy.v1");
+        bytes.extend_from_slice(&(self.trainable_parameters.len() as u64).to_be_bytes());
+        for parameter in &self.trainable_parameters {
+            if !trainable.insert(parameter) {
+                return Err(CellExecutionError::InvalidDefinition);
+            }
+            push_id(&mut bytes, parameter);
         }
         Ok(Digest32::of_bytes(&bytes))
     }
