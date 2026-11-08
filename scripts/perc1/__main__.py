@@ -1,4 +1,5 @@
 """Run with PYTHONPATH=scripts python -m perc1 ..."""
+
 import argparse
 import json
 import sys
@@ -10,7 +11,9 @@ from .schema import Dataset, Invalid, load
 
 
 def main():
-    parser = argparse.ArgumentParser(description="PERC-1 audit harness: structural PASS never grants scientific qualification.")
+    parser = argparse.ArgumentParser(
+        description="PERC-1 audit harness: structural PASS never grants scientific qualification."
+    )
     commands = parser.add_subparsers(dest="command", required=True)
     cmd = commands.add_parser("smoke")
     cmd.add_argument("--output", required=True)
@@ -24,14 +27,25 @@ def main():
             result = smoke(args.output)
         else:
             dataset = Dataset(load(args.dataset), Path(args.dataset).parent)
-            result = build_report(load(args.manifest), dataset, load(args.traces), load(args.evaluator))
+            result = build_report(
+                load(args.manifest), dataset, load(args.traces), load(args.evaluator)
+            )
             if args.output:
                 write_json(args.output, result)
         print(json.dumps(result, sort_keys=True, allow_nan=False))
         return 0
     except (Invalid, OSError, ValueError, TypeError, KeyError, UnicodeError) as error:
-        message = str(error) if isinstance(error, Invalid) else "Malformed or unavailable input: " + type(error).__name__
-        print(json.dumps({"status": "HOLD", "structural_validation": "FAIL", "reason": message}), file=sys.stderr)
+        message = (
+            str(error)
+            if isinstance(error, Invalid)
+            else "Malformed or unavailable input: " + type(error).__name__
+        )
+        print(
+            json.dumps(
+                {"status": "HOLD", "structural_validation": "FAIL", "reason": message}
+            ),
+            file=sys.stderr,
+        )
         return 2
 
 
