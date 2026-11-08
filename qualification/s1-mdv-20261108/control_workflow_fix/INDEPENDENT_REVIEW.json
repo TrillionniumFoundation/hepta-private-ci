@@ -1,0 +1,232 @@
+{
+  "schema": "hepta.ctrl1.workflow-step-boundary-review.v1",
+  "created_at_utc": "2026-11-08T18:12:31.814143+00:00",
+  "conclusion": "PASS_ONE_LINE_STEP_BOUNDARY_REPAIR",
+  "repository_path": ".github/workflows/hepta-ndu-recursion.yml",
+  "published_head": "ffecc2502db6038645be9ef0e6469807eadfc139",
+  "published_blob_sha": "cedfb0b7b0902e9f797215ada347174b7c938e9a",
+  "published_sha256": "fc1f833652f5d9e400501a40bff27f85e92b8e6bff0e2e0d5222ea82dfa4d706",
+  "original_base": "b2646b4cbf19817145c9cb680d95333a267d19f4",
+  "original_base_blob_sha": "e365f4b8fb187163682244f04bb0f6750402c355",
+  "corrected_source": "/workspace/scratch/14afb8ae9d10/control-ci-fix/corrected.yaml",
+  "corrected_sha256": "4766d3c303b515ea5817e4261d9b4c4573c959088655ff26b1c5b1844738f921",
+  "corrected_blob_sha": "9b502753efe5fb492df46d9d74baae051b110fd9",
+  "exactly_one_line_added": true,
+  "yaml_duplicate_keys": false,
+  "all_job_steps_exactly_one_run_or_uses": true,
+  "original_structure_preserved_after_removing_S1_step": true,
+  "original_install_step_exactly_restored": true,
+  "S1_commands_and_environment_unchanged": true,
+  "jobs": [
+    "ndu"
+  ],
+  "steps_before": 14,
+  "steps_after": 15,
+  "invalid_published_steps": [
+    {
+      "job": "ndu",
+      "index": 5,
+      "name": "S1 decision controls and continuation regressions",
+      "run": true,
+      "uses": true,
+      "keys": [
+        "name",
+        "env",
+        "run",
+        "uses",
+        "with"
+      ]
+    }
+  ],
+  "corrected_steps": [
+    {
+      "job": "ndu",
+      "index": 0,
+      "name": "Check out exact source without credentials",
+      "run": false,
+      "uses": true,
+      "keys": [
+        "name",
+        "uses",
+        "with"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 1,
+      "name": "Bind source and optional synthetic merge",
+      "run": true,
+      "uses": false,
+      "keys": [
+        "name",
+        "shell",
+        "run"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 2,
+      "name": "Verify Cargo lockfile integrity",
+      "run": true,
+      "uses": false,
+      "keys": [
+        "name",
+        "run"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 3,
+      "name": "Reject new legacy NDU evaluator callers",
+      "run": true,
+      "uses": false,
+      "keys": [
+        "name",
+        "run"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 4,
+      "name": "CTRL-1 finite decision and coordination regressions",
+      "run": true,
+      "uses": false,
+      "keys": [
+        "name",
+        "env",
+        "run"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 5,
+      "name": "S1 decision controls and continuation regressions",
+      "run": true,
+      "uses": false,
+      "keys": [
+        "name",
+        "env",
+        "run"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 6,
+      "name": "Install pinned repository test tools",
+      "run": false,
+      "uses": true,
+      "keys": [
+        "name",
+        "uses",
+        "with"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 7,
+      "name": "Locked all-target compilation",
+      "run": true,
+      "uses": false,
+      "keys": [
+        "name",
+        "working-directory",
+        "run"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 8,
+      "name": "Regression tests",
+      "run": true,
+      "uses": false,
+      "keys": [
+        "name",
+        "working-directory",
+        "run"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 9,
+      "name": "Control NDU caller regressions",
+      "run": true,
+      "uses": false,
+      "keys": [
+        "name",
+        "working-directory",
+        "run"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 10,
+      "name": "Strict lint",
+      "run": true,
+      "uses": false,
+      "keys": [
+        "name",
+        "working-directory",
+        "run"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 11,
+      "name": "Named-host NDU qualification",
+      "run": true,
+      "uses": false,
+      "keys": [
+        "name",
+        "working-directory",
+        "shell",
+        "run"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 12,
+      "name": "Retain named-host NDU receipt",
+      "run": false,
+      "uses": true,
+      "keys": [
+        "name",
+        "if",
+        "uses",
+        "with"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 13,
+      "name": "Formatting check without source mutation",
+      "run": true,
+      "uses": false,
+      "keys": [
+        "name",
+        "if",
+        "working-directory",
+        "run"
+      ]
+    },
+    {
+      "job": "ndu",
+      "index": 14,
+      "name": "Preserve exact source state",
+      "run": true,
+      "uses": false,
+      "keys": [
+        "name",
+        "if",
+        "shell",
+        "run"
+      ]
+    }
+  ],
+  "diff": "--- published/hepta-ndu-recursion.yml\n+++ corrected/hepta-ndu-recursion.yml\n@@ -73,6 +73,7 @@\n           python3 -B -m unittest discover -s scripts/ndu_ctrl1_s1 -t scripts -p 'test_*.py' -v\n           python3 -B -O -m unittest discover -s scripts/ndu_ctrl1_s1 -t scripts -p 'test_*.py' -v\n \n+      - name: Install pinned repository test tools\n         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532\n         with:\n           tool: just@1.51.0,nextest@0.9.103\n",
+  "method": "Exact Git blob byte checks; PyYAML BaseLoader with duplicate mapping rejection; full parsed-document comparison with original baseline after removing S1; all-job step run/uses exclusivity.",
+  "scope": "Static YAML structure and exact-byte diff review; no GitHub workflow execution or full Actions schema validation claimed.",
+  "component_tests_run": false,
+  "source_files_modified": false,
+  "remote_mutations": 0,
+  "review_script_sha256": "50d7c9938504d9bf468ff1c11fd70443215a006f48891ec2eb0cf87d899d063d"
+}

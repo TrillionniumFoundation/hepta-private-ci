@@ -73,6 +73,7 @@ jobs:
           python3 -B -m unittest discover -s scripts/ndu_ctrl1_s1 -t scripts -p 'test_*.py' -v
           python3 -B -O -m unittest discover -s scripts/ndu_ctrl1_s1 -t scripts -p 'test_*.py' -v
 
+      - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
