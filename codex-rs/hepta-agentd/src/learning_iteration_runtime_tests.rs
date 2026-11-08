@@ -443,6 +443,7 @@ async fn terminal_rejection_replays_after_expiry_without_retraining() {
     let first = ok(owner.process(&state, request.clone(), || Ok(50)).await);
     let replay = ok(owner.process(&state, request, || Ok(100)).await);
     assert_eq!(replay, first);
+    assert_eq!(ok(ports.checkpoint.lock()).as_ref(), Some(&first));
     assert_eq!(ok(ports.executed.lock()).len(), 4);
 }
 
@@ -536,3 +537,7 @@ async fn separate_keys_under_one_controller_cannot_self_evaluate() {
         Some(3)
     );
 }
+
+#[cfg(unix)]
+#[path = "learning_iteration_checkpoint_process_tests.rs"]
+mod checkpoint_process_tests;
