@@ -11,6 +11,9 @@ use super::*;
 use crate::circuit_credit::CircuitCreditErrorV1;
 use crate::circuit_credit::CircuitCreditTargetV1;
 
+#[path = "circuit_credit_signed_tests.rs"]
+mod signed_tests;
+
 #[tokio::test]
 async fn terminal_credit_requires_both_owners_and_exact_original_inputs() {
     let (definition, bindings) = configuration();

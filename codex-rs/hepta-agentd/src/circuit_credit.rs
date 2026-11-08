@@ -7,8 +7,13 @@ use std::collections::BTreeMap;
 
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::TaskFlowError;
+use codex_hepta_contracts::AgentId;
 use codex_hepta_intelligence::OutcomeCreditClosureErrorV2;
+use codex_hepta_intelligence::OutcomeCreditClosureReceiptV2;
+use codex_hepta_intelligence::OutcomeCreditClosureRequestV2;
+use codex_hepta_intelligence::append_outcome_credit_v2;
 use codex_hepta_learning_ledger::CreditAllocationBatchV1;
+use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_neuron::CellExecutionError;
 use codex_hepta_neuron::CellInferenceReadbackPortV1;
 use codex_hepta_neuron::CellInputEncoderV1;
@@ -22,6 +27,7 @@ use codex_hepta_types::StableId;
 use crate::AgentdCircuitCellOwnerV1;
 use crate::CircuitCellErrorV1;
 use crate::circuit_cell::finish;
+use crate::circuit_cell_binding::push_text;
 use crate::circuit_cell_output::encode_receipt;
 
 #[derive(Debug, thiserror::Error)]
@@ -36,6 +42,29 @@ pub enum CircuitCreditErrorV1 {
     State(#[from] CellExecutionError),
     #[error(transparent)]
     Closure(#[from] OutcomeCreditClosureErrorV2),
+}
+
+/// Execution-before-credit profile: one Circuit run per logical ledger,
+/// owner agent and learning episode. Use this identity for CircuitStart.run_id,
+/// CellScope.run_id and the signed Decision.record_id BEFORE execution.
+/// Existing traces must never be renamed or relabeled to join this profile.
+pub fn circuit_learning_run_id_v1(
+    ledger: &LedgerWriter,
+    owner: &AgentId,
+    episode_id: &StableId,
+) -> Result<StableId, CircuitCreditErrorV1> {
+    let mut bytes = b"hepta.agentd.circuit-learning-run.v1\0".to_vec();
+    for digest in [
+        ledger.binding_digest(),
+        ledger.verifier().scope_digest(),
+        ledger.verifier().objective_digest(),
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    push_text(&mut bytes, owner.as_str());
+    push_text(&mut bytes, episode_id.as_str());
+    StableId::new(format!("circuit-learning:{}", Digest32::of_bytes(&bytes)))
+        .map_err(|_| CircuitCreditErrorV1::Binding("learning run identity"))
 }
 
 /// One executed Cell version, aggregating all its committed activations. The
@@ -150,4 +179,28 @@ where
         })
     }
 
+    /// Re-read both fact owners before submitting unchanged signed evidence.
+    /// The ledger still verifies the active run/episode, independent roles and
+    /// terminal outcome. Its partial-commit error retains the outcome receipt,
+    /// so a rejected credit append can be retried without redispatching work.
+    pub async fn append_terminal_credit(
+        &self,
+        circuit: &AutomationStore,
+        inputs: &BTreeMap<u64, CellStepInputV1>,
+        ledger: &mut LedgerWriter,
+        request: OutcomeCreditClosureRequestV2,
+        now: u64,
+    ) -> Result<OutcomeCreditClosureReceiptV2, CircuitCreditErrorV1> {
+        if request.outcome.run_id != circuit_learning_run_id_v1(
+            ledger, circuit.owner_agent_id(), &request.outcome.outcome.episode_id,
+        )? {
+            return Err(CircuitCreditErrorV1::Binding("ledger/owner/episode execution identity"));
+        }
+        let support = self.terminal_credit_support(circuit, request.outcome.run_id.as_str(), inputs).await?;
+        if inputs.values().any(|input| input.objective_digest != ledger.verifier().objective_digest()) {
+            return Err(CircuitCreditErrorV1::Binding("executed objective differs from ledger"));
+        }
+        support.validate_credit(&request.credit)?;
+        Ok(append_outcome_credit_v2(ledger, request, now)?)
+    }
 }

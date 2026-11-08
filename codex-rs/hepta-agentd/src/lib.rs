@@ -466,6 +466,7 @@ pub use circuit_cell_output::circuit_cell_output_schema_v1;
 pub use circuit_credit::CircuitCreditErrorV1;
 pub use circuit_credit::CircuitCreditSupportV1;
 pub use circuit_credit::CircuitCreditTargetV1;
+pub use circuit_credit::circuit_learning_run_id_v1;
 pub use client::AgentdClient;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
