@@ -1,7 +1,7 @@
 # Joint Cell stages: integrated source and bounded native verification
 
-**Selected engineering verification is complete at the tested source below; S0–S5 research admission remains HOLD.**
-The final code identity is byte-for-byte equal to the tested source. The sealed raw archive and per-member manifest are described below.
+**Selected native integration verification is complete at the historical runtime freeze below; S0–S5 research admission remains HOLD.**
+The current source head is `81da60b349e32d89d0e4c4674a517a66af7e5eee`. Its two-file caller-proof follow-up leaves the entire `codex-rs` subtree identical to the tested `710df84` source. The original sealed native archive remains unchanged; a separate follow-up archive records the later static proof checks and hosted-CI failures.
 Repository paths below are relative to the repository root; raw receipt paths are relative to the `payload/` directory inside the final evidence archive.
 
 ## Engineering result and source identity
@@ -11,7 +11,8 @@ Repository paths below are relative to the repository root; raw receipt paths ar
 | Common starting branch | `f49128e503b24bb52ccdb32a860939e6392c8e08` ([#5346](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5346)) | Starting identity; its failed hosted CI remains historical evidence. |
 | Pre-successor combined candidate | `c37ebf8de8efc660229e66e4030d589be46bc194`, tree `ac1bd96d97186f404bf38cbaa22edbe021e29290` | **1,774 selected native passes**: V3's first eight successful scopes plus V4's final three. V3 itself did not complete successfully. |
 | Circuit successor composition | `710df84a6b10afa005976c24a1108fb2a57810d3`, tree `37bf89db155cdd04145914cc63f6a8e1b4e1b2bd` | **1,097 selected native passes**, six V5 scopes, all command exits 0; `complete=true`. |
-| Final code after maintenance | `710df84a6b10afa005976c24a1108fb2a57810d3`, tree `37bf89db155cdd04145914cc63f6a8e1b4e1b2bd` | All **13,641 tracked files** match the tested bytes. Scoped lint and formatting exited 0; no tests followed final formatting. The enclosing evidence commit adds only documentation, the sealed archive and its exact asset pin. |
+| Original runtime freeze after maintenance | `710df84a6b10afa005976c24a1108fb2a57810d3`, tree `37bf89db155cdd04145914cc63f6a8e1b4e1b2bd` | All **13,641 tracked files** matched the tested bytes at this freeze. Scoped lint and formatting exited 0; no Rust tests followed the original final formatting. |
+| Caller-proof source follow-up | `81da60b349e32d89d0e4c4674a517a66af7e5eee`, tree `cc6ca8d7c05a2b5d6ccc9179a570c6efc71e4d83` | Two static-proof files changed. The canonical caller verifier and 96 B4 checks ran on dirty `710df84` plus the exact patch; committed bytes match that candidate. The runtime test results retain their original source identity. |
 
 The 710df84 candidate cleanly merges [#5388](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5388) at `f21e41039046b1247d64536bdec2bd308816f16d` onto c37, with no handwritten source conflict resolution.
 The two native pass totals belong to different source snapshots and overlapping suites. They are not additive unique-test, scientific-sample, or efficacy counts.
@@ -197,13 +198,49 @@ Darwin's targeted Notes fix is supported by actual Rust red/green results. The r
 The seven original CI logs remain in `qualification/cell-platform-fixtures-20261108/native-and-ci-evidence.tar.gz` (SHA256 `11ba543a46a6150bbd89c2ac5513bea56660c69358ddb348122b4bae57533fe7`).
 See also raw `matrix-validation/F491_REMAINING_CI_REVIEW.json`. Published-head hosted CI is tracked on the draft PRs. This evidence package makes no claim that the full required CI gate has passed.
 
-## Final maintenance and evidence seal
+## Post-publication caller-proof correction
+
+The first hosted `repo-checks / build-test` jobs on source `710df84` and evidence `7e2e9c8` failed at the canonical caller verifier. Both reached the checker after checkout/setup; the verifier self-test passed. The exact failure was an unexpected `codex-rs/hepta-automation/src/action_skill_driver.rs` caller for `automation_taskflow_provider_effect_bridge`. The original source and evidence job logs are retained as jobs `128860381916` and `128860392087`.
+
+The existing ACT implementation constructs `ProviderEffectTaskFlowDriver`, but the repository-root manifest still declared no product callers. The follow-up registers that exact caller and adds two lexical protected-file rules plus seven mutation-test methods. It does not change the checker, symbol inventory, source roots, ignored paths, authority fields or the 146 existing protected-file rows.
+
+| Follow-up identity or check | Observed result |
+| --- | --- |
+| Source commit | `81da60b349e32d89d0e4c4674a517a66af7e5eee`, parent `710df84a6b10afa005976c24a1108fb2a57810d3`, tree `cc6ca8d7c05a2b5d6ccc9179a570c6efc71e4d83` |
+| Exact executed candidate | Dirty base `710df84` plus the 12,003-byte patch, SHA256 `ecd500c22fa388c14d08793ac22ba11f4738597c1d1ce3c83ddb5210947b0fe6`; both committed file hashes match. No test was repeated merely to bind a later commit ID. |
+| Canonical verifier self-test | Exit 0. |
+| Canonical full caller verification | Exit 0; 220.965 s; **6,113 Rust files, 160 boundaries and 148 protected-file rules**; `PASS_HEPTA_CALLER_CLOSED_SET`, `authorityGranted=false`. |
+| B4 source-proof regressions | **96/96 passed**, including all seven new methods. Registration mutations use the actual source-index checker; protected-file mutations use actual temporary Rust source bytes and the existing checker. |
+| Official scoped formatting | `just fmt --base 710df84…` exited 0. The existing formatter owns neither changed root TOML nor `qa/` Python path, so it made no byte changes. Before/after patch, Python AST and parsed TOML remain identical; no tests followed this formatter. |
+| Runtime identity | Entire `codex-rs` subtree is unchanged: `0675516b80b0e28915ed8afac18c899fe6299982`. This follow-up ran no Rust tests/builds and wrote no Cargo target artifacts. The 1,097 native passes remain bound to `710df84`. |
+
+The rules retain contract/observer validation, wire and invocation binding, initiation checks before provider contact, and the durable owner's original claimed-step, complete binding, FinalUse claim and attempt sequence. Dispatch remains in the existing `.with_verified_use_async(token, expected_binding, || driver.dispatch(request))` closure; post-contact uncertainty remains unresolved. Negative source mutations include an extra caller, removed or comment-camouflaged guards and dispatch moved outside that closure.
+
+These are lexical source constraints and source-mutation rejections, not compiled Rust exploit tests or a general control-flow proof. `AuthorizedProviderEffectRequest` has public fields and is constructible data, not an unforgeable authorization capability. Independent inspection found no new reachable production bypass in this change; the existing owner performs the authorization and no default product host installs the goal driver. Registering this source relationship grants no authority.
+
+The changed root `CALLERS.toml` is consumed by Python source-proof/CI tooling. The Rust `include_str!` and Bazel `compile_data` matches resolve to the distinct, unchanged `codex-rs/hepta-contracts/CALLERS.toml`; the static reference inspection is retained and is not represented as a new runtime build.
+
+### Original hosted failures and rerun outcome
+
+Source blob-policy job `128860287201` in run `42522964021` failed during pinned Fence v0.10.0 startup, before checkout: `unsupported_resolver_layout`, resident service exited before readiness. Checkout, range detection, policy self-test and blob checking were skipped; this job produced no blob-violation result. Evidence blob-policy job `128860292838` in run `42522965652` succeeded. One purpose-built rerun request for the failed source job received GitHub HTTP 403, `The workflow run containing this job is already running`; no new rerun attempt was created and no alternate channel was used.
+
+The two original caller-proof failures and the Fence failure remain failures at their original heads. The native static checks above establish the proof correction locally; hosted checks for the new source are tracked on the draft PRs. Full repository CI is not claimed green. The 403 was a GitHub workflow-state response, not an automatic approval-review rejection.
+
+### Separate follow-up seal
+
+`post-publication-caller-proof-evidence.zip`: **299089 bytes**, SHA256 **`eb8712d384301f852e8b597979b0c1fae9f09657809a815b595821556edd6a51`**, **66 regular members**, all member bytes read back and verified. It contains the original hosted failures, original structured rerun response, static validation logs, before/after patches, commit identities and independent reviews. Its payload paths preserve their ROOT-relative directory names under `evidence/`. The complete packer manifest and seal result are retained losslessly as `caller-proof-manifest.json.gz` and `caller-proof-archive-result.json.gz`.
+
+Primary follow-up receipts are `joint-caller-proof-validation-v1/RESULT.json`, `joint-caller-proof-finalization/FORMAT_IDENTITY.json`, `joint-publication/caller-proof-followup/CODE_READY.json`, `joint-publication/caller-proof-review-s3/FINAL_COMMIT_REVIEW.json` and `joint-publication/root-caller-proof-review/ROOT_REVIEW.json`. They are inside this separate archive; they are not retroactively inserted into the original `9abc9567…` archive.
+
+The seal closes the source-proof follow-up. Its later evidence-branch composition, formatting, blob-policy check and GitHub publication have separate receipts outside this snapshot. S0–S5 remain HOLD; this follow-up launches no registered scientific campaign and changes no production profile.
+
+## Original runtime maintenance and evidence seal
 
 - Ten changed first-party product packages passed `just fix --locked` (exit 0).
 - `just fmt --base c37ebf8de8efc660229e66e4030d589be46bc194` passed. This scope covers the Circuit successor and any maintenance diff; it does not reformat third-party source or claim whole-tree formatting.
 - The only lint edits changed two non-Windows unit-value statements in `hepta-operator-acceptance/src/durable.rs`. Independent review confirmed no behavior change; the suggestions introduced `path_statements` warnings and were discarded.
-- The exact tested statements were restored and the same scoped formatter passed again. All **13,641 tracked files** match the pre-maintenance snapshot; the source tree is clean and remains **710df84a6b10afa005976c24a1108fb2a57810d3 / 37bf89db155cdd04145914cc63f6a8e1b4e1b2bd**.
-- No behavioral tests were run after final fix/fmt. The earlier raw lint diff remains preserved alongside the restoration receipt.
+- The exact tested statements were restored and the same scoped formatter passed again. All **13,641 tracked files** matched the pre-maintenance snapshot at the original freeze: **710df84a6b10afa005976c24a1108fb2a57810d3 / 37bf89db155cdd04145914cc63f6a8e1b4e1b2bd**. This historical full-file comparison is not relabeled as a comparison of the later proof commit.
+- No Rust tests followed the original final fix/fmt. The later Python source-proof checks are a separate follow-up and precede their own final scoped formatting. The earlier raw lint diff remains preserved alongside the restoration receipt.
 - Original proof: `joint-finalization/{RESULT.json,FINAL_SOURCE_IDENTITY.json,final.patch}`, `joint-boundary-review/FINAL_FIX_PIN_REVIEW.json` and `root-native-termination-receipts/{INDEX.json,FINALIZATION_INDEX.json}`.
 - Sealed archive: `joint-final-native-evidence.tar.gz`, **9923429 bytes**, SHA256 **`9abc9567e66334a8f16df97b0e7187a286ec04d140a126bb8dcb9300b64cf64a`**; **360 regular members** passed complete member readback. The wrapper manifest is `MANIFEST.json`; original packer metadata is retained losslessly as `raw-manifest.json.gz` and `archive-result.json.gz`.
 - The archive preserves all four forensic rmeta originals and the selected attempts, source identities, real helper bindings, raw output and terminal receipts. The seven earlier hosted-CI logs retain their original platform archive identity above.

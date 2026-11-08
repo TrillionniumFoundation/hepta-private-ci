@@ -4,12 +4,18 @@
   "source": {
     "repository": "TrillionniumFoundation/hepta-private-ci",
     "common_head": "f49128e503b24bb52ccdb32a860939e6392c8e08",
-    "code_head": "710df84a6b10afa005976c24a1108fb2a57810d3",
-    "code_tree": "37bf89db155cdd04145914cc63f6a8e1b4e1b2bd",
+    "code_head": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+    "code_tree": "cc6ca8d7c05a2b5d6ccc9179a570c6efc71e4d83",
     "code_branch": "research/cell-joint-source-20261108-1628",
     "evidence_branch": "research/cell-joint-evidence-20261108-1628",
     "evidence_only_child": true,
     "first_parent_composition": [
+      {
+        "head": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+        "tree": "cc6ca8d7c05a2b5d6ccc9179a570c6efc71e4d83",
+        "subject": "fix(ci): register the ACT provider bridge with guarded source proof",
+        "scope": "Only root CALLERS.toml and qa/b4-no-bypass/test_current_caller_migrations.py; no runtime bytes changed."
+      },
       {
         "head": "710df84a6b10afa005976c24a1108fb2a57810d3",
         "tree": "37bf89db155cdd04145914cc63f6a8e1b4e1b2bd",
@@ -130,7 +136,15 @@
         "tree": "dee7132289b43b0c65f6b70ece3505be32b2f4d3",
         "subject": "compose(cell): integrate framework source candidate"
       }
-    ]
+    ],
+    "native_runtime_freeze": {
+      "head": "710df84a6b10afa005976c24a1108fb2a57810d3",
+      "tree": "37bf89db155cdd04145914cc63f6a8e1b4e1b2bd",
+      "codex_rs_subtree": "0675516b80b0e28915ed8afac18c899fe6299982",
+      "tracked_file_comparison_count": 13641,
+      "scope": "Historical source for V5 runtime tests and original 9abc sealed archive."
+    },
+    "codex_rs_subtree": "0675516b80b0e28915ed8afac18c899fe6299982"
   },
   "archive": {
     "path": "joint-final-native-evidence.tar.gz",
@@ -145,7 +159,8 @@
       "head": "710df84a6b10afa005976c24a1108fb2a57810d3",
       "tree": "37bf89db155cdd04145914cc63f6a8e1b4e1b2bd",
       "verified_final_identity": true
-    }
+    },
+    "identity_scope": "Original immutable710 runtime freeze; not the later caller-proof source head."
   },
   "lossless_metadata": [
     {
@@ -578,7 +593,9 @@
         "act_boundary_ids": 3,
         "ctrl_boundary_ids": 8,
         "all_first_attempt_pass": true
-      }
+      },
+      "identity_scope": "Historical V5 native runtime freeze; this head is not the newer static-proof source commit.",
+      "is_latest_source_head": false
     },
     "counts_are_not_additive": true,
     "scope": "Selected integration/correctness suites, not full repository CI or scientific efficacy.",
@@ -642,7 +659,8 @@
     "terminal_indexes": [
       "root-native-termination-receipts/INDEX.json",
       "root-native-termination-receipts/FINALIZATION_INDEX.json"
-    ]
+    ],
+    "phase_scope": "Original native source finalization at710. Later Python proof checks are a separate phase and precede their own final scoped formatter."
   },
   "scientific_admission": {
     "stages": {
@@ -758,9 +776,404 @@
     "required_before_push": [
       "Scoped evidence formatting",
       "Existing blob policy on the exact staged tree",
-      "No product changes relative to the frozen code head"
+      "Evidence-only diff relative to current81da source; unchanged codex-rs subtree relative to710"
     ],
     "hosted_ci": "No full required green status claimed; read actual checks on the draft pull requests.",
-    "raw_snapshot_boundary": "This archive closes code integration/finalization. Evidence-only preparation and publication occur afterward and retain separate native receipts."
+    "raw_snapshot_boundary": "Original archive closes710 runtime integration/finalization. Separate follow-up archive closes static proof correction and original hosted failure records. Evidence staging and publication occur later and retain separate native receipts."
+  },
+  "post_publication_caller_proof": {
+    "schema": "hepta.joint-caller-proof-followup.v1",
+    "source": {
+      "schema": "hepta.caller-proof-code-ready.v1",
+      "code_head": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+      "code_tree": "cc6ca8d7c05a2b5d6ccc9179a570c6efc71e4d83",
+      "base_head": "710df84a6b10afa005976c24a1108fb2a57810d3",
+      "codex_rs_subtree": "0675516b80b0e28915ed8afac18c899fe6299982",
+      "codex_rs_tree_identical_to_710": true,
+      "paths": [
+        "CALLERS.toml",
+        "qa/b4-no-bypass/test_current_caller_migrations.py"
+      ],
+      "git_clean": true,
+      "tested_source": "dirty base710 with exact patch SHA256; no test rerun for commit identity",
+      "tested_patch_sha256": "ecd500c22fa388c14d08793ac22ba11f4738597c1d1ce3c83ddb5210947b0fe6",
+      "validation_receipt": "joint-caller-proof-validation-v1/RESULT.json",
+      "validation_sha256": "e9efe35968f58e1cc15b41bcce475727cbbef3e0957fc286e21fd7a199537eb5",
+      "final_format_receipt": "joint-caller-proof-finalization/FORMAT_IDENTITY.json",
+      "final_format_sha256": "8438abd001576284e3e7558a58c35891652134fbd29fbd005919a9d55ee71946",
+      "formatter_scope": "official just fmt ran successfully; changed root TOML and qa Python have no formatter owner, so bytes were unchanged",
+      "source_proof_completion": true,
+      "scientific_or_runtime_authority_granted": false,
+      "rust_tests": 0,
+      "target_writes": 0,
+      "tests_after_format": 0,
+      "pushed": false
+    },
+    "executed_candidate": {
+      "schema": "hepta.caller-proof-source-identity.v1",
+      "base_head": "710df84a6b10afa005976c24a1108fb2a57810d3",
+      "codex_rs_subtree": "0675516b80b0e28915ed8afac18c899fe6299982",
+      "codex_rs_worktree_diff_from_base_empty": true,
+      "changed_paths": [
+        "CALLERS.toml",
+        "qa/b4-no-bypass/test_current_caller_migrations.py"
+      ],
+      "candidate_patch_sha256": "ecd500c22fa388c14d08793ac22ba11f4738597c1d1ce3c83ddb5210947b0fe6",
+      "candidate_files": {
+        "CALLERS.toml": {
+          "bytes": 214323,
+          "sha256": "1f9a5858f4c8256a67baee9a7e588133752882c1a9e1d3a7e4f87a4f160376e1"
+        },
+        "qa/b4-no-bypass/test_current_caller_migrations.py": {
+          "bytes": 16037,
+          "sha256": "5f1606e2c9b0f2c496558e8f64f1794f6776fb8fbaa7173563f195e11f87c3f4"
+        }
+      },
+      "reference_search": {
+        "argv": [
+          "/usr/bin/rg",
+          "--line-number",
+          "--no-heading",
+          "--fixed-strings",
+          "CALLERS.toml",
+          "--glob",
+          "!qualification/**",
+          "--glob",
+          "!CALLERS.toml",
+          "--glob",
+          "!AGENTS.md",
+          "--glob",
+          "!.git/**",
+          "."
+        ],
+        "exit_code": 0,
+        "stdout_bytes": 6609,
+        "stdout_sha256": "27d80c53556601c3e53d9b6d988caf7dcfd68dccd7dc6282a64e2d6d099a44cd",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runtime_source_writes": 0,
+      "rust_tests": 0,
+      "cargo_or_bazel_builds": 0,
+      "target_writes": 0,
+      "native_tests_relabelled_to_this_candidate": false
+    },
+    "validation": [
+      {
+        "name": "proof-self-test",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "scripts/verify_hepta_callers.py",
+          "self-test"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 0.06399101699935272,
+        "stdout_bytes": 48,
+        "stdout_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "proof-full-verify",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "scripts/verify_hepta_callers.py",
+          "verify"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 220.96510030998616,
+        "stdout_bytes": 75046,
+        "stdout_sha256": "c2ede7225f58ebad1b3d3261b3aa0fb5f67acaeb0d883fb9d552ac6f837a7162",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+        "rust_files_scanned": 6113,
+        "boundary_count": 160,
+        "protected_file_count": 148,
+        "authority_granted": false
+      },
+      {
+        "name": "b4-negative-regressions",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-v",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "test_*.py"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 5.523429896042217,
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_bytes": 17114,
+        "stderr_sha256": "f5f71e3e8e97f7d913dccdda755f49fb41727e74af9e92b676b528a412ed9e32",
+        "summary_tail": [
+          "test_original_pre_cas_shape_order_passes (test_verify_hepta_callers.RequiredCodeOrderTests.test_original_pre_cas_shape_order_passes) ... ok",
+          "",
+          "----------------------------------------------------------------------",
+          "Ran 96 tests in 5.458s",
+          "",
+          "OK"
+        ]
+      }
+    ],
+    "final_format": {
+      "schema": "hepta.caller-proof-final-format-identity.v1",
+      "base_head": "710df84a6b10afa005976c24a1108fb2a57810d3",
+      "tested_source": "dirty base 710df plus exact PATCH_BEFORE_FMT.diff and candidate file SHA256 identities",
+      "formatter": {
+        "argv": [
+          "/home/qian-qi/.cargo/bin/just",
+          "fmt",
+          "--base",
+          "710df84a6b10afa005976c24a1108fb2a57810d3"
+        ],
+        "cwd": "/home/qian-qi/work/cell-s0s5-20261108-1628/joint-caller-proof-source",
+        "exit_code": 0,
+        "wall_seconds": 0.1522960050497204,
+        "stdout_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "before": {
+        "CALLERS.toml": {
+          "bytes": 214323,
+          "sha256": "1f9a5858f4c8256a67baee9a7e588133752882c1a9e1d3a7e4f87a4f160376e1"
+        },
+        "qa/b4-no-bypass/test_current_caller_migrations.py": {
+          "bytes": 16037,
+          "sha256": "5f1606e2c9b0f2c496558e8f64f1794f6776fb8fbaa7173563f195e11f87c3f4"
+        }
+      },
+      "after": {
+        "CALLERS.toml": {
+          "bytes": 214323,
+          "sha256": "1f9a5858f4c8256a67baee9a7e588133752882c1a9e1d3a7e4f87a4f160376e1"
+        },
+        "qa/b4-no-bypass/test_current_caller_migrations.py": {
+          "bytes": 16037,
+          "sha256": "5f1606e2c9b0f2c496558e8f64f1794f6776fb8fbaa7173563f195e11f87c3f4"
+        }
+      },
+      "patch_before": {
+        "path": "PATCH_BEFORE_FMT.diff",
+        "bytes": 12003,
+        "sha256": "ecd500c22fa388c14d08793ac22ba11f4738597c1d1ce3c83ddb5210947b0fe6"
+      },
+      "patch_after": {
+        "path": "PATCH_AFTER_FMT.diff",
+        "bytes": 12003,
+        "sha256": "ecd500c22fa388c14d08793ac22ba11f4738597c1d1ce3c83ddb5210947b0fe6"
+      },
+      "python_full_ast_equal": true,
+      "python_ast_before_sha256": "3b9a7a32d16dc48d2fc32d7b0057623ccf0eaf02f0308545f6fdf819756376b1",
+      "python_ast_after_sha256": "3b9a7a32d16dc48d2fc32d7b0057623ccf0eaf02f0308545f6fdf819756376b1",
+      "toml_parsed_value_equal": true,
+      "diff_check_exit": 0,
+      "changed_paths": [
+        "CALLERS.toml",
+        "qa/b4-no-bypass/test_current_caller_migrations.py"
+      ],
+      "codex_rs_subtree": "0675516b80b0e28915ed8afac18c899fe6299982",
+      "codex_rs_diff_from_tested_base_empty": true,
+      "rust_tests": 0,
+      "target_writes": 0,
+      "tests_after_format": 0,
+      "native_1097_tests_remain_bound_to": "710df84a6b10afa005976c24a1108fb2a57810d3",
+      "published_source_or_evidence_refs_modified": false,
+      "authority_granted": false
+    },
+    "static_runtime_input_review": {
+      "schema": "hepta.caller-proof-static-runtime-input-review.v1",
+      "base_head": "710df84a6b10afa005976c24a1108fb2a57810d3",
+      "codex_rs_git_subtree": "0675516b80b0e28915ed8afac18c899fe6299982",
+      "codex_rs_worktree_diff": "",
+      "root_manifest": {
+        "path": "CALLERS.toml",
+        "sha256": "1f9a5858f4c8256a67baee9a7e588133752882c1a9e1d3a7e4f87a4f160376e1"
+      },
+      "crate_local_manifest": {
+        "path": "codex-rs/hepta-contracts/CALLERS.toml",
+        "sha256": "6a6966d66ec8d93c3ff9b56ec51df52a45d463c96c96d6b66b6a34721f079478",
+        "git_blob": "e09190e6bd64e48ba254c5aa00cacbe8c86fb9c4",
+        "unchanged_from_base": true
+      },
+      "rust_include": {
+        "path": "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
+        "line": 35,
+        "expression": "include_str!(\"../CALLERS.toml\")",
+        "resolved_path": "codex-rs/hepta-contracts/CALLERS.toml",
+        "refers_to_changed_root_manifest": false
+      },
+      "bazel_compile_data": {
+        "path": "codex-rs/hepta-contracts/BUILD.bazel",
+        "line": 8,
+        "label": "CALLERS.toml",
+        "resolved_package_path": "codex-rs/hepta-contracts/CALLERS.toml",
+        "refers_to_changed_root_manifest": false
+      },
+      "lexical_search": {
+        "argv": [
+          "/usr/bin/rg",
+          "--hidden",
+          "--no-ignore-vcs",
+          "--line-number",
+          "--no-heading",
+          "--fixed-strings",
+          "CALLERS.toml",
+          "--glob",
+          "*.rs",
+          "--glob",
+          "*.bzl",
+          "--glob",
+          "*BUILD*",
+          "--glob",
+          "Cargo.toml",
+          "--glob",
+          "!.git/**",
+          "."
+        ],
+        "exit_code": 0,
+        "stdout_bytes": 211,
+        "stdout_sha256": "584d3c0b609e427d0041911a0bd5832219841a39c6beb75989024d89b4d56b42",
+        "stdout_relative_path": "CALLERS_RUST_BUILD_REFERENCES.stdout",
+        "matches": [
+          "./codex-rs/hepta-contracts/src/callers_manifest_tests.rs:35:    toml::from_str(include_str!(\"../CALLERS.toml\")).expect(\"CALLERS.toml must parse\")",
+          "./codex-rs/hepta-contracts/BUILD.bazel:8:        \"CALLERS.toml\","
+        ]
+      },
+      "root_manifest_usage_observed": [
+        "Python verify_hepta_callers.py and B4 source-proof tests",
+        "hepta_ci_scope.py selects effects and lifecycle CI groups for this metadata path",
+        "hepta-engineering-control candidate protected path list"
+      ],
+      "conclusion": "No literal Rust/build include of the changed repository-root CALLERS.toml was found. The actual Rust test include and Bazel compile_data use a distinct unchanged crate-local manifest. This is a static reference inspection, not a new compiled runtime validation.",
+      "native_1097_passes_source_remains": "710df84a6b10afa005976c24a1108fb2a57810d3",
+      "native_tests_relabelled_to_new_proof_candidate": false,
+      "rust_tests": 0,
+      "builds": 0,
+      "target_writes": 0
+    },
+    "source_identity_review": {
+      "path": "joint-publication/caller-proof-review-s3/FINAL_COMMIT_REVIEW.json",
+      "bytes": 4841,
+      "sha256": "b5e402c2aba6bf80e19f2eb5cd62541904d810a6df8d9e55578ea13e4ad66604"
+    },
+    "root_review": {
+      "path": "joint-publication/root-caller-proof-review/ROOT_REVIEW.json",
+      "bytes": 2634,
+      "sha256": "2d32d56f307dcd28559afbf2487989518a25ba483f2290522467145572b16637"
+    },
+    "original_hosted_failures": [
+      {
+        "kind": "caller_set_registration_gap",
+        "source_head": "710df84a6b10afa005976c24a1108fb2a57810d3",
+        "job_id": 128860381916,
+        "run_id": 42522964021,
+        "raw_log_bytes": 53890,
+        "raw_log_sha256": "f32c9ec2beec145ba7a488c4b01fba116fec0845a0ceffda95e8d1eeb5eb5683",
+        "error": "automation_taskflow_provider_effect_bridge: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-automation/src/action_skill_driver.rs']",
+        "preserved": true
+      },
+      {
+        "kind": "caller_set_registration_gap",
+        "source_head": "7e2e9c8519ece6d223e7d94f0a2b47a6383a49f4",
+        "job_id": 128860392087,
+        "run_id": 42522965652,
+        "raw_log_bytes": 54284,
+        "raw_log_sha256": "0ea1086588984dfa77bd653c9846d5aeb6c8275b65d9c95f5832807538523f93",
+        "preserved": true
+      },
+      {
+        "kind": "fence_startup_before_checkout",
+        "source_head": "710df84a6b10afa005976c24a1108fb2a57810d3",
+        "job_id": 128860287201,
+        "run_id": 42522964021,
+        "error": "unsupported_resolver_layout; Fence resident service exited before readiness",
+        "blob_checker_executed": false,
+        "blob_violation_count": null,
+        "actual_blob_base": null,
+        "actual_blob_head": null,
+        "rerun_requests": 1,
+        "rerun_response": "HTTP403: The workflow run containing this job is already running",
+        "new_rerun_attempt_created": false,
+        "automatic_approval_rejection": false,
+        "alternate_channel_retry": false,
+        "raw_structured_rerun_response": {
+          "path": "joint-publication/root-caller-proof-review/GITHUB_BLOB_RERUN_RESPONSE.json",
+          "bytes": 500,
+          "sha256": "fa3c93f4191fb990992573ac81c8f10dd4c5c993ebdb159904589d8718714831"
+        },
+        "preserved": true
+      }
+    ],
+    "original_evidence_blob_policy": {
+      "head": "7e2e9c8519ece6d223e7d94f0a2b47a6383a49f4",
+      "run_id": 42522965652,
+      "job_id": 128860292838,
+      "conclusion": "success"
+    },
+    "proof_limits": [
+      "Lexical source constraints and source-index/source-text mutation rejection; not compiled Rust exploit tests or a general control-flow proof.",
+      "AuthorizedProviderEffectRequest has public fields and is constructible data, not an unforgeable authority token.",
+      "Existing owner retains actual FinalUse authorization. No default goal-driver installation or new external-effect authority.",
+      "No checker, inventory, source roots, ignored paths, authority fields, or 146 existing protected rows changed."
+    ],
+    "native_runtime_tests_relabelled": false,
+    "rust_tests": 0,
+    "builds": 0,
+    "target_writes": 0,
+    "scientific_admission": "S0-S5 HOLD",
+    "archive": {
+      "path": "post-publication-caller-proof-evidence.zip",
+      "bytes": 299089,
+      "sha256": "eb8712d384301f852e8b597979b0c1fae9f09657809a815b595821556edd6a51",
+      "payload_file_count": 62,
+      "regular_members": 66,
+      "all_member_bytes_verified": true,
+      "all_input_bytes_rechecked": true,
+      "payload_prefix": "evidence/",
+      "original_manifest_sha256": "2ac15fddb55b31221b0fdc3d316bea7f407bad233a2a30b143e088f65dccc97a",
+      "source_identity": {
+        "head": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+        "tree": "cc6ca8d7c05a2b5d6ccc9179a570c6efc71e4d83",
+        "actual_execution": "dirty base710 + exact ecd500 patch; commit bytes verified identical"
+      },
+      "original_native_archive_modified": false
+    },
+    "lossless_metadata": [
+      {
+        "path": "caller-proof-manifest.json.gz",
+        "bytes": 4359,
+        "sha256": "3a7a8ab69e584d3f0fca283ebe7db5f1d9fad6e52e2d30b2ad2b62490678940e",
+        "uncompressed_bytes": 16516,
+        "uncompressed_sha256": "2ac15fddb55b31221b0fdc3d316bea7f407bad233a2a30b143e088f65dccc97a",
+        "source": "/home/qian-qi/work/cell-s0s5-20261108-1628/joint-publication/caller-proof-delivery-prep/snapshots/final-v1/MANIFEST.json"
+      },
+      {
+        "path": "caller-proof-archive-result.json.gz",
+        "bytes": 1151,
+        "sha256": "6beefc3cb0b8b52e36f73902861449a66bdc7bcb9103dd243e77fca454913e6a",
+        "uncompressed_bytes": 2210,
+        "uncompressed_sha256": "9f0de087564dc7949e0ff7e2deed0a83acb89d5c341bcda082fdcdcb316e11b9",
+        "source": "/home/qian-qi/work/cell-s0s5-20261108-1628/joint-publication/caller-proof-delivery-prep/snapshots/final-v1/ARCHIVE_RESULT.json"
+      },
+      {
+        "path": "caller-proof-seal-execution.json.gz",
+        "bytes": 3648,
+        "sha256": "a0006b4c63f7f27cedd952e3d8e64300ff8cf6d32f66d6fd2498cd4791ec0485",
+        "uncompressed_bytes": 9658,
+        "uncompressed_sha256": "7d544c826e0c5aa06dd3bffa192b0e55b445481ebf84e8a55297449ad36476da",
+        "source": "/home/qian-qi/work/cell-s0s5-20261108-1628/joint-publication/caller-proof-publication/SEAL_EXECUTION.json"
+      }
+    ],
+    "receipt_metadata_is_historical": true,
+    "source_receipt_scope": "CODE_READY and validation/format receipts are original pre-publication snapshots. Their pushed/ref-modified flags describe that time."
   }
 }
