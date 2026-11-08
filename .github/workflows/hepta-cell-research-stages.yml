@@ -7,7 +7,11 @@ on:
     paths:
       - scripts/hepta_cell_research_gate.py
       - scripts/test_hepta_cell_research_gate.py
+      - scripts/hepta_cell_research_foundation.py
+      - scripts/test_hepta_cell_research_successor.py
       - scripts/hepta_cell_joint_config.py
+      - scripts/test_hepta_cell_joint_config.py
+      - qualification/cell-research-stages-20261108/**
       - .github/workflows/hepta-cell-research-stages.yml
   workflow_dispatch:
 
@@ -41,10 +45,32 @@ jobs:
           records="$RUNNER_TEMP/cell-research-stages"
           mkdir -p "$records"
           git rev-parse HEAD HEAD^{tree} > "$records/source.txt"
-          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 10 \
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 19 \
             --output "$records/research-gate.json" \
             -- python3 -B -m unittest discover -s scripts \
             -p test_hepta_cell_research_gate.py -v
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 23 \
+            --output "$records/joint-configuration.json" \
+            -- python3 -B -m unittest discover -s scripts \
+            -p test_hepta_cell_joint_config.py -v
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 8 \
+            --output "$records/successor-binding.json" \
+            -- python3 -B -m unittest discover -s scripts \
+            -p test_hepta_cell_research_successor.py -v
+          python3 -B scripts/hepta_cell_research_gate.py \
+            qualification/cell-research-stages-20261108/CURRENT_INPUT.json \
+            --source-root . \
+            --artifact-root qualification/cell-research-stages-20261108 \
+            --output "$records/current-review.json"
+          python3 - "$records/current-review.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          expected = Path("qualification/cell-research-stages-20261108/CURRENT_RESULT.json")
+          if json.loads(Path(sys.argv[1]).read_text()) != json.loads(expected.read_text()):
+              raise SystemExit("Current research review differs from its retained result")
+          PY
           test -z "$(git status --porcelain)"
       - name: Retain results for the exact source
         if: always()
