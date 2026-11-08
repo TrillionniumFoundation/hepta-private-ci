@@ -236,6 +236,9 @@ jobs:
           "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m unittest -v \
             ndu_semantic_state.test_state ndu_semantic_state.test_materials \
             ndu_semantic_state.test_source_pool ndu_semantic_state.test_acquire_vizwiz \
+            ndu_semantic_state.test_review_packet \
+            ndu_semantic_state.test_evaluation_sources \
+            ndu_semantic_state.test_official_vqa_accuracy \
             ndu_semantic_state.test_torch_adapter \
             2>&1 | tee "$RUNNER_TEMP/ndu-reference-evidence/semantic-contracts.log"
           git diff --check
