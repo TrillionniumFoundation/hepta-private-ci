@@ -159,12 +159,20 @@ stream_max_retries = 0
         .await?;
     let auto_env = app_server.auto_env()?;
     let environment_id = auto_env.selection().environment_id.clone();
-    let plugin_dir = auto_env.selection().cwd.join("plugin")?;
+    let file_system = auto_env.environment().get_filesystem();
+    // Authorized reads compare the stable handle's physical path with the
+    // granted workspace. Resolve the fixture through its executor so Darwin
+    // temporary-directory aliases do not name a different permission root.
+    let cwd = file_system
+        .canonicalize(&auto_env.selection().cwd, /*sandbox*/ None)
+        .await?;
+    let mut environment = app_server.auto_env_params()?;
+    environment.cwd = cwd.clone().into();
+    let plugin_dir = cwd.join("plugin")?;
     let manifest_dir = plugin_dir.join(".codex-plugin")?;
     let skill_dir = plugin_dir.join("skills/deploy")?;
     let agents_dir = skill_dir.join("agents")?;
     let reference_dir = skill_dir.join("references")?;
-    let file_system = auto_env.environment().get_filesystem();
     for directory in [&manifest_dir, &agents_dir, &reference_dir] {
         file_system
             .create_directory(
@@ -379,8 +387,9 @@ stream_max_retries = 0
     timeout(READ_TIMEOUT, app_server.initialize()).await??;
 
     let request_id = app_server
-        .send_thread_start_request_with_auto_env(ThreadStartParams {
+        .send_thread_start_request(ThreadStartParams {
             model: Some("mock-model".to_string()),
+            environments: Some(vec![environment]),
             selected_capability_roots: Some(vec![SelectedCapabilityRoot {
                 id: "demo-plugin@1".to_string(),
                 location: CapabilityRootLocation::Environment {

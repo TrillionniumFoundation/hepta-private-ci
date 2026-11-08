@@ -228,7 +228,8 @@ impl PairFleet {
             agents.push(agent_id);
         }
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
-        let fixture_binary = std::env::current_exe()?;
+        // Bazel runfiles may expose the current test executable through a symlink.
+        let fixture_binary = std::env::current_exe()?.canonicalize()?;
         let child_args = vec![
             "--exact".to_string(),
             "paired_child_process".to_string(),

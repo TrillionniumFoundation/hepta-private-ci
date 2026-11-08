@@ -556,11 +556,9 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchClaimOutcome> {
-        let lease_expires_at_ms = if self.short_dispatch_lease {
-            now_ms + 250
-        } else {
-            lease_expires_at_ms
-        };
+        // Keep the normal claim window until dispatch is authorized. These fixtures
+        // shorten only the authorized lease so setup cannot expire before the
+        // intended Core admission, completion, or recovery fault is reached.
         self.inner.claim_client_binding_dispatch(
             process_lock,
             queued_item_id,

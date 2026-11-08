@@ -538,9 +538,10 @@ async fn terminal_bound_lease_transitions_audit_compact_journal_atomically() {
     // through a test-only trigger drop; the lifecycle transaction itself must
     // still leave the lease row count and compact row count unchanged.
     for (index, transition) in ["release", "rollback", "expire"].into_iter().enumerate() {
-        let expiry_offset = if transition == "expire" { 1 } else { 3_600 };
+        // Build an active durable fixture before selecting the expiry observation.
+        // The existing test clock seam exercises the same terminal transaction.
         let (_temp, store, lease, executor, current_fence, checkpoint) =
-            open_bound_executor(130 + index as u8, expiry_offset).await;
+            open_bound_executor(130 + index as u8, 3_600).await;
         let current = snapshot(current_fence);
         executor
             .append_intent("op:terminal-compact-tamper", &checkpoint, &current)
@@ -578,24 +579,16 @@ async fn terminal_bound_lease_transitions_audit_compact_journal_atomically() {
         .await
         .expect("tamper compact event");
 
-        if transition == "expire" {
-            let expiry = lease
-                .binding()
-                .expect("bound lease binding")
-                .lease_expires_at_unix_seconds;
-            for _ in 0..120 {
-                if unix_seconds() >= expiry {
-                    break;
-                }
-                tokio::time::sleep(Duration::from_millis(25)).await;
-            }
-            assert!(unix_seconds() >= expiry, "test lease did not expire");
-        }
-
         let result = match transition {
             "release" => lease.release().await.map(|_| ()),
             "rollback" => lease.rollback_lease().await.map(|_| ()),
-            "expire" => lease.expire_lease().await.map(|_| ()),
+            "expire" => {
+                let expiry = lease
+                    .binding()
+                    .expect("bound lease binding")
+                    .lease_expires_at_unix_seconds;
+                lease.expire_lease_at_unix_seconds(expiry).await.map(|_| ())
+            }
             _ => unreachable!("test transition"),
         };
         assert!(
