@@ -478,8 +478,8 @@ id = "automation_taskflow_provider_effect_bridge"
 symbol = "ProviderEffectTaskFlowDriver::new"
 definition_path = "codex-rs/hepta-automation/src/authorized_effect.rs"
 definition_markers = ["pub struct ProviderEffectTaskFlowDriver", "pub async fn execute_authorized_taskflow_effect_async", "ProviderEffectKey::for_logical_effect"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-automation/src/action_skill_driver.rs"]
+caller_markers = ["GoalCheckedActionSkillDriver", "contract.digest()?", "observer.observer_id()", "self.provider.dispatch(request)"]
 
 
 [[boundary]]
@@ -2225,3 +2225,105 @@ path = "codex-rs/hepta-memory/src/cognitive_store_barrier.rs"
 required = ["let transaction = self\n            .pool\n            .begin_with(\"BEGIN IMMEDIATE\")"]
 forbidden = ["AllowVerifier", "permit_all"]
 required_function_order = [{function = "fn begin_write_transaction(", sequence = ["self.commit_gate.require_open()?", "let transaction = self", ".begin_with(", "if let Some(publication) = &self.bound_publication", "publication.begin_writes().await.map_err(unavailable)?", "else if self.commit_gate.is_managed()", "drop(self.commit_gate.transition_attempt())", "return Err(CognitiveStoreError::Unavailable(", "self.commit_gate.require_open()?", "Ok(transaction)"]}]
+
+# ACT-1 is a decorator over the original durable/FinalUse owner, not an authority.
+# These source-order checks are lexical invariants, not a control-flow proof.
+[[protected_file]]
+path = "codex-rs/hepta-automation/src/action_skill_driver.rs"
+required = ["pub struct GoalCheckedActionSkillDriver", "impl<A: ProviderEffectAdapter, O: ActionSkillObserver> AsyncAuthorizedEffectDriver"]
+forbidden = []
+required_order = [
+  [
+    "impl<A: ProviderEffectAdapter, O: ActionSkillObserver> AsyncAuthorizedEffectDriver",
+    "for GoalCheckedActionSkillDriver<A, O>",
+    "fn dispatch<'a>(",
+    "Box::pin(async move {",
+    "if request.intent.destination_id != self.contract.destination_id",
+    "|| self.provider.adapter().capability()",
+    "!= ProviderEffectIdempotencyCapability::KeyAndStatusLookup",
+    "return Err(AuthorizedEffectDriverError::BeforeProviderContact);",
+    "let (binding, invocation) = self",
+    ".bind_invocation(",
+    "request.intent_digest,",
+    "&request.provider_intent,",
+    "request.wire_payload,",
+    ".map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;",
+    "let initiation = tokio::time::timeout(",
+    "self.observer.check_initiation(&binding, &invocation.body),",
+    "let Ok(Ok(initiation)) = initiation else {",
+    "return Err(AuthorizedEffectDriverError::BeforeProviderContact);",
+    "if initiation.binding != binding",
+    "|| initiation.observer_id != self.contract.observer_id",
+    "|| initiation.condition != ActionConditionV1::Met",
+    "|| Sha256Digest::parse(initiation.evidence_digest.as_str()).is_err()",
+    "return Err(AuthorizedEffectDriverError::BeforeProviderContact);",
+    "let provider = match tokio::time::timeout(",
+    "self.provider.dispatch(request),",
+    "Ok(Ok(receipt)) => receipt,",
+    "_ => unresolved(&binding,",
+    "Ok(self.check_goal(&binding, provider).await)",
+  ],
+]
+[[protected_file.required_function_order]]
+function = "fn new("
+sequence = [
+  "let contract_digest = contract.digest()?;",
+  "if observer.observer_id() != contract.observer_id",
+  "return Err(ActionSkillError::Contract);",
+  "let provider = ProviderEffectTaskFlowDriver::new(contract.destination_id.clone(), adapter)",
+  "Ok(Self {",
+]
+[[protected_file.required_function_order]]
+function = "fn bind_invocation("
+sequence = [
+  "if wire_payload.len() > self.contract.budget.max_wire_bytes as usize",
+  "|| provider_intent.validate().is_err()",
+  "|| Sha256Digest::parse(effect_intent_digest.as_str()).is_err()",
+  "|| Sha256Digest::for_bytes(wire_payload) != provider_intent.payload_sha256",
+  "return Err(ActionSkillError::Invocation);",
+  "let invocation: ActionSkillInvocationV1 =",
+  "serde_json::from_slice(wire_payload).map_err(|_| ActionSkillError::Invocation)?;",
+  "if invocation.schema_version != ACTION_SKILL_SCHEMA_VERSION",
+  "|| invocation.contract_digest != self.contract_digest",
+  "|| invocation.destination_id != self.contract.destination_id",
+  "return Err(ActionSkillError::Invocation);",
+  "ActionSkillBindingV1 {",
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-automation/src/authorized_effect.rs"
+required = ["pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>", ".with_verified_use_async(token, expected_binding, || driver.dispatch(request))"]
+forbidden = []
+required_order = [
+  [
+    "pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>(",
+    "let provider_intent = provider_effect_intent(intent, wire_payload)?;",
+    "let operation_intent = intent.operation_intent_v1()?;",
+    "let intent_digest = intent.digest()?;",
+    ".read_taskflow_step(&intent.run_id, &intent.step_id, intent.attempt, fence)",
+    "if current.state != TaskFlowStepState::Claimed",
+    "|| current.intent_digest != intent_digest",
+    "|| current.payload_digest != *payload_digest",
+    "if expected_binding.subject_id != intent.subject_id",
+    "|| expected_binding.destination_id != intent.destination_id",
+    "|| expected_binding.request_sha256 != digest_bytes(&intent_digest)?",
+    "|| expected_binding.scope_sha256 != digest_bytes(&intent.final_use_scope_digest)?",
+    "|| expected_binding.payload_sha256 != digest_bytes(payload_digest)?",
+    "return Err(AuthorizedEffectError::BindingMismatch);",
+    "if let Some(existing) = self",
+    ".effect_dispatch_attempt(&intent.run_id, &intent.step_id, intent.attempt)",
+    "ensure_attempt_binding(",
+    "return match self",
+    ".settle_effect_dispatch_attempt(&existing, fence)",
+    "let token = authority",
+    ".claim(signed_grant, expected_binding)",
+    ".begin_effect_dispatch_attempt(",
+    "EffectDispatchStart::Existing(durable) => {",
+    "return match self.settle_effect_dispatch_attempt(&durable, fence).await?",
+    "let request = AuthorizedProviderEffectRequest {",
+    "let provider = match authority",
+    ".with_verified_use_async(token, expected_binding, || driver.dispatch(request))",
+    ".await",
+    "validate_receipt_digest(&provider.receipt_digest)?;",
+  ],
+]
