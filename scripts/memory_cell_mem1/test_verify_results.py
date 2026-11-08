@@ -1,6 +1,7 @@
 """Adversarial retained-evidence tests; fixtures do not execute a native model."""
 
 import copy
+from dataclasses import asdict
 import hashlib
 import json
 from pathlib import Path
@@ -9,7 +10,7 @@ import sys
 import tempfile
 import unittest
 
-from environment import panels, schedule
+from environment import Owner, panels, schedule
 from verify_results import verify
 
 
@@ -27,7 +28,37 @@ class EvidenceVerificationTests(unittest.TestCase):
         self.folder = self.root / "rag-seed-0"
         self.folder.mkdir()
         plan = schedule(0)
-        dump(self.root / "inputs.json", {"0": {"schedule": plan}})
+        owner, seen = Owner(0), set()
+        owner_change = getattr(self, "owner_change", True)
+        dump(
+            self.root / "inputs.json",
+            {
+                "0": {
+                    "schedule": plan,
+                    "initial_facts": [asdict(f) for f in owner.facts.values()],
+                }
+            },
+        )
+
+        def answer(query):
+            facts = [owner.resolve(source) for source in query]
+            blocked = [
+                fact is None or source not in seen for source, fact in zip(query, facts)
+            ]
+            expected = [fact.label for fact in facts] if all(facts) else None
+            output = expected if not any(blocked) else None
+            return {
+                "output": output,
+                "expected": expected,
+                "blocked": blocked,
+                "correct": output == expected,
+                "eligible": all(facts),
+                "answered": output is not None,
+                "wrong_assertion": False,
+                "stale_assertion": False,
+                "invalid_assertion": False,
+            }
+
         budget = {
             "kernel_multiplications": 5_000_000,
             "owner_checks": 100_000,
@@ -36,7 +67,7 @@ class EvidenceVerificationTests(unittest.TestCase):
         }
         self.manifest = {
             "schema": "hepta-mem1-reference-v1",
-            "owner_change": True,
+            "owner_change": owner_change,
             "arms": ["rag"],
             "seeds": [0],
             "planned_runs": 1,
@@ -52,10 +83,19 @@ class EvidenceVerificationTests(unittest.TestCase):
         state = b"retained state fixture"
         digest = hashlib.sha256(state).hexdigest()
         for phase, sources in plan:
-            generation = 1 if phase == "A1" else 2
+            generation = 2 if owner_change and phase != "A1" else 1
             base = {"arm": "rag", "seed": 0, "generation": generation, "phase": phase}
             if phase == "B":
-                self.events.append({**base, "event": "owner_change", "step": offset})
+                if owner_change:
+                    owner.change_rules_and_revoke()
+                    seen.difference_update({"A:8", "A:9", "A:10", "A:11"})
+                self.events.append(
+                    {
+                        **base,
+                        "event": "owner_change" if owner_change else "owner_stationary",
+                        "step": offset,
+                    }
+                )
             for i, source in enumerate(sources):
                 step = offset + i + 1
                 self.events.append(
@@ -65,10 +105,10 @@ class EvidenceVerificationTests(unittest.TestCase):
                         "step": step,
                         "sources": [source],
                         "before_update": True,
-                        "output": [0],
-                        "expected": [0],
+                        **answer([source]),
                     }
                 )
+                seen.add(source)
                 if i == len(sources) // 2:
                     self.events.append(
                         {
@@ -95,17 +135,14 @@ class EvidenceVerificationTests(unittest.TestCase):
                             "step": offset,
                             "panel": panel,
                             "sources": list(query),
-                            "output": [0] * len(query),
-                            "expected": [0] * len(query),
-                            "correct": True,
-                            "stale_assertion": False,
-                            "eligible": True,
+                            **answer(query),
                         }
                     )
+                rows = self.events[-len(queries) :]
                 summaries[phase][panel] = {
                     "n": len(queries),
-                    "accuracy": 1.0,
-                    "coverage": 1.0,
+                    "accuracy": sum(row["correct"] for row in rows) / len(rows),
+                    "coverage": sum(row["answered"] for row in rows) / len(rows),
                     "wrong_assertions": 0,
                     "stale_assertions": 0,
                     "invalid_assertions": 0,
@@ -114,10 +151,17 @@ class EvidenceVerificationTests(unittest.TestCase):
             "arm": "rag",
             "seed": 0,
             "status": "completed",
-            "owner_change": True,
+            "owner_change": owner_change,
             "panels": summaries,
             "retention_delta": 0.0,
-            "b_prequential_accuracy": 1.0,
+            "b_prequential_accuracy": sum(
+                row["correct"]
+                for row in self.events
+                if row["event"] == "prequential"
+                and row["phase"] == "B"
+                and row["sources"][0].startswith("B:")
+            )
+            / 96,
             "native_recoveries": [True, True, True],
             "coverage_floor_passed": True,
             "common_budget_cap": budget,

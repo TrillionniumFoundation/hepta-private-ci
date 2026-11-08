@@ -1,0 +1,136 @@
+{
+  "baseline_commit": "afa0638cc26792772830f1f9ec87bc154a20a430",
+  "files": [
+    {
+      "ast_sha256": "705a15fbb289c5a50e188492f06d7eda04916cdf26d45817cc77be763e06a5c5",
+      "baseline_commit": "afa0638cc26792772830f1f9ec87bc154a20a430",
+      "baseline_git_blob_sha1": null,
+      "baseline_sha256": null,
+      "bytes": 5310,
+      "candidate_git_blob_sha1": "268152aa2f6b871b733c6fc37e8f698de3f8e8ee",
+      "candidate_sha256": "2f49acd4776fe37ddedadf0be2363a434ce583195508aa6d7f7392290617de58",
+      "local_path": "/workspace/scratch/14afb8ae9d10/memory/code/scripts/memory_cell_mem1/audit_truth.py",
+      "operation": "create",
+      "path": "scripts/memory_cell_mem1/audit_truth.py"
+    },
+    {
+      "ast_sha256": "249d8b3ee9240c7ac998ad7746b3d98ff58ac0e22869fed2576aeb31f263a9d3",
+      "baseline_commit": "afa0638cc26792772830f1f9ec87bc154a20a430",
+      "baseline_git_blob_sha1": "2763b80443ecf70e9d359f8511ae15277ed620f6",
+      "baseline_sha256": "f4ada0efeb82d3ef045e1936a40e8bd797674b574e5cc5b68763bb1a78eb68f3",
+      "bytes": 11930,
+      "candidate_git_blob_sha1": "65da7df8b240025856b4ad1110455c16ff460c63",
+      "candidate_sha256": "75893c202c214f8bf03d1dc19401e7623055521c76d0cd11d122f4649b3ed345",
+      "local_path": "/workspace/scratch/14afb8ae9d10/memory/code/scripts/memory_cell_mem1/audit_evidence.py",
+      "operation": "update",
+      "path": "scripts/memory_cell_mem1/audit_evidence.py"
+    },
+    {
+      "ast_sha256": "ccc92d5ac8609d20332cf32bb72972c19bce9a3c5c0559556a2e0364eecaac9d",
+      "baseline_commit": "afa0638cc26792772830f1f9ec87bc154a20a430",
+      "baseline_git_blob_sha1": "a78aed6b7a4413c91da1bcbec91dd3726cfe26d5",
+      "baseline_sha256": "515f47a57dfb07fcac0d5260f3eed1e53c4cd2e51660782ee2e6088a07446448",
+      "bytes": 8103,
+      "candidate_git_blob_sha1": "bee829d9cc6527cf989349a919f58578c99eef7a",
+      "candidate_sha256": "250d7866624f280e27712d5b1b47faf987d22d7b8532dd82fb7b2a78d4ab73d2",
+      "local_path": "/workspace/scratch/14afb8ae9d10/memory/code/scripts/memory_cell_mem1/verify_results.py",
+      "operation": "update",
+      "path": "scripts/memory_cell_mem1/verify_results.py"
+    },
+    {
+      "ast_sha256": "b4a055183d4383acf06a95a2c41e984b8784a693b8d157e214047e4053283ec3",
+      "baseline_commit": "afa0638cc26792772830f1f9ec87bc154a20a430",
+      "baseline_git_blob_sha1": null,
+      "baseline_sha256": null,
+      "bytes": 8306,
+      "candidate_git_blob_sha1": "73858a0c296d5acac994bcc97ae8e1cb89d9d287",
+      "candidate_sha256": "9baad007e4dbe6953c434a648495bafcbd8ebc85bfba6b72b70089b1766a2da0",
+      "local_path": "/workspace/scratch/14afb8ae9d10/memory/code/scripts/memory_cell_mem1/test_audit_truth.py",
+      "operation": "create",
+      "path": "scripts/memory_cell_mem1/test_audit_truth.py"
+    },
+    {
+      "ast_sha256": "acbfbdabc117b04d9f836d5425353c30d518f928454a6bf98c26e2b899714ee3",
+      "baseline_commit": "afa0638cc26792772830f1f9ec87bc154a20a430",
+      "baseline_git_blob_sha1": "6c584773f167fba24f4c6066158f010d2640df15",
+      "baseline_sha256": "0a0b5e918cb1d902ed2ceb51e03139c5496f9591bdf10432bb15704409f289c6",
+      "bytes": 19904,
+      "candidate_git_blob_sha1": "d68055d5296387ae1bcdc3bd9425a56b21dc4ca8",
+      "candidate_sha256": "38a826fc55489f4bc8a5f71f134e6dfda919160f70c9ea676e9a4d66a8a67984",
+      "local_path": "/workspace/scratch/14afb8ae9d10/memory/code/scripts/memory_cell_mem1/test_verify_results.py",
+      "operation": "update",
+      "path": "scripts/memory_cell_mem1/test_verify_results.py"
+    },
+    {
+      "baseline_commit": "afa0638cc26792772830f1f9ec87bc154a20a430",
+      "baseline_git_blob_sha1": "b7786b847b5f91f45ef66c09eebf21c0482f65e7",
+      "baseline_sha256": "70cd968383610c9e06947a428fb9aeed9f368986436efcfa239901c73753d492",
+      "bytes": 2562,
+      "candidate_git_blob_sha1": "1dd6830c454422467f4aa28cb572f1daf8429cef",
+      "candidate_sha256": "33bf4b66fd6fd584f3bde70985f29db5c118444264b9385f64a630697c3a7a4b",
+      "local_path": "/workspace/scratch/14afb8ae9d10/memory/code/.github/workflows/hepta-mem1-evidence-verifier.yml",
+      "operation": "update",
+      "path": ".github/workflows/hepta-mem1-evidence-verifier.yml"
+    }
+  ],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_instructions": {
+    "AGENTS_git_blob_sha1": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "AGENTS_read": true,
+    "just_fmt": "root to run after exact-source native validation in full checkout; this local projection has no Rust workspace",
+    "nested_AGENTS": "scripts/AGENTS.md and scripts/memory_cell_mem1/AGENTS.md returned GitHub 404 at the pinned SHA"
+  },
+  "schema": "hepta-mem1-frozen-truth-patch-v1",
+  "source_identity_manifest": "/workspace/scratch/14afb8ae9d10/memory/source-identities.json",
+  "verification": {
+    "kernel_rerun": false,
+    "normal_tests": 42,
+    "optimized_tests": 42,
+    "production_adoption": "NoUpdate",
+    "receipts": {
+      "mutations-baseline.json": {
+        "path": "/workspace/scratch/14afb8ae9d10/memory/mutations-baseline.json",
+        "sha256": "1821237aadd49c798af048b1cbf76f2261b391395c4565f195ec0c4d6a47c557"
+      },
+      "mutations-code.json": {
+        "path": "/workspace/scratch/14afb8ae9d10/memory/mutations-code.json",
+        "sha256": "e1c50cd9609ba290b513b969ce86c61731ec9d04ba1b2b591dfb3d7ed8e41932"
+      },
+      "reverify-dynamic.json": {
+        "path": "/workspace/scratch/14afb8ae9d10/memory/reverify-dynamic.json",
+        "sha256": "76be3161b51b04491837ddc334ceefec758b970b00003b39a3e1ad1977b8dd15"
+      },
+      "reverify-stationary.json": {
+        "path": "/workspace/scratch/14afb8ae9d10/memory/reverify-stationary.json",
+        "sha256": "cc0082ac1ffb0d227455ffbbd7062321231d368c8e4c0a12eefd91ff4f60156f"
+      },
+      "reverify-summary.json": {
+        "path": "/workspace/scratch/14afb8ae9d10/memory/reverify-summary.json",
+        "sha256": "77fb64a472a3b2c76db978b8f5115eb5db49e4f8043f98aea58cf0450a0cdb8b"
+      },
+      "source-identities.json": {
+        "path": "/workspace/scratch/14afb8ae9d10/memory/source-identities.json",
+        "sha256": "7465e2a32be83eb43a5af08a8b146231f6d55315b8929ecff222d87331536321"
+      },
+      "tests-normal.json": {
+        "path": "/workspace/scratch/14afb8ae9d10/memory/tests-normal.json",
+        "sha256": "1dd5c8fec38a5607ab9472c62671d72ddfe0ef44bb12252822dc7c289bc3bce4"
+      },
+      "tests-normal.log": {
+        "path": "/workspace/scratch/14afb8ae9d10/memory/tests-normal.log",
+        "sha256": "8562fd2ed5136d2dcb23fce24f973733e1ba0f7d149e39ca7363703a6d3c6dda"
+      },
+      "tests-optimized.json": {
+        "path": "/workspace/scratch/14afb8ae9d10/memory/tests-optimized.json",
+        "sha256": "5050f87e72b2577d835fb40ab89cc300cfedbc7756c46b72237ca440753d8b7e"
+      },
+      "tests-optimized.log": {
+        "path": "/workspace/scratch/14afb8ae9d10/memory/tests-optimized.log",
+        "sha256": "8eb83baf03224545bb108c2bcbcd515a1565334ae81946cc9f58803e7c2a3a1b"
+      }
+    },
+    "retained_queries_reverified": 21000,
+    "retained_runs_reverified": 70,
+    "scientific_qualification": "HOLD"
+  }
+}
