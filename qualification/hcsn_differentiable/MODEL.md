@@ -198,10 +198,10 @@ timestamps; a rate is in Hz only when those units are seconds.
 | --- | --- | --- | --- |
 | `E(V;V_b)` | Original He--Xiong equity value under the financial model's cash flows, debt rollover, and endogenous default boundary. Equity value matching and smooth pasting belong to that model's optimal boundary. | Currency, or a consistently normalized financial value | **Not implemented**; `call` is not this equity function. |
 | `C_T(x)` | Killed single-cycle value: active running reward until first hit, plus terminal reward only on survival; the displayed definition below has zero payoff on absorption. | Reward units | Its constant-flow/terminal components are evaluated for one interval; risk and hit payoff are separate terms. |
-| `U_T(x)` or `U(x)` | Total regenerative finite-horizon or perpetual value, including repeated events, delays, reset continuations, and terminal payoff paid once. | Reward units | **No global U solver** is implemented. Repeatedly summing `call` does not give U. |
+| `U_T(x)` or `U(x)` | Total regenerative finite-horizon or perpetual value, including repeated events, delays, reset continuations, and terminal payoff paid once. | Reward units | Fixed-policy continuum `U` and `U_T` are implemented in `regenerative.py` and `finite_renewal.py`; `value.py` separately evaluates the projected chain. Summing `call` does not give U. |
 | `F(T,x)` | `P_x(tau_0<=T)`, the first-hit CDF of one active killed cycle. | Dimensionless probability in `[0,1]` | Analytic primitive. The API's `risk` is the corresponding *one-interval* event probability integrated over its current active/refractory basis. |
-| `M(t)` | `E[N_t]`, the expected cumulative number of boundary-hit events after episode start; it may exceed one. | Expected event count (dimensionless count) | Add interval `expected_events` for a fixed propagated law. With observation filtering these are successive conditional interval expectations, not a smoothed global first-hit probability. |
-| `J(t)` | `dM(t)/dt`, the regenerative event-rate density; after resets it differs from the first-hit density `f(t,x)=dF/dt`. | Expected events per time unit | No continuous-time J solver is exposed. For `dt>0`, `expected_events/dt` is an **interval-average** conditional rate, not instantaneous J. |
+| `M(t)` | `E[N_t]`, the expected cumulative number of boundary-hit events after episode start; it may exceed one. | Expected event count (dimensionless count) | `finite_renewal.py` gives the fixed-policy continuum reference. Summed projected interval counts refer to the projected law. With observation filtering they are successive conditional interval expectations. |
+| `J(t)` | `dM(t)/dt`, the regenerative event-rate density; after resets it differs from the first-hit density `f(t,x)=dF/dt`. | Expected events per time unit | `finite_renewal.py` gives the fixed-policy analytic reference. `expected_events/dt` remains an **interval-average** conditional rate, not instantaneous J. |
 | `G_q(T,x)` | `E_x[exp(-q*tau_0) 1_{tau_0<=T}]`, a discounted first-hit mass. | Dimensionless discounted count | Analytic primitive; `1-G_q` is not survival. |
 | `call` | Declared finite-interval running/hit/terminal reward readout below. | Reward units, with `c_a` in reward/time, `c_h` in reward/event, and `c_T` in reward | Implemented engineering feature, not E or a global U. |
 
@@ -283,10 +283,114 @@ U(x)=C(x)+\psi_q(x)[r_{\rm sp}+e^{-qd}U(x_r)],\qquad
 \exp\!\left[-\frac{\mu+\sqrt{\mu^2+2q\sigma^2}}{\sigma^2}x\right].
 \]
 
-That global `U` solver is **not implemented** in this candidate. Its reset
-boundary condition differs from permanently killed equity value matching.
-The module is not the full He--Xiong debt/equity model, a put/call replication,
-a QVI solver, or a proof that a network learned an optimal free boundary.
+The fixed-policy perpetual solution is now implemented in `regenerative.py`.
+Write `a=c_a`, `h=c_h`, `g(x)=psi_q(x)`, `eta=exp(-q*d)` and distinguish
+the zero-absorption-payoff `C` above from `C^(a,h)`, which includes one hit:
+
+\[
+C^{(a,h)}(x)=a\frac{1-g(x)}q+h g(x),\qquad
+U(x_r)=\frac{C^{(a,h)}(x_r)}{1-\eta g(x_r)},
+\]
+
+\[
+U(x)=C^{(a,h)}(x)+g(x)\eta U(x_r),\qquad
+U_{\rm ref}(r)=e^{-qr}U(x_r).
+\]
+
+The hit payoff is paid on entering refractory state, so `U_ref` does not pay
+it again. The no-reset control has `U=C^(a,h)` and zero absorbing-state value.
+The implementation uses a rationalized positive Laplace exponent and
+`expm1` for occupation and the renewal denominator. Analytic integrals over
+uniform active cells, the returning exponential tail, and uniform remaining
+times provide `basis_perpetual_value`; these are continuum values of the
+reconstructed densities, not of the repeatedly projected chain.
+
+For the projected chain, `value.perpetual_basis_value` separately solves
+
+\[
+(I-e^{-q\Delta t}P^{QPR}_{\Delta t})u
+=c_a A_q+c_hG_q.
+\]
+
+Its measured residual amplification is an **estimate**, not a certified
+floating-point bound. `value.finite_basis_value` uses backward continuation
+and pays `c_T` only at the final horizon, including for empty or zero-padded
+schedules. Both APIs evaluate a fixed unconditioned law; they do not account
+for the network's observation filtering, content updates, or policy changes.
+The explicit `interval_value` name aliases legacy `call` without changing
+network outputs or checkpoint semantics.
+
+### Finite-horizon renewal reference
+
+For positive distance `x`, fixed positive delay `d`, and the same `mu,sigma`
+after every reset, the first-passage-time convolution is additive in distance.
+The time of event `n` has the law `(n-1)d + tau_(x+(n-1)x_r)`. Consequently,
+with nonpositive deadlines contributing zero, the finite sums are
+
+\[
+M_x(T)=\sum_{k\ge0}F(T-kd,x+kx_r),\qquad
+J_x(T)=\sum_{k\ge0}f(T-kd,x+kx_r),
+\]
+
+\[
+H_q(T)=\sum_{k\ge0}e^{-qkd}G_q(T-kd,x+kx_r).
+\]
+
+`H_q` is the discounted **repeated-event** count and differs from the
+single-cycle `G_q`. Only `floor(T/d)+1` terms can contribute. Writing
+`B(T)=M(T)-M(T-d)` for refractory occupancy gives
+
+\[
+R_q(T)=\frac{H_q(T)-e^{-qd}H_q(T-d)-e^{-qT}B(T)}q,
+\quad A_q^{\rm reg}(T)=\frac{1-e^{-qT}}q-R_q(T),
+\]
+
+\[
+U_T(x)=c_a A_q^{\rm reg}(T)+c_hH_q(T)
++c_T e^{-qT}[1-B(T)].
+\]
+
+`finite_renewal.py` exposes these quantities separately, with stable
+differences where possible and explicit unresolved-cancellation rejection.
+It bounds the number of terms and requires positive deterministic delay;
+this implementation does not qualify zero-delay infinite sums or every
+long-horizon/near-cancellation parameter combination. The tests compare
+against independent density/occupation integration, `dM/dT=J`, renewal and
+perpetual limits. These are continuum references, not claims of exact QPR
+time composition or network forecasting quality.
+
+The reset boundary condition differs from permanently killed equity value
+matching. This remains a fixed-policy neural model, not the full He--Xiong
+debt/equity model, put/call replication, or an endogenous optimum.
+
+### Optimal-boundary research is a separate problem
+
+This candidate does not optimize intervention timing or solve a QVI. A new
+optimal-intervention study must first specify continuation rewards, admissible
+interventions, reset choices, costs, and post-intervention delay. For a
+maximization convention a possible formulation is
+`max(LU - qU + a, M[U] - U) = 0`, where `M` is the explicitly declared
+intervention operator. Value matching and smooth pasting must be justified
+for that model, including regularity and transversality, not imposed on F/G.
+A learned static threshold is not proof that these optimality conditions hold.
+
+### Measured approximation budgets
+
+`error_budget.json` declares fixed fixture limits before execution.
+`python -m qualification.hcsn_differentiable.error_budget --output NEW.json`
+compares the projected perpetual value against the exact exponential moment
+of one common conditioned-Gaussian initial law. It separately records initial
+projection error, active-space refinement, remaining-time refinement, tail
+extension at fixed cell width, time-step halving, quadrature refinement,
+mass drift, and linear-solve residual estimates. An unaligned time fixture
+exercises remaining-time reprojection. Limits are not relaxed after failure.
+Changing the grid creates a new candidate and retains the failed attempt.
+
+The main value gate applies to the declared baseline profile of each fixture;
+refinement variants have separate sensitivity gates and retain their total
+errors. Sensitivities are not independent or additive certified error bounds.
+Passing these fixtures does not qualify the full parameter box, arbitrary
+irregular timestamps, training trajectories, or the inexpensive default grid.
 
 ## 7. Explicit no-reset control
 
