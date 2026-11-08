@@ -12,6 +12,9 @@ use crate::*;
 #[path = "circuit_legacy_recovery_tests.rs"]
 mod legacy;
 
+#[path = "circuit_expired_recovery_tests.rs"]
+mod expired;
+
 fn command(run: &CircuitRunV2, id: &str, event: CircuitEventV2, now_ms: u64) -> CircuitCommandV2 {
     CircuitCommandV2 {
         run_id: run.run_id().to_string(),

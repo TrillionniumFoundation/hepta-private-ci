@@ -16,6 +16,7 @@ use crate::TaskFlowError;
 use crate::TaskFlowFence;
 use crate::circuit_history::CircuitFenceIdentityV2;
 use crate::circuit_history::CircuitLedgerEventV2;
+use crate::circuit_history::CircuitRecoverySettlementV2;
 use crate::circuit_journal;
 use crate::circuit_journal::encode;
 use crate::circuit_journal::unavailable;
@@ -136,6 +137,25 @@ impl AutomationStore {
             lease_duration_ms: claim.lease_duration_ms,
         };
         self.apply_circuit_ledger(&claim.run_id, &claim.command_id, &event)
+            .await
+    }
+
+    /// Stop an expired run and settle one original receipt in the same event.
+    /// A higher fence enters settlement-only mode; subsequent receipts may use
+    /// that exact fence. No lease or dispatch is issued, and the event consumes
+    /// a reserved receipt slot even when recovery lease renewals are exhausted.
+    pub async fn reconcile_expired_circuit_computation(
+        &self,
+        request: &CircuitRecoverySettlementV2,
+    ) -> Result<CircuitCommandReceiptV2, TaskFlowError> {
+        let event = CircuitLedgerEventV2::RecoverySettled {
+            fence: self.circuit_fence_identity(&request.fence)?,
+            expected_revision: request.expected_revision,
+            now_ms: request.now_ms,
+            execution_request_digest: request.execution_request_digest.clone(),
+            completion: request.completion.clone(),
+        };
+        self.apply_circuit_ledger(&request.run_id, &request.command_id, &event)
             .await
     }
 

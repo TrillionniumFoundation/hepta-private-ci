@@ -6,6 +6,7 @@ impl AgentdConfig {
         mut self,
         config: crate::AgentdDesktopObjectiveConfig,
     ) -> Result<Self, AgentdError> {
+        self.require_no_circuit_task_profile()?;
         config.validate()?;
         if self.notes_objective.is_some()
             || self.desktop_objective.is_some()

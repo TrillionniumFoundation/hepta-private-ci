@@ -16,6 +16,9 @@ use crate::AgentdError;
 #[path = "config_desktop.rs"]
 mod desktop;
 
+#[path = "config_circuit_task.rs"]
+mod circuit_task;
+
 #[path = "config_sockets.rs"]
 mod sockets;
 pub(crate) use sockets::AgentdSocketInputs;
@@ -121,6 +124,9 @@ pub struct AgentdConfig {
     learning_iteration_bootstrap: Option<crate::LearningIterationRuntimeBootstrapV1>,
     terminal_learning_bootstrap: Option<crate::TerminalLearningRuntimeBootstrapV1>,
     neuron_generation_bootstrap: Option<crate::NeuronGenerationRuntimeBootstrapV2>,
+    circuit_task_bootstrap: Option<crate::CircuitTaskRuntimeBootstrapV1>,
+    circuit_task_invocation:
+        Option<std::sync::Arc<dyn crate::AgentdCircuitTaskInvocationProviderV1>>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
@@ -285,6 +291,8 @@ impl AgentdConfig {
             learning_iteration_bootstrap: None,
             terminal_learning_bootstrap: None,
             neuron_generation_bootstrap: None,
+            circuit_task_bootstrap: None,
+            circuit_task_invocation: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
@@ -826,6 +834,7 @@ impl AgentdConfig {
         mut self,
         runner: std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>,
     ) -> Result<Self, AgentdError> {
+        self.require_no_circuit_task_profile()?;
         if self.intelligence_product_runner.is_some() {
             return Err(AgentdError::Invalid(
                 "intelligence product runner already configured".to_string(),
@@ -848,6 +857,7 @@ impl AgentdConfig {
         mut self,
         provider: std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>,
     ) -> Result<Self, AgentdError> {
+        self.require_no_circuit_task_profile()?;
         if self.intelligence_invocation_provider.is_some() {
             return Err(AgentdError::Invalid(
                 "intelligence invocation provider already configured".to_string(),
@@ -868,6 +878,7 @@ impl AgentdConfig {
         mut self,
         config: crate::AgentdNotesObjectiveConfig,
     ) -> Result<Self, AgentdError> {
+        self.require_no_circuit_task_profile()?;
         config.validate()?;
         if self.notes_objective.is_some()
             || self.desktop_objective.is_some()
@@ -883,6 +894,7 @@ impl AgentdConfig {
 
     #[cfg(target_os = "linux")]
     pub(crate) fn require_finite_notes_profile(&self) -> Result<(), AgentdError> {
+        self.require_no_circuit_task_profile()?;
         if self.production_writer_host.is_none()
             || self.notes_objective.is_none()
             || self.authbus_trust_file.is_none()
