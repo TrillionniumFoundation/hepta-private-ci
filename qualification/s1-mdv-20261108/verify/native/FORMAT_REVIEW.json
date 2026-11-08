@@ -1,0 +1,195 @@
+{
+  "changed_docstrings": [
+    {
+      "after": "Fail closed on a missing, altered or unplanned decision/check/budget.\n\n    The complete trajectory roster comes from the plan; reached decision frontiers\n    come from completed trajectories cross-checked against actual effect receipts.\n    Inference identity and acceptance are separate gates in ``model_summary``.\n    ",
+      "before": "Fail closed on a missing, altered or unplanned decision/check/budget.\n\nThe complete trajectory roster comes from the plan; reached decision frontiers\ncome from completed trajectories cross-checked against actual effect receipts.\nInference identity and acceptance are separate gates in ``model_summary``.\n",
+      "path": "experiments/verification_cell_verify1/model_decisions.py",
+      "qualname": "decision_bindings"
+    },
+    {
+      "after": "Rebuild effects, optional checks, reconciliation and terminal acceptance.\n\n    The loop never uses a row's claimed reached/detected/interrupted state to decide\n    which events to require. Unknown missing-ACK optional checks reconcile once and\n    continue; the reserved terminal check can read back once more after reconciliation.\n    ",
+      "before": "Rebuild effects, optional checks, reconciliation and terminal acceptance.\n\nThe loop never uses a row's claimed reached/detected/interrupted state to decide\nwhich events to require. Unknown missing-ACK optional checks reconcile once and\ncontinue; the reserved terminal check can read back once more after reconciliation.\n",
+      "path": "experiments/verification_cell_verify1/model_readbacks.py",
+      "qualname": "readback_bindings"
+    }
+  ],
+  "command_receipt_sha256": {
+    "formatter-install": "3ae51dc556d3d4d672b8017919e05b7ad8682f7a04d1a12e4afd2ced83b17112",
+    "formatter-venv": "951bd8b8cb6e032b4f479b8a6974793464e48512a9da775ca9fa1ffa4f32083c",
+    "just-fmt": "fe8cab5ffb7aae1627ba3afa31c4e2b91c8015eeef9796b1f62298c5de23cb41",
+    "retained-decisions-command": "5c5d8d34d896aa8d8a8c2694fd3d1255f815769e7fbd2c235cfa683bd478aa59",
+    "ruff-check": "d688a2cc6a18c25523e8307dc4be7b10a02fac86b93001eca11dc3b3a35ed461",
+    "ruff-format": "a811cb2b65204555037a1e776c8417ae991912100f6d95d018ea4812ca83d569",
+    "test-00": "d85ce931d759f6f27c208b16c794830c583c0d685f8fae5106e8605c2251e087",
+    "test-01": "fcddc81a0b45c6770d17e6478c1e67fc8eca02358af30ab11fc061866e1b0ea2",
+    "test-02": "d2caa10f9755af48b50e0d5bd3c20d0386008a2e9d1344883ad6212c0349759f"
+  },
+  "docstring_normalized_ast_equal": true,
+  "files": {
+    "experiments/verification_cell_verify1/__init__.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "34501e640bd290f92ece01aa58b12eb587ec88589f3c6bd62ebb000704c92913",
+      "raw_ast_equal": true,
+      "tested_sha256": "34501e640bd290f92ece01aa58b12eb587ec88589f3c6bd62ebb000704c92913",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/__init__.py"
+    },
+    "experiments/verification_cell_verify1/contracts.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "60a38923c46e3df3ad4ec357cbe0287062986e84aa8123267b5ef2954062730d",
+      "raw_ast_equal": true,
+      "tested_sha256": "60a38923c46e3df3ad4ec357cbe0287062986e84aa8123267b5ef2954062730d",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/contracts.py"
+    },
+    "experiments/verification_cell_verify1/metrics.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "3e0a9a996ad62a0feae24a9905c7885352917b195146564b04ac6b15771b302d",
+      "raw_ast_equal": true,
+      "tested_sha256": "3e0a9a996ad62a0feae24a9905c7885352917b195146564b04ac6b15771b302d",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/metrics.py"
+    },
+    "experiments/verification_cell_verify1/model_audit.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "a245eb86f080968fe8a8a5edc117ec3479be85f3eabc70a985723f4d362588df",
+      "raw_ast_equal": true,
+      "tested_sha256": "a245eb86f080968fe8a8a5edc117ec3479be85f3eabc70a985723f4d362588df",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/model_audit.py"
+    },
+    "experiments/verification_cell_verify1/model_backend.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "426cb259d8cb6bd74840460f281b4b7e238b9be689694290cf585e412136135c",
+      "raw_ast_equal": true,
+      "tested_sha256": "426cb259d8cb6bd74840460f281b4b7e238b9be689694290cf585e412136135c",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/model_backend.py"
+    },
+    "experiments/verification_cell_verify1/model_decisions.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "80172444f343d8a2fd2503cee50133abe09c74c2873a741f98d5712aef6e1264",
+      "raw_ast_equal": false,
+      "tested_sha256": "47e518b4a6a0af1eb16b1475a8e2175debea2ce8ed9993a1d272f5cc74c60347",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/input-verify-r2/verify/changes/experiments/verification_cell_verify1/model_decisions.py"
+    },
+    "experiments/verification_cell_verify1/model_heads.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "ee3f872a5d32c7723204f3bee1073b20b7d7e59e6f7775546be637be47c091bf",
+      "raw_ast_equal": true,
+      "tested_sha256": "ee3f872a5d32c7723204f3bee1073b20b7d7e59e6f7775546be637be47c091bf",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/model_heads.py"
+    },
+    "experiments/verification_cell_verify1/model_policy.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "7f14595ace200997498e20b020ce36e00d8c5c06585b9acfff85e8673d0a8e21",
+      "raw_ast_equal": true,
+      "tested_sha256": "7f14595ace200997498e20b020ce36e00d8c5c06585b9acfff85e8673d0a8e21",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/model_policy.py"
+    },
+    "experiments/verification_cell_verify1/model_protocol.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "abc186c14d11cffbab2106eac44bd98a277c9900090902df01f80e32c6afc2d4",
+      "raw_ast_equal": true,
+      "tested_sha256": "abc186c14d11cffbab2106eac44bd98a277c9900090902df01f80e32c6afc2d4",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/model_protocol.py"
+    },
+    "experiments/verification_cell_verify1/model_readbacks.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "0736268d698dd73984d7bd56ac479c4e0d2baca00250aad9f57cc689171dc059",
+      "raw_ast_equal": false,
+      "tested_sha256": "d4c3442001122ac9c0ab3532d6295f847eee15807ecfceb93cab90e65b94033d",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/input-verify-r2/verify/changes/experiments/verification_cell_verify1/model_readbacks.py"
+    },
+    "experiments/verification_cell_verify1/model_runner.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "b8b6b915cf985b412ab96e17c1c7ef60067c54fb104ade084fa51755b2301df5",
+      "raw_ast_equal": true,
+      "tested_sha256": "b8b6b915cf985b412ab96e17c1c7ef60067c54fb104ade084fa51755b2301df5",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/model_runner.py"
+    },
+    "experiments/verification_cell_verify1/model_summary.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "48e963fe4e0ed10bf1f51b0c9fa14a5c958167a1a9c90668fe713b75bc67514c",
+      "raw_ast_equal": true,
+      "tested_sha256": "cfc0315b031235b175f722ef98a3a4fa865c9822facb1da4093fb6222069902b",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/input-verify-r2/verify/changes/experiments/verification_cell_verify1/model_summary.py"
+    },
+    "experiments/verification_cell_verify1/runtime.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "af8b6cf4ed31cb6024c536771f056c5a3481902e011990ab70d43b8e961079a4",
+      "raw_ast_equal": true,
+      "tested_sha256": "af8b6cf4ed31cb6024c536771f056c5a3481902e011990ab70d43b8e961079a4",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/runtime.py"
+    },
+    "experiments/verification_cell_verify1/test_model_audit.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "060d8e4b1e3a0cf959edc37b0d38c168abec635a021b85db8c280923eb332f52",
+      "raw_ast_equal": true,
+      "tested_sha256": "060d8e4b1e3a0cf959edc37b0d38c168abec635a021b85db8c280923eb332f52",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/test_model_audit.py"
+    },
+    "experiments/verification_cell_verify1/test_model_backend.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "f1bfe598bc420ba9ca5c5f8a87299ab395466f56d01c702200ad99ca93c3458a",
+      "raw_ast_equal": true,
+      "tested_sha256": "f1bfe598bc420ba9ca5c5f8a87299ab395466f56d01c702200ad99ca93c3458a",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/test_model_backend.py"
+    },
+    "experiments/verification_cell_verify1/test_model_decisions.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "8a608031c5a28039a57e1628a718759734f9c3f6376a1b1e2a9240dd93ffea3e",
+      "raw_ast_equal": true,
+      "tested_sha256": "94633f12433437ff86caf5589ad752ced4dab121fc0f3d9ce1dd1e9db72b6656",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/input-verify-r2/verify/changes/experiments/verification_cell_verify1/test_model_decisions.py"
+    },
+    "experiments/verification_cell_verify1/test_model_heads.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "c0e92b3bab6cf65ef198dd20683453997f84c096231818837d4d217d4f292bf2",
+      "raw_ast_equal": true,
+      "tested_sha256": "c0e92b3bab6cf65ef198dd20683453997f84c096231818837d4d217d4f292bf2",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/test_model_heads.py"
+    },
+    "experiments/verification_cell_verify1/test_model_policy.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "be685843857b272206f247502037bd3d07b809b4a59af1bd140fd81ccecb5c37",
+      "raw_ast_equal": true,
+      "tested_sha256": "be685843857b272206f247502037bd3d07b809b4a59af1bd140fd81ccecb5c37",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/test_model_policy.py"
+    },
+    "experiments/verification_cell_verify1/test_model_protocol.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "4b6189082f0894cc9ea55a6507df3f3d6ac1c08781aa240fcebf39da833f6fc6",
+      "raw_ast_equal": true,
+      "tested_sha256": "4b6189082f0894cc9ea55a6507df3f3d6ac1c08781aa240fcebf39da833f6fc6",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/test_model_protocol.py"
+    },
+    "experiments/verification_cell_verify1/test_model_runner.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "26ba3dca8e882f277429b2238a97e4d58dc23b4040fcbb102c07e5e2e8d21ff6",
+      "raw_ast_equal": true,
+      "tested_sha256": "26ba3dca8e882f277429b2238a97e4d58dc23b4040fcbb102c07e5e2e8d21ff6",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/experiments/verification_cell_verify1/test_model_runner.py"
+    },
+    "scripts/format.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+      "raw_ast_equal": true,
+      "tested_sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/scripts/format.py"
+    },
+    "scripts/just-shell.py": {
+      "docstring_normalized_ast_equal": true,
+      "formatted_sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+      "raw_ast_equal": true,
+      "tested_sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+      "tested_source": "/Users/qianqi/hepta-s1-mdv-20261108-14afb/verify-r2/work/scripts/just-shell.py"
+    }
+  },
+  "normalization": "inspect.cleandoc only on module, class and function docstrings; all other AST fields exact",
+  "previous_failure_sha256": "8234dbcdf4a269c31e6be896f7b9c365d78b536adf5c3c664c786832f5bb833f",
+  "raw_ast_equal": false,
+  "replay_receipt_sha256": {
+    "retained-decisions-optimized.json": "424dce15169ff2feac46772e4103479acfe5245da5aac4f40af99a69841bde85",
+    "retained-decisions.json": "c4d6b5fe42eb3f7742fbeab71911db9ccd933de781cc561815dc115516917460"
+  },
+  "schema": "hepta.format-docstring.v1",
+  "scope": "docstring whitespace is observable through __doc__; affected code does not consume it",
+  "tested_source_manifest_sha256": "0f4d79e19107f22f4fdbefe4c2617761a0aef9d361e442036fc172b86e107b54",
+  "tests_repeated_after_formatting": false
+}
