@@ -247,6 +247,10 @@ impl QualificationEvidenceEnvelopeV1 {
         if self.schema_version != QUALIFICATION_EVIDENCE_SCHEMA_VERSION {
             return Err("unsupported qualification evidence schema version".to_string());
         }
+        if self.payload.get("payload_type").and_then(Value::as_str) == Some("hepta.verify1.report")
+        {
+            crate::parse_verify1_payload(&self.payload)?;
+        }
         self.candidate.validate()?;
         if self.asset_digests.len() > QUALIFICATION_EVIDENCE_MAX_ASSETS {
             return Err("qualification evidence references more than 64 assets".to_string());

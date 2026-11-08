@@ -19,6 +19,21 @@ mod recovery_frontier;
 mod schema_validation;
 mod store;
 mod summary;
+mod verify1_report;
+
+pub use verify1_report::Verify1CalibrationReport;
+pub use verify1_report::Verify1ModelIdentity;
+pub use verify1_report::Verify1Record;
+pub use verify1_report::Verify1RiskPrediction;
+pub use verify1_report::Verify1Scope;
+pub use verify1_report::Verify1Verdict;
+pub use verify1_report::Verify1VerificationReceipt;
+pub use verify1_report::parse_verify1_payload;
+pub use verify1_report::verify1_receipt_payload;
+
+#[cfg(test)]
+#[path = "verify1_report_tests.rs"]
+mod verify1_report_tests;
 
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
