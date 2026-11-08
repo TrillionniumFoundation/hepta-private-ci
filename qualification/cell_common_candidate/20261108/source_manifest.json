@@ -1,0 +1,76 @@
+{
+  "authority_granted": false,
+  "complete_history_cost_available": false,
+  "exact_assembled_identity": "Each execution receipt must bind a clean SOURCE_SHA=TESTED_SHA checkout, its tree, and before/after identity. This provenance manifest is not an execution receipt.",
+  "full_physical_cost": null,
+  "production_qualification": false,
+  "research_advancement": false,
+  "research_stage_status": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "schema": "hepta.cell-common-source-manifest.v1",
+  "scope": "engineering integration and source provenance",
+  "source_pins": [
+    {
+      "commit": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+      "component": "Circuit/common starting point"
+    },
+    {
+      "commit": "b040333617ed493944ae028bfb502c94d3b10991",
+      "component": "NDU v4 and cold state"
+    },
+    {
+      "commit": "ad1e07b004d96b748411db655249dc6a7cf2409c",
+      "component": "Stage gates and CI"
+    },
+    {
+      "commit": "36d5eff44f4071bb1f250b1c7706dc690cf0a875",
+      "component": "Learning checkpoint"
+    },
+    {
+      "commit": "0c81508e3cb9ea5c949c12a0c01c61c66e8d4df2",
+      "component": "VERIFY1"
+    },
+    {
+      "commit": "afa0638cc26792772830f1f9ec87bc154a20a430",
+      "component": "MEM1"
+    },
+    {
+      "commit": "9aa9fa75f74ad7a15c3a3db36586502f0215aff0",
+      "component": "HCSN"
+    },
+    {
+      "commit": "6736d8acaf3f8c69288ce6c59a7d5246ea00448f",
+      "component": "Causal controls / organization"
+    },
+    {
+      "commit": "b2646b4cbf19817145c9cb680d95333a267d19f4",
+      "component": "CTRL1"
+    },
+    {
+      "commit": "473897f97a492f1455dda2caa8152786242bc8ac",
+      "component": "PERC1"
+    },
+    {
+      "commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+      "component": "PRED1"
+    },
+    {
+      "commit": "95617b64dfdb035780f18c20df5f344ace1fc34a",
+      "component": "ACT1"
+    },
+    {
+      "commit": "c600204c6095b438746e7efd8a098bc38e1d8613",
+      "component": "EVOLVE1"
+    },
+    {
+      "commit": "d74efedeed3b3f5ec62e35ce6133eccf6e44256d",
+      "component": "Durable native terminal recovery"
+    }
+  ]
+}
