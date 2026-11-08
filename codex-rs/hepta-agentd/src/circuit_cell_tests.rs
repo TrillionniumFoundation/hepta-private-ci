@@ -891,3 +891,6 @@ async fn all_join_materializes_frozen_reference_bytes_for_the_next_native_cell()
     assert_eq!(exited.run.outcome(), Some(CircuitExitV2::Succeeded));
     store.close().await;
 }
+
+#[path = "circuit_cell_batch_tests.rs"]
+mod batch_tests;
