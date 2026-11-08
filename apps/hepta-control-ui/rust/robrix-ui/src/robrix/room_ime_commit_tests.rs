@@ -31,7 +31,7 @@ impl Surface {
             });
             WidgetRef::script_from_value(vm, value)
         });
-        let input = root.text_input(&mut cx, ids!(message_input));
+        let input = root.text_input(&cx, ids!(message_input));
         assert!(!input.is_empty());
         let mut workspace = ChatWorkspace::default();
         assert!(workspace.edit(text.to_owned()));
