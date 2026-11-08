@@ -1,0 +1,486 @@
+{
+  "schema": "hepta.joint-v4.ndu-training-native-diagnostic.v1",
+  "status": "failed",
+  "fixture": "synthetic-width8-depth1-fp64-seed811",
+  "inference_profile": "ndu-finite-deterministic-v1",
+  "finite_profile": {
+    "risk": 0.25,
+    "discount_per_second": 1.0,
+    "latency_weight": 0.01,
+    "horizon": 2,
+    "max_forecasts": 32,
+    "action_micros": [
+      1000,
+      1000,
+      1000,
+      1000,
+      1000,
+      1000,
+      1000
+    ]
+  },
+  "noise": "deterministic Mean emission; one particle; risk has no effect",
+  "training": {
+    "initial_checkpoint_sha256": "e42618a261bbc541b04ad8a990b7a82243cc94ae7afd43b02502c14ba08734ab",
+    "trained_checkpoint_sha256": "5e9a9a69cdb024d66bf94ba1a9dbd1dfeccacff2d7c59b99281cc9c1b98f2d3a",
+    "frozen_reference_sha256_before": "e42618a261bbc541b04ad8a990b7a82243cc94ae7afd43b02502c14ba08734ab",
+    "frozen_reference_sha256_after": "e42618a261bbc541b04ad8a990b7a82243cc94ae7afd43b02502c14ba08734ab",
+    "frozen_reference_gradients_absent": true,
+    "initial_losses": {
+      "recursive": -0.5562964178163539,
+      "policy": -0.5345929403720305,
+      "teacher_forced": 5.009147148304756
+    },
+    "per_loss_gradient_groups": {
+      "recursive": {
+        "core": {
+          "max_abs": 0.0009174236425629953,
+          "l2": 0.0038181194382251363,
+          "nonzero_elements": 616
+        },
+        "ordered_text_shared_recurrence": {
+          "max_abs": 0.0004916972831475918,
+          "l2": 0.0014069307756708178,
+          "nonzero_elements": 72
+        },
+        "token_embedding": {
+          "max_abs": 0.0005008435638359168,
+          "l2": 0.000619866886111741,
+          "nonzero_elements": 64
+        },
+        "text_decoder_condition": {
+          "max_abs": 0.0,
+          "l2": 0.0,
+          "nonzero_elements": 0
+        },
+        "text_emission_head": {
+          "max_abs": 0.0,
+          "l2": 0.0,
+          "nonzero_elements": 0
+        },
+        "actor": {
+          "max_abs": 0.0,
+          "l2": 0.0,
+          "nonzero_elements": 0
+        },
+        "critics": {
+          "max_abs": 0.0,
+          "l2": 0.0,
+          "nonzero_elements": 0
+        }
+      },
+      "policy": {
+        "core": {
+          "max_abs": 4.380318809412566e-05,
+          "l2": 0.00012560564050555112,
+          "nonzero_elements": 608
+        },
+        "ordered_text_shared_recurrence": {
+          "max_abs": 9.758697912459668e-06,
+          "l2": 2.998423394349058e-05,
+          "nonzero_elements": 72
+        },
+        "token_embedding": {
+          "max_abs": 8.500059929969714e-06,
+          "l2": 1.2438833981815881e-05,
+          "nonzero_elements": 64
+        },
+        "text_decoder_condition": {
+          "max_abs": 0.0,
+          "l2": 0.0,
+          "nonzero_elements": 0
+        },
+        "text_emission_head": {
+          "max_abs": 0.0,
+          "l2": 0.0,
+          "nonzero_elements": 0
+        },
+        "actor": {
+          "max_abs": 0.0052322238901897165,
+          "l2": 0.01389361679021725,
+          "nonzero_elements": 279
+        },
+        "critics": {
+          "max_abs": 0.0,
+          "l2": 0.0,
+          "nonzero_elements": 0
+        }
+      },
+      "teacher_forced": {
+        "core": {
+          "max_abs": 0.01563752004639739,
+          "l2": 0.04913363523490406,
+          "nonzero_elements": 608
+        },
+        "ordered_text_shared_recurrence": {
+          "max_abs": 0.04098917595405977,
+          "l2": 0.16718026159270108,
+          "nonzero_elements": 72
+        },
+        "token_embedding": {
+          "max_abs": 0.023388452792991805,
+          "l2": 0.07977798683664916,
+          "nonzero_elements": 120
+        },
+        "text_decoder_condition": {
+          "max_abs": 0.04116610114882113,
+          "l2": 0.14965234479633613,
+          "nonzero_elements": 136
+        },
+        "text_emission_head": {
+          "max_abs": 0.10922322436940402,
+          "l2": 0.916757670635541,
+          "nonzero_elements": 4131
+        },
+        "actor": {
+          "max_abs": 0.0,
+          "l2": 0.0,
+          "nonzero_elements": 0
+        },
+        "critics": {
+          "max_abs": 0.0,
+          "l2": 0.0,
+          "nonzero_elements": 0
+        }
+      }
+    },
+    "central_differences": [
+      {
+        "loss": "recursive",
+        "parameter": "core.layers.0.drift_bias",
+        "flat_index": 3,
+        "epsilon": 1e-07,
+        "autograd": 0.0006948744641494188,
+        "central_difference": 0.0006948741582135654,
+        "absolute_error": 3.059358534736323e-10,
+        "tolerance": 3.389748928298838e-08,
+        "branch_stable": true,
+        "policy_q_held_fixed": false
+      },
+      {
+        "loss": "recursive",
+        "parameter": "text_recurrent.weight",
+        "flat_index": 45,
+        "epsilon": 1e-08,
+        "autograd": 0.0004916972831475918,
+        "central_difference": 0.0004916955731459893,
+        "absolute_error": 1.7100016024484618e-09,
+        "tolerance": 2.9833945662951836e-08,
+        "branch_stable": true,
+        "policy_q_held_fixed": false
+      },
+      {
+        "loss": "policy",
+        "parameter": "core.layers.0.drift_bias",
+        "flat_index": 5,
+        "epsilon": 1e-06,
+        "autograd": 1.4429886503374622e-05,
+        "central_difference": 1.4429957229111778e-05,
+        "absolute_error": 7.0725737156478e-11,
+        "tolerance": 2.0288599144582236e-08,
+        "branch_stable": true,
+        "policy_q_held_fixed": true
+      },
+      {
+        "loss": "policy",
+        "parameter": "text_recurrent.weight",
+        "flat_index": 5,
+        "epsilon": 1e-06,
+        "autograd": 8.88886097396365e-06,
+        "central_difference": 8.888834113207622e-06,
+        "absolute_error": 2.6860756027329577e-11,
+        "tolerance": 2.0177777219479272e-08,
+        "branch_stable": true,
+        "policy_q_held_fixed": true
+      },
+      {
+        "loss": "policy",
+        "parameter": "actor.2.weight",
+        "flat_index": 13,
+        "epsilon": 1e-06,
+        "autograd": -0.0017177151040732544,
+        "central_difference": -0.0017177150812841546,
+        "absolute_error": 2.2789099817302483e-11,
+        "tolerance": 5.435430208146509e-08,
+        "branch_stable": true,
+        "policy_q_held_fixed": true
+      },
+      {
+        "loss": "teacher_forced",
+        "parameter": "emissions.text.weight",
+        "flat_index": 2456,
+        "epsilon": 1e-06,
+        "autograd": -0.10922322436940402,
+        "central_difference": -0.10922322468687184,
+        "absolute_error": 3.1746782980235366e-10,
+        "tolerance": 2.2044644937374367e-06,
+        "branch_stable": true,
+        "policy_q_held_fixed": false
+      }
+    ],
+    "optimizer_steps": [
+      {
+        "loss": "recursive",
+        "learning_rate": 0.02,
+        "loss_before_update": -0.5562964178163539,
+        "reference_selected_action": 1,
+        "applied_gradients": {
+          "core": {
+            "max_abs": 0.0009174236425629953,
+            "l2": 0.0038181194382251363,
+            "nonzero_elements": 616
+          },
+          "ordered_text_shared_recurrence": {
+            "max_abs": 0.0004916972831475918,
+            "l2": 0.0014069307756708178,
+            "nonzero_elements": 72
+          },
+          "token_embedding": {
+            "max_abs": 0.0005008435638359168,
+            "l2": 0.000619866886111741,
+            "nonzero_elements": 64
+          },
+          "text_decoder_condition": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          },
+          "text_emission_head": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          },
+          "actor": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          },
+          "critics": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          }
+        },
+        "parameter_updates": {
+          "core": {
+            "max_abs": 1.8348472851259512e-05,
+            "l2": 7.636238876449514e-05,
+            "nonzero_elements": 616
+          },
+          "ordered_text_shared_recurrence": {
+            "max_abs": 9.833945662951482e-06,
+            "l2": 2.813861551341993e-05,
+            "nonzero_elements": 72
+          },
+          "token_embedding": {
+            "max_abs": 1.001687127671902e-05,
+            "l2": 1.2397337722250674e-05,
+            "nonzero_elements": 64
+          },
+          "text_decoder_condition": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          },
+          "text_emission_head": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          },
+          "actor": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          },
+          "critics": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          }
+        }
+      },
+      {
+        "loss": "policy",
+        "learning_rate": 0.02,
+        "loss_before_update": -0.5342853758118975,
+        "reference_selected_action": 1,
+        "applied_gradients": {
+          "core": {
+            "max_abs": 4.194903433402816e-05,
+            "l2": 9.791137891877094e-05,
+            "nonzero_elements": 608
+          },
+          "ordered_text_shared_recurrence": {
+            "max_abs": 7.762241059941568e-06,
+            "l2": 2.3094567479089655e-05,
+            "nonzero_elements": 72
+          },
+          "token_embedding": {
+            "max_abs": 6.662715468167464e-06,
+            "l2": 9.754723471374787e-06,
+            "nonzero_elements": 64
+          },
+          "text_decoder_condition": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          },
+          "text_emission_head": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          },
+          "actor": {
+            "max_abs": 0.003348362694019544,
+            "l2": 0.009360336264760244,
+            "nonzero_elements": 279
+          },
+          "critics": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          }
+        },
+        "parameter_updates": {
+          "core": {
+            "max_abs": 8.389806867015182e-07,
+            "l2": 1.9582275783921094e-06,
+            "nonzero_elements": 608
+          },
+          "ordered_text_shared_recurrence": {
+            "max_abs": 1.5524482119277927e-07,
+            "l2": 4.6189134957838124e-07,
+            "nonzero_elements": 72
+          },
+          "token_embedding": {
+            "max_abs": 1.3325430936461657e-07,
+            "l2": 1.9509446942413282e-07,
+            "nonzero_elements": 64
+          },
+          "text_decoder_condition": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          },
+          "text_emission_head": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          },
+          "actor": {
+            "max_abs": 6.696725388039004e-05,
+            "l2": 0.00018720672529520807,
+            "nonzero_elements": 279
+          },
+          "critics": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          }
+        }
+      },
+      {
+        "loss": "teacher_forced",
+        "learning_rate": 0.01,
+        "loss_before_update": 5.009149253094013,
+        "reference_selected_action": 1,
+        "applied_gradients": {
+          "core": {
+            "max_abs": 0.015638540521358983,
+            "l2": 0.04913036598553351,
+            "nonzero_elements": 608
+          },
+          "ordered_text_shared_recurrence": {
+            "max_abs": 0.0409894890196996,
+            "l2": 0.16717797697571402,
+            "nonzero_elements": 72
+          },
+          "token_embedding": {
+            "max_abs": 0.023389835706205474,
+            "l2": 0.07977678592854894,
+            "nonzero_elements": 120
+          },
+          "text_decoder_condition": {
+            "max_abs": 0.041164514624283936,
+            "l2": 0.14964994264462844,
+            "nonzero_elements": 136
+          },
+          "text_emission_head": {
+            "max_abs": 0.10922309898253166,
+            "l2": 0.9167246272682869,
+            "nonzero_elements": 4131
+          },
+          "actor": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          },
+          "critics": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          }
+        },
+        "parameter_updates": {
+          "core": {
+            "max_abs": 0.00015638540521356603,
+            "l2": 0.0004913036598553456,
+            "nonzero_elements": 608
+          },
+          "ordered_text_shared_recurrence": {
+            "max_abs": 0.00040989489019699343,
+            "l2": 0.0016717797697571328,
+            "nonzero_elements": 72
+          },
+          "token_embedding": {
+            "max_abs": 0.00023389835706205675,
+            "l2": 0.000797767859285479,
+            "nonzero_elements": 120
+          },
+          "text_decoder_condition": {
+            "max_abs": 0.00041164514624283943,
+            "l2": 0.0014964994264462883,
+            "nonzero_elements": 136
+          },
+          "text_emission_head": {
+            "max_abs": 0.0010922309898253185,
+            "l2": 0.009167246272682868,
+            "nonzero_elements": 4131
+          },
+          "actor": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          },
+          "critics": {
+            "max_abs": 0.0,
+            "l2": 0.0,
+            "nonzero_elements": 0
+          }
+        }
+      }
+    ],
+    "recursive_objective": "-max_a Q_frozen_reference(z_live,a)",
+    "policy_objective": "-sum_a pi_live(a|z_live,owner)*stop_gradient(Q_frozen_reference(z_live,a))",
+    "live_state": "ordered-input encoding followed by persistent shared and text content actions",
+    "text_gradient_path": "token embedding and text_recurrent are shared with the ordered input encoder",
+    "discrete_emission_gradient": "none through quantization/UTF-8 argmax; exclusive text heads use teacher forcing",
+    "critic_calibration": "untrained synthetic predictions; no external quality calibration"
+  },
+  "source_sha256": {
+    "joint_generation_v4_io.py": "65ff7fb09b8439304e794642987f20e1acfb8c42a2ae42c1730708437875ed8c",
+    "joint_generation_v4_model.py": "01ea458fac536c183a871d80d476393b5295af71057f61c2d49eecf98b32bb27",
+    "joint_generation_v4_codecs.py": "2bba4d5b8e774f883b6acdca135058639f0e7e4cfb213cb54b4787adb24038ce",
+    "joint_generation_v4_ndu.py": "44fa140799a57cee3731e045529c07de54e8fd9a695efca3defe181a1988fa55",
+    "joint_generation_v4_gradients.py": "0ff69b7a0850ba07c90f232a0252c85e73cc1a1ad787e535ff801c769762b6d7",
+    "joint_generation_v4_diagnostic.py": "521615b7f22d63eb9aea5310f380a5abdd34f9923c71e3b83682ae0e0f408583"
+  },
+  "limitations": [
+    "No semantic model capability or NDU scientific benefit is measured",
+    "Reference critics are uncalibrated synthetic predictions",
+    "128 Unicode scalars, 16x16 image, 64ms audio, 4 video frames",
+    "NDU gradients do not pass through discrete emitted bytes",
+    "Native parity uses the trained candidate, not the frozen training evaluator"
+  ],
+  "failure": "AssertionError: Native execution failed: hepta-joint-propose: bridge requires selected width32/depth1/dual/direct profile\n"
+}

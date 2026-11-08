@@ -20,6 +20,12 @@ use support::Fixture;
 use support::raw_frame;
 use support::request;
 
+#[path = "planner_tests.rs"]
+mod planner;
+
+#[path = "observed_tests.rs"]
+mod observed;
+
 fn init() -> Command {
     Command::Init(EmissionLaw {
         seed: 17,
