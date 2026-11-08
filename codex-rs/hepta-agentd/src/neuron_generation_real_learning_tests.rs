@@ -3,15 +3,19 @@
 //! All keys/custody are isolated research fixtures, never production authority.
 
 use std::fs;
+use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::Ordering;
-use std::sync::{Arc, Mutex};
 
 use base64::Engine;
 use codex_hepta_learning_artifacts::*;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_neuron::*;
-use codex_hepta_types::{Digest32, Generation, StableId};
-use serde_json::{Value, json};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+use serde_json::Value;
+use serde_json::json;
 use tokio_util::sync::CancellationToken;
 
 use super::super::support as host;
@@ -33,7 +37,8 @@ use crate::RuntimeTasks;
 use crate::learning_iteration_channel_v1;
 use crate::learning_retained_task_operation_id_v1;
 use crate::neuron_generation_channel_v2;
-use crate::neuron_generation_current::test_support::{Fixture, Journal};
+use crate::neuron_generation_current::test_support::Fixture;
+use crate::neuron_generation_current::test_support::Journal;
 use crate::neuron_generation_service::spawn_neuron_generation_service;
 use crate::prepare_agentd_generation_same_model_task_v1;
 use crate::recover_agentd_generation_update_v1;
@@ -43,7 +48,12 @@ mod process;
 #[path = "neuron_generation_real_learning_trust.rs"]
 mod trust;
 
-use process::{Driver, ProcessControl, digest, monotonic, now, persist};
+use process::Driver;
+use process::ProcessControl;
+use process::digest;
+use process::monotonic;
+use process::now;
+use process::persist;
 use trust::ResearchTrust;
 
 fn d(value: &[u8]) -> Digest32 {
@@ -641,32 +651,30 @@ impl LearningIterationOwnerPortsV1 for ResearchPorts {
                 predecessor.receipts.truncate(count);
                 predecessor.head_digest = receipt.predecessor;
                 let coordinator = LearningIterationCoordinatorV1::from_snapshot(predecessor)?;
-                let guard = self.runtime.lock().await;
-                let runtime =
-                    guard
-                        .as_ref()
-                        .ok_or(LearningIterationRuntimeErrorV1::OwnerUnavailable(
-                            "actual generation owner unavailable",
-                        ))?;
+                let (handle, request) = {
+                    let guard = self.runtime.lock().await;
+                    let runtime =
+                        guard
+                            .as_ref()
+                            .ok_or(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+                                "actual generation owner unavailable",
+                            ))?;
+                    (runtime.runtime.handle.clone(), runtime.request.clone())
+                };
                 let actual = if receipt.observation.stage() == LearningIterationStageV1::Selection {
-                    runtime
-                        .runtime
-                        .handle
+                    handle
                         .read_learning_selection(&coordinator)
                         .await
                         .map_err(unavailable)?
                 } else {
-                    let intent = runtime
-                        .request
+                    let intent = request
                         .as_ref()
                         .ok_or(LearningIterationRuntimeErrorV1::OwnerUnavailable(
                             "actual task missing",
                         ))?
                         .intent()
                         .map_err(unavailable)?;
-                    runtime
-                        .runtime
-                        .handle
+                    handle
                         .read_learning_next_use(&coordinator, &intent)
                         .await
                         .map_err(unavailable)?

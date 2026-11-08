@@ -3,8 +3,10 @@
 
 use codex_hepta_learning_artifacts::*;
 use codex_hepta_learning_ledger::*;
-use codex_hepta_types::{Digest32, StableId};
-use ed25519_dalek::{Signer, SigningKey};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 use super::process::now;
 
