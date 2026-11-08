@@ -1,5 +1,26 @@
 # Differentiable continuous-probability HCSN candidate
 
+## Fixed-policy mathematical closure extension
+
+The follow-on candidate adds `regenerative.py` for analytic perpetual
+continuum value, `finite_renewal.py` for finite-horizon F/G/M/J and value,
+and `value.py` for the separately defined projected-chain value. Legacy
+`call` remains a one-interval feature; use `interval_value` for its explicit
+name. Repeated terminal feature payments are excluded from both value solvers.
+
+`error_budget.json` declares a named numerical profile and fixed limits.
+Run `python -m qualification.hcsn_differentiable.error_budget --output NEW.json`
+in addition to `run_qualification`. Passing a named fixture does not qualify
+the small default grid or the whole trainable parameter box. Historical
+evidence below remains historical; current attempts and their source hashes
+are recorded under `evidence/math-closure-20261108/`.
+
+`BENCHMARK.md` and `research_protocol.json` specify the real asynchronous
+comparison and required ablations. The admission checker validates records,
+not their authenticity or model superiority. A data/interface smoke is
+separate from independently seeded formal comparisons. Performance and hybrid
+pretraining remain gated on measured real-task benefit.
+
 This package implements the next **research candidate** after the existing
 regenerative-distribution experiments: trainable physical parameters, complete
 probability and vector-content state, a multilayer task loss, and an irregular

@@ -1,0 +1,157 @@
+name: HCSN differentiable qualification
+
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_differentiable/**
+      - .github/workflows/hcsn-differentiable.yml
+  push:
+    paths:
+      - qualification/hcsn_differentiable/**
+      - .github/workflows/hcsn-differentiable.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-differentiable-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cpu-qualification:
+    name: HCSN CPU science gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    env:
+      CUDA_VISIBLE_DEVICES: ""
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+      SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Check out the event commit
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Record source head and tested tree identities
+        id: identity
+        run: |
+          python3 - <<'PY'
+          from datetime import datetime, timezone
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          def git(ref):
+              return subprocess.check_output(["git", "rev-parse", "--verify", ref], text=True).strip()
+          out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
+          out.mkdir()
+          source, tested = os.environ["SOURCE_HEAD"], git("HEAD")
+          source_tree, tested_tree = git(source + "^{tree}"), git("HEAD^{tree}")
+          record = {"schema": "hcsn-ci-identity-v1", "recorded_utc": datetime.now(timezone.utc).isoformat(),
+                    "source_head": source, "source_tree": source_tree, "tested_commit": tested,
+                    "tested_tree": tested_tree, "trees_equal": source_tree == tested_tree,
+                    "event_sha": os.environ["GITHUB_SHA"], "event": os.environ["GITHUB_EVENT_NAME"],
+                    "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                    "evidence_scope": "tested_commit_tree_only"}
+          with (out / "identity.json").open("x") as stream:
+              json.dump(record, stream, indent=2)
+          assert tested == os.environ["GITHUB_SHA"], "checkout differs from the event commit"
+          PY
+
+      - name: Set up pinned Python
+        id: python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.3"
+
+      - name: Install and verify pinned CPU Torch
+        id: runtime
+        run: |
+          python -m pip install --disable-pip-version-check "torch==2.8.0+cpu" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip freeze --all > "$RUNNER_TEMP/hcsn-differentiable/pip-freeze.txt"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import sys
+          import torch
+          runtime = {"python": sys.version, "torch": torch.__version__, "cuda_build": torch.version.cuda}
+          (Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable/runtime.json").write_text(json.dumps(runtime, indent=2))
+          assert sys.version_info[:3] == (3, 12, 3)
+          assert torch.__version__ == "2.8.0+cpu" and torch.version.cuda is None
+          PY
+
+      - name: Discover and run every qualification test
+        id: qualification
+        run: |
+          trap 'hcsn_rc=$?; printf "%s\n" "$hcsn_rc" > "$RUNNER_TEMP/hcsn-differentiable/qualification.exit-code"; exit "$hcsn_rc"' EXIT
+          python -m qualification.hcsn_differentiable.run_qualification --threads 1 \
+            --output "$RUNNER_TEMP/hcsn-differentiable/qualification.json" 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/qualification.log"
+
+      - name: Enforce the predeclared numerical error budget
+        id: budget
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runtime.outcome == 'success' }}
+        run: |
+          trap 'hcsn_rc=$?; printf "%s\n" "$hcsn_rc" > "$RUNNER_TEMP/hcsn-differentiable/error-budget.exit-code"; exit "$hcsn_rc"' EXIT
+          python -m qualification.hcsn_differentiable.error_budget \
+            --output "$RUNNER_TEMP/hcsn-differentiable/error-budget.json" 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/error-budget.log"
+
+      - name: Require an unchanged source and index
+        id: clean
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Record terminal outcomes without granting failure exemptions
+        if: always()
+        env:
+          HCSN_STEPS: ${{ toJSON(steps) }}
+        run: |
+          python3 - <<'PY'
+          from datetime import datetime, timezone
+          import json
+          import os
+          from pathlib import Path
+          out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
+          out.mkdir(exist_ok=True)
+          steps = json.loads(os.environ["HCSN_STEPS"])
+          required = ("checkout", "identity", "python", "runtime", "qualification", "budget", "clean")
+          outcomes = {name: steps.get(name, {}).get("outcome", "missing") for name in required}
+          passed = all(value == "success" for value in outcomes.values())
+          codes = {name: int((out / (name + ".exit-code")).read_text())
+                   if (out / (name + ".exit-code")).exists() else None
+                   for name in ("qualification", "error-budget")}
+          record = {"schema": "hcsn-ci-outcome-v1", "finished_utc": datetime.now(timezone.utc).isoformat(),
+                    "science_status": "PASSED_DECLARED_FIXTURES" if passed else "HOLD",
+                    "steps": outcomes, "step_exit_codes": codes, "rerun_of_old_evidence": False,
+                    "claim": "CPU fixture qualification only; no real-task or repository-wide pass."}
+          with (out / "outcome.json").open("x") as stream:
+              json.dump(record, stream, indent=2)
+          print(json.dumps(record))
+          raise SystemExit(0 if passed else 1)
+          PY
+
+      - name: Retain receipts on every outcome
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hcsn-differentiable-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hcsn-differentiable/
+          if-no-files-found: error
+          retention-days: 14
+
