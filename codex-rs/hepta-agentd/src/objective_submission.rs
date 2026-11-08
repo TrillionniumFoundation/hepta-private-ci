@@ -25,6 +25,18 @@ impl ObjectiveExecutionProfile for FullObjectiveExecution {
     ) -> Result<&'static str, AgentdError> {
         let disposition = match record.disposition {
             RunStartObjectiveDispositionV1::Compiled => {
+                if let Some(receipt) = agentd.execute_circuit_task_record(record).await? {
+                    return match receipt.trace().run().outcome() {
+                        Some(codex_hepta_automation::CircuitExitV2::Succeeded) => {
+                            Ok("circuit_succeeded")
+                        }
+                        Some(codex_hepta_automation::CircuitExitV2::Failed) => Ok("circuit_failed"),
+                        Some(codex_hepta_automation::CircuitExitV2::Abstained) => {
+                            Ok("circuit_abstained")
+                        }
+                        None => Err(invalid("Circuit task has no terminal outcome")),
+                    };
+                }
                 match agentd.start_canonical_intelligence(record).await? {
                     Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
                         "canonical_ready"
@@ -88,6 +100,7 @@ impl ObjectiveRuntimeHost {
             || agentd.production_operations.get().is_none()
             || agentd.intelligence_product.get().is_some()
             || agentd.intelligence_invocation.get().is_some()
+            || agentd.circuit_task_enabled()
         {
             return Err(invalid(
                 "finite Notes execution requires its original dedicated owner",

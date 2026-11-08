@@ -5,6 +5,7 @@
 #[path = "circuit_cell_batch.rs"]
 mod batch;
 
+use std::cell::Cell;
 use std::error::Error;
 use std::fmt;
 
@@ -24,7 +25,7 @@ use codex_hepta_neuron::canonical_cell_step_request_digest_v1;
 use codex_hepta_neuron::commit_cell_step;
 use codex_hepta_neuron::decide_cell;
 use codex_hepta_neuron::enter_cell_step;
-use codex_hepta_neuron::infer_cell;
+use codex_hepta_neuron::infer_cell_with_clock;
 use codex_hepta_neuron::recover_cell_inference;
 use codex_hepta_types::AuthorityPosture;
 
@@ -179,26 +180,41 @@ where
                     time.cell_micros,
                 )? {
                     CellStepEntryV1::Ready(prepared) => {
-                        let before_infer = clock();
-                        if before_infer.circuit_millis < time.circuit_millis
-                            || before_infer.cell_micros < time.cell_micros
-                            || before_infer.circuit_millis >= admission_deadline
-                        {
-                            return Err(CircuitCellErrorV1::ReconciliationRequired);
-                        }
+                        let sampled = Cell::new(time);
+                        // The inference entry samples immediately after durable
+                        // admission. Use that same live sample for the Circuit
+                        // guard so its queue measurement ends at this boundary.
+                        let mut dispatch_clock = || sampled.get();
                         let mut guarded = GuardedCellDispatchV1::new(
                             &mut self.inference_control,
-                            &mut clock,
-                            before_infer,
+                            &mut dispatch_clock,
+                            time,
                             admission_deadline,
                             input.deadline_micros,
                         );
-                        let inferred = infer_cell(
+                        let mut invalid_clock = false;
+                        let inferred = infer_cell_with_clock(
                             *prepared,
                             &mut self.state_owner,
                             &mut guarded,
-                            before_infer.cell_micros,
-                        )?;
+                            || {
+                                let before = sampled.get();
+                                let now = clock();
+                                if now.circuit_millis < before.circuit_millis
+                                    || now.cell_micros < before.cell_micros
+                                    || now.circuit_millis >= admission_deadline
+                                {
+                                    invalid_clock = true;
+                                    return u64::MAX;
+                                }
+                                sampled.set(now);
+                                now.cell_micros
+                            },
+                        );
+                        if invalid_clock {
+                            return Err(CircuitCellErrorV1::ReconciliationRequired);
+                        }
+                        let inferred = inferred?;
                         last_time = guarded
                             .observed_at()
                             .ok_or(CircuitCellErrorV1::ReconciliationRequired)?;
@@ -307,4 +323,4 @@ pub(crate) fn finish(
 
 #[cfg(test)]
 #[path = "circuit_cell_tests.rs"]
-mod tests;
+pub(crate) mod tests;

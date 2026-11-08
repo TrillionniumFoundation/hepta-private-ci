@@ -82,6 +82,11 @@ impl CircuitActivationV2 {
     pub fn execution_request_digest(&self) -> Option<&Sha256Digest> {
         self.execution_request_digest.as_ref()
     }
+
+    /// Wake-up deadline for an activation still waiting for join quorum.
+    pub fn join_deadline_ms(&self) -> Option<u64> {
+        self.join_deadline_ms
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -138,6 +143,10 @@ pub struct CircuitRunV2 {
     pub(crate) last_observed_ms: u64,
     pub(crate) revision: u64,
     pub(crate) writer: CircuitWriterV2,
+    /// Revision installing the current settlement-only writer. Omission keeps
+    /// canonical state digests from before this recovery mode unchanged.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) settlement_fence_revision: Option<u64>,
     pub(crate) instances: BTreeMap<u64, CircuitInstanceV2>,
     pub(crate) activations: BTreeMap<u64, CircuitActivationV2>,
     pub(crate) next_activation: u64,

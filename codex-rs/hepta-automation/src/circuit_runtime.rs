@@ -53,6 +53,7 @@ impl CircuitRunV2 {
             last_observed_ms: start.created_at_ms,
             revision: 0,
             writer: CircuitWriterV2::new(fence, expires)?,
+            settlement_fence_revision: None,
             instances: BTreeMap::new(),
             activations: BTreeMap::new(),
             next_activation: 1,

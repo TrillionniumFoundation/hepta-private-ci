@@ -264,6 +264,9 @@ impl Fixture {
             codex_hepta_cognitive_store::DurableCognitiveStore::open(&self.identity.layout).await,
         );
         checked(self.state().attach_cognitive_store(Arc::new(store)));
+        let automation =
+            checked(codex_hepta_automation::AutomationStore::open(&self.identity.layout).await);
+        checked(self.state().attach_automation_store(automation));
         checked(self.state().mark_runtime_prerequisites_ready());
     }
 
