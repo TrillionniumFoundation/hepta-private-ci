@@ -1,14 +1,40 @@
 {
-  "native_final": {
-    "existing_candidate_files_compared": 24,
-    "mismatches": []
-  },
   "cloud_final": {
     "existing_candidate_files_compared": 69,
     "mismatches": []
   },
+  "compared_snapshot_commit": "e2802a53a82529b9a206f77fcdfa98dd65918bfc",
+  "followup_cloud_binary_identical": false,
+  "followup_qualification": "POST_CI_QUALIFICATION.json",
+  "followup_source_changes": [
+    {
+      "after_sha256": "e69d384980418fcd9f00a0ab521f90f37a224ee0d211ec06a151bbd8cff31c9d",
+      "before_sha256": "d9380b1651436e04c7d615b52fa9f2eb1d7d5a05a1e266941b4e67d8e7a6e594",
+      "canonical_inverse_rename_matches_prior": true,
+      "occurrences": 1,
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs"
+    },
+    {
+      "after_sha256": "20ac1039b1309dfbd49047563372bf56ed3f707a64d0d75853b201c5dc8f77da",
+      "before_sha256": "c40435fa84d7a018ad06c38c15e6583d77ef3ccd92f179d395d2c1c147cdc713",
+      "canonical_inverse_rename_matches_prior": true,
+      "occurrences": 1,
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs"
+    },
+    {
+      "after_sha256": "2074133ebd9fb9d0e26ba5c5a63e48e98f958dc669ffb0ede97a89016270ae00",
+      "before_sha256": "aca1f05877c294eb4f6e7f75c55a7c9c4cc062cd78587fa74ac9a82c913f3949",
+      "canonical_inverse_rename_matches_prior": true,
+      "occurrences": 3,
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/observation_tests.rs"
+    }
+  ],
   "host_final": {
     "files": 7,
+    "mismatches": []
+  },
+  "native_final": {
+    "existing_candidate_files_compared": 24,
     "mismatches": []
   }
 }

@@ -119,6 +119,41 @@
       "record": "cloud-v4/results/run-receipt.json",
       "source_payload_sha256": "5f9b2426d8929cf8cea2dec273695f0a3329fa250089b07a1292efb17a107492",
       "source_revision": "native-source-v3-width32-diagnostic"
+    },
+    {
+      "id": "ci-first-head-caller",
+      "kind": "github_ci",
+      "outcome": "failed",
+      "reason": "Delivery method name collided with the root-writer caller shape; repaired without changing the verifier or privileged manifest.",
+      "record": "post-ci/caller-original-job.log"
+    },
+    {
+      "id": "ci-first-head-codespell",
+      "kind": "github_ci",
+      "outcome": "failed",
+      "reason": "Four legitimate inout package names in unchanged baseline raw logs; added the word to the existing list.",
+      "record": "post-ci/codespell-original-job.log"
+    },
+    {
+      "id": "ci-first-head-cargo-deny",
+      "kind": "github_ci",
+      "outcome": "failed",
+      "reason": "Existing dependency advisories; no dependency policy suppression or upgrade.",
+      "record": "post-ci/cargo-deny-diagnosis.json"
+    },
+    {
+      "id": "delivery-rename-harness-first",
+      "kind": "qualification_harness",
+      "outcome": "failed",
+      "reason": "Whitespace-only assertion rejected rustfmt's added call argument trailing comma.",
+      "record": "post-ci/rename-validation/run-receipt.json"
+    },
+    {
+      "id": "delivery-rename-focused",
+      "kind": "native_and_caller_qualification",
+      "outcome": "passed",
+      "reason": "19 existing Rust tests, fmt, scoped Clippy, canonical inverse rename, actual build, and exact unchanged caller-boundary slice passed.",
+      "record": "POST_CI_QUALIFICATION.json"
     }
   ],
   "schema": "hepta.ndu.generation-attempts.v1"

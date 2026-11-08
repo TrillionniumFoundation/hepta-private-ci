@@ -1,0 +1,32 @@
+{
+  "job_id": 128644089826,
+  "run_id": 42452357957,
+  "head_sha": "e2802a53a82529b9a206f77fcdfa98dd65918bfc",
+  "ci_checkout_merge_sha": "031c5d78c81837655ca95107ef5ab6e20c4a8ebd",
+  "error_count": 4,
+  "introduced_here": false,
+  "file_matches": [
+    {
+      "path": "qualification/cell-owner-context-20261107/raw/shm/context-native-dev-small.log",
+      "head_blob": "c9854f5cf22d775e8bd22497a4bb12a1863b6816",
+      "original_base_blob": "c9854f5cf22d775e8bd22497a4bb12a1863b6816",
+      "unchanged": true
+    },
+    {
+      "path": "qualification/cell-owner-context-20261107/raw/workspace/context-native-tests.log",
+      "head_blob": "06ae79338508b4277f35597987bf202a4072b234",
+      "original_base_blob": "06ae79338508b4277f35597987bf202a4072b234",
+      "unchanged": true
+    }
+  ],
+  "failure": "Codespell treats the Cargo package name inout as a misspelling in unchanged raw baseline qualification logs.",
+  "minimal_maintenance_fix": {
+    "path": ".codespellignore",
+    "add_line": "inout",
+    "preserve_raw_logs": true
+  },
+  "modified_candidate_files": [],
+  "workflow_rerun": false,
+  "original_read_timeout_evidence_retained": true,
+  "log_sha256": "a32e28261d3b68957069f4d0cbacbae23505ae156958f83ca89847b8d27f37cf"
+}

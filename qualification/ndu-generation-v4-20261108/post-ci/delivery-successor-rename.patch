@@ -1,0 +1,50 @@
+--- a/codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs
++++ b/codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs
+@@ -32,7 +32,7 @@
+         Ok(())
+     }
+ 
+-    pub(crate) fn validate_successor(&self, previous: &Self) -> Result<()> {
++    pub(crate) fn validate_delivery_successor(&self, previous: &Self) -> Result<()> {
+         self.validate()?;
+         if self.required_mask != previous.required_mask
+             || self.optional_mask != previous.optional_mask
+--- a/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs
++++ b/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs
+@@ -75,7 +75,9 @@
+             return Err("stopped state cannot continue".into());
+         }
+         if let Some(owner) = &request.owner {
+-            owner.validate_successor(prior.owner.as_ref().ok_or("missing predecessor owner")?)?;
++            owner.validate_delivery_successor(
++                prior.owner.as_ref().ok_or("missing predecessor owner")?,
++            )?;
+             prior.owner = Some(owner.clone());
+         }
+         prior.planning = None;
+--- a/codex-rs/hepta-infer-worker-host/src/joint_generation/observation_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/joint_generation/observation_tests.rs
+@@ -15,12 +15,12 @@
+     let previous = owner();
+     let mut next = previous.clone();
+     next.budget_remaining -= 1;
+-    next.validate_successor(&previous)?;
++    next.validate_delivery_successor(&previous)?;
+     let mut packet = Packet::default();
+     next.write_packet(&mut packet);
+     assert_eq!(OwnerContext::read_packet(&packet)?, next);
+     next.budget_remaining = previous.budget_remaining + 1;
+-    assert!(next.validate_successor(&previous).is_err());
++    assert!(next.validate_delivery_successor(&previous).is_err());
+     for changed in [
+         OwnerContext {
+             required_mask: 9,
+@@ -35,7 +35,7 @@
+             ..previous.clone()
+         },
+     ] {
+-        assert!(changed.validate_successor(&previous).is_err());
++        assert!(changed.validate_delivery_successor(&previous).is_err());
+     }
+     Ok(())
+ }
