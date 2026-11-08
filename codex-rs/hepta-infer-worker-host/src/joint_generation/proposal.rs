@@ -75,7 +75,9 @@ pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
             return Err("stopped state cannot continue".into());
         }
         if let Some(owner) = &request.owner {
-            owner.validate_successor(prior.owner.as_ref().ok_or("missing predecessor owner")?)?;
+            owner.validate_delivery_successor(
+                prior.owner.as_ref().ok_or("missing predecessor owner")?,
+            )?;
             prior.owner = Some(owner.clone());
         }
         prior.planning = None;

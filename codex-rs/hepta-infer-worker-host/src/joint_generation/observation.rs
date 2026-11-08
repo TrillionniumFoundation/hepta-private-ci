@@ -32,7 +32,7 @@ impl OwnerContext {
         Ok(())
     }
 
-    pub(crate) fn validate_successor(&self, previous: &Self) -> Result<()> {
+    pub(crate) fn validate_delivery_successor(&self, previous: &Self) -> Result<()> {
         self.validate()?;
         if self.required_mask != previous.required_mask
             || self.optional_mask != previous.optional_mask

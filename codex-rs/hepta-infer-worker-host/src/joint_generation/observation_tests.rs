@@ -15,12 +15,12 @@ fn owner_contract_retains_identity_and_cannot_refill_budget() -> Result<()> {
     let previous = owner();
     let mut next = previous.clone();
     next.budget_remaining -= 1;
-    next.validate_successor(&previous)?;
+    next.validate_delivery_successor(&previous)?;
     let mut packet = Packet::default();
     next.write_packet(&mut packet);
     assert_eq!(OwnerContext::read_packet(&packet)?, next);
     next.budget_remaining = previous.budget_remaining + 1;
-    assert!(next.validate_successor(&previous).is_err());
+    assert!(next.validate_delivery_successor(&previous).is_err());
     for changed in [
         OwnerContext {
             required_mask: 9,
@@ -35,7 +35,7 @@ fn owner_contract_retains_identity_and_cannot_refill_budget() -> Result<()> {
             ..previous.clone()
         },
     ] {
-        assert!(changed.validate_successor(&previous).is_err());
+        assert!(changed.validate_delivery_successor(&previous).is_err());
     }
     Ok(())
 }
