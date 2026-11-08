@@ -182,10 +182,9 @@ common:ci-linux --config=ci-bazel
 common:ci-linux --build_metadata=TAG_os=linux
 common:ci-linux --platforms=//:rbe
 
-# Bazel 9.3 skips strategy_regexp matching for TestRunner. Prefer RBE for
-# eligible tests; no-remote-exec tests use the native namespace sandbox.
-# CI provisions original system OpenSSH for operator-acceptance there.
-common:ci-linux --strategy=TestRunner=remote,linux-sandbox
+# Tests requiring system OpenSSH run in a dedicated native TestRunner
+# invocation in bazel.yml. Keep compilation remote on every host; rule-wide
+# no-remote-exec tags would also move cross-host Rustc/Clippy actions locally.
 
 # On mac, we can run all the build actions remotely but test actions locally.
 common:ci-macos --config=ci-bazel
