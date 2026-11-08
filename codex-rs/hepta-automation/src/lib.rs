@@ -13,6 +13,10 @@
 mod effect_executor;
 
 mod action_skill;
+mod action_skill_driver;
+#[cfg(test)]
+#[path = "action_skill_tests.rs"]
+mod action_skill_tests;
 mod authorized_effect;
 mod automation_taskflow;
 mod circuit_admission;
@@ -57,6 +61,7 @@ pub use action_skill::ActionSkillInvocationV1;
 pub use action_skill::ActionSkillObservationV1;
 pub use action_skill::ActionSkillObserver;
 pub use action_skill::ActionSkillRecoveryV1;
+pub use action_skill_driver::GoalCheckedActionSkillDriver;
 pub use authorized_effect::AsyncAuthorizedEffectDriver;
 pub use authorized_effect::AuthorizedEffectDependency;
 pub use authorized_effect::AuthorizedEffectDispatchRequest;
