@@ -87,6 +87,12 @@ impl LoadedTabularOperatorV1 {
         &self.artifact.artifact_id
     }
 
+    /// Validated immutable data; this does not authorize selection or adoption.
+    #[must_use]
+    pub fn artifact(&self) -> &TabularOperatorArtifactV1 {
+        &self.artifact
+    }
+
     /// The immutable loaded value validates O(n) once, then looks up in O(log n).
     pub fn predict(
         &self,
