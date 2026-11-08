@@ -379,3 +379,135 @@ async fn signed_ingress(state: &AgentdState) -> anyhow::Result<AuthBusObjectiveI
     Ok(request)
 }
 
+#[tokio::test]
+async fn signed_objective_sink_ack_loss_replays_original_circuit_and_cell_result()
+-> anyhow::Result<()> {
+    let mut f = fixture(/*lose_ack*/ true, /*expire*/ false).await?;
+    let state = Arc::clone(&f.runtime.state);
+    assert!(
+        state
+            .response(
+                1,
+                1,
+                AgentdMethod::ObjectiveStart {
+                    request: f.request.clone()
+                }
+            )
+            .await
+            .is_err()
+    );
+    let first = f.invocation.receipts.lock().expect("receipt")[0].clone();
+    assert_eq!(
+        first.trace().run().outcome(),
+        Some(CircuitExitV2::Succeeded)
+    );
+    assert_eq!(first.executions().len(), 1);
+    assert_eq!(first.trace().run().budget().spent(), 20);
+    assert_eq!(first.trace().run().budget().reserved(), 0);
+    assert_eq!(
+        f.store.bounded_circuit_committed_trace(RUN).await?.as_ref(),
+        Some(first.trace()),
+        "the service uses the attached original AutomationStore",
+    );
+    let authentication = crate::authbus_objective_claims(state.identity(), &f.request)?;
+    let record = f.invocation.records.lock().expect("record")[0].clone();
+    assert_eq!(
+        record.authentication.signed_body_digest,
+        authentication.payload_digest
+    );
+    assert_eq!(record.snapshot.generation, state.current_generation()?);
+    assert_ne!(
+        record.snapshot.generation,
+        state.identity().spawn_generation
+    );
+    for request_id in [2, 3] {
+        let response = state
+            .response(
+                request_id,
+                1,
+                AgentdMethod::ObjectiveStart {
+                    request: f.request.clone(),
+                },
+            )
+            .await?;
+        let AgentdPayload::ObjectiveRun(admission) = response.payload else {
+            panic!("ordinary objective admission")
+        };
+        assert_eq!(admission.disposition, "circuit_succeeded");
+        assert!(admission.idempotent);
+    }
+    assert_eq!(
+        *f.invocation.receipts.lock().expect("receipts"),
+        vec![first.clone(); 3]
+    );
+    assert_eq!(f.calls.load(Ordering::SeqCst), 1);
+    assert_eq!(
+        f.store.bounded_circuit_committed_trace(RUN).await?.as_ref(),
+        Some(first.trace())
+    );
+    f.stop().await;
+    let reopened = cell_owner(&f.runtime);
+    let decision = &first
+        .executions()
+        .values()
+        .next()
+        .expect("one Cell")
+        .decision;
+    assert_eq!(
+        reopened.lookup(
+            &decision.scope,
+            &decision.operation_id,
+            decision.semantic_request_digest
+        )?,
+        Some(decision.clone())
+    );
+    let snapshot = reopened.snapshot(&decision.scope)?;
+    assert_eq!(snapshot.revision, 1);
+    assert_eq!(
+        snapshot.checkpoint.expect("durable checkpoint").digest(),
+        decision.checkpoint_after
+    );
+    assert_eq!(reopened.pending_inference(&decision.scope)?, None);
+    f.store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn ordinary_ingress_rejects_invalid_trust_generation_and_deadline_before_contact()
+-> anyhow::Result<()> {
+    for boundary in ["signature", "revoked", "generation", "deadline"] {
+        let mut f = fixture(/*lose_ack*/ false, boundary == "deadline").await?;
+        let mut request = f.request.clone();
+        if boundary == "signature" {
+            request.signature_hex = "00".repeat(64);
+        }
+        if boundary == "revoked" {
+            let path = f.runtime.identity.home_root.join("circuit-trust.json");
+            let mut trust: Value = serde_json::from_slice(&fs::read(&path)?)?;
+            trust["revoked"] = json!(true);
+            fs::write(path, serde_json::to_vec(&trust)?)?;
+        }
+        let spawn_generation = if boundary == "generation" { 2 } else { 1 };
+        assert!(
+            f.runtime
+                .state
+                .response(
+                    1,
+                    spawn_generation,
+                    AgentdMethod::ObjectiveStart { request }
+                )
+                .await
+                .is_err(),
+            "{boundary}"
+        );
+        assert_eq!(f.calls.load(Ordering::SeqCst), 0, "{boundary}");
+        assert!(f.invocation.receipts.lock().expect("receipts").is_empty());
+        assert_eq!(f.store.bounded_circuit_run(RUN).await?, None, "{boundary}");
+        f.stop().await;
+        let owner = cell_owner(&f.runtime);
+        assert_eq!(owner.snapshot(&cell::scope(RUN))?.revision, 0);
+        assert_eq!(owner.pending_inference(&cell::scope(RUN))?, None);
+        f.store.close().await;
+    }
+    Ok(())
+}
