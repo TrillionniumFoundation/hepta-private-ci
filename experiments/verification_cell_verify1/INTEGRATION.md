@@ -12,9 +12,16 @@ preserve the same contracts.
 | Base tree | `491eace326f335498334fb051c9e8f298ca7a04c` |
 | Observed `main` | `732e934ba496d90fbe042b8d41d479ef901643e5` |
 
-The native entry points in the table were inspected at the implementation base.
-In particular, its durable dispatch and automation host code differ from the
+The existing native entry points below retain the original implementation-base
+audit. In particular, durable dispatch and automation host code differ from the
 observed `main`; this document uses the base's dispatch behavior.
+
+The native extension was separately inspected at published snapshot
+`0c81508e3cb9ea5c949c12a0c01c61c66e8d4df2`. Its
+[SOURCE_BINDING.json](../../qualification/verify1-native-20261108/SOURCE_BINDING.json)
+binds the actual Linux run to the base plus eight source files, with separate
+tested and formatted hashes. The publication snapshot is not the test subject,
+and the test's ephemeral candidate identity is not a production identity.
 
 ## What this package establishes
 
@@ -31,12 +38,28 @@ production trust registration. Payload identity checking is not signature
 verification or an authenticated native store read. Its inner record digest is
 not the native payload or envelope digest.
 
-The neural self-evaluation, shared-base roles, distinct-adapter, and distinct-base
-arms remain `NOT_RUN`. The `common_misjudgment` fixture injects a shared wrong
-value; it does not execute correlated model voters. Synthetic source groups do
+The separate Rust extension and Agentd qualification described below now exercise
+typed native report validation, a real fixture-state checker, and signed native
+evidence ingress under ephemeral fixture trust. This does not change the Python
+serializer's responsibilities or register a production checker, signer, or caller.
+
+Within the original four-policy SQLite runner, the neural self-evaluation,
+shared-base roles, distinct-adapter, and distinct-base arms remain `NOT_RUN`.
+That runner's `common_misjudgment` fixture injects a shared wrong value; it does not execute correlated model voters. Synthetic source groups do
 not become independent real tasks by receiving different identifiers. An
 engineering smoke result does not qualify a real-model study, Agentd production
 integration, or a statistical guarantee.
+
+Separate real-model execution was retained in PR #5346 at evidence snapshot
+`f25124815a9832af9b00652a4741d794a744df06`: see the
+[run-v2 provenance](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f25124815a9832af9b00652a4741d794a744df06/qualification/cell-research-stages-20261108/followthrough-20261108/README.zh-CN.md)
+and [43-check independent audit](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f25124815a9832af9b00652a4741d794a744df06/qualification/cell-research-stages-20261108/followthrough-20261108/VERIFY1_AUDIT.json).
+It records 108 completed policy trajectories, 652 real model forwards and three
+trained frozen-feature logistic readouts. The execution is bound to a source
+capsule and manifest; `published_model_source_commit` remains `null`. It is not
+covered by the native capsule below or automatically part of the observed
+phase-1 PR #5351 source. The pilot retains scientific admission **HOLD** and
+production authority **NONE**; its optional-call cap is not equal actual cost.
 
 ## Existing native entry points
 
@@ -54,6 +77,33 @@ Paths below are relative to the repository root; links resolve from this file.
 | Provider outcome semantics | [hepta-contracts/src/provider_effect.rs](../../codex-rs/hepta-contracts/src/provider_effect.rs): `ProviderEffectIntent`, `ProviderEffectAckStatus`, `ProviderEffectState` | `Accepted` means admitted, not completed. `Indeterminate` requires reconciliation using the exact effect identity. |
 | Qualification-only provider seam | [hepta-evidence/src/provider_effect_store.rs](../../codex-rs/hepta-evidence/src/provider_effect_store.rs): `dispatch_provider_effect_qualification`, `reconcile_provider_effect_with_adapter` | Useful for fault/recovery qualification; this seam is not registered as a production Agentd caller. Invocation is not proof of a physical effect. |
 | Full task accounting | [hepta-neuron/src/cell_task_cost.rs](../../codex-rs/hepta-neuron/src/cell_task_cost.rs): `CellTaskCostV2`, `CellTaskCostIdentityV2`, `CellCostEntryV2`, `CellCostAccountingV2` | Bind source/task identity and all stages, including failed or cancelled work. Keep exclusive entries distinct from inclusive envelopes; unmeasured cost is unknown, not zero. |
+
+## Native extension and retained execution
+
+| Component | Source | Executed scope |
+| --- | --- | --- |
+| Typed report namespace | [verify1_report.rs](../../codex-rs/hepta-evidence/src/verify1_report.rs), [qualification.rs](../../codex-rs/hepta-evidence/src/qualification.rs) | Validate original inner report bytes/digest and typed semantics in `hepta.verify1.report`. Generic append does not invoke a property checker. |
+| SQLite property checker | [verify1_checker.rs](../../codex-rs/hepta-evidence/src/verify1_checker.rs), [verify1_fixture_check.rs](../../codex-rs/hepta-evidence/examples/verify1_fixture_check.rs) | Recompute initialized goal, epoch, frontier, values, finished intents and ACK/readback obligations in one read snapshot. Return an unsigned receipt without accepting the task. |
+| Agentd evidence path | [verify1_kernel_evidence_product.rs](../../codex-rs/hepta-agentd/tests/verify1_kernel_evidence_product.rs) | Start the actual daemon with ephemeral fixture trust; sign, append, query and verify, including replay, expiry, tamper and current revocation checks. No production principal is registered. |
+
+The [native qualification capsule](../../qualification/verify1-native-20261108/README.md)
+records 131 evidence-crate tests passing, one existing ignored test, and four
+selected Agentd integration tests passing. Six actual Python SQLite cases
+produced seven native checker results. These are engineering observations for the
+bound source overlay; final formatting and eventual publication are separate
+identities. Tests were not rerun after final formatting.
+
+The checker's property is `fixture_prefix_goal_and_owner_readback_at_snapshot`
+in domain `sqlite_two_field_engineering_fixture_v1`. A step-1 result covers only
+the left target and cannot become a terminal success result. The checker assumes
+a trusted controller goal, a trusted host-selected fixture database, a consistent
+SQLite transaction, and trusted owner/epoch-bound readbacks. It does not isolate
+another process able to modify that database.
+
+The native qualification capsule records `model_inference=false`, no production
+caller and no adoption. This scope is separate from the real-model run-v2 pilot
+above and does not assert zero inference across VERIFY-1. It does not include
+whole-workspace, Bazel or other-platform qualification.
 
 ## Three report contracts and their authority
 
@@ -76,31 +126,37 @@ nor a probability may become a `FinalUse` grant or a replacement for readback.
 
 ## Faults and the corresponding native observations
 
-| Injection | Current local fixture | Native connection still to implement |
+The native checker exercised the same retained SQLite states. The final column
+lists remaining production or model work, not missing fixture-checker code.
+
+| Injection | Executed fixture and native result | Remaining production or model connection |
 | --- | --- | --- |
-| Stale read | State changes after an earlier observation; acceptance checks current values/version. | Bind Cell source frontier and owner revision, current dispatch fence, and evidence expiry/revocation. Recheck the property against the current destination before acceptance. |
-| Missing receipt | Commit the effect while withholding its ACK; reconcile the retained intent and state. | Preserve admission/dispatch identity and `Indeterminate`; use authoritative destination lookup and reconciliation without repeating the effect. |
-| Semantic error | Write an incorrect goal value with otherwise normal execution. | Run a trusted property-specific checker on actual destination bytes/values. Hashes, transport success, and signatures alone do not check meaning. |
-| Partial success | Complete only part of the goal. | Distinguish `Accepted` from `Completed` and enumerate all terminal obligations. A completed sub-operation is not a completed trajectory. |
-| Common misjudgment | Inject the same wrong value used to represent a common failure. | Collect actual model/voter outputs with frozen base/adapter identities and blinded outcome labels; compare shared failures with an external checker. Native signer diversity is not a substitute. |
+| Stale read | State changes after an earlier observation; native checker refutes the current wrong values. | Bind Cell source frontier and owner revision, current dispatch fence, and evidence expiry/revocation. Recheck the property against the current destination before acceptance. |
+| Missing receipt | Native checker returns unknown after commit without ACK, then proves the pinned snapshot after owner readback without effect replay. | Preserve admission/dispatch identity and `Indeterminate`; use authoritative destination lookup and reconciliation without repeating the effect. |
+| Semantic error | Native checker refutes the incorrect goal value despite normal effect execution. | Run a trusted property-specific checker on actual destination bytes/values. Hashes, transport success, and signatures alone do not check meaning. |
+| Partial success | Native checker refutes the complete goal when only part is present. | Distinguish `Accepted` from `Completed` and enumerate all terminal obligations. A completed sub-operation is not a completed trajectory. |
+| Common misjudgment | Native checker refutes an injected wrong value; no model voters ran in this native capsule. | Collect actual model/voter outputs with frozen base/adapter identities and blinded outcome labels; compare shared failures with an external checker. Native signer diversity is not a substitute. |
 
 ## Remaining integration sequence
 
-1. Register a real checker trust entry point. Fix checker version, property,
-   assumptions, allowed evidence sources, freshness policy, and result scope.
-   Authenticate destination readback and distinguish checker execution from a
-   caller-supplied report. Preserve `unknown` when obligations cannot be checked.
-2. Connect typed payloads to native canonical envelopes, `SignedMessage` claims,
-   configured issuers, append ingress, and current-trust verification. Bind the
-   source commit/tree and exact evidence identity; validate native size limits.
-   Exercise expiry, revocation, replay, and recovery through the real host.
+1. Connect the existing fixture checker or another property-specific checker to
+   an owner-selected production trust entry point. Fix its version, property,
+   assumptions, evidence sources, freshness policy and result scope. Authenticate
+   destination readback and retain `unknown` for unchecked obligations. The
+   SQLite fixture's trusted database assumption does not establish this ownership.
+2. Supply actual production issuers and caller wiring for the native envelope,
+   signing, append/query and current-trust path exercised by the Agentd fixture.
+   Bind the real source/tree and evidence identity, and qualify the target's
+   revocation, expiry, replay and recovery behavior. The test's ephemeral trust
+   configuration must not be reused as production authority.
 3. Add actor/tool hooks around observation, optional check selection, effect
    execution, and terminal acceptance. Keep authorization, hard constraints,
    dispatch fencing, and current destination readback in the host. Synchronous
    authorized callbacks must not wait on remote work; asynchronous delivery
    needs the existing durable admission and reconciliation path.
-4. Freeze real model/base/adapter artifacts, task sources, train/calibration/
-   confirmation splits, and output receipts before comparing arms. Keep hidden
+4. For the next scientific comparison, freeze real model/base/adapter artifacts,
+   task sources, train/calibration/confirmation splits, and output receipts.
+   Preserve the separate run-v2 evidence and its unresolved qualification limits. Keep hidden
    outcome labels away from policies. Use paired tasks and explicit source,
    model-family, adapter, and failure-cluster labels; execute equal-budget voting
    and external-check arms before drawing ensemble conclusions.

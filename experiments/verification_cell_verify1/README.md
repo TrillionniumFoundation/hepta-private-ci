@@ -1,9 +1,10 @@
 # VERIFY-1: verification and risk Cell
 
-This package executes a bounded engineering experiment and prepares typed inputs
-for a later model study. It does not install a production Cell or grant effect
-authority. The original Hepta host continues to own authorization, deterministic
-constraints and actual effect readback.
+This package executes a bounded SQLite experiment and provides native typed
+reports, a fixture checker, and an Agentd evidence integration qualification.
+The four-policy runner is separate from the retained model pilot described below.
+It does not install a production Cell or grant effect authority. The original Hepta host continues to own authorization,
+deterministic constraints and actual effect readback.
 
 ## Run
 
@@ -68,9 +69,9 @@ the same optional-check opportunity cap (0.6 declared units, 0.2 per check) and 
 separately reserved mandatory terminal check. Actual spending can differ. The
 declared scheduling units are not measured dollars, energy or latency.
 
-Single-step neural self-evaluation, shared-base roles, different adapters and
-different bases are registered as `NOT_RUN`, with zero inference receipts and
-missing artifact identities. Naming a fault `common_misjudgment` does not execute
+Within this original four-policy SQLite runner, single-step neural self-evaluation,
+shared-base roles, different adapters and different bases are registered as
+`NOT_RUN`, with zero inference receipts and missing artifact identities. Naming a fault `common_misjudgment` does not execute
 an ensemble. No simulated model voting result is reported as a real-model result.
 
 ## Measurements and retained records
@@ -96,8 +97,8 @@ against the scheduled step-4 decision horizon, including early stops.
 
 `compare_votes` accepts original per-voter records and reports base/adapter
 provenance, paired error correlation and common failure clusters. Different
-identities never imply independent errors. The experiment itself runs no neural
-voters. `summarize_costs` rejects duplicate physical operation IDs and preserves
+identities never imply independent errors. This original four-policy runner executes no neural
+voters; the separate model pilot below has its own execution and source identity. `summarize_costs` rejects duplicate physical operation IDs and preserves
 failed/cancelled work. Controller CPU and operation wall times are measured;
 child CPU and energy remain unmeasured. Summed nested durations are not elapsed
 time. `full_physical_cost_complete` therefore remains false.
@@ -121,8 +122,52 @@ and independently pinned digest. This serialization layer does not sign an
 envelope, register a trusted issuer, execute Agentd ingress or authenticate a
 queried payload. `kernel.evidence`'s `Supported` is not a property proof.
 
-See [INTEGRATION.md](INTEGRATION.md) for the audited native entry points and
-[STUDY_PROTOCOL.md](STUDY_PROTOCOL.md) for the remaining real-model experiment.
+Separate native code validates the `hepta.verify1.report` namespace and implements
+`check_verify1_sqlite(path, trusted_goal, expected_scope)`. The checker reads one
+SQLite snapshot and recomputes the pinned fixture property; imported verdicts are
+not checker inputs. Generic evidence append validates the report namespace but
+does not automatically run this checker.
+
+The [native qualification](../../qualification/verify1-native-20261108/README.md)
+records a Linux run with 131 evidence-crate tests passing, one existing ignored
+test, and four selected Agentd integration tests passing. The Agentd test starts
+the actual daemon with ephemeral fixture trust and exercises signing, append,
+query, replay, expiry, tampering, and current-trust revocation. Six Python fixture
+cases produced seven native checks; missing ACK remained unknown until owner
+readback, and no database acceptance rows were added.
+
+Those observations bind the exact base plus source overlay and the distinct
+tested/formatted hashes in
+[SOURCE_BINDING.json](../../qualification/verify1-native-20261108/SOURCE_BINDING.json).
+They are not a rerun of the eventual publication commit, a whole-workspace or
+Bazel result, or a registration of a production signer/caller. The retained
+[RESULT.json](../../qualification/verify1-native-20261108/RESULT.json) keeps
+`model_inference=false`, `production_caller_registered=false`, and
+`production_adoption=false` for this native qualification capsule. These fields do
+not describe all VERIFY-1 experiments.
+
+## Separately retained real-model pilot
+
+The [run-v2 provenance and independent audit](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f25124815a9832af9b00652a4741d794a744df06/qualification/cell-research-stages-20261108/followthrough-20261108/README.zh-CN.md)
+retained in PR #5346 describe a separate native model execution: 108 completed
+policy trajectories, 652 actual model forwards, and three trained frozen-feature
+logistic readouts. Its [audit result](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f25124815a9832af9b00652a4741d794a744df06/qualification/cell-research-stages-20261108/followthrough-20261108/VERIFY1_AUDIT.json)
+passed 43 checks by independently recomputing the retained originals, without
+rerunning inference or training. These observations are distinct from both the
+four-policy runner above and the native evidence/checker qualification capsule.
+
+The model execution is bound by its source capsule and manifest. The retained
+`published_model_source_commit` is `null`; the audit does not claim that its new
+`model_*` files belong to the observed phase-1 PR #5351 head. Three frozen-feature
+readouts are not base-model finetunes or independent natural-task trials. All
+seven primary arms accepted 4 of 12 trajectories with zero accepted errors under
+mandatory host readback; selector superiority remains unestablished. Equal voting
+opportunities do not establish equal physical cost, and the pilot retains
+scientific admission **HOLD** and production authority **NONE**.
+
+See [INTEGRATION.md](INTEGRATION.md) for the original base audit, the native
+extension, and the remaining owner integration, and
+[STUDY_PROTOCOL.md](STUDY_PROTOCOL.md) for the real-model experiment.
 
 Scientific acceptance, full physical cost, Agentd production integration and
 real-model superiority remain **HOLD** even when this engineering gate passes.
