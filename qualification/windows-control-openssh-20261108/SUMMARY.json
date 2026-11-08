@@ -1,0 +1,64 @@
+{
+  "base_head": "f49128e503b24bb52ccdb32a860939e6392c8e08",
+  "code_commit": "770569422ea9f5cac8461d8b2ae4b7a48eb1b874",
+  "code_tree": "ab05536448cc2b4079af2ec88024fb58c8ca6107",
+  "tested_tree": "d28e9603ccea36bcda98aad2e9fe31bb1071b499",
+  "formatted_tree": "ab05536448cc2b4079af2ec88024fb58c8ca6107",
+  "native_host": "rog",
+  "native_scope": {
+    "selected": 33,
+    "passed": 33,
+    "skipped": 166,
+    "neuron_control_selected": 8,
+    "operator_acceptance_selected": 25,
+    "test_job": "1a1bc80a18c-138b0-2e1",
+    "nextest_run_id": "848938ce-14f9-469c-b614-9b10d8210c8d",
+    "exit_code": 0
+  },
+  "first_native_compile_attempt": {
+    "job": "1a1bc7e40b1-138b0-2d2",
+    "tree": "1e845b2d2338298549b3ce0830552954fbc50502",
+    "exit_code": 101,
+    "runtime_tests_executed": 0
+  },
+  "formatter": {
+    "job": "1a1bc831221-138b0-2f3",
+    "exit_code": 0,
+    "changed_paths": [
+      "codex-rs/hepta-operator-acceptance/src/openssh_windows.rs"
+    ],
+    "rust_tests_rerun_after_fmt": false
+  },
+  "bazel_lock": {
+    "command": [
+      "/home/qian-qi/.cargo/bin/just",
+      "bazel-lock-update"
+    ],
+    "cwd": "/home/qian-qi/work/cell-s0s5-20261108-1628/platform-fixtures-source",
+    "exit_code": 0,
+    "elapsed_seconds": 4.336337327957153,
+    "before_sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+    "after_sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+    "changed": false,
+    "stdout_path": "/home/qian-qi/work/cell-s0s5-20261108-1628/platform-fixtures-validation/bazel-lock-update.stdout",
+    "stderr_path": "/home/qian-qi/work/cell-s0s5-20261108-1628/platform-fixtures-validation/bazel-lock-update.stderr"
+  },
+  "upstream_windows_unique_failures": {
+    "neuron_control": 4,
+    "operator_trust": 10
+  },
+  "windows_runtime_validation": "PENDING_CI",
+  "windows_255_complete_cause_proven": false,
+  "historical_child_environment_observed": false,
+  "evidence_archive": {
+    "path": "native-evidence.zip",
+    "bytes": 48848,
+    "sha256": "127f79750f1877d48b79296fd7cd89d703a40f4b5e3b474d9993b17c7526f2f9",
+    "members": 37,
+    "manifest_bound_members": 36
+  },
+  "scientific_admission": "HOLD",
+  "production_qualification": false,
+  "training_updates": 0,
+  "model_forwards": 0
+}
