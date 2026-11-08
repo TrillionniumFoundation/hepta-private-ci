@@ -1,0 +1,346 @@
+{
+  "architecture": {
+    "K_is_number_of_basis_coefficients_not_independent_neurons": true,
+    "distribution_cells_per_layer": 1,
+    "explicit_observation_likelihood_normalization": true,
+    "network_fixture_basis": {
+      "K": 10,
+      "active": 6,
+      "quadrature_order": 8,
+      "remaining_time": 3,
+      "tail": 1
+    },
+    "network_fixture_content_dimension": 3,
+    "network_fixture_layers": 2,
+    "one_advance_per_layer_per_input_position": true,
+    "operator_81_state_fixture": {
+      "K": 81,
+      "active": 64,
+      "remaining_time": 16,
+      "tail": 1
+    },
+    "padding_advances_shared_position_only": true,
+    "physical_parameters_per_layer": [
+      "mu",
+      "sigma",
+      "static_log_boundary",
+      "absolute_reset"
+    ],
+    "physical_row_normalization_or_clipping": false,
+    "reset_content_rule": "identity",
+    "static_parameters_within_retained_episode": true
+  },
+  "artifact_hashes": {
+    "artifact-redactions.json": {
+      "bytes": 259,
+      "sha256": "ff38a8bf51cae4acff2f6431571a47e98a51e472e9d5e8c9653916f070491566"
+    },
+    "attempt-001-to-002.diff": {
+      "bytes": 30595,
+      "sha256": "3347d292e08fa8a8bcabb26b828279e4c74aa88523e4d8f2a459f101c4bbb91a"
+    },
+    "cloud-execution.json": {
+      "bytes": 2530,
+      "sha256": "18e40f627b6b0e59086f1819df0cce5fb9fe91594b28c95e05cd8601adf18f9a"
+    },
+    "colab-attempt-002.json": {
+      "bytes": 34079,
+      "sha256": "d925fb594178ca0418cb3d4ecaf2206df131fb8ff79f2ebcacbf72b9d7520545"
+    },
+    "format-gate.json": {
+      "bytes": 1407,
+      "sha256": "52d30390146b2c59fcfc0cbdb404b6e8cfe73ac6c161ca76bb1d16d25b952f08"
+    },
+    "legacy-status.json": {
+      "bytes": 2117,
+      "sha256": "2b7c130152f2161661316b0d3e596c90a3cf3547883c5e01243b126fa0ae8b40"
+    },
+    "native-attempt-001.json": {
+      "bytes": 33600,
+      "sha256": "2328f0526fffbb511df6f64b978267676c7079700f87e52837fe0cc773ef6680"
+    },
+    "native-attempt-002.json": {
+      "bytes": 34073,
+      "sha256": "b614eba8783997eb10c7c41a0fd9afb8ff30ac38b8ea10eeb8e1923ab25e2365"
+    },
+    "refinement.png": {
+      "bytes": 122817,
+      "sha256": "ef75491c43d8a060113ab31b78f921104c0e59b627e513a9bf4478fa18ba4ed9"
+    },
+    "refinement.svg": {
+      "bytes": 84890,
+      "sha256": "c986ef562aecbe0e56c3c16b81e9a5c88a759e7d329bc953cd85981ed6dbe048"
+    },
+    "six-accounts.json": {
+      "bytes": 6022,
+      "sha256": "f2bebb72e444905e50422a5eefea4406980734b55688f86d3d91ee4bd1e1f9c8"
+    }
+  },
+  "candidate": "qualification/hcsn_differentiable",
+  "candidate_source_manifest": {
+    "MODEL.md": {
+      "bytes": 17988,
+      "sha256": "983c7a20ddd86529614bedf0cdf040129e2344f5ba5b243671d1d07d2ac71d4f"
+    },
+    "README.md": {
+      "bytes": 9477,
+      "sha256": "a917d26bfc407d6a7203956137f0713d10a43a46889a3c995830eb9132b0894e"
+    },
+    "__init__.py": {
+      "bytes": 237,
+      "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123"
+    },
+    "checkpoint.py": {
+      "bytes": 7943,
+      "sha256": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793"
+    },
+    "contract.py": {
+      "bytes": 4514,
+      "sha256": "35338e23a8809c1d5ec83159247e3ae7a3511b2857e60dbc78098bdedb8ec41f"
+    },
+    "encoder.py": {
+      "bytes": 7996,
+      "sha256": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18"
+    },
+    "network.py": {
+      "bytes": 27528,
+      "sha256": "5b92871b84f24e6b3ccb8231e8068b1d834b5edb4b351a8caa684e52c80611bd"
+    },
+    "operator.py": {
+      "bytes": 23203,
+      "sha256": "75a81f620c954433ad14ae4b3253038bc88af69f300052495cec8eb782ba58c5"
+    },
+    "run_qualification.py": {
+      "bytes": 8088,
+      "sha256": "01d52568e1a93fd6a646ab515ce15a1b0c439d7afeb4dc3b927bbb4059ba7911"
+    },
+    "tests/test_encoder.py": {
+      "bytes": 4515,
+      "sha256": "8f8235398de00aaefef30b92633e189a451c24ed657858220c352e0b6ce66011"
+    },
+    "tests/test_network.py": {
+      "bytes": 24930,
+      "sha256": "0ff492b3068cfcb63925d0b986194d8f1cd26ce0672faf48ddbaba07fcb47759"
+    },
+    "tests/test_operator.py": {
+      "bytes": 28682,
+      "sha256": "6887878f132ee6a86423f400aaeeac35ff2a96032ac199534e4932fcf3976779"
+    }
+  },
+  "cloud_execution_record": "cloud-execution.json",
+  "colab": {
+    "checkpoint_recovery": {
+      "archive_bytes": 54113,
+      "autograd_tape_restored": false,
+      "next_optimizer_parameter_max_error": 0.0,
+      "next_prediction_max_error": 0.0
+    },
+    "cpu_interop_threads": 1,
+    "cpu_threads": 1,
+    "cross_layer_content_gradient": {
+      "autograd": 0.009637279488704263,
+      "finite_difference": 0.009637279489715933,
+      "raw_parameter_step": 2e-05,
+      "relative_error": 1.0497463683475491e-10
+    },
+    "device": "cpu",
+    "long_propagation": {
+      "M_expected_cumulative_events": 142.2381294752234,
+      "average_event_rate_per_time_unit": 1.3890442331564783,
+      "checkpoints": [
+        {
+          "M_expected_cumulative_events": 0.0010839827385822007,
+          "mass_drift": 1.1102230246251565e-16,
+          "maximum_signed_content_total_error": 1.1102230246251565e-16,
+          "minimum_probability": 0.0,
+          "step": 1
+        },
+        {
+          "M_expected_cumulative_events": 0.4731542974509952,
+          "mass_drift": 1.2212453270876722e-15,
+          "maximum_signed_content_total_error": 7.771561172376096e-16,
+          "minimum_probability": 7.431906175955527e-11,
+          "step": 16
+        },
+        {
+          "M_expected_cumulative_events": 8.85887495742804,
+          "mass_drift": 1.1435297153639112e-14,
+          "maximum_signed_content_total_error": 6.439293542825908e-15,
+          "minimum_probability": 4.577637970948979e-05,
+          "step": 256
+        },
+        {
+          "M_expected_cumulative_events": 35.53524689313117,
+          "mass_drift": 4.496403249731884e-14,
+          "maximum_signed_content_total_error": 1.8762769116165146e-14,
+          "minimum_probability": 5.163839493977761e-05,
+          "step": 1024
+        },
+        {
+          "M_expected_cumulative_events": 142.2381294752234,
+          "mass_drift": 1.2090328738167955e-13,
+          "maximum_signed_content_total_error": 5.695444116327053e-14,
+          "minimum_probability": 5.1640354845216036e-05,
+          "step": 4096
+        }
+      ],
+      "dt": 0.025,
+      "elapsed": 102.4,
+      "final_minimum_probability": 5.1640354845216036e-05,
+      "final_signed_content_totals": [
+        0.8301020807629996,
+        -0.6518841019508812,
+        -0.05416971771745607
+      ],
+      "grid_K": 25,
+      "initial_signed_content_totals": [
+        0.8301020807629427,
+        -0.6518841019508312,
+        -0.054169717717448634
+      ],
+      "maximum_recorded_mass_drift": 1.2090328738167955e-13,
+      "maximum_recorded_signed_content_total_error": 5.695444116327053e-14,
+      "scope": "fixed numerical propagation only; no neural long-horizon superiority claim",
+      "steps": 4096
+    },
+    "network_eight_raw_physical_gradients_max_relative_fd_error": 5.339398013867312e-08,
+    "operator_81_state_four_physical_gradients_max_relative_fd_error": 3.123645414102992e-11,
+    "peak_process_rss_mib": 362.6796875,
+    "peak_process_rss_scope": "Entire qualification process high-water mark; unavailable where Python resource is unsupported.",
+    "process_cpu_seconds": 18.220789892000003,
+    "python": "3.13.18 (main, Oct 26 2026, 15:28:15) [GCC 13.3.0]",
+    "rejected_restore_cases": 9,
+    "source_unchanged": true,
+    "status": "passed",
+    "tests_run": 36,
+    "torch": "2.14.1+cpu",
+    "wall_seconds": 19.82305948300018
+  },
+  "cost_interpretation": "Native and Colab execution scopes and hardware differ. Qualification wall time is nested within wrapper/lease time and must not be added to it; these are not matched-hardware performance benchmarks.",
+  "evidence_date_utc": "2026-11-08",
+  "fixed_research_parent": "4cfa4a2941baeabc26ebf325b44446aa076d3888",
+  "format_gate_record": "format-gate.json",
+  "legacy_status_record": "legacy-status.json",
+  "limits": [
+    "FP64 CPU fixtures only; no full numerical-domain certification.",
+    "0 <= dt <= fixed refractory duration; longer gaps require a separately frozen policy.",
+    "QPR projection is not an exact semigroup and can cause early refractory release.",
+    "The network fixture is coarse; the separate 81-state fixture does not qualify the network at that resolution.",
+    "No moving boundary, variable refractory derivative, optimal-free-boundary QVI, complete He-Xiong equity/debt solver, or higher-order AD.",
+    "Optimizer updates require a new episode; explicit TBPTT cuts graphs without permitting mid-episode physical changes.",
+    "Checkpoint recovery is a numerical CPU/ordinary-Adam continuation, not restoration of historical autograd tape or a crash-durable transaction.",
+    "No real-data generalization, wide-cell scaling, multimodal foundation-model, SNN/Transformer superiority, energy, or paid-cost result."
+  ],
+  "native": {
+    "checkpoint_recovery": {
+      "archive_bytes": 54113,
+      "autograd_tape_restored": false,
+      "next_optimizer_parameter_max_error": 0.0,
+      "next_prediction_max_error": 0.0
+    },
+    "cpu_interop_threads": 1,
+    "cpu_threads": 1,
+    "cross_layer_content_gradient": {
+      "autograd": 0.009637279488704263,
+      "finite_difference": 0.009637279489715933,
+      "raw_parameter_step": 2e-05,
+      "relative_error": 1.0497463683475491e-10
+    },
+    "device": "cpu",
+    "long_propagation": {
+      "M_expected_cumulative_events": 142.2381294752234,
+      "average_event_rate_per_time_unit": 1.3890442331564783,
+      "checkpoints": [
+        {
+          "M_expected_cumulative_events": 0.0010839827385822007,
+          "mass_drift": 1.1102230246251565e-16,
+          "maximum_signed_content_total_error": 1.1102230246251565e-16,
+          "minimum_probability": 0.0,
+          "step": 1
+        },
+        {
+          "M_expected_cumulative_events": 0.4731542974509952,
+          "mass_drift": 1.2212453270876722e-15,
+          "maximum_signed_content_total_error": 7.771561172376096e-16,
+          "minimum_probability": 7.431906175955527e-11,
+          "step": 16
+        },
+        {
+          "M_expected_cumulative_events": 8.85887495742804,
+          "mass_drift": 1.1435297153639112e-14,
+          "maximum_signed_content_total_error": 6.439293542825908e-15,
+          "minimum_probability": 4.577637970948979e-05,
+          "step": 256
+        },
+        {
+          "M_expected_cumulative_events": 35.53524689313117,
+          "mass_drift": 4.496403249731884e-14,
+          "maximum_signed_content_total_error": 1.8762769116165146e-14,
+          "minimum_probability": 5.163839493977761e-05,
+          "step": 1024
+        },
+        {
+          "M_expected_cumulative_events": 142.2381294752234,
+          "mass_drift": 1.2090328738167955e-13,
+          "maximum_signed_content_total_error": 5.695444116327053e-14,
+          "minimum_probability": 5.1640354845216036e-05,
+          "step": 4096
+        }
+      ],
+      "dt": 0.025,
+      "elapsed": 102.4,
+      "final_minimum_probability": 5.1640354845216036e-05,
+      "final_signed_content_totals": [
+        0.8301020807629996,
+        -0.6518841019508812,
+        -0.05416971771745607
+      ],
+      "grid_K": 25,
+      "initial_signed_content_totals": [
+        0.8301020807629427,
+        -0.6518841019508312,
+        -0.054169717717448634
+      ],
+      "maximum_recorded_mass_drift": 1.2090328738167955e-13,
+      "maximum_recorded_signed_content_total_error": 5.695444116327053e-14,
+      "scope": "fixed numerical propagation only; no neural long-horizon superiority claim",
+      "steps": 4096
+    },
+    "network_eight_raw_physical_gradients_max_relative_fd_error": 5.339400258700571e-08,
+    "operator_81_state_four_physical_gradients_max_relative_fd_error": 3.123645414102992e-11,
+    "peak_process_rss_mib": 636.42578125,
+    "peak_process_rss_scope": "Entire qualification process high-water mark; unavailable where Python resource is unsupported.",
+    "process_cpu_seconds": 18.536367627,
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "rejected_restore_cases": 9,
+    "source_unchanged": true,
+    "status": "passed",
+    "tests_run": 36,
+    "torch": "2.8.0+cu128",
+    "wall_seconds": 18.584664250025526
+  },
+  "physical_semantics": {
+    "C": "single-cycle killed value",
+    "E": "original financial equity value; not implemented",
+    "F": "first-hit probability",
+    "J": "event rate; the interval readout divided by dt is an average, not a continuous J solver",
+    "M": "expected cumulative event count in unconditioned fixed propagation; may exceed one",
+    "U": "regenerative total value; no global solver implemented",
+    "call": "declared one-interval engineering value; terminal reward cannot be resummed as global U",
+    "observed_stream_count": "sum of predictive conditional interval expectations; not a retrospective smoothed count posterior"
+  },
+  "preserved_failed_attempt": {
+    "cause": "Padding test incorrectly required the global sequence-position counter to remain unchanged.",
+    "existing_numerical_gates_weakened": false,
+    "original_result_sha256": "336231de88adeb7d7cbae272f676b39543f6dacfbb84c8295a5ac23bf1483e27",
+    "passed": 33,
+    "public_result": "native-attempt-001.json",
+    "repair_patch": "attempt-001-to-002.diff",
+    "status": "failed",
+    "tests_run": 34
+  },
+  "same_source_and_test_inventory": true,
+  "schema": "hcsn.differentiable-evidence-summary.v1",
+  "scope": "New independent fixed-basis probability/content prototype; not a formal real-data fit or a modification of old studies.",
+  "status": "MECHANISM_QUALIFIED_IN_TWO_CPU_ENVIRONMENTS"
+}
