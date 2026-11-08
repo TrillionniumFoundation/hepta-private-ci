@@ -1,6 +1,6 @@
 """Train only from completed, host-observed receipt trajectories.
 
-JSONL ``ndu.real.training-transition.v1`` records carry the current candidate
+JSONL ``ndu.real.training-transition.v1/v2`` records carry the current candidate
 features/metadata, actual successor observation, observed scores and duration,
 and training-only field/box references. No oracle action or counterfactual score
 is used. Only weights.pt, a plain tensor state_dict, is a deployment artifact.
@@ -9,9 +9,10 @@ is used. Only weights.pt, a plain tensor state_dict, is a deployment artifact.
 replicate. --content-only prepares a reusable, seed/core/data-bound content
 checkpoint. --pretrained DIR admits that checkpoint for frozen shared-head fits
 or independent controller-conditioned joint fits. Light backpropagates its
-observed action-value loss into content; NDU/VOI/MPC backpropagate their world
-model and utility losses. Unused heads receive the same auxiliary training with
-detached content. Fixed control has no learned controller gradient.
+observed action-value loss into content. V2 NDU fits additionally differentiate
+finite recursive utility through a frozen fitted reference and an exact
+finite-action policy improvement objective. V1 retains explicit reset/auxiliary
+compatibility. Persistent replay requires a complete checked v2 episode chain.
 """
 
 import argparse
@@ -22,7 +23,6 @@ import json
 import math
 import os
 from pathlib import Path
-import random
 import resource
 import sys
 import time
@@ -30,6 +30,10 @@ import traceback
 import uuid
 
 from .metering import Meter, atomic_json, canonical_sha, file_sha
+from .controllers import ControlPlan
+from .objective import utility_profile
+from .trajectory import V2_SCHEMA, V2_FIELDS, validate_link, validate_chains, episode_groups, memory_replay_metadata
+from .fit_loop import train_epochs as _epochs, estimate_residuals as _residuals
 
 SCHEMA = "ndu.real.training-transition.v1"
 ACTION_NAMES = ("PREPARE_ROI", "READ_ROI", "WRITE_TEXT", "RENDER_IMAGE", "STOP")
@@ -92,9 +96,10 @@ def _box(box, width, height):
 
 def validate_record(row):
     """Reject evaluation splits, malformed observations and fabricated labels."""
-    if not isinstance(row, dict) or not REQUIRED <= set(row) or set(row) - REQUIRED - OPTIONAL:
+    additions = V2_FIELDS if isinstance(row, dict) and row.get("schema") == V2_SCHEMA else set()
+    if not isinstance(row, dict) or not (REQUIRED | additions) <= set(row) or set(row) - REQUIRED - OPTIONAL - additions:
         raise ValueError("Training record has missing or unexpected fields")
-    if row["schema"] != SCHEMA or row["split"] != "train":
+    if row["schema"] not in {SCHEMA, V2_SCHEMA} or row["split"] != "train":
         raise ValueError("Only registered train observations may be fitted")
     for key in ("record_id", "episode_id", "source_group", "origin_run_id"):
         if not isinstance(row[key], str) or not 1 <= len(row[key]) <= 512:
@@ -149,6 +154,8 @@ def validate_record(row):
             raise ValueError("Invalid source provenance field")
         if name.endswith("sha256") and value is not None and (len(value) != 64 or any(c not in "0123456789abcdef" for c in value)):
             raise ValueError("Invalid original artifact digest")
+    if additions:
+        validate_link(row)
     return row
 
 
@@ -168,7 +175,7 @@ def load_records(path):
     path = Path(path)
     if path.is_symlink() or not path.is_file() or path.stat().st_size > 512 * 1024 * 1024:
         raise ValueError("Training JSONL outside the bounded regular-file profile")
-    rows, ids, content_keys = [], set(), set()
+    rows, original_rows, ids, content_keys = [], [], set(), set()
     counts = Counter()
     groups, episodes, origins = set(), set(), set()
     digest = hashlib.sha256()
@@ -178,6 +185,7 @@ def load_records(path):
                 raise ValueError("Training JSONL exceeds its line/count bound")
             digest.update(raw)
             row = validate_record(json.loads(raw, object_pairs_hook=_strict_object))
+            original_rows.append(row)
             if row["record_id"] in ids:
                 raise ValueError("Duplicate original transition identity")
             ids.add(row["record_id"])
@@ -192,7 +200,10 @@ def load_records(path):
             first_content = key not in content_keys
             content_keys.add(key)
             scale = torch.tensor([row["source_size"][k] for k in ("width", "height", "width", "height")])
-            packed = {k: row[k] for k in ("record_id", "before_score", "after_score", "duration_seconds")}
+            packed = {k: row[k] for k in ("record_id", "before_score", "after_score", "duration_seconds",
+                                           "schema", "origin_run_id", "episode_id")}
+            if row["schema"] == V2_SCHEMA:
+                packed.update({key: row[key] for key in V2_FIELDS})
             packed.update(features=torch.tensor(row["candidate_features"], dtype=torch.float32),
                           meta=torch.tensor(row["public_metadata"], dtype=torch.float32),
                           boxes=torch.tensor([c["bbox"] for c in row["candidate_metadata"]]) / scale,
@@ -211,7 +222,9 @@ def load_records(path):
             counts["after_score_observed"] += row["after_score"] is not None
             if row.get("terminal_reason"):
                 counts["terminal:" + row["terminal_reason"]] += 1
+    chains = validate_chains(original_rows)
     return rows, {"sha256": digest.hexdigest(), "bytes": path.stat().st_size, "counts": dict(counts),
+                  "complete_v2_chains": chains, "legacy_v1_rows": sum(r["schema"] == SCHEMA for r in rows),
                   "source_groups": len(groups), "episodes": len(episodes), "origin_run_ids": sorted(origins),
                   "unique_content_states": len(content_keys), "record_ids_sha256": canonical_sha(sorted(ids)),
                   "observed_collection_action_seconds": sum(r["duration_seconds"] for r in rows),
@@ -245,7 +258,7 @@ def supervised_terms(row, logits, delta):
 def control_terms(model, row, state, following, *, regime, controller, latency_weight):
     import torch
     from torch.nn import functional as F
-    world_connected = regime == "joint" and controller in {"ndu", "voi", "mpc"}
+    world_connected = regime == "joint" and controller in {"ndu", "ndu_policy", "voi", "mpc"}
     light_connected = regime == "joint" and controller == "light"
     x = state if world_connected else state.detach()
     utility = F.mse_loss(model.utility_head(x).sigmoid().squeeze(), x.new_tensor(row["before_score"]))
@@ -269,102 +282,11 @@ def control_terms(model, row, state, following, *, regime, controller, latency_w
     return total, connected, {"utility": utility, "transition": transition, "duration": duration_loss, "light": light}
 
 
-def _epochs(model, rows, config, *, phase, seed, regime, controller, meter, output, deadline):
-    import torch
-    selected = [r for r in rows if r["first_content"]] if phase == "content" else rows
-    content = [p for p in model.content_parameters() if p.requires_grad]
-    content_ids = {id(p) for p in model.content_parameters()}
-    heads = [] if phase == "content" else [p for p in model.parameters() if p.requires_grad and id(p) not in content_ids]
-    groups = ([{"params": content, "lr": config.content_lr}] if content else []) + ([{"params": heads, "lr": config.lr}] if heads else [])
-    optimizer = torch.optim.Adam(groups)
-    epoch_count = config.content_epochs if phase == "content" else config.fit_epochs
-    generator = random.Random(seed ^ (0xC017E17 if phase == "content" else 0xF17))
-    audit = {"control_gradient_into_content": None, "optimizer_steps": 0, "epochs": []}
-    for epoch in range(epoch_count):
-        order = list(range(len(selected))); generator.shuffle(order)
-        totals = Counter()
-        for start in range(0, len(order), config.batch_size):
-            if time.perf_counter() > deadline:
-                raise TimeoutError("Original finite fit budget exhausted")
-            batch = [selected[i] for i in order[start:start + config.batch_size]]
-            optimizer.zero_grad(set_to_none=True)
-            with meter.stage("shared", phase + " current and observed-successor content"):
-                states = [model.public_state(r["features"], r["meta"]) for r in batch]
-                following = []
-                for row in batch:
-                    if phase == "content" or row["next_features"] is None:
-                        following.append(None)
-                    else:
-                        connected = regime == "joint" and controller in {"ndu", "voi", "mpc"}
-                        with torch.set_grad_enabled(connected):
-                            following.append(model.public_state(row["next_features"], row["next_meta"])[0])
-            with meter.stage("decoder", phase + " train-only field and box loss"):
-                task = [supervised_terms(row, state[1], state[2]) for row, state in zip(batch, states)]
-                loss = sum(ce + 4 * box for ce, box in task) / len(batch)
-            controlled = []
-            if phase == "fit":
-                with meter.stage("critic", "observed utility transition duration and light auxiliary losses"):
-                    head_losses = [control_terms(model, row, state[0], after, regime=regime,
-                                                 controller=controller, latency_weight=config.latency_weight)
-                                   for row, state, after in zip(batch, states, following)]
-                    loss = loss + sum(item[0] for item in head_losses) / len(batch)
-                    controlled = [item[1] for item in head_losses if item[1] is not None]
-                    for _, _, values in head_losses:
-                        for name, value in values.items():
-                            totals[name] += float(value.detach())
-            if controlled and audit["control_gradient_into_content"] is None:
-                with meter.stage("critic", "audit controller-loss gradient into actual content parameters"):
-                    gradients = torch.autograd.grad(sum(controlled) / len(controlled),
-                                                    list(model.content_parameters()), retain_graph=True, allow_unused=True)
-                    norm = sum(float(g.detach().square().sum()) for g in gradients if g is not None) ** 0.5
-                    if not math.isfinite(norm) or norm <= 0:
-                        raise ValueError("Joint control loss did not reach content")
-                    audit["control_gradient_into_content"] = norm
-            with meter.stage("shared", phase + " single combined backward and optimizer step"):
-                if not bool(torch.isfinite(loss)):
-                    raise ValueError("Nonfinite observed training objective")
-                loss.backward()
-                norms = [float(torch.nn.utils.clip_grad_norm_(g["params"], 1.0, error_if_nonfinite=True)) for g in groups]
-                gradient_norm = math.sqrt(sum(n * n for n in norms))
-                optimizer.step()
-            totals["objective"] += float(loss.detach()) * len(batch)
-            totals["text_ce"] += sum(float(ce.detach()) for ce, _ in task)
-            totals["bbox"] += sum(float(box.detach()) for _, box in task)
-            totals["gradient_norm"] += float(gradient_norm) * len(batch)
-            audit["optimizer_steps"] += 1
-        summary = {"phase": phase, "epoch": epoch, "examples": len(selected),
-                   "losses": {k: v / len(selected) for k, v in totals.items()},
-                   "content_parameter_sha256": parameter_sha(model, content_only=True)}
-        audit["epochs"].append(summary)
-        with (output / "epochs.jsonl").open("a") as stream:
-            stream.write(json.dumps(summary, sort_keys=True, allow_nan=False) + "\n"); stream.flush()
-    return audit
-
-
-def _residuals(model, rows, deadline):
-    import torch
-    errors = []
-    with torch.no_grad():
-        for row in rows:
-            if time.perf_counter() > deadline:
-                raise TimeoutError("Original finite fit budget exhausted during residual estimation")
-            if row["next_features"] is not None:
-                current = model.public_state(row["features"], row["meta"])[0]
-                after = model.public_state(row["next_features"], row["next_meta"])[0]
-                predicted, _ = model.predict_transition(current[None], torch.tensor([row["action"]]))
-                errors.append((predicted[0] - after).square())
-        if not errors:
-            raise ValueError("No observed successors support a learned forecast residual")
-        scale = torch.stack(errors).mean(0).sqrt()
-        model.residual_std.copy_(scale.clamp(0.001, 1.0))
-    return {"observed_successors": len(errors), "method": "train residual RMS, not a coverage guarantee",
-            "scale": model.residual_std.tolist(), "clipped_dimensions": int(((scale < .001) | (scale > 1)).sum())}
-
-
 def _source_pins():
     root = Path(__file__).resolve().parents[2]
     paths = [Path(__file__), *[Path(__file__).with_name(n + ".py") for n in
-             ("neural", "ocr", "controllers", "metering", "span_meter")],
+             ("neural", "ocr", "controllers", "metering", "span_meter", "objective", "trajectory",
+              "recursive_objective", "fit_loop")], Path(__file__).with_name("finite_entropic_golden.json"),
              root / "scripts/ndu_real_materials/evaluator.py",
              root / "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py"]
     return {str(p.relative_to(root)): file_sha(p) for p in paths}
@@ -402,6 +324,18 @@ def run(args):
     try:
         if not 0 <= args.seed < 2 ** 32 or (args.regime == "joint" and args.controller == "shared"):
             raise ValueError("Invalid seed or shared joint controller")
+        if args.control_plan:
+            control = json.loads(args.control_plan.read_text())
+            plan = ControlPlan(**control["control"])
+            report["control_plan_sha256"] = file_sha(args.control_plan)
+        else:
+            plan = ControlPlan(latency_weight=config.latency_weight, memory_mode=args.memory_mode or "reset")
+        if (plan.latency_weight != config.latency_weight
+                or args.memory_mode is not None and plan.memory_mode != args.memory_mode):
+            raise ValueError("Training and deployment control profiles differ")
+        report.update(memory_mode=plan.memory_mode, control=asdict(plan), utility_profile=utility_profile(plan),
+                      utility_profile_sha256=canonical_sha(utility_profile(plan)),
+                      control_profile_sha256=canonical_sha(asdict(plan)))
         with meter.stage("sync", "load pinned training runtime and initialize independent weights"):
             import torch
             from .neural import ReceiptPortfolioModel
@@ -424,6 +358,16 @@ def run(args):
                     raise ValueError("Actual records differ from the precommitted file digest")
                 if not rows:
                     raise ValueError("No eligible real training records")
+                v2_rows = [row for row in rows if row["schema"] == V2_SCHEMA]
+                if any(row["utility_profile_sha256"] != report["utility_profile_sha256"] for row in v2_rows):
+                    raise ValueError("Collected and fitted utility profiles differ")
+                rubrics = {row["rubric_sha256"] for row in v2_rows}
+                if len(rubrics) > 1:
+                    raise ValueError("Training mixes independent rubric revisions")
+                report["rubric_sha256"] = next(iter(rubrics), None)
+                report["behavior_control_profile_sha256"] = sorted({row["behavior_control_profile_sha256"] for row in v2_rows})
+                episode_groups(rows, plan.memory_mode)
+                report.update(memory_replay_metadata(rows, plan.memory_mode))
             if args.pretrained:
                 with meter.stage("sync", "admit shared content checkpoint and its original receipt"):
                     base = Path(args.pretrained); previous = json.loads((base / "receipt.json").read_text())
@@ -431,6 +375,8 @@ def run(args):
                                 and previous.get("seed") == args.seed and previous.get("core") == args.core
                                 and previous.get("records", {}).get("sha256") == report["records"]["sha256"]
                                 and previous.get("source_pins") == report["source_pins"]
+                                and previous.get("memory_mode") == plan.memory_mode
+                                and previous.get("utility_profile_sha256") == report["utility_profile_sha256"]
                                 and all(previous["config"][k] == asdict(config)[k] for k in ("content_epochs", "content_lr", "batch_size")))
                     if not expected or file_sha(base / "weights.pt") != previous.get("weights_sha256"):
                         raise ValueError("Shared content seed/core/data/source/budget binding differs")
@@ -441,7 +387,7 @@ def run(args):
                                                 "run_id": previous["run_id"], "cost_in_original_receipt": True}
             else:
                 report["content_training"] = _epochs(model, rows, config, phase="content", seed=args.seed,
-                    regime=args.regime, controller=args.controller, meter=meter, output=output, deadline=deadline)
+                    regime=args.regime, controller=args.controller, meter=meter, output=output, deadline=deadline, plan=plan)
             report["pretrained_content_sha256"] = parameter_sha(model, content_only=True)
             report["prefit_parameter_sha256"] = parameter_sha(model)
             if stage == "fit":
@@ -452,15 +398,19 @@ def run(args):
                         p.requires_grad_(False)
                         p.grad = None
                 report["fit_training"] = _epochs(model, rows, config, phase="fit", seed=args.seed,
-                    regime=args.regime, controller=args.controller, meter=meter, output=output, deadline=deadline)
+                    regime=args.regime, controller=args.controller, meter=meter, output=output, deadline=deadline, plan=plan)
                 with meter.stage("critic", "fit residual scale from actual training successors"):
-                    report["residual_estimate"] = _residuals(model, rows, deadline)
+                    report["residual_estimate"] = _residuals(model, rows, deadline, plan=plan)
                 report["joint_content_gradient_source"] = ("none: content frozen" if args.regime == "frozen"
+                    else "frozen reference recursive utility and exact frozen-Q policy improvement plus observed auxiliary losses"
+                    if report["fit_training"]["recursive_objective_applied"]
                     else "observed light action values" if args.controller == "light"
                     else "observed utility and transition/duration" if args.controller in {"ndu", "voi", "mpc"}
                     else "none: fixed controller; supervised content and detached common auxiliary heads")
                 report["common_auxiliary_heads_trained"] = ["utility", "transition", "duration", "light"]
                 report["combined_objective"] = "exact-candidate CE + 4*normalized-box SmoothL1 + utility MSE + transition MSE + log-duration SmoothL1 + observed-light MSE"
+                if report["fit_training"]["recursive_objective_applied"]:
+                    report["combined_objective"] += " + frozen-reference negative recursive V0 + negative exact policy expectation; unit weights"
         report["final_parameter_sha256"] = parameter_sha(model)
         report["final_content_sha256"] = parameter_sha(model, content_only=True)
         if stage == "fit" and args.regime == "frozen" and report["final_content_sha256"] != report["pretrained_content_sha256"]:
@@ -476,8 +426,17 @@ def run(args):
             report["checkpoint_parameter_replay_exact"] = True
         if _source_pins() != report["source_pins"] or (stage != "bootstrap" and file_sha(args.records) != report["records"]["sha256"]):
             raise ValueError("Frozen source or original records changed during training")
+        if args.control_plan and file_sha(args.control_plan) != report["control_plan_sha256"]:
+            raise ValueError("Control plan changed during training")
         if stage != "bootstrap" and time.perf_counter() > deadline:
             raise TimeoutError("Original finite fit budget exhausted before checkpoint publication")
+        report["deployment_profile_sha256"] = atomic_json(output / "deployment-profile.json", {
+            "schema": "ndu.real.deployment-profile.v1", "weights_sha256": report["weights_sha256"],
+            "core": args.core, "memory_mode": plan.memory_mode,
+            "utility_profile_sha256": report["utility_profile_sha256"],
+            "control_profile_sha256": report["control_profile_sha256"],
+            "rubric_sha256": report.get("rubric_sha256"),
+            "recursive_policy_trained": report.get("fit_training", {}).get("recursive_objective_applied", False)})
         os.link(output / "candidate-weights.pt", output / "weights.pt")
         (output / "candidate-weights.pt").unlink()
         report["status"] = {"bootstrap": "BOOTSTRAP_READY_NOT_A_FIT", "content": "CONTENT_PRETRAINED", "fit": "FITTED_NOT_ADOPTED"}[stage]
@@ -506,7 +465,9 @@ def main(argv=None):
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--core", choices=("ordinary", "hepta"), required=True)
     parser.add_argument("--regime", choices=("frozen", "joint"), default="frozen")
-    parser.add_argument("--controller", choices=("shared", "light", "ndu", "voi", "mpc", "tuned_fixed"), default="shared")
+    parser.add_argument("--controller", choices=("shared", "light", "ndu", "ndu_policy", "voi", "mpc", "tuned_fixed"), default="shared")
+    parser.add_argument("--control-plan", type=Path)
+    parser.add_argument("--memory-mode", choices=("reset", "persistent"))
     stage = parser.add_mutually_exclusive_group()
     stage.add_argument("--bootstrap", action="store_true")
     stage.add_argument("--content-only", action="store_true")

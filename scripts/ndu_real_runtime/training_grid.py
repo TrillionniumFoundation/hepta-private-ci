@@ -13,7 +13,7 @@ JOINT_CONTROLLERS = ("light", "ndu", "tuned_fixed", "voi", "mpc")
 
 
 def fit_grid(records, records_sha256, output_root, *, python=sys.executable,
-             seeds=PILOT_SEEDS, head_lrs=(.001, .003, .01), config=FitConfig()):
+             seeds=PILOT_SEEDS, head_lrs=(.001, .003, .01), config=FitConfig(), control_plan=None):
     """Return every pretraining dependency and fit candidate before selection.
 
     The default grid contains 8 shared content checkpoints, 24 frozen shared-head
@@ -40,6 +40,11 @@ def fit_grid(records, records_sha256, output_root, *, python=sys.executable,
               "max_wall_seconds": config.max_wall_seconds, "source_pins": _source_pins(),
               "grid_source_sha256": file_sha(__file__)}
     prefix = "fit-grid-" + canonical_sha(intent)[:20]
+    if control_plan is not None:
+        if not Path(control_plan).is_absolute():
+            raise ValueError("Control plan needs an absolute source path")
+        intent.update(control_plan=str(control_plan), control_plan_sha256=file_sha(control_plan))
+        prefix = "fit-grid-" + canonical_sha(intent)[:20]
     jobs = []
 
     def add(seed, core, phase, regime, controller, lr, pretrained=None, trial_index=None):
@@ -54,6 +59,8 @@ def fit_grid(records, records_sha256, output_root, *, python=sys.executable,
                 "--lr", str(lr), "--latency-weight", str(config.latency_weight),
                 "--max-wall-seconds", str(config.max_wall_seconds), "--run-id", identity,
                 "--replicate-role", "fit"]
+        if control_plan is not None:
+            argv += ["--control-plan", str(control_plan)]
         if phase == "content":
             argv.append("--content-only")
         else:
@@ -108,9 +115,10 @@ def main(argv=None):
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--seeds", type=int, nargs="+", default=PILOT_SEEDS)
     parser.add_argument("--head-lrs", type=float, nargs="+", default=(.001, .003, .01))
+    parser.add_argument("--control-plan", type=Path)
     args = parser.parse_args(argv)
     result = fit_grid(args.records, args.records_sha256, args.output_root, python=args.python,
-                      seeds=args.seeds, head_lrs=args.head_lrs)
+                      seeds=args.seeds, head_lrs=args.head_lrs, control_plan=args.control_plan)
     args.manifest.parent.mkdir(parents=True, exist_ok=True)
     digest = atomic_json(args.manifest, result)
     index_path = args.index or args.manifest.with_name(args.manifest.stem + ".index.json")
