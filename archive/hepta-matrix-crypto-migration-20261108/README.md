@@ -34,3 +34,9 @@ The pre-minimization file named MATRIX_FINAL_GRAPH_REVIEW.json is historical and
 Runtime validation preceded the two reviewed comment/metadata corrections and layout-only formatting. Those differences and their before/after source hashes are retained. No tests ran after fix or formatting.
 
 This dependency repair does not alter Control owner admission or scientific qualification. Research stages remain HOLD.
+
+## Blob policy supplement
+
+The original evidence commit fa28c0a22fe83519655cdbe528cc496fcf67828a failed the real blob-size check: 289 changed files were inspected and six exceeded 512,000 bytes. Archive paths have no exemption. The original command, stdout, stderr and native execution identity are retained under blob-policy; MANIFEST.json binds their bytes.
+
+The follow-up adds six exact SHA-256 and repository-path pins for the immutable original audit log, resolver metadata and official Starlark archive. The default limit and policy implementation are unchanged. The original SUMMARY.json and ARTIFACTS.json describe the first evidence commit; blob-policy/MANIFEST.json is the separate failure-and-pin supplement. Final-head policy results are retained in the native job and the pull request description.
