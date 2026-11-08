@@ -6,6 +6,12 @@ The engineering slice is implemented and exercised. Scientific acceptance and
 production adoption remain **HOLD / NoUpdate**. This change adds no native
 activation path and does not advance the existing S4 research stage.
 
+The candidate also incorporates upstream paired-starting-state repair
+`a55a209e20fe78c59644b5bff0298c36fe61294c`. Integration validation passes **41
+tests**: 22 ORG-1, 7 topology and 12 protocol. `INTEGRATION.json` records this
+update. The original 40-test log and reference archives remain bound to their
+original source; they have not been rewritten as observations of a later run.
+
 The final Python reference executed 99 paired tasks, or 198 arm/task executions:
 
 | Operation | Fixed nodes | Candidate nodes | Paired tasks | Fixed / candidate score | Fixed / candidate messages |
@@ -44,7 +50,7 @@ The original D validator and its tests are unchanged. The new files are:
   Python state operations and create-only reference evidence.
 - `test_organization_policy.py`: 22 adversarial test methods.
 - `.github/workflows/hepta-cell-organization-reference.yml`: exact-source CI,
-  40 regression methods and three operation runs, preserving scientific HOLD.
+  41 regression methods and three operation runs, preserving scientific HOLD.
 
 The original native topology proposal, migration-owner, writer-fence, governed
 apply/recovery and Cell lifecycle mechanisms remain the authority boundary. This

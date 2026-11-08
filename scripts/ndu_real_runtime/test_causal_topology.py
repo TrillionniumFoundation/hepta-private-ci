@@ -22,7 +22,7 @@ class TopologyEvidenceTests(unittest.TestCase):
         self.addCleanup(self.directory.cleanup)
         self.root = Path(self.directory.name)
 
-    def fixture(self, kind="split", prefix="dynamic"):
+    def fixture(self, kind="split", prefix="dynamic", *, state_value=1.0):
         def graph(names, edges, generation):
             return {
                 "generation": generation,
@@ -52,11 +52,11 @@ class TopologyEvidenceTests(unittest.TestCase):
         }
         state_before = {
             "generation": before["generation"],
-            "states": {n: [1.0] for n in sorted(old)},
+            "states": {n: [state_value] for n in sorted(old)},
         }
         state_after = {
             "generation": after["generation"],
-            "states": {n: [1.0] for n in sorted(new)},
+            "states": {n: [state_value] for n in sorted(new)},
         }
         receipt = {
             "schema": "hepta.cell-causal.topology.v1",
@@ -278,6 +278,32 @@ class TopologyEvidenceTests(unittest.TestCase):
         self.assertIn(
             "exceeds charged", self.validate(self.seal(receipt))["blockers"][0]
         )
+
+    def test_pair_rejects_different_actual_starting_state(self):
+        for kind in ("split", "rewire"):
+            with self.subTest(kind=kind):
+                fixed = self.fixture("no_change", "fixed-" + kind)
+                dynamic = self.fixture(kind, "dynamic-" + kind, state_value=7.0)
+                for receipt in (fixed, dynamic):
+                    self.assertEqual(
+                        self.validate(receipt)["status"], "EVIDENCE_CONSISTENT"
+                    )
+                self.assertEqual(
+                    self.read(fixed, "before_graph"), self.read(dynamic, "before_graph")
+                )
+                pins = [r["artifacts"]["owner"]["sha256"] for r in (fixed, dynamic)]
+                result = validate_topology_pair(
+                    fixed, dynamic, self.root, trusted_observer_sha256=pins
+                )
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertIn(
+                    "paired arms did not start with the same actual state",
+                    result["blockers"],
+                )
+                self.assertEqual(
+                    (result["scientific_acceptance"], result["benefit_proven"]),
+                    ("HOLD", False),
+                )
 
     def test_pair_rejects_scheduler_and_recovery_contract_asymmetry(self):
         fixed, dynamic = self.fixture("no_change", "fixed"), self.fixture()
