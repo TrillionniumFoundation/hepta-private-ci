@@ -1,0 +1,189 @@
+{
+  "schema": "hcsn-cuda-campaign-v2-progress-observation-v3",
+  "observation": {
+    "progress_updated_utc": "2026-11-08T08:17:14.783318+00:00",
+    "progress_sha256": "9910edff1d3123e7b95a256a99f0bc4ebae988671e5b577d236005eb80850443",
+    "progress_bytes": 14152,
+    "campaign_job_id": "1a1acdd69f2-fc05-5757",
+    "process_state": "running",
+    "systemd": {
+      "active_state": "active",
+      "sub_state": "running",
+      "result": "success",
+      "exec_main_status": 0
+    },
+    "active_stage": "full",
+    "active_stage_started_utc": "2026-11-06T08:08:57.361720+00:00",
+    "registered_run_indexes": {
+      "completed": 85,
+      "failed": 0,
+      "unavailable": 0,
+      "requested": 170
+    },
+    "global_qualification": "open",
+    "no_automatic_training_retries": true,
+    "budget_change_permitted": false,
+    "progress_counts_are_terminal_result_status_records": true
+  },
+  "frozen_pins": {
+    "original_baseline_commit": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+    "execution_candidate_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "candidate_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "candidate_benchmark_source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "campaign_archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5"
+  },
+  "identity_level_audit": {
+    "status": "verified_for_85_registered_indexes",
+    "search_scope_complete": true,
+    "search_result_paths": 256,
+    "run_index_files": 85,
+    "attempt_related_json_files": 171,
+    "attempt_file_contents_read": false,
+    "unreadable_files": 0,
+    "unique_identity_count": 85,
+    "duplicate_identity_count": 0,
+    "missing_identity_count": 85,
+    "task_counts": {
+      "delayed_recall": 85,
+      "adding": 0
+    },
+    "model_counts": {
+      "hx_attention": 5,
+      "hx_call": 5,
+      "hx_dual": 5,
+      "hx_fixed": 5,
+      "hx_risk": 5,
+      "no_recovery": 5,
+      "no_rollover": 5,
+      "population_flux": 5,
+      "population_flux_no_recovery": 5,
+      "softplus": 5,
+      "gru": 5,
+      "lif": 5,
+      "adaptive_lif": 5,
+      "pif": 5,
+      "transformer": 5,
+      "cfc": 5,
+      "mamba2": 5
+    },
+    "source_sha256_all_match_pinned_benchmark": true,
+    "dataset_split_set_count": 1,
+    "config_variant_count": 1,
+    "immutable_budget": {
+      "train_steps": 400,
+      "batch_size": 64,
+      "sequence_length": 64,
+      "hidden_size": 64,
+      "data_seed": 271828,
+      "train_examples": 4096,
+      "validation_examples": 512,
+      "test_examples": 1024,
+      "examples_seen_per_run": 25600,
+      "tokens_seen_per_run": 1638400,
+      "learning_rate": 0.001,
+      "dt": 0.1
+    },
+    "all_cuda_available": true,
+    "all_cuda_device_0": true,
+    "gpu_runtime_identity_count": 1,
+    "all_status_completed_400": true,
+    "all_policy_1": true,
+    "all_checkpoint_references_present": true,
+    "checkpoint_hash_audit": {
+      "previously_verified_checkpoint_files": 48,
+      "previous_hash_matches": 48,
+      "previous_hash_mismatches": 0,
+      "newly_registered_checkpoint_files_pending_independent_hash_read": 37
+    },
+    "b_training_runs_completed": 10,
+    "b_model_runs_by_model": {
+      "population_flux": 5,
+      "population_flux_no_recovery": 5
+    },
+    "b_policy_values_observed": [
+      1
+    ],
+    "b_full_audit_status": "not_started; all 20 requested B identities remain the denominator",
+    "mamba2_training_runs_completed": 5,
+    "mamba2_training_runs_requested": 10
+  },
+  "runtime": {
+    "execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "selected_population_checkpoint_steps": 1,
+    "cuda_memory_fraction": 0.5,
+    "runtime_profile_sha256": "21a9ca457133123d674a41721c3ecb904477efc42953ab51bf03ae66eacbb3e8",
+    "runtime_profile_schema": "hcsn-runtime-profile-v2",
+    "device": "cuda:0",
+    "canonical_gpu_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+    "torch_ready_receipt_sha256": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+    "mamba_ready_receipt_sha256": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76"
+  },
+  "memory": {
+    "peak_allocated_min_bytes": 80913408,
+    "peak_allocated_max_bytes": 835176960,
+    "peak_reserved_max_bytes": 1572864000,
+    "scope": "Per-run PyTorch allocator measurements; not whole-device reservation"
+  },
+  "physical_energy": {
+    "joules": null,
+    "null_count_across_85_runs": 85,
+    "imputation": false,
+    "reason": "Physical counters remain unavailable on this driver/device; NVML NOT_SUPPORTED and RAPL PermissionError are retained, never replaced with TDP."
+  },
+  "strict_gates": {
+    "baseline_cpu": {
+      "passed": 95,
+      "total": 95
+    },
+    "candidate_cpu": {
+      "passed": 109,
+      "total": 109
+    },
+    "cpu_parity": {
+      "passed": 16,
+      "total": 16
+    },
+    "cuda_parity": {
+      "passed": 16,
+      "total": 16
+    },
+    "original_b_fullshape": "CUDA OOM retained",
+    "candidate_b_fullshape": "both probes passed",
+    "mamba2_fullshape_probe": "passed",
+    "policy_admission": 1
+  },
+  "github": {
+    "exact_source_ci": {
+      "run_id": 42078258351,
+      "job_id": 127424159520,
+      "status": "completed",
+      "conclusion": "success",
+      "steps_passed": 10,
+      "steps_total": 10
+    },
+    "trusted_main_gpu_probe": {
+      "run_id": 39526325715,
+      "job_id": 127299267982,
+      "status": "completed",
+      "conclusion": "cancelled"
+    },
+    "pr_4873_read": "404 Not Found; no PR mutation performed"
+  },
+  "not_yet_observed": {
+    "newly_registered_checkpoint_hashes": 37,
+    "attempt_json_contents": 171,
+    "final_full_json": true,
+    "final_full_runtime_manifest": true,
+    "full_b_audit": true,
+    "terminal_json": true
+  },
+  "publication": {
+    "evidence_branch": "research/hcsn-desktop-evidence-20261105",
+    "source_branch_modified": false,
+    "campaign_outputs_modified": false,
+    "training_budget_started_or_retried": false,
+    "credentials_or_home_paths_published": false
+  }
+}
