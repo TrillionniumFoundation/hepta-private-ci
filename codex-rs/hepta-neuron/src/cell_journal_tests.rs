@@ -14,6 +14,8 @@ use std::sync::atomic::Ordering;
 
 #[path = "cell_queue_cost_journal_tests.rs"]
 mod queue_cost;
+#[path = "cell_batch_cost_recovery_tests.rs"]
+mod batch_cost_recovery;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
@@ -700,10 +702,10 @@ fn batch_admission_sync_crossing_deadline_never_dispatches_and_reopens_pending()
                 &mut readback,
                 /*now_micros*/ 111,
             ),
-            Err(CellExecutionError::InferencePending)
+            Err(CellExecutionError::UnmeasuredQueueCost)
         ));
     }
-    assert_eq!((readback.executions, readback.reads), (0, 2));
+    assert_eq!((readback.executions, readback.reads), (0, 0));
 }
 
 #[test]
@@ -759,7 +761,7 @@ fn batch_dispatch_filters_expired_members_and_counts_durable_admission_queue_tim
             ));
         } else {
             assert_eq!(result.scope, scope("run2"));
-            let proposed = checked(decide_cell(checked(result.result), /*now_micros*/ 111));
+            let proposed = checked(decide_cell(checked(result.result), clock.load(Ordering::SeqCst)));
             assert_eq!(proposed.receipt().cost.queue_age_micros, 102);
             assert_eq!(proposed.receipt().cost.model_latency_micros, 20);
             assert!(!proposed.receipt().deadline_exceeded);
