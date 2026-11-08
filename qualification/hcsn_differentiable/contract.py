@@ -104,6 +104,11 @@ class PhysicalParameters:
 
 @dataclass(frozen=True)
 class OperatorTable:
+    """One projected interval; ``call`` includes a terminal feature payment.
+
+    ``rewards`` columns are expected events, discounted events and discounted
+    active occupation. Use value.py for continuation across intervals.
+    """
     matrix: torch.Tensor
     rewards: torch.Tensor
     call: torch.Tensor
@@ -112,9 +117,15 @@ class OperatorTable:
     duration: float
     active_probability: torch.Tensor
 
+    @property
+    def interval_value(self):
+        """Explicit name for the legacy ``call`` engineering readout."""
+        return self.call
+
 
 @dataclass(frozen=True)
 class FlowReceipt:
+    """One conditional interval; event counts are not a global first-hit CDF."""
     probability: torch.Tensor
     content_mass: torch.Tensor
     expected_events: torch.Tensor
@@ -124,3 +135,8 @@ class FlowReceipt:
     risk: torch.Tensor
     margin: torch.Tensor
     mass_residual: torch.Tensor
+
+    @property
+    def interval_value(self):
+        """Running/hit reward plus one queried endpoint's terminal feature."""
+        return self.call

@@ -128,7 +128,7 @@ class ContentLayer(nn.Module):
         self.active_count = grid.active_cells + 1
         self.physics = TrainablePhysics()
         self.operator = operator if operator is not None else DifferentiableDistributionOperator(grid)
-        # Five channels: call, first-hit risk, successor-margin proxy, expected
+        # Five channels: interval value, interval event risk, successor-margin proxy, expected
         # interval event count, and current active occupancy. They are readouts
         # of one propagated law, not two independently evolving physical states.
         self.likelihood = nn.Linear(input_dim + 5, self.state_count)
@@ -317,7 +317,7 @@ class ContinuousSpikingNetwork(nn.Module):
                 defects.append(defect)
                 negatives.append(negative)
                 active = predicted.probability[:, :layer.active_count].sum(-1)
-                channels = torch.tanh(torch.stack((flow.call, flow.risk, flow.margin,
+                channels = torch.tanh(torch.stack((flow.interval_value, flow.risk, flow.margin,
                                                   flow.expected_events, active), dim=-1))
                 successor, evidence = layer.condition(predicted.probability, predicted.content_mass,
                                                       message, channels, observed[:, index])

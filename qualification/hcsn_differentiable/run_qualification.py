@@ -31,7 +31,8 @@ except ImportError:
 def _sources(root: Path) -> dict[str, dict[str, str | int]]:
     result = {}
     for path in sorted(root.rglob("*")):
-        if path.is_file() and path.suffix in (".py", ".md") and "__pycache__" not in path.parts:
+        if (path.is_file() and path.suffix in (".py", ".md", ".json")
+                and "__pycache__" not in path.parts and "evidence" not in path.relative_to(root).parts):
             data = path.read_bytes()
             result[str(path.relative_to(root))] = {
                 "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)
