@@ -172,9 +172,22 @@ def main():
                 assert original.is_file()
             owner, opened = open_worker(helper, worker, root, config, frozen, parent, name, 1,
                                         transcript=name + ("-cold" if action == "probe_recover" else "-hot"))
+            phase = "cold" if action == "probe_recover" else "hot"
+            def count(label):
+                current = owner.call(phase + "-counter-" + label, "inspect",
+                                     dict(collection="modules", offset=0, limit=1))
+                assert current["ok"], current
+                value = current["result"]["cost"]["forward_examples_total"]
+                assert type(value) is int and value >= 0
+                return dict(forward_examples=value, original_response=current)
             try:
+                before_counter = count("before")
                 response = owner.call("native-step", "probe", dict(inputs=inputs))
                 observed = helper.output_record(response, inputs, 1)
+                after_counter = count("after")
+                assert after_counter["forward_examples"] == 1
+                assert before_counter["forward_examples"] == (1 if action == "probe_recover" else 0)
+                measured_delta = after_counter["forward_examples"] - before_counter["forward_examples"]
                 if action == "probe":
                     save(original, response)
                 else:
@@ -184,15 +197,29 @@ def main():
                     assert not conflict["ok"] and conflict["error"]["code"] == "IDEMPOTENCY_CONFLICT"
                     exhausted = owner.call("extra", "probe", dict(inputs=dict(inputs, request_id=inputs["request_id"] + "-extra")))
                     assert not exhausted["ok"] and exhausted["error"]["code"] == "FORWARD_BUDGET"
-                    save(root / (name + "-recovery-controls.json"), dict(conflict=conflict, exhausted=exhausted))
+                    final_counter = count("after-negative-controls")
+                    assert final_counter["forward_examples"] == 1
+                    save(root / (name + "-recovery-controls.json"), dict(conflict=conflict, exhausted=exhausted,
+                         final_counter=final_counter))
+                counter_ref = save(root / (name + "-" + phase + "-counters.json"),
+                    dict(before=before_counter, after=after_counter, delta=measured_delta,
+                         meaning="source-bound-original-worker-persisted-forward-budget-delta-not-external-invocation-instrument"))
                 # EOF preserves the same session ledger; close would terminate it.
             finally:
                 exit_record = owner.finish()
                 save(root / (name + ("-cold-exit.json" if action == "probe_recover" else "-hot-exit.json")), exit_record)
+            previous_pid = None
+            if action == "probe_recover":
+                previous_pid = json.loads((root / (name + "-hot-exit.json")).read_bytes())["pid"]
+                assert previous_pid != exit_record["pid"], "cold readback did not use a distinct actual process"
             result = dict(schema="hepta.research.smollm.actual-proposal.v1", selected_adapter=parent["adapter"],
                           selected_file_sha256=parent["file_sha256"], native_request_digest=request["native_request_digest"],
                           observation=observed, original_response_sha256=sha(original), worker_pid=exit_record["pid"],
-                          cold_recovery=action == "probe_recover", new_forward_calls=0 if action == "probe_recover" else 1)
+                          cold_recovery=action == "probe_recover", previous_worker_pid=previous_pid,
+                          forward_counter_before=before_counter["forward_examples"],
+                          forward_counter_after=after_counter["forward_examples"],
+                          forward_counter_evidence=counter_ref, new_forward_calls=measured_delta,
+                          forward_count_kind="source-bound-live-worker-ledger-delta-inference")
         else:
             raise ValueError("unsupported explicit research action")
     assert {path: sha(path) for path in before} == before
