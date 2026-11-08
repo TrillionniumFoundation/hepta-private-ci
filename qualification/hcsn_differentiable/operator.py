@@ -164,6 +164,35 @@ def _survivor_tail(x, horizon, mu, sigma, edge):
     return torch.exp(first) * (-torch.expm1(second - first))
 
 
+def _normal_interval_logprob(lower, upper):
+    """Log Gaussian interval mass, using SF in the right half-line.
+
+    Select the arguments BEFORE evaluating logdiff: an unselected CDF
+    subtraction near one would otherwise create log(0) and NaN gradients.
+    """
+    right_tail = lower >= 0
+    large_arg = torch.where(right_tail, -lower, upper)
+    small_arg = torch.where(right_tail, -upper, lower)
+    large, small = _logcdf(large_arg), _logcdf(small_arg)
+    return large + torch.log(-torch.expm1(small - large))
+
+
+def _killed_interval_probability(x, horizon, mu, sigma, left, right):
+    """Integrate the reflected Gaussian density over 0<=left<right.
+
+    Subtract interval masses in log space rather than adjacent survivor
+    tails near one. The image density is pointwise no larger than the free
+    density on y>=0; unresolved sign errors still fail the caller's checks.
+    """
+    scale = sigma * torch.sqrt(horizon)
+    first = _normal_interval_logprob((left - x - mu * horizon) / scale,
+                                     (right - x - mu * horizon) / scale)
+    image = (-2.0 * mu * x / sigma.square()
+             + _normal_interval_logprob((left + x - mu * horizon) / scale,
+                                        (right + x - mu * horizon) / scale))
+    return torch.exp(first) * (-torch.expm1(image - first))
+
+
 class DifferentiableDistributionOperator(torch.nn.Module):
     """One physical propagation, 0<=dt<=d, with an unchanged parameter graph.
 
@@ -223,6 +252,7 @@ class DifferentiableDistributionOperator(torch.nn.Module):
             "actual_phase_edge_fractions": [str(edge) for edge in self._phase_edges],
             "dtype": "float64",
             "normal_cdf_derivatives": "first_order_stable_mills_ratio",
+            "active_bin_probability": "direct_gaussian_interval_logdiff_reflection_v1",
             "source_quadrature": "positive_gauss_legendre_fixed_order",
             "occupation_quadrature": "positive_gauss_legendre_squared_time",
             "tail_basis": "returning_shifted_exponential",
@@ -280,9 +310,10 @@ class DifferentiableDistributionOperator(torch.nn.Module):
         x, horizon = torch.broadcast_tensors(x, _tensor(horizon, x))
         nodes, weights, edges = self._constants(x)
         mu, sigma, discount = params.mu, params.sigma, params.discount
-        tails = _survivor_tail(x[..., None], horizon[..., None], mu, sigma, edges)
-        bins = tails[..., :-1] - tails[..., 1:]
-        active = torch.cat((bins, tails[..., -1:]), dim=-1)
+        bins = _killed_interval_probability(x[..., None], horizon[..., None], mu, sigma,
+                                             edges[:-1], edges[1:])
+        tail = _survivor_tail(x, horizon, mu, sigma, edges[-1])
+        active = torch.cat((bins, tail[..., None]), dim=-1)
         hit = _first_hit(x, horizon, mu, sigma)
         discounted_hit = _first_hit(x, horizon, mu, sigma, discount)
         # Direct positive occupation quadrature avoids division of close

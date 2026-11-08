@@ -102,9 +102,15 @@ S_y(T,x)=
  \Phi\!\left(\frac{-x+\mu T-y}{\sigma\sqrt T}\right).
 \]
 
-Cell probabilities are differences of adjacent tails. These expressions use
-log-CDF sums, a stable exponential difference, and rationalized roots. The
-normal log-CDF backward uses the Mills ratio with `erfcx`; it deliberately
+Finite-cell probabilities use the difference of two reflected Gaussian
+**interval masses**. Each normal interval is evaluated with a log-CDF
+difference on the left or its symmetric survival difference on the right;
+the image subtraction uses `expm1`. This avoids subtracting two survivor
+probabilities near one, which can reverse a tiny positive bin's sign in
+FP64. The tail coefficient still uses `S_L` directly, never `1-sum(bins)`.
+There is no clipping, normalization, or positivity-tolerance exemption.
+These expressions use log-CDF sums and rationalized roots. The normal log-CDF
+backward uses the Mills ratio with `erfcx`; it deliberately
 supports first-order reverse AD only. Numerical stability is tested afresh.
 
 Discounted active occupation is evaluated by a positive quadrature:
