@@ -21,9 +21,12 @@ use crate::neuron_generation_runtime::GenerationLearningPublicationV1;
 use crate::neuron_generation_runtime::neuron_generation_channel_with_learning_v2;
 use crate::neuron_generation_update_live::LiveGenerationCurrent;
 
+#[path = "neuron_generation_update_adopted_learning.rs"]
+mod adopted_learning;
 #[path = "neuron_generation_update_learning.rs"]
 mod learning;
 
+pub use adopted_learning::learning_updated_task_operation_id_v1;
 pub(crate) use learning::GenerationLearningReadbackV1;
 pub use learning::learning_retained_task_operation_id_v1;
 #[cfg(test)]

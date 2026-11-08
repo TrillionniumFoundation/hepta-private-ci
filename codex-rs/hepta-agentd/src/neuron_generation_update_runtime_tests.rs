@@ -20,6 +20,8 @@ use crate::neuron_generation_current::test_support::Fixture;
 use crate::prepare_agentd_generation_update_v1;
 use crate::recover_agentd_generation_update_v1;
 
+#[path = "neuron_generation_adopted_learning_tests.rs"]
+mod adopted_learning;
 #[path = "neuron_generation_context_runtime_tests.rs"]
 mod expected_context;
 #[path = "neuron_generation_learning_runtime_tests.rs"]

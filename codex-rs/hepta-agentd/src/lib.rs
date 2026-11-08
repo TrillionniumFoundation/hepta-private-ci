@@ -742,6 +742,8 @@ pub use neuron_generation_update_bootstrap::ReadyAgentdGenerationUpdateV1;
 #[cfg(unix)]
 pub use neuron_generation_update_bootstrap::learning_retained_task_operation_id_v1;
 #[cfg(unix)]
+pub use neuron_generation_update_bootstrap::learning_updated_task_operation_id_v1;
+#[cfg(unix)]
 pub use neuron_generation_update_cold::AgentdGenerationUpdatePredecessorFilesV1;
 #[cfg(unix)]
 pub use neuron_generation_update_cold::prepare_agentd_generation_cold_drained_update_v1;
