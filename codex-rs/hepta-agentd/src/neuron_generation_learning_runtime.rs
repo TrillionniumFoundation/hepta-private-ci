@@ -10,6 +10,7 @@ use codex_hepta_neuron::CellGenerationIntentV2;
 use codex_hepta_neuron::CellGenerationJournalV2;
 use codex_hepta_types::StableId;
 
+use super::AgentdGenerationLearningUseReadbackV1;
 use super::GenerationCommand;
 use super::NeuronGenerationRuntimeHandleV2;
 use crate::AgentdError;
@@ -48,6 +49,37 @@ pub(crate) enum GenerationLearningPublicationV1 {
 }
 
 impl GenerationLearningPublicationV1 {
+    pub(crate) fn export<W: AnchorWitnessStore>(
+        &self,
+        journal: &CellGenerationJournalV2<W>,
+        request: GenerationLearningReadV1,
+    ) -> Result<AgentdGenerationLearningUseReadbackV1, AgentdError> {
+        let Self::Published(publication) = self else {
+            return Err(AgentdError::GenerationFenced(
+                "generation actor has no original learning publication".into(),
+            ));
+        };
+        let reader = GenerationLearningReadbackV1 {
+            journal,
+            publication,
+        };
+        match request {
+            GenerationLearningReadV1::NextUse {
+                coordinator,
+                intent,
+            } => reader.export_next_use(&coordinator, /*previous_manifest*/ None, &intent),
+            GenerationLearningReadV1::UpdatedNextUse {
+                coordinator,
+                previous_manifest,
+                intent,
+            } => reader.export_next_use(&coordinator, Some(&previous_manifest), &intent),
+            GenerationLearningReadV1::Selection(_)
+            | GenerationLearningReadV1::UpdatedSelection { .. } => Err(AgentdError::Invalid(
+                "learning-use export requires the original next-use intent".into(),
+            )),
+        }
+    }
+
     pub(crate) fn read<W: AnchorWitnessStore>(
         &self,
         journal: &CellGenerationJournalV2<W>,
@@ -82,6 +114,47 @@ impl GenerationLearningPublicationV1 {
 }
 
 impl NeuronGenerationRuntimeHandleV2 {
+    /// Export the original retained-model use and its native byte preimages.
+    /// The read confers no delivery completion or ongoing current permission.
+    pub async fn read_learning_next_use_readback(
+        &self,
+        coordinator: &LearningIterationCoordinatorV1,
+        intent: &CellGenerationIntentV2,
+    ) -> Result<AgentdGenerationLearningUseReadbackV1, NeuronGenerationLearningReadErrorV1> {
+        StableId::new(&intent.operation_id).map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
+        self.call(|response| GenerationCommand::LearningReadback {
+            request: Box::new(GenerationLearningReadV1::NextUse {
+                coordinator: Box::new(coordinator.clone()),
+                intent: intent.clone(),
+            }),
+            response,
+        })
+        .await?
+        .map_err(Into::into)
+    }
+
+    /// Export a committed candidate use after the original model-reset checks.
+    /// Historical byte binding is not a learning attestation or FinalUse grant.
+    pub async fn read_learning_updated_next_use_readback(
+        &self,
+        coordinator: &LearningIterationCoordinatorV1,
+        previous_manifest: &CellBackendManifestV2,
+        intent: &CellGenerationIntentV2,
+    ) -> Result<AgentdGenerationLearningUseReadbackV1, NeuronGenerationLearningReadErrorV1> {
+        previous_manifest.digest()?;
+        StableId::new(&intent.operation_id).map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
+        self.call(|response| GenerationCommand::LearningReadback {
+            request: Box::new(GenerationLearningReadV1::UpdatedNextUse {
+                coordinator: Box::new(coordinator.clone()),
+                previous_manifest: Box::new(previous_manifest.clone()),
+                intent: intent.clone(),
+            }),
+            response,
+        })
+        .await?
+        .map_err(Into::into)
+    }
+
     /// Read the qualified candidate's real model-reset publication. The old
     /// manifest must match the original predecessor and the learning baseline.
     /// Current selection and revocation are checked by the same journal owner.

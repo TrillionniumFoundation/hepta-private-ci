@@ -164,11 +164,16 @@ impl PublishedNeuronGenerationUpdateV1 {
     /// The actual published record, including the consumed grant and witness;
     /// the preparable intent digest alone is not a publication receipt.
     pub(crate) fn publication_digest(&self) -> Result<Digest32, AgentdError> {
-        let bytes = serde_json::to_vec(self.record.as_ref()).map_err(invalid)?;
+        let bytes = self.publication_json()?;
         Ok(Digest32::of_parts(&[
             b"hepta.agentd.generation-publication.v1\0",
-            &bytes,
+            bytes.as_bytes(),
         ]))
+    }
+
+    /// Serialize the same retained signed record; this grants no live authority.
+    pub(crate) fn publication_json(&self) -> Result<String, AgentdError> {
+        serde_json::to_string(self.record.as_ref()).map_err(invalid)
     }
 
     pub fn completion(&self) -> NeuronGenerationPredecessorCompletionV1 {
