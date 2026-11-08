@@ -265,6 +265,7 @@ async fn updated_candidate_uses_original_actor_and_recovers_without_another_rese
         .await?;
     verify_learning_use_readback_test_bytes(
         &pending,
+        &f.coordinator,
         &f.publication.target_config.manifest,
         &receipt,
         &observed,
@@ -318,6 +319,7 @@ async fn updated_candidate_uses_original_actor_and_recovers_without_another_rese
         .await?;
     verify_learning_use_readback_test_bytes(
         &exported,
+        &f.coordinator,
         &f.publication.target_config.manifest,
         &receipt,
         &f.runtime.handle.observe_generation().await?,

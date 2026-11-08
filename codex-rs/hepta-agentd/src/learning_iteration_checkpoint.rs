@@ -236,3 +236,7 @@ impl LearningIterationCheckpointOwnerV1 {
 #[cfg(test)]
 #[path = "learning_iteration_checkpoint_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "learning_iteration_checkpoint_profile_tests.rs"]
+mod profile_tests;

@@ -1,5 +1,8 @@
 //! Exact original owner bytes from engineering fixtures only.
 
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD_NO_PAD;
+use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_neuron::CellBackendManifestV2;
 use codex_hepta_neuron::CellGenerationObservationV1;
 use codex_hepta_neuron::CellGenerationReceiptV2;
@@ -8,9 +11,19 @@ use codex_hepta_types::Digest32;
 use pretty_assertions::assert_eq;
 
 use super::AgentdGenerationLearningUseReadbackV1;
+use crate::LearningIterationCheckpointErrorV1;
+
+// Exercise the exact production codec without widening its production API.
+#[allow(
+    clippy::duplicate_mod,
+    reason = "This test-only exporter reuses the private production codec without widening its API"
+)]
+#[path = "learning_iteration_checkpoint_codec.rs"]
+mod checkpoint_codec;
 
 pub(crate) fn verify_original_bytes(
     readback: &AgentdGenerationLearningUseReadbackV1,
+    coordinator: &LearningIterationCoordinatorV1,
     manifest: &CellBackendManifestV2,
     receipt: &CellGenerationReceiptV2,
     observation: &CellGenerationObservationV1,
@@ -37,12 +50,38 @@ pub(crate) fn verify_original_bytes(
     );
     assert_eq!(payload["authority"], "DENY_ALL");
     assert_eq!(payload["current_permission"], "NOT_EXPORTED");
+    let snapshot = coordinator.snapshot();
+    assert_eq!(
+        payload["learning_head"],
+        serde_json::to_value(snapshot.head_digest.into_array())?
+    );
+    let checkpoint = checkpoint_codec::encode(snapshot)?;
+    assert_eq!(checkpoint_codec::decode(&checkpoint)?, *snapshot);
+    let initial =
+        LearningIterationCoordinatorV1::new(snapshot.request.clone(), snapshot.owners.clone())?;
     // The marker identifies original serialized fixture bytes, never a real
     // model/independent-evaluation claim. The collector must not rebuild JSON.
     if std::env::var_os("HEPTA_GENERATION_LEARNING_READBACK_STDOUT").is_some() {
         println!(
             "HEPTA_LEARNING_READBACK_V1 {phase} {}",
             serde_json::to_string(readback)?
+        );
+        // Paired native serialization of this test coordinator, not evidence
+        // of independent production checkpoint custody or evaluation quality.
+        println!(
+            "HEPTA_LEARNING_CHECKPOINT_V2 {phase} {}",
+            serde_json::json!({
+                "schema": "hepta.learning.checkpoint.fixture.v2",
+                "initial_head": initial.snapshot().head_digest.to_string(),
+                "checkpoint_sha256": Digest32::of_bytes(&checkpoint).to_string(),
+                "checkpoint_base64": STANDARD_NO_PAD.encode(&checkpoint),
+                "learning_head": snapshot.head_digest.to_string(),
+                "evaluation_profile": snapshot.request.evaluation_profile.to_string(),
+                "authority": "DENY_ALL",
+                "current_permission": "NOT_EXPORTED",
+                "production_qualification": "HOLD_NO_GO",
+                "pins_are_fixture_derived": true,
+            })
         );
     }
     Ok(())

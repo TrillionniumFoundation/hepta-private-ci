@@ -28,6 +28,9 @@ pub struct LearningIterationRequestV1 {
     pub completed_task_receipt: Digest32,
     /// The content pin used by the existing artifact/plasticity owner.
     pub selected_artifact_digest: Digest32,
+    /// Owner-frozen evaluation protocol, selected before dataset/training work.
+    /// The trainer cannot replace this pin with a profile chosen for its result.
+    pub evaluation_profile: Digest32,
     pub selected_bundle: CellCompatibilityBundleV1,
     pub envelope: IterationEnvelopeV1,
     pub budget: LearningIterationBudgetV1,
