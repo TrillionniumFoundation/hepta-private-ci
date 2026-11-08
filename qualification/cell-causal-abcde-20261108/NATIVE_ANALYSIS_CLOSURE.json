@@ -1,0 +1,95 @@
+{
+  "schema": "hepta.causal-b.analysis-native-closure.v1",
+  "closed_utc": "2026-11-08T10:16:07.098878+00:00",
+  "host": "ai395",
+  "job_id": "1a1baa1acfc-12894-1c0d",
+  "idempotency_key": "cell-causal-b-analysis-20261108-cf0-v1",
+  "original_request": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-launch-v1/native-request.json",
+    "bytes": 62139,
+    "sha256": "534754a78ea45d12e950e1e5793329069920efe8987d81539be263a042f84090"
+  },
+  "original_start_transport_reply": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-launch-v1/native-start.json",
+    "bytes": 219,
+    "sha256": "4e2076130a9560658ced741a0e6eb0377bc6220b7db383924c467a202d2e7866"
+  },
+  "same_request_reconciliation": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-launch-v1/native-reconcile.json",
+    "bytes": 9939,
+    "sha256": "e188b55bde843110905605091e50e61ebc5129a35ca06552df1481efdbbfb10d"
+  },
+  "original_logs": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-launch-v1/native-logs.json",
+    "bytes": 4073,
+    "sha256": "7b57f12b4b914349a2e11d0d0e45d26c1f842156f2d3f1d043baba787572298d"
+  },
+  "recovered_result_receipt": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/ANALYSIS_RESULT.json",
+    "bytes": 2173,
+    "sha256": "5e5b635e191229fe2cd3a2a1b9325e01bf460efc078669bfa8714015ee30ff42"
+  },
+  "recovered_artifacts_manifest": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/RECOVERY_MANIFEST.json",
+    "bytes": 1454,
+    "sha256": "3e249cbafc0e84c3c1d521e1a1294017e715b73d97011ddc265af3731b2e1061"
+  },
+  "same_native_job_reused": true,
+  "launch_retried": false,
+  "new_experiment_dispatched": false,
+  "native_status": {
+    "at_unix_ms": 1794132547826,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1baa1acfc-12894-1c0d",
+    "launch_nonce": "092c7d926731dfcdc992b4c106eb42e7",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1123,
+        "stored": 1123
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "analysis_status": "DESCRIPTIVE_ONLY_HOLD",
+  "transport_diagnostics": [
+    {
+      "kind": "original_start_rpc_timeout",
+      "counts_as_analysis_failure": false
+    },
+    {
+      "kind": "durable_inventory_total_source_byte_bound_exceeded",
+      "counts_as_analysis_failure": false
+    },
+    {
+      "kind": "same_request_idempotent_original_job_reconciliation",
+      "state": "closed"
+    }
+  ],
+  "native_record_created_to_terminal_seconds": 27.638,
+  "timing_scope": "Native created-to-terminal interval is separate from the nested 3.443-second analysis clock; do not sum nested measurements as disjoint cost.",
+  "full_improvement_budget_complete": false,
+  "adoption_authorized": false
+}

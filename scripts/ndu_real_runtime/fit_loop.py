@@ -8,8 +8,27 @@ import random
 import time
 
 from .controllers import ControlPlan
+from .metering import canonical_sha
 from .objective import utility_profile
 from .trajectory import V2_SCHEMA, episode_groups, grouped_batches
+
+OBSERVATION_POLICIES = ("legacy", "matched_episodes")
+
+
+def training_sequences(rows, phase, memory_mode, observation_policy):
+    """Match observations and optimizer boundaries while varying state use only."""
+    if observation_policy not in OBSERVATION_POLICIES:
+        raise ValueError("Unknown training observation policy")
+    if observation_policy == "matched_episodes":
+        # Both arms retain whole v2 chains and identical row weights. The reset
+        # arm resets inside observed_states, not by changing the batch inventory.
+        return rows, episode_groups(rows, "persistent")
+    selected = (
+        [r for r in rows if r["first_content"]]
+        if phase == "content" and memory_mode == "reset"
+        else rows
+    )
+    return selected, episode_groups(selected, memory_mode)
 
 
 def train_epochs(
@@ -25,18 +44,16 @@ def train_epochs(
     output,
     deadline,
     plan=None,
+    observation_policy="legacy",
 ):
     import torch
     from .recursive_objective import observed_states, recursive_terms
     from .training import control_terms, parameter_sha, supervised_terms, _save_weights
 
     plan = plan or ControlPlan(latency_weight=config.latency_weight)
-    selected = (
-        [r for r in rows if r["first_content"]]
-        if phase == "content" and plan.memory_mode == "reset"
-        else rows
+    selected, sequences = training_sequences(
+        rows, phase, plan.memory_mode, observation_policy
     )
-    sequences = episode_groups(selected, plan.memory_mode)
     content = [p for p in model.content_parameters() if p.requires_grad]
     content_ids = {id(p) for p in model.content_parameters()}
     heads = (
@@ -71,6 +88,14 @@ def train_epochs(
         "optimizer_steps": 0,
         "epochs": [],
         "memory_mode": plan.memory_mode,
+        "observation_policy": observation_policy,
+        "rows_per_epoch": len(selected),
+        "sequence_count": len(sequences),
+        "observation_partition_sha256": canonical_sha(
+            [[row["record_id"] for row in group] for group in sequences]
+        ),
+        "batch_schedule_sha256": [],
+        "loss_weighting": "equal row weights within each optimizer batch",
         "utility_profile": utility_profile(plan),
         "recursive_objective_applied": recursive,
         "estimator": "frozen_model_recursive_gradient_and_exact_frozen_Q_policy_improvement"
@@ -105,6 +130,14 @@ def train_epochs(
                 }
         order = list(range(len(sequences)))
         generator.shuffle(order)
+        audit["batch_schedule_sha256"].append(
+            canonical_sha(
+                [
+                    [row["record_id"] for group in batch for row in group]
+                    for batch in grouped_batches(sequences, order, config.batch_size)
+                ]
+            )
+        )
         totals = Counter()
         for batch_groups in grouped_batches(sequences, order, config.batch_size):
             if time.perf_counter() > deadline:
