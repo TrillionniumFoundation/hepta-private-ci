@@ -351,7 +351,7 @@ impl Fixture {
         let (not_before_unix_ms, expires_at_unix_ms) = if self.research {
             (
                 now,
-                now.checked_add(600_000)
+                now.checked_add(90_000)
                     .ok_or_else(|| anyhow::anyhow!("research grant expiry overflow"))?,
             )
         } else {
