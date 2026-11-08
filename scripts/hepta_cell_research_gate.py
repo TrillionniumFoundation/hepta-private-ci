@@ -18,6 +18,7 @@ from statistics import fmean
 import subprocess
 
 import hepta_cell_joint_config as joint
+import hepta_cell_research_foundation as foundation_adapter
 
 
 STAGES = {
@@ -149,6 +150,15 @@ def bound(document, schema, fields, experiment, configuration_sha, protocol_sha)
             raise ValueError(f"evidence has a different {key}")
 
 
+def declare_bindings(document, declarations):
+    """Require common claims without treating missing originals as verified."""
+    for key, expected in declarations.items():
+        claimed = digest(document[key])
+        if expected is not None and claimed != expected:
+            raise ValueError(f"conflicting declared {key}")
+        declarations[key] = claimed
+
+
 def protocol_specs(protocol, evidence, configuration_sha):
     shape(
         protocol,
@@ -197,6 +207,7 @@ def experiment_review(
     configuration_sha,
     protocol_sha,
     expected_configuration_sha=None,
+    declared_bindings=None,
 ):
     document = evidence.read(binding)
     bound(
@@ -207,6 +218,8 @@ def experiment_review(
         configuration_sha or expected_configuration_sha,
         protocol_sha,
     )
+    if declared_bindings is not None:
+        declare_bindings(document, declared_bindings)
     if (
         not isinstance(document["evidence_kind"], str)
         or document["evidence_kind"] not in KINDS
@@ -487,6 +500,11 @@ def assess(manifest: dict, source_root: Path, artifact_root: Path) -> dict:
         None,
     )
     configuration_sha, protocol_sha, expected_configuration_sha = None, None, None
+    foundation_result = None
+    declared_bindings = {
+        "joint_configuration_sha256": None,
+        "protocol_sha256": None,
+    }
     with joint.directory_root(artifact_root.resolve(strict=True)) as descriptor:
         evidence = Evidence(descriptor)
         for name, binding in inventory.items():
@@ -498,6 +516,7 @@ def assess(manifest: dict, source_root: Path, artifact_root: Path) -> dict:
             configuration = evidence.read(manifest["joint_configuration"])
             configuration_sha = manifest["joint_configuration"]["sha256"]
             joint_result = joint.verify(configuration, source_root, artifact_root)
+            declared_bindings["joint_configuration_sha256"] = configuration_sha
             for binding in [
                 *configuration["artifacts"].values(),
                 configuration["ci_evidence"],
@@ -511,31 +530,22 @@ def assess(manifest: dict, source_root: Path, artifact_root: Path) -> dict:
             protocol_sha = manifest["protocol"]["sha256"]
             specs = protocol_specs(protocol, evidence, configuration_sha)
             expected_configuration_sha = protocol["joint_configuration_sha256"]
+            declare_bindings(
+                {
+                    "joint_configuration_sha256": expected_configuration_sha,
+                    "protocol_sha256": protocol_sha,
+                },
+                declared_bindings,
+            )
         if manifest["foundation"] is None:
             missing.append("MISSING_FOUNDATION_EVIDENCE")
         else:
             foundation = evidence.read(manifest["foundation"])
-            shape(
-                foundation,
-                "schema joint_configuration_sha256 protocol_sha256 artifacts",
-                "hepta.cell-research-foundation.v1",
+            foundation_result = foundation_adapter.review(
+                foundation, evidence, joint_result
             )
-            for key, expected in (
-                (
-                    "joint_configuration_sha256",
-                    configuration_sha or expected_configuration_sha,
-                ),
-                ("protocol_sha256", protocol_sha),
-            ):
-                if digest(foundation[key]) != expected and expected is not None:
-                    raise ValueError("foundation belongs to another frozen binding")
-            shape(
-                foundation["artifacts"],
-                "trajectory source_registry recovery successor evaluator_owner",
-            )
-            for binding in foundation["artifacts"].values():
-                evidence.read(binding, document=False)
-            foundation_ready = True
+            declare_bindings(foundation, declared_bindings)
+            foundation_ready = foundation_result["mechanical_ready"]
         for experiment, binding in manifest["experiments"].items():
             if protocol_sha is not None and experiment not in specs:
                 raise ValueError("experiment is absent from the frozen protocol")
@@ -547,6 +557,7 @@ def assess(manifest: dict, source_root: Path, artifact_root: Path) -> dict:
                 configuration_sha,
                 protocol_sha,
                 expected_configuration_sha,
+                declared_bindings=declared_bindings,
             )
         evidence.finish()
         if configuration is not None and joint.source_identity(
@@ -573,8 +584,12 @@ def assess(manifest: dict, source_root: Path, artifact_root: Path) -> dict:
             blockers += [
                 "OWNER_AUTHENTICATION_ADAPTER_UNSUPPORTED",
                 "RECOVERY_ADAPTER_UNSUPPORTED",
-                "SUCCESSOR_ADAPTER_UNSUPPORTED",
             ]
+            blockers += (
+                ["SUCCESSOR_ADAPTER_UNSUPPORTED"]
+                if foundation_result is None
+                else foundation_result["blockers"]
+            )
         else:
             blockers += sorted(
                 {
@@ -606,9 +621,11 @@ def assess(manifest: dict, source_root: Path, artifact_root: Path) -> dict:
         "schema": "hepta.cell-research-review-result.v1",
         "stages": stages,
         "experiments": results,
+        "foundation": foundation_result,
         "source": joint_result["source"] if joint_result is not None else None,
         "joint_configuration_sha256": configuration_sha,
         "protocol_sha256": protocol_sha,
+        "declared_bindings": declared_bindings,
         "inventory": inventory,
         "research_advancement": False,
         "authority_granted": False,

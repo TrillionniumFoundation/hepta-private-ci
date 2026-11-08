@@ -193,6 +193,146 @@ class ResearchGateTests(unittest.TestCase):
         self.put(record)
         return self.assess()["experiments"][record["subject"]["experiment_id"]]
 
+    def put_foundation(self):
+        self.manifest["foundation"] = self.bind(
+            "foundation.json",
+            {
+                "schema": "hepta.cell-research-foundation.v1",
+                "joint_configuration_sha256": self.configuration_binding["sha256"],
+                "protocol_sha256": self.manifest["protocol"]["sha256"],
+                "artifacts": {
+                    role: self.bind(f"foundation-{role}.bin", role.encode())
+                    for role in (
+                        "trajectory",
+                        "source_registry",
+                        "recovery",
+                        "successor",
+                        "evaluator_owner",
+                    )
+                },
+            },
+        )
+
+    def change_binding(self, record, field):
+        for document in ("subject", "registry", "attempts", "design"):
+            record[document][field] = "f" * 64
+
+    def test_partial_foundation_and_experiment_bindings_must_agree(self):
+        self.put_foundation()
+        original = copy.deepcopy(self.manifest)
+        experiment = self.experiment()
+        for field in ("joint_configuration_sha256", "protocol_sha256"):
+            with self.subTest(field=field):
+                self.manifest = copy.deepcopy(original)
+                record = copy.deepcopy(experiment)
+                self.change_binding(record, field)
+                self.put(record)
+                self.manifest["joint_configuration"] = None
+                self.manifest["protocol"] = None
+                with self.assertRaisesRegex(
+                    ValueError, f"conflicting declared {field}"
+                ):
+                    self.assess()
+
+    def test_partial_experiments_must_share_bindings_in_either_order(self):
+        original = copy.deepcopy(self.manifest)
+        for field in ("joint_configuration_sha256", "protocol_sha256"):
+            for reverse in (False, True):
+                with self.subTest(field=field, reverse=reverse):
+                    self.manifest = copy.deepcopy(original)
+                    self.put(self.experiment("MEM-1"))
+                    record = self.experiment("CTRL-1")
+                    self.change_binding(record, field)
+                    self.put(record)
+                    if reverse:
+                        self.manifest["experiments"] = dict(
+                            reversed(list(self.manifest["experiments"].items()))
+                        )
+                    self.manifest["joint_configuration"] = None
+                    self.manifest["protocol"] = None
+                    with self.assertRaisesRegex(
+                        ValueError, f"conflicting declared {field}"
+                    ):
+                        self.assess()
+
+    def test_configuration_only_cannot_hide_conflicting_protocol_claims(self):
+        self.put(self.experiment("MEM-1"))
+        record = self.experiment("CTRL-1")
+        self.change_binding(record, "protocol_sha256")
+        self.put(record)
+        self.manifest["protocol"] = None
+        with self.assertRaisesRegex(ValueError, "conflicting declared protocol_sha256"):
+            self.assess()
+
+    def test_protocol_only_still_constrains_configuration_and_protocol_claims(self):
+        original = copy.deepcopy(self.manifest)
+        for envelope in ("foundation", "experiment"):
+            for field in ("joint_configuration_sha256", "protocol_sha256"):
+                with self.subTest(envelope=envelope, field=field):
+                    self.manifest = copy.deepcopy(original)
+                    if envelope == "foundation":
+                        self.put_foundation()
+                        document = json.loads(
+                            (self.artifacts / "foundation.json").read_bytes()
+                        )
+                        document[field] = "f" * 64
+                        self.manifest["foundation"] = self.bind(
+                            "foundation.json", document
+                        )
+                    else:
+                        record = self.experiment()
+                        self.change_binding(record, field)
+                        self.put(record)
+                    self.manifest["joint_configuration"] = None
+                    with self.assertRaises(ValueError):
+                        self.assess()
+
+    def test_consistent_partial_claims_do_not_replace_verified_originals(self):
+        original = copy.deepcopy(self.manifest)
+        expected_claims = {
+            "joint_configuration_sha256": self.configuration_binding["sha256"],
+            "protocol_sha256": self.manifest["protocol"]["sha256"],
+        }
+        for foundation in (False, True):
+            for omitted in (
+                ("joint_configuration",),
+                ("protocol",),
+                ("joint_configuration", "protocol"),
+            ):
+                with self.subTest(foundation=foundation, omitted=omitted):
+                    self.manifest = copy.deepcopy(original)
+                    if foundation:
+                        self.put_foundation()
+                    for name in gate.STAGES["S1"]:
+                        self.put(self.experiment(name))
+                    for field in omitted:
+                        self.manifest[field] = None
+                    result = self.assess()
+                    self.assertEqual(result.get("declared_bindings"), expected_claims)
+                    for field, claim in expected_claims.items():
+                        original_name = field.removesuffix("_sha256")
+                        self.assertEqual(
+                            result[field], None if original_name in omitted else claim
+                        )
+                    for field in omitted:
+                        self.assertIn(
+                            f"MISSING_{field.upper()}",
+                            result["stages"]["S0"]["blockers"],
+                        )
+                    for stage in result["stages"].values():
+                        self.assertFalse(stage["mechanical_ready"])
+                        self.assertFalse(stage["numerical_screen_ready"])
+                        self.assertFalse(stage["substantive_evidence_ready"])
+                    for experiment in result["experiments"].values():
+                        self.assertIn("MISSING_FROZEN_BINDING", experiment["blockers"])
+                    for field in (
+                        "research_advancement",
+                        "authority_granted",
+                        "production_qualification",
+                        "preregistration_verified",
+                    ):
+                        self.assertFalse(result[field])
+
     def test_empty_evidence_is_not_vacuously_ready(self):
         original = copy.deepcopy(self.manifest)
         for omitted in (
