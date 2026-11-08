@@ -1,0 +1,3728 @@
+{
+  "schema_version": 1,
+  "kind": "fixed_inventory_custom_evidence_classification",
+  "records_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+  "inventory_sha256": "02c1a3afa0c59f76c14134f58754cf6b71169e29fc4e7bb32d98a15f8dcc2c6a",
+  "script_sha256": "2b8cba864576e234eb93e1a131f0fde459445dc1b74ca3c79af405f1506acad7",
+  "original_custom_json_count": 118,
+  "original_unbound_log_count": 121,
+  "custom_categories": {
+    "read_only_review_or_fixture_observation": 4,
+    "operational_or_postprocessing_recovery": 6,
+    "dependency_or_source_input_provenance": 7,
+    "github_job_metadata": 22,
+    "historical_remote_job_or_pr_observation": 7,
+    "format_lint_or_tool_preparation": 8,
+    "source_or_publication_operation_metadata": 11,
+    "unknown_custom_schema": 4,
+    "helper_environment_mapping": 2,
+    "native_helper_build_manifest": 2,
+    "sealed_running_state_observation_not_terminal_execution": 1,
+    "partial_or_finished_coordinator": 3,
+    "original_research_gate_result_not_execution": 6,
+    "completed_python_run_integrity_or_context": 17,
+    "dependency_admission_execution_or_support": 8,
+    "historical_migration_input_or_preparation": 9,
+    "original_research_gate_input": 1
+  },
+  "raw_binding_categories": {
+    "completed_reference_sha256_and_two_pass_bytes_verified": 57,
+    "unknown": 60,
+    "completed_path_reference_without_recorded_content_hash": 4
+  },
+  "custom_json": [
+    {
+      "path": "act1-caller-review-6fd-grep.json",
+      "original_bytes": 9674,
+      "original_sha256": "65133a1c1e1b61351046b92c18e6b905f05a07f7952d66cac83cbabbde7393c7",
+      "category": "read_only_review_or_fixture_observation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "act1-caller-review-6fd-source-identities.json",
+      "original_bytes": 1416,
+      "original_sha256": "c5fe19cdb82e179f551eedb1eaf8258182443ee4601649a072d63df4f01df17a",
+      "category": "read_only_review_or_fixture_observation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "commit": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "baseline-bazel-cache-reclamation-v1.json",
+      "original_bytes": 1261,
+      "original_sha256": "4637d3885335666fa15355e8294044ab23cba8c4f52c7ebeb7f335be43d31d5e",
+      "category": "operational_or_postprocessing_recovery",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "status": "removed_after_successful_normal_shutdown",
+        "started_at": "2026-11-08T19:06:43.665460+00:00",
+        "finished_at": "2026-11-08T19:07:08.731241+00:00"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "bindgen-compat-v1/PROVENANCE.json",
+      "original_bytes": 2515,
+      "original_sha256": "4dc6d350be7ca6fd1ad13fc3da76dbf6485caff7af54651ac050f1a4babbcd60",
+      "category": "dependency_or_source_input_provenance",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta-vendored-dependency-observation-v1"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "bindgen-compat-v1/bindgen-0.73.2/.cargo_vcs_info.json",
+      "original_bytes": 101,
+      "original_sha256": "0013e5331e62a55f4ad4224a3ea171df6301eb4f48398dcfe1730c0957fd8600",
+      "category": "dependency_or_source_input_provenance",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "caller-memo-fixture-results.json",
+      "original_bytes": 371,
+      "original_sha256": "0a58fc807fcf218cb127feb6fcca597b96764d3e955c32563630d1e3ff60b2ca",
+      "category": "read_only_review_or_fixture_observation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "caller-patch-transport-recovery-v2.json",
+      "original_bytes": 1128,
+      "original_sha256": "4efa31af8111ac5eca188fb9011d2c63ea3683f29acc3a5a8c8c6e19fdd9b38f",
+      "category": "operational_or_postprocessing_recovery",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "kind": "caller-patch-transport-reconciliation"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832688185-job.json",
+      "original_bytes": 5685,
+      "original_sha256": "287d57c9ba9aa2ee8c09f4ef1daff4245f5a55d343fa3bc3845bbfb3ccaa1cc7",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:27:12Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832688209-job.json",
+      "original_bytes": 5677,
+      "original_sha256": "84dcc14ee5d73c0b35c691e30fba4b2c0711569e8878f1dee66386071c2ddb1e",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:28:37Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832737145-job.json",
+      "original_bytes": 2617,
+      "original_sha256": "bc2a2ab36baf4c2267d9c1e191fb4793a40c81da98a1172fc97f9a40f8d272ae",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:27:18Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832737268-job.json",
+      "original_bytes": 2170,
+      "original_sha256": "44245dc9b302cc12c4d5b78c25128f47c5d22aea90ee05442c331c83d6d75f97",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:25:41Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832737304-job.json",
+      "original_bytes": 3769,
+      "original_sha256": "967bf0a5718d9ede656b4159313a921d5844503e49f01a085c0b5b42d04dab68",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:29:34Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832737628-job.json",
+      "original_bytes": 2555,
+      "original_sha256": "264921f34ee66c06224409d71e03f9f7232d5d5b6c83f03c48d9f50d600b0d10",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:14:00Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832737785-job.json",
+      "original_bytes": 2342,
+      "original_sha256": "1d2cc0ac4dd6cb90ec1e101bd2f3d4239bb223d822e1b381157244a4131945a7",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:21:17Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832737790-job.json",
+      "original_bytes": 2798,
+      "original_sha256": "bf0835d5bc84c619cafbee9a731e79531467b7d82d27bc47a13e0052b35a81ae",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:27:35Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380605-job.json",
+      "original_bytes": 4971,
+      "original_sha256": "aef81bc9dc47e4ad7dcd1fd724b31e248f2315fa468be6bef98db38bc2610ecd",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:33:46Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380679-job.json",
+      "original_bytes": 2774,
+      "original_sha256": "07b52fa47481dc028361e678a1d032bd4c57478ac823509a61797c2d976e2e4e",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:37:30Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380848-job.json",
+      "original_bytes": 2931,
+      "original_sha256": "0335231c00d80b4474d0de88334c74d01fcf54e44167f6b2d025903513b76aa2",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:36:13Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380930-job.json",
+      "original_bytes": 2775,
+      "original_sha256": "8179fd320395160cf107056c1d6a713efce7f22bbb807e841783394575fc9a48",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:41:10Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380953-job.json",
+      "original_bytes": 2782,
+      "original_sha256": "385c9a35ebb94430749d665dd286e0862e0619e926ad2fd8f7a5cb857fa362f9",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:41:14Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380959-job.json",
+      "original_bytes": 2608,
+      "original_sha256": "ee74b9302827314167addb03de02a8656ffa6427e91350c45cd0717e6f9ad5fe",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:38:02Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380971-job.json",
+      "original_bytes": 2775,
+      "original_sha256": "796bee080f900dd8e8955dd8ce4b82ed183698877fdc601542bf105916a83c73",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:41:19Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380982-job.json",
+      "original_bytes": 2775,
+      "original_sha256": "7dd371d3721fd931c885807c6ad74316d4c750a905daea8b34e95622514a171f",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:41:39Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380993-job.json",
+      "original_bytes": 2775,
+      "original_sha256": "6e251bfabde70d00a4fc887850788dc92bb8e5f4ff713a8516601b19341121d1",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:41:38Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/index.json",
+      "original_bytes": 37155,
+      "original_sha256": "a8ccdbced634656e011412fbacc296df39ecaabc6db6523b1560b27979b43d2e",
+      "category": "historical_remote_job_or_pr_observation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-late-20261108T2003/128832737080-job.json",
+      "original_bytes": 9942,
+      "original_sha256": "bb33b2c40fad23c61219922cb002ff12b2822a98117b924cb4edc736245eebcb",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:25:43Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-late-20261108T2003/128832737369-job.json",
+      "original_bytes": 9943,
+      "original_sha256": "fdfab083c14078f0a97143cdba8c53cca183764b1c099aae607f3ad96210a8c4",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:33:04Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-late-20261108T2003/128836380935-job.json",
+      "original_bytes": 2757,
+      "original_sha256": "0d96caa6dcdae43da7a948791ebe2a7ac0bc8ecde232ccdb38e8960e7aa96052",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:36:46Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-late-20261108T2003/128840115655-job.json",
+      "original_bytes": 1533,
+      "original_sha256": "0b375d045b6f9d3163dfb9bdc91ef2f4b106adc851ce988f97d5a34fa8f4152e",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T20:02:27Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "ci-failures-v1-late-20261108T2003/index.json",
+      "original_bytes": 7136,
+      "original_sha256": "6e8b87bd2f660c733750cbd2dd58eeb601a80f05cfecfcc7aec67f0dfe9f6484",
+      "category": "historical_remote_job_or_pr_observation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "codespell-v2-install-2.json",
+      "original_bytes": 414,
+      "original_sha256": "56e2c2349f45cc251a0f1ea507786bbbcee12e548948e14bd344fd9d491bfd07",
+      "category": "format_lint_or_tool_preparation",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "codespell-v2-venv.json",
+      "original_bytes": 346,
+      "original_sha256": "e6583286d09201639dfc6ebe9ceb0b43b172c3a1aaca3914a82c76791b003364",
+      "category": "format_lint_or_tool_preparation",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-bazel-cache-reclamation-v1.json",
+      "original_bytes": 705,
+      "original_sha256": "b7a650e40e30263bf1f5e0eed55e3bd355140f806c14b1d13617191190c93603",
+      "category": "operational_or_postprocessing_recovery",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-candidate-freeze-v2.json",
+      "original_bytes": 1732,
+      "original_sha256": "be55825db77371ff1ebbed111145e6e95c283f4f6714cf795d3aa5e8f621c11e",
+      "category": "source_or_publication_operation_metadata",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "source_sha": "86ac7796345ec0a885bb212e5174ba85bb16485e"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-candidate-pr-body-v2-request.json",
+      "original_bytes": 4950,
+      "original_sha256": "bb32e83d543a71aae489e66e3040d1fe436e8b212ee4d5c41e4d08488b830353",
+      "category": "source_or_publication_operation_metadata",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-candidate-pr-body-v2-update.json",
+      "original_bytes": 344,
+      "original_sha256": "fdc51181873209885c1bfb4894d4c951d23ffdc07a80edb8bc023fea4a32dd76",
+      "category": "source_or_publication_operation_metadata",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "head": "86ac7796345ec0a885bb212e5174ba85bb16485e"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-candidate-publish-v1.json",
+      "original_bytes": 1626,
+      "original_sha256": "62852ed42587de2ee1fe55f212f3798603653e0aaf5c773fc4f2179851b663e7",
+      "category": "source_or_publication_operation_metadata",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "started_at": "2026-11-08T19:12:56.546605+00:00",
+        "finished_at": "2026-11-08T19:13:22.223473+00:00",
+        "source_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-candidate-publish-v2.json",
+      "original_bytes": 519,
+      "original_sha256": "8fc8a2beaf76da03779c549b40a04fede3b0e9b766d9850c157c26108aeaf168",
+      "category": "source_or_publication_operation_metadata",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "source_sha": "86ac7796345ec0a885bb212e5174ba85bb16485e"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-ci-observation-20261108T191914Z.json",
+      "original_bytes": 11064,
+      "original_sha256": "b75c7b71985d350807beea0cf8d939e6a243da027c4b9e809121e1ae77de9a9f",
+      "category": "historical_remote_job_or_pr_observation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-ci-observation-20261108T194451Z.json",
+      "original_bytes": 26172,
+      "original_sha256": "e6f0c146bfa44433f159a343901ec58b4efc8e50ed0a072e5d3caaea895d303e",
+      "category": "historical_remote_job_or_pr_observation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-ci-observation-20261108T200233Z.json",
+      "original_bytes": 26926,
+      "original_sha256": "acbb7cc65109aa00fbaf68b734599c3f4794c224f9c6dec1998c27761864fa78",
+      "category": "historical_remote_job_or_pr_observation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-ci-observation-20261108T203523Z.json",
+      "original_bytes": 26921,
+      "original_sha256": "b5b930b10e08a4aaad34e2d24b8ba107c6dedcc8f12aae3b3829a75b950c255b",
+      "category": "historical_remote_job_or_pr_observation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-final-native-v1-plan.json",
+      "original_bytes": 1976,
+      "original_sha256": "df7d60ed9dc8c5e564ce8b5b4a20e1aa6ed864c281d5cb73239e4567cd2916d3",
+      "category": "unknown_custom_schema",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "source_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-final-native-v1/boundary-control.json",
+      "original_bytes": 729,
+      "original_sha256": "7d3380779ea2eb1d0159e43d369838a2689098bad71a1618232fb3bf99d68087",
+      "category": "operational_or_postprocessing_recovery",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "kind": "orchestrator_boundary_control",
+        "source_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-final-native-v1/core-reclaimed-junit.summary.json",
+      "original_bytes": 1087,
+      "original_sha256": "d13a5c0338add00a77452b0669e27c2063a7467c8a8cb2d2a991505df91514d1",
+      "category": "unknown_custom_schema",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "kind": "native-junit-collection",
+        "status": "retained-failed",
+        "source_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-final-native-v1/helpers/env.json",
+      "original_bytes": 307,
+      "original_sha256": "c359c26279c51fd4f7190ac69969f66026a7207cdf8a75404cfc2f9815500979",
+      "category": "helper_environment_mapping",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-final-native-v1/helpers/manifest.json",
+      "original_bytes": 1928,
+      "original_sha256": "6e83305b7fc383eaf98775c6b6e2916bcc9e0a5f057d66b0df74e462473e2f9d",
+      "category": "native_helper_build_manifest",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "complete": true,
+        "exit_code": 0,
+        "source_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-final-native-v1/orchestration-before-boundary-finalization.json",
+      "original_bytes": 5042,
+      "original_sha256": "4ebb3da6b002ab2ffcdda7206f9d2c3dd6b8337add82d37535b6538e6b9e5def",
+      "category": "sealed_running_state_observation_not_terminal_execution",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "status": "running",
+        "started_at": "2026-11-08T19:15:05.278299+00:00",
+        "source_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-final-native-v1/orchestration.json",
+      "original_bytes": 7208,
+      "original_sha256": "086297aa84565768da0a8ddcbf1aa8331157632d956990a25fee2ceb811f2ce7",
+      "category": "partial_or_finished_coordinator",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "partial",
+        "returncode": 100,
+        "started_at": "2026-11-08T19:15:05.278299+00:00",
+        "finished_at": "2026-11-08T19:39:51.051967+00:00",
+        "source_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-final-native-v1/partial-final-result.json",
+      "original_bytes": 7208,
+      "original_sha256": "086297aa84565768da0a8ddcbf1aa8331157632d956990a25fee2ceb811f2ce7",
+      "category": "partial_or_finished_coordinator",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "partial",
+        "returncode": 100,
+        "started_at": "2026-11-08T19:15:05.278299+00:00",
+        "finished_at": "2026-11-08T19:39:51.051967+00:00",
+        "source_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-format-tools-pip-report-v1.json",
+      "original_bytes": 13531,
+      "original_sha256": "76594cdba511419edb27b9ce17d0986d530c20f7c5ccd578651f486859c3be95",
+      "category": "format_lint_or_tool_preparation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-matrix-scoped-fix-v1.json",
+      "original_bytes": 976,
+      "original_sha256": "716f307a1fbba47ad69c65a9293b23a32f37d635a7981d4bf81e8a3d1cf85f52",
+      "category": "format_lint_or_tool_preparation",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "exit_code": 0,
+        "started_at": "2026-11-08T18:59:42.963135+00:00",
+        "finished_at": "2026-11-08T19:03:49.299223+00:00"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-native-fixes-agentd-box-commit.json",
+      "original_bytes": 967,
+      "original_sha256": "c0405cf667f51e85016e77e7ca7716f350e21223bdb2154ca95e3469c8727c17",
+      "category": "source_or_publication_operation_metadata",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-native-fixes-bindgen-cargo-update.json",
+      "original_bytes": 547,
+      "original_sha256": "fd90594c53a688fda2a295bf4f0576471533c1c6d0646697f655d19ba7b4d356",
+      "category": "unknown_custom_schema",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "returncode": 0,
+        "head": "cadc31bc50a749c3bc23069da5094448f113efb8"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-native-fixes-bindgen-commit.json",
+      "original_bytes": 389,
+      "original_sha256": "a3d56cb6c4e42d2bf19a133f44517d5c541f2d507aef533670ffd48068785bc9",
+      "category": "source_or_publication_operation_metadata",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "status": "",
+        "commit": "1d762f58558429013a24d4e7ad170e5579a73b91"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-native-fixes-boxed-receipt-commit.json",
+      "original_bytes": 435,
+      "original_sha256": "73c0c600dbec150961299971e14b511489be201498d13b3ecf3522976a7fd65d",
+      "category": "source_or_publication_operation_metadata",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "status": "",
+        "commit": "238fe3431cc1451ed17e6023437f1cdd8452cf66"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-native-fixes-hcsn-commit.json",
+      "original_bytes": 1111,
+      "original_sha256": "904efb7392fc4fae3b93d297b3939d9a475ac27ca05ac267825340bce5602261",
+      "category": "source_or_publication_operation_metadata",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "status": "",
+        "commit": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-native-fixes-scoped-fix-v1.json",
+      "original_bytes": 913,
+      "original_sha256": "74887f455cbd0427ab96b46daafd33a4a4604b0aef1d8353bacb0bbf5262858a",
+      "category": "format_lint_or_tool_preparation",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "finished",
+        "returncode": 101,
+        "started_at": "2026-11-08T18:49:54.149522+00:00",
+        "finished_at": "2026-11-08T18:57:55.856310+00:00"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-native-fixes-v1-helpers/env.json",
+      "original_bytes": 307,
+      "original_sha256": "fbae816fc83e2d3feff8050823fe7f2175aca88a38fd9f5f7daa632534f71459",
+      "category": "helper_environment_mapping",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-native-fixes-v1-helpers/manifest.json",
+      "original_bytes": 1936,
+      "original_sha256": "c22a60a752b8490620d0b199fd51718684058de5356e8b4b734687d6c2e5d3bc",
+      "category": "native_helper_build_manifest",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "complete": true,
+        "exit_code": 0,
+        "source_sha": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-native-fixes-v1-pipeline.json",
+      "original_bytes": 2542,
+      "original_sha256": "73b9f32cd93b36259009a34b979de3f167d5e5bc33b34ab7483c7870163bb4dc",
+      "category": "partial_or_finished_coordinator",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "status": "finished",
+        "returncode": 101,
+        "source_sha": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560",
+        "tested_sha": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-pr-observation-20261108T203523Z.json",
+      "original_bytes": 23636,
+      "original_sha256": "4bb449b4d5bf4929dc153a24bfa6e3cdce47f8d16c8f24dc13d405cf48eff059",
+      "category": "historical_remote_job_or_pr_observation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "state": "open"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-source-freeze-v1.json",
+      "original_bytes": 1172,
+      "original_sha256": "ad64afd8cf1d31ccb1ee8f0035ea102d04f726c86a7e91c8630b8729439e8812",
+      "category": "source_or_publication_operation_metadata",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.common-source-freeze.v1",
+        "source_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "common-v2-pre-freeze-format.json",
+      "original_bytes": 357,
+      "original_sha256": "1306a877cc159f083c13cf019e457a59cc65f7125823745f76da6445df752947",
+      "category": "format_lint_or_tool_preparation",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "dependency-admission-tool-probe.json",
+      "original_bytes": 1242,
+      "original_sha256": "6630e55756d56f02ddab63abc62082c5ce634a00450565fd733260848e550be0",
+      "category": "format_lint_or_tool_preparation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "dependency-lock-static-prefreeze.json",
+      "original_bytes": 9133,
+      "original_sha256": "8fa714b97632e4315d26e19bd1122f9f245c317541a0c590236fb1f686aa7723",
+      "category": "source_or_publication_operation_metadata",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v1/CURRENT_RESULT.original.json",
+      "original_bytes": 7587,
+      "original_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+      "category": "original_research_gate_result_not_execution",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.cell-research-review-result.v1"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v1/archive-manifest.json",
+      "original_bytes": 7903,
+      "original_sha256": "9af1fca4f1327c9e93e99f383483f7220e127b504b32a29be471b38fc1abfa51",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "source_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v1/cell-research-stages/common-candidate-observation.json",
+      "original_bytes": 1395,
+      "original_sha256": "d732526f6e6dd405131bb976f48ab6261e6b2ce9bdb0f88b82f3936aaabb9b1c",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.cell-common-candidate-observation.v1"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v1/cell-research-stages/current-review.json",
+      "original_bytes": 7587,
+      "original_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+      "category": "original_research_gate_result_not_execution",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.cell-research-review-result.v1"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v1/evidence-inventory.json",
+      "original_bytes": 7411,
+      "original_sha256": "9fe7fc952dc7cbc101698297040840673a234498999fbf83f51cd693802b7030",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "source_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7",
+        "tested_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v1/evidence-verification.json",
+      "original_bytes": 9503,
+      "original_sha256": "97c7dc7f2682a47443604b69040f2dc5c357526d209b475474a7204c7876ece1",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "kind": "engineering_execution_evidence_integrity",
+        "source_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7",
+        "tested_sha": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v1/execution-manifest.json",
+      "original_bytes": 21236,
+      "original_sha256": "8d4fd6f629c488cd48f55b6543bad98c0cd04546b89916035d89aaeefcb72977",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "kind": "fixed_source_python_and_caller_engineering_validation",
+        "state": "finished",
+        "started_at": "2026-11-08T19:15:12.598326+00:00",
+        "finished_at": "2026-11-08T19:23:26.064568+00:00"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v1/postprocessing-recovery.json",
+      "original_bytes": 749,
+      "original_sha256": "c0e81d9f523d5de829845dc7a5a14baa4920aca5029f29339c2ebd7ac4a46120",
+      "category": "operational_or_postprocessing_recovery",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema_version": 1
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v1/source-after.json",
+      "original_bytes": 138,
+      "original_sha256": "9a894f65dfe3da6cab4fb4688f2ec59380f3cb4e96f7d18c6b0d3df20030b4f4",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "commit": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v1/source-before.json",
+      "original_bytes": 138,
+      "original_sha256": "9a894f65dfe3da6cab4fb4688f2ec59380f3cb4e96f7d18c6b0d3df20030b4f4",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "commit": "6fd7471bce6102de857c0c7f9da5d5e641b719f7"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v2-archive-manifest.json",
+      "original_bytes": 2823,
+      "original_sha256": "45a8ccbb639d245949f020629ce709d67ab97ae73b5c4e990d135e6235401449",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "source_sha": "86ac7796345ec0a885bb212e5174ba85bb16485e",
+        "tested_sha": "86ac7796345ec0a885bb212e5174ba85bb16485e"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v2/CURRENT_RESULT.original.json",
+      "original_bytes": 7587,
+      "original_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+      "category": "original_research_gate_result_not_execution",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.cell-research-review-result.v1"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v2/cell-research-stages/common-candidate-observation.json",
+      "original_bytes": 1395,
+      "original_sha256": "a4a67bf57552f60ca63bb3e5987b0191fd6182e063f5c3c8b17c54f01aaf91f0",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.cell-common-candidate-observation.v1"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v2/cell-research-stages/current-review.json",
+      "original_bytes": 7587,
+      "original_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+      "category": "original_research_gate_result_not_execution",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.cell-research-review-result.v1"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v2/evidence-inventory.json",
+      "original_bytes": 7875,
+      "original_sha256": "82af0abdbcea4f233579e82a242cf05cd808e31c5f7b11b47a5bd7cd6cd573f7",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "source_sha": "86ac7796345ec0a885bb212e5174ba85bb16485e",
+        "tested_sha": "86ac7796345ec0a885bb212e5174ba85bb16485e"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v2/evidence-verification.json",
+      "original_bytes": 179355,
+      "original_sha256": "2da02631fa8e572df905612280afd3889a9d4ee828d85890d9d67709bccee31b",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "kind": "engineering_execution_evidence_integrity",
+        "source_sha": "86ac7796345ec0a885bb212e5174ba85bb16485e",
+        "tested_sha": "86ac7796345ec0a885bb212e5174ba85bb16485e"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v2/execution-manifest.json",
+      "original_bytes": 21363,
+      "original_sha256": "d9cdedadb34f4787d2bab8d82ec8ad28154322fe6ddb56d6da92ceed92e0e290",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "kind": "fixed_source_python_and_caller_engineering_validation",
+        "state": "finished",
+        "started_at": "2026-11-08T20:12:14.311411+00:00",
+        "finished_at": "2026-11-08T20:28:05.150346+00:00"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v2/source-after.json",
+      "original_bytes": 138,
+      "original_sha256": "ba6d9e01f27ef18c25eaa67e1b68923522a5535b33caf5ada15c6c1acf73108e",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "commit": "86ac7796345ec0a885bb212e5174ba85bb16485e"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-python-v2/source-before.json",
+      "original_bytes": 138,
+      "original_sha256": "ba6d9e01f27ef18c25eaa67e1b68923522a5535b33caf5ada15c6c1acf73108e",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "commit": "86ac7796345ec0a885bb212e5174ba85bb16485e"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "final-quality-v2/summary.json",
+      "original_bytes": 2662,
+      "original_sha256": "ae40695c68c6ead96525c370a401bdd032f9c1b442a4ae02a9de4a7e0c08e85f",
+      "category": "unknown_custom_schema",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "frozen-6fd7471-cargo-deny-capture.json",
+      "original_bytes": 1211,
+      "original_sha256": "6cc265bf45ea0ad6dc36b419808f8f95e89bb0e03eb9ffc4a95c929a720ad852",
+      "category": "dependency_admission_execution_or_support",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.dependency-admission.capture.v1",
+        "status": "passed"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "frozen-6fd7471-cargo-deny-launch-result.json",
+      "original_bytes": 574,
+      "original_sha256": "de75a32b46606e5b742dec5091a284be16cb198ac1dfbd8c791edd8ec3c5c376",
+      "category": "dependency_admission_execution_or_support",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "exit_code": 0
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "frozen-6fd7471-cargo-deny-policy-lineage.json",
+      "original_bytes": 1214,
+      "original_sha256": "8c86b18d5d3d5dee0b9413cfbd4e646c7037ad83bc8b7ea41943ac5395b2ea00",
+      "category": "dependency_admission_execution_or_support",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "frozen-6fd7471-cargo-deny-start.json",
+      "original_bytes": 986,
+      "original_sha256": "b163d808205369781a709b1904def39c024cff36da1a81d0f9f07f2c31ca0972",
+      "category": "dependency_admission_execution_or_support",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "frozen-6fd7471-cargo-deny-v1/RESULT.json",
+      "original_bytes": 7434,
+      "original_sha256": "fceb39e8bc34c176aace5828d406a095ac33eb0c16137630f5989ed8a682b35a",
+      "category": "dependency_admission_execution_or_support",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "schema": "hepta.frozen-dependency-gate.v1",
+        "status": "passed"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "frozen-86ac779-cargo-deny-v2-capture.json",
+      "original_bytes": 10464,
+      "original_sha256": "142cc0781fca5e51aff8158272dd7e44a2ee9aedee64db334d6f0d0c28c9a5f3",
+      "category": "dependency_admission_execution_or_support",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "frozen-86ac779-cargo-deny-v2-launch-result.json",
+      "original_bytes": 577,
+      "original_sha256": "e8909068e2d92076a8f3b85dc352c40aa398b84570aeb109894a9f90e514352b",
+      "category": "dependency_admission_execution_or_support",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "exit_code": 0
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "frozen-86ac779-cargo-deny-v2/RESULT.json",
+      "original_bytes": 7451,
+      "original_sha256": "defe0bf38a562c8373178fd24083bfe1e03fe793a61929d4804cdbc7ade8819f",
+      "category": "dependency_admission_execution_or_support",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "schema": "hepta.frozen-dependency-gate.v1",
+        "status": "passed"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "historical-matrix-packet-b36/INDEX.json",
+      "original_bytes": 22481,
+      "original_sha256": "a5fbd0b4b3fc66d70e34235e3fa7c5fbd544a7ff5ec14ae36083f905308426fa",
+      "category": "historical_migration_input_or_preparation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "historical-matrix-packet-b36/PUBLICATION.json",
+      "original_bytes": 8451,
+      "original_sha256": "634aeca93eadefae5b8dd0c1c797076e8445affa963455a49cb64ac4d50d3c41",
+      "category": "historical_migration_input_or_preparation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "historical-matrix-packet-b36/ROOT_RESTORATION_REVIEW.json",
+      "original_bytes": 1762,
+      "original_sha256": "79643fbc22d218f605d5526d6983663dbfb7ced582c54fa05330a21c60ea1a7f",
+      "category": "historical_migration_input_or_preparation",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "exit_code": 0
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "historical-matrix-packet-download.json",
+      "original_bytes": 4145,
+      "original_sha256": "a8c89c2959fe00d028966d1de1552029a4b5420ee1f9b3455f0706ec02a33ab5",
+      "category": "historical_migration_input_or_preparation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "status": "prepared_historical_input"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "historical-matrix-replay/fixture/expected.json",
+      "original_bytes": 1690,
+      "original_sha256": "71bef9c6e207f2ad37cdf2a41c298effa75a3e748e8aac1538d33029319b17a0",
+      "category": "historical_migration_input_or_preparation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "historical-matrix-replay/fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/session.json",
+      "original_bytes": 151,
+      "original_sha256": "195167ce802c9630ae49edf1ffe97397c71d33d42273de6a8cb02697877abe17",
+      "category": "historical_migration_input_or_preparation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "historical-matrix-replay/historical-RESULT.json",
+      "original_bytes": 19890,
+      "original_sha256": "6212a7d916305520efd08087bc578beee0d796d6dfd50aec3e77ab9c69955878",
+      "category": "historical_migration_input_or_preparation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.ci.matrix-old-fixture.v2",
+        "status": "old_fixture_generated"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "historical-matrix-replay/historical-fixture-layout.json",
+      "original_bytes": 2123,
+      "original_sha256": "171df74e8c277c68ad6db84543d33c7df74035614a218fe98da6088764bf9c36",
+      "category": "historical_migration_input_or_preparation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.ci.fixture-layout.v1"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "historical-matrix-replay/lineage.json",
+      "original_bytes": 2839,
+      "original_sha256": "45ae2a9436ef84b94c66f4924afff48ebce141378fda6737c498dd59857cfbc5",
+      "category": "historical_migration_input_or_preparation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "mem-format-only-v1.json",
+      "original_bytes": 1279,
+      "original_sha256": "85f5bc89e92955bc51904d1f758c6e7561fced88e6f48497abcffb5e95a0f9f1",
+      "category": "format_lint_or_tool_preparation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "pin-vendor-blob-manifest.json",
+      "original_bytes": 31883,
+      "original_sha256": "abfcbda808b334ab434ac64b0deb0d186c19b45f1f9fc26333971bf0973358bd",
+      "category": "dependency_or_source_input_provenance",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "python-common-cadc/CURRENT_INPUT.original.json",
+      "original_bytes": 4859,
+      "original_sha256": "838742a8f66a014d6f7b65c3bf1f51fd637648875efccd640479a1e0708b5ac5",
+      "category": "original_research_gate_input",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.cell-research-review.v1"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "python-common-cadc/CURRENT_RESULT.original.json",
+      "original_bytes": 7587,
+      "original_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+      "category": "original_research_gate_result_not_execution",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.cell-research-review-result.v1"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "python-common-cadc/cell-research-stages/current-review.json",
+      "original_bytes": 7587,
+      "original_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+      "category": "original_research_gate_result_not_execution",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.cell-research-review-result.v1"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "python-common-cadc/evidence-inventory.json",
+      "original_bytes": 5488,
+      "original_sha256": "158507384762721feb1a2a6046482e0e0ffb201d9da6a892d84d95cef4c8d6df",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema_version": 1,
+        "kind": "engineering_unit_and_gate_evidence"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "python-common-cadc/source-after.json",
+      "original_bytes": 138,
+      "original_sha256": "050d8126538434067b6cd9d72be0cd1b15802c396f0406841d37f0d22c618af6",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "commit": "cadc31bc50a749c3bc23069da5094448f113efb8"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "python-common-cadc/source-before.json",
+      "original_bytes": 138,
+      "original_sha256": "050d8126538434067b6cd9d72be0cd1b15802c396f0406841d37f0d22c618af6",
+      "category": "completed_python_run_integrity_or_context",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "commit": "cadc31bc50a749c3bc23069da5094448f113efb8"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "rama-time-port/PREPARATION.json",
+      "original_bytes": 6241,
+      "original_sha256": "f817a7d1b36580007a31b1c3e3ab7e278c0e0ba34c5b9e657419afec1d0db802",
+      "category": "dependency_or_source_input_provenance",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "rama-time-port/TREE_IDENTITY.json",
+      "original_bytes": 399,
+      "original_sha256": "2975c71b375583bd5fb8d9c588cd85ba8b0d8e5b3443cef0ddddb1c37ce5fd83",
+      "category": "dependency_or_source_input_provenance",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "rama-time-port/codex-rs/third_party/rama-crypto-0.3.0/.cargo_vcs_info.json",
+      "original_bytes": 105,
+      "original_sha256": "30a1ce70025f955d308da9186f1240c1f231c38a85db04517cd684df7f5b2836",
+      "category": "dependency_or_source_input_provenance",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "rama-time-port/codex-rs/third_party/rama-crypto-0.3.0/HEPTA_PROVENANCE.json",
+      "original_bytes": 5223,
+      "original_sha256": "ed84e0d79388566b829e698ba0e91612f382efacf32784b23862b3f163154117",
+      "category": "dependency_or_source_input_provenance",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {
+        "schema": "hepta.third-party-source-port.v1"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "task-cache-reclamation-v2.json",
+      "original_bytes": 1145,
+      "original_sha256": "e090747e4cec4f0d7499df65410c7f682ab8b67cc932e5b6ba3190f3228f4d60",
+      "category": "operational_or_postprocessing_recovery",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "v2-original-evidence-byte-audit.json",
+      "original_bytes": 16172,
+      "original_sha256": "2a71b696ecef93517a63240f6f659a2bc407bcacc7bc79a84c8245eadc13dc9a",
+      "category": "read_only_review_or_fixture_observation",
+      "terminal_execution_or_completed_parent_record": false,
+      "status_claims_as_recorded": {},
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    },
+    {
+      "path": "verify1-windows-v1-job.json",
+      "original_bytes": 2555,
+      "original_sha256": "264921f34ee66c06224409d71e03f9f7232d5d5b6c83f03c48d9f50d600b0d10",
+      "category": "github_job_metadata",
+      "terminal_execution_or_completed_parent_record": true,
+      "status_claims_as_recorded": {
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-08T19:14:00Z"
+      },
+      "retention": "retained_host_only_pending_explicit_supplemental_snapshot",
+      "binding_status": "custom_metadata_not_an_execution_adapter",
+      "new_execution_or_stage_pass_inferred": false,
+      "stable_against_inventory_and_two_current_reads": true
+    }
+  ],
+  "previously_unbound_logs": [
+    {
+      "path": "baseline-bazel-cache-shutdown-v1.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "references": [
+        {
+          "owner": "baseline-bazel-cache-reclamation-v1.json",
+          "json_location": "$.shutdown_log",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "hash_verified": true,
+          "bytes": 0
+        },
+        {
+          "owner": "baseline-bazel-cache-reclamation-v1.json",
+          "json_location": "$.shutdown_log",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": null,
+          "hash_verified": false
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "baseline-terminal-tests-2.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "baseline-terminal-tests.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "caller-memo-closed-set-tests.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "caller-memo-typed-tests.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "cargo-deny-check-help.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "cargo-deny-help.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832688185-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 246216,
+      "sha256": "ca35e9386208fe9c1f0fbf00aa9a18cc72d88393693aac993abaeca41f1d9dff",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[6].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "ca35e9386208fe9c1f0fbf00aa9a18cc72d88393693aac993abaeca41f1d9dff",
+          "hash_verified": true,
+          "bytes": 246216
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832688209-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 205516,
+      "sha256": "a4909b5b1439afcf539e2da405ce6d2285c720e4f0aa8231867707c288ce0ccf",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[4].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "a4909b5b1439afcf539e2da405ce6d2285c720e4f0aa8231867707c288ce0ccf",
+          "hash_verified": true,
+          "bytes": 205516
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832737145-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 25861,
+      "sha256": "1beaa3ff4041a58d41f04c664fdc92458acebf9a776a9123e36c22de89c11bdc",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[1].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "1beaa3ff4041a58d41f04c664fdc92458acebf9a776a9123e36c22de89c11bdc",
+          "hash_verified": true,
+          "bytes": 25861
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832737268-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 23514,
+      "sha256": "a28e5927b5095dc047e85ec899831b947c6e4ba6916ef267f6c166a31ff98227",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[2].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "a28e5927b5095dc047e85ec899831b947c6e4ba6916ef267f6c166a31ff98227",
+          "hash_verified": true,
+          "bytes": 23514
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832737304-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 28354,
+      "sha256": "1d29bfd13ba2c432c670953b1012d1cf1e1da008c7cf56694fa58933cbbae8d9",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[0].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "1d29bfd13ba2c432c670953b1012d1cf1e1da008c7cf56694fa58933cbbae8d9",
+          "hash_verified": true,
+          "bytes": 28354
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832737628-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 24874,
+      "sha256": "af7a276e7655372871b31d436de550ae89d3e4ac059181ba1b35fb46dfe71f48",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[3].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "af7a276e7655372871b31d436de550ae89d3e4ac059181ba1b35fb46dfe71f48",
+          "hash_verified": true,
+          "bytes": 24874
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832737785-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 28131,
+      "sha256": "15077f8f87b596e1b0afc3967c407b105205d84ec759d524667fc193a27830a9",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[7].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "15077f8f87b596e1b0afc3967c407b105205d84ec759d524667fc193a27830a9",
+          "hash_verified": true,
+          "bytes": 28131
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128832737790-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 2152143,
+      "sha256": "f4fb34a620d8215e1054230809a974e2c34fd4294fcfdf2ccc552765f2691ca0",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[5].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "f4fb34a620d8215e1054230809a974e2c34fd4294fcfdf2ccc552765f2691ca0",
+          "hash_verified": true,
+          "bytes": 2152143
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380605-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 53892,
+      "sha256": "1745f0f08276c63b4214d90a8706b9113a7bfb8c74192aa821e75690dd72169f",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[15].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "1745f0f08276c63b4214d90a8706b9113a7bfb8c74192aa821e75690dd72169f",
+          "hash_verified": true,
+          "bytes": 53892
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380679-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 25207,
+      "sha256": "2c44980e01541116ee18b5d55a1e3edfa41bea932bcb8d32b9d5b3d6bfbc83ea",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[16].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "2c44980e01541116ee18b5d55a1e3edfa41bea932bcb8d32b9d5b3d6bfbc83ea",
+          "hash_verified": true,
+          "bytes": 25207
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380848-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 759596,
+      "sha256": "6fedcfb573040420e586444ae0657ac1a3a5b3387541e957e9acae5b11befd48",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[13].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "6fedcfb573040420e586444ae0657ac1a3a5b3387541e957e9acae5b11befd48",
+          "hash_verified": true,
+          "bytes": 759596
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380930-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 25550,
+      "sha256": "1409312fb9933a52f9e70bc9eadf08accf0cf2b04003152177703e85665fb924",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[11].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "1409312fb9933a52f9e70bc9eadf08accf0cf2b04003152177703e85665fb924",
+          "hash_verified": true,
+          "bytes": 25550
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380953-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 26342,
+      "sha256": "355274a6afca275c90f89a2647c59cc2b312f92e7d740e8a994e13f3c692ea10",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[14].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "355274a6afca275c90f89a2647c59cc2b312f92e7d740e8a994e13f3c692ea10",
+          "hash_verified": true,
+          "bytes": 26342
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380959-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 26512,
+      "sha256": "4d43772306378cba56954969b4e368bb6b3012f81946c199355db72963052a0a",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[12].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "4d43772306378cba56954969b4e368bb6b3012f81946c199355db72963052a0a",
+          "hash_verified": true,
+          "bytes": 26512
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380971-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 25997,
+      "sha256": "2c006f8f3cd2bec035cb545e265850977f8c71dfde850aaf78fd83e7e4dc2735",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[10].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "2c006f8f3cd2bec035cb545e265850977f8c71dfde850aaf78fd83e7e4dc2735",
+          "hash_verified": true,
+          "bytes": 25997
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380982-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 26191,
+      "sha256": "3fd7f1d513da28755f969c6ca6726c4195adef405de2f89b9c490ec01c8194b8",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[9].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "3fd7f1d513da28755f969c6ca6726c4195adef405de2f89b9c490ec01c8194b8",
+          "hash_verified": true,
+          "bytes": 26191
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-20261108T195057Z/128836380993-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 25997,
+      "sha256": "77b695c1a821150b59ff3c106153a30c299ea02ac6972e7d724324ae76a1319d",
+      "references": [
+        {
+          "owner": "ci-failures-v1-20261108T195057Z/index.json",
+          "json_location": "$.jobs[8].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "77b695c1a821150b59ff3c106153a30c299ea02ac6972e7d724324ae76a1319d",
+          "hash_verified": true,
+          "bytes": 25997
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-late-20261108T2003/128832737080-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1933264,
+      "sha256": "e7648eafc6aa5241646df1bfd2618d45ced522fffc269af032340819a48ae60d",
+      "references": [
+        {
+          "owner": "ci-failures-v1-late-20261108T2003/index.json",
+          "json_location": "$.jobs[1].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "e7648eafc6aa5241646df1bfd2618d45ced522fffc269af032340819a48ae60d",
+          "hash_verified": true,
+          "bytes": 1933264
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-late-20261108T2003/128832737369-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1928805,
+      "sha256": "ffbb900280567955ea015d113060ff024020fcdda84ee4b9eb6b3555473d4fc2",
+      "references": [
+        {
+          "owner": "ci-failures-v1-late-20261108T2003/index.json",
+          "json_location": "$.jobs[0].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "ffbb900280567955ea015d113060ff024020fcdda84ee4b9eb6b3555473d4fc2",
+          "hash_verified": true,
+          "bytes": 1928805
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-late-20261108T2003/128836380935-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 819394,
+      "sha256": "c58a15aaffa65253d0f9b38b8a4e83fff3f43f04132a9bf39e194e5cca136081",
+      "references": [
+        {
+          "owner": "ci-failures-v1-late-20261108T2003/index.json",
+          "json_location": "$.jobs[2].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "c58a15aaffa65253d0f9b38b8a4e83fff3f43f04132a9bf39e194e5cca136081",
+          "hash_verified": true,
+          "bytes": 819394
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "ci-failures-v1-late-20261108T2003/128840115655-raw.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 2642,
+      "sha256": "9cc9fbd5a66b2c59f9bc352e4e80327dda2c4aaaa31dabc041c7735eda529ade",
+      "references": [
+        {
+          "owner": "ci-failures-v1-late-20261108T2003/index.json",
+          "json_location": "$.jobs[3].files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "9cc9fbd5a66b2c59f9bc352e4e80327dda2c4aaaa31dabc041c7735eda529ade",
+          "hash_verified": true,
+          "bytes": 2642
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "codespell-v2-install-2.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 214,
+      "sha256": "184e5e058a356e5cf316c7ec558962ac06fe37c4bc4e42470fd657bf5fec7b7f",
+      "references": [
+        {
+          "owner": "codespell-v2-install-2.json",
+          "json_location": "$.log",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "184e5e058a356e5cf316c7ec558962ac06fe37c4bc4e42470fd657bf5fec7b7f",
+          "hash_verified": true,
+          "bytes": 214
+        },
+        {
+          "owner": "codespell-v2-install-2.json",
+          "json_location": "$.log",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": null,
+          "hash_verified": false
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "codespell-v2-install.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "codespell-v2-venv.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 236,
+      "sha256": "03cb1c435a595461dd8971bb1c525cb874af287f7b08307eb7c58c413612a7ff",
+      "references": [
+        {
+          "owner": "codespell-v2-venv.json",
+          "json_location": "$.log",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "03cb1c435a595461dd8971bb1c525cb874af287f7b08307eb7c58c413612a7ff",
+          "hash_verified": true,
+          "bytes": 236
+        },
+        {
+          "owner": "codespell-v2-venv.json",
+          "json_location": "$.log",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": null,
+          "hash_verified": false
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "common-bazel-cache-shutdown-v1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-candidate-publish-v1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-candidate-publish-v2.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-candidate-v2-commit.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-core-v1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-final-format-v1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-final-format-v2.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-final-format.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-final-native-v1/helpers/codex-hepta-infer-worker-host.jsonl",
+      "binding_status": "completed_path_reference_without_recorded_content_hash",
+      "retention": "retained_host_only",
+      "completion_unknown": false,
+      "bytes": null,
+      "sha256": null,
+      "references": [
+        {
+          "owner": "common-final-native-v1/helpers/manifest.json",
+          "json_location": "$.builds[0].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": null,
+          "hash_verified": false
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-final-native-v1/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "binding_status": "completed_path_reference_without_recorded_content_hash",
+      "retention": "retained_host_only",
+      "completion_unknown": false,
+      "bytes": null,
+      "sha256": null,
+      "references": [
+        {
+          "owner": "common-final-native-v1/helpers/manifest.json",
+          "json_location": "$.builds[0].stderr",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": null,
+          "hash_verified": false
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-format-tools-install-v1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-hcsn-import-whitespace.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-hcsn-pin-bazel-update.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-hcsn-pin-cargo-update.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-matrix-bindgen-cargo-update.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-matrix-bindgen-rama-cargo-update.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-matrix-scoped-fix-v1.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 12502,
+      "sha256": "98529efb15d70405b6835348d0be3fb2ffcf00f572df9e937a1d1bf48f501867",
+      "references": [
+        {
+          "owner": "common-matrix-scoped-fix-v1.json",
+          "json_location": "$.log_file",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "98529efb15d70405b6835348d0be3fb2ffcf00f572df9e937a1d1bf48f501867",
+          "hash_verified": true,
+          "bytes": 12502
+        },
+        {
+          "owner": "common-matrix-scoped-fix-v1.json",
+          "json_location": "$.log_file",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": null,
+          "hash_verified": false
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "common-native-fixes-agentd-box-fmt.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-native-fixes-bindgen-cargo-update.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 281,
+      "sha256": "5a72bf57c0b7b8924e5477600b9572baa59088b2afe42e39fc000477e51d7356",
+      "references": [
+        {
+          "owner": "common-native-fixes-bindgen-cargo-update.json",
+          "json_location": "$.log",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "5a72bf57c0b7b8924e5477600b9572baa59088b2afe42e39fc000477e51d7356",
+          "hash_verified": true,
+          "bytes": 281
+        },
+        {
+          "owner": "common-native-fixes-bindgen-cargo-update.json",
+          "json_location": "$.log",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": null,
+          "hash_verified": false
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "common-native-fixes-bindgen-upstream-whitespace.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-native-fixes-boxed-receipt-fmt.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-native-fixes-hcsn-fmt.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-native-fixes-scoped-fix-v1.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 49315,
+      "sha256": "e1222b13129805d1ec485eafb41a790895cee10ff1e56a2f3036ffa2e32d2958",
+      "references": [
+        {
+          "owner": "common-native-fixes-scoped-fix-v1.json",
+          "json_location": "$.log",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "e1222b13129805d1ec485eafb41a790895cee10ff1e56a2f3036ffa2e32d2958",
+          "hash_verified": true,
+          "bytes": 49315
+        },
+        {
+          "owner": "common-native-fixes-scoped-fix-v1.json",
+          "json_location": "$.log",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": null,
+          "hash_verified": false
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "common-native-fixes-v1-helpers/codex-hepta-infer-worker-host.jsonl",
+      "binding_status": "completed_path_reference_without_recorded_content_hash",
+      "retention": "retained_host_only",
+      "completion_unknown": false,
+      "bytes": null,
+      "sha256": null,
+      "references": [
+        {
+          "owner": "common-native-fixes-v1-helpers/manifest.json",
+          "json_location": "$.builds[0].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": null,
+          "hash_verified": false
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-native-fixes-v1-helpers/codex-hepta-infer-worker-host.stderr.log",
+      "binding_status": "completed_path_reference_without_recorded_content_hash",
+      "retention": "retained_host_only",
+      "completion_unknown": false,
+      "bytes": null,
+      "sha256": null,
+      "references": [
+        {
+          "owner": "common-native-fixes-v1-helpers/manifest.json",
+          "json_location": "$.builds[0].stderr",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": null,
+          "hash_verified": false
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-v2-format-v1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "common-v2-pre-freeze-format.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "references": [
+        {
+          "owner": "common-v2-pre-freeze-format.json",
+          "json_location": "$",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "hash_verified": true,
+          "bytes": 0
+        },
+        {
+          "owner": "common-v2-pre-freeze-format.json",
+          "json_location": "$.log",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": null,
+          "hash_verified": false
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-bazel-lock-v1-launcher.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "final-format-check-v1-launcher.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "final-python-v1/caller-closed-set-fixtures.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1485,
+      "sha256": "f7cb50752a09b9ef26d330104e5873af0c32f00a3de6f8c237b11bbff8fa59f0",
+      "references": [
+        {
+          "owner": "final-python-v1/archive-manifest.json",
+          "json_location": "$.members[1]",
+          "owner_terminal_or_completed_scope": false,
+          "recorded_sha256": "f7cb50752a09b9ef26d330104e5873af0c32f00a3de6f8c237b11bbff8fa59f0",
+          "hash_verified": false
+        },
+        {
+          "owner": "final-python-v1/evidence-inventory.json",
+          "json_location": "$.files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "f7cb50752a09b9ef26d330104e5873af0c32f00a3de6f8c237b11bbff8fa59f0",
+          "hash_verified": true,
+          "bytes": 1485
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v1/caller-full-scan.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1488,
+      "sha256": "9b89271f087d2ea32882acac1d199d23a12b33a1716ab841741107abea5de0da",
+      "references": [
+        {
+          "owner": "final-python-v1/archive-manifest.json",
+          "json_location": "$.members[4]",
+          "owner_terminal_or_completed_scope": false,
+          "recorded_sha256": "9b89271f087d2ea32882acac1d199d23a12b33a1716ab841741107abea5de0da",
+          "hash_verified": false
+        },
+        {
+          "owner": "final-python-v1/evidence-inventory.json",
+          "json_location": "$.files[4]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "9b89271f087d2ea32882acac1d199d23a12b33a1716ab841741107abea5de0da",
+          "hash_verified": true,
+          "bytes": 1488
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v1/caller-self-test.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1369,
+      "sha256": "f1250831ba2d3dfc9c11cede56ea447a124a161a18e0d025c17059c52c5762bd",
+      "references": [
+        {
+          "owner": "final-python-v1/archive-manifest.json",
+          "json_location": "$.members[7]",
+          "owner_terminal_or_completed_scope": false,
+          "recorded_sha256": "f1250831ba2d3dfc9c11cede56ea447a124a161a18e0d025c17059c52c5762bd",
+          "hash_verified": false
+        },
+        {
+          "owner": "final-python-v1/evidence-inventory.json",
+          "json_location": "$.files[7]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "f1250831ba2d3dfc9c11cede56ea447a124a161a18e0d025c17059c52c5762bd",
+          "hash_verified": true,
+          "bytes": 1369
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v1/caller-typed-fixtures.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1434,
+      "sha256": "d794748f0df72a513b310f3b50268d39af928b73adfc0671f341e75793b3bb5d",
+      "references": [
+        {
+          "owner": "final-python-v1/archive-manifest.json",
+          "json_location": "$.members[10]",
+          "owner_terminal_or_completed_scope": false,
+          "recorded_sha256": "d794748f0df72a513b310f3b50268d39af928b73adfc0671f341e75793b3bb5d",
+          "hash_verified": false
+        },
+        {
+          "owner": "final-python-v1/evidence-inventory.json",
+          "json_location": "$.files[10]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "d794748f0df72a513b310f3b50268d39af928b73adfc0671f341e75793b3bb5d",
+          "hash_verified": true,
+          "bytes": 1434
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v1/current-result-byte-comparison.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 2120,
+      "sha256": "97dafd38df66906124a4d904c2fd524bd3b8fcc736687c4933d6a081e90c9e8b",
+      "references": [
+        {
+          "owner": "final-python-v1/archive-manifest.json",
+          "json_location": "$.members[22]",
+          "owner_terminal_or_completed_scope": false,
+          "recorded_sha256": "97dafd38df66906124a4d904c2fd524bd3b8fcc736687c4933d6a081e90c9e8b",
+          "hash_verified": false
+        },
+        {
+          "owner": "final-python-v1/evidence-inventory.json",
+          "json_location": "$.files[22]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "97dafd38df66906124a4d904c2fd524bd3b8fcc736687c4933d6a081e90c9e8b",
+          "hash_verified": true,
+          "bytes": 2120
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v1/history-collector-regressions.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 3002,
+      "sha256": "7e3842d2c7bf732a0976cdbccdd722cd3f207fbefd2e2d2d61983ed65d498cd2",
+      "references": [
+        {
+          "owner": "final-python-v1/archive-manifest.json",
+          "json_location": "$.members[28]",
+          "owner_terminal_or_completed_scope": false,
+          "recorded_sha256": "7e3842d2c7bf732a0976cdbccdd722cd3f207fbefd2e2d2d61983ed65d498cd2",
+          "hash_verified": false
+        },
+        {
+          "owner": "final-python-v1/evidence-inventory.json",
+          "json_location": "$.files[27]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "7e3842d2c7bf732a0976cdbccdd722cd3f207fbefd2e2d2d61983ed65d498cd2",
+          "hash_verified": true,
+          "bytes": 3002
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v1/research-observation.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1377,
+      "sha256": "919030ecd0c563aac9da2cfe24509cd6551d5fa0a840e6ec747b59928d673250",
+      "references": [
+        {
+          "owner": "final-python-v1/archive-manifest.json",
+          "json_location": "$.members[33]",
+          "owner_terminal_or_completed_scope": false,
+          "recorded_sha256": "919030ecd0c563aac9da2cfe24509cd6551d5fa0a840e6ec747b59928d673250",
+          "hash_verified": false
+        },
+        {
+          "owner": "final-python-v1/evidence-inventory.json",
+          "json_location": "$.files[31]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "919030ecd0c563aac9da2cfe24509cd6551d5fa0a840e6ec747b59928d673250",
+          "hash_verified": true,
+          "bytes": 1377
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v1/research-workflow-container.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 14777,
+      "sha256": "4481ad517dd42adb0f3b4882fd737557afe07115264f2698c891c92d48ecf23e",
+      "references": [
+        {
+          "owner": "final-python-v1/archive-manifest.json",
+          "json_location": "$.members[37]",
+          "owner_terminal_or_completed_scope": false,
+          "recorded_sha256": "4481ad517dd42adb0f3b4882fd737557afe07115264f2698c891c92d48ecf23e",
+          "hash_verified": false
+        },
+        {
+          "owner": "final-python-v1/evidence-inventory.json",
+          "json_location": "$.files[35]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "4481ad517dd42adb0f3b4882fd737557afe07115264f2698c891c92d48ecf23e",
+          "hash_verified": true,
+          "bytes": 14777
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v2-driver.console.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "final-python-v2-verification.console.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "final-python-v2/caller-closed-set-fixtures.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1489,
+      "sha256": "7399556245a34b2e62d1cea3b10f81ba36d2f49bfb758df693327e789d6ac3df",
+      "references": [
+        {
+          "owner": "final-python-v2/evidence-inventory.json",
+          "json_location": "$.files[1]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "7399556245a34b2e62d1cea3b10f81ba36d2f49bfb758df693327e789d6ac3df",
+          "hash_verified": true,
+          "bytes": 1489
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v2/caller-full-scan.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 79335,
+      "sha256": "6a147916934ec42e52dca54e07c393324da3b623a70bce88f3497f4a6baa665b",
+      "references": [
+        {
+          "owner": "final-python-v2/evidence-inventory.json",
+          "json_location": "$.files[4]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "6a147916934ec42e52dca54e07c393324da3b623a70bce88f3497f4a6baa665b",
+          "hash_verified": true,
+          "bytes": 79335
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v2/caller-self-test.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1372,
+      "sha256": "eff08df96f6bf3aa39c54ab27f68fe4d2020aece280be84e9dae815dd5670d4b",
+      "references": [
+        {
+          "owner": "final-python-v2/evidence-inventory.json",
+          "json_location": "$.files[7]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "eff08df96f6bf3aa39c54ab27f68fe4d2020aece280be84e9dae815dd5670d4b",
+          "hash_verified": true,
+          "bytes": 1372
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v2/caller-typed-fixtures.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1438,
+      "sha256": "4c0f14134b9b95eba9bbe8655b2a884c4d5d16d1b3799e1aa80439fc480bd818",
+      "references": [
+        {
+          "owner": "final-python-v2/evidence-inventory.json",
+          "json_location": "$.files[10]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "4c0f14134b9b95eba9bbe8655b2a884c4d5d16d1b3799e1aa80439fc480bd818",
+          "hash_verified": true,
+          "bytes": 1438
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v2/current-result-byte-comparison.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 2125,
+      "sha256": "5802f85eee442bcd80e92f4c927ef09cfda1571b9b6551957a72ed52d9d71037",
+      "references": [
+        {
+          "owner": "final-python-v2/evidence-inventory.json",
+          "json_location": "$.files[22]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "5802f85eee442bcd80e92f4c927ef09cfda1571b9b6551957a72ed52d9d71037",
+          "hash_verified": true,
+          "bytes": 2125
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v2/driver.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 12198,
+      "sha256": "5433894c1a28d23b0b5fa1e5e8e23b74a3e1e39cb220ba16bd38cecd3f666230",
+      "references": [
+        {
+          "owner": "final-python-v2/evidence-inventory.json",
+          "json_location": "$.files[25]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "5433894c1a28d23b0b5fa1e5e8e23b74a3e1e39cb220ba16bd38cecd3f666230",
+          "hash_verified": true,
+          "bytes": 12198
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v2/history-collector-regressions.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 3005,
+      "sha256": "1f1c73cbca7235257c691330ba888060258cf83350017615d9666a2ac916f2d7",
+      "references": [
+        {
+          "owner": "final-python-v2/evidence-inventory.json",
+          "json_location": "$.files[29]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "1f1c73cbca7235257c691330ba888060258cf83350017615d9666a2ac916f2d7",
+          "hash_verified": true,
+          "bytes": 3005
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v2/research-observation.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1380,
+      "sha256": "fa6c4f209e1af977b1a3a28893ed9f26ed9f8d6a6dbc963ef53ff0db6fc926bc",
+      "references": [
+        {
+          "owner": "final-python-v2/evidence-inventory.json",
+          "json_location": "$.files[34]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "fa6c4f209e1af977b1a3a28893ed9f26ed9f8d6a6dbc963ef53ff0db6fc926bc",
+          "hash_verified": true,
+          "bytes": 1380
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-python-v2/research-workflow-container.console.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 14791,
+      "sha256": "25443a955b428e7d5bdbe41974a8ac0dc5c8199c18fc3f11a2f958e9df1d7d04",
+      "references": [
+        {
+          "owner": "final-python-v2/evidence-inventory.json",
+          "json_location": "$.files[38]",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "25443a955b428e7d5bdbe41974a8ac0dc5c8199c18fc3f11a2f958e9df1d7d04",
+          "hash_verified": true,
+          "bytes": 14791
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "final-quality-v2/blob-size-policy.console.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "final-quality-v2/codespell.console.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "final-quality-v2/format-check.console.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "format-vendor-scope-native-tests-v1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "frozen-6fd7471-cargo-deny-launch.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "frozen-6fd7471-cargo-deny-v1/0-rustc-version.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 36,
+      "sha256": "7aaf71af0cccdebda4e70ae5216dcf348bccfeb5cc30d148247005558cec03ad",
+      "references": [
+        {
+          "owner": "frozen-6fd7471-cargo-deny-v1/RESULT.json",
+          "json_location": "$.commands[0].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "7aaf71af0cccdebda4e70ae5216dcf348bccfeb5cc30d148247005558cec03ad",
+          "hash_verified": true,
+          "bytes": 36
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "frozen-6fd7471-cargo-deny-v1/1-cargo-version.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 36,
+      "sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068",
+      "references": [
+        {
+          "owner": "frozen-6fd7471-cargo-deny-v1/RESULT.json",
+          "json_location": "$.commands[1].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068",
+          "hash_verified": true,
+          "bytes": 36
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "frozen-6fd7471-cargo-deny-v1/2-cargo-deny-version.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 18,
+      "sha256": "adb7fef6f86abdd43a1514a9c4afe36bfb27d64bd1b956bf1c82d9480587fe85",
+      "references": [
+        {
+          "owner": "frozen-6fd7471-cargo-deny-v1/RESULT.json",
+          "json_location": "$.commands[2].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "adb7fef6f86abdd43a1514a9c4afe36bfb27d64bd1b956bf1c82d9480587fe85",
+          "hash_verified": true,
+          "bytes": 18
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "frozen-6fd7471-cargo-deny-v1/3-rustsec-guard-unit.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1120,
+      "sha256": "9b933f777e9f6a2b4105c6ce4fa6fb043ed6c0437bec72d2acc6859a87e63297",
+      "references": [
+        {
+          "owner": "frozen-6fd7471-cargo-deny-v1/RESULT.json",
+          "json_location": "$.commands[3].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "9b933f777e9f6a2b4105c6ce4fa6fb043ed6c0437bec72d2acc6859a87e63297",
+          "hash_verified": true,
+          "bytes": 1120
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "frozen-6fd7471-cargo-deny-v1/4-rustsec-guard.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 55,
+      "sha256": "39f5697dfcd129e3c20c87c5fc203a77198b37126d50eab99f30ba83cf764df2",
+      "references": [
+        {
+          "owner": "frozen-6fd7471-cargo-deny-v1/RESULT.json",
+          "json_location": "$.commands[4].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "39f5697dfcd129e3c20c87c5fc203a77198b37126d50eab99f30ba83cf764df2",
+          "hash_verified": true,
+          "bytes": 55
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "frozen-6fd7471-cargo-deny-v1/5-cargo-deny-all-features.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 13227349,
+      "sha256": "b3da8b889c3f7c967cc6f20c763a66b0fd963125d978408c2fe3cc24fd42827f",
+      "references": [
+        {
+          "owner": "frozen-6fd7471-cargo-deny-capture.json",
+          "json_location": "$.raw_log",
+          "owner_terminal_or_completed_scope": false,
+          "recorded_sha256": "b3da8b889c3f7c967cc6f20c763a66b0fd963125d978408c2fe3cc24fd42827f",
+          "hash_verified": false
+        },
+        {
+          "owner": "frozen-6fd7471-cargo-deny-v1/RESULT.json",
+          "json_location": "$.commands[5].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "b3da8b889c3f7c967cc6f20c763a66b0fd963125d978408c2fe3cc24fd42827f",
+          "hash_verified": true,
+          "bytes": 13227349
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "frozen-86ac779-cargo-deny-v2-launch.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "frozen-86ac779-cargo-deny-v2/0-rustc-version.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 36,
+      "sha256": "7aaf71af0cccdebda4e70ae5216dcf348bccfeb5cc30d148247005558cec03ad",
+      "references": [
+        {
+          "owner": "frozen-86ac779-cargo-deny-v2/RESULT.json",
+          "json_location": "$.commands[0].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "7aaf71af0cccdebda4e70ae5216dcf348bccfeb5cc30d148247005558cec03ad",
+          "hash_verified": true,
+          "bytes": 36
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "frozen-86ac779-cargo-deny-v2/1-cargo-version.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 36,
+      "sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068",
+      "references": [
+        {
+          "owner": "frozen-86ac779-cargo-deny-v2/RESULT.json",
+          "json_location": "$.commands[1].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068",
+          "hash_verified": true,
+          "bytes": 36
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "frozen-86ac779-cargo-deny-v2/2-cargo-deny-version.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 18,
+      "sha256": "adb7fef6f86abdd43a1514a9c4afe36bfb27d64bd1b956bf1c82d9480587fe85",
+      "references": [
+        {
+          "owner": "frozen-86ac779-cargo-deny-v2/RESULT.json",
+          "json_location": "$.commands[2].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "adb7fef6f86abdd43a1514a9c4afe36bfb27d64bd1b956bf1c82d9480587fe85",
+          "hash_verified": true,
+          "bytes": 18
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "frozen-86ac779-cargo-deny-v2/3-rustsec-guard-unit.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 1120,
+      "sha256": "bc752d3110a4d33c608630503cd98ae5f5ffa6e4768adf5cb03f78ead293cd3b",
+      "references": [
+        {
+          "owner": "frozen-86ac779-cargo-deny-v2/RESULT.json",
+          "json_location": "$.commands[3].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "bc752d3110a4d33c608630503cd98ae5f5ffa6e4768adf5cb03f78ead293cd3b",
+          "hash_verified": true,
+          "bytes": 1120
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "frozen-86ac779-cargo-deny-v2/4-rustsec-guard.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 55,
+      "sha256": "39f5697dfcd129e3c20c87c5fc203a77198b37126d50eab99f30ba83cf764df2",
+      "references": [
+        {
+          "owner": "frozen-86ac779-cargo-deny-v2/RESULT.json",
+          "json_location": "$.commands[4].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "39f5697dfcd129e3c20c87c5fc203a77198b37126d50eab99f30ba83cf764df2",
+          "hash_verified": true,
+          "bytes": 55
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "frozen-86ac779-cargo-deny-v2/5-cargo-deny-all-features.log",
+      "binding_status": "completed_reference_sha256_and_two_pass_bytes_verified",
+      "retention": "eligible_for_explicit_supplemental_snapshot",
+      "completion_unknown": false,
+      "bytes": 13227691,
+      "sha256": "cfe68dc8a49a068f64a731a34946c7a6caab2a6f781b619f1ff724030389003d",
+      "references": [
+        {
+          "owner": "frozen-86ac779-cargo-deny-v2/RESULT.json",
+          "json_location": "$.commands[5].stdout",
+          "owner_terminal_or_completed_scope": true,
+          "recorded_sha256": "cfe68dc8a49a068f64a731a34946c7a6caab2a6f781b619f1ff724030389003d",
+          "hash_verified": true,
+          "bytes": 13227691
+        }
+      ],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": null
+    },
+    {
+      "path": "historical-matrix-packet-driver.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "historical-matrix-prepare.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "matrix-donor-fetch.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "mem-format-only-v1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-act1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-causal-controls.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-ctrl1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-evolve1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-hcsn-credit-plasticity.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-learning-owner-checkpoint.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-mem1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-ndu-cold-state.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-perc1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-pred1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-stage-gates-ci.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-terminal-durable.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "merge-verify1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "terminal-bellman-v1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "terminal-native-v1.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "terminal-native-v2.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "terminal-native-v3.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "terminal-original-host-cas-v2.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "terminal-original-host-cas-v3.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    },
+    {
+      "path": "verify1-windows-v1-job.log",
+      "binding_status": "unknown",
+      "retention": "retained_host_only",
+      "completion_unknown": true,
+      "bytes": null,
+      "sha256": null,
+      "references": [],
+      "raw_content_archived_by_this_operation": false,
+      "weak_binding_limit": "Path-only or unreferenced bytes are not receipt-hash evidence; no execution interval or source identity inferred."
+    }
+  ],
+  "classification_problems": [],
+  "archives_created": false,
+  "source_or_original_logs_modified": false,
+  "complete_execution_history": false,
+  "physical_cost": null,
+  "full_history_cost": null,
+  "full_history_cost_known": false,
+  "qualification_evaluation": "not_performed",
+  "limitations": [
+    "Classification covers this exact earlier 118/121 inventory only; later terminal groups remain separately indexed.",
+    "A verified hash reference is not external authentication or a scientific/production pass.",
+    "Explicit weak path references remain host-only pending a separate, clearly labeled admission; unknown logs stay unknown."
+  ]
+}

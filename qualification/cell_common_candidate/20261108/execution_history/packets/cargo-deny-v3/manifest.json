@@ -1,0 +1,78 @@
+{
+  "packet_id": "cargo-deny-v3",
+  "archive_path": "/workspace/scratch/898e2183709e/ci-fixes/deps/frozen-09f543c-cargo-deny-v3-evidence.tar.gz",
+  "bytes": 711417,
+  "sha256": "5efa5760e3f4b98b8abcb465dcfdda5bbc53c1061e1c916c75201d5e617b893b",
+  "compression": "gzip",
+  "file_members": [
+    {
+      "path": "frozen-09f543c-cargo-deny-v3/0-rustc-version.log",
+      "bytes": 36,
+      "sha256": "7aaf71af0cccdebda4e70ae5216dcf348bccfeb5cc30d148247005558cec03ad"
+    },
+    {
+      "path": "frozen-09f543c-cargo-deny-v3/1-cargo-version.log",
+      "bytes": 36,
+      "sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068"
+    },
+    {
+      "path": "frozen-09f543c-cargo-deny-v3/2-cargo-deny-version.log",
+      "bytes": 18,
+      "sha256": "adb7fef6f86abdd43a1514a9c4afe36bfb27d64bd1b956bf1c82d9480587fe85"
+    },
+    {
+      "path": "frozen-09f543c-cargo-deny-v3/3-rustsec-guard-unit.log",
+      "bytes": 1120,
+      "sha256": "868aa4e13f53e1a28ce37492d523fe13ac3ebd77c4fb0b1fee18aacc2aa7ce2c"
+    },
+    {
+      "path": "frozen-09f543c-cargo-deny-v3/4-rustsec-guard.log",
+      "bytes": 55,
+      "sha256": "39f5697dfcd129e3c20c87c5fc203a77198b37126d50eab99f30ba83cf764df2"
+    },
+    {
+      "path": "frozen-09f543c-cargo-deny-v3/5-cargo-deny-all-features.log.gz",
+      "bytes": 715099,
+      "sha256": "d86e19a0b88ea09801d8fd3fc0b0defb153ea926143e873a3c6f381df7bf1cd6"
+    },
+    {
+      "path": "frozen-09f543c-cargo-deny-v3/CAPTURE.json",
+      "bytes": 12218,
+      "sha256": "67bda3d69750b2edaa8d95bcebdcd6094a0389bb2a9cb7544a7cefee2f9da0d9"
+    },
+    {
+      "path": "frozen-09f543c-cargo-deny-v3/FILE_INDEX.json",
+      "bytes": 1567,
+      "sha256": "bf5e84e22a7232577f43479f4ec932b86c9fb400212ab583d9654dd42922583f"
+    },
+    {
+      "path": "frozen-09f543c-cargo-deny-v3/RESULT.json",
+      "bytes": 7454,
+      "sha256": "b6a2c29bf5fd2cafd02b95aeddd04bab8462b0cc17c1e06cae85487b4bc11691"
+    }
+  ],
+  "required_parts_at_max_512000": 2,
+  "scope": "09f543c dependency/advisory/policy checks; not research or whole-workspace tests",
+  "preserves_original_bytes": true,
+  "contains_overlapping_or_duplicate_history": false,
+  "physical_cost": null,
+  "full_history_cost": null,
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/cargo-deny-v3/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "f41a7d4f40e4291c99a276e429c23eb008f2176acdd515644a987c2989043c41"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/cargo-deny-v3/archive.part002",
+      "offset": 490000,
+      "bytes": 221417,
+      "sha256": "efe674e2fc15d716779666ab40bf1ce4a6709ba444c98879a4cbe6dc6154fbeb"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true
+}

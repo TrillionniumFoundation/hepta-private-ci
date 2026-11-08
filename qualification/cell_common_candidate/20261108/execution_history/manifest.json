@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.source-bound-publication-checkpoint.v1",
+  "status": "bounded_checkpoint_verified",
+  "original_inventory_sha256": "def710605375f143910702995a147288f751c7ea704d6c6f670a24046e2fd1c7",
+  "packets": [
+    {
+      "packet_id": "history-capture-002",
+      "scope": "mixed recorded sources; earlier terminal attempts; external baseline pair retains weak observed linkage",
+      "archive_bytes": 36458,
+      "archive_sha256": "beb50897c8155ec4e9affa503f0f80dcfa1afda6b6bb5a8a64796eafd8cdc10f",
+      "file_member_count": 39,
+      "manifest_path": "packets/history-capture-002/manifest.json",
+      "manifest_sha256": "37f593331492cd1e17a09caf8d8db77e28ee7c2ff2aac7cb881b53fc1b71fdd1"
+    },
+    {
+      "packet_id": "python-v1",
+      "scope": "6fd7471; original Python execution with caller full-scan failure and post-reader errors preserved",
+      "archive_bytes": 20195,
+      "archive_sha256": "f673ef024de1f7cadb1e7f02a0806f5b7e0444c1b16b15e06f91cf0ee5318dbf",
+      "file_member_count": 43,
+      "manifest_path": "packets/python-v1/manifest.json",
+      "manifest_sha256": "ae9ff0873e0f48ecff2ff1cfec9704ef39529e4b165013ad557838b5f1608992"
+    },
+    {
+      "packet_id": "python-v2",
+      "scope": "86ac779; 127 Python tests and 943.885s diagnostic scan; not within 600s CI scan budget",
+      "archive_bytes": 62281,
+      "archive_sha256": "378fb82a8297bd03becb4eec5b8a11452584d14581ce978d3bcbab4734a0baff",
+      "file_member_count": 45,
+      "manifest_path": "packets/python-v2/manifest.json",
+      "manifest_sha256": "f218082e72618d281ca94ca6fb34faf8a2721f805796292abb4f986a87283905"
+    },
+    {
+      "packet_id": "python-v3",
+      "scope": "09f543c; 130 Python tests and 371.628s full scan within original 600s budget; CURRENT bytes unchanged",
+      "archive_bytes": 45325,
+      "archive_sha256": "c86e865fab453df852bb5ad680323f566d4d7a549df5e1f759c21072e75bdfcc",
+      "file_member_count": 46,
+      "manifest_path": "packets/python-v3/manifest.json",
+      "manifest_sha256": "958b69fceaf43074fd952c48568d2e89d1640390ab39eed4bbcd608f4baacb2d"
+    },
+    {
+      "packet_id": "history-capture-003",
+      "scope": "mixed recorded sources; failed collector setup due wrong external log basename; preserve failure",
+      "archive_bytes": 237457,
+      "archive_sha256": "cf8739bd282482863a05f583a76c3e63392eb2896d704dae737badd23c5bea90",
+      "file_member_count": 144,
+      "manifest_path": "packets/history-capture-003/manifest.json",
+      "manifest_sha256": "72c9c9bfa6cb27764592947e1f46d31ff9c96e954c0261745b2ea9473a27b69c"
+    },
+    {
+      "packet_id": "history-capture-004",
+      "scope": "mixed recorded sources; 74 terminal records /146 files; includes original failures/rejections; not exhaustive",
+      "archive_bytes": 238754,
+      "archive_sha256": "bc64f04912b8599c388c45c706b14ac96ba1da812732416f7e6f8fa062dd093c",
+      "file_member_count": 146,
+      "manifest_path": "packets/history-capture-004/manifest.json",
+      "manifest_sha256": "48b9396cb07d4ce57f1c028f4661ae5455903a744256304913cdb42d370478b6"
+    },
+    {
+      "packet_id": "ui-patch-preparation",
+      "scope": "dirty patch on86ac; original3 failures plus SDK7/fix preparation; not a frozen v3 qualification",
+      "archive_bytes": 150488,
+      "archive_sha256": "cc3f58f84a998c5a0f99749c95e81c51d26b0d22054b2b0bd1073b0d9adcc061",
+      "file_member_count": 169,
+      "manifest_path": "packets/ui-patch-preparation/manifest.json",
+      "manifest_sha256": "f1928481186595967b8b3decaba8f0679d861741324abfb92420244889564b35"
+    },
+    {
+      "packet_id": "cargo-deny-v3",
+      "scope": "09f543c dependency/advisory/policy checks; not research or whole-workspace tests",
+      "archive_bytes": 711417,
+      "archive_sha256": "5efa5760e3f4b98b8abcb465dcfdda5bbc53c1061e1c916c75201d5e617b893b",
+      "file_member_count": 9,
+      "manifest_path": "packets/cargo-deny-v3/manifest.json",
+      "manifest_sha256": "257706ff848b6d32a9c1c5a8e10b863fc15ee4283e3ff0b23961708ef0da7fd3"
+    },
+    {
+      "packet_id": "ci-sdk7-v3",
+      "scope": "two CI lanes each exact7; source-head and base-merge retain distinct tested identity",
+      "archive_bytes": 41815,
+      "archive_sha256": "2012fa72686c5c81f84ee8ace6338bf6219cd3003bdd5fcea4837655d29d7169",
+      "file_member_count": 23,
+      "manifest_path": "packets/ci-sdk7-v3/manifest.json",
+      "manifest_sha256": "bc596061ae54db2f69bca7ec210c5e6570ce8e0ae2f4164478131ff55177d7ca"
+    },
+    {
+      "packet_id": "native-v3-history",
+      "scope": "09f543c; r1 Clang failure + officialheaders prep +r2 core700/agentd729/HostCAS1; native unique1430, full workspace false",
+      "archive_bytes": 2350760,
+      "archive_sha256": "961c1c5a3fceb599f969690c252d5ed091daeb20835e0a436a2ddc074b8b680e",
+      "file_member_count": 105,
+      "manifest_path": "packets/native-v3-history/manifest.json",
+      "manifest_sha256": "0ba56440b6c49485514f3d5272aec82ab1c496dbb6d7ed8e7a5e63f6691fbbed"
+    }
+  ],
+  "max_chunk_bytes": 490000,
+  "complete_execution_history": false,
+  "physical_cost": null,
+  "cpu_seconds": null,
+  "learning_cost": null,
+  "full_history_cost": null,
+  "full_history_cost_known": false,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "stage_advancement_claimed": false,
+  "publication_commit_location": "external_git_readback_receipt",
+  "source_branch_mutated_by_publication": false,
+  "counts_and_wall_times_must_not_be_added_across_packets": true
+}
