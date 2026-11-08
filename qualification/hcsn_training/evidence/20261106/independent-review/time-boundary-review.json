@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "review_id": "hcsn-time-and-artifact-independent-review-20261106",
+  "reviewer": "/root/hcsn_continuous",
+  "recorded_at_utc": "2026-11-06T07:57:54Z",
+  "recorded_at_source": "clock__curr_time returned 2026-11-06 07:57:54 UTC immediately before archival",
+  "executed_at_utc": null,
+  "executed_at_note": "The original read-only check did not record an exact UTC timestamp. It occurred during this 2026-11-06 session before archival. recorded_at_utc is the archival observation time, not a fabricated execution timestamp.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_base_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "workspace": "/workspace/scratch/c084ba2352cd/hepta-hcsn",
+  "review_independence": {
+    "python_training_adapter": "Reviewed code owned by /root/hcsn_graph; reviewer did not edit the Python source.",
+    "artifact_owner_adapter": "Reviewed code owned by /root; reviewer did not edit the artifact-owner source.",
+    "rust_continuous_time": "Implemented by this reviewer, so this record is not an independent signoff on that Rust module. Root and the bridge agent provide separate integration review and execution."
+  },
+  "archive_actions": {
+    "reran_training": false,
+    "reran_original_check": false,
+    "modified_source": false,
+    "action": "Archived the exact previously executed script, stdout, execution metadata, and static review findings. Read current source hashes without changing files."
+  },
+  "executed_check": {
+    "scope": "Python ValueKernel time-plan structural parser, profile hash calculation, and reviewed agreement with the Rust V1 canonical encoding. This check does not execute a Rust binary or the native bridge.",
+    "python": "/workspace/scratch/40d04650905b/generation-work/venv/bin/python",
+    "working_directory": "/workspace/scratch/c084ba2352cd/hepta-hcsn",
+    "shell_invocation": "/workspace/scratch/40d04650905b/generation-work/venv/bin/python - <<'PY'\\n<source_script>\\nPY",
+    "source_script": "import copy, hashlib, json\nfrom pathlib import Path\nfrom qualification.hcsn_training.joint_graph import interval_seconds, time_profile_digest\nprofile = {'maximum_gap_micros': 1_000_000, 'forecast_horizon_micros': 500_000, 'integration': {'kind':'value_kernel'}}\nsource = Path('qualification/hcsn_training/joint_graph.py')\nbefore = hashlib.sha256(source.read_bytes()).hexdigest()\nanchor = hashlib.sha256(b'real owner anchor stand-in for structural parser checks').hexdigest()\nstart = 9_000_000_000_000_000_000\nplan = {'schema_version':1,'start_micros':start,'end_micros':start+1,'elapsed_micros':1,'substep_micros':1,'substeps':1,'forecast_horizon_micros':500_000,'profile_digest':time_profile_digest(profile),'checkpoint_before':anchor}\nassert interval_seconds([plan],profile) == (1e-6,)\nrejected=[]\ndef check(name, plans, profile=profile):\n    try:\n        interval_seconds(plans,profile)\n    except ValueError:\n        rejected.append(name)\n    else:\n        raise AssertionError(name+' unexpectedly accepted')\nfor field,value in [('schema_version',True),('start_micros',True),('end_micros',float(start)),('elapsed_micros',True),('substeps',True),('profile_digest','f'*64),('checkpoint_before','0'*64),('forecast_horizon_micros',500_001)]:\n    changed=copy.deepcopy(plan); changed[field]=value; check(field,[changed])\ngap=copy.deepcopy(plan); gap.update(end_micros=start+1_000_001,elapsed_micros=1_000_001,substep_micros=1_000_001); check('maximum gap',[gap])\nend=copy.deepcopy(plan); end.update(start_micros=2**64-2,end_micros=2**64-1); check('forecast overflow',[end])\nsecond=copy.deepcopy(plan); second.update(start_micros=start+1,end_micros=start+2,checkpoint_before='e'*64); check('mixed anchor',[plan,second])\nsecond['checkpoint_before']=anchor; second.update(start_micros=start+2,end_micros=start+3); check('time gap',[plan,second])\ncheck('empty batch',[]); check('excess batch',[plan]*257)\nunknown=copy.deepcopy(profile); unknown['other']=1; check('unknown profile',[plan],unknown)\ngrid=copy.deepcopy(profile); grid['integration']={'kind':'population_grid','step_micros':1,'max_substeps':1}; check('unsupported B',[plan],grid)\nchanged=copy.deepcopy(plan); changed['unknown']=1; check('unknown plan',[changed])\nassert before == hashlib.sha256(source.read_bytes()).hexdigest()\nprint(json.dumps({'profile_sha256':time_profile_digest(profile),'joint_graph_sha256':before,'accepted':1,'rejected':len(rejected),'negative_cases':rejected,'all_passed':True}))\n",
+    "original_tool": "tools.exec_command through functions.exec",
+    "original_tool_chunk_id": "3fc1a1",
+    "original_process_exit_code": 0,
+    "original_process_wall_time_seconds": 1.939021616,
+    "stdout": "{\"profile_sha256\": \"bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28\", \"joint_graph_sha256\": \"a43a93520746de5e3d320f0699246149dfffadba439804953b71a7ddbda99835\", \"accepted\": 1, \"rejected\": 17, \"negative_cases\": [\"schema_version\", \"start_micros\", \"end_micros\", \"elapsed_micros\", \"substeps\", \"profile_digest\", \"checkpoint_before\", \"forecast_horizon_micros\", \"maximum gap\", \"forecast overflow\", \"mixed anchor\", \"time gap\", \"empty batch\", \"excess batch\", \"unknown profile\", \"unsupported B\", \"unknown plan\"], \"all_passed\": true}\n",
+    "stderr": "",
+    "result": {
+      "profile_sha256": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+      "joint_graph_sha256": "a43a93520746de5e3d320f0699246149dfffadba439804953b71a7ddbda99835",
+      "accepted": 1,
+      "rejected": 17,
+      "negative_cases": [
+        "schema_version",
+        "start_micros",
+        "end_micros",
+        "elapsed_micros",
+        "substeps",
+        "profile_digest",
+        "checkpoint_before",
+        "forecast_horizon_micros",
+        "maximum gap",
+        "forecast overflow",
+        "mixed anchor",
+        "time gap",
+        "empty batch",
+        "excess batch",
+        "unknown profile",
+        "unsupported B",
+        "unknown plan"
+      ],
+      "all_passed": true
+    },
+    "source_hash_verified_before_and_after": true,
+    "model_training_performed": false,
+    "numerical_model_inference_performed": false,
+    "gpu_used": false,
+    "actual_clock_sampled": false,
+    "fixture_anchor_is_synthetic": true,
+    "fixture_anchor_scope": "Nonzero digest stand-in used only to exercise parsing/equality; this check does not authenticate a real owner checkpoint.",
+    "limitations": [
+      "The observed 18 cases establish only this bounded parser behavior on the recorded Python source.",
+      "Canonical Rust/Python profile encoding was compared by reading both implementations; executed native interoperability belongs to the separate Rust-to-Python bridge evidence.",
+      "No CUDA campaign, scientific comparison, training budget, performance benchmark, or energy measurement was run by this check.",
+      "Absolute timestamps are synthetic integers; no production monotonic clock, epoch migration, or owner authorization is qualified by them."
+    ]
+  },
+  "archival_source_hashes_observed_at_utc": "2026-11-06T07:57:54Z",
+  "archival_source_sha256": {
+    "qualification/hcsn_training/joint_graph.py": "a43a93520746de5e3d320f0699246149dfffadba439804953b71a7ddbda99835",
+    "qualification/hcsn_training/worker.py": "81e4c2b7f053604548157bc75d3ea4f10a86dfd986cbf9f76f84c78c2ec609ea",
+    "qualification/hcsn_training/handoff.py": "7809cc14ccd5750049e4a2b91462ed9655a30db0c2535d35e3e0f7c6472f2c21",
+    "codex-rs/hepta-neuron/src/continuous_time.rs": "ae08bcbc9c0a54cd376aa46ce98e1d87a2eee453e1abaef7e651eab4bff83313",
+    "codex-rs/hepta-learning-artifacts/src/hcsn_candidate.rs": "6ed338bf71d1ece130f35ab7e318dc1dbaaba8adb9bc5c629ae01285c7548de6",
+    "codex-rs/hepta-learning-artifacts/src/hcsn_candidate_tests.rs": "ad57fa8e17344174e18930cf3a5c1b145f4bd67d248764858cc87107781201c9",
+    "codex-rs/hepta-automation/src/taskflow_step.rs": "9929474f0010c88ab2d09f01afce6ad267129d12406d1c6b945aacb414eda007",
+    "codex-rs/hepta-automation/src/neural_circuit.rs": "492e2b0b5f42dd6872d0a41fda63d0dbd5492884b8741972298eac096f0b5f9d"
+  },
+  "findings": [
+    {
+      "id": "time-profile-complete-binding",
+      "original_issue": "Python initially accepted only profile_digest and could not enforce Rust maximum_gap_micros or the integration mode.",
+      "status": "fixed_and_parser_behavior_executed",
+      "resolution": "Python now accepts the complete time_profile, computes SHA256 of the same domain/u64BE gap/u64BE horizon/kind-zero encoding, checks maximum gap, horizon, ValueKernel mode, and one outer checkpoint anchor.",
+      "evidence": "The executed check above includes maximum-gap, profile, horizon, mixed-anchor and unsupported-B negative cases."
+    },
+    {
+      "id": "diagnostic-receipt-bound",
+      "original_issue": "Rust originally limited receipt bytes to 64 KiB, while admitted Python batch/output and gradient diagnostics could exceed that after training completed.",
+      "status": "fix_observed_in_source",
+      "resolution": "Rust prepare_hcsn_publication_v1 and Python MAX_DIAGNOSTIC_BYTES now use 1 MiB.",
+      "verification_scope": "Static comparison of both bounds. This reviewer did not run a maximum-size training or publication stress test."
+    },
+    {
+      "id": "dataset-withdrawal-after-preparation",
+      "original_issue": "The initial test name mentioned withdrawal but its body checked only signer revocation and signature corruption.",
+      "status": "specific_negative_test_added_and_reviewed",
+      "resolution": "withdrawal_after_preparation_blocks_publication now prepares the candidate, installs a newer withdrawal frontier, attempts publication, and checks failure plus absence of the candidate in the registry.",
+      "verification_scope": "Reviewed test source only in this record. Rust execution results must be taken from the root's actual test receipt."
+    },
+    {
+      "id": "authoritative-candidate-handoff",
+      "original_issue": "Typed outcome fields needed to be retained and bound with the exact worker result, rather than remaining unrelated caller-provided assertions.",
+      "status": "fixed_width_handoff_reviewed",
+      "resolution": "The Python encoder and Rust decoder agree on magic, one rule byte, eleven 32-byte digests, and seven big-endian u64 counts. Operation ID is hashed, request binding is compared with independently retained expected facts, exact diagnostics and payload hashes are checked, and the handoff hash is required in lineage.",
+      "verification_scope": "Static encoder/decoder and gate review. Native end-to-end execution belongs to the separate bridge receipt.",
+      "limitation": "A pinned worker receipt is not a mathematical proof of derivative correctness, independent quality evaluation, or NDU benefit."
+    },
+    {
+      "id": "cost-measurement-scope",
+      "original_issue": "The earlier generic wall/cpu fields excluded loading/copy and serialization/fsync without an explicit measurement scope.",
+      "status": "measurement_scope_corrected_in_source",
+      "resolution": "Proposal timing now includes validation, base reload, copy, BP, final forward and serialization. CLI additionally records cost through checkpoint fsync. Diagnostic/handoff generation and publication exclusions are explicit.",
+      "verification_scope": "Static timing-boundary review; no independent total process or physical energy measurement was performed here."
+    }
+  ],
+  "remaining_gaps_and_scope_limits": [
+    {
+      "id": "ordinary-taskflow-training-handler",
+      "status": "open_ordinary_handler_integration",
+      "observed_behavior": "NeuralCircuit copies max_attempts to TaskFlowNodeSpec. prepare_taskflow_step validates a global attempt bound and node existence/nonterminal status but does not enforce the node's max_attempts.",
+      "consequence": "Setting train.max_attempts=1 in a compiled circuit alone does not prove that a second training budget cannot be dispatched.",
+      "recommendation_not_executed": "An HCSN handler should require attempt == 1, bind operation ID/request digest to one durable job, query that same job on recovery, and leave unknown outcomes Indeterminate instead of opening a fresh output directory/job.",
+      "structural_limit": "The existing TaskFlow definition is a control ledger; it does not invoke callbacks. A circuit factory or successful compile alone is not an executed training workflow."
+    },
+    {
+      "id": "candidate-model-and-state-version",
+      "status": "qualification_boundary",
+      "observed_behavior": "Training changes model parameters and returns final state produced with candidate parameters. The artifact adapter publishes Candidate only.",
+      "consequence": "Candidate state must not be described as an adopted ordinary runtime state of the old base model.",
+      "recommendation_not_executed": "Bind any admitted candidate-state continuation to the candidate model identity through an explicit owner transition; keep candidate publication, fresh-process tensor recovery and runtime activation as separate claims."
+    },
+    {
+      "id": "checkpoint-loader-owner-context",
+      "status": "caller_boundary_explicit",
+      "observed_behavior": "load_training_checkpoint validates bytes/tensors and returns saved binding/time; its documentation requires the owner to compare those fields with the expected context.",
+      "consequence": "A tensor-only cold load does not on its own prove scope/clock authorization or ordinary runtime adoption.",
+      "recommendation_not_executed": "The native bridge and eventual ordinary handler must actually perform the saved-binding, timestamp and independently retained anchor checks."
+    }
+  ],
+  "suggested_coarse_circuit_not_executed": {
+    "nodes": [
+      {
+        "name": "train",
+        "role": "OrganCall / Activity",
+        "max_attempts": 1
+      },
+      {
+        "name": "evaluate",
+        "role": "OrganCall / Activity",
+        "max_attempts": 1
+      },
+      {
+        "name": "publish_candidate",
+        "role": "Effect",
+        "idempotency_template": "hcsn/{run}/publish"
+      },
+      {
+        "name": "success",
+        "role": "ExitSuccess"
+      },
+      {
+        "name": "failure",
+        "role": "ExitFailure"
+      }
+    ],
+    "edges": [
+      [
+        "train",
+        "evaluate"
+      ],
+      [
+        "train",
+        "failure"
+      ],
+      [
+        "evaluate",
+        "publish_candidate"
+      ],
+      [
+        "evaluate",
+        "failure"
+      ],
+      [
+        "publish_candidate",
+        "success"
+      ],
+      [
+        "publish_candidate",
+        "failure"
+      ]
+    ],
+    "scope": "One coarse training invocation owns all tensor cells/time steps. This record proposes the structure and required guards; it does not claim the ordinary handler is implemented or exercised."
+  }
+}

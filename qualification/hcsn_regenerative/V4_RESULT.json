@@ -1,0 +1,252 @@
+{
+  "bounded_numerical_operator": {
+    "audits": {
+      "cpu": {
+        "failed": 0,
+        "passed": 185,
+        "path": "evidence/colab/audit-v4/evidence/audit-cpu.json",
+        "source_unchanged": true,
+        "status": "bounded_tensor_checks_pass",
+        "wall_seconds": 76.71737734499993
+      },
+      "cuda": {
+        "failed": 0,
+        "passed": 185,
+        "path": "evidence/colab/audit-v4/evidence/audit-cuda.json",
+        "source_unchanged": true,
+        "status": "bounded_tensor_checks_pass",
+        "wall_seconds": 82.40063734
+      }
+    },
+    "fresh_process_next_block_recovery": {
+      "cpu": {
+        "actual_optimizer_updates": 9,
+        "path": "evidence/colab/recovery-v4/evidence/recovery-cpu/receipt.json",
+        "source_unchanged": true,
+        "status": "pass",
+        "wall_seconds": 12.200469384000144
+      },
+      "cuda": {
+        "actual_optimizer_updates": 9,
+        "path": "evidence/colab/recovery-v4/evidence/recovery-cuda/receipt.json",
+        "source_unchanged": true,
+        "status": "pass",
+        "wall_seconds": 9.360286880000103
+      }
+    },
+    "full_survivor_refractory_training_continuation_qualified": false,
+    "global_numerical_domain_certified": false,
+    "higher_order_autodiff_supported": false,
+    "independent_short_relative_and_gradient_gate": {
+      "failed": 0,
+      "passed": 64,
+      "path": "evidence/colab/short-v4/evidence/tiny-gate.json",
+      "source_unchanged": true,
+      "status": "pass",
+      "wall_seconds": 2.1779650250000486
+    },
+    "independent_stress": {
+      "failed": 0,
+      "passed": 12,
+      "path": "evidence/colab/short-v4/evidence/stress.json",
+      "source_unchanged": true,
+      "status": "stress_pass",
+      "wall_seconds": 1.5124228560000574
+    },
+    "production_owner_recovery_qualified": false,
+    "qvi_boundary_qualified": false,
+    "registry_test_methods": 34,
+    "relative_tail_log_risk_accuracy_qualified": false,
+    "status": "RECORDED_CHECKS_PASS",
+    "tensor_test_methods": 27,
+    "tiny_case_results": {
+      "cpu:torch.float32": {
+        "active_time": 5.2080494583606196e-08,
+        "max_relative_gradient_error": 6.797626037688093e-07,
+        "oracle": 5.2080505328105094e-08,
+        "relative_value_error": 2.0630558075047313e-07
+      },
+      "cpu:torch.float64": {
+        "active_time": 5.2080508708754445e-08,
+        "max_relative_gradient_error": 4.693579120685328e-10,
+        "oracle": 5.208050870920704e-08,
+        "relative_value_error": 8.690267006543325e-12
+      },
+      "cuda:torch.float32": {
+        "active_time": 5.208048747817884e-08,
+        "max_relative_gradient_error": 7.040984211410948e-07,
+        "oracle": 5.2080505328105094e-08,
+        "relative_value_error": 3.4273719393926795e-07
+      },
+      "cuda:torch.float64": {
+        "active_time": 5.208050870875448e-08,
+        "max_relative_gradient_error": 4.693574211293003e-10,
+        "oracle": 5.208050870920704e-08,
+        "relative_value_error": 8.6896316973783e-12
+      }
+    },
+    "unit_logs": [
+      "evidence/colab/short-v4/evidence/tensor-registry-short-normal-unittest.stderr.log"
+    ],
+    "unit_test_methods": 61
+  },
+  "cost": {
+    "complete_model_peak_vram_bytes": null,
+    "deployed_task_latency_quantiles": null,
+    "deployed_task_throughput": null,
+    "full_end_to_end_cost_available": false,
+    "full_machine_physical_energy_joules": null,
+    "gpu_measurement_scope": "device intervals only; not model exclusive or full machine",
+    "known_cost_subtotals": {
+      "capability_execution_seconds_separate": 12.569212913513184,
+      "cloud_execution_seconds": 668.8486037254333,
+      "excluded_or_unknown": [
+        "unresolved short-v3 attempt",
+        "lease allocation and idle intervals outside wrappers",
+        "host orchestration and source analysis",
+        "original 170-run campaign",
+        "external task training",
+        "encoder/decoder and deployment",
+        "full-machine energy",
+        "monetary invoice"
+      ],
+      "failed_attempts_included": true,
+      "gpu_device_counter_interval_joules": 12338.921,
+      "gpu_interval_measurement_missing_count": 0,
+      "is_complete_campaign_cost": false,
+      "scope": "Per-job cloud execution and GPU interval counters include successful, failed and diagnostic suites; counters are never differenced across leases.",
+      "terminal_numerical_and_diagnostic_job_count": 12
+    },
+    "known_suite_cloud_wall_seconds": 668.8486037254333,
+    "known_suite_gpu_device_counter_delta_joules": 12338.921,
+    "known_terminal_capability_jobs": 2,
+    "known_terminal_suite_or_diagnostic_jobs": 12,
+    "ledger": "evidence/colab/compute_ledger.json",
+    "unresolved_attempt_cost": null
+  },
+  "evidence_package_paths_are_relative_to_separately_retained_archive": true,
+  "evidence_package_sha256": "7e0944df7d338b3c492f80ccdf89df8cd09a15448263ccdf2033346c0621a89c",
+  "external_task_gain_established": false,
+  "local_materialized_subset_commit": "1453448d09942b4cb4781179444c49f5f7cddb33",
+  "original_campaign_completion_credit": 0,
+  "production_activation": false,
+  "reference_commit": "65bf6680c77338d89cd933e2d0d032b88a3e5078",
+  "retained_failures": [
+    {
+      "attempt": "V1",
+      "outcome": "ordinary_audit_pass_but_stress_failed",
+      "stress_failed": 8,
+      "stress_passed": 4
+    },
+    {
+      "attempt": "V2",
+      "outcome": "ordinary_audit_pass_but_tiny_cuda_value_wrong_and_cpu_rejected"
+    },
+    {
+      "attempt": "short-v3-retry1/diagnostic-v3",
+      "independent_short_checks_failed": 12,
+      "independent_short_checks_passed": 52,
+      "outcome": "value_and_57_methods_pass_but_short_release_FP32_gradients_NaN"
+    },
+    {
+      "attempt": "short-v3",
+      "cost": null,
+      "not_merged_into_retry": true,
+      "outcome": "UNKNOWN_NO_CLOUD_TERMINAL_OR_ARTIFACT",
+      "path": "evidence/colab/short-v3-unknown.json"
+    }
+  ],
+  "schema": "hcsn-regenerative-v4-publication-result-v1",
+  "scope": "bounded numerical operator, not task or deployment qualification",
+  "source_files": {
+    "qualification/hcsn/__init__.py": {
+      "bytes": 84,
+      "sha256": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d"
+    },
+    "qualification/hcsn/population.py": {
+      "bytes": 8894,
+      "sha256": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178"
+    },
+    "qualification/hcsn/reference.py": {
+      "bytes": 15847,
+      "sha256": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2"
+    },
+    "qualification/hcsn_regenerative/TENSOR_PROTOCOL.md": {
+      "bytes": 11919,
+      "sha256": "5401f2bafc73b79ebcaaad1bff61a2d2c1a050b6220b1764c28413034cfe233e"
+    },
+    "qualification/hcsn_regenerative/__init__.py": {
+      "bytes": 87,
+      "sha256": "133f20d47b4146591d160e498819b910e8217bb852a3bff9deeaeee06b3a4319"
+    },
+    "qualification/hcsn_regenerative/audit.py": {
+      "bytes": 14628,
+      "sha256": "0fc55cc51ebdc741f11641785ae4609bb46f6298a20bfe3b291e640237548d8c"
+    },
+    "qualification/hcsn_regenerative/experiment_registry.py": {
+      "bytes": 21030,
+      "sha256": "9bbf9e09ab14f9b2bcb52fb12e50d10e649eeb175de94e41aa2438ae7f680995"
+    },
+    "qualification/hcsn_regenerative/process.py": {
+      "bytes": 19818,
+      "sha256": "e7a7b6b8eed0c22c4ca61237db8729408eb2e23938d71716ecdce69714a6be67"
+    },
+    "qualification/hcsn_regenerative/run_audit.py": {
+      "bytes": 16044,
+      "sha256": "f2bd3042eae70e6e41229045dd4e5d2c3d2455d3534efb490e8cf083f25542e5"
+    },
+    "qualification/hcsn_regenerative/run_recovery_probe.py": {
+      "bytes": 9227,
+      "sha256": "1e240c1355bf4f862fd58e6edc5fd4f547018e95d9bd84f97ea889bd1fd5d881"
+    },
+    "qualification/hcsn_regenerative/run_tensor_audit.py": {
+      "bytes": 13946,
+      "sha256": "68d1be09e9163556b1ab9aa447fd0f010260684c68a383526e5de3bc517c6d01"
+    },
+    "qualification/hcsn_regenerative/tensor.py": {
+      "bytes": 14807,
+      "sha256": "1cf419e0c9af02c434d0492d4269e427a3c4783c683456c1eb514f6cb90cbc56"
+    },
+    "qualification/hcsn_regenerative/tensor_normal.py": {
+      "bytes": 1969,
+      "sha256": "d1423414112361bd5fe2c218ccc297a93972a6f9b79517abef343d4fc9c918e8"
+    },
+    "qualification/hcsn_regenerative/tensor_short.py": {
+      "bytes": 5046,
+      "sha256": "a49ba3a629d8198a9176e1b9ced30edd447309bdb7139a22fcc1c0084d2db07b"
+    },
+    "qualification/hcsn_regenerative/tensor_state.py": {
+      "bytes": 6157,
+      "sha256": "173c8fb75d1bc669ce316d03d26d545af6cbf460539c2a6f57e778db11d65f7f"
+    },
+    "qualification/hcsn_regenerative/tests/__init__.py": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/hcsn_regenerative/tests/test_audit.py": {
+      "bytes": 9032,
+      "sha256": "e4b8c644c90866a999afdfceaeb4294eb686ce5473d72726b6962daf3c5b8e82"
+    },
+    "qualification/hcsn_regenerative/tests/test_experiment_registry.py": {
+      "bytes": 16720,
+      "sha256": "62316371de20b672468815ca0df9d06ea425706ea7bf36c35ee0c0b5f5c7cfa7"
+    },
+    "qualification/hcsn_regenerative/tests/test_process.py": {
+      "bytes": 17368,
+      "sha256": "f1cb36d7e037af664be27e501f2b2de1607cb826689c672e7668c24433b41710"
+    },
+    "qualification/hcsn_regenerative/tests/test_short_tensor.py": {
+      "bytes": 8834,
+      "sha256": "978a57a5be931bc907e631f9a68d185619338a22db1b5f2cdfce172817941e29"
+    },
+    "qualification/hcsn_regenerative/tests/test_tensor.py": {
+      "bytes": 12014,
+      "sha256": "9820f205569482d4af397584f513c8dbd96e0f7d3725da8b42d9119bd06e2c6a"
+    },
+    "qualification/hcsn_regenerative/tests/test_tensor_normal.py": {
+      "bytes": 5489,
+      "sha256": "46a244ff3267690009b4a25c92aa1d8c6d0c88c3b01b99fc11d4ac4871a8595c"
+    }
+  },
+  "source_set_sha256": "c7d41c6fe3886891475ee743fe7fdd4635d77afa87f9f6e2d636f11ea800bf88"
+}

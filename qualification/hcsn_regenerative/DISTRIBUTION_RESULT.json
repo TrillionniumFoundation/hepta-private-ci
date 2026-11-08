@@ -1,0 +1,887 @@
+{
+  "audits": {
+    "cpu": {
+      "checks": [
+        {
+          "name": "torch.float32:all_configurations_construct",
+          "pass_": true
+        },
+        {
+          "name": "torch.float32:fine_state_l1<=.04",
+          "pass_": true
+        },
+        {
+          "name": "torch.float32:coupled_refinement_improves",
+          "pass_": true
+        },
+        {
+          "name": "torch.float32:fine_reward_abs<=.01",
+          "pass_": true
+        },
+        {
+          "name": "torch.float32:exact_physical_clocks",
+          "pass_": true
+        },
+        {
+          "name": "torch.float64:all_configurations_construct",
+          "pass_": true
+        },
+        {
+          "name": "torch.float64:fine_state_l1<=.04",
+          "pass_": true
+        },
+        {
+          "name": "torch.float64:coupled_refinement_improves",
+          "pass_": true
+        },
+        {
+          "name": "torch.float64:fine_reward_abs<=.01",
+          "pass_": true
+        },
+        {
+          "name": "torch.float64:exact_physical_clocks",
+          "pass_": true
+        },
+        {
+          "name": "semigroup_comparison_equal_physical_duration",
+          "pass_": true
+        },
+        {
+          "name": "source_unchanged",
+          "pass_": true
+        }
+      ],
+      "peak_cuda_allocated_bytes": null,
+      "process_cpu_seconds": 3.1791578190000003,
+      "rows": [
+        {
+          "active_cells": 32,
+          "clock_exact": true,
+          "common_bin_l1_error": 0.016960070462293364,
+          "device": "cpu",
+          "diagnostics": {
+            "construction_mass_residual": 2.220446049250313e-16,
+            "construction_wall_seconds": 0.19051671000011083,
+            "materialization_zeroed_positive_matrix_entries": 178,
+            "materialization_zeroed_probability_mass_max_row": 1.7458629173421725e-46,
+            "materialized_mass_residual": 3.456002173329864e-08,
+            "matrix_sha256": "e2fb6dbbe36c4bb8f33141f577349a77cb0b28297e0745e9e93d2aefe4551531",
+            "projection_is_part_of_model": true,
+            "relative_tail_probability_qualified": false,
+            "renewal_truncation_mass": 0.0,
+            "reward_sha256": "10419f5901f466891c3a2792b04742274a8019a8141be2707cd26224adc3f5c3",
+            "scaled_reward_order_difference": 2.5153490401663703e-15,
+            "source_row_l1_order_difference": 1.5491620213330984e-13,
+            "spatial_truncation_mass": 0.0,
+            "whole_trajectory_error_bound_qualified": false
+          },
+          "dt": 0.08,
+          "dtype": "torch.float32",
+          "phase_cells": 8,
+          "reward_abs_errors": {
+            "discounted_active_time": 0.00044654957109568905,
+            "expected_discounted_hits": 0.005087471543356953,
+            "expected_hits": 0.005249250620393692
+          },
+          "rewards": {
+            "discounted_active_time": 0.30829688756864004,
+            "expected_discounted_hits": 0.06010292879444251,
+            "expected_hits": 0.06229268302922719
+          },
+          "status": "pass",
+          "steps": 4,
+          "terminal_mass_residual": 0.0,
+          "transition_matrix_bytes": 6724
+        },
+        {
+          "active_cells": 64,
+          "clock_exact": true,
+          "common_bin_l1_error": 0.009815281113044133,
+          "device": "cpu",
+          "diagnostics": {
+            "construction_mass_residual": 2.220446049250313e-16,
+            "construction_wall_seconds": 0.30299603000003117,
+            "materialization_zeroed_positive_matrix_entries": 822,
+            "materialization_zeroed_probability_mass_max_row": 6.860211948346789e-46,
+            "materialized_mass_residual": 3.001437653971095e-08,
+            "matrix_sha256": "4d2f9b31243d1990f1c7dab870fa6a1f2fd04d07b00a1f93168d90ead5a7bf4f",
+            "projection_is_part_of_model": true,
+            "relative_tail_probability_qualified": false,
+            "renewal_truncation_mass": 0.0,
+            "reward_sha256": "72325ee8a9db21aefee136a282a8f2bea9e147d5d9f2bbca30e5d33310588ede",
+            "scaled_reward_order_difference": 5.117434254131581e-15,
+            "source_row_l1_order_difference": 4.1987663655622e-12,
+            "spatial_truncation_mass": 0.0,
+            "whole_trajectory_error_bound_qualified": false
+          },
+          "dt": 0.04,
+          "dtype": "torch.float32",
+          "phase_cells": 16,
+          "reward_abs_errors": {
+            "discounted_active_time": 0.0002482155869260594,
+            "expected_discounted_hits": 0.0029758650420291244,
+            "expected_hits": 0.003073055185254109
+          },
+          "rewards": {
+            "discounted_active_time": 0.3084952215528097,
+            "expected_discounted_hits": 0.05799132229311468,
+            "expected_hits": 0.06011648759408761
+          },
+          "status": "pass",
+          "steps": 8,
+          "terminal_mass_residual": 0.0,
+          "transition_matrix_bytes": 26244
+        },
+        {
+          "active_cells": 128,
+          "clock_exact": true,
+          "common_bin_l1_error": 0.005406367145123344,
+          "device": "cpu",
+          "diagnostics": {
+            "construction_mass_residual": 2.220446049250313e-16,
+            "construction_wall_seconds": 0.5997035279999636,
+            "materialization_zeroed_positive_matrix_entries": 3931,
+            "materialization_zeroed_probability_mass_max_row": 6.208913549884223e-46,
+            "materialized_mass_residual": 2.5773565393016895e-08,
+            "matrix_sha256": "9f1aee32662c20e7fd31292028e84ba98cccc00baa30c13018c0fa9b6d14f208",
+            "projection_is_part_of_model": true,
+            "relative_tail_probability_qualified": false,
+            "renewal_truncation_mass": 0.0,
+            "reward_sha256": "3effdbc6f5bfb44bc2058e49319713372a096f04d9896445ddce9934d4125305",
+            "scaled_reward_order_difference": 1.700029006457271e-14,
+            "source_row_l1_order_difference": 3.46907644291252e-11,
+            "spatial_truncation_mass": 0.0,
+            "whole_trajectory_error_bound_qualified": false
+          },
+          "dt": 0.02,
+          "dtype": "torch.float32",
+          "phase_cells": 32,
+          "reward_abs_errors": {
+            "discounted_active_time": 0.00012903665349056626,
+            "expected_discounted_hits": 0.0015960384827884075,
+            "expected_hits": 0.0016488718907253647
+          },
+          "rewards": {
+            "discounted_active_time": 0.30861440048624517,
+            "expected_discounted_hits": 0.056611495733873966,
+            "expected_hits": 0.058692304299558865
+          },
+          "status": "pass",
+          "steps": 16,
+          "terminal_mass_residual": -1.1920928955078125e-07,
+          "transition_matrix_bytes": 103684
+        },
+        {
+          "active_cells": 32,
+          "clock_exact": true,
+          "common_bin_l1_error": 0.01696004356846987,
+          "device": "cpu",
+          "diagnostics": {
+            "construction_mass_residual": 2.220446049250313e-16,
+            "construction_wall_seconds": 0.18871727100008684,
+            "materialization_zeroed_positive_matrix_entries": 0,
+            "materialization_zeroed_probability_mass_max_row": 0.0,
+            "materialized_mass_residual": 2.220446049250313e-16,
+            "matrix_sha256": "d8fb45dcb734ce9eb1453f9bdc8b85ef8a851e23b08ca195bcbb9248b22f5ad3",
+            "projection_is_part_of_model": true,
+            "relative_tail_probability_qualified": false,
+            "renewal_truncation_mass": 0.0,
+            "reward_sha256": "cf498b8f85d68bbb08d60f217077598b934502deef64627cac352abaedb2bc7d",
+            "scaled_reward_order_difference": 2.5153490401663703e-15,
+            "source_row_l1_order_difference": 1.5491620213330984e-13,
+            "spatial_truncation_mass": 0.0,
+            "whole_trajectory_error_bound_qualified": false
+          },
+          "dt": 0.08,
+          "dtype": "torch.float64",
+          "phase_cells": 8,
+          "reward_abs_errors": {
+            "discounted_active_time": 0.0004465662712868079,
+            "expected_discounted_hits": 0.00508747565648332,
+            "expected_hits": 0.005249250737418894
+          },
+          "rewards": {
+            "discounted_active_time": 0.3082968708684489,
+            "expected_discounted_hits": 0.06010293290756888,
+            "expected_hits": 0.062292683146252394
+          },
+          "status": "pass",
+          "steps": 4,
+          "terminal_mass_residual": 2.220446049250313e-16,
+          "transition_matrix_bytes": 13448
+        },
+        {
+          "active_cells": 64,
+          "clock_exact": true,
+          "common_bin_l1_error": 0.009815266897575168,
+          "device": "cpu",
+          "diagnostics": {
+            "construction_mass_residual": 2.220446049250313e-16,
+            "construction_wall_seconds": 0.2847522609999942,
+            "materialization_zeroed_positive_matrix_entries": 0,
+            "materialization_zeroed_probability_mass_max_row": 0.0,
+            "materialized_mass_residual": 2.220446049250313e-16,
+            "matrix_sha256": "e026cc1e1bc6ecd67bc45ea5a41f2c80e3ffa58be52a0fca6d9fd2882e94d45d",
+            "projection_is_part_of_model": true,
+            "relative_tail_probability_qualified": false,
+            "renewal_truncation_mass": 0.0,
+            "reward_sha256": "780194b5e0b43aadc05fd09efe1157e7a22c5868d2a7f423a3308eb5f6c26d79",
+            "scaled_reward_order_difference": 5.117434254131581e-15,
+            "source_row_l1_order_difference": 4.1987663655622e-12,
+            "spatial_truncation_mass": 0.0,
+            "whole_trajectory_error_bound_qualified": false
+          },
+          "dt": 0.04,
+          "dtype": "torch.float64",
+          "phase_cells": 16,
+          "reward_abs_errors": {
+            "discounted_active_time": 0.0002481866922058873,
+            "expected_discounted_hits": 0.002975867123352821,
+            "expected_hits": 0.0030730620381808488
+          },
+          "rewards": {
+            "discounted_active_time": 0.30849525044752985,
+            "expected_discounted_hits": 0.05799132437443838,
+            "expected_hits": 0.06011649444701435
+          },
+          "status": "pass",
+          "steps": 8,
+          "terminal_mass_residual": 4.440892098500626e-16,
+          "transition_matrix_bytes": 52488
+        },
+        {
+          "active_cells": 128,
+          "clock_exact": true,
+          "common_bin_l1_error": 0.005406286895977815,
+          "device": "cpu",
+          "diagnostics": {
+            "construction_mass_residual": 2.220446049250313e-16,
+            "construction_wall_seconds": 0.6009135340000284,
+            "materialization_zeroed_positive_matrix_entries": 0,
+            "materialization_zeroed_probability_mass_max_row": 0.0,
+            "materialized_mass_residual": 2.220446049250313e-16,
+            "matrix_sha256": "ac83c263522a4e05be9332219f9a271d214ad573e8fe4b78d3066ae0b0cd35a1",
+            "projection_is_part_of_model": true,
+            "relative_tail_probability_qualified": false,
+            "renewal_truncation_mass": 0.0,
+            "reward_sha256": "fb30f4c1adb3862ff377be22d4f9c3cecf483a88cd43eef02e1579df6485f1b9",
+            "scaled_reward_order_difference": 1.700029006457271e-14,
+            "source_row_l1_order_difference": 3.46907644291252e-11,
+            "spatial_truncation_mass": 0.0,
+            "whole_trajectory_error_bound_qualified": false
+          },
+          "dt": 0.02,
+          "dtype": "torch.float64",
+          "phase_cells": 32,
+          "reward_abs_errors": {
+            "discounted_active_time": 0.00012899322068599117,
+            "expected_discounted_hits": 0.0015960477423572275,
+            "expected_hits": 0.0016488812659495033
+          },
+          "rewards": {
+            "discounted_active_time": 0.30861444391904974,
+            "expected_discounted_hits": 0.056611504993442786,
+            "expected_hits": 0.058692313674783
+          },
+          "status": "pass",
+          "steps": 16,
+          "terminal_mass_residual": -3.3306690738754696e-16,
+          "transition_matrix_bytes": 207368
+        }
+      ],
+      "semigroup_defect": {
+        "exact_semigroup_claim": false,
+        "explanation": "Intermediate remapping changes the finite basis approximation",
+        "fixed_grid_cells": [
+          32,
+          8
+        ],
+        "l1_difference": 0.026850329369888723,
+        "long_dt": 0.08,
+        "same_elapsed": true,
+        "short_dt": 0.04
+      },
+      "status": "pass",
+      "wall_seconds": 3.2031783709999218
+    },
+    "cuda": {
+      "checks": [
+        {
+          "name": "torch.float32:all_configurations_construct",
+          "pass_": true
+        },
+        {
+          "name": "torch.float32:fine_state_l1<=.04",
+          "pass_": true
+        },
+        {
+          "name": "torch.float32:coupled_refinement_improves",
+          "pass_": true
+        },
+        {
+          "name": "torch.float32:fine_reward_abs<=.01",
+          "pass_": true
+        },
+        {
+          "name": "torch.float32:exact_physical_clocks",
+          "pass_": true
+        },
+        {
+          "name": "torch.float64:all_configurations_construct",
+          "pass_": true
+        },
+        {
+          "name": "torch.float64:fine_state_l1<=.04",
+          "pass_": true
+        },
+        {
+          "name": "torch.float64:coupled_refinement_improves",
+          "pass_": true
+        },
+        {
+          "name": "torch.float64:fine_reward_abs<=.01",
+          "pass_": true
+        },
+        {
+          "name": "torch.float64:exact_physical_clocks",
+          "pass_": true
+        },
+        {
+          "name": "semigroup_comparison_equal_physical_duration",
+          "pass_": true
+        },
+        {
+          "name": "source_unchanged",
+          "pass_": true
+        }
+      ],
+      "peak_cuda_allocated_bytes": 78125568,
+      "process_cpu_seconds": 5.77981402,
+      "rows": [
+        {
+          "active_cells": 32,
+          "clock_exact": true,
+          "common_bin_l1_error": 0.016960043063534422,
+          "device": "cuda",
+          "diagnostics": {
+            "construction_mass_residual": 2.220446049250313e-16,
+            "construction_wall_seconds": 0.8940260290000879,
+            "materialization_zeroed_positive_matrix_entries": 178,
+            "materialization_zeroed_probability_mass_max_row": 1.7458629173421747e-46,
+            "materialized_mass_residual": 3.456002173329864e-08,
+            "matrix_sha256": "3ad0d1fae00c4c4e06729df35426015c4736a88d189426710cfd9ed0aa4445f4",
+            "projection_is_part_of_model": true,
+            "relative_tail_probability_qualified": false,
+            "renewal_truncation_mass": 0.0,
+            "reward_sha256": "10419f5901f466891c3a2792b04742274a8019a8141be2707cd26224adc3f5c3",
+            "scaled_reward_order_difference": 1.5612511283791264e-15,
+            "source_row_l1_order_difference": 1.5493169204831933e-13,
+            "spatial_truncation_mass": 0.0,
+            "whole_trajectory_error_bound_qualified": false
+          },
+          "dt": 0.08,
+          "dtype": "torch.float32",
+          "phase_cells": 8,
+          "reward_abs_errors": {
+            "discounted_active_time": 0.00044655675822591334,
+            "expected_discounted_hits": 0.005087469768265657,
+            "expected_hits": 0.005249246895103393
+          },
+          "rewards": {
+            "discounted_active_time": 0.3082968803815098,
+            "expected_discounted_hits": 0.060102927019351216,
+            "expected_hits": 0.06229267930393689
+          },
+          "status": "pass",
+          "steps": 4,
+          "terminal_mass_residual": 0.0,
+          "transition_matrix_bytes": 6724
+        },
+        {
+          "active_cells": 64,
+          "clock_exact": true,
+          "common_bin_l1_error": 0.009815246308565279,
+          "device": "cuda",
+          "diagnostics": {
+            "construction_mass_residual": 2.220446049250313e-16,
+            "construction_wall_seconds": 0.5190761030000886,
+            "materialization_zeroed_positive_matrix_entries": 822,
+            "materialization_zeroed_probability_mass_max_row": 6.860211948346779e-46,
+            "materialized_mass_residual": 3.001437653971095e-08,
+            "matrix_sha256": "cca2984d03d1d6910b251fae7e0b0f394db66ce97e764a4256555e5cd681656a",
+            "projection_is_part_of_model": true,
+            "relative_tail_probability_qualified": false,
+            "renewal_truncation_mass": 0.0,
+            "reward_sha256": "72325ee8a9db21aefee136a282a8f2bea9e147d5d9f2bbca30e5d33310588ede",
+            "scaled_reward_order_difference": 7.112366251504909e-15,
+            "source_row_l1_order_difference": 4.198975090408269e-12,
+            "spatial_truncation_mass": 0.0,
+            "whole_trajectory_error_bound_qualified": false
+          },
+          "dt": 0.04,
+          "dtype": "torch.float32",
+          "phase_cells": 16,
+          "reward_abs_errors": {
+            "discounted_active_time": 0.0002481794120849923,
+            "expected_discounted_hits": 0.002975869213381853,
+            "expected_hits": 0.0030730599582823037
+          },
+          "rewards": {
+            "discounted_active_time": 0.30849525772765074,
+            "expected_discounted_hits": 0.05799132646446741,
+            "expected_hits": 0.060116492367115804
+          },
+          "status": "pass",
+          "steps": 8,
+          "terminal_mass_residual": 0.0,
+          "transition_matrix_bytes": 26244
+        },
+        {
+          "active_cells": 128,
+          "clock_exact": true,
+          "common_bin_l1_error": 0.005406330388005239,
+          "device": "cuda",
+          "diagnostics": {
+            "construction_mass_residual": 2.220446049250313e-16,
+            "construction_wall_seconds": 0.6427784720001455,
+            "materialization_zeroed_positive_matrix_entries": 3931,
+            "materialization_zeroed_probability_mass_max_row": 6.208913549884224e-46,
+            "materialized_mass_residual": 2.5773565281994593e-08,
+            "matrix_sha256": "a3764194db235fda485e177cbfacaf3cedc527adde3e5a060477f8e0454a1574",
+            "projection_is_part_of_model": true,
+            "relative_tail_probability_qualified": false,
+            "renewal_truncation_mass": 0.0,
+            "reward_sha256": "3effdbc6f5bfb44bc2058e49319713372a096f04d9896445ddce9934d4125305",
+            "scaled_reward_order_difference": 1.1622647289044608e-14,
+            "source_row_l1_order_difference": 3.469042684348909e-11,
+            "spatial_truncation_mass": 0.0,
+            "whole_trajectory_error_bound_qualified": false
+          },
+          "dt": 0.02,
+          "dtype": "torch.float32",
+          "phase_cells": 32,
+          "reward_abs_errors": {
+            "discounted_active_time": 0.0001290097598694584,
+            "expected_discounted_hits": 0.0015960430938838366,
+            "expected_hits": 0.0016488761182858885
+          },
+          "rewards": {
+            "discounted_active_time": 0.3086144273798663,
+            "expected_discounted_hits": 0.056611500344969395,
+            "expected_hits": 0.05869230852711939
+          },
+          "status": "pass",
+          "steps": 16,
+          "terminal_mass_residual": -5.960464477539063e-08,
+          "transition_matrix_bytes": 103684
+        },
+        {
+          "active_cells": 32,
+          "clock_exact": true,
+          "common_bin_l1_error": 0.016960043568469692,
+          "device": "cuda",
+          "diagnostics": {
+            "construction_mass_residual": 2.220446049250313e-16,
+            "construction_wall_seconds": 0.5023786599999767,
+            "materialization_zeroed_positive_matrix_entries": 0,
+            "materialization_zeroed_probability_mass_max_row": 0.0,
+            "materialized_mass_residual": 2.220446049250313e-16,
+            "matrix_sha256": "ea8c3a764cdff62cb0feebe51acf25bd64f2b90d3941a7421380d98ac101494e",
+            "projection_is_part_of_model": true,
+            "relative_tail_probability_qualified": false,
+            "renewal_truncation_mass": 0.0,
+            "reward_sha256": "3e25cca6ea96fa26d94651be142f866e9b14f8dbcb86aa720c40b621479c6e5c",
+            "scaled_reward_order_difference": 1.5612511283791264e-15,
+            "source_row_l1_order_difference": 1.5493169204831933e-13,
+            "spatial_truncation_mass": 0.0,
+            "whole_trajectory_error_bound_qualified": false
+          },
+          "dt": 0.08,
+          "dtype": "torch.float64",
+          "phase_cells": 8,
+          "reward_abs_errors": {
+            "discounted_active_time": 0.0004465662712866969,
+            "expected_discounted_hits": 0.005087475656483327,
+            "expected_hits": 0.005249250737418901
+          },
+          "rewards": {
+            "discounted_active_time": 0.30829687086844904,
+            "expected_discounted_hits": 0.060102932907568886,
+            "expected_hits": 0.0622926831462524
+          },
+          "status": "pass",
+          "steps": 4,
+          "terminal_mass_residual": 2.220446049250313e-16,
+          "transition_matrix_bytes": 13448
+        },
+        {
+          "active_cells": 64,
+          "clock_exact": true,
+          "common_bin_l1_error": 0.009815266897575281,
+          "device": "cuda",
+          "diagnostics": {
+            "construction_mass_residual": 2.220446049250313e-16,
+            "construction_wall_seconds": 0.67392173799999,
+            "materialization_zeroed_positive_matrix_entries": 0,
+            "materialization_zeroed_probability_mass_max_row": 0.0,
+            "materialized_mass_residual": 2.220446049250313e-16,
+            "matrix_sha256": "a6f29982ffc425d39fb810a7854ac1c84035ccb761ba171c3e5b04d3bcf3ff20",
+            "projection_is_part_of_model": true,
+            "relative_tail_probability_qualified": false,
+            "renewal_truncation_mass": 0.0,
+            "reward_sha256": "6c86dffe4beacd053f78540a802efcbc35c49be95e76a40ec86c417cd1febfcb",
+            "scaled_reward_order_difference": 7.112366251504909e-15,
+            "source_row_l1_order_difference": 4.198975090408269e-12,
+            "spatial_truncation_mass": 0.0,
+            "whole_trajectory_error_bound_qualified": false
+          },
+          "dt": 0.04,
+          "dtype": "torch.float64",
+          "phase_cells": 16,
+          "reward_abs_errors": {
+            "discounted_active_time": 0.0002481866922058873,
+            "expected_discounted_hits": 0.002975867123352821,
+            "expected_hits": 0.003073062038180835
+          },
+          "rewards": {
+            "discounted_active_time": 0.30849525044752985,
+            "expected_discounted_hits": 0.05799132437443838,
+            "expected_hits": 0.060116494447014335
+          },
+          "status": "pass",
+          "steps": 8,
+          "terminal_mass_residual": 2.220446049250313e-16,
+          "transition_matrix_bytes": 52488
+        },
+        {
+          "active_cells": 128,
+          "clock_exact": true,
+          "common_bin_l1_error": 0.005406286895977318,
+          "device": "cuda",
+          "diagnostics": {
+            "construction_mass_residual": 2.220446049250313e-16,
+            "construction_wall_seconds": 0.8283581240000331,
+            "materialization_zeroed_positive_matrix_entries": 0,
+            "materialization_zeroed_probability_mass_max_row": 0.0,
+            "materialized_mass_residual": 2.220446049250313e-16,
+            "matrix_sha256": "eeca88f85f9e4fef281e25ddfd936f1cee362a306995eb78d0828c761afc7840",
+            "projection_is_part_of_model": true,
+            "relative_tail_probability_qualified": false,
+            "renewal_truncation_mass": 0.0,
+            "reward_sha256": "c42b4269338555db48d45a36041cc25d10eb53df23f648c8779c0de0adc18e66",
+            "scaled_reward_order_difference": 1.1622647289044608e-14,
+            "source_row_l1_order_difference": 3.469042684348909e-11,
+            "spatial_truncation_mass": 0.0,
+            "whole_trajectory_error_bound_qualified": false
+          },
+          "dt": 0.02,
+          "dtype": "torch.float64",
+          "phase_cells": 32,
+          "reward_abs_errors": {
+            "discounted_active_time": 0.00012899322068599117,
+            "expected_discounted_hits": 0.0015960477423572345,
+            "expected_hits": 0.0016488812659494964
+          },
+          "rewards": {
+            "discounted_active_time": 0.30861444391904974,
+            "expected_discounted_hits": 0.05661150499344279,
+            "expected_hits": 0.058692313674782996
+          },
+          "status": "pass",
+          "steps": 16,
+          "terminal_mass_residual": 6.661338147750939e-16,
+          "transition_matrix_bytes": 207368
+        }
+      ],
+      "semigroup_defect": {
+        "exact_semigroup_claim": false,
+        "explanation": "Intermediate remapping changes the finite basis approximation",
+        "fixed_grid_cells": [
+          32,
+          8
+        ],
+        "l1_difference": 0.026850329369888855,
+        "long_dt": 0.08,
+        "same_elapsed": true,
+        "short_dt": 0.04
+      },
+      "status": "pass",
+      "wall_seconds": 5.838911434000011
+    }
+  },
+  "candidate": "hcsn-regenerative-distribution-fv-v1",
+  "canonical_parent_commit": "d9bff7b92965e372db9bcbaf4d1a20c42d688603",
+  "exact_semigroup_claim": false,
+  "external_task_gain_established": false,
+  "full_physical_energy_joules": null,
+  "global_parameter_domain_qualified": false,
+  "known_cost_subtotals": {
+    "complete_cost": false,
+    "includes_development_preflight": true,
+    "known_cloud_execution_seconds": 62.18626379966736,
+    "known_gpu_device_counter_interval_joules": 1185.656
+  },
+  "limitations": [
+    "Q P_dt R is a finite-basis approximation; a fixed coarse grid has a measurable composition defect.",
+    "FP64 operator construction and fixed generator/time/grid parameters; execution and consumed mass/observation/readout gradients are separately qualified.",
+    "Relative/log-tail and arbitrary long-horizon accuracy are not qualified by these cases.",
+    "Recovery is an isolated consuming model, not admission or recovery of a production owner.",
+    "The CPU and CUDA recovery branches each include six optimizer updates and eighteen probability steps; replays are cost, not independent training repetitions.",
+    "Full machine energy, allocation/idle cost, invoice cost, and complete deployment metrics remain unknown.",
+    "This candidate receives zero original-170 or Hepta x NDU completion credit."
+  ],
+  "original_campaign_credit": 0,
+  "original_full_evidence_summary_sha256": "e8e0934a85bbea9cfb9360ef464e9bd1955e67e654d439635862dd6ad161a9dc",
+  "production_owner_recovery_qualified": false,
+  "qualification_artifacts": [
+    {
+      "artifact_bytes": 16679,
+      "artifact_sha256": "92bd98e9cf36215314ce6bbb5ceb60f58bc15f8611046c4b50f94c41e584f4fb",
+      "name": "fv-v1-unit-audit-cpu",
+      "state": "succeeded"
+    },
+    {
+      "artifact_bytes": 15790,
+      "artifact_sha256": "4657bba9b71878c34f4644537f3f6bda52aa7ee0ed76e700a3386744838e33d9",
+      "name": "fv-v1-audit-cuda",
+      "state": "succeeded"
+    },
+    {
+      "artifact_bytes": 32850,
+      "artifact_sha256": "377fed6762e1e83865ce4743b4a24ff61487da05dd746f53cef9f04d6070acd6",
+      "name": "fv-v1-recovery-cpu",
+      "state": "succeeded"
+    },
+    {
+      "artifact_bytes": 33032,
+      "artifact_sha256": "af1adc6472a4931bb363f0be009b7235810fa3685ddcf1de9fee0656568c680f",
+      "name": "fv-v1-recovery-cuda",
+      "state": "succeeded"
+    }
+  ],
+  "qualification_scope": "Fixed-generator finite-volume distribution state, FP32/FP64 bounded numerical cases and fresh-process truncated-BPTT continuation; no global continuum or task-benefit qualification.",
+  "recoveries": {
+    "cpu": {
+      "actual_optimizer_updates_including_replays": 6,
+      "checkpoint_semantic_sha256": "666490ff00a4828973f07e2996b787a10c5cd6267e6e569d5c10584eb8604b51",
+      "checkpoint_sha256": "70681ac87508b1d81d25fa4e4c2e094b6eb9bf948a723037ddd8d93a323fa0cb",
+      "checks": [
+        {
+          "name": "fresh_process_replay_completed",
+          "pass_": true
+        },
+        {
+          "name": "source_unchanged",
+          "pass_": true
+        },
+        {
+          "name": "fresh_child_identity",
+          "pass_": true
+        },
+        {
+          "name": "all_next_block_semantics_exact",
+          "pass_": true
+        },
+        {
+          "name": "child_source_unchanged",
+          "pass_": true
+        },
+        {
+          "name": "replace_measure:same_data",
+          "pass_": true
+        },
+        {
+          "name": "replace_measure:changes_predictions",
+          "pass_": true,
+          "prediction_linf": 0.057988449931144714
+        },
+        {
+          "name": "replace_measure:changes_parameters",
+          "pass_": true
+        },
+        {
+          "name": "remove_phase:same_data",
+          "pass_": true
+        },
+        {
+          "name": "remove_phase:changes_predictions",
+          "pass_": true,
+          "prediction_linf": 0.0012694336473941803
+        },
+        {
+          "name": "remove_phase:changes_parameters",
+          "pass_": true
+        },
+        {
+          "name": "remove_tail:same_data",
+          "pass_": true
+        },
+        {
+          "name": "remove_tail:changes_predictions",
+          "pass_": true,
+          "prediction_linf": 0.03281310200691223
+        },
+        {
+          "name": "remove_tail:changes_parameters",
+          "pass_": true
+        }
+      ],
+      "child_exit_code": 0,
+      "parent_cpu_seconds": 0.7008582879999996,
+      "probability_steps_including_replays": 18,
+      "recovery_scope": "Full density, tail, phase, physical clock, schedule, model, Adam and RNG; truncated BPTT",
+      "status": "pass",
+      "wall_seconds": 4.7411624759999995
+    },
+    "cuda": {
+      "actual_optimizer_updates_including_replays": 6,
+      "checkpoint_semantic_sha256": "48b168a1a68a998eab2981d22ef47c84d79f35a36aa99bee8f5372f1e9389216",
+      "checkpoint_sha256": "95dc5d247740f42dc08162849f7458052b53c7ebc174b81de148f83fe7d90dee",
+      "checks": [
+        {
+          "name": "fresh_process_replay_completed",
+          "pass_": true
+        },
+        {
+          "name": "source_unchanged",
+          "pass_": true
+        },
+        {
+          "name": "fresh_child_identity",
+          "pass_": true
+        },
+        {
+          "name": "all_next_block_semantics_exact",
+          "pass_": true
+        },
+        {
+          "name": "child_source_unchanged",
+          "pass_": true
+        },
+        {
+          "name": "replace_measure:same_data",
+          "pass_": true
+        },
+        {
+          "name": "replace_measure:changes_predictions",
+          "pass_": true,
+          "prediction_linf": 0.05798846483230591
+        },
+        {
+          "name": "replace_measure:changes_parameters",
+          "pass_": true
+        },
+        {
+          "name": "remove_phase:same_data",
+          "pass_": true
+        },
+        {
+          "name": "remove_phase:changes_predictions",
+          "pass_": true,
+          "prediction_linf": 0.001269422471523285
+        },
+        {
+          "name": "remove_phase:changes_parameters",
+          "pass_": true
+        },
+        {
+          "name": "remove_tail:same_data",
+          "pass_": true
+        },
+        {
+          "name": "remove_tail:changes_predictions",
+          "pass_": true,
+          "prediction_linf": 0.03281310200691223
+        },
+        {
+          "name": "remove_tail:changes_parameters",
+          "pass_": true
+        }
+      ],
+      "child_exit_code": 0,
+      "parent_cpu_seconds": 1.547918159,
+      "probability_steps_including_replays": 18,
+      "recovery_scope": "Full density, tail, phase, physical clock, schedule, model, Adam and RNG; truncated BPTT",
+      "status": "pass",
+      "wall_seconds": 7.2204695310001625
+    }
+  },
+  "schema": "hcsn-distribution-fv-result-v1",
+  "source_files": {
+    "qualification/hcsn/__init__.py": {
+      "bytes": 84,
+      "sha256": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d"
+    },
+    "qualification/hcsn/population.py": {
+      "bytes": 8894,
+      "sha256": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178"
+    },
+    "qualification/hcsn/reference.py": {
+      "bytes": 15847,
+      "sha256": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2"
+    },
+    "qualification/hcsn_regenerative/DISTRIBUTION_PROTOCOL.md": {
+      "bytes": 7854,
+      "sha256": "f4d7e5bb3cd9ed713ba640c997cfa401a2249002801d4e80ef61ecf8924d8492"
+    },
+    "qualification/hcsn_regenerative/__init__.py": {
+      "bytes": 87,
+      "sha256": "133f20d47b4146591d160e498819b910e8217bb852a3bff9deeaeee06b3a4319"
+    },
+    "qualification/hcsn_regenerative/distribution.py": {
+      "bytes": 12570,
+      "sha256": "7cdc0c45ec2d22334a5cc57e5b583ccf0fcc1ae04a96b8b3536c88104d9636af"
+    },
+    "qualification/hcsn_regenerative/distribution_kernel.py": {
+      "bytes": 5673,
+      "sha256": "97be7116e7b7d4fb86529f13197b684e5b39d1bead394c1f561858caefae3ac4"
+    },
+    "qualification/hcsn_regenerative/distribution_manifest.py": {
+      "bytes": 2078,
+      "sha256": "3faffcc5e1b42c0285979100c6434036dd0ab48e52ee4a071a3203835a3d3cc1"
+    },
+    "qualification/hcsn_regenerative/distribution_operator.py": {
+      "bytes": 12828,
+      "sha256": "7593edd1f70eab0d21551a2e61ac7ebcce69655f5bf2b7bd2d6f35c3767295b4"
+    },
+    "qualification/hcsn_regenerative/process.py": {
+      "bytes": 19818,
+      "sha256": "e7a7b6b8eed0c22c4ca61237db8729408eb2e23938d71716ecdce69714a6be67"
+    },
+    "qualification/hcsn_regenerative/run_distribution_audit.py": {
+      "bytes": 10081,
+      "sha256": "20487cd0c8e881d870b960b119ac7579d39b20fb08c87ebf26404f406bcc5d19"
+    },
+    "qualification/hcsn_regenerative/run_distribution_recovery.py": {
+      "bytes": 15042,
+      "sha256": "5c010c9c64da6ae93210d20a46790979665c2d19e7d439dd9384ba071874a345"
+    },
+    "qualification/hcsn_regenerative/tensor.py": {
+      "bytes": 14807,
+      "sha256": "1cf419e0c9af02c434d0492d4269e427a3c4783c683456c1eb514f6cb90cbc56"
+    },
+    "qualification/hcsn_regenerative/tensor_normal.py": {
+      "bytes": 1969,
+      "sha256": "d1423414112361bd5fe2c218ccc297a93972a6f9b79517abef343d4fc9c918e8"
+    },
+    "qualification/hcsn_regenerative/tensor_short.py": {
+      "bytes": 5046,
+      "sha256": "a49ba3a629d8198a9176e1b9ced30edd447309bdb7139a22fcc1c0084d2db07b"
+    },
+    "qualification/hcsn_regenerative/tensor_state.py": {
+      "bytes": 6157,
+      "sha256": "173c8fb75d1bc669ce316d03d26d545af6cbf460539c2a6f57e778db11d65f7f"
+    },
+    "qualification/hcsn_regenerative/tests/__init__.py": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/hcsn_regenerative/tests/test_distribution.py": {
+      "bytes": 9859,
+      "sha256": "375ba90b16686bfb5c090adc1c0baadbfd3ffe17f7d62f4ce64be4e48b859427"
+    }
+  },
+  "source_set_sha256": "b454cfe9f00a412b8201822142d9a8dec043de71cfcefb7efbae2ce133081ce3",
+  "status": "recorded_bounded_checks_pass",
+  "unit_methods_passed": 8
+}

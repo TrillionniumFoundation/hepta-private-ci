@@ -1,0 +1,42 @@
+{
+  "profile": "smoke",
+  "device": "cpu",
+  "tasks": [
+    "delayed_recall"
+  ],
+  "models": [
+    "hx_dual",
+    "hx_fixed",
+    "hx_call",
+    "hx_risk",
+    "no_rollover",
+    "softplus",
+    "no_recovery",
+    "hx_attention",
+    "population_flux",
+    "gru",
+    "lif",
+    "adaptive_lif",
+    "pif",
+    "transformer",
+    "cfc",
+    "mamba2"
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "data_seed": 271828,
+  "train_count": 128,
+  "validation_count": 32,
+  "test_count": 64,
+  "length": 8,
+  "hidden_size": 8,
+  "batch_size": 16,
+  "train_steps": 8,
+  "learning_rate": 0.003,
+  "dt": 0.1,
+  "latency_repeats": 7,
+  "cpu_threads": 2
+}

@@ -1,0 +1,121 @@
+{
+  "actual_native_preflight": {
+    "bytes": 3898,
+    "sha256": "1a666712f5157921bdd4b167e54981eab9f70c7cb2e129eef85b071f7b89b26e"
+  },
+  "counts_are_not_a_single_suite_or_independent_training_repeats": true,
+  "formal_training_fits": 0,
+  "full_physical_energy_joules": null,
+  "model_executions_in_these_controls": 0,
+  "monetary_cost": null,
+  "parent_source_files_unchanged": 60,
+  "retained_failures": [
+    {
+      "body_wall_seconds": 1.3898113000323065,
+      "evidence": {
+        "bytes": 14255,
+        "sha256": "c901e4852143713046b2cffc8bd55a4f7ab09ce971f0d213dd90688f95f8a416"
+      },
+      "kind": "native_initial_import_configuration",
+      "result": "execution18 had one import error; guard suite could not import. Initial failed run remains unchanged."
+    },
+    {
+      "evidence": {
+        "bytes": 2403,
+        "sha256": "f51a5690d284b50f36508f7b32ba44b8d7c58c7911bcae2974a13ddcac0b323c"
+      },
+      "failed": 1,
+      "kind": "projection_first_targeted_run",
+      "passed": 8,
+      "resolution": "Required successful return, no timeout, and actual stopped freezer subprocess. Test rejection conditions were not loosened."
+    },
+    {
+      "kind": "prospective_resource_amendment",
+      "old_source_map_sha256": "b939ed108aeb2db11597acfa92cbfc9fc8d047bb85fec5113edcb6473514055f",
+      "resolution": "Corrected Colab parent and existing resource lineage before execution; old candidate retained."
+    }
+  ],
+  "runs": [
+    {
+      "evidence": {
+        "bytes": 4050,
+        "sha256": "f9d6403af482fcc3d8e6d62a5fde2e28057751af60fb6bd258aa3c52a0661f9e"
+      },
+      "failed": 0,
+      "name": "native_asset_transport",
+      "parent_receipt": {
+        "bytes": 14255,
+        "sha256": "c901e4852143713046b2cffc8bd55a4f7ab09ce971f0d213dd90688f95f8a416"
+      },
+      "parent_status": "FAILED",
+      "passed": 20,
+      "scope": "Includes three actual process termination cases. Subsequent import errors in other suites are retained."
+    },
+    {
+      "body_wall_seconds": 0.3173401500098407,
+      "correction": "Added the execution module directory to the test import path; no source change; helper20 not repeated.",
+      "evidence": {
+        "bytes": 13348,
+        "sha256": "96fc8347acf81ef2a893940e310195063e575151030c31795c8a50a59d3ca9b0"
+      },
+      "failed": 0,
+      "log": {
+        "bytes": 7708,
+        "sha256": "9c470c1b595981b00394057c53fbb902ed58ece6e507178691b805b8b1499bd2"
+      },
+      "name": "native_execution_and_fixed_kernel_guard_corrected_command",
+      "passed": 35,
+      "skipped": 0
+    },
+    {
+      "evidence": {
+        "bytes": 4399,
+        "sha256": "043620725200876cef7ecfb5c6a675fe7f766fd9e1888089fdefbec1f953a846"
+      },
+      "failed": 0,
+      "name": "resource_lineage_final_sealed_sources",
+      "passed": 19,
+      "scope": "Actual local unittest execution with synthetic lifecycle fixtures and retained immutable predecessor evidence.",
+      "skipped": 0
+    },
+    {
+      "evidence": {
+        "bytes": 978,
+        "sha256": "17708ff1fbaa1ef5e1962ccdcf6a483fcf733ea5ac6f3dc60cafb82b9789ba95"
+      },
+      "failed": 0,
+      "name": "private_formal_glue",
+      "passed": 6,
+      "scope": "Immutable predecessor bytes plus synthetic preparation fixtures; selected owner/provider checks mocked. No actual future configuration.",
+      "skipped": 0
+    },
+    {
+      "evidence_kind": "Observed prior tool output; no retained raw test-result file is claimed.",
+      "failed": 0,
+      "name": "private_publisher",
+      "passed": 10,
+      "scope": "Offline synthetic control checks; independent review inspected source without rerunning this suite.",
+      "test_source": {
+        "bytes": 10364,
+        "sha256": "c1bceb24e5e927b9910c00ce952430450979c4cdc463cd07b9a01f9652b3e2bb"
+      }
+    },
+    {
+      "evidence": {
+        "bytes": 1007,
+        "sha256": "72dfb295dbf6b53f97ab9644cb209652dac67b62811f25d62544e595debdeaf8"
+      },
+      "failed": 0,
+      "name": "private_public_projection_bridges_final",
+      "passed": 9,
+      "scope": "Exact tested helper bytes and synthetic lifecycle/artifact/energy fixtures; no actual new qualification or freezer result.",
+      "skipped": 0
+    }
+  ],
+  "schema": "hcsn-colab-v4-public-control-tests-v1",
+  "scope": "Separate actual control runs, including explicitly synthetic fixtures; no numerical qualification or task training credit.",
+  "source_identity_count": 78,
+  "source_map_sha256": "7e8c8b9e61d86f30a0c8a1c85011fec1d966b1508858b95bfb0f50a4b685296c",
+  "status": "PROSPECTIVE_CONTROL_CHECKS_PASSED_WITH_RETAINED_FAILURE_HISTORY",
+  "task_optimizer_updates": 0
+}

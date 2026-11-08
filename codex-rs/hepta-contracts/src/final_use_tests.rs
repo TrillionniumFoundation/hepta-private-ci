@@ -14,6 +14,9 @@ use std::task::Waker;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+#[path = "final_use_pq_tests.rs"]
+mod pq;
+
 #[derive(Debug)]
 struct FixedClock(u64);
 

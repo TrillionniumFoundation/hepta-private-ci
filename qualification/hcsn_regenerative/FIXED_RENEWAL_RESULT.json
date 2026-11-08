@@ -1,0 +1,122 @@
+{
+  "schema": "hcsn-fixed-renewal-construction-v2",
+  "status": "BOUNDED_FP64_CONSTRUCTION_CHECKS_PASS",
+  "finished_utc": "2026-11-07T14:29:30.258540+00:00",
+  "source_files_sha256": {
+    "qualification/hcsn_regenerative/fixed_renewal.py": "b6f0a3da026797886fe38c78cff44a063cf27de85e5088f0b8b4cfc8ee2b38d3",
+    "qualification/hcsn_regenerative/run_fixed_renewal_audit.py": "da26546f297e1372067cb73922efd30658494b5c169948c1811e306a1acf091b",
+    "qualification/hcsn_regenerative/FIXED_RENEWAL.md": "b80c5f3abaa799f6586f172f8493cf58943e250180a4737fac0aa343547c9799",
+    "qualification/hcsn_regenerative/tests/test_fixed_renewal.py": "41fc1e6dd233f9f1bf395d3ea5b4b01f6e2c67f33e56c0b5fad9e39901bc922c"
+  },
+  "source_unchanged": true,
+  "construction_dtype": "float64",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "unit_methods_run": 6,
+  "unit_failures": 0,
+  "unit_errors": 0,
+  "unit_log": "test_independent_zero_delay_pde_refinement (qualification.hcsn_regenerative.tests.test_fixed_renewal.FixedRenewalTests.test_independent_zero_delay_pde_refinement) ... ok\ntest_release_against_independent_positive_time_convolution (qualification.hcsn_regenerative.tests.test_fixed_renewal.FixedRenewalTests.test_release_against_independent_positive_time_convolution) ... ok\ntest_renewal_tail_and_spatial_aggregation_without_normalization (qualification.hcsn_regenerative.tests.test_fixed_renewal.FixedRenewalTests.test_renewal_tail_and_spatial_aggregation_without_normalization) ... ok\ntest_strong_drift_release_uses_log_weight_without_overflow (qualification.hcsn_regenerative.tests.test_fixed_renewal.FixedRenewalTests.test_strong_drift_release_uses_log_weight_without_overflow) ... ok\ntest_underflow_does_not_claim_an_exact_zero_renewal_tail (qualification.hcsn_regenerative.tests.test_fixed_renewal.FixedRenewalTests.test_underflow_does_not_claim_an_exact_zero_renewal_tail) ... ok\ntest_zero_delay_atoms_and_same_generator_values (qualification.hcsn_regenerative.tests.test_fixed_renewal.FixedRenewalTests.test_zero_delay_atoms_and_same_generator_values) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.097s\n\nOK\n",
+  "independent_time_convolution_cases": 36,
+  "independent_pde_refinement": [
+    {
+      "spacing": 0.1,
+      "max_cdf_error": 0.014781567726882328,
+      "hit_count_error": 0.02408306751236433,
+      "pde_hit_count": 0.6982767353841631,
+      "renewal_count_partial": 0.6741936678717988,
+      "count_tail_bound": 3.7500494997811585e-11,
+      "terms": 9
+    },
+    {
+      "spacing": 0.05,
+      "max_cdf_error": 0.011298255101353183,
+      "hit_count_error": 0.024169416746970263,
+      "pde_hit_count": 0.6983630846187691,
+      "renewal_count_partial": 0.6741936678717988,
+      "count_tail_bound": 3.7500494997811585e-11,
+      "terms": 9
+    },
+    {
+      "spacing": 0.025,
+      "max_cdf_error": 0.005723221033833492,
+      "hit_count_error": 0.01312560618076053,
+      "pde_hit_count": 0.6873192740525593,
+      "renewal_count_partial": 0.6741936678717988,
+      "count_tail_bound": 3.7500494997811585e-11,
+      "terms": 9
+    }
+  ],
+  "boundary_short_tail_cases": [
+    {
+      "x": 1e-05,
+      "horizon": 1e-06,
+      "mass_residual": 2.653433028854124e-14,
+      "terms": 1,
+      "omitted_active_mass": 0.0,
+      "log_omitted_active_mass": -347256.6740332362,
+      "state_tail_exponential_underflow": true,
+      "omitted_count_bound": 5e-324,
+      "diagnostics": {
+        "positive_quadrature_fallbacks": 0,
+        "positive_quadrature_error_sum": 0.0,
+        "underflowed_intervals": 11
+      }
+    },
+    {
+      "x": 0.0,
+      "horizon": 1e-06,
+      "mass_residual": 0.0,
+      "terms": 1,
+      "omitted_active_mass": 0.0,
+      "log_omitted_active_mass": -347228.89567101497,
+      "state_tail_exponential_underflow": true,
+      "omitted_count_bound": 5e-324,
+      "diagnostics": {
+        "positive_quadrature_fallbacks": 0,
+        "positive_quadrature_error_sum": 0.0,
+        "underflowed_intervals": 5
+      }
+    },
+    {
+      "x": 0.35,
+      "horizon": 1.4,
+      "mass_residual": 1.1102230246251565e-16,
+      "terms": 9,
+      "omitted_active_mass": 3.992903930788391e-12,
+      "log_omitted_active_mass": -26.24650234754376,
+      "state_tail_exponential_underflow": false,
+      "omitted_count_bound": 3.7500494997811585e-11,
+      "diagnostics": {
+        "positive_quadrature_fallbacks": 0,
+        "positive_quadrature_error_sum": 0.0,
+        "underflowed_intervals": 0
+      }
+    },
+    {
+      "x": 4.0,
+      "horizon": 0.5,
+      "mass_residual": 0.0,
+      "terms": 1,
+      "omitted_active_mass": 3.002085052883542e-87,
+      "log_omitted_active_mass": -199.22559602559892,
+      "state_tail_exponential_underflow": false,
+      "omitted_count_bound": 7.555819020267517e-86,
+      "diagnostics": {
+        "positive_quadrature_fallbacks": 0,
+        "positive_quadrature_error_sum": 0.0,
+        "underflowed_intervals": 0
+      }
+    }
+  ],
+  "wall_seconds": 0.1367761369983782,
+  "process_cpu_seconds": 0.13676191500000012,
+  "physical_energy_joules": null,
+  "physical_energy_reason": "No bound whole-machine physical meter",
+  "parameter_autodiff_qualified": false,
+  "tensor_execution_qualified": false,
+  "global_parameter_box_certified": false,
+  "task_training_runs": 0,
+  "external_task_gain_established": false,
+  "original_campaign_completion_credit": 0
+}

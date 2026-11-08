@@ -11,6 +11,7 @@ pub mod authbus_b5;
 #[cfg(test)]
 #[path = "authbus_tests.rs"]
 mod authbus_tests;
+mod authority_authentication;
 mod authority_consumer_wire;
 #[cfg(target_os = "linux")]
 mod authority_host_clock;
@@ -22,6 +23,7 @@ pub mod authority_lease;
 #[cfg(target_os = "linux")]
 mod authority_root_frontier;
 pub mod authority_trust;
+pub mod authority_trust_unix;
 #[cfg(test)]
 mod callers_manifest_tests;
 mod canonical;
@@ -29,6 +31,7 @@ mod final_use;
 mod final_use_control;
 mod identity;
 mod memory;
+pub mod pq_auth;
 mod provider;
 mod provider_effect;
 mod qualification_receipt;
@@ -36,6 +39,8 @@ mod receipt;
 mod stable_id;
 mod verified_use_witness;
 
+pub use authority_authentication::FinalUseAuthenticationProfile;
+pub use authority_authentication::PqAuthorityTrustKey;
 pub use authority_consumer_wire::HostConsumerFrontierRequestV1;
 pub use authority_consumer_wire::HostConsumerFrontierResponseV1;
 pub use authority_consumer_wire::HostConsumerFrontierStatusV1;
@@ -104,6 +109,7 @@ pub use final_use_control::FinalUseRevocationReceipt;
 pub use final_use_control::FinalUseRevocationUpdate;
 pub use final_use_control::FinalUseTrustKey;
 pub use final_use_control::MAX_REVOCATION_FEED_LIFETIME_MS;
+pub use final_use_control::PqFinalUseRevocationNodeTrust;
 pub use final_use_control::SignedFinalUseApproval;
 pub use final_use_control::SignedFinalUseRevocationAck;
 pub use final_use_control::SignedFinalUseRevocationUpdate;

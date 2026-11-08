@@ -49,6 +49,7 @@ path = "src/bin/hepta-g2-native-owner.rs"
 test = false
 
 [dependencies]
+rustix = { workspace = true, features = ["fs", "process"] }
 anyhow = { workspace = true }
 base64 = { workspace = true }
 codex-app-server = { workspace = true }

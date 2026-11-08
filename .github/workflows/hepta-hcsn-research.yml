@@ -1,0 +1,61 @@
+name: Hepta HCSN research
+
+on:
+  # A scoped research branch; this does not fan out on every repository PR.
+  push:
+    branches: [research/hcsn-hx-20261105]
+    paths:
+      - qualification/hcsn/**
+      - .github/workflows/hepta-hcsn-research.yml
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-hcsn-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  kernel-and-mechanisms:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: qualification
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - name: Check out the exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU research dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hcsn-venv"
+          echo "$RUNNER_TEMP/hcsn-venv/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/hcsn-venv/bin/python" -m pip install -r qualification/hcsn/requirements.txt
+          "$RUNNER_TEMP/hcsn-venv/bin/python" -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+      - name: Require tensor runtime and validate research modules
+        run: |
+          python -c 'import torch; print(torch.__version__)'
+          python -m hcsn.checks --require-torch --output "$RUNNER_TEMP/hcsn-tests.json"
+      - name: Independent FP64 and population mechanism receipts
+        run: |
+          python -m hcsn.validate --output "$RUNNER_TEMP/hcsn-kernel-reference.json"
+          python -m hcsn.mechanisms --output "$RUNNER_TEMP/hcsn-mechanisms.json"
+      - name: Equal-budget three-seed CPU training smoke
+        run: python -m hcsn.benchmark --config qualification/hcsn/configs/smoke.json --output "$RUNNER_TEMP/hcsn-training-smoke.json"
+      - name: Retain exact-source research receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-research-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hcsn-*.json
+            ${{ runner.temp }}/hcsn-training-smoke.runs/
+          if-no-files-found: warn
+      - name: Check the source stayed unchanged
+        if: always()
+        run: git diff --exit-code

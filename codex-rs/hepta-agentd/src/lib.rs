@@ -387,6 +387,8 @@ mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
 mod plasticity_runtime;
 #[cfg(target_os = "linux")]
+mod pq_final_use;
+#[cfg(target_os = "linux")]
 mod production_authority;
 #[cfg(target_os = "linux")]
 mod production_composition;
@@ -396,6 +398,8 @@ mod production_launcher;
 mod production_root_composition;
 mod production_writer_host;
 mod prompt_runtime;
+#[cfg(target_os = "linux")]
+mod protected_file;
 mod qualification_writer;
 mod runtime;
 #[cfg(target_os = "linux")]

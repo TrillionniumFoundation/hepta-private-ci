@@ -14,7 +14,7 @@ use super::FinalUseRevocations;
 use super::Inner;
 use super::State;
 use super::VerifiedUseToken;
-use super::frontier_for_state;
+use super::frontier_for_state_with_profile;
 use super::map_trust_error;
 use super::validate_live;
 use std::sync::MutexGuard;
@@ -55,7 +55,7 @@ impl Inner {
                     return Err(map_trust_error(error));
                 }
             };
-            if trusted != frontier_for_state(&state) {
+            if trusted != frontier_for_state_with_profile(&state, self.profile) {
                 state.failed = true;
                 return Err(FinalUseError::AntiRollbackViolation);
             }

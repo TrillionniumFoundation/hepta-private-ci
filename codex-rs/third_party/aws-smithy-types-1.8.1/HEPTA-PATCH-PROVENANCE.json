@@ -1,0 +1,65 @@
+{
+  "schema": "hepta-private-pin-backport-v1",
+  "crate": {
+    "name": "aws-smithy-types",
+    "version": "1.8.1",
+    "archive_bytes": 108689,
+    "checksum": "69bb407740a197147da48238ecc94498493c9e85445732360cec180296ca45f1",
+    "url": "https://static.crates.io/crates/aws-smithy-types/aws-smithy-types-1.8.1.crate",
+    "vendor": "codex-rs/third_party/aws-smithy-types-1.8.1",
+    "archive_regular_files": 50,
+    "licenses": {
+      "LICENSE": {
+        "bytes": 10142,
+        "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+        "git_blob": "67db8588217f266eb561f75fae738656325deac9"
+      }
+    },
+    "edits": [
+      {
+        "path": "src/byte_stream.rs",
+        "before_sha256": "299ad8361e0227face7a0fbe42fab58996c8104c1cbf3b3917463d319eb075a1",
+        "after_sha256": "b74dfcedd604c3e5a40fa42fa97d303f0d6e8e581ff22268e639c24fa93e9191",
+        "replace": [
+          [
+            "        let body = self.body;\n        pin_utils::pin_mut!(body);",
+            "        let mut body = std::pin::pin!(self.body);",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "Cargo.toml",
+        "before_sha256": "1b1d9f6d302b4b200b483ee0b039823d3fdef5cc781ec0ab8c70a44fb2dcb01d",
+        "after_sha256": "73e27c0e0d351a0e7f1ed6896131d4f0c2c4c0c08418367d09b18065d28fe8fd",
+        "replace": [
+          [
+            "[dependencies.pin-utils]\nversion = \"0.1.0\"\n\n",
+            "",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "Cargo.toml.orig",
+        "before_sha256": "02ce62c16ea241dd001dfa7168b36b84f6f03d46323fe457aa9ffe945524ab7d",
+        "after_sha256": "546f27765180acdc100a7630dbb866a89af2b635896cc48448b540559fe2e2ef",
+        "replace": [
+          [
+            "pin-utils = \"0.1.0\"\n",
+            "",
+            1
+          ]
+        ]
+      }
+    ],
+    "source_scope": "Exact upstream pin-only Rust changes from aws-sdk-rust b3bdfffc to b964fc77; all other source and dependency versions retained."
+  },
+  "upstream": {
+    "aws_before_commit": "b3bdfffc8dbbaf115b572079d7f170ec78ec939c",
+    "aws_after_commit": "b964fc77de60b0a492ff788c40bb66524fd26a44",
+    "loom_before_commit": "a7033ee06a97c52eb2f8131c095fbea6c6eecba3",
+    "rust_pin_macro_stable_since": "1.68.0",
+    "source_note": "AWS full compatibility-line upgrade is deliberately not proposed; existing local aws-config crypto maintenance patch and all other original leaves must remain unchanged."
+  }
+}

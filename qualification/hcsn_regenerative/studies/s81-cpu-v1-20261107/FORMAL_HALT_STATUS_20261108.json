@@ -1,0 +1,342 @@
+{
+  "allowed_continuation": "Keep the original unknown request and all reservations. Resume authoritative same-request identity/terminal observation only after the permission barrier is legitimately resolved. Any future continuation requires an explicit reviewed control path; the frozen owner refuses HALTED state.",
+  "cost_scopes": {
+    "actual_provider_execution_interval_seconds": null,
+    "aggregation_rule": "Native intervals, child steps, adapter wall time, transport latency, and provider work are different or nested scopes. They are not added. Unknown submission effects and the unknown diagnostic prevent a complete total.",
+    "native_intervals": [
+      {
+        "exit_code": 0,
+        "monetary_cost": null,
+        "observed_interval_seconds": 0.309,
+        "output_complete": true,
+        "output_durable": true,
+        "physical_energy_joules": null,
+        "scope": "Actual native preparation (builder plus validation glue)",
+        "source_commitments": {
+          "start": {
+            "bytes": 331,
+            "sha256": "e641b23cd03a9dc1a2e749a46eb6e8884f5a674376c0d5219d44449bf5c37a1b"
+          },
+          "terminal": {
+            "bytes": 500,
+            "sha256": "5bfcc81539e95a10740b95f772590391b7776b1695e67c292fb678dab01fa11c"
+          },
+          "witness": {
+            "bytes": 207,
+            "sha256": "3874f490c3f4e1b86250c5cd18c2b923848897dfd3974e65feede1dacb83eb71"
+          }
+        },
+        "started_unix_ms": 1794095391841,
+        "terminal_unix_ms": 1794095392150,
+        "timed_out": false
+      },
+      {
+        "exit_code": 1,
+        "monetary_cost": null,
+        "observed_interval_seconds": 5.753,
+        "output_complete": true,
+        "output_durable": true,
+        "physical_energy_joules": null,
+        "scope": "First formal native owner through failure",
+        "source_commitments": {
+          "start": {
+            "bytes": 331,
+            "sha256": "038f7aa902027a85533a31e2b161a09d31d089ce6016a375b538753627ee7b07"
+          },
+          "terminal": {
+            "bytes": 504,
+            "sha256": "69abb4757be1799edb2dcd5d7c01be7805909244b0fc7b4155c0ad5c33b00566"
+          },
+          "witness": {
+            "bytes": 207,
+            "sha256": "67780ae0865514ab7d6f23c859038895ca402c4ac4bb053fd0c7c1802c7a8dfd"
+          }
+        },
+        "started_unix_ms": 1794095565758,
+        "terminal_unix_ms": 1794095571511,
+        "timed_out": false
+      },
+      {
+        "exit_code": 1,
+        "monetary_cost": null,
+        "observed_interval_seconds": 0.106,
+        "output_complete": true,
+        "output_durable": true,
+        "physical_energy_joules": null,
+        "scope": "Read-only inventory v1: syntax failure before reads",
+        "source_commitments": {
+          "start": {
+            "bytes": 331,
+            "sha256": "52c86f15252a8c9b85d19e3c8b6dfa11a1542b5f4e9d24dfb83226ac14f74fad"
+          },
+          "terminal": {
+            "bytes": 498,
+            "sha256": "cbcd97c8a85caed06a97634a7525e4914b2eb36d5916c4301a13127284d6fc7c"
+          },
+          "witness": {
+            "bytes": 207,
+            "sha256": "026e8b8e627f47bfc0cdc193f98f485b8aff2d4dc666b5ae1f550b77ba33f06c"
+          }
+        },
+        "started_unix_ms": 1794095653695,
+        "terminal_unix_ms": 1794095653801,
+        "timed_out": false
+      },
+      {
+        "exit_code": 1,
+        "monetary_cost": null,
+        "observed_interval_seconds": 3.014,
+        "output_complete": true,
+        "output_durable": true,
+        "physical_energy_joules": null,
+        "scope": "Same-request official read-only resume",
+        "source_commitments": {
+          "start": {
+            "bytes": 331,
+            "sha256": "0feca993943b3bcfa6cb4b34e2626c58b52facf1b63ce2a66a2b2c5cb139737f"
+          },
+          "terminal": {
+            "bytes": 498,
+            "sha256": "d355b91afcad0610793a364361dfc3fbbc2140138b0362735313d94f3dcf91b3"
+          },
+          "witness": {
+            "bytes": 207,
+            "sha256": "f909a55ba60d3f26e30d2403a8b6af9ed6a70664afe27a5cbe3c2bdd6aade5c1"
+          }
+        },
+        "started_unix_ms": 1794096091366,
+        "terminal_unix_ms": 1794096094380,
+        "timed_out": false
+      }
+    ],
+    "nested_prepare_children": [
+      {
+        "name": "build-request",
+        "returncode": 0,
+        "timeout_seconds": 60,
+        "wall_seconds": 0.06372377800289541
+      },
+      {
+        "name": "prepare",
+        "returncode": 0,
+        "timeout_seconds": 120,
+        "wall_seconds": 0.16408519999822602
+      }
+    ],
+    "nested_prepare_wrapper_seconds": 0.23385588801465929,
+    "nested_submit_adapter_seconds": 5.51212338701589,
+    "total_cost_complete": false,
+    "unknown_diagnostic_launch_interval_seconds": null
+  },
+  "diagnosis_failures_retained": [
+    "Read-only inventory v1: actual SyntaxError caused by literal backslash-n.",
+    "Read-only inventory v2: launch_unknown and status/read missing native job directory; no completion credit."
+  ],
+  "expansion_decision": "HOLD",
+  "frozen_source_count": 93,
+  "frozen_source_map_sha256": "6facc00162b24fcc7e3fc3267a891650b178d96598618220c73c03bf27296bfa",
+  "frozen_source_or_plan_changes": 0,
+  "full_physical_energy_joules": null,
+  "local_ledger": {
+    "actual_remote_fit_count": null,
+    "actual_remote_optimizer_updates": null,
+    "credited_completed_fits": 0,
+    "credited_task_updates": 0,
+    "ever_claimed": 0,
+    "owner_events": [
+      {
+        "bytes": 41300,
+        "sha256": "ca2833f288cdb030674cd189225b32072c3fc1e1f4a3ec04723d8b89150bc724"
+      },
+      {
+        "bytes": 41353,
+        "sha256": "2451e57c9255929c5c074227bcac05b4f0669100a0cf865b5a4734a50afdbf57"
+      }
+    ],
+    "released_reservations": 0,
+    "reserved": 20,
+    "unstarted": 140
+  },
+  "monetary_cost": null,
+  "native_owner": {
+    "exit_code": 1,
+    "finished_at_unix_ms": 1794095571511,
+    "native_five": {
+      "child.json": {
+        "bytes": 117,
+        "sha256": "ca9709719d94831d74ecee4a050ffcb2aa6c676ef1c8dd77680fe84e943c9358"
+      },
+      "exit.json": {
+        "bytes": 504,
+        "sha256": "69abb4757be1799edb2dcd5d7c01be7805909244b0fc7b4155c0ad5c33b00566"
+      },
+      "exit.witness.json": {
+        "bytes": 207,
+        "sha256": "67780ae0865514ab7d6f23c859038895ca402c4ac4bb053fd0c7c1802c7a8dfd"
+      },
+      "owner-intent.json": {
+        "bytes": 331,
+        "sha256": "038f7aa902027a85533a31e2b161a09d31d089ce6016a375b538753627ee7b07"
+      },
+      "started.json": {
+        "bytes": 331,
+        "sha256": "038f7aa902027a85533a31e2b161a09d31d089ce6016a375b538753627ee7b07"
+      }
+    },
+    "observed_native_utc_span_seconds": 5.753,
+    "output_complete": true,
+    "output_durable": true,
+    "started_at_unix_ms": 1794095565758,
+    "streams": {
+      "stderr": {
+        "bytes": 1780,
+        "sha256": "494c5013d2b64b2ac80c8d4102da4ca8daf2c379443c05252ba57ea99fbcd783"
+      },
+      "stdout": {
+        "bytes": 247,
+        "sha256": "14b7ab1f8b7c46c9acfe67fa21019a9e52cd8aa78c85ad47aecce3326af29204"
+      }
+    },
+    "terminal_publication_confirmed": true,
+    "timed_out": false
+  },
+  "new_submit_after_failure": false,
+  "original_campaign_completion_credit": 0,
+  "plan_sha256": "e145972d3ea13f8259840498444614d41b8c41b30e99c370ac8032007edf6c15",
+  "previous_qualification": {
+    "budget_archive_sha256": "23343b6a4bf75f2ddc27b81e76280547195e34d4f01a01ec909b8e213df9c0df",
+    "formal_training_completion_credit": 0,
+    "full_cpu_qualification_pass": true,
+    "original_400_update_budget_probe_reused": true,
+    "qualification_archive_sha256": "2ca8d4060832cae6690e64217d17e37e16d7f5c9ceec9725492cedcad29ef13a",
+    "registered_checks_passed": 8
+  },
+  "private_evidence_commitments": {
+    "cost_scopes": {
+      "bytes": 7685,
+      "sha256": "1b32ac66d5460c66ee37ef856a532da7d323dfe883803af67951087f47efbb21"
+    },
+    "failure_summary": {
+      "bytes": 5557,
+      "sha256": "494e555a725710b4ec4debf1184c7fa4c169830dc56d79ed2ab23f4b6a876399"
+    },
+    "independent_actual_review": {
+      "bytes": 33054,
+      "sha256": "519828044719f6044ecb470d07461a34dd708959eb0750163aa836e1ddfe8d8d"
+    },
+    "preexec_admission": {
+      "bytes": 5285,
+      "sha256": "5dea63beb5cb850a59a07405ee03e5cda2de9478d9ff72cb4a584b48401324da"
+    },
+    "reviewed_launch_request": {
+      "bytes": 3888,
+      "sha256": "a4cb4d0c9691d13886cacfbb671795f774800a352104774baf3aced30a02de77"
+    },
+    "root_actual_review": {
+      "bytes": 6464,
+      "sha256": "5e6f528a6961c4eb17ccdb42f4a91202e465730243ba15c420d248b2584551aa"
+    }
+  },
+  "published_frozen_plan_commit": "e5808b7766deda2a9b5fe904cebbebaf4d219050",
+  "qualification_credit_repeated": false,
+  "registered_budget": {
+    "all_budget_and_inferential_units_preserved": true,
+    "fit_timeout_seconds": 480,
+    "fits": 160,
+    "learning_rates": [
+      0.001,
+      0.003
+    ],
+    "minimum_remaining_seconds": 720,
+    "provider_timeout_seconds": 3000,
+    "task_training_updates": 64000,
+    "test_episode_seeds": [
+      4703,
+      5801
+    ],
+    "training_seeds": [
+      1103,
+      2207,
+      3301,
+      4409
+    ],
+    "updates_per_fit": 400
+  },
+  "same_request_readonly_reconciliation": {
+    "api_error_status": "PERMISSION_DENIED",
+    "denied_permission": "kernelSessions.get",
+    "get_remote_effect_unknown": false,
+    "http_status": 403,
+    "interpretation": "The GET denial establishes neither remote absence nor termination; its false effect flag applies only to that read.",
+    "observed_native_utc_span_seconds": 3.014,
+    "original_request_bytes_unchanged": true,
+    "original_request_sha256": "7243fc1f9b99cc0d9064185fb775b1f9d9b4fbeb430fd045979cf53b8ef26646",
+    "original_submit_unknown_cleared": false,
+    "stdout": {
+      "bytes": 282,
+      "sha256": "02e58a48f60f4f86e19f97cab3fb648a69266ee936cbbe0b9891842fb6b80dee"
+    }
+  },
+  "schema": "hcsn-cpu-v1-actual-formal-halt-public-v1",
+  "scientific_scope": "Exploratory synthetic pilot; external-task useful benefit, retention and complete cost gates remain unmeasured for this candidate.",
+  "status": "HALTED_REMOTE_SUBMIT_UNKNOWN_READONLY_PERMISSION_DENIED",
+  "study_id": "hcsn-regenerative-mechanisms-fv-pilot-20261107-1631115f163f-cpu-v1",
+  "submission": {
+    "adapter_record": {
+      "bytes": 1495,
+      "sha256": "f341435fc09777ee686ce97e750d89276a1908af5b4cd58529840a127e504a19"
+    },
+    "adapter_span_nested_within_native_owner": true,
+    "adapter_wall_seconds": 5.51212338701589,
+    "api_error_status": "INVALID_ARGUMENT",
+    "http_status": 400,
+    "identity_verified": false,
+    "presubmission_enumeration": {
+      "all_pages_completed": true,
+      "collision_found": false,
+      "notebooks_seen": 16,
+      "pages": 1,
+      "scope": "Only before SaveKernel; not a postfailure absence or termination proof."
+    },
+    "provider_event_file_commitments": [
+      {
+        "bytes": 111,
+        "sha256": "d29263cbf3c24f4a6a44e1ae5ce4e43f5e4e897c198e75e794a969097cbce526"
+      },
+      {
+        "bytes": 397,
+        "sha256": "ea408bbd2dad5e0b630a078986ee3e827dc8152c5d0e6b368a1312a195d12712"
+      },
+      {
+        "bytes": 232,
+        "sha256": "959a2c08c6e18c5d8ce748859d801e8c13b8926f72836e7967ea428db010c5ae"
+      },
+      {
+        "bytes": 384,
+        "sha256": "4545ce1389da22d08aad6b16309f04629f35dd68e0964567e2fe52e72cc0a445"
+      }
+    ],
+    "remote_effect_unknown": true,
+    "remote_submission_state": "MAY_HAVE_BEEN_SENT",
+    "request_record": {
+      "bytes": 2539,
+      "sha256": "7243fc1f9b99cc0d9064185fb775b1f9d9b4fbeb430fd045979cf53b8ef26646"
+    },
+    "save_kernel_intent_persisted": true,
+    "save_kernel_payload_sha256": "4c9a7dee9c601956b25e734a6b7455d7ff7de736735cd610498fdfd7138b9f5b",
+    "service_field_cause": null,
+    "size_interpretation": "The actual source is above 1 MiB and below the installed 2 MiB guard. No field-specific server response establishes that size caused this HTTP 400.",
+    "source_bytes": 1091095,
+    "source_reconstruction_executed": false,
+    "source_sha256": "275c511e987354c973274855782cf49b4579ca598d2f43b219073c87b3c98861",
+    "submission_replayed": false
+  },
+  "success_analysis_watcher_launched": false,
+  "unsafe_inferences_rejected": [
+    "HTTP400 implies no remote side effect",
+    "GET403 implies target absent or stopped",
+    "zero local claimed implies zero remote updates",
+    "source above 1 MiB proves the HTTP400 cause",
+    "existing full CPU qualification proves formal training succeeded"
+  ]
+}

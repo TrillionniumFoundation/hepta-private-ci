@@ -1,0 +1,531 @@
+--- a/qualification/hcsn_differentiable/MODEL.md
++++ b/qualification/hcsn_differentiable/MODEL.md
+@@ -336,3 +336,13 @@
+ fixture is evidence of an unresolved candidate, not authorization to weaken
+ an old study's thresholds. No cloud job, large training run, financial market
+ calibration, or real-sensor formal fit is started by these files.
++
++## 9. Motivating financial reference
++
++Zhiguo He and Wei Xiong, **Rollover Risk and Credit Risk**, *The Journal of
++Finance* (2012), [author-hosted paper](https://www.princeton.edu/~wxiong/papers/rollover.pdf).
++The boundary-value and endogenous-default perspective motivates this research.
++The probability/reset/content model defined above is a separately specified
++neural candidate, not an implementation of that paper's complete debt/equity
++valuation system or a claim that financial smooth pasting applies to every
++neural risk readout.
+--- a/qualification/hcsn_differentiable/README.md
++++ b/qualification/hcsn_differentiable/README.md
+@@ -22,7 +22,7 @@
+ | Observations | Explicit end-of-interval likelihood conditioning and bounded content writing |
+ | Layers | Recurrent probability/content layers with vector messages and declared value/risk/margin readouts |
+ | Training | Ordinary first-order reverse AD through the actual fixed-quadrature construction; full or explicit truncated BPTT |
+-| Recovery | Numerical state, model, optimizer, clocks, truncation position, and CPU RNG restoration; no serialized autograd tape |
++| Recovery | Numerical state, model, validated Adam optimizer state, clocks, truncation position, and CPU RNG restoration; no serialized autograd tape |
+ | Input adapter | Per-channel missingness, per-example padding, actual time gaps, and retained absolute timestamps |
+ 
+ There is no binary-step surrogate gradient. There is also no sampled spike
+@@ -31,6 +31,10 @@
+ value; it is not a complete He--Xiong equity solution or a regenerative total
+ value solver. `risk` and `expected_events` coincide within the supported
+ single-event propagation interval; they are not independent physical states.
++With observation conditioning, the sum of these outputs is a sum of predictive
++conditional interval expectations. It is not a retrospective cumulative-count
++posterior conditioned on all later observations; that would require additional
++joint state and smoothing machinery.
+ 
+ ## Run the independent qualification
+ 
+@@ -51,6 +55,8 @@
+ peak RSS where available. A missing dependency or a skipped test cannot earn
+ a passing qualification. A failure must be retained with the source that
+ produced it; fix the candidate and create a distinct result for the next run.
++Recorded outcomes and resource observations are kept under `evidence/` with
++their own timestamps and source identities.
+ 
+ The test families address different questions:
+ 
+@@ -105,6 +111,10 @@
+ the full numerical state. Checkpoint serialization also starts a new graph
+ segment on restoration. It cannot recover gradients through already executed
+ and serialized history.
++Optimizer recovery in this first checkpoint schema supports `torch.optim.Adam`
++explicitly. It checks parameter-group identity, moment tensors, and step values;
++other optimizer schemas require their own validation. Failure rollback is an
++in-memory CPU transaction, not a crash-durable storage transaction.
+ 
+ In this first candidate, truncation cuts the graph but does not permit an
+ optimizer update inside a retained episode. Accumulate the intended chunk
+--- a/qualification/hcsn_differentiable/checkpoint.py
++++ b/qualification/hcsn_differentiable/checkpoint.py
+@@ -0,0 +1,156 @@
++"""Validated local restoration helpers for the bounded research candidate.
++
++This is an in-memory rollback transaction, not a production durable owner.
++The optimizer schema deliberately supports ordinary torch.optim.Adam only.
++"""
++
++import copy
++from contextlib import contextmanager
++import math
++
++import torch
++from torch import Tensor
++
++
++ADAM_SCHEMA = "torch.optim.Adam.basic.v1"
++
++
++def validate_model_state(module, candidate):
++    expected = module.state_dict()
++    if not isinstance(candidate, dict) or candidate.keys() != expected.keys() or any(
++        not isinstance(value, Tensor) or value.shape != expected[name].shape
++        or value.dtype != expected[name].dtype or not bool(torch.isfinite(value).all())
++        for name, value in candidate.items()
++    ):
++        raise ValueError("checkpoint model keys, shapes, dtype or finite values mismatch")
++
++
++@contextmanager
++def rollback_on_error(module, optimizer):
++    model_before = {name: value.detach().clone() for name, value in module.state_dict().items()}
++    optimizer_before = copy.deepcopy(optimizer.state_dict()) if optimizer is not None else None
++    rng_before = torch.random.get_rng_state().clone()
++    try:
++        yield
++    except Exception:
++        module.load_state_dict(model_before, strict=True)
++        if optimizer is not None:
++            optimizer.load_state_dict(optimizer_before)
++        torch.random.set_rng_state(rng_before)
++        raise
++
++
++def _real(value, name, *, upper=None):
++    if (isinstance(value, bool) or not isinstance(value, (int, float))
++            or not math.isfinite(value) or value < 0 or (upper is not None and value >= upper)):
++        raise ValueError(f"invalid Adam {name}")
++
++
++def validate_adam_state(module, optimizer, candidate):
++    """Validate moments against their actual destination parameters before load.
++
++    Adam's scalar step is not a parameter-shaped moment. FP32 step counters for
++    FP64 parameters and ordinary CPU step counters remain legal.
++    """
++    if type(optimizer) is not torch.optim.Adam:
++        raise TypeError("this checkpoint profile supports torch.optim.Adam only")
++    if not isinstance(candidate, dict) or set(candidate) != {"state", "param_groups"}:
++        raise ValueError("invalid Adam state envelope")
++    groups, states = candidate["param_groups"], candidate["state"]
++    if not isinstance(groups, list) or not isinstance(states, dict) or len(groups) != len(optimizer.param_groups):
++        raise ValueError("Adam parameter-group count/type mismatch")
++    owned = {id(parameter) for parameter in module.parameters()}
++    mapping, live_ids = {}, set()
++    for saved, live in zip(groups, optimizer.param_groups):
++        if not isinstance(saved, dict) or set(saved) != set(live):
++            raise ValueError("Adam parameter-group schema mismatch")
++        identifiers = saved["params"]
++        if not isinstance(identifiers, list) or len(identifiers) != len(live["params"]):
++            raise ValueError("Adam group parameter count mismatch")
++        for name in ("lr", "eps", "weight_decay"):
++            _real(saved[name], name)
++        if "initial_lr" in saved:
++            _real(saved["initial_lr"], "initial_lr")
++        if not isinstance(saved["betas"], (tuple, list)) or len(saved["betas"]) != 2:
++            raise ValueError("invalid Adam betas")
++        for beta in saved["betas"]:
++            _real(beta, "beta", upper=1.)
++        for name in ("amsgrad", "maximize", "capturable", "differentiable", "decoupled_weight_decay"):
++            if name in saved and not isinstance(saved[name], bool):
++                raise ValueError(f"invalid Adam boolean {name}")
++        for name in ("foreach", "fused"):
++            if saved.get(name) is not None and not isinstance(saved[name], bool):
++                raise ValueError(f"invalid Adam optional boolean {name}")
++        if saved.get("capturable") or saved.get("differentiable") or saved.get("fused"):
++            raise ValueError("capturable/differentiable/fused Adam is outside this checkpoint profile")
++        for identifier, parameter in zip(identifiers, live["params"]):
++            if (isinstance(identifier, bool) or not isinstance(identifier, int) or identifier < 0
++                    or identifier in mapping or id(parameter) in live_ids or id(parameter) not in owned):
++                raise ValueError("invalid, duplicate, or unowned Adam parameter mapping")
++            mapping[identifier] = (parameter, saved["amsgrad"])
++            live_ids.add(id(parameter))
++    if any(identifier not in mapping for identifier in states):
++        raise ValueError("Adam state refers to an unknown parameter")
++    for identifier, entry in states.items():
++        if not isinstance(entry, dict):
++            raise ValueError("Adam per-parameter state must be a dictionary")
++        if not entry:  # A parameter may not have received a gradient yet.
++            continue
++        parameter, amsgrad = mapping[identifier]
++        expected = {"step", "exp_avg", "exp_avg_sq"} | ({"max_exp_avg_sq"} if amsgrad else set())
++        if set(entry) != expected:
++            raise ValueError("Adam moment schema mismatch")
++        step = entry["step"]
++        if isinstance(step, Tensor):
++            if (step.ndim != 0 or step.requires_grad
++                    or step.dtype not in (torch.float32, torch.float64, torch.int64)
++                    or step.device.type != "cpu" and step.device != parameter.device):
++                raise ValueError("Adam step must be a scalar counter on a supported device")
++            step = float(step.detach())
++        _real(step, "step")
++        if step != math.floor(step):
++            raise ValueError("Adam step must be an integer-valued counter")
++        for name in expected - {"step"}:
++            value = entry[name]
++            if (not isinstance(value, Tensor) or value.shape != parameter.shape
++                    or value.dtype != parameter.dtype or value.requires_grad
++                    or value.device.type != "cpu" and value.device != parameter.device
++                    or not bool(torch.isfinite(value).all())):
++                raise ValueError(f"Adam {name} shape/dtype/device/finite mismatch")
++            if name != "exp_avg" and bool((value < 0).any()):
++                raise ValueError(f"Adam {name} must be nonnegative")
++        if amsgrad and bool((entry["max_exp_avg_sq"] < entry["exp_avg_sq"]).any()):
++            raise ValueError("Adam AMSGrad maximum is below its second moment")
++
++
++def pack_adam_state(module, optimizer):
++    if optimizer is None:
++        return None
++    state = copy.deepcopy(optimizer.state_dict())
++    validate_adam_state(module, optimizer, state)
++    return {"schema": ADAM_SCHEMA, "state": state,
++            "parameter_names": _parameter_name_layout(module, optimizer)}
++
++
++def _parameter_name_layout(module, optimizer):
++    names = {id(parameter): name for name, parameter in module.named_parameters()}
++    try:
++        return [[names[id(parameter)] for parameter in group["params"]]
++                for group in optimizer.param_groups]
++    except KeyError as error:
++        raise ValueError("optimizer contains a parameter not owned by the restored module") from error
++
++
++def restore_adam_state(module, optimizer, payload):
++    if optimizer is None:
++        return
++    if (not isinstance(payload, dict) or set(payload) != {"schema", "state", "parameter_names"}
++            or payload["schema"] != ADAM_SCHEMA):
++        raise ValueError("requested Adam restoration requires a supported optimizer schema")
++    layout = payload["parameter_names"]
++    if (not isinstance(layout, list) or any(not isinstance(group, list)
++                                          or any(not isinstance(name, str) for name in group) for group in layout)
++            or layout != _parameter_name_layout(module, optimizer)):
++        raise ValueError("Adam parameter-name layout/order mismatch")
++    validate_adam_state(module, optimizer, payload["state"])
++    optimizer.load_state_dict(payload["state"])
+--- a/qualification/hcsn_differentiable/encoder.py
++++ b/qualification/hcsn_differentiable/encoder.py
+@@ -21,7 +21,7 @@
+     dt: Tensor  # [batch, time], in the same physical unit as timestamps
+     observed: Tensor  # [batch, time], at least one genuinely observed channel
+     valid: Tensor  # [batch, time], false means padding rather than missing data
+-    last_timestamp: Tensor  # [batch], retains the timestamp input precision
++    last_timestamp: Tensor  # [batch], retains at least the incoming clock precision
+     start_timestamp: Tensor  # [batch], exact predecessor for this chunk
+ 
+ 
+@@ -109,12 +109,19 @@
+         elif isinstance(start_time, Tensor):
+             if start_time.device != timestamps.device:
+                 raise ValueError("start_time and timestamps must use the same device")
+-            previous = start_time.to(dtype=timestamps.dtype)
++            if start_time.dtype not in (torch.float32, torch.float64):
++                raise TypeError("start_time tensors must use float32 or float64")
++            clock_dtype = torch.promote_types(timestamps.dtype, start_time.dtype)
++            timestamps = timestamps.to(dtype=clock_dtype)
++            previous = start_time.to(dtype=clock_dtype)
+             if previous.ndim == 0:
+                 previous = previous.expand(batch)
+             if previous.shape != (batch,):
+                 raise ValueError("start_time must be scalar or have shape [batch]")
+         else:
++            # A Python float is double precision. Preserve it rather than
++            # rounding a retained fractional clock down to an FP32 timestamp.
++            timestamps = timestamps.to(dtype=torch.float64)
+             previous = timestamps.new_full((batch,), float(start_time))
+         if not bool(torch.isfinite(previous).all()):
+             raise ValueError("start_time must be finite")
+--- a/qualification/hcsn_differentiable/network.py
++++ b/qualification/hcsn_differentiable/network.py
+@@ -8,13 +8,13 @@
+ """
+ 
+ import copy
+-from contextlib import contextmanager
+ from dataclasses import asdict, dataclass
+ import math
+ 
+ import torch
+ from torch import Tensor, nn
+ 
++from .checkpoint import pack_adam_state, restore_adam_state, rollback_on_error, validate_model_state
+ from .contract import GridSpec, PhysicalParameters
+ from .encoder import IrregularSensorEncoder
+ from .operator import DifferentiableDistributionOperator
+@@ -85,32 +85,6 @@
+ 
+ def _logit(value):
+     return math.log(value / (1. - value))
+-
+-
+-def _validate_model_state(module, candidate):
+-    expected = module.state_dict()
+-    if candidate.keys() != expected.keys() or any(
+-        not isinstance(value, Tensor) or value.shape != expected[name].shape
+-        or value.dtype != expected[name].dtype or not bool(torch.isfinite(value).all())
+-        for name, value in candidate.items()
+-    ):
+-        raise ValueError("checkpoint model keys, shapes, dtype or finite values mismatch")
+-
+-
+-@contextmanager
+-def _rollback_on_error(module, optimizer):
+-    """In-memory restoration transaction; not a durable publication protocol."""
+-    model_before = {name: value.detach().clone() for name, value in module.state_dict().items()}
+-    optimizer_before = copy.deepcopy(optimizer.state_dict()) if optimizer is not None else None
+-    rng_before = torch.random.get_rng_state().clone()
+-    try:
+-        yield
+-    except Exception:
+-        module.load_state_dict(model_before, strict=True)
+-        if optimizer is not None:
+-            optimizer.load_state_dict(optimizer_before)
+-        torch.random.set_rng_state(rng_before)
+-        raise
+ 
+ 
+ class TrainablePhysics(nn.Module):
+@@ -147,6 +121,8 @@
+ class ContentLayer(nn.Module):
+     def __init__(self, input_dim, content_dim, grid, operator=None):
+         super().__init__()
++        if operator is not None and operator.grid != grid:
++            raise ValueError("operator.grid must equal the layer grid, including active/phase ownership")
+         self.grid = grid
+         self.state_count = grid.active_cells + 1 + grid.phase_cells
+         self.active_count = grid.active_cells + 1
+@@ -247,7 +223,7 @@
+             raise ValueError("a complete compatible NetworkState is required")
+         if state.configuration_snapshot != self.configuration():
+             raise ValueError("configuration changed within a retained episode")
+-        if (not isinstance(state.sequence_position, int) or state.sequence_position < 0
++        if (isinstance(state.sequence_position, bool) or not isinstance(state.sequence_position, int) or state.sequence_position < 0
+                 or (state.truncate_every is not None
+                     and (not isinstance(state.truncate_every, int) or state.truncate_every < 1))):
+             raise ValueError("invalid retained BPTT position or policy")
+@@ -259,6 +235,12 @@
+                 or not bool(torch.isfinite(state.elapsed).all()) or bool((state.elapsed < 0).any())
+                 or bool((state.steps < 0).any())):
+             raise ValueError("invalid state clock dtype, device or value")
++        if bool((state.steps > state.sequence_position).any()):
++            raise ValueError("valid-step count exceeds the global sequence position")
++        if state.sequence_position == 0 and (bool((state.steps != 0).any()) or bool((state.elapsed != 0).any())):
++            raise ValueError("position-zero state requires zero valid steps and elapsed time")
++        if bool(((state.steps == 0) & (state.elapsed != 0)).any()):
++            raise ValueError("zero valid steps cannot advance physical time")
+         _check_snapshot(self, state.parameter_snapshot)
+         for layer, current in zip(self.layers, state.layers):
+             if (current.probability.shape != (batch_size, layer.state_count)
+@@ -372,20 +354,20 @@
+ 
+     def checkpoint(self, state, optimizer=None):
+         self._validate_state(state, state.elapsed.shape[0])
+-        return dict(schema="hcsn-network-checkpoint-v1", configuration=self.configuration(),
++        return dict(schema="hcsn-network-checkpoint-v2", configuration=self.configuration(),
+                     model={name: tensor.detach().cpu().clone() for name, tensor in self.state_dict().items()},
+                     layers=[dict(probability=layer.probability.detach().cpu().clone(),
+                                  content_mass=layer.content_mass.detach().cpu().clone()) for layer in state.layers],
+                     elapsed=state.elapsed.detach().cpu().clone(), steps=state.steps.detach().cpu().clone(),
+                     sequence_position=state.sequence_position, truncate_every=state.truncate_every,
+-                    optimizer=copy.deepcopy(optimizer.state_dict()) if optimizer is not None else None,
++                    optimizer=pack_adam_state(self, optimizer),
+                     torch_rng=torch.random.get_rng_state().clone())
+ 
+     def restore_checkpoint(self, payload, optimizer=None):
+-        if payload.get("schema") != "hcsn-network-checkpoint-v1" or payload.get("configuration") != self.configuration():
++        if payload.get("schema") != "hcsn-network-checkpoint-v2" or payload.get("configuration") != self.configuration():
+             raise ValueError("checkpoint schema/configuration mismatch")
+         model_state = payload["model"]
+-        _validate_model_state(self, model_state)
++        validate_model_state(self, model_state)
+         reference = next(self.parameters())
+         converted = tuple(LayerState(item["probability"].to(reference.device).clone(),
+                                      item["content_mass"].to(reference.device).clone()) for item in payload["layers"])
+@@ -393,17 +375,14 @@
+         # snapshot checks follow strict model restoration below.
+         for layer in converted:
+             self._state_invariants(layer)
+-        with _rollback_on_error(self, optimizer):
++        with rollback_on_error(self, optimizer):
+             self.load_state_dict(model_state, strict=True)
+             restored = NetworkState(converted, payload["elapsed"].to(reference.device).clone(),
+                                     payload["steps"].to(reference.device).clone(), _snapshot(self),
+                                     copy.deepcopy(self.configuration()), payload["sequence_position"],
+                                     payload["truncate_every"])
+             self._validate_state(restored, restored.elapsed.shape[0])
+-            if optimizer is not None:
+-                if payload.get("optimizer") is None:
+-                    raise ValueError("requested optimizer restoration but checkpoint has no optimizer")
+-                optimizer.load_state_dict(payload["optimizer"])
++            restore_adam_state(self, optimizer, payload.get("optimizer"))
+             torch.random.set_rng_state(payload["torch_rng"].cpu())
+         return restored
+ 
+@@ -453,26 +432,23 @@
+         _check_snapshot(self.encoder, state.encoder_snapshot)
+         if state.encoder_configuration != self._encoder_profile():
+             raise ValueError("encoder configuration changed within a retained episode")
+-        return dict(schema="hcsn-irregular-sensor-checkpoint-v1",
++        return dict(schema="hcsn-irregular-sensor-checkpoint-v2",
+                     encoder={name: value.detach().cpu().clone() for name, value in self.encoder.state_dict().items()},
+                     encoder_profile=self._encoder_profile(),
+                     network=self.network.checkpoint(state.network),
+                     last_timestamp=state.last_timestamp.detach().cpu().clone(),
+-                    optimizer=copy.deepcopy(optimizer.state_dict()) if optimizer is not None else None)
++                    optimizer=pack_adam_state(self, optimizer))
+ 
+     def restore_checkpoint(self, payload, optimizer=None):
+         profile = self._encoder_profile()
+-        if payload.get("schema") != "hcsn-irregular-sensor-checkpoint-v1" or payload.get("encoder_profile") != profile:
++        if payload.get("schema") != "hcsn-irregular-sensor-checkpoint-v2" or payload.get("encoder_profile") != profile:
+             raise ValueError("sensor checkpoint profile mismatch")
+-        _validate_model_state(self.encoder, payload["encoder"])
+-        with _rollback_on_error(self, optimizer):
++        validate_model_state(self.encoder, payload["encoder"])
++        with rollback_on_error(self, optimizer):
+             self.encoder.load_state_dict(payload["encoder"], strict=True)
+             network_state = self.network.restore_checkpoint(payload["network"])
+             clock = payload["last_timestamp"].to(next(self.parameters()).device).clone()
+             if clock.shape != network_state.elapsed.shape or not bool(torch.isfinite(clock).all()):
+                 raise ValueError("sensor checkpoint timestamp shape or value mismatch")
+-            if optimizer is not None:
+-                if payload.get("optimizer") is None:
+-                    raise ValueError("checkpoint has no optimizer")
+-                optimizer.load_state_dict(payload["optimizer"])
++            restore_adam_state(self, optimizer, payload.get("optimizer"))
+         return SensorStreamState(network_state, clock, _snapshot(self.encoder), profile)
+--- a/qualification/hcsn_differentiable/tests/test_encoder.py
++++ b/qualification/hcsn_differentiable/tests/test_encoder.py
+@@ -61,6 +61,19 @@
+         torch.testing.assert_close(result.dt, torch.tensor([[.125, .375]]), rtol=0, atol=0)
+         self.assertEqual(result.last_timestamp.dtype, torch.float64)
+ 
++    def test_continuation_never_rounds_a_retained_fp64_clock_down_to_fp32(self):
++        values = torch.zeros(1, 1, 2, dtype=torch.float64)
++        rounded_back = torch.tensor([[2.**24]], dtype=torch.float32)
++        retained = torch.tensor([2.**24 + .5], dtype=torch.float64)
++        for predecessor in (retained, float(retained[0])):
++            with self.subTest(predecessor_type=type(predecessor).__name__):
++                with self.assertRaisesRegex(ValueError, "nondecreasing"):
++                    self.encoder(values, rounded_back, start_time=predecessor)
++        ahead = torch.tensor([[2.**24 + 2.]], dtype=torch.float32)
++        result = self.encoder(values, ahead, start_time=retained)
++        torch.testing.assert_close(result.dt, torch.tensor([[1.5]], dtype=torch.float64), rtol=0, atol=0)
++        self.assertEqual(result.last_timestamp.dtype, torch.float64)
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+--- a/qualification/hcsn_differentiable/tests/test_network.py
++++ b/qualification/hcsn_differentiable/tests/test_network.py
+@@ -57,9 +57,10 @@
+         self.model = make_network()
+         self.features, self.dt = example()
+ 
+-    def assert_states_close(self, left, right, atol=2e-12):
++    def assert_states_close(self, left, right, atol=2e-12, *, compare_position=True):
+         self.assertEqual(len(left.layers), len(right.layers))
+-        self.assertEqual(left.sequence_position, right.sequence_position)
++        if compare_position:
++            self.assertEqual(left.sequence_position, right.sequence_position)
+         self.assertEqual(left.truncate_every, right.truncate_every)
+         self.assertEqual(left.configuration_snapshot, right.configuration_snapshot)
+         torch.testing.assert_close(left.elapsed, right.elapsed, rtol=0, atol=atol)
+@@ -198,8 +199,18 @@
+         self.assertTrue(bool((no_data.state.elapsed > first.state.elapsed).all()))
+         padding = self.model(self.features[:, 2:3], torch.zeros_like(self.dt[:, 2:3]), state=first.state,
+                              observed=missing, valid_mask=missing)
+-        self.assert_states_close(padding.state, first.state)
++        self.assert_states_close(padding.state, first.state, compare_position=False)
++        self.assertEqual(padding.state.sequence_position, first.state.sequence_position + 1)
+         self.assertEqual(float(padding.predictions.abs().sum()), 0.)
++
++    def test_operator_grid_ownership_cannot_differ_at_equal_state_count(self):
++        grid = mechanism_grid()
++        same_size_wrong_partition = GridSpec(active_cells=5, phase_cells=4, quadrature_order=8)
++        self.assertEqual(grid.state_count, same_size_wrong_partition.state_count)
++        with self.assertRaisesRegex(ValueError, "operator.grid must equal"):
++            ContinuousSpikingNetwork(3, grid=grid, operators=[
++                DifferentiableDistributionOperator(same_size_wrong_partition),
++                DifferentiableDistributionOperator(grid)])
+ 
+     def test_parameter_update_requires_explicit_new_episode(self):
+         result = self.model(self.features[:, :2], self.dt[:, :2], state=fresh_state(self.model, 2))
+@@ -301,9 +312,24 @@
+         bad_clock = copy.deepcopy(payload)
+         bad_clock["elapsed"] = torch.zeros(3, dtype=torch.float64)
+         corruptions.append(bad_clock)
++        bad_position = copy.deepcopy(payload)
++        bad_position["sequence_position"] = 0
++        corruptions.append(bad_position)
++        bad_zero_clock = copy.deepcopy(payload)
++        bad_zero_clock["sequence_position"] = 0
++        bad_zero_clock["steps"].zero_()
++        corruptions.append(bad_zero_clock)
+         bad_optimizer = copy.deepcopy(payload)
+-        bad_optimizer["optimizer"] = {"state": {}, "param_groups": []}
++        bad_optimizer["optimizer"]["state"]["param_groups"] = []
+         corruptions.append(bad_optimizer)
++        bad_moment_shape = copy.deepcopy(payload)
++        first_id = next(iter(bad_moment_shape["optimizer"]["state"]["state"]))
++        first_moment = bad_moment_shape["optimizer"]["state"]["state"][first_id]["exp_avg"]
++        bad_moment_shape["optimizer"]["state"]["state"][first_id]["exp_avg"] = first_moment.unsqueeze(0)
++        corruptions.append(bad_moment_shape)
++        bad_moment_nan = copy.deepcopy(payload)
++        bad_moment_nan["optimizer"]["state"]["state"][first_id]["exp_avg_sq"].fill_(float("nan"))
++        corruptions.append(bad_moment_nan)
+         bad_rng = copy.deepcopy(payload)
+         bad_rng["torch_rng"] = torch.zeros(3, dtype=torch.uint8)
+         corruptions.append(bad_rng)
+@@ -314,6 +340,27 @@
+                 torch.testing.assert_close(self.model.state_dict()[name], value, rtol=0, atol=0)
+             torch.testing.assert_close(optimizer.state_dict(), before_optimizer, rtol=0, atol=0)
+             torch.testing.assert_close(torch.random.get_rng_state(), before_rng, rtol=0, atol=0)
++        # Two physical parameters have the same scalar shape. Numeric optimizer
++        # IDs/counts alone cannot detect their order being exchanged at restore.
++        parameters = list(self.model.parameters())
++        mu = self.model.layers[0].physics.raw_mu
++        sigma = self.model.layers[0].physics.raw_sigma
++        mu_index = next(index for index, parameter in enumerate(parameters) if parameter is mu)
++        sigma_index = next(index for index, parameter in enumerate(parameters) if parameter is sigma)
++        parameters[mu_index], parameters[sigma_index] = parameters[sigma_index], parameters[mu_index]
++        swapped_optimizer = torch.optim.Adam(parameters, lr=.0037)
++        swapped_before = copy.deepcopy(swapped_optimizer.state_dict())
++        with self.assertRaisesRegex(ValueError, "parameter-name layout"):
++            self.model.restore_checkpoint(payload, swapped_optimizer)
++        for name, value in before.items():
++            torch.testing.assert_close(self.model.state_dict()[name], value, rtol=0, atol=0)
++        torch.testing.assert_close(swapped_optimizer.state_dict(), swapped_before, rtol=0, atol=0)
++        torch.testing.assert_close(torch.random.get_rng_state(), before_rng, rtol=0, atol=0)
++        # Rejected malformed moments must not poison the next real update.
++        optimizer.zero_grad(set_to_none=True)
++        self.objective().backward()
++        optimizer.step()
++        self.assertTrue(all(bool(torch.isfinite(parameter).all()) for parameter in self.model.parameters()))
+         # A late sensor-clock error must also undo the already restored encoder
+         # and nested network, not only the component that raised the exception.
+         sensor = IrregularHCSNEncoder(3, grid=mechanism_grid())
+@@ -329,7 +376,10 @@
+         for name, value in sensor_before.items():
+             torch.testing.assert_close(sensor.state_dict()[name], value, rtol=0, atol=0)
+         torch.testing.assert_close(torch.random.get_rng_state(), sensor_rng_before, rtol=0, atol=0)
+-        self.measurements["rejected_restore_cases"] = len(corruptions) + 1
++        self.measurements["rejected_restore_cases"] = len(corruptions) + 2
++        self.measurements["optimizer_moment_shape_and_nonfinite_rejections"] = 2
++        self.measurements["same_shape_physics_parameter_permutation_rejected"] = True
++        self.measurements["next_adam_step_after_rejections_finite"] = True
+ 
+     def test_no_reset_control_and_32_step_unobserved_transport(self):
+         grid = mechanism_grid()
