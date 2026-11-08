@@ -61,6 +61,8 @@ pub(crate) struct Fixture {
     pub(crate) authority: Arc<FinalUseAuthority>,
     pub(crate) artifacts: Arc<Mutex<LearningArtifactOwnerService>>,
     pub(crate) clock: Arc<TestClock>,
+    live_clock: Arc<dyn AuthorityClock>,
+    research: bool,
     current_file: Arc<FileCas<CurrentHead>>,
     final_use_file: Arc<FileCas<FinalUseFrontier>>,
     artifact_files: ArtifactFiles,
@@ -95,9 +97,35 @@ impl Fixture {
         target_config: CellGenerationConfigV2,
         initial_operation: Option<&str>,
     ) -> anyhow::Result<Self> {
-        let directory = tempfile::tempdir()?;
+        Self::create_with_clock(old_config, target_config, initial_operation, false)
+    }
+
+    pub(crate) fn new_research(
+        old_config: CellGenerationConfigV2,
+        target_config: CellGenerationConfigV2,
+    ) -> anyhow::Result<Self> {
+        Self::create_with_clock(old_config, target_config, None, true)
+    }
+
+    fn create_with_clock(
+        old_config: CellGenerationConfigV2,
+        target_config: CellGenerationConfigV2,
+        initial_operation: Option<&str>,
+        research: bool,
+    ) -> anyhow::Result<Self> {
+        let mut directory = tempfile::tempdir()?;
+        if research {
+            // Research failures retain the original owner/nonce/journal files.
+            // No uncertain model operation is erased or silently resubmitted.
+            directory.disable_cleanup(true);
+        }
         fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700))?;
         let clock = Arc::new(TestClock(AtomicU64::new(NOW)));
+        let live_clock: Arc<dyn AuthorityClock> = if research {
+            Arc::new(files::ResearchClock)
+        } else {
+            clock.clone()
+        };
         let issuer = SigningKey::from_bytes(&[63; 32]);
         let head = FinalUseRevocations {
             authority_epoch: 1,
@@ -117,11 +145,18 @@ impl Fixture {
             "test-control-authority".into(),
             issuer.verifying_key().to_bytes(),
             head,
-            clock.clone(),
+            live_clock.clone(),
             final_use_file.clone(),
         )?);
-        let artifact_files =
-            ArtifactFiles::new(&directory.path().join("artifacts"), &target_config.manifest)?;
+        let artifact_files = if research {
+            ArtifactFiles::new_research(
+                &directory.path().join("artifacts"),
+                &target_config.manifest,
+                live_clock.now_unix_ms()?,
+            )?
+        } else {
+            ArtifactFiles::new(&directory.path().join("artifacts"), &target_config.manifest)?
+        };
         let artifacts = artifact_files.owner.clone();
         let head = initial_fixture::current_head(
             &old_config,
@@ -156,11 +191,52 @@ impl Fixture {
             authority,
             artifacts,
             clock,
+            live_clock,
+            research,
             current_file,
             final_use_file,
             artifact_files,
             issuer,
         })
+    }
+
+    pub(crate) fn research_directory(&self) -> anyhow::Result<&std::path::Path> {
+        anyhow::ensure!(self.research, "not the isolated research owner");
+        Ok(self.directory.path())
+    }
+
+    pub(crate) fn research_checkpoint(
+        &self,
+        request: codex_hepta_learning_artifacts::LearningIterationRequestV1,
+        owners: codex_hepta_learning_artifacts::LearningIterationOwnersV1,
+        create: bool,
+    ) -> anyhow::Result<crate::LearningIterationCheckpointOwnerV1> {
+        anyhow::ensure!(
+            self.research,
+            "real-model checkpoint requires the isolated research owner"
+        );
+        let owner_id = format!("research-checkpoint:{}", request.operation_id.as_str());
+        let path = self.directory.path().join("learning-checkpoint");
+        let store = if create {
+            FileCas::create(
+                &path,
+                owner_id.clone(),
+                &crate::LearningIterationCheckpointRecordV1::vacant(
+                    request.clone(),
+                    owners.clone(),
+                )?,
+            )?
+        } else {
+            FileCas::reopen(&path, owner_id.clone())?
+        };
+        Ok(
+            crate::LearningIterationCheckpointOwnerV1::from_research_store(
+                Arc::new(store),
+                owner_id,
+                request,
+                owners,
+            )?,
+        )
     }
 
     pub(crate) fn old_journal(&self) -> anyhow::Result<Journal> {
@@ -258,18 +334,29 @@ impl Fixture {
     }
 
     pub(crate) fn selection(&self) -> anyhow::Result<AgentdSelectedGenerationV1> {
-        self.artifact_files.selection(self.clock.now_unix_ms()?)
+        self.artifact_files
+            .selection(self.live_clock.now_unix_ms()?)
     }
 
     pub(crate) fn authorities(&self) -> anyhow::Result<AgentdGenerationUpdateAuthoritiesV1> {
         Ok(AgentdGenerationUpdateAuthoritiesV1::new(
             self.artifacts.clone(),
             self.authority.clone(),
-            self.clock.clone(),
+            self.live_clock.clone(),
         )?)
     }
 
     pub(crate) fn sign(&self, binding: &FinalUseBinding) -> anyhow::Result<SignedFinalUseGrant> {
+        let now = self.live_clock.now_unix_ms()?;
+        let (not_before_unix_ms, expires_at_unix_ms) = if self.research {
+            (
+                now,
+                now.checked_add(600_000)
+                    .ok_or_else(|| anyhow::anyhow!("research grant expiry overflow"))?,
+            )
+        } else {
+            (1, 9_000)
+        };
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "test-control-authority".into(),
@@ -281,8 +368,8 @@ impl Fixture {
             nonce: Digest32::of_parts(&[b"test-independent-nonce", &serde_json::to_vec(binding)?])
                 .into_array(),
             binding: binding.clone(),
-            not_before_unix_ms: 1,
-            expires_at_unix_ms: 9_000,
+            not_before_unix_ms,
+            expires_at_unix_ms,
         };
         Ok(SignedFinalUseGrant {
             signature: self
@@ -340,7 +427,7 @@ impl Fixture {
         name: &str,
     ) -> anyhow::Result<AgentdSelectedGenerationV1> {
         self.artifact_files
-            .publish_next_selection(manifest, name, self.clock.now_unix_ms()?)
+            .publish_next_selection(manifest, name, self.live_clock.now_unix_ms()?)
     }
 
     pub(crate) fn withdraw(&self) -> anyhow::Result<()> {

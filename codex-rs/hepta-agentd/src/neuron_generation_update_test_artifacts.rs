@@ -26,10 +26,56 @@ pub(super) struct ArtifactFiles {
     selector: SigningKey,
     selected: SignedArtifactSelectionV1,
     verifier: ArtifactSelectionVerifierV1,
+    times: ArtifactTimes,
+}
+
+#[derive(Clone, Copy)]
+struct ArtifactTimes {
+    created: u64,
+    observed: u64,
+    expires: u64,
+    selection_expires: u64,
 }
 
 impl ArtifactFiles {
     pub(super) fn new(root: &Path, manifest: &CellBackendManifestV2) -> anyhow::Result<Self> {
+        Self::new_at(
+            root,
+            manifest,
+            ArtifactTimes {
+                created: 1,
+                observed: NOW,
+                expires: 10_000,
+                selection_expires: 2_000,
+            },
+        )
+    }
+
+    pub(super) fn new_research(
+        root: &Path,
+        manifest: &CellBackendManifestV2,
+        now: u64,
+    ) -> anyhow::Result<Self> {
+        let expires = now
+            .checked_add(600_000)
+            .ok_or_else(|| anyhow::anyhow!("research authority expiry overflow"))?;
+        Self::new_at(
+            root,
+            manifest,
+            ArtifactTimes {
+                created: now,
+                observed: now,
+                expires,
+                selection_expires: expires,
+            },
+        )
+    }
+
+    fn new_at(
+        root: &Path,
+        manifest: &CellBackendManifestV2,
+        times: ArtifactTimes,
+    ) -> anyhow::Result<Self> {
         let key = SigningKey::from_bytes(&[61; 32]);
         let selector = SigningKey::from_bytes(&[62; 32]);
         let withdrawals = DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalScopeV1 {
@@ -45,8 +91,8 @@ impl ArtifactFiles {
             verifying_key: key.verifying_key().to_bytes(),
             minimum_authority_epoch: 1,
             maximum_authority_epoch: 1,
-            valid_from: 1,
-            expires_at: 10_000,
+            valid_from: times.created,
+            expires_at: times.expires,
             revoked_at: None,
         };
         let trust = ArtifactOwnerTrustV1 {
@@ -67,8 +113,8 @@ impl ArtifactFiles {
             signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
             authority_epoch: 1,
             lease_generation: 1,
-            issued_at: 1,
-            expires_at: 10_000,
+            issued_at: times.created,
+            expires_at: times.expires,
             signature: [0; 64],
         };
         lease.signature = key.sign(&lease.signing_bytes()).to_bytes();
@@ -79,10 +125,10 @@ impl ArtifactFiles {
             required_current_head: None,
             withdrawal_registry: withdrawals,
             storage_binding: Digest32::of_bytes(b"test-artifact-storage"),
-            now: NOW,
+            now: times.observed,
         })?;
-        let candidate = publish_candidate(&mut owner, manifest, &key, "selected-candidate")?;
-        let current = owner.current_registry_view(NOW)?;
+        let candidate = publish_candidate(&mut owner, manifest, &key, "selected-candidate", times)?;
+        let current = owner.current_registry_view(times.observed)?;
         let verifier = ArtifactSelectionVerifierV1::new(
             ArtifactSelectionTrustV1 {
                 registry_id: trust.registry_id.clone(),
@@ -93,8 +139,8 @@ impl ArtifactFiles {
                     verifying_key: selector.verifying_key().to_bytes(),
                     minimum_authority_epoch: 1,
                     maximum_authority_epoch: 1,
-                    valid_from: 1,
-                    expires_at: 10_000,
+                    valid_from: times.created,
+                    expires_at: times.expires,
                     revoked_at: None,
                 }],
             },
@@ -120,8 +166,8 @@ impl ArtifactFiles {
             selector_credential_digest: Digest32::of_bytes(b"test-selector-credential"),
             signing_key_digest: Digest32::of_bytes(&selector.verifying_key().to_bytes()),
             authority_epoch: 1,
-            issued_at: NOW,
-            expires_at: 2_000,
+            issued_at: times.observed,
+            expires_at: times.selection_expires,
             signature: [0; 64],
         };
         selected.signature = selector.sign(&selected.signing_bytes()).to_bytes();
@@ -132,6 +178,7 @@ impl ArtifactFiles {
             selector,
             selected,
             verifier,
+            times,
         })
     }
 
@@ -159,7 +206,7 @@ impl ArtifactFiles {
             .owner
             .lock()
             .map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
-        let candidate = publish_candidate(&mut owner, manifest, &self.key, name)?;
+        let candidate = publish_candidate(&mut owner, manifest, &self.key, name, self.times)?;
         let current = owner.current_registry_view(now)?;
         let mut selected = self.selected.clone();
         selected.selection_id = id(&format!("selection-{name}"))?;
@@ -186,7 +233,13 @@ impl ArtifactFiles {
             .owner
             .lock()
             .map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
-        publish_candidate(&mut owner, manifest, &self.key, "new-current-candidate")?;
+        publish_candidate(
+            &mut owner,
+            manifest,
+            &self.key,
+            "new-current-candidate",
+            self.times,
+        )?;
         Ok(())
     }
 
@@ -204,7 +257,7 @@ impl ArtifactFiles {
             credential_chain_digest: Digest32::of_bytes(b"test-withdrawal-credential"),
             signing_key_digest: Digest32::of_bytes(&self.key.verifying_key().to_bytes()),
             authority_epoch: 1,
-            issued_at: NOW,
+            issued_at: self.times.observed,
         })?;
         owner.install_withdrawal_frontier(withdrawals)?;
         Ok(())
@@ -244,6 +297,7 @@ fn publish_candidate(
     cell: &CellBackendManifestV2,
     key: &SigningKey,
     name: &str,
+    times: ArtifactTimes,
 ) -> anyhow::Result<ArtifactManifest> {
     let payload = serde_json::to_vec(cell)?;
     let manifest = LearningArtifactManifestV2 {
@@ -265,15 +319,15 @@ fn publish_candidate(
         schema_profile_digest: Digest32::from_array(cell.state_schema),
         normalization_digest: Digest32::of_bytes(b"test-normalization"),
         producer_id: id("test-producer")?,
-        created_at: 1,
-        expires_at: 10_000,
+        created_at: times.created,
+        expires_at: times.expires,
     };
     let predecessor = owner.registry().snapshot().head_digest;
     let admission = admit_manifest_at_withdrawal_head_v3(
         owner.withdrawal_registry(),
         owner.withdrawal_registry().head_digest(),
         manifest.clone(),
-        NOW,
+        times.observed,
     )?;
     let transaction = ArtifactPublicationTransactionV1::begin(
         id(name)?,
@@ -281,7 +335,7 @@ fn publish_candidate(
         owner.withdrawal_registry(),
         owner.registry(),
         predecessor,
-        NOW,
+        times.observed,
     )?;
     // The fixture issuer previews the same public Register event that the real
     // owner stages. Only Service::publish supplies durable CURRENT evidence.
@@ -316,8 +370,8 @@ fn publish_candidate(
             authority_epoch: 1,
             signer_id: id("test-artifact-authority")?,
             signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
-            issued_at: NOW,
-            expires_at: 10_000,
+            issued_at: times.observed,
+            expires_at: times.expires,
         },
         signature: [0; 64],
     };
@@ -328,7 +382,7 @@ fn publish_candidate(
         payload,
         signed_current_head: signed,
         expected_registry_predecessor_head: predecessor,
-        now: NOW,
+        now: times.observed,
     })?;
     anyhow::ensure!(
         receipt.registry_head_digest == staged.snapshot().head_digest,
