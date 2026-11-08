@@ -127,11 +127,12 @@ Build `mem1_fast_memory` with Cargo, then supply that exact executable to the fo
 ```sh
 python scripts/memory_cell_mem1/run.py --native /absolute/path/to/mem1_fast_memory --output /absolute/path/to/dynamic
 python scripts/memory_cell_mem1/run.py --native /absolute/path/to/mem1_fast_memory --output /absolute/path/to/stationary --stationary
-python scripts/memory_cell_mem1/verify_results.py /absolute/path/to/dynamic
-python scripts/memory_cell_mem1/verify_results.py /absolute/path/to/stationary
+python scripts/memory_cell_mem1/verify_results.py /absolute/path/to/dynamic --native /absolute/path/to/mem1_fast_memory
+python scripts/memory_cell_mem1/verify_results.py /absolute/path/to/stationary --native /absolute/path/to/mem1_fast_memory
 ```
 
 The raw package retains both complete campaigns, inputs, before/after-maintenance patches, original error receipts, build/test logs, exact final source snapshots and the binary identity. It omits the compiled ELF; the original immutable native archive containing it is identified in `evidence.json`.
+Verification now requires the retained binary bytes; a newly rebuilt executable must not be substituted unless its SHA256 is identical. The verifier checks the complete frozen operation order, including rebuilds and 64 sleep updates in each of A1 and B, exact recovery artifacts, and candidate bytes/lineage bound to their events. It recomputes kernel multiplication and checkpoint counts. Its cost audit remains **PARTIAL**: owner-call counts are reported values, and retained working snapshots only establish a lower bound on peak pool payload. A successful audit does not establish full physical cost or authenticate the original execution. The historical measurements and HOLD verdict above are unchanged.
 Scientific HOLD requires a frozen real-task panel, independent evaluator, adequate independent repeats, tuned strong baselines, matched useful resources and an advance practical-benefit threshold. Five synthetic seeds are not pretrained-model repeats.
 Production HOLD additionally requires the actual current-owner provider, bounded persistent fast-state owner, Recall/Replay separation at real use, atomic revocation/adoption fencing, full crash recovery and a selected successor consuming an evaluated artifact.
 No pretrained base/adapter is loaded here. Current sleep checkpoints rehearse private state; they do not create or adopt slow knowledge. The existing HNMF/adoption pipeline remains unchanged.
