@@ -6,6 +6,7 @@ provider, grant owner authority, or qualify learning/production adoption.
 
 import argparse
 from contextlib import contextmanager
+import copy
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -18,6 +19,7 @@ import subprocess
 
 
 SCHEMA = "hepta.cell-joint-config.v1"
+SCHEMA_V2 = "hepta.cell-joint-config.v2"
 ROLES = frozenset(
     (
         "runtime",
@@ -30,6 +32,9 @@ ROLES = frozenset(
         "adoption_rules",
     )
 )
+CONTRACT_AXES = ("state_schema", "encoder", "backend")
+MODEL_ROLES = ("incumbent_model", "candidate_model")
+ROLES_V2 = ROLES | set(CONTRACT_AXES) | {"incumbent_" + axis for axis in CONTRACT_AXES}
 SHA256 = re.compile(r"[0-9a-f]{64}")
 GIT_OID = re.compile(r"[0-9a-f]{40}")
 
@@ -273,16 +278,133 @@ def check_ci(document: dict, source: dict, workflows: list[str]) -> list[dict]:
     return observed
 
 
+def canonical_sha256(document: dict) -> str:
+    """Hash content identities using sorted, compact, ASCII JSON (no floats)."""
+    raw = json.dumps(
+        document,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+        allow_nan=False,
+    ).encode("ascii")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def check_compatibility(declaration: dict, artifacts: dict) -> None:
+    """Check bound declarations, not whether a model or migration is correct."""
+    if (
+        not isinstance(declaration, dict)
+        or set(declaration) != {"schema", "models", "state_transition"}
+        or declaration["schema"] != "hepta.cell-model-compatibility.v1"
+    ):
+        raise ValueError("unknown or incomplete model compatibility declaration")
+    expected = {}
+    for role in MODEL_ROLES:
+        prefix = "incumbent_" if role == "incumbent_model" else ""
+        expected[role] = {"model_sha256": artifacts[role]["sha256"]} | {
+            axis + "_sha256": artifacts[prefix + axis]["sha256"]
+            for axis in CONTRACT_AXES
+        }
+    if declaration["models"] != expected:
+        raise ValueError(
+            "model contract does not match bound model/schema/encoder/backend"
+        )
+    transition = declaration["state_transition"]
+    mode = transition.get("mode") if isinstance(transition, dict) else None
+    if mode in ("carry", "reset"):
+        if set(transition) != {"mode"}:
+            raise ValueError("carry/reset cannot contain undeclared transition fields")
+        if (
+            mode == "carry"
+            and expected["incumbent_model"] != expected["candidate_model"]
+        ):
+            raise ValueError(
+                "changed model/schema/encoder/backend requires reset or migration"
+            )
+    elif mode == "migrate":
+        required = {
+            "mode": "migrate",
+            "migration_sha256": artifacts["state_migration"]["sha256"],
+            "from_contract_sha256": canonical_sha256(expected["incumbent_model"]),
+            "to_contract_sha256": canonical_sha256(expected["candidate_model"]),
+        }
+        if transition != required:
+            raise ValueError(
+                "migration must bind its artifact and both exact contracts"
+            )
+    else:
+        raise ValueError("state transition must declare carry, reset or migrate")
+
+
+def check_consumer_readback(
+    result: dict, readback: dict, expected_model_role: str, expected_task_id: str
+) -> dict:
+    """Compare a supplied consumer declaration without authenticating execution."""
+    if not isinstance(result, dict) or result.get("legacy", True):
+        raise ValueError("legacy configurations have no complete consumption bundle")
+    if result.get("schema") != "hepta.cell-joint-config-integrity.v2" or (
+        result.get("configuration_integrity") != "verified"
+    ):
+        raise ValueError("consumer requires a verified v2 integrity result")
+    bundle = result.get("bundle")
+    if not isinstance(bundle, dict) or canonical_sha256(bundle) != result.get(
+        "bundle_sha256"
+    ):
+        raise ValueError("verified bundle content no longer matches its digest")
+    if expected_model_role not in MODEL_ROLES:
+        raise ValueError("the expected selected model role must be explicit")
+    fields = {
+        "schema",
+        "task_id",
+        "model_role",
+        "bundle_sha256",
+        "model_sha256",
+        "state_schema_sha256",
+        "encoder_sha256",
+        "backend_sha256",
+    }
+    if (
+        not isinstance(readback, dict)
+        or set(readback) != fields
+        or (readback["schema"] != "hepta.cell-consumption-readback.v1")
+    ):
+        raise ValueError("unknown or incomplete consumer readback")
+    if (
+        not isinstance(readback["task_id"], str)
+        or re.fullmatch(r"[\w./:@-]{1,256}", readback["task_id"]) is None
+    ):
+        raise ValueError("consumer task identity must be nonempty and bounded")
+    if readback["task_id"] != expected_task_id:
+        raise ValueError("consumer belongs to a different task")
+    if readback["bundle_sha256"] != result["bundle_sha256"]:
+        raise ValueError("consumer belongs to a different complete bundle")
+    expected = result["bundle"]["compatibility"]["models"][expected_model_role]
+    if (
+        readback["model_role"] != expected_model_role
+        or {key: readback[key] for key in expected} != expected
+    ):
+        raise ValueError("consumer selected model/schema/encoder/backend differs")
+    return {
+        "consumption_binding_integrity": "verified",
+        "readback": dict(readback),
+        "consumer_readback_authenticity_verified": False,
+        "actual_successor_consumption_verified": False,
+        "model_execution_verified": False,
+    }
+
+
 def verify(config: dict, source_root: Path, artifact_root: Path) -> dict:
-    if not isinstance(config, dict) or config.get("schema") != SCHEMA:
+    if not isinstance(config, dict) or config.get("schema") not in (SCHEMA, SCHEMA_V2):
         raise ValueError("unknown joint configuration schema")
-    if set(config) != {
+    legacy = config["schema"] == SCHEMA
+    fields = {
         "schema",
         "source",
         "artifacts",
         "required_workflows",
         "ci_evidence",
-    }:
+    } | (set() if legacy else {"compatibility"})
+    if set(config) != fields:
         raise ValueError("joint configuration has unknown or missing fields")
     source = config.get("source")
     if not isinstance(source, dict) or set(source) != {"repository", "commit", "tree"}:
@@ -298,8 +420,22 @@ def verify(config: dict, source_root: Path, artifact_root: Path) -> dict:
     ):
         raise ValueError("source commit and tree must be complete Git identities")
     artifacts = config.get("artifacts")
-    if not isinstance(artifacts, dict) or set(artifacts) != ROLES:
-        raise ValueError("all eight joint configuration roles must be bound")
+    roles = ROLES if legacy else ROLES_V2
+    if not legacy:
+        declaration = config["compatibility"]
+        transition = (
+            declaration.get("state_transition")
+            if isinstance(declaration, dict)
+            else None
+        )
+        if isinstance(transition, dict) and transition.get("mode") == "migrate":
+            roles = roles | {"state_migration"}
+    if not isinstance(artifacts, dict) or set(artifacts) != roles:
+        raise ValueError(
+            "all eight joint configuration roles must be bound"
+            if legacy
+            else "v2 requires all model, state_schema, encoder and backend roles (and declared migration)"
+        )
     workflows = config.get("required_workflows")
     if (
         not isinstance(workflows, list)
@@ -323,7 +459,7 @@ def verify(config: dict, source_root: Path, artifact_root: Path) -> dict:
         raise ValueError("configuration does not name the actual clean execution tree")
     checked, versions = {}, []
     with directory_root(artifact_root) as artifact_fd:
-        for role in sorted(ROLES):
+        for role in sorted(roles):
             checked[role], _, version = read_artifact(artifact_fd, artifacts[role])
             versions.append((artifacts[role]["path"], version))
         ci_binding, ci_bytes, version = read_artifact(
@@ -331,6 +467,8 @@ def verify(config: dict, source_root: Path, artifact_root: Path) -> dict:
         )
         versions.append((ci_binding["path"], version))
         ci = check_ci(strict_json(ci_bytes), source, workflows)
+        if not legacy:
+            check_compatibility(config["compatibility"], checked)
         for name, version in versions:
             with regular_file(artifact_fd, name) as stream:
                 if file_fingerprint(os.fstat(stream.fileno())) != version:
@@ -339,8 +477,11 @@ def verify(config: dict, source_root: Path, artifact_root: Path) -> dict:
                     )
     if source_identity(source_root) != before:
         raise ValueError("source changed during configuration verification")
-    return {
-        "schema": "hepta.cell-joint-config-integrity.v1",
+    result = {
+        "schema": "hepta.cell-joint-config-integrity.v1"
+        if legacy
+        else "hepta.cell-joint-config-integrity.v2",
+        "legacy": legacy,
         "configuration_integrity": "verified",
         "source": source,
         "artifacts": checked,
@@ -350,6 +491,28 @@ def verify(config: dict, source_root: Path, artifact_root: Path) -> dict:
         "production_qualification": False,
         "authority_granted": False,
     }
+    if not legacy:
+        bundle = {
+            "schema": "hepta.cell-consumption-bundle.v1",
+            "source": dict(source),
+            "artifacts": {
+                role: {key: binding[key] for key in ("sha256", "bytes")}
+                for role, binding in checked.items()
+            },
+            "compatibility": copy.deepcopy(config["compatibility"]),
+            "required_workflows": sorted(workflows),
+        }
+        result.update(
+            source=dict(source),
+            bundle=bundle,
+            bundle_sha256=canonical_sha256(bundle),
+            compatibility_declaration_integrity="verified",
+            semantic_compatibility_verified=False,
+            state_transition_executed=False,
+            model_execution_verified=False,
+            actual_successor_consumption_verified=False,
+        )
+    return result
 
 
 def main() -> int:
@@ -358,8 +521,20 @@ def main() -> int:
     parser.add_argument("--source-root", type=Path, required=True)
     parser.add_argument("--artifact-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--consumer-readback", type=Path)
+    parser.add_argument("--expected-model-role", choices=MODEL_ROLES)
+    parser.add_argument("--expected-task-id")
     args = parser.parse_args()
     try:
+        consumer_options = (
+            args.consumer_readback,
+            args.expected_model_role,
+            args.expected_task_id,
+        )
+        if any(consumer_options) and not all(consumer_options):
+            raise ValueError(
+                "consumer readback requires an explicit expected model role and task identity"
+            )
         if args.configuration.stat().st_size > 1024 * 1024:
             raise ValueError("configuration exceeds the 1 MiB bound")
         raw = args.configuration.read_bytes()
@@ -367,6 +542,23 @@ def main() -> int:
         if output.is_relative_to(args.source_root.resolve()):
             raise ValueError("integrity receipts must be outside the source checkout")
         result = verify(strict_json(raw), args.source_root, args.artifact_root)
+        if args.consumer_readback:
+            with directory_root(
+                args.consumer_readback.parent.resolve(strict=True)
+            ) as root_fd:
+                with regular_file(root_fd, args.consumer_readback.name) as stream:
+                    before = file_fingerprint(os.fstat(stream.fileno()))
+                    consumer_raw = stream.read(1024 * 1024 + 1)
+                    if len(consumer_raw) > 1024 * 1024 or before != file_fingerprint(
+                        os.fstat(stream.fileno())
+                    ):
+                        raise ValueError("consumer readback changed or exceeds 1 MiB")
+            result["consumer"] = check_consumer_readback(
+                result,
+                strict_json(consumer_raw),
+                args.expected_model_role,
+                args.expected_task_id,
+            ) | {"readback_sha256": hashlib.sha256(consumer_raw).hexdigest()}
         result["configuration_sha256"] = hashlib.sha256(raw).hexdigest()
         result["observed_at_utc"] = datetime.now(timezone.utc).isoformat()
         with output.open("x", encoding="utf-8") as stream:
