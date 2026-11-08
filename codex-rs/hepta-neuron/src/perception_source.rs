@@ -16,9 +16,16 @@ const MAX_SOURCE_BYTES: u64 = 64 * 1024 * 1024;
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum PerceptionSourceLayoutV1 {
-    Bytes { origin_offset: u64, origin_length: u64 },
+    Bytes {
+        origin_offset: u64,
+        origin_length: u64,
+    },
     /// Tightly packed, interleaved pixels; encoded image files use Bytes.
-    Raster { width: u32, height: u32, channels: u8 },
+    Raster {
+        width: u32,
+        height: u32,
+        channels: u8,
+    },
     /// Tightly packed frames with a fixed, declared presentation period.
     Frames {
         width: u32,
@@ -45,7 +52,12 @@ pub struct PerceptionSourcePinV1 {
 pub enum PerceptionCoordinatesV1 {
     /// Half-open offsets in the original source, not in its captured window.
     Bytes { start: u64, end: u64 },
-    ImageRegion { x: u32, y: u32, width: u32, height: u32 },
+    ImageRegion {
+        x: u32,
+        y: u32,
+        width: u32,
+        height: u32,
+    },
     VideoRegion {
         frame_index: u32,
         timestamp_micros: u64,
@@ -70,11 +82,17 @@ impl PerceptionEvidenceV1 {
     /// source pins and original coordinates. IDs alone never bind a latent.
     pub fn digest(&self) -> Result<Digest32, PerceptionErrorV1> {
         if StableId::new(self.evidence_id.as_str()).is_err()
-            || self.raw_bytes.is_empty() || self.raw_bytes.len() > MAX_PERCEPTION_RAW_BYTES
+            || self.raw_bytes.is_empty()
+            || self.raw_bytes.len() > MAX_PERCEPTION_RAW_BYTES
         {
             return Err(PerceptionErrorV1::InvalidEvidence);
         }
-        let length: usize = self.source.raw_ranges(&self.coordinates)?.iter().map(|range| range.end - range.start).sum();
+        let length: usize = self
+            .source
+            .raw_ranges(&self.coordinates)?
+            .iter()
+            .map(|range| range.end - range.start)
+            .sum();
         if length != self.raw_bytes.len() {
             return Err(PerceptionErrorV1::InvalidEvidence);
         }
@@ -154,18 +172,35 @@ impl PerceptionSourcePinV1 {
             return Err(PerceptionErrorV1::InvalidSource);
         }
         let expected = match self.layout {
-            PerceptionSourceLayoutV1::Bytes { origin_offset, origin_length } => {
-                if origin_offset.checked_add(self.byte_length).is_none_or(|end| end > origin_length) {
+            PerceptionSourceLayoutV1::Bytes {
+                origin_offset,
+                origin_length,
+            } => {
+                if origin_offset
+                    .checked_add(self.byte_length)
+                    .is_none_or(|end| end > origin_length)
+                {
                     return Err(PerceptionErrorV1::InvalidSource);
                 }
                 self.byte_length
             }
-            PerceptionSourceLayoutV1::Raster { width, height, channels } => {
-                raster_bytes(width, height, channels)?
-            }
-            PerceptionSourceLayoutV1::Frames { width, height, channels, frame_count, frame_period_micros } => {
-                if frame_count == 0 || frame_period_micros == 0
-                    || u64::from(frame_count).checked_mul(frame_period_micros).is_none()
+            PerceptionSourceLayoutV1::Raster {
+                width,
+                height,
+                channels,
+            } => raster_bytes(width, height, channels)?,
+            PerceptionSourceLayoutV1::Frames {
+                width,
+                height,
+                channels,
+                frame_count,
+                frame_period_micros,
+            } => {
+                if frame_count == 0
+                    || frame_period_micros == 0
+                    || u64::from(frame_count)
+                        .checked_mul(frame_period_micros)
+                        .is_none()
                 {
                     return Err(PerceptionErrorV1::InvalidSource);
                 }
@@ -180,28 +215,71 @@ impl PerceptionSourcePinV1 {
         Ok(())
     }
 
-    pub(crate) fn raw_ranges(&self, coordinates: &PerceptionCoordinatesV1) -> Result<Vec<Range<usize>>, PerceptionErrorV1> {
+    pub(crate) fn raw_ranges(
+        &self,
+        coordinates: &PerceptionCoordinatesV1,
+    ) -> Result<Vec<Range<usize>>, PerceptionErrorV1> {
         self.validate()?;
-        let (frame, source_width, source_height, channels, x, y, width, height) = match (&self.layout, coordinates) {
-            (PerceptionSourceLayoutV1::Bytes { origin_offset, .. }, PerceptionCoordinatesV1::Bytes { start, end }) => {
-                let start = start.checked_sub(*origin_offset).ok_or(PerceptionErrorV1::InvalidCoordinates)?;
-                let end = end.checked_sub(*origin_offset).ok_or(PerceptionErrorV1::InvalidCoordinates)?;
-                if start >= end || end > self.byte_length || end - start > MAX_PERCEPTION_RAW_BYTES as u64 {
-                    return Err(PerceptionErrorV1::InvalidCoordinates);
+        let (frame, source_width, source_height, channels, x, y, width, height) =
+            match (&self.layout, coordinates) {
+                (
+                    PerceptionSourceLayoutV1::Bytes { origin_offset, .. },
+                    PerceptionCoordinatesV1::Bytes { start, end },
+                ) => {
+                    let start = start
+                        .checked_sub(*origin_offset)
+                        .ok_or(PerceptionErrorV1::InvalidCoordinates)?;
+                    let end = end
+                        .checked_sub(*origin_offset)
+                        .ok_or(PerceptionErrorV1::InvalidCoordinates)?;
+                    if start >= end
+                        || end > self.byte_length
+                        || end - start > MAX_PERCEPTION_RAW_BYTES as u64
+                    {
+                        return Err(PerceptionErrorV1::InvalidCoordinates);
+                    }
+                    return Ok(vec![start as usize..end as usize]);
                 }
-                return Ok(vec![start as usize..end as usize]);
-            }
-            (PerceptionSourceLayoutV1::Raster { width: sw, height: sh, channels }, PerceptionCoordinatesV1::ImageRegion { x, y, width, height }) => {
-                (0, *sw, *sh, *channels, *x, *y, *width, *height)
-            }
-            (PerceptionSourceLayoutV1::Frames { width: sw, height: sh, channels, frame_count, frame_period_micros }, PerceptionCoordinatesV1::VideoRegion { frame_index, timestamp_micros, x, y, width, height }) => {
-                if frame_index >= frame_count || u64::from(*frame_index).checked_mul(*frame_period_micros) != Some(*timestamp_micros) {
-                    return Err(PerceptionErrorV1::InvalidCoordinates);
+                (
+                    PerceptionSourceLayoutV1::Raster {
+                        width: sw,
+                        height: sh,
+                        channels,
+                    },
+                    PerceptionCoordinatesV1::ImageRegion {
+                        x,
+                        y,
+                        width,
+                        height,
+                    },
+                ) => (0, *sw, *sh, *channels, *x, *y, *width, *height),
+                (
+                    PerceptionSourceLayoutV1::Frames {
+                        width: sw,
+                        height: sh,
+                        channels,
+                        frame_count,
+                        frame_period_micros,
+                    },
+                    PerceptionCoordinatesV1::VideoRegion {
+                        frame_index,
+                        timestamp_micros,
+                        x,
+                        y,
+                        width,
+                        height,
+                    },
+                ) => {
+                    if frame_index >= frame_count
+                        || u64::from(*frame_index).checked_mul(*frame_period_micros)
+                            != Some(*timestamp_micros)
+                    {
+                        return Err(PerceptionErrorV1::InvalidCoordinates);
+                    }
+                    (*frame_index, *sw, *sh, *channels, *x, *y, *width, *height)
                 }
-                (*frame_index, *sw, *sh, *channels, *x, *y, *width, *height)
-            }
-            _ => return Err(PerceptionErrorV1::InvalidCoordinates),
-        };
+                _ => return Err(PerceptionErrorV1::InvalidCoordinates),
+            };
         let length = raster_bytes(width, height, channels)?;
         if x.checked_add(width).is_none_or(|end| end > source_width)
             || y.checked_add(height).is_none_or(|end| end > source_height)
@@ -229,19 +307,28 @@ fn raster_bytes(width: u32, height: u32, channels: u8) -> Result<u64, Perception
     if width == 0 || height == 0 || !(1..=4).contains(&channels) {
         return Err(PerceptionErrorV1::InvalidCoordinates);
     }
-    u64::from(width).checked_mul(u64::from(height))
+    u64::from(width)
+        .checked_mul(u64::from(height))
         .and_then(|value| value.checked_mul(u64::from(channels)))
         .ok_or(PerceptionErrorV1::InvalidCoordinates)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum PerceptionErrorV1 {
-    InvalidWire, Capacity, InvalidSource, InvalidCoordinates, InvalidEvidence,
-    SourceMismatch, InvalidLatent, BindingMismatch,
+    InvalidWire,
+    Capacity,
+    InvalidSource,
+    InvalidCoordinates,
+    InvalidEvidence,
+    SourceMismatch,
+    InvalidLatent,
+    BindingMismatch,
 }
 
 impl fmt::Display for PerceptionErrorV1 {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result { write!(formatter, "{self:?}") }
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
 }
 impl Error for PerceptionErrorV1 {}
 

@@ -1,13 +1,13 @@
 //! Bounded dual-channel observations. Latents are externally supplied outputs of
 //! a pinned encoder, never hashes or fabricated evidence of model training.
 
-use std::collections::BTreeSet;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
+use std::collections::BTreeSet;
 
-use crate::perception_source::PerceptionActorSourceV1;
 use crate::perception_source::MAX_PERCEPTION_RAW_BYTES;
+use crate::perception_source::PerceptionActorSourceV1;
 use crate::perception_source::PerceptionErrorV1;
 use crate::perception_source::PerceptionEvidenceV1;
 
@@ -19,7 +19,10 @@ const SCHEMA: &str = "hepta.perception.observation.v1";
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub enum PerceptionRepresentationV1 { Global, Dense }
+pub enum PerceptionRepresentationV1 {
+    Global,
+    Dense,
+}
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -59,8 +62,11 @@ pub struct PerceptionEncoderBindingV1 {
 
 impl PerceptionEncoderBindingV1 {
     pub(crate) fn validate(&self) -> Result<(), PerceptionErrorV1> {
-        if self.encoder_digest.is_zero() || self.latent_model_digest.is_zero()
-            || self.residual_predictor_digest.is_some_and(Digest32::is_zero)
+        if self.encoder_digest.is_zero()
+            || self.latent_model_digest.is_zero()
+            || self
+                .residual_predictor_digest
+                .is_some_and(Digest32::is_zero)
             || !(1..=MAX_FEATURES).contains(&self.feature_dimension)
         {
             return Err(PerceptionErrorV1::BindingMismatch);
@@ -71,8 +77,11 @@ impl PerceptionEncoderBindingV1 {
 
 impl PerceptionObservationV1 {
     pub fn decode(bytes: &[u8]) -> Result<Self, PerceptionErrorV1> {
-        if bytes.len() > MAX_OBSERVATION_BYTES { return Err(PerceptionErrorV1::Capacity); }
-        let result: Self = serde_json::from_slice(bytes).map_err(|_| PerceptionErrorV1::InvalidWire)?;
+        if bytes.len() > MAX_OBSERVATION_BYTES {
+            return Err(PerceptionErrorV1::Capacity);
+        }
+        let result: Self =
+            serde_json::from_slice(bytes).map_err(|_| PerceptionErrorV1::InvalidWire)?;
         result.validate_structure()?;
         Ok(result)
     }
@@ -80,7 +89,9 @@ impl PerceptionObservationV1 {
     pub fn encode(&self) -> Result<Vec<u8>, PerceptionErrorV1> {
         self.validate_structure()?;
         let bytes = serde_json::to_vec(self).map_err(|_| PerceptionErrorV1::InvalidWire)?;
-        if bytes.len() > MAX_OBSERVATION_BYTES { return Err(PerceptionErrorV1::Capacity); }
+        if bytes.len() > MAX_OBSERVATION_BYTES {
+            return Err(PerceptionErrorV1::Capacity);
+        }
         Ok(bytes)
     }
 
@@ -95,9 +106,17 @@ impl PerceptionObservationV1 {
         if self.encoder_digest != binding.encoder_digest.into_array()
             || self.latent_model_digest != binding.latent_model_digest.into_array()
             || self.representation != binding.representation
-            || self.latents.iter().map(|latent| latent.values_q24.len()).sum::<usize>() != binding.feature_dimension
-            || self.latents.iter().any(|latent| latent.residual_predictor_digest
-                .is_some_and(|digest| Some(Digest32::from_array(digest)) != binding.residual_predictor_digest))
+            || self
+                .latents
+                .iter()
+                .map(|latent| latent.values_q24.len())
+                .sum::<usize>()
+                != binding.feature_dimension
+            || self.latents.iter().any(|latent| {
+                latent.residual_predictor_digest.is_some_and(|digest| {
+                    Some(Digest32::from_array(digest)) != binding.residual_predictor_digest
+                })
+            })
         {
             return Err(PerceptionErrorV1::BindingMismatch);
         }
@@ -111,8 +130,11 @@ impl PerceptionObservationV1 {
             }
         }
         for evidence in &self.evidence {
-            actor_sources.iter().find(|source| source.pin().source_id == evidence.source.source_id)
-                .ok_or(PerceptionErrorV1::SourceMismatch)?.matches(evidence)?;
+            actor_sources
+                .iter()
+                .find(|source| source.pin().source_id == evidence.source.source_id)
+                .ok_or(PerceptionErrorV1::SourceMismatch)?
+                .matches(evidence)?;
         }
         Ok(())
     }
@@ -122,41 +144,84 @@ impl PerceptionObservationV1 {
         self.validate_structure()?;
         let mut bytes = b"hepta.perception.evidence-set.v1\0".to_vec();
         bytes.extend_from_slice(&self.source_frontier);
-        for evidence in &self.evidence { bytes.extend_from_slice(evidence.digest()?.as_array()); }
+        for evidence in &self.evidence {
+            bytes.extend_from_slice(evidence.digest()?.as_array());
+        }
         Ok(Digest32::of_bytes(&bytes))
     }
 
     fn validate_structure(&self) -> Result<(), PerceptionErrorV1> {
-        if self.schema != SCHEMA || [self.scope_digest, self.source_frontier, self.encoder_digest, self.latent_model_digest].contains(&[0; 32]) {
+        if self.schema != SCHEMA
+            || [
+                self.scope_digest,
+                self.source_frontier,
+                self.encoder_digest,
+                self.latent_model_digest,
+            ]
+            .contains(&[0; 32])
+        {
             return Err(PerceptionErrorV1::BindingMismatch);
         }
-        if self.evidence.is_empty() || self.evidence.len() > MAX_EVIDENCE || self.latents.is_empty() || self.latents.len() > MAX_EVIDENCE {
+        if self.evidence.is_empty()
+            || self.evidence.len() > MAX_EVIDENCE
+            || self.latents.is_empty()
+            || self.latents.len() > MAX_EVIDENCE
+        {
             return Err(PerceptionErrorV1::Capacity);
         }
         let mut ids = BTreeSet::new();
         let mut digests = Vec::with_capacity(self.evidence.len());
         let mut raw_bytes = 0_usize;
         for evidence in &self.evidence {
-            if !ids.insert(evidence.evidence_id.as_str()) { return Err(PerceptionErrorV1::InvalidEvidence); }
-            raw_bytes = raw_bytes.checked_add(evidence.raw_bytes.len()).ok_or(PerceptionErrorV1::Capacity)?;
-            if raw_bytes > MAX_PERCEPTION_RAW_BYTES { return Err(PerceptionErrorV1::Capacity); }
+            if !ids.insert(evidence.evidence_id.as_str()) {
+                return Err(PerceptionErrorV1::InvalidEvidence);
+            }
+            raw_bytes = raw_bytes
+                .checked_add(evidence.raw_bytes.len())
+                .ok_or(PerceptionErrorV1::Capacity)?;
+            if raw_bytes > MAX_PERCEPTION_RAW_BYTES {
+                return Err(PerceptionErrorV1::Capacity);
+            }
             digests.push(evidence.digest()?.into_array());
         }
         let coverage_matches = match self.representation {
-            PerceptionRepresentationV1::Global => self.latents.len() == 1 && self.latents[0].evidence_digests == digests,
-            PerceptionRepresentationV1::Dense => self.latents.len() == digests.len()
-                && self.latents.iter().zip(digests).all(|(latent, digest)| latent.evidence_digests == [digest]),
+            PerceptionRepresentationV1::Global => {
+                self.latents.len() == 1 && self.latents[0].evidence_digests == digests
+            }
+            PerceptionRepresentationV1::Dense => {
+                self.latents.len() == digests.len()
+                    && self
+                        .latents
+                        .iter()
+                        .zip(digests)
+                        .all(|(latent, digest)| latent.evidence_digests == [digest])
+            }
         };
-        if !coverage_matches { return Err(PerceptionErrorV1::InvalidLatent); }
+        if !coverage_matches {
+            return Err(PerceptionErrorV1::InvalidLatent);
+        }
         let dimension = self.latents[0].values_q24.len();
-        if dimension == 0 || dimension.checked_mul(self.latents.len()).is_none_or(|size| size > MAX_FEATURES)
-            || self.latents.iter().any(|latent| latent.values_q24.len() != dimension
-                || latent.values_q24.iter().any(|value| !(-Q24_LIMIT..=Q24_LIMIT).contains(value))
-                || match (latent.prediction_residual_q24, latent.residual_predictor_digest) {
-                    (None, None) => false,
-                    (Some(value), Some(digest)) => !(0..=Q24_LIMIT).contains(&value) || digest == [0; 32],
-                    (None, Some(_)) | (Some(_), None) => true,
-                })
+        if dimension == 0
+            || dimension
+                .checked_mul(self.latents.len())
+                .is_none_or(|size| size > MAX_FEATURES)
+            || self.latents.iter().any(|latent| {
+                latent.values_q24.len() != dimension
+                    || latent
+                        .values_q24
+                        .iter()
+                        .any(|value| !(-Q24_LIMIT..=Q24_LIMIT).contains(value))
+                    || match (
+                        latent.prediction_residual_q24,
+                        latent.residual_predictor_digest,
+                    ) {
+                        (None, None) => false,
+                        (Some(value), Some(digest)) => {
+                            !(0..=Q24_LIMIT).contains(&value) || digest == [0; 32]
+                        }
+                        (None, Some(_)) | (Some(_), None) => true,
+                    }
+            })
         {
             return Err(PerceptionErrorV1::InvalidLatent);
         }
