@@ -1,8 +1,10 @@
 """Exercise formatter scope using real Git state and observable tool commands."""
 
 import importlib.util
+import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -261,6 +263,157 @@ class FormatterScopeTests(unittest.TestCase):
         with patch.object(FMT, "tomllib", None):
             groups = FMT.scoped_formatter_groups(["scripts/first.py"], check=False)
             self.assertEqual([group.name for group in groups], ["Python scripts"])
+
+    def vendor_workspace(self):
+        self.write(
+            "codex-rs/Cargo.toml",
+            '[workspace]\nmembers=["first", "third_party/member"]\n'
+            'exclude=["third_party/vendor"]\n',
+        )
+        packages = []
+        for name in ("first", "third_party/member", "third_party/vendor"):
+            manifest = self.write(
+                f"codex-rs/{name}/Cargo.toml",
+                f'[package]\nname="{Path(name).name}"\nedition="2024"\n',
+            )
+            self.write(f"codex-rs/{name}/src/lib.rs", "pub fn original() {}\n")
+            if name != "third_party/vendor":
+                packages.append({"id": name, "manifest_path": str(manifest)})
+        return {
+            "workspace_root": str(self.root / "codex-rs"),
+            "workspace_members": [package["id"] for package in packages],
+            "packages": packages,
+        }
+
+    def cargo_scope_probe(self, metadata):
+        original = subprocess.check_output
+        calls = []
+
+        def check_output(args, **kwargs):
+            if args[:2] == ["cargo", "metadata"]:
+                calls.append((args, kwargs))
+                return json.dumps(metadata)
+            return original(args, **kwargs)
+
+        patcher = patch.object(FMT.subprocess, "check_output", side_effect=check_output)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        return calls
+
+    def test_scoped_rust_preserves_nonmember_vendor_but_checks_members_and_others(self):
+        calls = self.cargo_scope_probe(self.vendor_workspace())
+        self.git("add", ".")
+        self.git("commit", "-qm", "Rust workspace and original vendor")
+        for name in ("first", "third_party/member", "third_party/vendor"):
+            self.write(f"codex-rs/{name}/src/lib.rs", "pub fn changed() {}\n")
+        self.git("add", "codex-rs/third_party/vendor/src/lib.rs")
+        self.write("codex-rs/third_party/vendor/src/new.rs", "pub fn new() {}\n")
+        self.write(
+            "qualification/fixture/Cargo.toml",
+            '[package]\nname="fixture"\nedition="2021"\n',
+        )
+        self.write("qualification/fixture/src/lib.rs", "pub fn fixture() {}\n")
+        for check in (False, True):
+            groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=check)
+            self.assertEqual([group.name for group in groups], ["Rust"])
+            self.assertEqual(
+                [
+                    Path(command.args[-1]).relative_to(self.root).as_posix()
+                    for command in groups[0].commands
+                ],
+                [
+                    "codex-rs/first/src/lib.rs",
+                    "codex-rs/third_party/member/src/lib.rs",
+                    "qualification/fixture/src/lib.rs",
+                ],
+            )
+            self.assertTrue(
+                all(
+                    ("--check" in command.args) == check
+                    for command in groups[0].commands
+                )
+            )
+        self.assertEqual(len(calls), 2)
+        args, kwargs = calls[0]
+        self.assertIn("--locked", args)
+        self.assertIn("--no-deps", args)
+        self.assertEqual(args[-1], str(self.root / "codex-rs/Cargo.toml"))
+        self.assertEqual(kwargs["cwd"], self.root / "codex-rs")
+
+    def test_rust_configuration_expansion_keeps_nonmember_vendor_out(self):
+        calls = self.cargo_scope_probe(self.vendor_workspace())
+        config = self.write(
+            "codex-rs/third_party/vendor/rustfmt.toml", "max_width=99\n"
+        )
+        self.git("add", ".")
+        self.git("commit", "-qm", "Original Rust inputs")
+        self.write("codex-rs/third_party/vendor/src/new.rs", "pub fn new() {}\n")
+        self.assertEqual(
+            FMT.rust_configuration_scope(["codex-rs/rustfmt.toml"]),
+            ["codex-rs/first/src/lib.rs", "codex-rs/third_party/member/src/lib.rs"],
+        )
+        config.unlink()
+        self.assertEqual(FMT.rust_configuration_scope(FMT.changed_paths()), [])
+        self.assertEqual(len(calls), 2)
+
+    def test_python310_vendor_scope_uses_cargo_membership_once(self):
+        calls = self.cargo_scope_probe(self.vendor_workspace())
+        with patch.object(FMT, "tomllib", None):
+            self.assertEqual(
+                FMT.rust_configuration_scope(
+                    [
+                        "codex-rs/first/src/lib.rs",
+                        "codex-rs/third_party/member/src/lib.rs",
+                        "codex-rs/third_party/vendor/src/lib.rs",
+                        "codex-rs/third_party/vendor/src/other.rs",
+                    ]
+                ),
+                ["codex-rs/first/src/lib.rs", "codex-rs/third_party/member/src/lib.rs"],
+            )
+        self.assertEqual(len(calls), 1)
+
+    @unittest.skipUnless(shutil.which("cargo"), "native Cargo metadata required")
+    def test_python310_scope_matches_real_cargo_workspace_membership(self):
+        self.vendor_workspace()
+        paths = [
+            "codex-rs/first/src/lib.rs",
+            "codex-rs/third_party/member/src/lib.rs",
+            "codex-rs/third_party/vendor/src/lib.rs",
+        ]
+        with patch.object(FMT, "tomllib", None):
+            self.assertEqual(FMT.rust_configuration_scope(paths), paths[:2])
+        self.assertFalse((self.root / "codex-rs/Cargo.lock").exists())
+
+    def test_vendor_without_owning_manifest_and_nonvendor_need_no_metadata(self):
+        self.vendor_workspace()
+        paths = [
+            "codex-rs/first/src/lib.rs",
+            "codex-rs/third_party/loose.rs",
+            "codex-rs/third_party_extra/src/lib.rs",
+            "qualification/loose.rs",
+        ]
+        with patch.object(FMT.subprocess, "check_output") as metadata:
+            self.assertEqual(FMT.rust_configuration_scope(paths), paths)
+            metadata.assert_not_called()
+
+    def test_vendor_scope_reports_metadata_failure_instead_of_exempting_files(self):
+        metadata = self.vendor_workspace()
+        paths = ["codex-rs/third_party/vendor/src/lib.rs"]
+        with patch.object(
+            FMT.subprocess,
+            "check_output",
+            side_effect=subprocess.CalledProcessError(1, ["cargo"]),
+        ):
+            with self.assertRaises(subprocess.CalledProcessError):
+                FMT.rust_configuration_scope(paths)
+        for key, value in (("workspace_root", str(self.root)), ("packages", [])):
+            with patch.object(
+                FMT.subprocess,
+                "check_output",
+                return_value=json.dumps({**metadata, key: value}),
+            ):
+                with self.assertRaises(ValueError):
+                    FMT.rust_configuration_scope(paths)
 
     def test_clean_checkout_does_not_start_any_formatter(self):
         with (

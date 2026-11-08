@@ -339,6 +339,64 @@ def formatting_configuration_changed(path: str, base: str | None = None) -> bool
     return previous != current
 
 
+def filter_scoped_rust_vendors(paths: set[str]) -> list[str]:
+    """Keep nonmember vendor crates outside Cargo's workspace fmt scope."""
+    vendor_root = REPO_ROOT / "codex-rs" / "third_party"
+    owners = {}
+    for path in paths:
+        source = REPO_ROOT / path
+        if not source.is_relative_to(vendor_root):
+            continue
+        if not source.resolve().is_relative_to(REPO_ROOT.resolve()):
+            raise ValueError(f"Rust format input escapes repository: {path!r}")
+        if not source.resolve().is_relative_to(vendor_root.resolve()):
+            continue
+        manifest = next(
+            (
+                parent / "Cargo.toml"
+                for parent in source.parents
+                if parent.is_relative_to(vendor_root)
+                and (parent / "Cargo.toml").is_file()
+            ),
+            None,
+        )
+        if manifest is not None:
+            owners[path] = manifest.resolve()
+    if not owners:
+        return sorted(paths)
+
+    workspace = REPO_ROOT / "codex-rs"
+    # Cargo supplies the same membership as --all, including on Python 3.10.
+    # Resolve it once per scope without fetching dependencies or changing locks.
+    metadata = json.loads(
+        subprocess.check_output(
+            [
+                "cargo",
+                "metadata",
+                "--locked",
+                "--no-deps",
+                "--format-version=1",
+                "--manifest-path",
+                str(workspace / "Cargo.toml"),
+            ],
+            cwd=workspace,
+            text=True,
+        )
+    )
+    if Path(metadata["workspace_root"]).resolve() != workspace.resolve():
+        raise ValueError("Cargo metadata returned a different Rust workspace")
+    members = set(metadata["workspace_members"])
+    packages = {package["id"]: package for package in metadata["packages"]}
+    if not members.issubset(packages):
+        raise ValueError("Cargo metadata omitted Rust workspace members")
+    manifests = {
+        Path(packages[member]["manifest_path"]).resolve() for member in members
+    }
+    return sorted(
+        path for path in paths if path not in owners or owners[path] in manifests
+    )
+
+
 def rust_configuration_scope(paths: list[str]) -> list[str]:
     """Expand changed Rust configuration to its subtree, never unrelated crates.
 
@@ -369,7 +427,7 @@ def rust_configuration_scope(paths: list[str]) -> list[str]:
                 raise ValueError(f"Rust format input escapes repository: {value!r}")
             if target.is_file():
                 selected.add(value)
-    return sorted(selected)
+    return filter_scoped_rust_vendors(selected)
 
 
 def scoped_formatter_groups(
