@@ -1,0 +1,885 @@
+{
+  "actual_regular_files_read_and_hashed": 4053,
+  "actual_total_unique_file_bytes": 411211392,
+  "adoption_authorized": false,
+  "all_read_file_identities_unchanged_at_completion": true,
+  "attempt_inventory_bytes": 1293815,
+  "attempt_inventory_sha256": "4788ff4855bcf72e0390fad909ec74df04aa9d01ee8ac3f697217601b63719dd",
+  "audit_source_sha256": "b6c0ab76e24310b6cabea174924cfbe3ec9264c7e6cf3302af0b2def9d37ed59",
+  "audited_at_utc": "2026-11-07T23:40:31.042979+00:00",
+  "by_predecessor_link_type": {
+    "explicit_failed_retry": {
+      "attempts": 8,
+      "deployment_observed_cpu_seconds": 12.263062921,
+      "deployment_unknown_seconds": 19.395562195,
+      "deployment_wall_seconds": 88.715408762,
+      "exclusive_category_wall_seconds": {
+        "codec": 1.078616284,
+        "critic": 32.198198565,
+        "decoder": 0.047235972,
+        "encoder": 3.216481008,
+        "failure": 0.0,
+        "planning": 32.514950197,
+        "retry": 0.0,
+        "shared": 0.114761327,
+        "sync": 0.14960321399999998
+      },
+      "external_evaluation_wall_seconds": 0.547870291,
+      "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+      "observer_tail_own_cpu_seconds": 1.774985842,
+      "observer_tail_wall_seconds": 1.783754292,
+      "outer_task_and_reaped_children_cpu_seconds": 32.35237600000001,
+      "outer_wall_seconds": 89.42638312117197,
+      "sum_is_elapsed_campaign_time": false,
+      "terminal_counts": {
+        "BudgetStop": 2,
+        "Completed": 6
+      }
+    },
+    "initial_attempt": {
+      "attempts": 120,
+      "deployment_observed_cpu_seconds": 29.354371281,
+      "deployment_unknown_seconds": 218.316661118,
+      "deployment_wall_seconds": 388.937803772,
+      "exclusive_category_wall_seconds": {
+        "codec": 1.868929502,
+        "critic": 67.804120539,
+        "decoder": 0.29841441,
+        "encoder": 30.642983522,
+        "failure": 0.0,
+        "planning": 68.359880316,
+        "retry": 0.0,
+        "shared": 0.526426176,
+        "sync": 1.120388189
+      },
+      "external_evaluation_wall_seconds": 6.008748096,
+      "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+      "observer_tail_own_cpu_seconds": 0.0,
+      "observer_tail_wall_seconds": 0.0,
+      "outer_task_and_reaped_children_cpu_seconds": 271.361913,
+      "outer_wall_seconds": 402.9739835492801,
+      "sum_is_elapsed_campaign_time": false,
+      "terminal_counts": {
+        "BudgetStop": 11,
+        "Completed": 101,
+        "Failed": 8
+      }
+    },
+    "instrumentation_revalidation": {
+      "attempts": 112,
+      "deployment_observed_cpu_seconds": 24.489546111,
+      "deployment_unknown_seconds": 229.737529257,
+      "deployment_wall_seconds": 330.135801275,
+      "exclusive_category_wall_seconds": {
+        "codec": 1.301441727,
+        "critic": 33.265611393,
+        "decoder": 0.242940643,
+        "encoder": 30.479918643,
+        "failure": 0.0,
+        "planning": 33.673926262,
+        "retry": 0.0,
+        "shared": 0.454549732,
+        "sync": 0.979883618
+      },
+      "external_evaluation_wall_seconds": 7.605054878,
+      "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+      "observer_tail_own_cpu_seconds": 1.923372039,
+      "observer_tail_wall_seconds": 2.0222051899999998,
+      "outer_task_and_reaped_children_cpu_seconds": 272.805827,
+      "outer_wall_seconds": 339.2646631828975,
+      "sum_is_elapsed_campaign_time": false,
+      "terminal_counts": {
+        "BudgetStop": 9,
+        "Completed": 103
+      }
+    }
+  },
+  "by_terminal_status": {
+    "BudgetStop": {
+      "attempts": 22,
+      "deployment_observed_cpu_seconds": 6.571490713999999,
+      "deployment_unknown_seconds": 43.835032027,
+      "deployment_wall_seconds": 74.088432681,
+      "exclusive_category_wall_seconds": {
+        "codec": 1.053806785,
+        "critic": 11.111060390999999,
+        "decoder": 0.170576544,
+        "encoder": 5.756493521,
+        "failure": 0.0,
+        "planning": 11.352044757,
+        "retry": 0.0,
+        "shared": 0.277501568,
+        "sync": 0.531917088
+      },
+      "external_evaluation_wall_seconds": 1.308468224,
+      "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+      "observer_tail_own_cpu_seconds": 0.642870658,
+      "observer_tail_wall_seconds": 0.653922746,
+      "outer_task_and_reaped_children_cpu_seconds": 53.48596599999998,
+      "outer_wall_seconds": 75.81334089813754,
+      "sum_is_elapsed_campaign_time": false,
+      "terminal_counts": {
+        "BudgetStop": 22
+      }
+    },
+    "Completed": {
+      "attempts": 210,
+      "deployment_observed_cpu_seconds": 52.139353515,
+      "deployment_unknown_seconds": 410.65235812,
+      "deployment_wall_seconds": 660.790902299,
+      "exclusive_category_wall_seconds": {
+        "codec": 2.4815977,
+        "critic": 93.858522104,
+        "decoder": 0.37614481,
+        "encoder": 56.362147163,
+        "failure": 0.0,
+        "planning": 94.702112325,
+        "retry": 0.0,
+        "shared": 0.75070425,
+        "sync": 1.607315827
+      },
+      "external_evaluation_wall_seconds": 12.853205041,
+      "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+      "observer_tail_own_cpu_seconds": 3.055487223,
+      "observer_tail_wall_seconds": 3.152036736,
+      "outer_task_and_reaped_children_cpu_seconds": 499.046263,
+      "outer_wall_seconds": 680.4312658440322,
+      "sum_is_elapsed_campaign_time": false,
+      "terminal_counts": {
+        "Completed": 210
+      }
+    },
+    "Failed": {
+      "attempts": 8,
+      "deployment_observed_cpu_seconds": 7.396136084,
+      "deployment_unknown_seconds": 12.962362423,
+      "deployment_wall_seconds": 72.909678829,
+      "exclusive_category_wall_seconds": {
+        "codec": 0.7135830280000001,
+        "critic": 28.298348002,
+        "decoder": 0.041869671,
+        "encoder": 2.220742489,
+        "failure": 0.0,
+        "planning": 28.494599692999998,
+        "retry": 0.0,
+        "shared": 0.067531417,
+        "sync": 0.110642106
+      },
+      "external_evaluation_wall_seconds": 0.0,
+      "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+      "observer_tail_own_cpu_seconds": 0.0,
+      "observer_tail_wall_seconds": 0.0,
+      "outer_task_and_reaped_children_cpu_seconds": 23.987887,
+      "outer_wall_seconds": 75.42042311117984,
+      "sum_is_elapsed_campaign_time": false,
+      "terminal_counts": {
+        "Failed": 8
+      }
+    }
+  },
+  "cell_journal_authentication": "NOT_ESTABLISHED_BY_THIS_AUDIT",
+  "confirmation_access_authorized": false,
+  "energy_joules": null,
+  "failed_originals_retained": 8,
+  "failed_originals_with_retained_actual_journals": 8,
+  "failure_and_retry_cost_interpretation": "Dedicated category zero is not zero attempt cost; use Failed and explicit_failed_retry whole-attempt aggregates.",
+  "full_physical_cost_complete": false,
+  "independent_new_scientific_units": 0,
+  "issues": [],
+  "limitations": [
+    "Frozen span verifier reused for raw replay; source author also reviewed integration.",
+    "File hashes and metadata checks do not authenticate a malicious host owner.",
+    "Deployment CPU is observed host and actor lower bound; outer CPU includes reaped children.",
+    "UNKNOWN remains real unclassified wall time; no monetary or energy conversion.",
+    "First run excludes observer tail from deployment; its outer envelope covers it."
+  ],
+  "missing_terminal_receipts": 0,
+  "native_owner_authentication": "NOT_ESTABLISHED_BY_THIS_AUDIT",
+  "new_model_fits": 0,
+  "one_source_group_five_workflow_variants_not_five_independent_source_families": true,
+  "original_input_pins": {
+    "PILOT_PLAN.json": "139a8c0ce912f4eadb62d80463674ac7295b04fad4c455296654ec7630946880",
+    "selected-sources.json": "bf743708f668815f907ee7e574e4b90d8ef82aa98318eef2210a3505faccc4ca",
+    "selection-lock.json": "410cc42b2ea09a9532963d5fa67b5e248af55ab86d3b1ffbd274edbcc3dec0ef"
+  },
+  "original_source_files_verified": 23,
+  "provider_charges": null,
+  "runs": [
+    {
+      "actual_event_ledger_sha256": "c4dbc5820b15670b57b0f980a7ac97244820347b5e9e4a98125f0a7a4127f2ee",
+      "actual_phase_result_sha256": "e2f1cfd0ca7b44f70f3c255c32ecb2e1652bafae4b3f17eafae42e606ff0da5f",
+      "by_predecessor_link_type": {
+        "initial_attempt": {
+          "attempts": 120,
+          "deployment_observed_cpu_seconds": 29.354371281,
+          "deployment_unknown_seconds": 218.316661118,
+          "deployment_wall_seconds": 388.937803772,
+          "exclusive_category_wall_seconds": {
+            "codec": 1.868929502,
+            "critic": 67.804120539,
+            "decoder": 0.29841441,
+            "encoder": 30.642983522,
+            "failure": 0.0,
+            "planning": 68.359880316,
+            "retry": 0.0,
+            "shared": 0.526426176,
+            "sync": 1.120388189
+          },
+          "external_evaluation_wall_seconds": 6.008748096,
+          "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+          "observer_tail_own_cpu_seconds": 0.0,
+          "observer_tail_wall_seconds": 0.0,
+          "outer_task_and_reaped_children_cpu_seconds": 271.361913,
+          "outer_wall_seconds": 402.9739835492801,
+          "sum_is_elapsed_campaign_time": false,
+          "terminal_counts": {
+            "BudgetStop": 11,
+            "Completed": 101,
+            "Failed": 8
+          }
+        }
+      },
+      "by_terminal_status": {
+        "BudgetStop": {
+          "attempts": 11,
+          "deployment_observed_cpu_seconds": 1.262850042,
+          "deployment_unknown_seconds": 20.230437973,
+          "deployment_wall_seconds": 24.421413265,
+          "exclusive_category_wall_seconds": {
+            "codec": 0.436295755,
+            "critic": 0.255653853,
+            "decoder": 0.086183225,
+            "encoder": 2.698965662,
+            "failure": 0.0,
+            "planning": 0.31877601,
+            "retry": 0.0,
+            "shared": 0.128464986,
+            "sync": 0.266635801
+          },
+          "external_evaluation_wall_seconds": 0.579846502,
+          "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+          "observer_tail_own_cpu_seconds": 0.0,
+          "observer_tail_wall_seconds": 0.0,
+          "outer_task_and_reaped_children_cpu_seconds": 23.160683000000002,
+          "outer_wall_seconds": 25.24677776824683,
+          "sum_is_elapsed_campaign_time": false,
+          "terminal_counts": {
+            "BudgetStop": 11
+          }
+        },
+        "Completed": {
+          "attempts": 101,
+          "deployment_observed_cpu_seconds": 20.695385155,
+          "deployment_unknown_seconds": 185.123860722,
+          "deployment_wall_seconds": 291.606711678,
+          "exclusive_category_wall_seconds": {
+            "codec": 0.719050719,
+            "critic": 39.250118684,
+            "decoder": 0.170361514,
+            "encoder": 25.723275371,
+            "failure": 0.0,
+            "planning": 39.546504613,
+            "retry": 0.0,
+            "shared": 0.330429773,
+            "sync": 0.743110282
+          },
+          "external_evaluation_wall_seconds": 5.428901594,
+          "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+          "observer_tail_own_cpu_seconds": 0.0,
+          "observer_tail_wall_seconds": 0.0,
+          "outer_task_and_reaped_children_cpu_seconds": 224.213343,
+          "outer_wall_seconds": 302.3067826698534,
+          "sum_is_elapsed_campaign_time": false,
+          "terminal_counts": {
+            "Completed": 101
+          }
+        },
+        "Failed": {
+          "attempts": 8,
+          "deployment_observed_cpu_seconds": 7.396136084,
+          "deployment_unknown_seconds": 12.962362423,
+          "deployment_wall_seconds": 72.909678829,
+          "exclusive_category_wall_seconds": {
+            "codec": 0.7135830280000001,
+            "critic": 28.298348002,
+            "decoder": 0.041869671,
+            "encoder": 2.220742489,
+            "failure": 0.0,
+            "planning": 28.494599692999998,
+            "retry": 0.0,
+            "shared": 0.067531417,
+            "sync": 0.110642106
+          },
+          "external_evaluation_wall_seconds": 0.0,
+          "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+          "observer_tail_own_cpu_seconds": 0.0,
+          "observer_tail_wall_seconds": 0.0,
+          "outer_task_and_reaped_children_cpu_seconds": 23.987887,
+          "outer_wall_seconds": 75.42042311117984,
+          "sum_is_elapsed_campaign_time": false,
+          "terminal_counts": {
+            "Failed": 8
+          }
+        }
+      },
+      "code_manifest_sha256": "a05f5b15466c7e355dd97a124879d59d0ce1d8dee08023a181d3684634936e91",
+      "native_job_id": "1a1b852687c-12894-e4f",
+      "original_qualification_status": "FAILED",
+      "result_sha256": "4ccdeb67700949cc6ecc2eb4e53e488fafd0dbe7c760f4b34c1a5c201d062fbd",
+      "root": "/home/qq/ndu-runtime-meter-v2-20261107-673721095449/diagnostic-run-v1",
+      "run_number": 1,
+      "totals": {
+        "attempts": 120,
+        "deployment_observed_cpu_seconds": 29.354371281,
+        "deployment_unknown_seconds": 218.316661118,
+        "deployment_wall_seconds": 388.937803772,
+        "exclusive_category_wall_seconds": {
+          "codec": 1.868929502,
+          "critic": 67.804120539,
+          "decoder": 0.29841441,
+          "encoder": 30.642983522,
+          "failure": 0.0,
+          "planning": 68.359880316,
+          "retry": 0.0,
+          "shared": 0.526426176,
+          "sync": 1.120388189
+        },
+        "external_evaluation_wall_seconds": 6.008748096,
+        "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+        "observer_tail_own_cpu_seconds": 0.0,
+        "observer_tail_wall_seconds": 0.0,
+        "outer_task_and_reaped_children_cpu_seconds": 271.361913,
+        "outer_wall_seconds": 402.9739835492801,
+        "sum_is_elapsed_campaign_time": false,
+        "terminal_counts": {
+          "BudgetStop": 11,
+          "Completed": 101,
+          "Failed": 8
+        }
+      }
+    },
+    {
+      "actual_event_ledger_sha256": "d233a7a88939edcc149a3e2f162bf4b77271aaef81e8ba265db7b1073af60454",
+      "actual_phase_result_sha256": "1dce36721b5fc56c81cbbc7b0bfff53acb34b8dca749d6ab04b0a22fca87385c",
+      "by_predecessor_link_type": {
+        "explicit_failed_retry": {
+          "attempts": 8,
+          "deployment_observed_cpu_seconds": 12.263062921,
+          "deployment_unknown_seconds": 19.395562195,
+          "deployment_wall_seconds": 88.715408762,
+          "exclusive_category_wall_seconds": {
+            "codec": 1.078616284,
+            "critic": 32.198198565,
+            "decoder": 0.047235972,
+            "encoder": 3.216481008,
+            "failure": 0.0,
+            "planning": 32.514950197,
+            "retry": 0.0,
+            "shared": 0.114761327,
+            "sync": 0.14960321399999998
+          },
+          "external_evaluation_wall_seconds": 0.547870291,
+          "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+          "observer_tail_own_cpu_seconds": 1.774985842,
+          "observer_tail_wall_seconds": 1.783754292,
+          "outer_task_and_reaped_children_cpu_seconds": 32.35237600000001,
+          "outer_wall_seconds": 89.42638312117197,
+          "sum_is_elapsed_campaign_time": false,
+          "terminal_counts": {
+            "BudgetStop": 2,
+            "Completed": 6
+          }
+        },
+        "instrumentation_revalidation": {
+          "attempts": 112,
+          "deployment_observed_cpu_seconds": 24.489546111,
+          "deployment_unknown_seconds": 229.737529257,
+          "deployment_wall_seconds": 330.135801275,
+          "exclusive_category_wall_seconds": {
+            "codec": 1.301441727,
+            "critic": 33.265611393,
+            "decoder": 0.242940643,
+            "encoder": 30.479918643,
+            "failure": 0.0,
+            "planning": 33.673926262,
+            "retry": 0.0,
+            "shared": 0.454549732,
+            "sync": 0.979883618
+          },
+          "external_evaluation_wall_seconds": 7.605054878,
+          "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+          "observer_tail_own_cpu_seconds": 1.923372039,
+          "observer_tail_wall_seconds": 2.0222051899999998,
+          "outer_task_and_reaped_children_cpu_seconds": 272.805827,
+          "outer_wall_seconds": 339.2646631828975,
+          "sum_is_elapsed_campaign_time": false,
+          "terminal_counts": {
+            "BudgetStop": 9,
+            "Completed": 103
+          }
+        }
+      },
+      "by_terminal_status": {
+        "BudgetStop": {
+          "attempts": 11,
+          "deployment_observed_cpu_seconds": 5.308640672,
+          "deployment_unknown_seconds": 23.604594054,
+          "deployment_wall_seconds": 49.667019416,
+          "exclusive_category_wall_seconds": {
+            "codec": 0.61751103,
+            "critic": 10.855406537999999,
+            "decoder": 0.084393319,
+            "encoder": 3.057527859,
+            "failure": 0.0,
+            "planning": 11.033268747000001,
+            "retry": 0.0,
+            "shared": 0.149036582,
+            "sync": 0.265281287
+          },
+          "external_evaluation_wall_seconds": 0.728621722,
+          "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+          "observer_tail_own_cpu_seconds": 0.642870658,
+          "observer_tail_wall_seconds": 0.653922746,
+          "outer_task_and_reaped_children_cpu_seconds": 30.325282999999985,
+          "outer_wall_seconds": 50.56656312989071,
+          "sum_is_elapsed_campaign_time": false,
+          "terminal_counts": {
+            "BudgetStop": 11
+          }
+        },
+        "Completed": {
+          "attempts": 109,
+          "deployment_observed_cpu_seconds": 31.44396836,
+          "deployment_unknown_seconds": 225.528497398,
+          "deployment_wall_seconds": 369.18419062099997,
+          "exclusive_category_wall_seconds": {
+            "codec": 1.762546981,
+            "critic": 54.60840342,
+            "decoder": 0.205783296,
+            "encoder": 30.638871792,
+            "failure": 0.0,
+            "planning": 55.155607712,
+            "retry": 0.0,
+            "shared": 0.420274477,
+            "sync": 0.864205545
+          },
+          "external_evaluation_wall_seconds": 7.424303447,
+          "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+          "observer_tail_own_cpu_seconds": 3.055487223,
+          "observer_tail_wall_seconds": 3.152036736,
+          "outer_task_and_reaped_children_cpu_seconds": 274.83292,
+          "outer_wall_seconds": 378.12448317417875,
+          "sum_is_elapsed_campaign_time": false,
+          "terminal_counts": {
+            "Completed": 109
+          }
+        }
+      },
+      "code_manifest_sha256": "b03848dfd0f0cce23bb6592903561283e67ac7ef8d82b6fe5b7398100139d5d0",
+      "native_job_id": "1a1b85a7c49-12894-e9e",
+      "original_qualification_status": "PASSED",
+      "result_sha256": "fb739608629e7723b6098a43f9a8475074ae6cfe85e32b878e8d8f61e73eb113",
+      "root": "/home/qq/ndu-runtime-meter-v2-20261107-673721095449-attempt02/diagnostic-run-v1",
+      "run_number": 2,
+      "totals": {
+        "attempts": 120,
+        "deployment_observed_cpu_seconds": 36.752609032,
+        "deployment_unknown_seconds": 249.133091452,
+        "deployment_wall_seconds": 418.851210037,
+        "exclusive_category_wall_seconds": {
+          "codec": 2.380058011,
+          "critic": 65.463809958,
+          "decoder": 0.290176615,
+          "encoder": 33.696399651,
+          "failure": 0.0,
+          "planning": 66.188876459,
+          "retry": 0.0,
+          "shared": 0.569311059,
+          "sync": 1.129486832
+        },
+        "external_evaluation_wall_seconds": 8.152925169,
+        "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+        "observer_tail_own_cpu_seconds": 3.698357881,
+        "observer_tail_wall_seconds": 3.805959482,
+        "outer_task_and_reaped_children_cpu_seconds": 305.158203,
+        "outer_wall_seconds": 428.69104630406946,
+        "sum_is_elapsed_campaign_time": false,
+        "terminal_counts": {
+          "BudgetStop": 11,
+          "Completed": 109
+        }
+      }
+    }
+  ],
+  "same_original_model_control_plan_source_rubric_evaluator_pins_verified": true,
+  "schema": "ndu.real.native-inventory-audit.v1",
+  "scientific_admission": "HOLD",
+  "scope": "Read-only actual file readback and pinned meter replay; no models executed and no outputs rescored.",
+  "scorer_receipts_absent_after_first_actor_failure": 8,
+  "scorer_receipts_verified": 232,
+  "source_manifests": [
+    {
+      "files": [
+        {
+          "bytes": 14705,
+          "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py",
+          "sha256": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978"
+        },
+        {
+          "bytes": 74,
+          "path": "scripts/ndu_real_materials/__init__.py",
+          "sha256": "1f0a2d2286ae48aa399b8759c8326e878b4de73bbec0fcc9c2617b58463187a9"
+        },
+        {
+          "bytes": 4397,
+          "path": "scripts/ndu_real_materials/acquire.py",
+          "sha256": "e27b2bf1cdb2a012790fb868fb9d0cce93d8718a8deedda61c81cdcc8fd75de6"
+        },
+        {
+          "bytes": 3063,
+          "path": "scripts/ndu_real_materials/common.py",
+          "sha256": "2f08fb8c73be5783552c02168acceb702149c2c5db510539e0b51b2578744ca6"
+        },
+        {
+          "bytes": 25826,
+          "path": "scripts/ndu_real_materials/coverage.py",
+          "sha256": "8b37fd61e272d8b5be04fe1ee7aabe9f9707911faf54c14df5e96e90e2f3caea"
+        },
+        {
+          "bytes": 8741,
+          "path": "scripts/ndu_real_materials/evaluator.py",
+          "sha256": "6c79c906eb021069f8e3df36dc2029909d2dd152a47dbc30ad64b1391ba59cfd"
+        },
+        {
+          "bytes": 4729,
+          "path": "scripts/ndu_real_materials/groups.py",
+          "sha256": "7427dc672eb40f99fbf8cc5d6633324195a7abe097cebc4b8ce328ee1cd9d121"
+        },
+        {
+          "bytes": 15161,
+          "path": "scripts/ndu_real_materials/isolate.py",
+          "sha256": "3e9d5c07a72257c3411d5ceff0f7d923f9f85bd2e9cd112ed9b496eb77d44ace"
+        },
+        {
+          "bytes": 10852,
+          "path": "scripts/ndu_real_materials/isolation_probe.py",
+          "sha256": "460bcd50909d496a3c0074229bbaf12991256f471b5c53566b9b84a5e1900f38"
+        },
+        {
+          "bytes": 18415,
+          "path": "scripts/ndu_real_materials/register.py",
+          "sha256": "6254f04844546ac4c5ff6402f217b119f55f6af54e1d83aca0570e73386496b3"
+        },
+        {
+          "bytes": 12465,
+          "path": "scripts/ndu_real_materials/test_coverage.py",
+          "sha256": "bbcb2351cedcb1cae7f850e48a0157d6b2929fec60f7d7a9ffdd823b5ed6d7bf"
+        },
+        {
+          "bytes": 77,
+          "path": "scripts/ndu_real_runtime/__init__.py",
+          "sha256": "cb8063131308ce06b535be86ae276281fa6c0cc0f21a1752f29d0c59018ef8a4"
+        },
+        {
+          "bytes": 12442,
+          "path": "scripts/ndu_real_runtime/actor.py",
+          "sha256": "8257b388d79bcd7b01784270ef1f0818635c01064fa1f0601851aed78c822fbb"
+        },
+        {
+          "bytes": 12402,
+          "path": "scripts/ndu_real_runtime/controllers.py",
+          "sha256": "39a504da7ac88a712b09806f10eb67e0a96d95c496395a336fb5208b9bc55161"
+        },
+        {
+          "bytes": 20431,
+          "path": "scripts/ndu_real_runtime/episode.py",
+          "sha256": "6845d5140204b525431cceb9d97cebde9539c9d17f662f5118d45c893a8e2fbc"
+        },
+        {
+          "bytes": 8122,
+          "path": "scripts/ndu_real_runtime/interval_costs.py",
+          "sha256": "7a31916a534b112bb8ca2b7895cc596f7ef70427ab58ca36a07273cf228c92b7"
+        },
+        {
+          "bytes": 16963,
+          "path": "scripts/ndu_real_runtime/matrix.py",
+          "sha256": "7c71e97461f3417e35cd56c6b027f02581a2b1bff0111787b23e73442c648f33"
+        },
+        {
+          "bytes": 10762,
+          "path": "scripts/ndu_real_runtime/meter_diagnostic.py",
+          "sha256": "bbdb2f54a9680c649651a9451da98d2af6fc8c6fb7ea877a6d3f38aa022d5fd7"
+        },
+        {
+          "bytes": 7427,
+          "path": "scripts/ndu_real_runtime/metering.py",
+          "sha256": "063dba4730c265ad3486ca63b5a38dff0c42ad82bdacd8a32877ad3d4e5ceead"
+        },
+        {
+          "bytes": 3034,
+          "path": "scripts/ndu_real_runtime/native_worker.py",
+          "sha256": "7d17b79fd33a79d8d2306055e5774bc909f907f0bc3288eb4c8c6e6179656ce5"
+        },
+        {
+          "bytes": 7817,
+          "path": "scripts/ndu_real_runtime/neural.py",
+          "sha256": "fa5062d477efe204ca6e424f2416d78d37dde4effa616a650605c83de959eadd"
+        },
+        {
+          "bytes": 9539,
+          "path": "scripts/ndu_real_runtime/ocr.py",
+          "sha256": "1c0d5b47dafd9a797257e8ec59be08da5d6f9bc2abfb0512716b13ab295ff14f"
+        },
+        {
+          "bytes": 12127,
+          "path": "scripts/ndu_real_runtime/pipeline.py",
+          "sha256": "38f4cb351e4b0d1773a8d1190b8f2206f994b7f05bdd7301406e2fd5ce325223"
+        },
+        {
+          "bytes": 1095,
+          "path": "scripts/ndu_real_runtime/score_worker.py",
+          "sha256": "64551bd3d3f6c22d63312dc70d7af8e3b985c1797734e0b1142a0af1ab2f762a"
+        },
+        {
+          "bytes": 18554,
+          "path": "scripts/ndu_real_runtime/span_meter.py",
+          "sha256": "7b3417caabbd952ae77f743593db15820c1fbf7afb9f6d3dcd2327fe34a03372"
+        },
+        {
+          "bytes": 14905,
+          "path": "scripts/ndu_real_runtime/study.py",
+          "sha256": "d1a90ac843a2def841d131cd3d4fe922cf3c7f0b5f0dc979a45841a53c34896e"
+        },
+        {
+          "bytes": 8892,
+          "path": "scripts/ndu_real_runtime/test_interval_costs.py",
+          "sha256": "16aad51a5b518af08e2f61f7260017e4a45d2af94a4f6704adcc984b469b38b3"
+        },
+        {
+          "bytes": 11072,
+          "path": "scripts/ndu_real_runtime/test_span_meter.py",
+          "sha256": "15cdcdc8903d164c8b048671660619ef6a50efeb29e49cace31c1812e72440a5"
+        },
+        {
+          "bytes": 33386,
+          "path": "scripts/ndu_real_runtime/training.py",
+          "sha256": "fbc01a695b53103067e50973c21e1f04d1aae5192a3e9c2e7854604cbaa7ca8b"
+        },
+        {
+          "bytes": 7309,
+          "path": "scripts/ndu_real_runtime/training_grid.py",
+          "sha256": "6543348bb0f12478e4dc9530f8df693d1ded74524953b534bf33559af0859c23"
+        }
+      ],
+      "native_job_id": "1a1b852687c-12894-e4f",
+      "root": "/home/qq/ndu-runtime-meter-v2-20261107-673721095449",
+      "sha256": "a05f5b15466c7e355dd97a124879d59d0ce1d8dee08023a181d3684634936e91"
+    },
+    {
+      "files": [
+        {
+          "bytes": 14705,
+          "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py",
+          "sha256": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978"
+        },
+        {
+          "bytes": 74,
+          "path": "scripts/ndu_real_materials/__init__.py",
+          "sha256": "1f0a2d2286ae48aa399b8759c8326e878b4de73bbec0fcc9c2617b58463187a9"
+        },
+        {
+          "bytes": 4397,
+          "path": "scripts/ndu_real_materials/acquire.py",
+          "sha256": "e27b2bf1cdb2a012790fb868fb9d0cce93d8718a8deedda61c81cdcc8fd75de6"
+        },
+        {
+          "bytes": 3063,
+          "path": "scripts/ndu_real_materials/common.py",
+          "sha256": "2f08fb8c73be5783552c02168acceb702149c2c5db510539e0b51b2578744ca6"
+        },
+        {
+          "bytes": 25826,
+          "path": "scripts/ndu_real_materials/coverage.py",
+          "sha256": "8b37fd61e272d8b5be04fe1ee7aabe9f9707911faf54c14df5e96e90e2f3caea"
+        },
+        {
+          "bytes": 8741,
+          "path": "scripts/ndu_real_materials/evaluator.py",
+          "sha256": "6c79c906eb021069f8e3df36dc2029909d2dd152a47dbc30ad64b1391ba59cfd"
+        },
+        {
+          "bytes": 4729,
+          "path": "scripts/ndu_real_materials/groups.py",
+          "sha256": "7427dc672eb40f99fbf8cc5d6633324195a7abe097cebc4b8ce328ee1cd9d121"
+        },
+        {
+          "bytes": 15161,
+          "path": "scripts/ndu_real_materials/isolate.py",
+          "sha256": "3e9d5c07a72257c3411d5ceff0f7d923f9f85bd2e9cd112ed9b496eb77d44ace"
+        },
+        {
+          "bytes": 10852,
+          "path": "scripts/ndu_real_materials/isolation_probe.py",
+          "sha256": "460bcd50909d496a3c0074229bbaf12991256f471b5c53566b9b84a5e1900f38"
+        },
+        {
+          "bytes": 18415,
+          "path": "scripts/ndu_real_materials/register.py",
+          "sha256": "6254f04844546ac4c5ff6402f217b119f55f6af54e1d83aca0570e73386496b3"
+        },
+        {
+          "bytes": 12465,
+          "path": "scripts/ndu_real_materials/test_coverage.py",
+          "sha256": "bbcb2351cedcb1cae7f850e48a0157d6b2929fec60f7d7a9ffdd823b5ed6d7bf"
+        },
+        {
+          "bytes": 77,
+          "path": "scripts/ndu_real_runtime/__init__.py",
+          "sha256": "cb8063131308ce06b535be86ae276281fa6c0cc0f21a1752f29d0c59018ef8a4"
+        },
+        {
+          "bytes": 12480,
+          "path": "scripts/ndu_real_runtime/actor.py",
+          "sha256": "97292ef7c4dfcbfe65cfce799e857fcd21c31ce15792cbbcfb1288d843b03fc2"
+        },
+        {
+          "bytes": 12402,
+          "path": "scripts/ndu_real_runtime/controllers.py",
+          "sha256": "39a504da7ac88a712b09806f10eb67e0a96d95c496395a336fb5208b9bc55161"
+        },
+        {
+          "bytes": 20501,
+          "path": "scripts/ndu_real_runtime/episode.py",
+          "sha256": "bcb15354c31a306e75ea9c5c926a0ba3a94ce9886f83dd6dffc79495387628a3"
+        },
+        {
+          "bytes": 11426,
+          "path": "scripts/ndu_real_runtime/interval_costs.py",
+          "sha256": "0ba74ec18979fc4f13facdaefe880796f7e81fd33937aa0bf02df7990487ed90"
+        },
+        {
+          "bytes": 17131,
+          "path": "scripts/ndu_real_runtime/matrix.py",
+          "sha256": "d0dc089178096bc9753cd6347f78251acae3915a9b84133435fcabdc55b75c17"
+        },
+        {
+          "bytes": 13642,
+          "path": "scripts/ndu_real_runtime/meter_diagnostic.py",
+          "sha256": "118c5e38046f83eefd4aa52d23fb0d4fd29639eb5907e3a0e69d3edd7d6e794b"
+        },
+        {
+          "bytes": 7844,
+          "path": "scripts/ndu_real_runtime/metering.py",
+          "sha256": "48c78da966e6902b840c65f2024d9302f90623a486fbfc17471b3ed40265b869"
+        },
+        {
+          "bytes": 3034,
+          "path": "scripts/ndu_real_runtime/native_worker.py",
+          "sha256": "7d17b79fd33a79d8d2306055e5774bc909f907f0bc3288eb4c8c6e6179656ce5"
+        },
+        {
+          "bytes": 7817,
+          "path": "scripts/ndu_real_runtime/neural.py",
+          "sha256": "fa5062d477efe204ca6e424f2416d78d37dde4effa616a650605c83de959eadd"
+        },
+        {
+          "bytes": 9539,
+          "path": "scripts/ndu_real_runtime/ocr.py",
+          "sha256": "1c0d5b47dafd9a797257e8ec59be08da5d6f9bc2abfb0512716b13ab295ff14f"
+        },
+        {
+          "bytes": 12127,
+          "path": "scripts/ndu_real_runtime/pipeline.py",
+          "sha256": "38f4cb351e4b0d1773a8d1190b8f2206f994b7f05bdd7301406e2fd5ce325223"
+        },
+        {
+          "bytes": 1095,
+          "path": "scripts/ndu_real_runtime/score_worker.py",
+          "sha256": "64551bd3d3f6c22d63312dc70d7af8e3b985c1797734e0b1142a0af1ab2f762a"
+        },
+        {
+          "bytes": 18554,
+          "path": "scripts/ndu_real_runtime/span_meter.py",
+          "sha256": "7b3417caabbd952ae77f743593db15820c1fbf7afb9f6d3dcd2327fe34a03372"
+        },
+        {
+          "bytes": 14905,
+          "path": "scripts/ndu_real_runtime/study.py",
+          "sha256": "d1a90ac843a2def841d131cd3d4fe922cf3c7f0b5f0dc979a45841a53c34896e"
+        },
+        {
+          "bytes": 10931,
+          "path": "scripts/ndu_real_runtime/test_interval_costs.py",
+          "sha256": "17c1b419c537e51684304fddaf2c477b5548656a935b6ad144de61838a9e235f"
+        },
+        {
+          "bytes": 11072,
+          "path": "scripts/ndu_real_runtime/test_span_meter.py",
+          "sha256": "15cdcdc8903d164c8b048671660619ef6a50efeb29e49cace31c1812e72440a5"
+        },
+        {
+          "bytes": 33386,
+          "path": "scripts/ndu_real_runtime/training.py",
+          "sha256": "fbc01a695b53103067e50973c21e1f04d1aae5192a3e9c2e7854604cbaa7ca8b"
+        },
+        {
+          "bytes": 7309,
+          "path": "scripts/ndu_real_runtime/training_grid.py",
+          "sha256": "6543348bb0f12478e4dc9530f8df693d1ded74524953b534bf33559af0859c23"
+        }
+      ],
+      "native_job_id": "1a1b85a7c49-12894-e9e",
+      "root": "/home/qq/ndu-runtime-meter-v2-20261107-673721095449-attempt02",
+      "sha256": "b03848dfd0f0cce23bb6592903561283e67ac7ef8d82b6fe5b7398100139d5d0"
+    }
+  ],
+  "status": "PASS_ACTUAL_FILE_INVENTORY_AND_BOUND_METER_REPLAY",
+  "totals": {
+    "attempts": 240,
+    "deployment_observed_cpu_seconds": 66.106980313,
+    "deployment_unknown_seconds": 467.44975257,
+    "deployment_wall_seconds": 807.789013809,
+    "exclusive_category_wall_seconds": {
+      "codec": 4.248987513,
+      "critic": 133.267930497,
+      "decoder": 0.588591025,
+      "encoder": 64.339383173,
+      "failure": 0.0,
+      "planning": 134.548756775,
+      "retry": 0.0,
+      "shared": 1.095737235,
+      "sync": 2.249875021
+    },
+    "external_evaluation_wall_seconds": 14.161673265,
+    "nonadditive_scopes": "Deployment and evaluation are nested inside outer task; do not sum them with outer costs.",
+    "observer_tail_own_cpu_seconds": 3.698357881,
+    "observer_tail_wall_seconds": 3.805959482,
+    "outer_task_and_reaped_children_cpu_seconds": 576.520116,
+    "outer_wall_seconds": 831.6650298533496,
+    "sum_is_elapsed_campaign_time": false,
+    "terminal_counts": {
+      "BudgetStop": 22,
+      "Completed": 210,
+      "Failed": 8
+    }
+  },
+  "unchanged_budget_markers": {
+    "declared_phase_budgets": {
+      "aggregate_job_cpu_quota_percent": 800,
+      "aggregate_job_memory_bytes": 8589934592,
+      "automatic_performance_retries": 0,
+      "episode_wall_seconds": 60,
+      "failed_originals": "Always retained; any explicit infrastructure correction gets a new operation ID and predecessor. No failed attempt disappears.",
+      "max_workers": 8,
+      "maximum_actions": 8,
+      "maximum_drain_seconds": 360,
+      "phase_budget_semantics": "Stop new episode admissions before the 7200-second deadline; drain already admitted episodes within the declared 360-second bound. This is not a hard total phase kill timer.",
+      "phase_wall_seconds": 7200,
+      "torch_threads_per_worker": 1
+    },
+    "episode_wall_seconds": 60,
+    "max_actor_output_bytes": 4194304,
+    "maximum_actions": 8
+  },
+  "unique_meter_identities_replayed": 1142
+}

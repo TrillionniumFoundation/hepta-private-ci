@@ -1,0 +1,183 @@
+{
+  "final": {
+    "full_native_result_bytes": 95404,
+    "full_native_result_sha256": "fb739608629e7723b6098a43f9a8475074ae6cfe85e32b878e8d8f61e73eb113",
+    "manifest_sha256": "b03848dfd0f0cce23bb6592903561283e67ac7ef8d82b6fe5b7398100139d5d0",
+    "start": {
+      "audit_recorded": true,
+      "job": {
+        "args": [
+          "-B",
+          "-"
+        ],
+        "created_unix_ms": 1794094300233,
+        "cwd": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0",
+        "env_keys": [
+          "MKL_NUM_THREADS",
+          "OMP_NUM_THREADS",
+          "OPENBLAS_NUM_THREADS",
+          "PYTHONDONTWRITEBYTECODE",
+          "PYTHONNOUSERSITE"
+        ],
+        "executable": "/usr/bin/python3",
+        "execution_mode": "operator",
+        "host": "ai395",
+        "id": "1a1b85a7c49-12894-e9e",
+        "idempotency_key": "ndu-real-meter-v2-diagnostic-20261107-673721095449-02",
+        "launch_error": null,
+        "launch_state": "launched",
+        "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b85a7c49-12894-e9e",
+        "request_digest": "3b5f1b6981735f3908654242ee447f606d4b8143d5fe913df7c88098d05157a5",
+        "request_fingerprint": 4278168310982598457,
+        "ssh_target": "ai395-lan",
+        "system_jobctl": false,
+        "unit": "hepta-runtime-job-1a1b85a7c49-12894-e9e"
+      },
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a1b85a7c49-12894-e9e"
+      },
+      "local_record_pending": false,
+      "reused": false
+    },
+    "terminal": {
+      "at_unix_ms": 1794094365967,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1b85a7c49-12894-e9e",
+      "launch_nonce": "ba56165cd9a75076bad4bb295f9078e3",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 4284,
+          "stored": 4284
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "first": {
+    "full_native_result_sha256": "4ccdeb67700949cc6ecc2eb4e53e488fafd0dbe7c760f4b34c1a5c201d062fbd",
+    "manifest_sha256": "a05f5b15466c7e355dd97a124879d59d0ce1d8dee08023a181d3684634936e91",
+    "start": {
+      "audit_recorded": true,
+      "job": {
+        "args": [
+          "-B",
+          "-"
+        ],
+        "created_unix_ms": 1794093770876,
+        "cwd": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0",
+        "env_keys": [
+          "MKL_NUM_THREADS",
+          "OMP_NUM_THREADS",
+          "OPENBLAS_NUM_THREADS",
+          "PYTHONDONTWRITEBYTECODE",
+          "PYTHONNOUSERSITE"
+        ],
+        "executable": "/usr/bin/python3",
+        "execution_mode": "operator",
+        "host": "ai395",
+        "id": "1a1b852687c-12894-e4f",
+        "idempotency_key": "ndu-real-meter-v2-diagnostic-20261107-673721095449-01",
+        "launch_error": null,
+        "launch_state": "launched",
+        "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1b852687c-12894-e4f",
+        "request_digest": "89e49cb8d540b3e36c4dc90f12a287b639173a36c3c4cc0c6923431f6c92e916",
+        "request_fingerprint": 9936238995551859683,
+        "ssh_target": "ai395-lan",
+        "system_jobctl": false,
+        "unit": "hepta-runtime-job-1a1b852687c-12894-e4f"
+      },
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a1b852687c-12894-e4f"
+      },
+      "local_record_pending": false,
+      "reused": false
+    },
+    "terminal": {
+      "at_unix_ms": 1794093830569,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 1,
+      "job_id": "1a1b852687c-12894-e4f",
+      "launch_nonce": "18b24f004583e743324c0a76740f78c6",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 8528,
+          "stored": 8528
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "failed",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "independent_inventory_audit": {
+    "native_audit_sha256": "43187817359101f63982151d5573cee5b5b471704eb66c65de6ec9c9e7d1aed9",
+    "native_job_id": "1a1b86230ab-12894-ef0",
+    "public_audit_sha256": "5a1505cf130011e02c209d85b4a5cf2a76838bb55b3af8f8efeee23ac69b4a24",
+    "source_sha256": "b6c0ab76e24310b6cabea174924cfbe3ec9264c7e6cf3302af0b2def9d37ed59",
+    "terminal_tool_response": {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "text": "{\n  \"at_unix_ms\": 1794094831131,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b86230ab-12894-ef0\",\n  \"launch_nonce\": \"3aa52a4939a730aa97beb80a03a15bcc\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 277245,\n      \"stored\": 277245\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "structuredContent": null
+      }
+    }
+  },
+  "scope": "Durable operator process evidence; not authenticated learning Cell journal, FinalUse, or next-task consumption"
+}
