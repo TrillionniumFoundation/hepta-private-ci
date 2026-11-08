@@ -64,6 +64,19 @@ pub struct JointGenerationProcessWorkerV1 {
 
 impl JointGenerationProcessWorkerV1 {
     pub const PROFILE: &'static str = "joint-generator-proposal-linux-v1";
+    pub const OBSERVED_PROFILE: &'static str = "joint-generator-proposal-linux-v2";
+
+    pub fn observed_input_schema_digest() -> [u8; 32] {
+        Digest32::of_bytes(b"hepta.joint.owner-bound-public-command.v2").into_array()
+    }
+
+    pub fn observed_state_schema_digest() -> [u8; 32] {
+        Digest32::of_bytes(b"hepta.joint.observed-complete-proposal-state.v2").into_array()
+    }
+
+    pub fn observed_output_schema_digest() -> [u8; 32] {
+        Digest32::of_bytes(b"hepta.joint.HGC2-multimodal-prefix.v2").into_array()
+    }
 
     pub fn input_schema_digest() -> [u8; 32] {
         Digest32::of_bytes(b"hepta.joint.host-bound-public-command.v1").into_array()
@@ -158,13 +171,29 @@ impl JointGenerationProcessWorkerV1 {
         manifest: &CellBackendManifestV2,
     ) -> Result<(), CellGenerationErrorV2> {
         manifest.digest()?;
-        if manifest.profile != Self::PROFILE
+        let observed = manifest.profile == Self::OBSERVED_PROFILE;
+        let schemas = if observed {
+            (
+                Self::observed_input_schema_digest(),
+                Self::observed_state_schema_digest(),
+                Self::observed_output_schema_digest(),
+            )
+        } else {
+            (
+                Self::input_schema_digest(),
+                Self::state_schema_digest(),
+                Self::output_schema_digest(),
+            )
+        };
+        if ![Self::PROFILE, Self::OBSERVED_PROFILE].contains(&manifest.profile.as_str())
             || manifest.source_digest != self.source_digest
             || manifest.runtime_digest != self.executable_digest
             || manifest.device_digest != self.device_digest
-            || manifest.input_schema != Self::input_schema_digest()
-            || manifest.state_schema != Self::state_schema_digest()
-            || manifest.output_schema != Self::output_schema_digest()
+            || (
+                manifest.input_schema,
+                manifest.state_schema,
+                manifest.output_schema,
+            ) != schemas
             || manifest.encoder != Some(self.encoder_digest())
             || manifest.head != Some(self.head_digest())
             || manifest.memory != Some(self.memory_digest())
@@ -204,23 +233,65 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
         {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
-        let input = match serde_json::from_slice::<JointGenerationInputV1>(&request.input) {
-            Ok(value) => value,
-            Err(_) => return rejected_input(manifest, request, started),
+        let payload = if manifest.profile == Self::OBSERVED_PROFILE {
+            let input =
+                match serde_json::from_slice::<crate::JointGenerationInputV2>(&request.input) {
+                    Ok(value) if value.public_digest == self.public_digest => value,
+                    _ => {
+                        return unstarted_proposal(
+                            manifest,
+                            request,
+                            started,
+                            CellGenerationDispositionV2::Rejected,
+                        );
+                    }
+                };
+            crate::cell_joint_observed::request_bytes(
+                request,
+                &input,
+                &self.weights,
+                &self.public,
+                (self.clock)(),
+            )
+        } else {
+            let input = match serde_json::from_slice::<JointGenerationInputV1>(&request.input) {
+                Ok(value) if value.public_digest == self.public_digest => value,
+                _ => {
+                    return unstarted_proposal(
+                        manifest,
+                        request,
+                        started,
+                        CellGenerationDispositionV2::Rejected,
+                    );
+                }
+            };
+            cell_joint_protocol::request_bytes(
+                request_digest,
+                &self.weights,
+                &self.public,
+                &request.predecessor.state,
+                &request.predecessor.prefix,
+                &input.command,
+            )
         };
-        if input.public_digest != self.public_digest {
-            return rejected_input(manifest, request, started);
-        }
-        let payload = match cell_joint_protocol::request_bytes(
-            request_digest,
-            &self.weights,
-            &self.public,
-            &request.predecessor.state,
-            &request.predecessor.prefix,
-            &input.command,
-        ) {
+        let payload = match payload {
             Ok(value) => value,
-            Err(_) => return rejected_input(manifest, request, started),
+            Err(CellGenerationErrorV2::Deadline) => {
+                return unstarted_proposal(
+                    manifest,
+                    request,
+                    started,
+                    CellGenerationDispositionV2::DeadlineExceeded,
+                );
+            }
+            Err(_) => {
+                return unstarted_proposal(
+                    manifest,
+                    request,
+                    started,
+                    CellGenerationDispositionV2::Rejected,
+                );
+            }
         };
         let observation = cell_joint_process::run(ProcessRequest {
             executable: &self.executable,
@@ -389,11 +460,23 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
     }
 }
 
-fn rejected_input(
+fn unstarted_proposal(
     manifest: &CellBackendManifestV2,
     request: &CellGenerationRequestV2,
     started: Instant,
+    disposition: CellGenerationDispositionV2,
 ) -> Result<CellGenerationProposalV2, CellGenerationErrorV2> {
+    let (event_domain, outcome): (&[u8], _) = match disposition {
+        CellGenerationDispositionV2::Rejected => (
+            b"hepta.joint.rejected-input.v1\0",
+            CellCostOutcomeV2::Rejected,
+        ),
+        CellGenerationDispositionV2::DeadlineExceeded => (
+            b"hepta.joint.unstarted-deadline.v2\0",
+            CellCostOutcomeV2::Cancelled,
+        ),
+        _ => return Err(CellGenerationErrorV2::InvalidBinding),
+    };
     let request_digest = request.digest()?;
     let identity = CellTaskCostIdentityV2 {
         task_digest: request.task_digest,
@@ -402,11 +485,10 @@ fn rejected_input(
     let mut cost =
         CellTaskCostV2::new(identity).map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
     cost.record(CellCostEntryV2 {
-        event_id: Digest32::of_parts(&[b"hepta.joint.rejected-input.v1\0", &request_digest])
-            .into_array(),
+        event_id: Digest32::of_parts(&[event_domain, &request_digest]).into_array(),
         identity,
         stage: CellCostStageV2::Codec,
-        outcome: CellCostOutcomeV2::Rejected,
+        outcome,
         accounting: CellCostAccountingV2::Exclusive,
         metrics: CellCostMetricsV2 {
             wall_micros: Some(cell_joint_process::elapsed_micros(started)?),
@@ -421,7 +503,7 @@ fn rejected_input(
         device_digest: manifest.device_digest,
         successor_state: request.predecessor.state.clone(),
         output_delta: Vec::new(),
-        disposition: CellGenerationDispositionV2::Rejected,
+        disposition,
         cost,
     })
 }

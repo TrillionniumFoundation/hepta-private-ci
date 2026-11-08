@@ -1,0 +1,134 @@
+{
+  "binaries": {
+    "gzip": {
+      "bytes": 400711,
+      "path": "/tmp/ndu-joint-v4-986c-20261108-source-v3/results/hepta-joint-propose.stripped.gz",
+      "sha256": "d6a5c3ca76cb0c6133735345f48f5e571b8c6c7b1803b7dc31a98eea6976f4f3"
+    },
+    "original": {
+      "bytes": 5332888,
+      "path": "/tmp/ndu-joint-v4-986c-20261108-source-v3/build/hepta-joint-propose",
+      "sha256": "8e6aa6b6c33e1851e8575a328418fc2a287c6156ee2e9e00fcb27c88b78fbf3f"
+    },
+    "stripped": {
+      "bytes": 1011544,
+      "path": "/tmp/ndu-joint-v4-986c-20261108-source-v3/build/hepta-joint-propose.stripped",
+      "sha256": "0866ace1c10daa70abf95eaa5f45020293986ea00ec06bbc9e03dbd59f9f9967"
+    }
+  },
+  "checks": [
+    {
+      "exit_code": 0,
+      "name": "rustc-version",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7aaf71af0cccdebda4e70ae5216dcf348bccfeb5cc30d148247005558cec03ad",
+      "wall_seconds": 0.008788155973888934
+    },
+    {
+      "exit_code": 0,
+      "name": "rustfmt-version",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "58e77f09cbe97eb2d0ab9174e5523494d03814f2879c8e187ed66370320abc7c",
+      "wall_seconds": 0.006106445973273367
+    },
+    {
+      "exit_code": 0,
+      "name": "just-version",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5f61500d03d8e5947e434b80f148a9d93c09293ab3186fd5fc5138e6ff8c03ea",
+      "wall_seconds": 0.000844346999656409
+    },
+    {
+      "exit_code": 0,
+      "name": "rustfmt",
+      "stderr_sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.03449038998223841
+    },
+    {
+      "exit_code": 0,
+      "name": "scoped-clippy-fix",
+      "stderr_sha256": "7f20e28caf7ac644cf0a727f38850e2e244f47aa2e11d2736749f260307bec88",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 1.0990112730069086
+    },
+    {
+      "exit_code": 0,
+      "name": "scoped-clippy-check",
+      "stderr_sha256": "3aa3190bb414892b6d1254cc79adff1c3da4a99ba5f4f131d3f9ee0bd2b3cf63",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 1.019597876991611
+    },
+    {
+      "exit_code": 0,
+      "name": "rustfmt-check",
+      "stderr_sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.037505456013605
+    },
+    {
+      "exit_code": 0,
+      "name": "rust-standalone-tests",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a1747a37361b65a354ffb7ee96555cdb5dee9cdc9bb7078fd848b85dadfd888e",
+      "wall_seconds": 17.80165963701438
+    },
+    {
+      "exit_code": 0,
+      "name": "strip-copy",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.0021135520073585212
+    },
+    {
+      "exit_code": 0,
+      "name": "elf-version-info",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "37295732479bc2dc377d61e49fddd117e7db3fe5e6d3cef05666d644a5ee0ef8",
+      "wall_seconds": 0.0007025800296105444
+    },
+    {
+      "exit_code": 0,
+      "name": "elf-header",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3490b23a0494d9fd82f18a9fc8bff9597475834394d9f2aa945f3b35770be5b8",
+      "wall_seconds": 0.0005292340065352619
+    },
+    {
+      "exit_code": 0,
+      "name": "elf-needed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3b0b531a7e0bcc11e29fd1605c302ed22e1f9b568a2956a07403500447e8a221",
+      "wall_seconds": 0.0005140159628354013
+    }
+  ],
+  "fix_changed_sources": [],
+  "full_workspace_validation": false,
+  "glibc_max_required": "2.34",
+  "glibc_versions": [
+    "2.2.5",
+    "2.3",
+    "2.3.4",
+    "2.14",
+    "2.16",
+    "2.17",
+    "2.18",
+    "2.28",
+    "2.29",
+    "2.30",
+    "2.32",
+    "2.33",
+    "2.34"
+  ],
+  "input_manifest_sha256": "45d25092ada6da9240c00586965c24af5fe0e2f5e7e5c5d5fdbf1a17ea657ec9",
+  "just": "just 1.58.0",
+  "production_adoption": false,
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "rustfmt": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)",
+  "rustfmt_config_sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c",
+  "schema": "ndu-native-rust-source-revision-v3",
+  "source_files": 28,
+  "source_manifest_sha256": "565219e31e08b2093be2093870bba47d1445290d9ceaaf612704aacc96c9327f",
+  "status": "PASS",
+  "target": "x86_64-unknown-linux-gnu"
+}

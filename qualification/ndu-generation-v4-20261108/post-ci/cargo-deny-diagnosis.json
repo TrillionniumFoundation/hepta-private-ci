@@ -1,0 +1,112 @@
+{
+  "schema": "hepta-ci-cargo-deny-diagnosis-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 5336,
+  "run_id": 42452357957,
+  "job_id": 128644157315,
+  "job_name": "cargo-deny / cargo-deny",
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42452357957/job/128644157315",
+  "candidate_head": "e2802a53a82529b9a206f77fcdfa98dd65918bfc",
+  "source_baseline": "1e6bc8517d61fd42496bc0ed5082e34204b065dd",
+  "target_at_job": "bf952042b3d31fc416f14adfea5c38181580498b",
+  "checkout_merge_sha": "031c5d78c81837655ca95107ef5ab6e20c4a8ebd",
+  "classification": "existing-dependency-advisory-failure",
+  "failed_step": "Run cargo-deny",
+  "command": {
+    "cargo_deny_version": "0.19.0",
+    "rust_version": "1.96.0",
+    "manifest_path": "./codex-rs/Cargo.toml",
+    "arguments": "--all-features",
+    "command": "check"
+  },
+  "observed_fatal_errors": [
+    {
+      "crate": "pin-utils",
+      "version": "0.1.1",
+      "severity": "error[unmaintained]",
+      "advisory": "RUSTSEC-2026-0441",
+      "message": "pin-utils is unmaintained",
+      "log_solution": "No safe upgrade is available",
+      "observed_dependency_path": [
+        "pin-utils 0.1.1",
+        "aws-smithy-http 0.64.1",
+        "aws-config 1.12.0",
+        "codex-aws-auth"
+      ]
+    },
+    {
+      "crate": "vodozemac",
+      "version": "0.10.0",
+      "severity": "error[vulnerability]",
+      "advisory": "RUSTSEC-2026-0451",
+      "message": "Degraded secret zeroization capabilities",
+      "log_solution": "Upgrade to >=0.11.2",
+      "observed_dependency_path": [
+        "vodozemac 0.10.0",
+        "matrix-sdk 0.18.0",
+        "codex-hepta-matrix-sdk",
+        "codex-hepta-matrixd"
+      ]
+    }
+  ],
+  "cargo_deny_final_summary": {
+    "advisories": "FAILED",
+    "bans": "ok",
+    "licenses": "ok",
+    "sources": "ok"
+  },
+  "guard_and_infrastructure": {
+    "tracked_rustsec_no_suppression_guard": "success",
+    "setup": "success",
+    "install_rust_toolchain": "success",
+    "check_clean_worktree": "success"
+  },
+  "comparisons": {
+    "candidate": {
+      "ahead_by": 12,
+      "behind_by": 0,
+      "total_commits": 12,
+      "changed_files_count": 152,
+      "cargo_deny_or_workflow_changes": [],
+      "evidence_file": "baseline-to-candidate.json"
+    },
+    "target": {
+      "ahead_by": 3,
+      "behind_by": 0,
+      "total_commits": 3,
+      "changed_files_count": 10,
+      "cargo_deny_or_workflow_changes": [],
+      "evidence_file": "baseline-to-target.json"
+    }
+  },
+  "causal_inference": "The observed denial concerns dependency versions already present in the source baseline. Neither the candidate nor the target branch advance changes Cargo manifests, Cargo.lock, deny.toml, or workflows. This attributes this job failure to the existing dependency graph under the observed advisory database, rather than to the NDU code changes. The baseline was not rerun and no historical baseline CI outcome is asserted.",
+  "log_evidence": {
+    "full_log_size": 19628047,
+    "full_log_downloaded": false,
+    "successful_http_status": 206,
+    "content_range": "bytes 19365903-19628046/19628047",
+    "range_bytes": 262144,
+    "etag": "\"0x8DF3D5C85BA7E72\"",
+    "raw_http_sha256": "b61fdc663d1705e47971d4d4254e141e49466d50e27f65a65854e4a33f72f06c",
+    "raw_tail_sha256": "32494fa8776880c5e7c00e93fe6584234d829d6d1dd85f3b3f91ec65cf15e5be",
+    "headers_sha256": "88effa2d191060204bb39299c04cc1942673454a4b3db2f32e07797320104e59",
+    "first_attempt_partial_bytes": 1457287,
+    "first_attempt_partial_sha256": "137be33f5a127f591fd6a2d2af2fa2330c2a27ceccfb0aed94f7aeefd3ae45f4",
+    "not_exhaustive_outside_retrieved_ranges": true
+  },
+  "check_run_annotations": {
+    "count": 1,
+    "failure_annotations": 0,
+    "only_annotation": "notice about ubuntu-latest label migration",
+    "summary": null,
+    "text": null
+  },
+  "actions_taken": [
+    "read-only GitHub API and log retrieval through native Mac gh",
+    "retained failed and partial retrieval evidence",
+    "verified successful byte-range response and local SHA256",
+    "compared candidate and target changes with pinned source baseline"
+  ],
+  "no_code_or_dependency_changes": true,
+  "no_workflow_reruns": true
+}

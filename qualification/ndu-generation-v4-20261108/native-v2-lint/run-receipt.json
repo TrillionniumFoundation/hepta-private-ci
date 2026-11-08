@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "exit_code": 0,
+      "name": "clippy-version",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "bbad497025b736fef6248108743f7d93b5421664e5d3c86c44119cad8d381ad9",
+      "wall_seconds": 0.015293710981495678
+    },
+    {
+      "exit_code": 101,
+      "name": "scoped-clippy-initial",
+      "stderr_sha256": "a14fa890dccffceb98561cd30da1a506ac6d8b4004f7705cbe746da9d5e42ee9",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.09784917201614007
+    },
+    {
+      "exit_code": 0,
+      "name": "scoped-clippy-fix",
+      "stderr_sha256": "70fb9c60d788f65e6062442e0c82a8fcad27db99c9bd759298901abb5b6a8d99",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 1.212390657979995
+    },
+    {
+      "exit_code": 101,
+      "name": "scoped-clippy-final",
+      "stderr_sha256": "a14fa890dccffceb98561cd30da1a506ac6d8b4004f7705cbe746da9d5e42ee9",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.06904507201397792
+    }
+  ],
+  "configuration": {
+    "Cargo.toml": "dedeb77251291692eb8f20e8b7ac0f928fba02aae11d458ffc2caa1c6da09640",
+    "codex-rs/clippy.toml": "323037ae6e8136646a8a80fd59724b32bbb3e3b2b7ea745ac79841443d4a71a9",
+    "qualification.just": "753dfac0f676313f3bb3a3b67ae357ed8037a988f6a934d42584eef413829838"
+  },
+  "full_workspace_validation": false,
+  "modified_files": [
+    {
+      "after_sha256": "a04f4ac98c8ce3b75f39afba712ccfdf2d06fcdcd61205863e4b486cb5e39951",
+      "before_sha256": "478e54d4217a423d707633bc63c14a29bd98feebaf166e6a4fd32427624622fc",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/observed_tests.rs"
+    }
+  ],
+  "original_source_modified": false,
+  "schema": "hepta.native-v4.scoped-clippy.v1",
+  "scope": "actual standalone joint bin and finite_entropic module, all test targets",
+  "source_manifest_sha256": "33ad528238b38553525b5a2061ae142c91755d269b898bb7fbbf84a42a780fe9",
+  "status": "FAIL_NEEDS_REVIEW"
+}
