@@ -8,6 +8,7 @@
 mod admin;
 mod admission_v3;
 mod cell_bundle;
+mod cell_implementation;
 mod closure_v2;
 mod dataset_revocation;
 mod durable_snapshots;
@@ -51,6 +52,14 @@ pub use cell_bundle::CellStateTransitionV1;
 pub use cell_bundle::CellTrainingLineageV1;
 pub use cell_bundle::prepare_cell_bundle_cutover_v1;
 pub use cell_bundle::validate_cell_bundle_readback_v1;
+pub use cell_implementation::CellImplementationFamilyV1;
+pub use cell_implementation::CellLocalResetV1;
+pub use cell_implementation::CellLocalUpdateErrorV1;
+pub use cell_implementation::DeterministicCellKindV1;
+pub use cell_implementation::SemanticTrainablePartV1;
+pub use cell_implementation::TemporalCellKernelV1;
+pub use cell_implementation::prepare_cell_local_reset_v1;
+pub use cell_implementation::validate_cell_local_update_v1;
 pub use closure_v2::ArtifactClosureError;
 pub use closure_v2::ArtifactLifecycleEventV1;
 pub use closure_v2::ArtifactLifecycleStateV1;
@@ -181,3 +190,4 @@ pub use storage::write_registry_snapshot;
 pub use storage::write_registry_snapshot_beneath;
 pub use storage_hygiene::OrphanCleanupDispositionV1;
 pub use storage_hygiene::cleanup_zero_length_orphan_beneath;
+
