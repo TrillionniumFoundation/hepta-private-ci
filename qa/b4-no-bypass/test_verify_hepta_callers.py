@@ -70,6 +70,47 @@ class CallerProofTests(unittest.TestCase):
         )
         return root
 
+    def test_registered_wrapper_does_not_authorize_external_constructor(self) -> None:
+        root = self.make_fixture()
+        caller = root / "codex-rs/caller/src/lib.rs"
+        caller.write_text(
+            "pub struct Wrapper; impl Wrapper { "
+            "pub fn new() -> Self { Gate::enter(); Self } }\n"
+        )
+        manifest = root / "CALLERS.toml"
+        text = manifest.read_text().replace(
+            'required_boundary_ids = ["gate"]',
+            'required_boundary_ids = ["gate", "wrapper_constructor"]',
+        )
+        wrapper = textwrap.dedent(
+            '''
+            [[boundary]]
+            id = "wrapper_constructor"
+            symbol = "Wrapper::new"
+            receiver_type = "Wrapper"
+            definition_path = "codex-rs/caller/src/lib.rs"
+            definition_markers = ["pub struct Wrapper", "pub fn new"]
+            product_callers = []
+            caller_markers = []
+            '''
+        )
+        manifest.write_text(
+            text.replace("[[protected_file]]", wrapper + "\n[[protected_file]]", 1)
+        )
+        MODULE.verify(root, manifest)
+        extra = root / "codex-rs/extra/src"
+        extra.mkdir(parents=True)
+        for source in (
+            "fn bypass() { Wrapper::new(); }\n",
+            "use crate::Wrapper as Borrowed; fn bypass() { Borrowed::new(); }\n",
+        ):
+            with self.subTest(source=source):
+                (extra / "lib.rs").write_text(source)
+                with self.assertRaisesRegex(
+                    MODULE.VerificationFailure, "wrapper_constructor.*unexpected"
+                ):
+                    MODULE.verify(root, manifest)
+
     def test_exact_caller_set_passes(self) -> None:
         root = self.make_fixture()
         receipt = MODULE.verify(root, root / "CALLERS.toml")

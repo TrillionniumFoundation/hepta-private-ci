@@ -30,14 +30,23 @@ jobs:
       matrix:
         os: [ubuntu-24.04, macos-15, windows-2025]
     env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HEPTA_CI_LANE: source-head
       PYTHONDONTWRITEBYTECODE: "1"
     defaults:
       run:
         shell: bash
     steps:
+      - name: Enable Git long paths before checkout (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
@@ -55,7 +64,8 @@ jobs:
           mkdir -p "$VERIFY1_RECORDS"
           git rev-parse HEAD > "$VERIFY1_RECORDS/source-commit.txt"
           git rev-parse 'HEAD^{tree}' > "$VERIFY1_RECORDS/source-tree.txt"
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$TESTED_SHA" = "$SOURCE_SHA"
           git diff --check
           python -B -m unittest discover -s experiments/verification_cell_verify1 -t . -v 2>&1 | tee "$VERIFY1_RECORDS/tests.log"
       - name: Run bounded real SQLite effects
@@ -67,7 +77,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: verify1-${{ matrix.os }}-${{ github.sha }}
+          name: verify1-${{ matrix.os }}-${{ env.SOURCE_SHA }}
           path: |
             ${{ runner.temp }}/verify1-records
             ${{ runner.temp }}/verify1-experiment

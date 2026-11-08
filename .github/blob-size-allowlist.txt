@@ -60,3 +60,8 @@ sha256:ac8863c2893869db846801d825e89863cf168e87782571dd009733b921643de0 qualific
 
 # Immutable PRED1 source evidence; changed bytes regain the size limit.
 sha256:08322f8fe581f84e7e6ea31f705c5c8554610930a5f531e15294de14e331219e qualification/pred1/evidence/pred1_evidence.tar.xz
+
+# Retained HCSN and MEM original evidence, unchanged from their original stage commits.
+# Permit only these exact bytes; replacements and other paths retain the size limit.
+sha256:65e999fa43c100b43a0b92b481c3d39ef5575ab1640c7b4cdd09dc1d72ade9a6 qualification/hcsn/evidence/cloud-20261105/attempt-safe/full.json
+sha256:df21f41c562a695cf76419521a6c73a99539571ee40b1b7b4315323ce38c6d15 qualification/memory-cell-mem1/raw-evidence-v1.tar.xz

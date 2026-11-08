@@ -81,10 +81,18 @@ def _workspace_root_test_impl(ctx):
         ctx.attr.runfile_env.keys()
     ):
         location_targets[target.label] = target
-    env = {
+    env = {}
+    inherited_environment = []
+    if ctx.attr.inherit_test_bin_environment:
+        if RunEnvironmentInfo not in ctx.attr.test_bin:
+            fail("{} must provide RunEnvironmentInfo when inherit_test_bin_environment is enabled".format(ctx.attr.test_bin.label))
+        test_bin_environment = ctx.attr.test_bin[RunEnvironmentInfo]
+        env.update(test_bin_environment.environment)
+        inherited_environment = test_bin_environment.inherited_environment
+    env.update({
         key: ctx.expand_location(value, targets = location_targets.values())
         for key, value in ctx.attr.env.items()
-    }
+    })
     if ctx.attr.test_threads:
         env["RUST_TEST_THREADS"] = str(ctx.attr.test_threads)
 
@@ -96,6 +104,7 @@ def _workspace_root_test_impl(ctx):
         ),
         RunEnvironmentInfo(
             environment = env,
+            inherited_environment = inherited_environment,
         ),
     ]
 
@@ -151,6 +160,10 @@ workspace_root_test = rule(
             allow_files = True,
         ),
         "env": attr.string_dict(),
+        "inherit_test_bin_environment": attr.bool(
+            default = False,
+            doc = "Forward the test binary's runtime environment; explicit env values take precedence.",
+        ),
         "runfile_env": attr.label_keyed_string_dict(
             cfg = "target",
         ),

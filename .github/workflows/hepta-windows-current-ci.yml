@@ -38,6 +38,11 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 65
     steps:
+      - name: Enable Git long paths before checkout (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
       - name: Checkout the exact source head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

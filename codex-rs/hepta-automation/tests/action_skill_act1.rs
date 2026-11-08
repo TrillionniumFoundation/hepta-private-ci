@@ -32,6 +32,7 @@ use codex_hepta_contracts::ProviderEffectKey;
 use action_skill_support::KEY_ENV;
 use action_skill_support::ROOT_ENV;
 use action_skill_support::baselines::BASELINES;
+use action_skill_support::baselines::Baseline;
 use action_skill_support::baselines::metric;
 use action_skill_support::baselines::oracle;
 use action_skill_support::destination::Destination;
@@ -46,7 +47,21 @@ use action_skill_support::observer::driver;
 use action_skill_support::observer::wire;
 
 #[tokio::test]
-async fn act1_shared_fault_matrix_preserves_truth_across_three_baselines() {
+async fn act1_shared_fault_matrix_preserves_truth_durable_workflow() {
+    assert_shared_fault_matrix_preserves_truth(Baseline::DurableWorkflow).await;
+}
+
+#[tokio::test]
+async fn act1_shared_fault_matrix_preserves_truth_handwritten_dsl() {
+    assert_shared_fault_matrix_preserves_truth(Baseline::HandwrittenDsl).await;
+}
+
+#[tokio::test]
+async fn act1_shared_fault_matrix_preserves_truth_flat_skills() {
+    assert_shared_fault_matrix_preserves_truth(Baseline::FlatSkills).await;
+}
+
+async fn assert_shared_fault_matrix_preserves_truth(baseline: Baseline) {
     let cases = [
         (
             "no_fault",
@@ -112,58 +127,56 @@ async fn act1_shared_fault_matrix_preserves_truth_across_three_baselines() {
             false,
         ),
     ];
-    for baseline in BASELINES {
-        for (scenario, fault, availability, events, expected_success) in cases {
-            let temp = tempfile::tempdir().expect("isolated case");
-            let root = temp.path().canonicalize().expect("canonical case root");
-            let destination = Destination::open(&root, fault)
-                .await
-                .with_lookup(availability);
-            let harness = Harness::create(&root, wire()).await;
-            let mut driver = driver(&root, destination.clone()).await;
-            let outcome = if matches!(fault, Fault::PauseBeforeCommit | Fault::PauseAfterCommit) {
-                let controller = async {
-                    tokio::time::timeout(Duration::from_secs(10), destination.reached.notified())
-                        .await
-                        .expect("destination reached the explicit race barrier");
-                    destination.cancel(&key()).await;
-                    destination.release.notify_one();
-                };
-                let (outcome, ()) = tokio::join!(baseline.run(&harness, &mut driver), controller);
-                outcome
-            } else {
-                baseline.run(&harness, &mut driver).await
+    for (scenario, fault, availability, events, expected_success) in cases {
+        let temp = tempfile::tempdir().expect("isolated case");
+        let root = temp.path().canonicalize().expect("canonical case root");
+        let destination = Destination::open(&root, fault)
+            .await
+            .with_lookup(availability);
+        let harness = Harness::create(&root, wire()).await;
+        let mut driver = driver(&root, destination.clone()).await;
+        let outcome = if matches!(fault, Fault::PauseBeforeCommit | Fault::PauseAfterCommit) {
+            let controller = async {
+                tokio::time::timeout(Duration::from_secs(10), destination.reached.notified())
+                    .await
+                    .expect("destination reached the explicit race barrier");
+                destination.cancel(&key()).await;
+                destination.release.notify_one();
             };
-            let truth = oracle(&root).await;
-            assert_eq!(truth.business_events, events, "{baseline:?} {scenario}");
-            assert_eq!(
-                outcome.reported_success, expected_success,
-                "{baseline:?} {scenario}"
-            );
-            if matches!(fault, Fault::WaitingInput) {
-                wait_for_file(&root.join("input-reader.ready")).await;
-                assert!(destination.input_process_waits());
-            }
-            if matches!(fault, Fault::PauseBeforeCommit | Fault::PauseAfterCommit) {
-                assert!(
-                    facts(&destination.pool, &key())
-                        .await
-                        .expect("cancel facts")
-                        .cancel_received
-                );
-            }
-            if matches!(fault, Fault::ExitZero) {
-                assert_eq!(
-                    facts(&destination.pool, &key())
-                        .await
-                        .expect("process facts")
-                        .exit_code,
-                    Some(0)
-                );
-            }
-            metric(baseline, scenario, &outcome, &truth);
-            harness.store.close().await;
+            let (outcome, ()) = tokio::join!(baseline.run(&harness, &mut driver), controller);
+            outcome
+        } else {
+            baseline.run(&harness, &mut driver).await
+        };
+        let truth = oracle(&root).await;
+        assert_eq!(truth.business_events, events, "{baseline:?} {scenario}");
+        assert_eq!(
+            outcome.reported_success, expected_success,
+            "{baseline:?} {scenario}"
+        );
+        if matches!(fault, Fault::WaitingInput) {
+            wait_for_file(&root.join("input-reader.ready")).await;
+            assert!(destination.input_process_waits());
         }
+        if matches!(fault, Fault::PauseBeforeCommit | Fault::PauseAfterCommit) {
+            assert!(
+                facts(&destination.pool, &key())
+                    .await
+                    .expect("cancel facts")
+                    .cancel_received
+            );
+        }
+        if matches!(fault, Fault::ExitZero) {
+            assert_eq!(
+                facts(&destination.pool, &key())
+                    .await
+                    .expect("process facts")
+                    .exit_code,
+                Some(0)
+            );
+        }
+        metric(baseline, scenario, &outcome, &truth);
+        harness.store.close().await;
     }
 }
 
