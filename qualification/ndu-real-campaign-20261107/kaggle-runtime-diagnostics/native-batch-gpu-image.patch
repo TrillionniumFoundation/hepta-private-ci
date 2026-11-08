@@ -1,0 +1,233 @@
+--- a/hepta_kaggle.py
++++ b/hepta_kaggle.py
+@@ -32,6 +32,8 @@
+     submit.add_argument("--source", type=Path, required=True)
+     submit.add_argument("--timeout", type=int, default=300)
+     submit.add_argument("--accelerator", default="cpu")
++    submit.add_argument("--docker-image", help="Explicit immutable official Kaggle GPU image; no account or budget override.")
++    submit.add_argument("--docker-image-pinning-type", choices=("original",), help="Preserve the explicit immutable image for this task.")
+     submit.add_argument("--internet", action="store_true")
+     submit.add_argument("--kernel-type", choices=("script", "notebook"), default="script")
+     for label in ("dataset", "kernel", "model", "competition"):
+@@ -80,7 +82,7 @@
+                 out = adapter.submit(request_id=a.request_id, source=a.source, timeout=a.timeout,
+                                      accelerator=a.accelerator, internet=a.internet, kernel_type=a.kernel_type,
+                                      dataset_sources=a.dataset_source, kernel_sources=a.kernel_source,
+-                                     model_sources=a.model_source, competition_sources=a.competition_source)
++                                     model_sources=a.model_source, competition_sources=a.competition_source, docker_image=a.docker_image, docker_image_pinning_type=a.docker_image_pinning_type)
+             elif a.command == "status": out = adapter.status(a.request_id)
+             elif a.command == "resume": out = adapter.resume(a.request_id)
+             elif a.command == "wait": out = adapter.wait(a.request_id, seconds=a.wait_seconds)
+--- a/kaggle_jobs.py
++++ b/kaggle_jobs.py
+@@ -320,13 +320,17 @@
+         raise AdapterError("NOTEBOOK_LIST_LIMIT", "Owned notebook listing did not finish within its bounded page count.")
+ 
+     def submit(self, *, request_id, source, timeout=300, accelerator="cpu", internet=False,
+-               kernel_type="script", dataset_sources=(), kernel_sources=(), model_sources=(), competition_sources=()):
++               kernel_type="script", dataset_sources=(), kernel_sources=(), model_sources=(), competition_sources=(), docker_image=None, docker_image_pinning_type=None):
+         checked_request_id(request_id)
+         if kernel_type not in {"script", "notebook"}: raise AdapterError("INVALID_KERNEL_TYPE", "Only Python scripts and notebooks are supported.")
+         if isinstance(timeout, bool) or not 1 <= timeout <= 43200:
+             raise AdapterError("INVALID_TIMEOUT", "Remote runtime limit must be between 1 and 43200 seconds.")
+         if not re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", accelerator):
+             raise AdapterError("INVALID_ACCELERATOR", "Accelerator identifier has an invalid format.")
++        if docker_image is not None and (not isinstance(docker_image, str) or not re.fullmatch(r"gcr\.io/kaggle-gpu-images/python@sha256:[0-9a-f]{64}", docker_image)):
++            raise AdapterError("INVALID_DOCKER_IMAGE", "Explicit image must be an immutable official Kaggle GPU image digest.")
++        if docker_image_pinning_type is not None and (docker_image_pinning_type != "original" or docker_image is None):
++            raise AdapterError("INVALID_DOCKER_IMAGE_PINNING", "This frozen-image task permits only original with an explicit image digest.")
+         code = read_source(Path(source), kernel_type)
+         intent = {"source_sha256": hashlib.sha256(code.encode()).hexdigest(), "timeout_seconds": timeout,
+                   "accelerator": accelerator, "internet": bool(internet), "kernel_type": kernel_type,
+@@ -336,6 +340,10 @@
+         for key in ("dataset_sources", "kernel_sources", "model_sources", "competition_sources"):
+             if len(intent[key]) > 50 or any(not isinstance(v, str) or len(v) > 512 or "\n" in v for v in intent[key]):
+                 raise AdapterError("INVALID_INPUT_REFERENCE", "Data source references exceed their bounds.")
++        if docker_image is not None:
++            intent["docker_image"] = docker_image
++        if docker_image_pinning_type is not None:
++            intent["docker_image_pinning_type"] = docker_image_pinning_type
+         fingerprint = digest(intent)
+         with self.ledger.locked(request_id):
+             existing = self.ledger.load(request_id, required=False)
+@@ -379,6 +387,8 @@
+                       "dataset_data_sources": list(dataset_sources), "kernel_data_sources": list(kernel_sources),
+                       "model_data_sources": list(model_sources), "competition_data_sources": list(competition_sources)}
+             if accelerator.lower() != "cpu": values["machine_shape"] = accelerator
++            if docker_image is not None: values["docker_image"] = docker_image
++            if docker_image_pinning_type is not None: values["docker_image_pinning_type"] = docker_image_pinning_type
+             record["submission_state"] = "SUBMITTING"
+             # Persist uncertainty before dispatch. This does not claim that bytes
+             # necessarily reached Kaggle; it prevents false rollback assumptions.
+@@ -431,6 +441,9 @@
+         source = blob.get("source")
+         if not isinstance(source, str) or hashlib.sha256(source.encode()).hexdigest() != record["intent"]["source_sha256"]:
+             raise AdapterError("SOURCE_IDENTITY_MISMATCH", "Kaggle source does not exactly match the frozen request.")
++        expected_image = record["intent"].get("docker_image")
++        if expected_image is not None and attr(metadata, "dockerImage", "docker_image") != expected_image:
++            raise AdapterError("DOCKER_IMAGE_MISMATCH", "Provider image differs from the immutable request image.")
+         record["identity_verified"] = True
+ 
+     def _status(self, record):
+--- /dev/null
++++ b/tests/test_image_pin.py
+@@ -0,0 +1,92 @@
++import contextlib, io, json, pathlib, tempfile, unittest
++from unittest.mock import patch
++from test_jobs import FakeTransport
++from kaggle_jobs import KaggleAdapter
++from kaggle_transport import AdapterError, RemoteError, sdk_payload
++import hepta_kaggle
++IMAGE = 'gcr.io/kaggle-gpu-images/python@sha256:de153e6d303881930c51286216393d56f56b26458d0661350305a1e8144eea01'
++OTHER = 'gcr.io/kaggle-gpu-images/python@sha256:' + '0' * 64
++
++class ImageTransport(FakeTransport):
++
++    def __init__(self):
++        super().__init__()
++        self.actual_image = IMAGE
++
++    def call(self, action, values, *, mutation=False):
++        result = super().call(action, values, mutation=mutation)
++        if action == 'get':
++            result['metadata']['dockerImage'] = self.actual_image
++        return result
++
++class ImagePinTest(unittest.TestCase):
++
++    def setUp(self):
++        self.tmp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.tmp.cleanup)
++        self.base = pathlib.Path(self.tmp.name)
++        self.source = self.base / 'probe.py'
++        self.source.write_text("print('device probe')\n")
++        self.transport = ImageTransport()
++        self.adapter = KaggleAdapter(self.transport, self.base / 'state')
++
++    def submit(self, image=IMAGE):
++        return self.adapter.submit(request_id='image-probe-1', source=self.source, timeout=120, accelerator='NvidiaTeslaT4', docker_image=image)
++
++    def test_pinned_image_reaches_official_sdk_wire_and_intent(self):
++        result = self.submit()
++        self.assertEqual(result['intent']['docker_image'], IMAGE)
++        wire = sdk_payload('submit', self.transport.saved)
++        self.assertEqual(wire['dockerImage'], IMAGE)
++        self.assertEqual(wire['machineShape'], 'NvidiaTeslaT4')
++        self.assertEqual(wire['sessionTimeoutSeconds'], 120)
++        self.assertTrue(wire['isPrivate'])
++        self.assertFalse(wire['enableInternet'])
++        self.assertEqual(self.adapter.status('image-probe-1')['remote_state'], 'RUNNING')
++
++    def test_same_image_reconciles_and_changed_image_conflicts(self):
++        self.submit()
++        self.assertTrue(self.submit()['reused'])
++        with self.assertRaises(AdapterError) as error:
++            self.submit(OTHER)
++        self.assertEqual(error.exception.code, 'IDEMPOTENCY_CONFLICT')
++        self.assertEqual(self.transport.count('submit'), 1)
++
++    def test_provider_image_mismatch_denies_identity_acceptance(self):
++        self.submit()
++        self.transport.actual_image = OTHER
++        with self.assertRaises(AdapterError) as error:
++            self.adapter.status('image-probe-1')
++        self.assertEqual(error.exception.code, 'DOCKER_IMAGE_MISMATCH')
++        self.assertEqual(self.transport.count('submit'), 1)
++
++    def test_mutable_foreign_and_malformed_images_rejected_before_rpc(self):
++        for value in ('gcr.io/kaggle-gpu-images/python:latest', 'gcr.io/kaggle-images/python@sha256:' + '0' * 64, IMAGE + '?x=1', {}, 'https://evil/image'):
++            with self.subTest(value=value):
++                with self.assertRaises(AdapterError) as error:
++                    self.submit(value)
++                self.assertEqual(error.exception.code, 'INVALID_DOCKER_IMAGE')
++        self.assertEqual(self.transport.calls, [])
++
++    def test_lost_ack_with_image_never_replays(self):
++        self.transport.lose_ack = True
++        with self.assertRaises(RemoteError):
++            self.submit()
++        self.transport.lose_ack = False
++        self.assertEqual(self.submit()['submission_state'], 'UNKNOWN')
++        self.assertEqual(self.transport.count('submit'), 1)
++
++    def test_legacy_intent_unchanged_when_no_image_provided(self):
++        result = self.submit(None)
++        self.assertNotIn('docker_image', result['intent'])
++        self.assertNotIn('docker_image', self.transport.saved)
++        self.assertTrue(self.submit(None)['reused'])
++        self.assertEqual(self.transport.count('submit'), 1)
++
++    def test_cli_forwards_explicit_pin_without_credentials(self):
++        output = io.StringIO()
++        with patch.object(hepta_kaggle, 'KaggleTransport', return_value=self.transport):
++            with contextlib.redirect_stdout(output):
++                code = hepta_kaggle.main(['--state-dir', str(self.base / 'cli-state'), 'submit', '--request-id', 'cli-image-1', '--source', str(self.source), '--timeout', '120', '--accelerator', 'NvidiaTeslaT4', '--docker-image', IMAGE])
++        self.assertEqual(code, 0)
++        self.assertEqual(json.loads(output.getvalue())['result']['intent']['docker_image'], IMAGE)
+--- /dev/null
++++ b/tests/test_image_pinning_policy.py
+@@ -0,0 +1,64 @@
++import contextlib, io, json, pathlib, tempfile, unittest
++from unittest.mock import patch
++import test_image_pin as fixture
++import hepta_kaggle
++from kaggle_jobs import KaggleAdapter
++from kaggle_transport import AdapterError, sdk_payload
++
++class OriginalImagePolicyTest(unittest.TestCase):
++
++    def setUp(self):
++        self.tmp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.tmp.cleanup)
++        self.base = pathlib.Path(self.tmp.name)
++        self.source = self.base / 'probe.py'
++        self.source.write_text("print('probe')\n")
++        self.transport = fixture.ImageTransport()
++        self.adapter = KaggleAdapter(self.transport, self.base / 'state')
++
++    def submit(self, policy='original', image=fixture.IMAGE):
++        return self.adapter.submit(request_id='original-image-1', source=self.source, timeout=120, accelerator='NvidiaTeslaT4', docker_image=image, docker_image_pinning_type=policy)
++
++    def test_original_policy_reaches_official_sdk_and_intent(self):
++        result = self.submit()
++        wire = sdk_payload('submit', self.transport.saved)
++        self.assertEqual(result['intent']['docker_image_pinning_type'], 'original')
++        self.assertEqual(wire['dockerImagePinningType'], 'original')
++        self.assertEqual(wire['dockerImage'], fixture.IMAGE)
++        self.assertEqual(wire['machineShape'], 'NvidiaTeslaT4')
++        self.assertEqual(wire['sessionTimeoutSeconds'], 120)
++        self.assertTrue(wire['isPrivate'])
++        self.assertFalse(wire['enableInternet'])
++        self.assertTrue(self.submit()['reused'])
++        self.assertEqual(self.transport.count('submit'), 1)
++
++    def test_policy_change_cannot_reinterpret_existing_image_only_request(self):
++        old = self.submit(None)
++        self.assertNotIn('docker_image_pinning_type', old['intent'])
++        with self.assertRaises(AdapterError) as error:
++            self.submit('original')
++        self.assertEqual(error.exception.code, 'IDEMPOTENCY_CONFLICT')
++        self.assertEqual(self.transport.count('submit'), 1)
++
++    def test_original_requires_fixed_image_and_rejects_other_policies_before_rpc(self):
++        for policy, image in [('original', None), ('latest', fixture.IMAGE), ('Original', fixture.IMAGE)]:
++            with self.subTest(policy=policy, image=image):
++                with self.assertRaises(AdapterError) as error:
++                    self.submit(policy, image)
++                self.assertEqual(error.exception.code, 'INVALID_DOCKER_IMAGE_PINNING')
++        self.assertEqual(self.transport.calls, [])
++
++    def test_provider_image_mismatch_still_fails_with_original_policy(self):
++        self.submit()
++        self.transport.actual_image = 'gcr.io/kaggle-images/python@sha256:' + '0' * 64
++        with self.assertRaises(AdapterError) as error:
++            self.adapter.status('original-image-1')
++        self.assertEqual(error.exception.code, 'DOCKER_IMAGE_MISMATCH')
++
++    def test_cli_forwards_original_without_authentication(self):
++        stream = io.StringIO()
++        with patch.object(hepta_kaggle, 'KaggleTransport', return_value=self.transport):
++            with contextlib.redirect_stdout(stream):
++                code = hepta_kaggle.main(['--state-dir', str(self.base / 'cli-state'), 'submit', '--request-id', 'cli-original-1', '--source', str(self.source), '--timeout', '120', '--accelerator', 'NvidiaTeslaT4', '--docker-image', fixture.IMAGE, '--docker-image-pinning-type', 'original'])
++        self.assertEqual(code, 0)
++        self.assertEqual(json.loads(stream.getvalue())['result']['intent']['docker_image_pinning_type'], 'original')

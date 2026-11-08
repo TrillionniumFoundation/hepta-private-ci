@@ -1,0 +1,49 @@
+{
+  "actual_task_code_equal_to_public_patch": false,
+  "actual_task_v1_patch_sha256": "836214c0c18a1768751d50f669d9c4aa73244fa5232a5c9043e9c53dd6a0ceac",
+  "actual_task_v2_incremental_patch_sha256": "b09ca79ccd0b87b168bfcd95e3904a57565e8509aed7ff18ca3dfa2b6d100438",
+  "added_behavior_tests": 12,
+  "baseline_release": "hepta-kaggle batch-0.1.6",
+  "baseline_tests": 65,
+  "derivation": "Combined two adapter source changes; removed task account launcher and its private-route preservation test; rendered the remaining 12 public tests with ast.unparse. This generalized patch is not the exact artifact used for cloud requests.",
+  "exit_code": 0,
+  "expected_total_tests": 77,
+  "files": [
+    {
+      "baseline_sha256": "eef3c39de191a06196436ae7278352b31a1ec3fe0a09f5719b55420cdc74fe20",
+      "patched_sha256": "ea510f7fbd1a21fa41806bd2c889b6fb46b337d0a77f1cd3436d3377f03db9e4",
+      "path": "hepta_kaggle.py",
+      "same_as_actual_task_v2_file": true
+    },
+    {
+      "baseline_sha256": "8dc1f9f5c7b54ed40a20701fdf299359200b13b5472dcce335afa8fc8ecbd304",
+      "patched_sha256": "c65d66cd1cadcd21ef29f616d2fd1de582adb71d0672344c5b579c5dd85c6991",
+      "path": "kaggle_jobs.py",
+      "same_as_actual_task_v2_file": true
+    },
+    {
+      "baseline_sha256": null,
+      "patched_sha256": "bd9fb60e37a569cfc17a99905c32b35e3abadfd313f529d1cf74c25dff3de640",
+      "path": "tests/test_image_pin.py",
+      "same_as_actual_task_v2_file": false
+    },
+    {
+      "baseline_sha256": null,
+      "patched_sha256": "bdeb1aae5cb4b431bb47ddc203499583404999337b631b8ef2632f4249542e5b",
+      "path": "tests/test_image_pinning_policy.py",
+      "same_as_actual_task_v2_file": false
+    }
+  ],
+  "git_apply_check_exit_code": 0,
+  "git_apply_exit_code": 0,
+  "observed_total_tests": 77,
+  "original_installed_release_modified": false,
+  "patch_bytes": 14063,
+  "patch_lines": 233,
+  "patch_sha256": "81cbabe626120a81857f9fabd803b5643a0748d33e5b14bf1553801a12172578",
+  "provider_mutations": 0,
+  "schema": "ndu.kaggle-image-public-patch-validation.v1",
+  "sdk": "kagglesdk 0.1.38",
+  "test_log_sha256": "a87bb78f8f7abacee4d60dc1708557d4be1f42f6562c9811cd47f6477e1d8597",
+  "wall_seconds": 0.47819099004846066
+}
