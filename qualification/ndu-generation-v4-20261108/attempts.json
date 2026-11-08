@@ -1,0 +1,125 @@
+{
+  "attempts": [
+    {
+      "id": "source-tree-1",
+      "kind": "source_retrieval",
+      "outcome": "failed",
+      "reason": "GitHub stream CANCEL; no source qualified from partial response"
+    },
+    {
+      "id": "source-tar-1",
+      "kind": "source_retrieval",
+      "outcome": "timed_out",
+      "reason": "180 second timeout; partial archive not used"
+    },
+    {
+      "excluded_missing_directory": "experiments/multimodal_output_portfolio/joint_hepta_20261029",
+      "files": 84,
+      "id": "source-focus-1",
+      "kind": "source_retrieval",
+      "outcome": "verified"
+    },
+    {
+      "id": "local-contracts-1",
+      "kind": "test_launcher",
+      "outcome": "failed",
+      "reason": "Root used scripts.ndu_real_runtime alias; two unittest.mock imports expected canonical ndu_real_runtime module"
+    },
+    {
+      "command": "PYTHONPATH=scripts python -m unittest ndu_real_runtime.test_recursive_contract ndu_real_runtime.test_span_meter ndu_real_runtime.test_interval_costs",
+      "id": "local-contracts-2",
+      "kind": "test_launcher",
+      "outcome": "passed",
+      "tests": 26
+    },
+    {
+      "error_code": "ELIGIBILITY_API_UNAVAILABLE",
+      "existing_assignments": 0,
+      "id": "colab-readiness-1",
+      "kind": "compute_channel",
+      "outcome": "unavailable",
+      "upstream_error_code": "PUBLIC_API_SERVICE_DISABLED",
+      "workload_submitted": false
+    },
+    {
+      "id": "ndu-gen-986c-persistent-gradient-20261108-v1",
+      "kind": "cloud_submission",
+      "outcome": "REJECTED",
+      "reason": "NOTEBOOK_LIST_SCOPE",
+      "record": "cloud-v1/rejected-before-submit.json",
+      "remote_effect_unknown": false,
+      "remote_submission_state": "NOT_SENT"
+    },
+    {
+      "id": "ndu-gen-986c-persistent-gradient-20261108-v2",
+      "kind": "cloud_execution",
+      "note": "26 runtime contracts and recursive gradient entry passed; 3 v4 Torch tests passed, 2 native tests explicitly skipped",
+      "outcome": "PASS",
+      "record": "cloud-v1/execution-summary.json",
+      "source_revision": "first-frozen-source"
+    },
+    {
+      "id": "native-source-v2-clippy",
+      "kind": "lint",
+      "outcome": "FAIL",
+      "reason": "Two nonminimal boolean expressions and one needless character iteration; preserved before final mechanical fixes",
+      "record": "native-v2-lint/run-receipt.json"
+    },
+    {
+      "id": "host-closure-lock-1",
+      "kind": "qualification_harness",
+      "outcome": "FAIL",
+      "reason": "Overinclusive temporary lock rejected under --locked; resolver pruned unused packages without version/source/checksum upgrades",
+      "record": "host-crate/lock-prune.json"
+    },
+    {
+      "id": "host-test-compile-1",
+      "kind": "test_compile",
+      "outcome": "FAIL",
+      "reason": "New child test macro import ambiguity E0659; explicit pretty_assertions::assert_eq import corrected it",
+      "record": "host-crate/check-v2.log"
+    },
+    {
+      "id": "host-format-1",
+      "kind": "qualification_harness",
+      "outcome": "FAIL",
+      "reason": "Generated target sources were not excluded in the temporary closure; repaired only the temporary Git exclusion scope",
+      "record": "host-crate/fmt-v1.log"
+    },
+    {
+      "full_workspace": false,
+      "id": "host-closure-final",
+      "kind": "crate_validation",
+      "outcome": "PASS",
+      "record": "host-crate/receipt.json",
+      "skips": 0,
+      "tests": 179
+    },
+    {
+      "id": "ndu-gen-986c-joint-native-20261108-v3",
+      "kind": "cloud_execution",
+      "outcome": "FAIL",
+      "reason": "Diagnostic width8 checkpoint refused by supported width32/depth1/dual/direct bridge; guard preserved",
+      "record": "cloud-v3-failed/diagnostic.json",
+      "source_revision": "native-source-v2-width8-diagnostic"
+    },
+    {
+      "id": "native-source-v3-final",
+      "kind": "native_qualification",
+      "outcome": "PASS",
+      "record": "native-v3/run-receipt.json",
+      "scoped_clippy": "PASS",
+      "tests": 25
+    },
+    {
+      "id": "ndu-gen-986c-joint-native-20261108-v4",
+      "kind": "cloud_execution",
+      "native_unit_skips": 0,
+      "outcome": "PASS",
+      "record": "cloud-v4/results/run-receipt.json",
+      "source_payload_sha256": "5f9b2426d8929cf8cea2dec273695f0a3329fa250089b07a1292efb17a107492",
+      "source_revision": "native-source-v3-width32-diagnostic"
+    }
+  ],
+  "schema": "hepta.ndu.generation-attempts.v1"
+}

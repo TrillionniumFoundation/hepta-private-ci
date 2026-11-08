@@ -1,0 +1,79 @@
+{
+  "base_commit": "1e6bc8517d61fd42496bc0ed5082e34204b065dd",
+  "cargo_nextest": "0.9.103",
+  "dependency_versions_changed": false,
+  "errors": 0,
+  "failures": 0,
+  "final_candidate_files": {
+    "codex-rs/hepta-neuron/src/cell_joint_generation.rs": {
+      "bytes": 19702,
+      "sha256": "fdced8188357af91d9bbde26943502bee5e03643d3f781791b612a6aa7dc18fa"
+    },
+    "codex-rs/hepta-neuron/src/cell_joint_generation_tests.rs": {
+      "bytes": 20873,
+      "sha256": "1de79263bad5c6356e6415c313887b3707811b51cfbb35ee6e83090b909435d8"
+    },
+    "codex-rs/hepta-neuron/src/cell_joint_observed.rs": {
+      "bytes": 4857,
+      "sha256": "89a0370b8a80b58eafa531deeb873082999cd9576f618befd42f16ba74e8fd80"
+    },
+    "codex-rs/hepta-neuron/src/cell_joint_observed_process_tests.rs": {
+      "bytes": 2952,
+      "sha256": "12091f6534297997626837f019801261543a21f32f334a6b442fdf4fc47041a6"
+    },
+    "codex-rs/hepta-neuron/src/cell_joint_observed_tests.rs": {
+      "bytes": 3905,
+      "sha256": "d7aee5e0bb6b1bf644d3de323933eaa3a9f0e877e3ad98dbb7fef286c5116e0a"
+    },
+    "codex-rs/hepta-neuron/src/cell_joint_protocol.rs": {
+      "bytes": 7239,
+      "sha256": "7c9807a1c92854b5938a05814e1b62c831d5da7a36a6fd27cebc322038acfaf5"
+    },
+    "codex-rs/hepta-neuron/src/lib.rs": {
+      "bytes": 15422,
+      "sha256": "b3e4e8cbde306a5856a737bc294a6b093aa11e52327047236503ce2a0855921c"
+    }
+  },
+  "final_source_manifest_sha256": "1313eba91715c2528bed43b3a4e4b6170c0cc7b1cce94d7acbf1edab88b47b26",
+  "format_final_exit": 0,
+  "full_workspace_validation": false,
+  "just": "1.58.0",
+  "native_binary_sha256": "86dff3e8c32dac27988a54bcc5c91e76d8f651bd0f467546d133cbdc251bc4f0",
+  "receipt_view": {
+    "original_receipt_sha256": "323fc9a3fbfbf35cb5c122302fee5c6db7bc726c88c69173effea51d4d119fc9",
+    "removed_nonessential_fields": [
+      "host",
+      "evidence_directory"
+    ]
+  },
+  "rerun_after_fix_or_fmt": false,
+  "results_archive_sha256": "2951fec5da81296e45326f58dfb4dbf7958e35fac6fd9fbe87449a2514fa97d4",
+  "retained_attempts": [
+    "first --locked attempt refused manually overinclusive lock; Cargo pruned 58 packages to 27 with no version/source/checksum changes",
+    "first real test compile exposed E0659 glob macro ambiguity; fixed explicit macro import",
+    "first just fmt saw unignored generated target sources; task-local git exclude repaired generated output scope"
+  ],
+  "schema": "hepta.neuron-host-qualification.v1",
+  "scoped_clippy_exit": 0,
+  "skipped": 0,
+  "status": "passed_after_recorded_harness_and_test_import_fixes",
+  "test_command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-neuron",
+    "--lib",
+    "--locked",
+    "--test-threads",
+    "2"
+  ],
+  "test_scope": "codex-hepta-neuron --lib",
+  "test_source_fix": "explicit pretty_assertions::assert_eq import in new child test module",
+  "tests": 179,
+  "toolchain": "1.96.0",
+  "workspace_scope": [
+    "codex-hepta-neuron",
+    "codex-hepta-infer-core",
+    "codex-hepta-types"
+  ]
+}

@@ -1,0 +1,300 @@
+{
+  "attempts": "attempts.json",
+  "checks": [
+    {
+      "failed": 0,
+      "passed": 179,
+      "record": "host-crate/receipt.json",
+      "scope": "complete hepta-neuron lib with exact-source types/infer-core dependency closure",
+      "skipped": 0
+    },
+    {
+      "failed": 0,
+      "passed": 19,
+      "record": "native-v3/run-receipt.json",
+      "scope": "actual standalone generation kernel"
+    },
+    {
+      "failed": 0,
+      "passed": 6,
+      "record": "native-v3/run-receipt.json",
+      "scope": "finite entropic pure Rust module"
+    },
+    {
+      "failed": 0,
+      "passed": 27,
+      "record": "cloud-v4/results/runtime-contract-tests.stderr.log",
+      "scope": "final Kaggle runtime contracts"
+    },
+    {
+      "failed": 0,
+      "passed": 8,
+      "record": "cloud-v4/results/joint-v4-tests.stderr.log",
+      "scope": "final Kaggle v4/NDU unit and actual native interoperability",
+      "skipped": 0
+    },
+    {
+      "record": "cloud-v4/results/joint-v4-ndu/diagnostic.json",
+      "scope": "same-checkpoint width32 NDU training, export, native Auto and independent content decoding",
+      "status": "passed"
+    }
+  ],
+  "cloud_final": {
+    "record": "cloud-v4/results/run-receipt.json",
+    "request_id": "ndu-gen-986c-joint-native-20261108-v4",
+    "runtime": {
+      "device": "cpu",
+      "libc": [
+        "glibc",
+        "2.39"
+      ],
+      "machine": "x86_64",
+      "packages": {
+        "Pillow": "13.0.0",
+        "cuda_available": false,
+        "ffprobe_present": true,
+        "numpy": "2.1.3",
+        "torch": "2.11.0+cpu",
+        "torch_interop_threads": 1,
+        "torch_threads": 1
+      },
+      "python": "3.13.18",
+      "system": "Linux",
+      "thread_limit": 1
+    },
+    "source_manifest_sha256": "2f734a88013333b6eb82124b47d1af8f86b9541bdaa98fe77c4417cf2082d0b9",
+    "source_payload_sha256": "5f9b2426d8929cf8cea2dec273695f0a3329fa250089b07a1292efb17a107492",
+    "wall_seconds": 53.004391655000006
+  },
+  "code_manifest": "FINAL_CODE_MANIFEST.json",
+  "implementation_status": "implemented",
+  "native_base": "1e6bc8517d61fd42496bc0ed5082e34204b065dd",
+  "native_final": {
+    "execution_binary_sha256": "0866ace1c10daa70abf95eaa5f45020293986ea00ec06bbc9e03dbd59f9f9967",
+    "format": "PASS",
+    "scoped_clippy": "PASS -D warnings",
+    "source_manifest_sha256": "565219e31e08b2093be2093870bba47d1445290d9ceaaf612704aacc96c9327f"
+  },
+  "numerical_and_scoped_integration_status": "PASS",
+  "python_import": "7ca2f6657529a538ccd17e056dfaf0269b1a14aa",
+  "receipt_runtime_earlier_numerical_check": {
+    "central_difference_checks": 6,
+    "deployment_training_value_max_error": 3.885780586188048e-16,
+    "entrypoints": {
+      "actor_decisions": 2,
+      "actor_memory_changed_across_actions": true,
+      "different_planner_profile_rejected": true,
+      "fixture_is_real_task_evidence": false,
+      "legacy_reset_status": "FITTED_NOT_ADOPTED",
+      "policy_gradient_norm": 0.0011797887696140083,
+      "recursive_gradient_norm": 0.08667889355943327,
+      "reference_unchanged": true,
+      "training_status": "FITTED_NOT_ADOPTED"
+    },
+    "max_absolute_error": 5.3669578004879315e-12,
+    "record": "cloud-v1/recursive-gradient-receipt.json",
+    "source_diff": "POST_V1_RUNTIME_DIFF.patch",
+    "source_revision": "first frozen source; unchanged numerical kernels verified below",
+    "unchanged_numeric_kernels": {
+      "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978",
+      "scripts/ndu_real_runtime/controllers.py": "32a5c663fc860302e47a85365a405b6e12044ebf49b3a41d7d3e66713eb0217c",
+      "scripts/ndu_real_runtime/fit_loop.py": "f315c980dee4f89e669d2f154b566d2cccd46cfd452203c440627292d1d40788",
+      "scripts/ndu_real_runtime/neural.py": "58989ece2e8f60beb65fe8cc8f6736042b739ed77cf561437a7fdcb72bbe9f2a",
+      "scripts/ndu_real_runtime/objective.py": "232077c1579713356cd13604530b71cca2dc798b20f5faae911235fa1e0d82a3",
+      "scripts/ndu_real_runtime/recursive_objective.py": "2ab0f7dfd9194205c2da6e4155fdc379586b81892edf1b86790965f03c056265"
+    }
+  },
+  "same_checkpoint": {
+    "central_difference_checks": 6,
+    "central_difference_max_absolute_error": 2.649368086027337e-10,
+    "committed_bytes_exactly_equal": true,
+    "decoded": {
+      "audio": {
+        "format": "PCM16-WAV",
+        "sample_rate": 16000,
+        "samples": 1024
+      },
+      "cursors": [
+        16,
+        1024,
+        4,
+        128
+      ],
+      "files": {
+        "generated.ppm": {
+          "bytes": 781,
+          "sha256": "1c61f41867e1fcfbeadbae0dac12aebae179aba270921a9288e25ec77b995075"
+        },
+        "generated.txt": {
+          "bytes": 129,
+          "sha256": "b25b8a393244c86d7064ca5a4f637a8fb17eada2a4dade0c8f12961039140d7a"
+        },
+        "generated.wav": {
+          "bytes": 2092,
+          "sha256": "155ac73b5eca9a430ee900f86d5118757b859c42f77e988c474d69f5a19039d8"
+        },
+        "generated.y4m": {
+          "bytes": 3132,
+          "sha256": "163ed05ac1b75d8e5b9d6a4c78300c3919fc3ead2ae8a9a263c42da693aa5793"
+        }
+      },
+      "image": {
+        "format": "PPM",
+        "height": 16,
+        "width": 16
+      },
+      "text": {
+        "encoding": "UTF-8",
+        "unicode_scalars": 128
+      },
+      "video": {
+        "format": "Y4M",
+        "frames": 4,
+        "pixel_format": "yuv444p"
+      }
+    },
+    "last_stop_is_forced_by_native_step_bound": true,
+    "native_auto_actions": [
+      "audio",
+      "audio",
+      "shared",
+      "audio",
+      "stop"
+    ],
+    "native_loaded_sha256": "fd5a17c0a5a706175130a88104aee00f762d0c923a2a090197f7e02e85be3fb5",
+    "optimizer_steps": [
+      "recursive",
+      "policy",
+      "teacher_forced"
+    ],
+    "per_loss_gradient_groups": {
+      "policy": {
+        "actor": {
+          "l2": 0.020151605147938886,
+          "max_abs": 0.004787155005709759,
+          "nonzero_elements": 2631
+        },
+        "core": {
+          "l2": 0.000908456039255512,
+          "max_abs": 0.00016031313510202894,
+          "nonzero_elements": 8576
+        },
+        "critics": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "ordered_text_shared_recurrence": {
+          "l2": 0.0002490477321216018,
+          "max_abs": 3.982516162062195e-05,
+          "nonzero_elements": 1056
+        },
+        "text_decoder_condition": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "text_emission_head": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "token_embedding": {
+          "l2": 6.603946101629928e-05,
+          "max_abs": 3.712095413777909e-05,
+          "nonzero_elements": 256
+        }
+      },
+      "recursive": {
+        "actor": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "core": {
+          "l2": 0.019363139922454975,
+          "max_abs": 0.0025917265600352876,
+          "nonzero_elements": 8608
+        },
+        "critics": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "ordered_text_shared_recurrence": {
+          "l2": 0.008926205575687641,
+          "max_abs": 0.0014273808834325754,
+          "nonzero_elements": 1056
+        },
+        "text_decoder_condition": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "text_emission_head": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "token_embedding": {
+          "l2": 0.0023303285268624872,
+          "max_abs": 0.00106621748549797,
+          "nonzero_elements": 256
+        }
+      },
+      "teacher_forced": {
+        "actor": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "core": {
+          "l2": 0.1384769557645105,
+          "max_abs": 0.021318965459561953,
+          "nonzero_elements": 8576
+        },
+        "critics": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "ordered_text_shared_recurrence": {
+          "l2": 0.32136049503327796,
+          "max_abs": 0.04265044624738986,
+          "nonzero_elements": 1056
+        },
+        "text_decoder_condition": {
+          "l2": 0.386975728666003,
+          "max_abs": 0.03694425011925875,
+          "nonzero_elements": 2080
+        },
+        "text_emission_head": {
+          "l2": 1.8157946325007481,
+          "max_abs": 0.11016063332495592,
+          "nonzero_elements": 15795
+        },
+        "token_embedding": {
+          "l2": 0.0903263748553373,
+          "max_abs": 0.021780232344430637,
+          "nonzero_elements": 480
+        }
+      }
+    },
+    "root_score_max_absolute_error": 1.1102230246251565e-16,
+    "state_max_absolute_error": 4.0245584642661925e-16,
+    "trained_sha256": "fd5a17c0a5a706175130a88104aee00f762d0c923a2a090197f7e02e85be3fb5"
+  },
+  "schema": "hepta.ndu.generation-qualification.v1",
+  "scope_limits": {
+    "full_workspace_cargo_or_bazel_validation": false,
+    "native_forecast_durations": "constant fixture metadata",
+    "native_single_particle_risk_effect": false,
+    "ndu_gradients_through_discrete_emitted_bytes": false,
+    "ndu_scientific_improvement_established": false,
+    "production_adoption": false,
+    "real_task_matched_reset_persistent_trial_performed": false,
+    "reference_critics": "uncalibrated synthetic fixture",
+    "semantic_generation_quality_measured": false
+  },
+  "source_execution_matches": "SOURCE_EXECUTION_MATCH.json"
+}

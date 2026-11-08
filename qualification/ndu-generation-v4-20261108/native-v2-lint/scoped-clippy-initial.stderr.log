@@ -1,0 +1,19 @@
+    Checking hepta-joint-v4-scoped-lint v0.0.0 (/tmp/ndu-joint-v4-986c-20261108-source-v2-lint)
+error: this boolean expression can be simplified
+  --> codex-rs/hepta-ndu/src/finite_entropic.rs:49:12
+   |
+49 |           if !self.risk.is_finite()
+   |  ____________^
+50 | |             || self.risk < 0.0
+51 | |             || !self.latency_weight.is_finite()
+52 | |             || self.latency_weight < 0.0
+53 | |             || !self.discount_per_second.is_finite()
+54 | |             || !(0.0 < self.discount_per_second && self.discount_per_second <= 1.0)
+   | |___________________________________________________________________________________^ help: try: `!(self.risk.is_finite() && self.risk >= 0.0 && self.latency_weight.is_finite() && self.latency_weight >= 0.0 && self.discount_per_second.is_finite() && 0.0 < self.discount_per_second && self.discount_per_second <= 1.0)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#nonminimal_bool
+   = note: `-D clippy::nonminimal-bool` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::nonminimal_bool)]`
+
+error: could not compile `hepta-joint-v4-scoped-lint` (lib) due to 1 previous error
+error: recipe `clippy` failed on line 5 with exit code 101

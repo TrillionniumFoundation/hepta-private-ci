@@ -1,0 +1,46 @@
+{
+  "default_utility": {
+    "discount_per_second": 1.0,
+    "edge": "-latency_weight*duration_seconds + discount_per_second**duration_seconds * successor_value",
+    "latency_weight": 0.01,
+    "risk": 0.25,
+    "time_unit": "seconds"
+  },
+  "external_terminal_metric": {
+    "duration_discount_applied": false,
+    "formula": "independent_rubric_quality - latency_weight * measured_deployment_wall_seconds",
+    "profile": "ndu.real.observed-quality-minus-wall-cost.v1",
+    "recursive_values_are_model_predictions": true,
+    "single_episode_certainty_equivalent_observed": false
+  },
+  "mathematical_profile": "hepta.ndu.finite-entropic.v1",
+  "native": {
+    "actual_budget": "admitted task deadline minus host monotonic clock; request and task deadlines must be equal",
+    "budget_unit": "wall-microseconds-v1",
+    "default_horizon": 2,
+    "default_max_forecasts": 32,
+    "duration_forecasts": "explicit checkpoint metadata; not measured action wall time",
+    "inference_profile": "ndu-finite-deterministic-v1",
+    "noise_profile": "single-particle-fixed-emission-seed-v1",
+    "observation_profile": "owner-prefix-budget-v1",
+    "output_frame": "HGC2",
+    "request_frame": "HJREQV02",
+    "risk_affects_single_particle_value": false,
+    "weights_kind": "joint-generator-weights-v4"
+  },
+  "receipt_runtime": {
+    "default_horizon": 3,
+    "default_max_forecasts": 96,
+    "default_particles": 4,
+    "noise_profile": "empirical diagonal Gaussian residual; fixed seed/step/action; no Brownian dt claim",
+    "training_deployment_binding": "deployment profile separately binds canonical SHA256(asdict(ControlPlan)), utility_profile_sha256, weights_sha256, core, memory_mode and rubric_sha256; persistent and ndu_policy require it; legacy reset/v1 allows absence",
+    "v2_replay": "full episode chains; collection memory modes reported independently of training memory mode"
+  },
+  "schema": "hepta.ndu.generation-evaluation-contract.v1",
+  "scientific_acceptance": {
+    "current_evidence": "source-bound numerical and integration diagnostics",
+    "production_adoption_authorized": false,
+    "real_task_matched_memory_experiment_performed": false,
+    "semantic_content_generation_qualified": false
+  }
+}

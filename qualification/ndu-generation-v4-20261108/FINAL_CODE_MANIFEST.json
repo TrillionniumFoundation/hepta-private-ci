@@ -1,0 +1,452 @@
+{
+  "files": [
+    {
+      "bytes": 1732,
+      "git_blob": "840bb20ba639be8935cb5c3818e3a86adba0127b",
+      "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-joint-propose.rs",
+      "sha256": "b11f8bb5c97f085ae6fd6a22c66c3ee1139cdf1f36c28a0b591eee02d28ce1bb"
+    },
+    {
+      "bytes": 4820,
+      "git_blob": "f7c9af197e4947d8d089fa3d85cbbee195b91680",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/bridge_state.rs",
+      "sha256": "0dfcd14b8318589a4b4877055e032eeea55fc40f050522ddacb29a66ee068e4e"
+    },
+    {
+      "bytes": 9452,
+      "git_blob": "12be3f88cc3a3563de407d49eca8aa9d0c6c0fb9",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/decoder.rs",
+      "sha256": "419c866f1231dce01658dcc7d8c0e01ea081f624601c0503357fd3478ddbc152"
+    },
+    {
+      "bytes": 4282,
+      "git_blob": "e600ae189c54a8d69fda8f2fde6defe31bafc12a",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/media_codec.rs",
+      "sha256": "221e0fcf81fda01c91fde49e78b24957cb88ac96629da333d7d6ebf7cf02d545"
+    },
+    {
+      "bytes": 1568,
+      "git_blob": "5565c44f0035e0c41f20fff400d89b867e7ab184",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/media_codec_tests.rs",
+      "sha256": "355fcdddc3edcca377637d2380ffa886b3a08489d08638d0bfb7ab1fe8a6def9"
+    },
+    {
+      "bytes": 21907,
+      "git_blob": "09f54bc7c8e43a4efb99ace968182c6e931b8f9b",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/model.rs",
+      "sha256": "add7c0852e1600b31e852b9e2c6aebad614e246c067a02eae53b6a77d1d13501"
+    },
+    {
+      "bytes": 8403,
+      "git_blob": "2229921884c6a27cb03950488b5083ac08bd9d26",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs",
+      "sha256": "d9380b1651436e04c7d615b52fa9f2eb1d7d5a05a1e266941b4e67d8e7a6e594"
+    },
+    {
+      "bytes": 2175,
+      "git_blob": "9ae3a6b323142be607c1756d06cc6af81cee7441",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/observation_tests.rs",
+      "sha256": "aca1f05877c294eb4f6e7f75c55a7c9c4cc062cd78587fa74ac9a82c913f3949"
+    },
+    {
+      "bytes": 4042,
+      "git_blob": "5b992ba59ecd46719faaf113334edadf50126153",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/observed_model.rs",
+      "sha256": "5ddc15b4b6af0809175396415976026e40817093d38f61a737e18419c506d829"
+    },
+    {
+      "bytes": 11938,
+      "git_blob": "8073635781f0f1fab24841f7d0c98f412aeea293",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/observed_tests.rs",
+      "sha256": "a04f4ac98c8ce3b75f39afba712ccfdf2d06fcdcd61205863e4b486cb5e39951"
+    },
+    {
+      "bytes": 14475,
+      "git_blob": "4ccd3395259803b5541ecae957ce3297cad8e659",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/planner.rs",
+      "sha256": "fdbc4e161212f18473090ca072d03591fc6d4128ed760b6d529543c8c3821315"
+    },
+    {
+      "bytes": 4572,
+      "git_blob": "61f9099d8ca1b2d2971c417ae60fb30bcee8a52f",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/planner_tests.rs",
+      "sha256": "149632c364e9f153849d8d99304203f1465f4b4f8aca0d529cda85e27272f026"
+    },
+    {
+      "bytes": 8017,
+      "git_blob": "f30e6b2fbf38520e6591f9e755c557197e46f647",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs",
+      "sha256": "c40435fa84d7a018ad06c38c15e6583d77ef3ccd92f179d395d2c1c147cdc713"
+    },
+    {
+      "bytes": 9645,
+      "git_blob": "a50e51102468110b63e2f2870c141a550fadc47a",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/proposal_test_support.rs",
+      "sha256": "62268f95a840babb42d72682ddbc29f0690c14bb30ddc4322c28cce72d26f39c"
+    },
+    {
+      "bytes": 9079,
+      "git_blob": "98a572ac579cc676c22e92c835ab786e811fd862",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/proposal_tests.rs",
+      "sha256": "bb7a50c6941b573e74c73266e4053e0b5b811ecf358fd6b216c4e6b22869197c"
+    },
+    {
+      "bytes": 6904,
+      "git_blob": "2edcce16a6e2548b21c30ecf873ccd4f59c0a4d5",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/protocol.rs",
+      "sha256": "2893879f67a931a4563c2b98d6045d4cbf820fcb651c38ca635844328aaad646"
+    },
+    {
+      "bytes": 5461,
+      "git_blob": "eb0a640ef11dd15151e2214be01ff55b5cad32d2",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/state.rs",
+      "sha256": "edb57151321484f10a5ef6585cadcc1416a9f975ca422fab314450771e1f1881"
+    },
+    {
+      "bytes": 3583,
+      "git_blob": "3bdfb28a8820b695a527be5800bce4dd24af60b3",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/text_codec.rs",
+      "sha256": "0185050b33765ce878626a7fc2046f7eb8dff5dfa6492cfe782ee5067caab079"
+    },
+    {
+      "bytes": 645,
+      "git_blob": "13d390aa0cfb3bf637eeacd9640479ceb5652783",
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/text_codec_tests.rs",
+      "sha256": "d333cd8ae4f8dacb8d4a02c85079253e377ed8182935926b05030eb0e218de45"
+    },
+    {
+      "bytes": 5600,
+      "git_blob": "8f09f2eb9a2b3fb230d684eb5446b8c21db939a1",
+      "path": "codex-rs/hepta-ndu/src/finite_entropic.rs",
+      "sha256": "ffef52707f8a6df0021fd3b735e347c82fa1efcdce9a37922003fd00a937f668"
+    },
+    {
+      "bytes": 3642,
+      "git_blob": "4fdfef7fe50b3fe4ca876a083f221288899a6dae",
+      "path": "codex-rs/hepta-ndu/src/finite_entropic_tests.rs",
+      "sha256": "13f47dac94941bed406fbc7d67b0bc51f1866208059dab071e05facac0028b63"
+    },
+    {
+      "bytes": 4465,
+      "git_blob": "da095883749358aaf00d73f0209892b7939685db",
+      "path": "codex-rs/hepta-ndu/src/lib.rs",
+      "sha256": "1ef33258c066d2649efbb208f21bdd84aafced0f2aaaeee1274a848fa6e3b83d"
+    },
+    {
+      "bytes": 19702,
+      "git_blob": "17f811291246e9b2a6a64456a57c22987e0d1163",
+      "path": "codex-rs/hepta-neuron/src/cell_joint_generation.rs",
+      "sha256": "fdced8188357af91d9bbde26943502bee5e03643d3f781791b612a6aa7dc18fa"
+    },
+    {
+      "bytes": 20873,
+      "git_blob": "86f3b7aba50881bd70157d1552dd01a76609a9ab",
+      "path": "codex-rs/hepta-neuron/src/cell_joint_generation_tests.rs",
+      "sha256": "1de79263bad5c6356e6415c313887b3707811b51cfbb35ee6e83090b909435d8"
+    },
+    {
+      "bytes": 4857,
+      "git_blob": "21fb990256e732d88da1904adaf1603ae881975d",
+      "path": "codex-rs/hepta-neuron/src/cell_joint_observed.rs",
+      "sha256": "89a0370b8a80b58eafa531deeb873082999cd9576f618befd42f16ba74e8fd80"
+    },
+    {
+      "bytes": 2952,
+      "git_blob": "a8b0b6ed6e1ee1ba5e28ada78b905111980b919b",
+      "path": "codex-rs/hepta-neuron/src/cell_joint_observed_process_tests.rs",
+      "sha256": "12091f6534297997626837f019801261543a21f32f334a6b442fdf4fc47041a6"
+    },
+    {
+      "bytes": 3905,
+      "git_blob": "274bd1f1941df05b2e437b0c7e8a70d70fe4c4dd",
+      "path": "codex-rs/hepta-neuron/src/cell_joint_observed_tests.rs",
+      "sha256": "d7aee5e0bb6b1bf644d3de323933eaa3a9f0e877e3ad98dbb7fef286c5116e0a"
+    },
+    {
+      "bytes": 7239,
+      "git_blob": "05d7a987e42322fe8c13cfd1f6d56d931c1ea4ca",
+      "path": "codex-rs/hepta-neuron/src/cell_joint_protocol.rs",
+      "sha256": "7c9807a1c92854b5938a05814e1b62c831d5da7a36a6fd27cebc322038acfaf5"
+    },
+    {
+      "bytes": 15422,
+      "git_blob": "f7ba05e3e10686e8e3937662438f2e1201ecc4e5",
+      "path": "codex-rs/hepta-neuron/src/lib.rs",
+      "sha256": "b3e4e8cbde306a5856a737bc294a6b093aa11e52327047236503ce2a0855921c"
+    },
+    {
+      "bytes": 14705,
+      "git_blob": "040dfaf474bccd07ecb64a6360e486240325458c",
+      "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py",
+      "sha256": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978"
+    },
+    {
+      "bytes": 5170,
+      "git_blob": "7a266af7d22b729933af2a14882e7808d720f2dd",
+      "path": "scripts/joint_generation_v4_codecs.py",
+      "sha256": "2bba4d5b8e774f883b6acdca135058639f0e7e4cfb213cb54b4787adb24038ce"
+    },
+    {
+      "bytes": 12351,
+      "git_blob": "bf3a17112301052479afa821aac7ee4570815eb0",
+      "path": "scripts/joint_generation_v4_diagnostic.py",
+      "sha256": "a58bdc13b92b7699aa9dfdc2987d46013f2f3129235e85b8596d278b7db14268"
+    },
+    {
+      "bytes": 10495,
+      "git_blob": "353ce8334b01bb288bc025729acc6d1dbebceada",
+      "path": "scripts/joint_generation_v4_gradients.py",
+      "sha256": "c1267b67798bc9777bfe8bfc4e28ce37ab64368ebac05792b14d2b3df266f5f9"
+    },
+    {
+      "bytes": 9001,
+      "git_blob": "5faf63a70928ff30d08e00e37f106082b19497ed",
+      "path": "scripts/joint_generation_v4_io.py",
+      "sha256": "65ff7fb09b8439304e794642987f20e1acfb8c42a2ae42c1730708437875ed8c"
+    },
+    {
+      "bytes": 12634,
+      "git_blob": "6cfd54f3b0ff5208796ecef1c7cac6ecdd10b867",
+      "path": "scripts/joint_generation_v4_model.py",
+      "sha256": "01ea458fac536c183a871d80d476393b5295af71057f61c2d49eecf98b32bb27"
+    },
+    {
+      "bytes": 6785,
+      "git_blob": "da149e74a749e5e4316764928e71a734d16296b1",
+      "path": "scripts/joint_generation_v4_ndu.py",
+      "sha256": "44fa140799a57cee3731e045529c07de54e8fd9a695efca3defe181a1988fa55"
+    },
+    {
+      "bytes": 74,
+      "git_blob": "8280c0d9390bcc5b21809676b5e368f870c3900b",
+      "path": "scripts/ndu_real_materials/__init__.py",
+      "sha256": "1f0a2d2286ae48aa399b8759c8326e878b4de73bbec0fcc9c2617b58463187a9"
+    },
+    {
+      "bytes": 4397,
+      "git_blob": "456daaf18fabaa9af9cc0eaaaa00cabbf1ff139d",
+      "path": "scripts/ndu_real_materials/acquire.py",
+      "sha256": "e27b2bf1cdb2a012790fb868fb9d0cce93d8718a8deedda61c81cdcc8fd75de6"
+    },
+    {
+      "bytes": 3063,
+      "git_blob": "7fe0ce599e48e5ea928f99fe4dfebc585b89a8d7",
+      "path": "scripts/ndu_real_materials/common.py",
+      "sha256": "2f08fb8c73be5783552c02168acceb702149c2c5db510539e0b51b2578744ca6"
+    },
+    {
+      "bytes": 25826,
+      "git_blob": "57f56ff1f99b3f653b794159b9eb061d132b99d0",
+      "path": "scripts/ndu_real_materials/coverage.py",
+      "sha256": "8b37fd61e272d8b5be04fe1ee7aabe9f9707911faf54c14df5e96e90e2f3caea"
+    },
+    {
+      "bytes": 8741,
+      "git_blob": "cb98737b405587ee81f263b7621a637e8c944e6d",
+      "path": "scripts/ndu_real_materials/evaluator.py",
+      "sha256": "6c79c906eb021069f8e3df36dc2029909d2dd152a47dbc30ad64b1391ba59cfd"
+    },
+    {
+      "bytes": 4729,
+      "git_blob": "37cb7243ba85df91d07c4eedd04a556767dbab27",
+      "path": "scripts/ndu_real_materials/groups.py",
+      "sha256": "7427dc672eb40f99fbf8cc5d6633324195a7abe097cebc4b8ce328ee1cd9d121"
+    },
+    {
+      "bytes": 15161,
+      "git_blob": "db16537c108a4aebed9d0f350610d0391961a522",
+      "path": "scripts/ndu_real_materials/isolate.py",
+      "sha256": "3e9d5c07a72257c3411d5ceff0f7d923f9f85bd2e9cd112ed9b496eb77d44ace"
+    },
+    {
+      "bytes": 10852,
+      "git_blob": "017122fb4746319949de74ae35e77930460ab625",
+      "path": "scripts/ndu_real_materials/isolation_probe.py",
+      "sha256": "460bcd50909d496a3c0074229bbaf12991256f471b5c53566b9b84a5e1900f38"
+    },
+    {
+      "bytes": 18415,
+      "git_blob": "c5aee9df1da37f456e24de29ebf9512bdf96b4ff",
+      "path": "scripts/ndu_real_materials/register.py",
+      "sha256": "6254f04844546ac4c5ff6402f217b119f55f6af54e1d83aca0570e73386496b3"
+    },
+    {
+      "bytes": 12465,
+      "git_blob": "34a89223e48aba709d46ba1239a1b65f5f0ecb27",
+      "path": "scripts/ndu_real_materials/test_coverage.py",
+      "sha256": "bbcb2351cedcb1cae7f850e48a0157d6b2929fec60f7d7a9ffdd823b5ed6d7bf"
+    },
+    {
+      "bytes": 77,
+      "git_blob": "f17ea999869e5f16ed7b0c274a6da9a2651e8f6e",
+      "path": "scripts/ndu_real_runtime/__init__.py",
+      "sha256": "cb8063131308ce06b535be86ae276281fa6c0cc0f21a1752f29d0c59018ef8a4"
+    },
+    {
+      "bytes": 15118,
+      "git_blob": "b0574f9a34764ccb4bda904bf4ff21c8dbbd6753",
+      "path": "scripts/ndu_real_runtime/actor.py",
+      "sha256": "99ece9c4887e6970def002086362acdbf55746694fce3a8e900433862dce4fb5"
+    },
+    {
+      "bytes": 13639,
+      "git_blob": "a9f675118b01b4bea3ab126254a82b938a3fe585",
+      "path": "scripts/ndu_real_runtime/controllers.py",
+      "sha256": "32a5c663fc860302e47a85365a405b6e12044ebf49b3a41d7d3e66713eb0217c"
+    },
+    {
+      "bytes": 24822,
+      "git_blob": "a61ec10e685f64b3f964db7104f72d668d0b0e34",
+      "path": "scripts/ndu_real_runtime/episode.py",
+      "sha256": "ae3229379e03751116f9d33f5340f78b48cd8cc2a5f6159a854804d5af225937"
+    },
+    {
+      "bytes": 2076,
+      "git_blob": "bc43a6f53def4420f1b3270ede66371d3b1bd62f",
+      "path": "scripts/ndu_real_runtime/finite_entropic_golden.json",
+      "sha256": "361f37baddd9bbcccbfa16f9b438e14707b22ae7c997863a13b19fe01def02cc"
+    },
+    {
+      "bytes": 9434,
+      "git_blob": "94aed203496b6c66982dc6c89eb67a502721b9cc",
+      "path": "scripts/ndu_real_runtime/fit_loop.py",
+      "sha256": "f315c980dee4f89e669d2f154b566d2cccd46cfd452203c440627292d1d40788"
+    },
+    {
+      "bytes": 14680,
+      "git_blob": "9679c27046cd35dd3325b3ddb22c76ecdabbb6e5",
+      "path": "scripts/ndu_real_runtime/gradient_check.py",
+      "sha256": "ca4b74ec21f4a8853a5036ff57cfffffc13bb1c9cfc7208dd4a002c07158cf29"
+    },
+    {
+      "bytes": 11426,
+      "git_blob": "684a853061b7e0cb14f67e873b519543225d6cf9",
+      "path": "scripts/ndu_real_runtime/interval_costs.py",
+      "sha256": "0ba74ec18979fc4f13facdaefe880796f7e81fd33937aa0bf02df7990487ed90"
+    },
+    {
+      "bytes": 17131,
+      "git_blob": "c0e9e67a6aab3115d6937f25572ec3e93bbf6708",
+      "path": "scripts/ndu_real_runtime/matrix.py",
+      "sha256": "d0dc089178096bc9753cd6347f78251acae3915a9b84133435fcabdc55b75c17"
+    },
+    {
+      "bytes": 13642,
+      "git_blob": "7409184c187262b0e9b505ce96bb4255ce8f1005",
+      "path": "scripts/ndu_real_runtime/meter_diagnostic.py",
+      "sha256": "118c5e38046f83eefd4aa52d23fb0d4fd29639eb5907e3a0e69d3edd7d6e794b"
+    },
+    {
+      "bytes": 7844,
+      "git_blob": "ba8b243b4d0bba2720f2b8fd0341edaab5cf382c",
+      "path": "scripts/ndu_real_runtime/metering.py",
+      "sha256": "48c78da966e6902b840c65f2024d9302f90623a486fbfc17471b3ed40265b869"
+    },
+    {
+      "bytes": 3034,
+      "git_blob": "e3e6cd8c165c308d6227b46843a02883472c7983",
+      "path": "scripts/ndu_real_runtime/native_worker.py",
+      "sha256": "7d17b79fd33a79d8d2306055e5774bc909f907f0bc3288eb4c8c6e6179656ce5"
+    },
+    {
+      "bytes": 9247,
+      "git_blob": "573984e7fc6bafdeabaae4d9803667f33c32d67f",
+      "path": "scripts/ndu_real_runtime/neural.py",
+      "sha256": "58989ece2e8f60beb65fe8cc8f6736042b739ed77cf561437a7fdcb72bbe9f2a"
+    },
+    {
+      "bytes": 3299,
+      "git_blob": "783c3f83665db7dacb8c4cdfb8c023c11f426a4f",
+      "path": "scripts/ndu_real_runtime/objective.py",
+      "sha256": "232077c1579713356cd13604530b71cca2dc798b20f5faae911235fa1e0d82a3"
+    },
+    {
+      "bytes": 9539,
+      "git_blob": "31206555e91f1789248d66687b4466423d26bf5b",
+      "path": "scripts/ndu_real_runtime/ocr.py",
+      "sha256": "1c0d5b47dafd9a797257e8ec59be08da5d6f9bc2abfb0512716b13ab295ff14f"
+    },
+    {
+      "bytes": 12451,
+      "git_blob": "5a7b615402e3ec31221aa5b9bcdb37380a374e85",
+      "path": "scripts/ndu_real_runtime/pipeline.py",
+      "sha256": "f0751cccef18b6e8e40ecf0b0cbd7bc727eed11f60d5ad647123407559b583b2"
+    },
+    {
+      "bytes": 6494,
+      "git_blob": "c9d0da9de0451fb1bb2dee61cd73a5dfe5cbd815",
+      "path": "scripts/ndu_real_runtime/recursive_objective.py",
+      "sha256": "2ab0f7dfd9194205c2da6e4155fdc379586b81892edf1b86790965f03c056265"
+    },
+    {
+      "bytes": 1095,
+      "git_blob": "f3e770f3ca9bff116a342df009bed2ec1d351efe",
+      "path": "scripts/ndu_real_runtime/score_worker.py",
+      "sha256": "64551bd3d3f6c22d63312dc70d7af8e3b985c1797734e0b1142a0af1ab2f762a"
+    },
+    {
+      "bytes": 18554,
+      "git_blob": "9a38ce4351bb075ebbe092884c2ceb57622e6794",
+      "path": "scripts/ndu_real_runtime/span_meter.py",
+      "sha256": "7b3417caabbd952ae77f743593db15820c1fbf7afb9f6d3dcd2327fe34a03372"
+    },
+    {
+      "bytes": 14995,
+      "git_blob": "80f71cce2527c77df8622d50842ec414cfcaaf71",
+      "path": "scripts/ndu_real_runtime/study.py",
+      "sha256": "348b8b4b5239e298fea71eb846a3366b81f38e9756ed0a8c4d5b3a14e7ccb0e4"
+    },
+    {
+      "bytes": 10931,
+      "git_blob": "38734aa66e3adf9c282928b598c51af95c86cc92",
+      "path": "scripts/ndu_real_runtime/test_interval_costs.py",
+      "sha256": "17c1b419c537e51684304fddaf2c477b5548656a935b6ad144de61838a9e235f"
+    },
+    {
+      "bytes": 6585,
+      "git_blob": "53c80a6b13bb5c1a5e795fa8aaa1aaab6525fceb",
+      "path": "scripts/ndu_real_runtime/test_recursive_contract.py",
+      "sha256": "de36ce00c0afb8d6853ae7ccd6e0e7d1bbe3d3c3fefbdbb8f36d6573976a78a7"
+    },
+    {
+      "bytes": 11072,
+      "git_blob": "321a8f284ebaa425a75bdf49d6a25862df36cb73",
+      "path": "scripts/ndu_real_runtime/test_span_meter.py",
+      "sha256": "15cdcdc8903d164c8b048671660619ef6a50efeb29e49cace31c1812e72440a5"
+    },
+    {
+      "bytes": 31467,
+      "git_blob": "6921adf4e0906218e23a07ba4a1276770cc0e889",
+      "path": "scripts/ndu_real_runtime/training.py",
+      "sha256": "d6cc3d6a0f69d3a07054993730379330e750aa936098d2512f395d98644b6a48"
+    },
+    {
+      "bytes": 7821,
+      "git_blob": "9445bc380f5789385197534a7a489662958a6c4c",
+      "path": "scripts/ndu_real_runtime/training_grid.py",
+      "sha256": "5ef5c4fbc9ddedc319770a0690d04311e8c8f98565c9e305a05fe9e4319754a1"
+    },
+    {
+      "bytes": 5441,
+      "git_blob": "b9d5051713e5873c348d47248251b410e84fb839",
+      "path": "scripts/ndu_real_runtime/trajectory.py",
+      "sha256": "660386ea9562ce3b973f6ad978d3f04e4d2219ef9c6333d4bee4f53949ad07e9"
+    },
+    {
+      "bytes": 9157,
+      "git_blob": "cc899c5561d0eae6be0395231174c3fc65b915b0",
+      "path": "scripts/test_joint_generation_v4.py",
+      "sha256": "2fab91739e0da2c8b784ba994d69fa25968f0fd9dbe5a3a39e6762b37eb04a55"
+    },
+    {
+      "bytes": 3012,
+      "git_blob": "f8942cc9d31253c356da4011380062a56449c34f",
+      "path": "scripts/test_joint_generation_v4_ndu.py",
+      "sha256": "4b653efd022279b86cd00571213ddb5ce46801305fbf43a30999b01461f0cdf1"
+    }
+  ],
+  "full_workspace_validation_claimed": false,
+  "native_base": "1e6bc8517d61fd42496bc0ed5082e34204b065dd",
+  "python_import": "7ca2f6657529a538ccd17e056dfaf0269b1a14aa",
+  "schema": "hepta.ndu.generation-final-code.v1"
+}

@@ -1,0 +1,35 @@
+
+running 19 tests
+test media_codec::tests::media_chunks_join_to_single_container_without_repeated_headers ... ok
+test media_codec::tests::text_frames_count_unicode_scalars_and_reject_truncation ... ok
+test observation::tests::owner_contract_retains_identity_and_cannot_refill_budget ... ok
+test observation::tests::prefix_features_track_progress_order_and_actual_bytes ... ok
+test tests::auto_uses_real_actor_mask_and_critic_computation ... ok
+test tests::malformed_framing_domains_and_request_bounds_are_rejected ... ok
+test tests::observed::actor_and_both_critics_consume_actual_committed_bytes ... ok
+test tests::observed::byte_decoder_is_autoregressive_and_chunk_partition_invariant ... ok
+test tests::observed::canonical_stopped_state_requires_actual_required_delivery ... ok
+test tests::observed::explicit_advance_uses_the_same_completed_modality_mask_as_auto ... ok
+test tests::observed::open_utf8_sampling_resumes_and_has_no_label_vocabulary ... ok
+test tests::observed::ordered_text_and_core_persistence_survive_state_roundtrip ... ok
+test tests::observed::v4_bridge_restores_owner_text_prefix_and_rejects_contract_drift ... ok
+test tests::planner::changed_inference_profile_cannot_silently_become_an_ndu_solver ... ok
+test tests::planner::planner_enforces_forecast_and_duration_budgets ... ok
+test tests::planner::recursive_value_selects_delivery_against_actor_argmax_and_retains_receipt ... ok
+test tests::real_kernel_partial_prefix_stop_flush_and_replay_are_deterministic ... ok
+test tests::state_inventory_and_actual_prefix_are_both_required ... ok
+test text_codec::tests::utf8_mask_rejects_overlong_surrogate_and_out_of_unicode_encodings ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.06s
+
+
+running 6 tests
+test tests::arbitrarily_small_positive_risk_is_continuous_at_the_mean ... ok
+test tests::duration_discount_and_cost_compose_without_duplicate_terminal_payoff ... ok
+test tests::invalid_lottery_and_duration_fail_before_planning ... ok
+test tests::positive_risk_penalizes_spread_and_ignores_zero_probability_extrema ... ok
+test tests::python_golden_vectors_match_the_native_operator ... ok
+test tests::risk_neutral_and_single_particle_degenerate_to_expected_recursion ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,119 @@
+{
+  "binaries": {
+    "gzip": {
+      "bytes": 400726,
+      "path": "/tmp/ndu-joint-v4-986c-20261108-source-v2/results/hepta-joint-propose.stripped.gz",
+      "sha256": "e31d85dbd63bcd936dd8d90103b4266fecdb5c2d45f6c7f478ef224ccf104e1a"
+    },
+    "original": {
+      "bytes": 5332888,
+      "path": "/tmp/ndu-joint-v4-986c-20261108-source-v2/build/hepta-joint-propose",
+      "sha256": "86dff3e8c32dac27988a54bcc5c91e76d8f651bd0f467546d133cbdc251bc4f0"
+    },
+    "stripped": {
+      "bytes": 1011544,
+      "path": "/tmp/ndu-joint-v4-986c-20261108-source-v2/build/hepta-joint-propose.stripped",
+      "sha256": "fb679e6b4892d3eda58831e887252502237ca0d6e9a3aadb48519a84c643d966"
+    }
+  },
+  "checks": [
+    {
+      "exit_code": 0,
+      "name": "rustc-version",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7aaf71af0cccdebda4e70ae5216dcf348bccfeb5cc30d148247005558cec03ad",
+      "wall_seconds": 0.009139574016444385
+    },
+    {
+      "exit_code": 0,
+      "name": "rustfmt-version",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "58e77f09cbe97eb2d0ab9174e5523494d03814f2879c8e187ed66370320abc7c",
+      "wall_seconds": 0.0075757920276373625
+    },
+    {
+      "exit_code": 0,
+      "name": "just-version",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5f61500d03d8e5947e434b80f148a9d93c09293ab3186fd5fc5138e6ff8c03ea",
+      "wall_seconds": 0.000864109955728054
+    },
+    {
+      "exit_code": 0,
+      "name": "rustfmt",
+      "stderr_sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.03974698297679424
+    },
+    {
+      "exit_code": 0,
+      "name": "rustfmt-check",
+      "stderr_sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.0317135929944925
+    },
+    {
+      "exit_code": 0,
+      "name": "rust-standalone-tests",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6364d1a425bca75f15789fea22d47d740bd5e0642d3a336fddf94e12ff473b33",
+      "wall_seconds": 18.251627188001294
+    },
+    {
+      "exit_code": 0,
+      "name": "strip-copy",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.00460906996158883
+    },
+    {
+      "exit_code": 0,
+      "name": "elf-version-info",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "37295732479bc2dc377d61e49fddd117e7db3fe5e6d3cef05666d644a5ee0ef8",
+      "wall_seconds": 0.0028627769788727164
+    },
+    {
+      "exit_code": 0,
+      "name": "elf-header",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3490b23a0494d9fd82f18a9fc8bff9597475834394d9f2aa945f3b35770be5b8",
+      "wall_seconds": 0.0010065269889310002
+    },
+    {
+      "exit_code": 0,
+      "name": "elf-needed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3b0b531a7e0bcc11e29fd1605c302ed22e1f9b568a2956a07403500447e8a221",
+      "wall_seconds": 0.0005380489747039974
+    }
+  ],
+  "full_workspace_validation": false,
+  "glibc_max_required": "2.34",
+  "glibc_versions": [
+    "2.2.5",
+    "2.3",
+    "2.3.4",
+    "2.14",
+    "2.16",
+    "2.17",
+    "2.18",
+    "2.28",
+    "2.29",
+    "2.30",
+    "2.32",
+    "2.33",
+    "2.34"
+  ],
+  "input_manifest_sha256": "a2d52af41b0b1334b416e7b9f1de60b2c745e51fead3778ec3f56418ce377642",
+  "just": "just 1.58.0",
+  "production_adoption": false,
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "rustfmt": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)",
+  "rustfmt_config_sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c",
+  "schema": "ndu-native-rust-source-revision-v2",
+  "source_files": 26,
+  "source_manifest_sha256": "33ad528238b38553525b5a2061ae142c91755d269b898bb7fbbf84a42a780fe9",
+  "status": "PASS",
+  "target": "x86_64-unknown-linux-gnu"
+}
