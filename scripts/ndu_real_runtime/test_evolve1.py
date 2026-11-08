@@ -1,0 +1,292 @@
+"""Adversarial EVOLVE-1 accounting fixtures; never production owner evidence."""
+
+from copy import deepcopy
+import unittest
+
+from ._causal_checks import ACEValidationError, COST_UNITS
+from .evolve1 import summarize_transfer
+from .test_causal_ace import e_fixture, pin
+
+
+def transfer_fixture(lineage="lineage-0"):
+    plan, registry, attempts, evaluations = None, None, [], {}
+    for solver in ("S0", "S1"):
+        subplan, subregistry, rows, records = e_fixture()
+        tag = lineage + "/" + solver + "/"
+        missing = deepcopy(rows[1])
+        missing.update(
+            {
+                key: subregistry["entries"][2][key]
+                for key in ("attempt_id", "operation_id", "request_sha256")
+            }
+        )
+        missing.update(
+            candidate_digest=pin("parent3"), rolled_back=False, rollback_reference=None
+        )
+        rows.append(missing)
+        subplan["improvers"]["child"]["artifact_digest"] = pin(lineage + "/child")
+        for run in subplan["runs"]:
+            run.update(
+                run_id=tag + run["run_id"],
+                pair_id=solver,
+                improver_digest=subplan["improvers"][run["role"]]["artifact_digest"],
+            )
+            run["common_start"]["initial_bundle"] = pin(solver)
+        for entry in subregistry["entries"] + rows:
+            for key in ("run_id", "attempt_id", "operation_id"):
+                entry[key] = tag + entry[key]
+        for row in rows:
+            row["candidate_digest"] = pin(tag + row["candidate_digest"])
+            if row["evaluation_reference"]:
+                row["evaluation_reference"] = pin(tag + row["evaluation_reference"])
+        for final in subregistry["finals"].values():
+            final["attempt_id"] = tag + final["attempt_id"]
+            for key in ("candidate_bundle", "selection_digest", "evaluation_reference"):
+                final[key] = pin(tag + final[key])
+        for key in ("finals", "run_overheads"):
+            subregistry[key] = {
+                tag + key_: value for key_, value in subregistry[key].items()
+            }
+        for (kind, reference), record in records.items():
+            record.update(
+                run_id=tag + record["run_id"],
+                baseline_bundle=pin(solver),
+                candidate_bundle=pin(tag + record["candidate_bundle"]),
+            )
+            if kind == "acceptance":
+                for key in ("attempt_id", "operation_id"):
+                    record[key] = tag + record[key]
+            else:
+                record.update(
+                    selection_digest=pin(tag + record["selection_digest"]),
+                    retention_baseline=0.8,
+                    retention_candidate=0.8,
+                    retention_data_digest=pin("retention-bytes"),
+                )
+            evaluations[(kind, pin(tag + reference))] = record
+        if plan is None:
+            plan, registry = subplan, subregistry
+        else:
+            plan["runs"].extend(subplan["runs"])
+            registry["entries"].extend(subregistry["entries"])
+            for key in ("run_overheads", "finals"):
+                registry[key].update(subregistry[key])
+        attempts.extend(rows)
+    return {
+        "lineage_id": lineage,
+        "plan": plan,
+        "registry": registry,
+        "attempts": attempts,
+        "solver_rows": {pin("S0"): "S0", pin("S1"): "S1"},
+        "historical_costs": dict.fromkeys(COST_UNITS, 77.0),
+        "source_groups": {
+            split: [split + "-group"]
+            for split in (
+                "training",
+                "development",
+                "acceptance",
+                "holdout",
+                "retention",
+            )
+        },
+        "retention_data_digest": pin("retention-bytes"),
+    }, evaluations
+
+
+class EvolveTransferChecks(unittest.TestCase):
+    def assess(self, block, records, **options):
+        return summarize_transfer(
+            [block] if isinstance(block, dict) else block,
+            minimum_gain=options.pop("minimum_gain", 0.1),
+            maximum_retention_loss=0.05,
+            read_evaluation=lambda kind, ref: records.get((kind, ref)),
+            verify_evaluation=lambda _kind, record, owner: record["actor_id"] == owner,
+            **options,
+        )
+
+    def test_four_cells_account_without_granting_scientific_or_owner_authority(self):
+        block, records = transfer_fixture()
+        report = self.assess(block, records)
+        self.assertEqual(set(report["cells"]), {"S0-I0", "S0-I1", "S1-I0", "S1-I1"})
+        for cell in report["cells"].values():
+            self.assertEqual(
+                (
+                    cell["registered_runs"],
+                    cell["qualified_runs"],
+                    cell["unresolved_runs"],
+                ),
+                (1, 1, 0),
+            )
+            self.assertEqual(cell["cost_totals"], dict.fromkeys(COST_UNITS, 4.0))
+        self.assertFalse(report["scientific_efficacy_qualified"])
+        self.assertFalse(report["authority_granted"])
+        self.assertEqual(
+            report["historical_costs"]["totals"], dict.fromkeys(COST_UNITS, 77.0)
+        )
+        self.assertFalse(report["historical_costs"]["amortized"])
+
+    def test_missing_arm_wrong_start_budget_or_cross_row_context_is_rejected(self):
+        for mutation in ("arm", "start", "budget", "cross_row"):
+            with self.subTest(mutation=mutation):
+                block, records = transfer_fixture()
+                runs = block["plan"]["runs"]
+                if mutation == "arm":
+                    runs.pop()
+                elif mutation == "budget":
+                    runs[1]["full_budget_contract"]["limits"]["cpu_seconds"] += 1
+                else:
+                    for run in runs[2:] if mutation == "cross_row" else [runs[1]]:
+                        run["common_start"]["seed"] += 1
+                with self.assertRaises(ACEValidationError):
+                    self.assess(block, records)
+
+    def test_confirmation_leakage_and_pseudoreplicated_lineages_are_rejected(self):
+        for mutation in ("groups", "posthoc", "lineage", "child"):
+            with self.subTest(mutation=mutation):
+                block, records = transfer_fixture()
+                blocks = [block]
+                if mutation == "groups":
+                    block["source_groups"]["holdout"] = block["source_groups"][
+                        "training"
+                    ]
+                elif mutation == "posthoc":
+                    for (kind, _), record in records.items():
+                        if kind == "heldout_final":
+                            record["selection_committed_unix_seconds"] = 21
+                else:
+                    other = deepcopy(block)
+                    if mutation == "child":
+                        other["lineage_id"] = "fake-independent-lineage"
+                    blocks.append(other)
+                with self.assertRaises(ACEValidationError):
+                    self.assess(blocks, records)
+
+    def test_invalid_online_and_historical_costs_are_rejected(self):
+        for bad in (True, -1, float("nan"), float("inf"), 10**1000):
+            for scope in ("online", "historical"):
+                with self.subTest(value=repr(bad)[:20], scope=scope):
+                    block, records = transfer_fixture()
+                    costs = (
+                        block["historical_costs"]
+                        if scope == "historical"
+                        else block["attempts"][0]["costs"]["training"]["values"]
+                    )
+                    costs["cpu_seconds"] = bad
+                    with self.assertRaises(ACEValidationError):
+                        self.assess(block, records)
+
+    def test_noupdate_never_becomes_improvement_from_noisy_positive_score(self):
+        block, records = transfer_fixture()
+        final = block["registry"]["finals"]["lineage-0/S0/parent"]
+        final.update(attempt_id=None, candidate_bundle=pin("S0"))
+        records[("heldout_final", final["evaluation_reference"])][
+            "candidate_bundle"
+        ] = pin("S0")
+        cell = self.assess(block, records)["cells"]["S0-I0"]
+        self.assertEqual((cell["registered_runs"], cell["qualified_runs"]), (1, 0))
+        self.assertEqual(cell["effect_criterion_not_met_runs"], 1)
+
+    def test_zero_success_has_no_zero_or_finite_cost_per_improvement(self):
+        block, records = transfer_fixture()
+        for cell in self.assess(block, records, minimum_gain=0.5)["cells"].values():
+            self.assertEqual(cell["qualified_runs"], 0)
+            self.assertEqual(
+                cell["cost_per_effective_improvement"], dict.fromkeys(COST_UNITS)
+            )
+
+    def test_missing_outcomes_keep_the_full_denominator_and_unknown_cost(self):
+        first, records = transfer_fixture()
+        second, other_records = transfer_fixture("lineage-1")
+        records.update(other_records)
+        second["attempts"] = [
+            row
+            for row in second["attempts"]
+            if row["attempt_id"] != "lineage-1/S0/parent3"
+        ]
+        cell = self.assess([first, second], records)["cells"]["S0-I0"]
+        self.assertEqual(
+            (cell["registered_runs"], cell["qualified_runs"], cell["unresolved_runs"]),
+            (2, 1, 1),
+        )
+        self.assertEqual(cell["improvement_probability_bounds"], [0.5, 1.0])
+        self.assertEqual(cell["cost_totals"], dict.fromkeys(COST_UNITS))
+
+    def test_retention_failure_and_no_trusted_reader_cannot_qualify(self):
+        block, records = transfer_fixture()
+        for (kind, _), record in records.items():
+            if kind == "heldout_final":
+                record["retention_candidate"] = 0.6
+        for cell in self.assess(block, records)["cells"].values():
+            self.assertEqual(cell["qualified_runs"], 0)
+            self.assertEqual(
+                (
+                    cell["effect_criterion_not_met_runs"],
+                    cell["retention_violated_runs"],
+                ),
+                (1, 1),
+            )
+        report = summarize_transfer(
+            [block], minimum_gain=0.1, maximum_retention_loss=0.05
+        )
+        for cell in report["cells"].values():
+            self.assertEqual((cell["qualified_runs"], cell["unresolved_runs"]), (0, 1))
+            self.assertEqual(
+                (cell["effect_criterion_unknown_runs"], cell["retention_unknown_runs"]),
+                (1, 1),
+            )
+
+    def test_failed_or_unknown_selected_attempt_never_qualifies(self):
+        for status in ("FAILED", "UNKNOWN"):
+            with self.subTest(status=status):
+                block, records = transfer_fixture()
+                block["attempts"][0]["terminal_status"] = status
+                self.assertEqual(
+                    self.assess(block, records)["cells"]["S0-I0"]["qualified_runs"], 0
+                )
+
+    def test_retention_score_on_other_data_cannot_satisfy_the_constraint(self):
+        block, records = transfer_fixture()
+        final = block["registry"]["finals"]["lineage-0/S0/parent"]
+        records[("heldout_final", final["evaluation_reference"])][
+            "retention_data_digest"
+        ] = pin("other")
+        with self.assertRaises(ACEValidationError):
+            self.assess(block, records)
+
+    def test_unknown_history_stays_unknown_separately_from_online_cost(self):
+        block, records = transfer_fixture()
+        block["historical_costs"]["energy_joules"] = None
+        report = self.assess(block, records)
+        self.assertIsNone(report["historical_costs"]["totals"]["energy_joules"])
+        self.assertEqual(report["cells"]["S0-I0"]["cost_totals"]["energy_joules"], 4.0)
+
+    def test_effect_observation_survives_incomplete_cost_without_qualification(self):
+        block, records = transfer_fixture()
+        block["attempts"][0]["costs"]["training"]["values"]["energy_joules"] = None
+        report = self.assess(block, records)
+        run = report["lineages"]["lineage-0"]["observed_runs"]["lineage-0/S0/parent"]
+        self.assertEqual(
+            (run["effect_criterion_met"], run["retention_violated"], run["qualified"]),
+            (True, False, None),
+        )
+        cell = report["cells"]["S0-I0"]
+        self.assertEqual(cell["effect_criterion_probability_bounds"], [1.0, 1.0])
+        self.assertEqual(cell["improvement_probability_bounds"], [0.0, 1.0])
+
+    def test_renaming_groups_cannot_hide_cross_lineage_data_leakage(self):
+        first, _ = transfer_fixture()
+        second, _ = transfer_fixture("lineage-1")
+        second["source_groups"] = {
+            split: ["renamed-" + split] for split in second["source_groups"]
+        }
+        for run in second["plan"]["runs"]:
+            run["common_start"]["training_data"] = first["plan"]["runs"][0][
+                "common_start"
+            ]["holdout_data"]
+            run["common_start"]["holdout_data"] = pin("different-holdout-data")
+        with self.assertRaisesRegex(ACEValidationError, "EVOLVE_DATA_DIGEST_LEAKAGE"):
+            self.assess([first, second], {})
+
+
+if __name__ == "__main__":
+    unittest.main()
