@@ -210,7 +210,12 @@ fn retired_guarded_journal_rejects_ordinary_open_and_live_recovery_without_chang
     .unwrap();
     owner.drain().unwrap();
     let bytes = owner.locked_bytes_for_test();
+    assert_eq!(owner.retained_bytes().unwrap(), bytes);
     *current.0.lock().unwrap() = (None, None);
+    assert_eq!(
+        owner.retained_bytes(),
+        Err(CellGenerationErrorV2::InvalidBinding)
+    );
     assert_eq!(owner.resume(), Err(CellGenerationErrorV2::InvalidBinding));
     assert_eq!(owner.recover(), Err(CellGenerationErrorV2::InvalidBinding));
     drop(owner);

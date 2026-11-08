@@ -26,12 +26,18 @@ fn state_prefix_outbox_cost_and_replay_survive_owner_reopen() {
     let mut owner = fixture.open();
     let req = request(&owner, "one");
     assert_eq!(owner.admit(req.clone(), /*now_micros*/ 11), Ok(None));
+    let cursor = checked(owner.file.seek(SeekFrom::Start(1)));
+    let retained = checked(owner.retained_bytes());
+    assert_eq!(checked(owner.file.stream_position()), cursor);
+    assert!(retained.len() > owner.header.len());
     let proposed = proposal(&req);
     let receipt = checked(owner.commit(proposed.clone(), /*now_micros*/ 20));
     let snapshot = checked(owner.snapshot()).clone();
     let chunk = checked(checked(owner.pending_output()).cloned().ok_or("outbox"));
     let costs = checked(owner.task_cost()).clone();
+    let retained_after = checked(owner.retained_bytes());
     drop(owner);
+    assert_eq!(fixture.bytes(), retained_after);
     let mut reopened = fixture.open();
     assert_eq!(reopened.snapshot(), Ok(&snapshot));
     assert_eq!(reopened.pending_output(), Ok(Some(&chunk)));
@@ -62,6 +68,24 @@ fn state_prefix_outbox_cost_and_replay_survive_owner_reopen() {
     final_proposal.disposition = CellGenerationDispositionV2::Stopped;
     checked(reopened.commit(final_proposal, /*now_micros*/ 25));
     assert_eq!(checked(reopened.snapshot()).prefix, "中🙂\ntail".as_bytes());
+}
+
+#[test]
+fn retained_byte_length_drift_restores_cursor_and_poison_blocks_original_writer() {
+    let fixture = Fixture::new();
+    let mut owner = fixture.open();
+    let request = request(&owner, "length-drift");
+    let cursor = checked(owner.file.seek(SeekFrom::Start(3)));
+    let changed_length = checked(owner.file.metadata()).len() + 1;
+    // Exercise the original live handle: no second open, unlock, or mock.
+    checked(owner.file.set_len(changed_length));
+    assert_eq!(owner.retained_bytes(), Err(CellGenerationErrorV2::Corrupt));
+    assert_eq!(checked(owner.file.stream_position()), cursor);
+    assert_eq!(
+        owner.admit(request, /*now_micros*/ 11),
+        Err(CellGenerationErrorV2::CommitUncertain)
+    );
+    assert_eq!(checked(owner.file.metadata()).len(), changed_length);
 }
 
 #[test]

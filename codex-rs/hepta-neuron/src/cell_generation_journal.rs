@@ -56,6 +56,71 @@ pub struct CellGenerationJournalV2<W: AnchorWitnessStore> {
 }
 
 impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
+    /// Read the exact physical bytes through this owner's original locked handle.
+    /// The caller must already own this value; no path, handle, write grant, or
+    /// provider-release authority is exposed. The exclusive borrow serializes
+    /// access, and the cursor is restored before bytes are returned. Any I/O or
+    /// retained-length uncertainty leaves subsequent writes poisoned.
+    /// Current-generation custody is checked before and after the observation.
+    pub fn retained_bytes(&mut self) -> Result<Vec<u8>, CellGenerationErrorV2> {
+        self.require_healthy()?;
+        let expected = self.length;
+        let maximum = MAX_BYTES;
+        if expected > maximum {
+            return Err(CellGenerationErrorV2::Capacity);
+        }
+        self.healthy = false;
+        let result = (|| {
+            let cursor = self
+                .file
+                .stream_position()
+                .map_err(|_| CellGenerationErrorV2::CommitUncertain)?;
+            let read = (|| {
+                if self
+                    .file
+                    .metadata()
+                    .map_err(|_| CellGenerationErrorV2::CommitUncertain)?
+                    .len()
+                    != expected
+                {
+                    return Err(CellGenerationErrorV2::Corrupt);
+                }
+                self.file
+                    .seek(SeekFrom::Start(0))
+                    .map_err(|_| CellGenerationErrorV2::CommitUncertain)?;
+                let mut bytes = Vec::new();
+                (&mut *self.file)
+                    .take(maximum + 1)
+                    .read_to_end(&mut bytes)
+                    .map_err(|_| CellGenerationErrorV2::CommitUncertain)?;
+                if bytes.len() as u64 != expected
+                    || self
+                        .file
+                        .metadata()
+                        .map_err(|_| CellGenerationErrorV2::CommitUncertain)?
+                        .len()
+                        != expected
+                {
+                    return Err(CellGenerationErrorV2::Corrupt);
+                }
+                Ok(bytes)
+            })();
+            // Restore even when the read or either length check failed.
+            let restored = self
+                .file
+                .seek(SeekFrom::Start(cursor))
+                .map_err(|_| CellGenerationErrorV2::CommitUncertain)?;
+            if restored != cursor {
+                return Err(CellGenerationErrorV2::Corrupt);
+            }
+            let bytes = read?;
+            self.require_current()?;
+            Ok(bytes)
+        })();
+        self.healthy = result.is_ok();
+        result
+    }
+
     pub fn open(
         file: File,
         witness: W,

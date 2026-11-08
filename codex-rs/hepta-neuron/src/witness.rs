@@ -70,6 +70,60 @@ pub struct FileAnchorWitnessStore {
 }
 
 impl FileAnchorWitnessStore {
+    /// Read the exact physical bytes through this owner's original locked handle.
+    /// The caller must already own this value; no path, handle, write grant, or
+    /// provider-release authority is exposed. The exclusive borrow serializes
+    /// access, and the cursor is restored before bytes are returned. Any I/O or
+    /// retained-length uncertainty leaves subsequent writes poisoned.
+    pub fn retained_bytes(&mut self) -> Result<Vec<u8>, WitnessStoreError> {
+        if self.poisoned {
+            return Err(WitnessStoreError::Poisoned);
+        }
+        let expected = (HEADER + self.records * RECORD) as u64;
+        let maximum = (HEADER + self.max_records * RECORD) as u64;
+        if expected > maximum {
+            return Err(WitnessStoreError::Capacity);
+        }
+        self.poisoned = true;
+        let result = (|| {
+            let cursor = self
+                .file
+                .stream_position()
+                .map_err(WitnessStoreError::from)?;
+            let read = (|| {
+                if self.file.metadata().map_err(WitnessStoreError::from)?.len() != expected {
+                    return Err(WitnessStoreError::Corrupt);
+                }
+                self.file
+                    .seek(SeekFrom::Start(0))
+                    .map_err(WitnessStoreError::from)?;
+                let mut bytes = Vec::new();
+                (&mut *self.file)
+                    .take(maximum + 1)
+                    .read_to_end(&mut bytes)
+                    .map_err(WitnessStoreError::from)?;
+                if bytes.len() as u64 != expected
+                    || self.file.metadata().map_err(WitnessStoreError::from)?.len() != expected
+                {
+                    return Err(WitnessStoreError::Corrupt);
+                }
+                Ok(bytes)
+            })();
+            // Restore even when the read or either length check failed.
+            let restored = self
+                .file
+                .seek(SeekFrom::Start(cursor))
+                .map_err(WitnessStoreError::from)?;
+            if restored != cursor {
+                return Err(WitnessStoreError::Corrupt);
+            }
+            let bytes = read?;
+            Ok(bytes)
+        })();
+        self.poisoned = result.is_err();
+        result
+    }
+
     pub fn open(
         file: File,
         scope: JournalScope,
