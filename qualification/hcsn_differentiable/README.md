@@ -1,5 +1,14 @@
 # Differentiable continuous-probability HCSN candidate
 
+## Current evidence
+
+Read [CURRENT.md](CURRENT.md) for the latest qualified scope: the stable
+interval repair, 75 native tests, the separately qualified 0.2-second
+profile, and 18 real-model interface runs. The immutable earlier
+71-test snapshot remains historical. Formal effect comparisons are
+not complete; no superiority, full-domain or efficiency claim is made.
+
+
 ## Fixed-policy mathematical closure extension
 
 The follow-on candidate adds `regenerative.py` for analytic perpetual
