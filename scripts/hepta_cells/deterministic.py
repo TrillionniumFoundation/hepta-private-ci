@@ -6,7 +6,16 @@ import json
 import math
 from typing import Any, Protocol
 
-from .lifecycle import CellError, ComponentIdentity, ReadbackResult, StepResult, _bounded_json, _hex, _token, digest
+from .lifecycle import (
+    CellError,
+    ComponentIdentity,
+    ReadbackResult,
+    StepResult,
+    _bounded_json,
+    _hex,
+    _token,
+    digest,
+)
 
 
 def _configuration(kind, canonical):
@@ -14,13 +23,22 @@ def _configuration(kind, canonical):
 
 
 def _counter(state, name):
-    if not isinstance(state, dict) or set(state) != {name} or type(state[name]) is not int or not 0 <= state[name] < 10**12:
+    if (
+        not isinstance(state, dict)
+        or set(state) != {name}
+        or type(state[name]) is not int
+        or not 0 <= state[name] < 10**12
+    ):
         raise CellError("invalid component state")
     return {name: state[name] + 1}
 
 
 def _number(value):
-    if type(value) not in (int, float) or abs(value) > 1e100 or not math.isfinite(value):
+    if (
+        type(value) not in (int, float)
+        or abs(value) > 1e100
+        or not math.isfinite(value)
+    ):
         raise CellError("expected a bounded finite number")
     return value
 
@@ -37,25 +55,40 @@ class ExactRetriever:
 
     @property
     def identity(self):
-        return ComponentIdentity("exact_retrieval", self._bundle_digest,
-                                 configuration_digest=_configuration("exact_retrieval.v1", self._records))
+        return ComponentIdentity(
+            "exact_retrieval",
+            self._bundle_digest,
+            configuration_digest=_configuration("exact_retrieval.v1", self._records),
+        )
 
     def initial_state(self):
         return {"queries": 0}
 
     def step(self, payload, state, context):
-        if not isinstance(payload, dict) or set(payload) != {"key"} or not isinstance(payload["key"], str):
+        if (
+            not isinstance(payload, dict)
+            or set(payload) != {"key"}
+            or not isinstance(payload["key"], str)
+        ):
             raise CellError("retrieval requires one literal key")
         view = context.retrieval_view
-        if not isinstance(view, dict) or set(view) != {"keys"} or not isinstance(view["keys"], list) or len(view["keys"]) > 2048:
+        if (
+            not isinstance(view, dict)
+            or set(view) != {"keys"}
+            or not isinstance(view["keys"], list)
+            or len(view["keys"]) > 2048
+        ):
             raise CellError("retrieval view must declare a bounded keys list")
         if not all(isinstance(key, str) for key in view["keys"]):
             raise CellError("retrieval view keys must be strings")
         records = json.loads(self._records)
         allowed = payload["key"] in view["keys"]
         found = allowed and payload["key"] in records
-        return StepResult({"found": found, "value": records[payload["key"]] if found else None},
-                          _counter(state, "queries"), len(view["keys"]) + 1)
+        return StepResult(
+            {"found": found, "value": records[payload["key"]] if found else None},
+            _counter(state, "queries"),
+            len(view["keys"]) + 1,
+        )
 
 
 class RuleVerifier:
@@ -68,11 +101,17 @@ class RuleVerifier:
             if not isinstance(rule, dict) or not isinstance(rule.get("field"), str):
                 raise CellError("rule requires a literal field")
             op = rule.get("op")
-            keys = {"required": {"field", "op"}, "equal": {"field", "op", "value"},
-                    "member": {"field", "op", "values"}, "range": {"field", "op", "min", "max"}}
+            keys = {
+                "required": {"field", "op"},
+                "equal": {"field", "op", "value"},
+                "member": {"field", "op", "values"},
+                "range": {"field", "op", "min", "max"},
+            }
             if op not in keys or set(rule) != keys[op]:
                 raise CellError("unsupported rule grammar")
-            if op == "member" and (not isinstance(rule["values"], list) or len(rule["values"]) > 128):
+            if op == "member" and (
+                not isinstance(rule["values"], list) or len(rule["values"]) > 128
+            ):
                 raise CellError("membership rule exceeds its bound")
             if op == "range" and _number(rule["min"]) > _number(rule["max"]):
                 raise CellError("reversed numeric range")
@@ -82,8 +121,11 @@ class RuleVerifier:
 
     @property
     def identity(self):
-        return ComponentIdentity("rule_verifier", self._bundle_digest,
-                                 configuration_digest=_configuration("rule_verifier.v1", self._rules))
+        return ComponentIdentity(
+            "rule_verifier",
+            self._bundle_digest,
+            configuration_digest=_configuration("rule_verifier.v1", self._rules),
+        )
 
     def initial_state(self):
         return {"checks": 0}
@@ -100,12 +142,23 @@ class RuleVerifier:
             if ok and op == "equal":
                 ok = _bounded_json(value) == _bounded_json(rule["value"])
             if ok and op == "member":
-                ok = any(_bounded_json(value) == _bounded_json(candidate) for candidate in rule["values"])
+                ok = any(
+                    _bounded_json(value) == _bounded_json(candidate)
+                    for candidate in rule["values"]
+                )
             if ok and op == "range":
-                ok = type(value) in (int, float) and math.isfinite(value) and rule["min"] <= value <= rule["max"]
+                ok = (
+                    type(value) in (int, float)
+                    and math.isfinite(value)
+                    and rule["min"] <= value <= rule["max"]
+                )
             if not ok:
                 failed.append(index)
-        return StepResult({"passed": not failed, "failed_rules": failed}, _counter(state, "checks"), work_units)
+        return StepResult(
+            {"passed": not failed, "failed_rules": failed},
+            _counter(state, "checks"),
+            work_units,
+        )
 
 
 class NumericAlgorithm:
@@ -118,8 +171,11 @@ class NumericAlgorithm:
 
     @property
     def identity(self):
-        return ComponentIdentity("numeric_" + self.operation, self._bundle_digest,
-                                 configuration_digest=_configuration("numeric.v1", self.operation))
+        return ComponentIdentity(
+            "numeric_" + self.operation,
+            self._bundle_digest,
+            configuration_digest=_configuration("numeric.v1", self.operation),
+        )
 
     def initial_state(self):
         return {"calls": 0}
@@ -131,18 +187,28 @@ class NumericAlgorithm:
         return [_number(value) for value in values]
 
     def step(self, payload, state, context):
-        if not isinstance(payload, dict) or set(payload) != ({"values"} if self.operation == "mean_variance" else {"left", "right"}):
+        if not isinstance(payload, dict) or set(payload) != (
+            {"values"} if self.operation == "mean_variance" else {"left", "right"}
+        ):
             raise CellError("invalid numeric arguments")
         if self.operation == "mean_variance":
             values = self._vector(payload["values"])
             mean = math.fsum(values) / len(values)
-            result = {"count": len(values), "mean": mean, "variance": math.fsum((value - mean)**2 for value in values) / len(values)}
+            result = {
+                "count": len(values),
+                "mean": mean,
+                "variance": math.fsum((value - mean) ** 2 for value in values)
+                / len(values),
+            }
             work = 2 * len(values)
         else:
             left, right = self._vector(payload["left"]), self._vector(payload["right"])
             if len(left) != len(right):
                 raise CellError("dot-product vector lengths differ")
-            result, work = {"value": math.fsum(a * b for a, b in zip(left, right))}, len(left)
+            result, work = (
+                {"value": math.fsum(a * b for a, b in zip(left, right))},
+                len(left),
+            )
         return StepResult(result, _counter(state, "calls"), work)
 
 
@@ -184,9 +250,19 @@ class ToolCell:
 
     @property
     def identity(self):
-        configuration = _bounded_json(dict(tool_name=self.tool_name, tool_digest=self.tool_digest, max_argument_bytes=16384))
-        return ComponentIdentity("host_tool", self._bundle_digest, effectful=True,
-                                 configuration_digest=_configuration("host_tool.v1", configuration))
+        configuration = _bounded_json(
+            dict(
+                tool_name=self.tool_name,
+                tool_digest=self.tool_digest,
+                max_argument_bytes=16384,
+            )
+        )
+        return ComponentIdentity(
+            "host_tool",
+            self._bundle_digest,
+            effectful=True,
+            configuration_digest=_configuration("host_tool.v1", configuration),
+        )
 
     def initial_state(self):
         return {"completed": 0}
@@ -195,12 +271,30 @@ class ToolCell:
         if not isinstance(payload, dict):
             raise CellError("tool arguments must be a bounded JSON mapping")
         arguments = json.loads(_bounded_json(payload, 16384))
-        binding = [context.partition.digest, context.request_id, self.identity.digest,
-                   self.tool_name, self.tool_digest, arguments, context.epoch,
-                   context.budget.max_work_units, context.budget.max_elapsed_ms, context.retrieval_view]
-        return ToolInvocation(digest(binding), self.tool_name, self.tool_digest,
-                              context.partition.digest, context.request_id, self.identity.digest, arguments,
-                              context.epoch, context.budget.max_work_units, context.budget.max_elapsed_ms)
+        binding = [
+            context.partition.digest,
+            context.request_id,
+            self.identity.digest,
+            self.tool_name,
+            self.tool_digest,
+            arguments,
+            context.epoch,
+            context.budget.max_work_units,
+            context.budget.max_elapsed_ms,
+            context.retrieval_view,
+        ]
+        return ToolInvocation(
+            digest(binding),
+            self.tool_name,
+            self.tool_digest,
+            context.partition.digest,
+            context.request_id,
+            self.identity.digest,
+            arguments,
+            context.epoch,
+            context.budget.max_work_units,
+            context.budget.max_elapsed_ms,
+        )
 
     @staticmethod
     def _result(reply, state):
@@ -217,4 +311,10 @@ class ToolCell:
 
     def readback(self, pending):
         reply = self.port.readback(self._invocation(pending.payload, pending))
-        return None if reply is None else ReadbackResult(self._result(reply, pending.state), reply.original_elapsed_ns)
+        return (
+            None
+            if reply is None
+            else ReadbackResult(
+                self._result(reply, pending.state), reply.original_elapsed_ns
+            )
+        )

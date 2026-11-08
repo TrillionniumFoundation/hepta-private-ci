@@ -61,7 +61,11 @@ def _token(value: str):
 
 
 def _hex(value: str):
-    if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value) or value == "0" * 64:
+    if (
+        not isinstance(value, str)
+        or not re.fullmatch(r"[0-9a-f]{64}", value)
+        or value == "0" * 64
+    ):
         raise CellError("expected a nonzero lowercase SHA256 digest")
 
 
@@ -192,5 +196,3 @@ class Qualification:
     def __post_init__(self):
         for value in asdict(self).values():
             _hex(value)
-
-
