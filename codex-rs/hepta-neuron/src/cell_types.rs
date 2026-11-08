@@ -156,6 +156,10 @@ pub struct CellInferenceAdmissionV1 {
     pub model_request: NeuronModelRequestV1,
     pub deadline_micros: u64,
     pub admitted_at_micros: u64,
+    /// Host queue time measured before native dispatch. None retains an
+    /// unresolved measurement, including legacy pending admissions; recovery
+    /// must hold rather than replace it with elapsed recovery time or zero.
+    pub host_queue_age_micros: Option<u64>,
 }
 
 #[derive(Debug)]
@@ -171,6 +175,13 @@ pub struct PreparedCellStepV1 {
     pub(crate) input: CellStepInputV1,
     pub(crate) encoded: CellEncodedInputV1,
     pub(crate) model_request: NeuronModelRequestV1,
+}
+
+impl PreparedCellStepV1 {
+    /// Frozen request identity for host deadline correlation, not execution authority.
+    pub fn model_request_id(&self) -> &StableId {
+        &self.model_request.request_id
+    }
 }
 
 #[derive(Debug)]
@@ -260,6 +271,19 @@ pub trait CellStateOwnerV1 {
         scope: &CellScopeV1,
     ) -> Result<Option<CellInferenceAdmissionV1>, CellExecutionError>;
 
+    /// Persist the original batch's measured host queue time after its native
+    /// call returns, including errors. The digest binds the complete feature
+    /// request. Only None -> Some is allowed; the same pending request and
+    /// value are idempotent, a different value conflicts. An uncertain write
+    /// requires journal readback and never authorizes another dispatch.
+    fn record_host_queue_age(
+        &mut self,
+        scope: &CellScopeV1,
+        operation_id: &StableId,
+        request_digest: Digest32,
+        host_queue_age_micros: u64,
+    ) -> Result<(), CellExecutionError>;
+
     /// Check the stable operation ID before encoding or inference. Reusing the
     /// ID with different semantics conflicts irrespective of state revision.
     /// An uncertain writer returns CommitUncertain until authoritative readback.
@@ -305,6 +329,7 @@ pub enum CellExecutionError {
     OperationAlreadyCommitted,
     InferencePending,
     InferenceNotAdmitted,
+    UnmeasuredQueueCost,
     JournalCorrupt,
     AcknowledgedHistoryMissing,
     CommitUncertain,

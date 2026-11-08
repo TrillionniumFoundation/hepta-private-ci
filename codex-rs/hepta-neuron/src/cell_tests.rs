@@ -324,6 +324,17 @@ impl CellStateOwnerV1 for UncertainOwner {
     ) -> Result<(), CellExecutionError> {
         self.inner.admit_inference(admission)
     }
+    fn record_host_queue_age(
+        &mut self,
+        scope: &CellScopeV1,
+        operation_id: &StableId,
+        request_digest: Digest32,
+        host_queue_age_micros: u64,
+    ) -> Result<(), CellExecutionError> {
+        self.inner.record_host_queue_age(
+            scope, operation_id, request_digest, host_queue_age_micros,
+        )
+    }
     fn pending_inference(
         &self,
         scope: &CellScopeV1,

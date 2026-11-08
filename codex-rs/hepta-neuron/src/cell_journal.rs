@@ -19,6 +19,7 @@ use crate::cell_journal_codec::MAX_FRAME_BYTES;
 use crate::cell_journal_codec::apply_record;
 use crate::cell_journal_codec::encode_admission;
 use crate::cell_journal_codec::encode_commit;
+use crate::cell_journal_codec::encode_host_queue_age;
 use crate::cell_journal_codec::encode_reset;
 use crate::cell_journal_codec::validate_admission_model;
 use crate::cell_owner::CellPartitionOwnerV1;
@@ -207,7 +208,7 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         self.owner
             .check_reset(scope, source_frontier, writer_epoch)?;
         let payload = encode_reset(index, source_frontier, writer_epoch);
-        self.check_reserved_capacity(payload.len(), self.owner.pending_count())?;
+        self.check_reserved_capacity(payload.len(), self.owner.pending_record_reservations())?;
         self.persist(payload)?;
         if let Err(error) = self
             .owner
@@ -237,9 +238,9 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
     fn check_reserved_capacity(
         &self,
         payload_bytes: usize,
-        remaining_pending: usize,
+        remaining_records: usize,
     ) -> Result<(), CellExecutionError> {
-        let reserved_records = remaining_pending as u64;
+        let reserved_records = remaining_records as u64;
         let sequence = self.head.map_or(0, |a| a.sequence);
         let reserved_bytes = reserved_records * (MAX_FRAME_BYTES as u64 + 36);
         if sequence + 1 + reserved_records > self.max_records as u64
@@ -302,7 +303,9 @@ impl<W: AnchorWitnessStore> CellStateOwnerV1 for CellOwnerJournalV1<W> {
         self.owner.check_admission(&admission)?;
         validate_admission_model(&self.specs[index].definition, &admission.model_request)?;
         let payload = encode_admission(index, &admission);
-        self.check_reserved_capacity(payload.len(), self.owner.pending_count() + 1)?;
+        let reservations = self.owner.pending_record_reservations()
+            + 1 + usize::from(admission.host_queue_age_micros.is_none());
+        self.check_reserved_capacity(payload.len(), reservations)?;
         self.persist(payload)?;
         if let Err(error) = self.owner.admit_inference(admission) {
             self.healthy = false;
@@ -317,6 +320,34 @@ impl<W: AnchorWitnessStore> CellStateOwnerV1 for CellOwnerJournalV1<W> {
     ) -> Result<Option<CellInferenceAdmissionV1>, CellExecutionError> {
         self.require_healthy()?;
         self.owner.pending_inference(scope)
+    }
+
+    fn record_host_queue_age(
+        &mut self,
+        scope: &CellScopeV1,
+        operation_id: &StableId,
+        request_digest: Digest32,
+        host_queue_age_micros: u64,
+    ) -> Result<(), CellExecutionError> {
+        self.require_healthy()?;
+        let index = self.partition_index(scope)?;
+        if self.owner.check_host_queue_age(
+            scope, operation_id, request_digest, host_queue_age_micros,
+        )?.is_some() {
+            return Ok(());
+        }
+        let payload = encode_host_queue_age(
+            index, operation_id, request_digest, host_queue_age_micros,
+        );
+        self.check_reserved_capacity(payload.len(), self.owner.pending_record_reservations() - 1)?;
+        self.persist(payload)?;
+        if let Err(error) = self.owner.record_host_queue_age(
+            scope, operation_id, request_digest, host_queue_age_micros,
+        ) {
+            self.healthy = false;
+            return Err(error);
+        }
+        Ok(())
     }
 
     fn snapshot(&self, scope: &CellScopeV1) -> Result<CellOwnerSnapshotV1, CellExecutionError> {
