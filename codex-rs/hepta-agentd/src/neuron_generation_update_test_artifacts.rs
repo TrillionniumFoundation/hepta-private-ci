@@ -2,6 +2,8 @@
 //! The Model payload is a synthetic contract fixture, not trained qualification.
 
 use std::fs::File;
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -202,6 +204,57 @@ impl ArtifactFiles {
         name: &str,
         now: u64,
     ) -> anyhow::Result<AgentdSelectedGenerationV1> {
+        self.publish_next_selection_until(manifest, name, now, now + 1_000)
+            .map(|(selection, _)| selection)
+    }
+
+    pub(super) fn publish_research_next_selection(
+        &self,
+        manifest: &CellBackendManifestV2,
+        name: &str,
+        now: u64,
+    ) -> anyhow::Result<AgentdSelectedGenerationV1> {
+        let expires = now
+            .checked_add(90_000)
+            .ok_or_else(|| anyhow::anyhow!("research selection expiry overflow"))?
+            .min(self.times.selection_expires);
+        anyhow::ensure!(now < expires, "research selection authority expired");
+        let (selection, signed) =
+            self.publish_next_selection_until(manifest, name, now, expires)?;
+        let mut file = OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .open(self.root.join("research-selected.json"))?;
+        file.write_all(&serde_json::to_vec(&signed)?)?;
+        file.sync_all()?;
+        File::open(&self.root)?.sync_all()?;
+        Ok(selection)
+    }
+
+    pub(super) fn research_selection(
+        &self,
+        now: u64,
+    ) -> anyhow::Result<AgentdSelectedGenerationV1> {
+        let bytes = std::fs::read(self.root.join("research-selected.json"))?;
+        let selected: SignedArtifactSelectionV1 = serde_json::from_slice(&bytes)?;
+        anyhow::ensure!(
+            serde_json::to_vec(&selected)? == bytes,
+            "research selection changed encoding"
+        );
+        let owner = self
+            .owner
+            .lock()
+            .map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
+        load_selection(&owner, &self.root, self.verifier.clone(), selected, now)
+    }
+
+    fn publish_next_selection_until(
+        &self,
+        manifest: &CellBackendManifestV2,
+        name: &str,
+        now: u64,
+        expires: u64,
+    ) -> anyhow::Result<(AgentdSelectedGenerationV1, SignedArtifactSelectionV1)> {
         let mut owner = self
             .owner
             .lock()
@@ -223,9 +276,16 @@ impl ArtifactFiles {
         selected.compatibility_digest = candidate.compatibility_digest;
         selected.encoded_size_bytes = candidate.encoded_size_bytes;
         selected.issued_at = now;
-        selected.expires_at = now + 1_000;
+        selected.expires_at = expires;
         selected.signature = self.selector.sign(&selected.signing_bytes()).to_bytes();
-        load_selection(&owner, &self.root, self.verifier.clone(), selected, now)
+        let verified = load_selection(
+            &owner,
+            &self.root,
+            self.verifier.clone(),
+            selected.clone(),
+            now,
+        )?;
+        Ok((verified, selected))
     }
 
     pub(super) fn advance_current(&self, manifest: &CellBackendManifestV2) -> anyhow::Result<()> {

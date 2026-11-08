@@ -21,6 +21,10 @@ pub type LearningIterationOwnerFutureV1<'a, T> =
 pub enum LearningIterationProposalPayloadV1 {
     Parameter(Box<ParameterPlasticityProductRequestV1>),
     Topology(Box<TopologyPlasticityProductRequestV1>),
+    #[cfg(all(test, unix))]
+    ResearchExternalTrainedArtifact(
+        Box<crate::learning_iteration_research_external::ResearchExternalTrainedArtifactProposalV1>,
+    ),
 }
 
 /// Resolved by the host from authenticated artifact/evaluation stores. The host

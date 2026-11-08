@@ -30,23 +30,31 @@ use crate::AgentdState;
 use crate::LearningIterationCheckpointOwnerV1;
 use crate::LearningIterationOwnerFutureV1;
 use crate::LearningIterationOwnerPortsV1;
+use crate::LearningIterationProposalPayloadV1;
 use crate::LearningIterationRuntimeErrorV1;
 use crate::NeuronGenerationRuntimeHandleV2;
 use crate::PreparedLearningIterationProposalV1;
 use crate::RuntimeTasks;
 use crate::learning_iteration_channel_v1;
+use crate::learning_iteration_research_external::ResearchExternalTrainedArtifactOwnerV1;
 use crate::learning_retained_task_operation_id_v1;
 use crate::neuron_generation_channel_v2;
 use crate::neuron_generation_current::test_support::Fixture;
 use crate::neuron_generation_current::test_support::Journal;
 use crate::neuron_generation_service::spawn_neuron_generation_service;
 use crate::prepare_agentd_generation_same_model_task_v1;
+use crate::prepare_agentd_generation_update_v1;
 use crate::recover_agentd_generation_update_v1;
 
+#[path = "neuron_generation_real_learning_adoption.rs"]
+mod adoption;
 #[path = "neuron_generation_real_learning_process.rs"]
 mod process;
 #[path = "neuron_generation_real_learning_trust.rs"]
 mod trust;
+
+use adoption::ResearchFlow;
+use adoption::SelectionKind;
 
 use process::Driver;
 use process::ProcessControl;
@@ -126,9 +134,13 @@ struct Running {
     request: Option<CellGenerationRequestV2>,
     readback: Option<AgentdGenerationLearningUseReadbackV1>,
     coordinator: LearningIterationCoordinatorV1,
+    target_config: CellGenerationConfigV2,
+    control: ProcessControl,
 }
 
 struct ResearchPorts {
+    flow: ResearchFlow,
+    external_owner: Option<ResearchExternalTrainedArtifactOwnerV1>,
     driver: Driver,
     trust: ResearchTrust,
     publication: Arc<Fixture>,
@@ -229,10 +241,13 @@ impl ResearchPorts {
                 let response =
                     tokio::task::spawn_blocking(move || driver.run("evaluate", json!({}), None))
                         .await??;
-                anyhow::ensure!(
-                    response["result"]["disposition"] == "NoUpdate",
-                    "actual candidate was not rejected; this research driver has no proposal authority"
-                );
+                let disposition = match response["result"]["disposition"].as_str() {
+                    Some("NoUpdate") => LearningEvaluationDispositionV1::NoUpdate,
+                    Some("Qualified") if self.flow == ResearchFlow::ExternalTrainedArtifact => {
+                        LearningEvaluationDispositionV1::Qualified
+                    }
+                    _ => anyhow::bail!("actual outcome is outside this explicit research profile"),
+                };
                 anyhow::ensure!(
                     digest(&response["result"]["candidate"]["adapter"])?
                         == coordinator
@@ -248,7 +263,7 @@ impl ResearchPorts {
                             .ok_or_else(|| anyhow::anyhow!("candidate"))?
                             .digest()?,
                         evaluation_profile: snapshot.request.evaluation_profile,
-                        disposition: LearningEvaluationDispositionV1::NoUpdate,
+                        disposition,
                     },
                     response["evidence"].clone(),
                 ))
@@ -266,22 +281,39 @@ impl ResearchPorts {
                     .map_err(|_| anyhow::anyhow!("config poisoned"))?
                     .take()
                     .ok_or_else(|| anyhow::anyhow!("runtime config already handed off"))?;
-                let prepared = prepare_agentd_generation_same_model_task_v1(
-                    self.publication.current.clone(),
-                    self.publication.authorities()?,
-                    old,
-                    self.publication.selection()?,
-                    self.publication.target_create()?,
-                    AgentdGenerationUpdateRequestV1 {
-                        operation_id: learning_retained_task_operation_id_v1(&coordinator)?
-                            .to_string(),
-                    },
+                let (target_config, control, selected) =
+                    adoption::admitted_target(self, &coordinator)?;
+                let target = self.publication.named_target_create(
+                    "target-journal",
+                    "target-witness",
+                    target_config.clone(),
                 )?;
+                let request = AgentdGenerationUpdateRequestV1 {
+                    operation_id: adoption::operation(&coordinator)?,
+                };
+                let prepared = match adoption::kind(&coordinator) {
+                    SelectionKind::Retained => prepare_agentd_generation_same_model_task_v1(
+                        self.publication.current.clone(),
+                        self.publication.authorities()?,
+                        old,
+                        selected,
+                        target,
+                        request,
+                    )?,
+                    SelectionKind::Updated => prepare_agentd_generation_update_v1(
+                        self.publication.current.clone(),
+                        self.publication.authorities()?,
+                        old,
+                        selected,
+                        target,
+                        request,
+                    )?,
+                };
                 let signed = self.publication.sign(prepared.final_use_binding())?;
                 let ready = prepared.publish(&signed)?;
                 let mut runtime = ready.into_runtime(
                     config,
-                    self.control.clone(),
+                    control.clone(),
                     monotonic,
                     AgentdGenerationUpdateRuntimeOptionsV1::default(),
                 )?;
@@ -300,7 +332,12 @@ impl ResearchPorts {
                         .ok_or_else(|| anyhow::anyhow!("research state already handed off"))?,
                     lifetime.clone(),
                 )?;
-                let observation = runtime.handle.read_learning_selection(&coordinator).await?;
+                let observation = adoption::selection(
+                    &runtime.handle,
+                    &coordinator,
+                    &self.publication.old_config.manifest,
+                )
+                .await?;
                 let evidence = reference(
                     "selection-owner.json",
                     json!({"current":serde_json::from_slice::<Value>(&self.publication.bytes("current.json")?)?,
@@ -313,6 +350,8 @@ impl ResearchPorts {
                     request: None,
                     readback: None,
                     coordinator: coordinator.clone(),
+                    target_config,
+                    control,
                 });
                 Ok((observation, evidence))
             }
@@ -325,41 +364,49 @@ impl ResearchPorts {
                     .ok_or_else(|| anyhow::anyhow!("missing selected actor"))?;
                 let request = request(
                     &self.driver,
-                    &self.publication.target_config,
+                    &running.target_config,
                     running.runtime.handle.snapshot().await?,
                     "next-task",
                 )?;
                 let intent = request.intent()?;
                 anyhow::ensure!(
-                    running
-                        .runtime
-                        .handle
-                        .read_learning_next_use(&coordinator, &intent)
-                        .await
-                        .is_err(),
+                    adoption::next_use(
+                        &running.runtime.handle,
+                        &coordinator,
+                        &self.publication.old_config.manifest,
+                        &intent
+                    )
+                    .await
+                    .is_err(),
                     "uncommitted use must be refused"
                 );
                 let receipt = running.runtime.handle.step(request.clone()).await?;
-                let pending = running
-                    .runtime
-                    .handle
-                    .read_learning_next_use_readback(&coordinator, &intent)
-                    .await?;
+                let pending = adoption::readback(
+                    &running.runtime.handle,
+                    &coordinator,
+                    &self.publication.old_config.manifest,
+                    &intent,
+                )
+                .await?;
                 persist(
                     &self.driver.evidence.join("next-use-pending.json"),
                     &serde_json::to_vec(&pending)?,
                 )?;
                 acknowledge(&self.driver, &running.runtime.handle, "next-use").await?;
-                let observation = running
-                    .runtime
-                    .handle
-                    .read_learning_next_use(&coordinator, &intent)
-                    .await?;
-                let readback = running
-                    .runtime
-                    .handle
-                    .read_learning_next_use_readback(&coordinator, &intent)
-                    .await?;
+                let observation = adoption::next_use(
+                    &running.runtime.handle,
+                    &coordinator,
+                    &self.publication.old_config.manifest,
+                    &intent,
+                )
+                .await?;
+                let readback = adoption::readback(
+                    &running.runtime.handle,
+                    &coordinator,
+                    &self.publication.old_config.manifest,
+                    &intent,
+                )
+                .await?;
                 persist(
                     &self.driver.evidence.join("next-use-acked.json"),
                     &serde_json::to_vec(&readback)?,
@@ -403,11 +450,13 @@ impl ResearchPorts {
         let coordinator = running.coordinator.clone();
         let intent = request.intent()?;
         let receipt = running.runtime.handle.step(request.clone()).await?;
-        let observation = running
-            .runtime
-            .handle
-            .read_learning_next_use(&coordinator, &intent)
-            .await?;
+        let observation = adoption::next_use(
+            &running.runtime.handle,
+            &coordinator,
+            &self.publication.old_config.manifest,
+            &intent,
+        )
+        .await?;
         anyhow::ensure!(
             finished
                 .receipts
@@ -422,6 +471,8 @@ impl ResearchPorts {
             self.publication.bytes("final-use/authority.claims")?,
         ];
         let intent_digest = running.runtime.publication.intent_digest();
+        let target_config = running.target_config.clone();
+        let control = running.control.clone();
         running.tasks.shutdown().await;
         drop(running);
         // The original learning owner is already complete and stopped. Rebuild
@@ -430,10 +481,10 @@ impl ResearchPorts {
         let ready = recover_agentd_generation_update_v1(
             self.publication.reopen_current()?,
             self.publication.authorities()?,
-            self.publication.selection()?,
-            self.publication.target_reopen()?,
+            adoption::reopen_selection(self, &coordinator)?,
+            adoption::reopen_target(self, target_config.clone())?,
             AgentdGenerationUpdateRecoveryV1 {
-                operation_id: learning_retained_task_operation_id_v1(&coordinator)?.to_string(),
+                operation_id: adoption::operation(&coordinator)?,
                 intent_digest,
             },
         )?;
@@ -445,7 +496,7 @@ impl ResearchPorts {
         let config = support::next_config(host, running_generation).await?;
         let mut runtime = ready.into_runtime(
             config,
-            self.control.clone(),
+            control.clone(),
             monotonic,
             AgentdGenerationUpdateRuntimeOptionsV1::default(),
         )?;
@@ -465,18 +516,24 @@ impl ResearchPorts {
             "cold native receipt differs"
         );
         anyhow::ensure!(
-            runtime
-                .handle
-                .read_learning_next_use(&coordinator, &intent)
-                .await?
+            adoption::next_use(
+                &runtime.handle,
+                &coordinator,
+                &self.publication.old_config.manifest,
+                &intent
+            )
+            .await?
                 == observation,
             "cold use differs"
         );
         anyhow::ensure!(
-            runtime
-                .handle
-                .read_learning_next_use_readback(&coordinator, &intent)
-                .await?
+            adoption::readback(
+                &runtime.handle,
+                &coordinator,
+                &self.publication.old_config.manifest,
+                &intent
+            )
+            .await?
                 == readback,
             "cold raw readback differs"
         );
@@ -491,7 +548,7 @@ impl ResearchPorts {
             "recovery rewrote native owner files"
         );
         let driver = self.driver.clone();
-        let inputs = self.control.model_request(&request)?;
+        let inputs = control.model_request(&request)?;
         let cold = tokio::task::spawn_blocking(move || driver.run("probe_recover", inputs, None))
             .await??;
         anyhow::ensure!(
@@ -513,6 +570,8 @@ impl ResearchPorts {
             request: Some(request),
             readback: Some(readback),
             coordinator,
+            target_config,
+            control,
         });
         Ok(())
     }
@@ -546,11 +605,18 @@ impl LearningIterationOwnerPortsV1 for ResearchPorts {
         request: &'a LearningIterationRequestV1,
     ) -> LearningIterationOwnerFutureV1<'a, Option<LearningIterationSnapshotV1>> {
         Box::pin(async move {
-            self.checkpoint
+            let snapshot = self
+                .checkpoint
                 .lock()
                 .map_err(unavailable)?
                 .restore(request)
-                .map_err(unavailable)
+                .map_err(unavailable)?;
+            if let Some(snapshot) = &snapshot
+                && let Some(owner) = &self.external_owner
+            {
+                owner.verify_restored(snapshot)?;
+            }
+            Ok(snapshot)
         })
     }
     fn checkpoint<'a>(
@@ -612,12 +678,31 @@ impl LearningIterationOwnerPortsV1 for ResearchPorts {
     }
     fn prepare_proposal<'a>(
         &'a self,
-        _snapshot: &'a LearningIterationSnapshotV1,
+        snapshot: &'a LearningIterationSnapshotV1,
     ) -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1> {
-        Box::pin(async {
-            Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
-                "research has no proposal authority",
-            ))
+        Box::pin(async move {
+            let owner = self.external_owner.as_ref().ok_or(
+                LearningIterationRuntimeErrorV1::OwnerUnavailable(
+                    "research has no proposal authority",
+                ),
+            )?;
+            let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
+            let candidate = coordinator.candidate().ok_or(
+                LearningIterationRuntimeErrorV1::OwnerUnavailable("actual candidate missing"),
+            )?;
+            let evaluation = snapshot.receipts.last().ok_or(
+                LearningIterationRuntimeErrorV1::OwnerUnavailable("actual evaluation missing"),
+            )?;
+            let prepared = owner.prepare(snapshot)?;
+            adoption::reject_prepared_contexts(self, snapshot, &prepared).map_err(unavailable)?;
+            Ok(PreparedLearningIterationProposalV1 {
+                iteration_head: snapshot.head_digest,
+                candidate_bundle: candidate.digest().map_err(unavailable)?,
+                evaluation_evidence: evaluation.evidence_digest,
+                payload: LearningIterationProposalPayloadV1::ResearchExternalTrainedArtifact(
+                    Box::new(prepared),
+                ),
+            })
         })
     }
     fn receipt_attestation<'a>(
@@ -662,10 +747,13 @@ impl LearningIterationOwnerPortsV1 for ResearchPorts {
                     (runtime.runtime.handle.clone(), runtime.request.clone())
                 };
                 let actual = if receipt.observation.stage() == LearningIterationStageV1::Selection {
-                    handle
-                        .read_learning_selection(&coordinator)
-                        .await
-                        .map_err(unavailable)?
+                    adoption::selection(
+                        &handle,
+                        &coordinator,
+                        &self.publication.old_config.manifest,
+                    )
+                    .await
+                    .map_err(unavailable)?
                 } else {
                     let intent = request
                         .as_ref()
@@ -674,10 +762,14 @@ impl LearningIterationOwnerPortsV1 for ResearchPorts {
                         ))?
                         .intent()
                         .map_err(unavailable)?;
-                    handle
-                        .read_learning_next_use(&coordinator, &intent)
-                        .await
-                        .map_err(unavailable)?
+                    adoption::next_use(
+                        &handle,
+                        &coordinator,
+                        &self.publication.old_config.manifest,
+                        &intent,
+                    )
+                    .await
+                    .map_err(unavailable)?
                 };
                 if actual != receipt.observation {
                     return Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
@@ -694,7 +786,25 @@ impl LearningIterationOwnerPortsV1 for ResearchPorts {
 #[ignore = "explicit pinned local model, research directory and process budget required"]
 async fn actual_smollm_training_no_update_native_next_use_and_cold_readback() -> anyhow::Result<()>
 {
+    run(ResearchFlow::RetainedOnly).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "explicit external-artifact research owner, real pinned model and fresh operation required"]
+async fn actual_smollm_external_artifact_native_adoption_and_cold_readback() -> anyhow::Result<()> {
+    run(ResearchFlow::ExternalTrainedArtifact).await
+}
+
+async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
     let driver = Driver::open()?;
+    anyhow::ensure!(
+        match flow {
+            ResearchFlow::RetainedOnly => driver.prepared["research_profile"].is_null(),
+            ResearchFlow::ExternalTrainedArtifact =>
+                driver.prepared["research_profile"] == "external-trained-artifact-v1",
+        },
+        "explicit research profile differs from selected native test"
+    );
     let prepared = &driver.prepared;
     let mut host = host::Fixture::new().await;
     host.directory.disable_cleanup(true);
@@ -724,7 +834,11 @@ async fn actual_smollm_training_no_update_native_next_use_and_cold_readback() ->
         rollback_predecessor: None,
     };
     let manifest = &mut host.config.manifest;
-    manifest.profile = "research-smollm-process-v1".into();
+    manifest.profile = match flow {
+        ResearchFlow::RetainedOnly => "research-smollm-process-v1",
+        ResearchFlow::ExternalTrainedArtifact => "research-smollm-external-trained-artifact-v1",
+    }
+    .into();
     manifest.source_digest = digest(&prepared["source_digest"])?.into_array();
     manifest.bundle_digest = baseline.digest()?.into_array();
     manifest.encoder = Some(baseline.components.encoder.into_array());
@@ -844,12 +958,31 @@ async fn actual_smollm_training_no_update_native_next_use_and_cold_readback() ->
             maximum_artifact_bytes: 1_048_576,
         },
     };
-    let owners = trust.owners()?;
+    let mut owners = trust.owners()?;
+    if flow == ResearchFlow::ExternalTrainedArtifact {
+        owners.proposal = id(format!(
+            "{}-research-external-artifact-v1",
+            driver.operation
+        ))?;
+    }
     let initial = LearningIterationCoordinatorV1::new(learning_request.clone(), owners.clone())?;
     let checkpoint =
         publication.research_checkpoint(learning_request.clone(), owners.clone(), true)?;
     let control = ProcessControl::new(driver.clone(), publication.target_config.manifest.clone());
+    let external_owner = match flow {
+        ResearchFlow::RetainedOnly => None,
+        ResearchFlow::ExternalTrainedArtifact => {
+            Some(ResearchExternalTrainedArtifactOwnerV1::create(
+                driver.evidence.join("external-artifact-owner"),
+                driver.output.clone(),
+                driver.evidence.clone(),
+                initial.snapshot(),
+            )?)
+        }
+    };
     let ports = Arc::new(ResearchPorts {
+        flow,
+        external_owner,
         driver: driver.clone(),
         trust,
         publication: publication.clone(),
@@ -868,7 +1001,9 @@ async fn actual_smollm_training_no_update_native_next_use_and_cold_readback() ->
         &serde_json::to_vec(&json!({"operation":driver.operation,
         "initial_learning_head":initial.snapshot().head_digest.to_string(),"evaluation_profile":objective.to_string(),
         "source_commit":driver.source_commit,"source_tree":driver.source_tree,"envelope_git_digest_encoding":"sha256-canonical-lowercase-git-object-id-text",
-        "frozen_plan_sha256":driver.frozen,"created_unix_seconds":now()?,"absolute_deadline_unix_seconds":driver.deadline,
+        "frozen_plan_sha256":driver.frozen,"created_unix_seconds":now()?,
+        "created_unix_ns":u64::try_from(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_nanos())?,
+        "absolute_deadline_unix_seconds":driver.deadline,
         "maximum_training_milliseconds":learning_request.budget.maximum_training_milliseconds,
         "current_research_owner":serde_json::from_slice::<Value>(&publication.bytes("current.json")?)?}))?,
     )?;
@@ -894,6 +1029,9 @@ async fn actual_smollm_training_no_update_native_next_use_and_cold_readback() ->
     let checkpoint_before = publication.bytes("learning-checkpoint")?;
     drop(handle);
     ports.cold_reopen(&mut host, &finished).await?;
+    if flow == ResearchFlow::ExternalTrainedArtifact {
+        adoption::reopen_and_reject_restored_contexts(&ports, &finished)?;
+    }
     *ports
         .checkpoint
         .lock()
@@ -919,9 +1057,17 @@ async fn actual_smollm_training_no_update_native_next_use_and_cold_readback() ->
         publication.bytes("learning-checkpoint")? == checkpoint_before,
         "completed learning restore rewrote checkpoint"
     );
+    let selected_executions = ports
+        .runtime
+        .lock()
+        .await
+        .as_ref()
+        .ok_or_else(|| anyhow::anyhow!("selected native owner missing"))?
+        .control
+        .executions
+        .load(Ordering::SeqCst);
     anyhow::ensure!(
-        source_control.executions.load(Ordering::SeqCst) == 1
-            && control.executions.load(Ordering::SeqCst) == 1,
+        source_control.executions.load(Ordering::SeqCst) == 1 && selected_executions == 1,
         "owner recovery dispatched another model call"
     );
     anyhow::ensure!(
@@ -962,11 +1108,40 @@ async fn actual_smollm_training_no_update_native_next_use_and_cold_readback() ->
         &driver.evidence.join("native-completed-use-readback.json"),
         &serde_json::to_vec(&readback)?,
     )?;
-    let result = json!({"schema":"hepta.research.real-model-native-completion.v1","result":"PASS",
+    let selected: Value =
+        serde_json::from_slice(&fs::read(driver.output.join("evaluate-result.json"))?)?;
+    let updated = adoption::kind(&running.coordinator) == SelectionKind::Updated;
+    let selected_material = if updated {
+        &selected["candidate"]
+    } else {
+        &driver.prepared["parent"]
+    };
+    let adoption_check = match flow {
+        ResearchFlow::RetainedOnly => Ok(Value::Null),
+        ResearchFlow::ExternalTrainedArtifact => {
+            adoption::require_actual_adoption(&ports, &running, &readback, &finished, &selected)
+        }
+    };
+    let positive_result = match &adoption_check {
+        Ok(_) => "PASS",
+        Err(_) if !updated => "NO_UPDATE_ADOPT_NOT_QUALIFIED",
+        Err(_) => "FAIL_ADOPT_BINDING",
+    };
+    let result = json!({"schema":match flow {
+            ResearchFlow::RetainedOnly => "hepta.research.real-model-native-completion.v1",
+            ResearchFlow::ExternalTrainedArtifact => "hepta.research.external-trained-native-completion.v1",
+        },"result":positive_result,
+        "native_iteration_complete":true,
+        "positive_adoption_validation":adoption_check.as_ref().ok(),
+        "positive_adoption_rejection":adoption_check.as_ref().err().map(|error| format!("{error:#}")),
         "operation":driver.operation,"initial_learning_head":initial.snapshot().head_digest.to_string(),"learning_head":finished.head_digest.to_string(),
         "checkpoint_sha256":d(&raw).to_string(),"frozen_plan_sha256":driver.frozen,"evaluation_profile":objective.to_string(),
         "actual_training_optimizer_steps":10,"actual_source_forward_calls":1,"actual_evaluation_forward_calls":8,"actual_next_task_forward_calls":1,
-        "disposition":"NoUpdate","selected_adapter":driver.prepared["parent"]["adapter"],"retained_artifact_sha256":driver.prepared["parent"]["file_sha256"],
+        "disposition":if updated {"ResearchExternalTrainedArtifactAdopt"} else {"NoUpdate"},
+        "real_new_candidate_adoption":updated && adoption_check.is_ok(),"native_proposal_update_candidates":updated,"selected_adapter":selected_material["adapter"],
+        "selected_artifact_sha256":selected_material["file_sha256"],
+        "retained_artifact_sha256":if updated {Value::Null} else {driver.prepared["parent"]["file_sha256"].clone()},
+        "original_parameter_v3_qualified":false,"product_ope_qualified":false,
         "original_learning_signature_verifier":true,"original_checkpoint_codec":true,"original_generation_actor":true,
         "generation_owner_reopened":true,"worker_process_restarted":true,"learning_owner_reopened":true,"reexecuted_after_recovery":false,
         "native_daemon_os_restart":false,"native_fleet_lifecycle_recreated":true,"research_keys_and_custody":true,"independent_operator_custody":false,
@@ -980,5 +1155,8 @@ async fn actual_smollm_training_no_update_native_next_use_and_cold_readback() ->
         "HEPTA_REAL_MODEL_NATIVE_COMPLETION_V1 {}",
         serde_json::to_string(&result)?
     );
+    // Retain a completed legal NoUpdate record before failing the positive
+    // adoption test. A qualified research update is the sole positive outcome.
+    adoption_check?;
     Ok(())
 }

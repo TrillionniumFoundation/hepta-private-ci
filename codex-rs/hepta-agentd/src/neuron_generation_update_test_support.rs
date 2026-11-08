@@ -430,6 +430,31 @@ impl Fixture {
             .publish_next_selection(manifest, name, self.live_clock.now_unix_ms()?)
     }
 
+    pub(crate) fn publish_research_next_selection(
+        &self,
+        manifest: &CellBackendManifestV2,
+        name: &str,
+    ) -> anyhow::Result<AgentdSelectedGenerationV1> {
+        anyhow::ensure!(
+            self.research,
+            "research selection requires a real-clock fixture"
+        );
+        self.artifact_files.publish_research_next_selection(
+            manifest,
+            name,
+            self.live_clock.now_unix_ms()?,
+        )
+    }
+
+    pub(crate) fn research_selection(&self) -> anyhow::Result<AgentdSelectedGenerationV1> {
+        anyhow::ensure!(
+            self.research,
+            "research selection requires a real-clock fixture"
+        );
+        self.artifact_files
+            .research_selection(self.live_clock.now_unix_ms()?)
+    }
+
     pub(crate) fn withdraw(&self) -> anyhow::Result<()> {
         self.artifact_files.withdraw()
     }

@@ -52,6 +52,8 @@ def main():
     os.umask(0o077)
     assert sha(args.config) == args.config_sha256
     config = json.loads(args.config.read_bytes())
+    profile = config.get("research_profile", "retained-no-update-v1")
+    assert profile in ("retained-no-update-v1", "external-trained-artifact-v1")
     request_raw = sys.stdin.buffer.read(16385)
     assert 0 < len(request_raw) <= 16384
     request = json.loads(request_raw)
@@ -80,14 +82,19 @@ def main():
         root.mkdir(mode=0o700, exist_ok=False)
         previous_result = json.loads((previous / "training-result.json").read_bytes())
         previous_plan = json.loads((previous / "frozen-plan.json").read_bytes())
-        parent_ref = previous_result["stages"][0]["parent_material"]
+        parent_index, dataset_index = (1, 0) if profile == "external-trained-artifact-v1" else (0, 1)
+        parent_ref = previous_result["stages"][parent_index]["parent_material"]
         assert sha(parent_ref["path"]) == parent_ref["sha256"]
         parent = json.loads(Path(parent_ref["path"]).read_bytes())
-        data = previous_plan["inputs"][1]
+        data = previous_plan["inputs"][dataset_index]
         assert sha(data["path"]) == data["sha256"]
         raw_data = Path(data["path"]).read_bytes()
         rows = json.loads(raw_data)["records"]
         base_config = json.loads((previous / "model-generation-1.json").read_bytes())
+        if profile == "external-trained-artifact-v1":
+            base_config.update(parent_dir=parent["directory"], parent_contract=parent["contract"],
+                               parent_adapter=parent["adapter"], parent_file_sha256=parent["file_sha256"],
+                               generation=parent["generation"])
         evaluation = [
             dict(row, request_id=config["operation"] + f"-eval-{i}")
             for i, row in enumerate(previous_plan["evaluation"])
@@ -115,6 +122,9 @@ def main():
             independent_evaluation=False,
             qualification="HOLD_NO_GO",
         )
+        if profile == "external-trained-artifact-v1":
+            frozen["research_profile"] = profile
+            frozen["next_request_id"] = config["operation"] + "-next-task"
         frozen_ref = save(root / "frozen.json", frozen)
         assert (
             sha(Path(parent["directory"]) / "artifact.safetensors")
@@ -142,6 +152,8 @@ def main():
             next_prompt=frozen["next_prompt"],
             device_sha256=sha("/proc/sys/kernel/osrelease"),
         )
+        if profile == "external-trained-artifact-v1":
+            result["research_profile"] = profile
     else:
         frozen = json.loads((root / "frozen.json").read_bytes())
         assert (
@@ -150,6 +162,7 @@ def main():
         )
         assert request["frozen_sha256"] == sha(root / "frozen.json")
         assert request["deadline_unix_seconds"] == frozen["deadline_unix_seconds"]
+        assert frozen.get("research_profile", "retained-no-update-v1") == profile
         parent = frozen["parent"]
         assert (
             sha(Path(parent["directory"]) / "artifact.safetensors")
@@ -187,6 +200,17 @@ def main():
                 "--parent-sha256",
                 frozen["parent_ref"]["sha256"],
             ]
+            started_unix_ns = time.time_ns()
+            save(
+                root / "training-start.json",
+                dict(
+                    schema="hepta.research.smollm.training-start.v1",
+                    operation=config["operation"],
+                    started_unix_ns=started_unix_ns,
+                    native_admission_sha256=sha(root / "native-training-admission.json"),
+                    frozen_sha256=sha(root / "frozen.json"),
+                ),
+            )
             start = time.monotonic_ns()
             remaining = min(90, request["deadline_unix_seconds"] - time.time())
             assert remaining > 0
@@ -203,6 +227,7 @@ def main():
                         "TRANSFORMERS_OFFLINE": "1",
                     },
                 )
+            completed_unix_ns = time.time_ns()
             milliseconds = (time.monotonic_ns() - start + 999999) // 1000000
             save(
                 root / "training-command.json",
@@ -210,6 +235,8 @@ def main():
                     command=command,
                     returncode=run.returncode,
                     milliseconds=milliseconds,
+                    started_unix_ns=started_unix_ns,
+                    completed_unix_ns=completed_unix_ns,
                 ),
             )
             assert run.returncode == 0
@@ -300,7 +327,21 @@ def main():
                 inputs["mode"] == "conditional_binary"
                 and inputs["prompt"] == frozen["next_prompt"]
             )
-            assert request["selected_adapter"] == parent["adapter"]
+            material = parent
+            if profile == "external-trained-artifact-v1":
+                assert inputs["request_id"] in (
+                    config["operation"] + "-source-task", frozen["next_request_id"]
+                )
+                if inputs["request_id"] == frozen["next_request_id"]:
+                    evaluation = json.loads((root / "evaluate-result.json").read_bytes())
+                    assert evaluation["frozen_sha256"] == sha(root / "frozen.json")
+                    if evaluation["disposition"] == "Qualified":
+                        material = json.loads((root / "training/worker/parent-material.json").read_bytes())
+                        assert evaluation["candidate"] == material
+                    else:
+                        assert evaluation["disposition"] == "NoUpdate"
+                    assert evaluation["selected_adapter"] == material["adapter"]
+            assert request["selected_adapter"] == material["adapter"]
             token = hashlib.sha256(inputs["request_id"].encode()).hexdigest()[:20]
             name = "probe-" + token
             original = root / (name + "-response.json")
@@ -314,7 +355,7 @@ def main():
                 root,
                 config,
                 frozen,
-                parent,
+                material,
                 name,
                 1,
                 transcript=name + ("-cold" if action == "probe_recover" else "-hot"),
@@ -412,8 +453,8 @@ def main():
                 )
             result = dict(
                 schema="hepta.research.smollm.actual-proposal.v1",
-                selected_adapter=parent["adapter"],
-                selected_file_sha256=parent["file_sha256"],
+                selected_adapter=material["adapter"],
+                selected_file_sha256=material["file_sha256"],
                 native_request_digest=request["native_request_digest"],
                 observation=observed,
                 original_response_sha256=sha(original),

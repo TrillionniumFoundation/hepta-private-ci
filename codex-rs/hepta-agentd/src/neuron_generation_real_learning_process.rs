@@ -272,23 +272,45 @@ pub(super) struct ProcessControl {
     pub(super) driver: Driver,
     pub(super) executions: Arc<AtomicUsize>,
     pub(super) manifest: CellBackendManifestV2,
+    material: Value,
     retained: Option<CellGenerationProposalV2>,
 }
 
 impl ProcessControl {
     pub(super) fn new(driver: Driver, manifest: CellBackendManifestV2) -> Self {
+        let material = driver.prepared["parent"].clone();
         Self {
             driver,
             executions: Arc::new(AtomicUsize::new(0)),
             manifest,
+            material,
             retained: None,
         }
+    }
+
+    pub(super) fn for_candidate(
+        driver: Driver,
+        manifest: CellBackendManifestV2,
+        material: Value,
+    ) -> anyhow::Result<Self> {
+        anyhow::ensure!(
+            driver.prepared["research_profile"] == "external-trained-artifact-v1"
+                && digest(&material["file_sha256"])?
+                    == Digest32::from_array(match &manifest.learning {
+                        CellLearningBindingV2::Frozen { weights } => *weights,
+                        _ => anyhow::bail!("research candidate must be a complete frozen artifact"),
+                    }),
+            "candidate process material is not the admitted manifest"
+        );
+        let mut control = Self::new(driver, manifest);
+        control.material = material;
+        Ok(control)
     }
 
     pub(super) fn model_request(&self, request: &CellGenerationRequestV2) -> anyhow::Result<Value> {
         Ok(
             json!({"inputs":serde_json::from_slice::<Value>(&request.input)?,
-            "selected_adapter":self.driver.prepared["parent"]["adapter"],
+            "selected_adapter":self.material["adapter"],
             "native_request_digest":Digest32::from_array(request.digest()?).to_string()}),
         )
     }
@@ -311,14 +333,13 @@ impl ProcessControl {
         )?;
         let output = &response["result"];
         anyhow::ensure!(
-            digest(&output["selected_adapter"])?
-                == digest(&self.driver.prepared["parent"]["adapter"])?
+            digest(&output["selected_adapter"])? == digest(&self.material["adapter"])?
                 && digest(&output["selected_file_sha256"])?
-                    == digest(&self.driver.prepared["parent"]["file_sha256"])?
+                    == digest(&self.material["file_sha256"])?
                 && digest(&output["native_request_digest"])?
                     == Digest32::from_array(request.digest()?)
                 && output["new_forward_calls"] == 1,
-            "actual retained model result differs"
+            "actual admitted model result differs"
         );
         let identity = CellTaskCostIdentityV2 {
             task_digest: request.task_digest,
