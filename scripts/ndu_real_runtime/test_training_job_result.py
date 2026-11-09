@@ -1,6 +1,7 @@
 """Synthetic protocol controls only; no trainer/model fit or production authority."""
 
 import copy
+from dataclasses import asdict
 import json
 import os
 from pathlib import Path
@@ -16,6 +17,7 @@ from . import pipeline, training_job_result as bridge
 from .controllers import ControlPlan
 from .metering import Meter, atomic_json, canonical_sha, file_sha
 from .test_recursive_contract import numerical_records
+from .training_grid import fit_grid
 
 
 class ResultAdmissionTests(unittest.TestCase):
@@ -279,6 +281,53 @@ class ResultAdmissionTests(unittest.TestCase):
                 self.assertEqual(result["status"], "failed")
                 self.assertIsNone(result["admission_sha256"])
                 self.job[field] = original
+
+    def test_real_grid_rows_reject_changed_planned_source_before_dispatch(self):
+        records = self.root / "records.jsonl"
+        rows = numerical_records(ControlPlan(memory_mode="persistent"))
+        records.write_text("".join(json.dumps(row) + "\n" for row in rows))
+        plans = {}
+        for mode in ("reset", "persistent"):
+            path = self.root / (mode + ".json")
+            atomic_json(path, {"control": asdict(ControlPlan(memory_mode=mode))})
+            plans[mode] = path
+        for paired in (False, True):
+            with self.subTest(paired=paired):
+                grid = fit_grid(
+                    records,
+                    file_sha(records),
+                    self.root / ("paired" if paired else "legacy"),
+                    python=sys.executable,
+                    seeds=(7,),
+                    head_lrs=(0.003,),
+                    regimes=("frozen",),
+                    controllers=("light",),
+                    control_plans=plans if paired else None,
+                    observation_policy="matched_episodes" if paired else "legacy",
+                )
+                for row in grid["jobs"]:
+                    self.assertEqual(row["source_pins"], grid["intent"]["source_pins"])
+                job = next(row for row in grid["jobs"] if row["phase"] == "content")
+                admitted = bridge.admit(job, self.config, "2026-11-09T00:00:00+00:00")
+                self.assertEqual(
+                    admitted["expected_receipt"]["source_pins"],
+                    grid["intent"]["source_pins"],
+                )
+                changed_source = dict(grid["intent"]["source_pins"])
+                changed_source["scripts/ndu_real_runtime/training.py"] = "0" * 64
+                with (
+                    patch.object(bridge, "_source_pins", return_value=changed_source),
+                    patch.object(pipeline, "run_logged") as launch,
+                ):
+                    result = pipeline.run_training_job(
+                        job,
+                        self.config,
+                        self.root / ("jobs-paired" if paired else "jobs-legacy"),
+                    )
+                    launch.assert_not_called()
+                self.assertEqual(result["status"], "failed")
+                self.assertIsNone(result["admission_sha256"])
+                self.assertIn("Indexed source pins", result["error"]["message"])
 
     def test_verification_time_is_charged_before_completed_status(self):
         def child(*args, **kwargs):
