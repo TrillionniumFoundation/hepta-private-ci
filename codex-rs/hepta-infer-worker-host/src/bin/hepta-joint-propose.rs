@@ -14,8 +14,20 @@ mod decoder;
 #[path = "../joint_generation/math.rs"]
 pub mod math;
 #[cfg(target_os = "linux")]
+#[path = "../joint_generation/media_codec.rs"]
+mod media_codec;
+#[cfg(target_os = "linux")]
 #[path = "../joint_generation/model.rs"]
 pub mod model;
+#[cfg(target_os = "linux")]
+#[path = "../joint_generation/observation.rs"]
+mod observation;
+#[cfg(target_os = "linux")]
+#[path = "../joint_generation/observed_model.rs"]
+mod observed_model;
+#[cfg(target_os = "linux")]
+#[path = "../joint_generation/planner.rs"]
+mod planner;
 #[cfg(target_os = "linux")]
 #[path = "../joint_generation/proposal.rs"]
 mod proposal;
@@ -25,6 +37,9 @@ mod protocol;
 #[cfg(target_os = "linux")]
 #[path = "../joint_generation/state.rs"]
 pub mod state;
+#[cfg(target_os = "linux")]
+#[path = "../joint_generation/text_codec.rs"]
+mod text_codec;
 
 fn main() {
     #[cfg(target_os = "linux")]

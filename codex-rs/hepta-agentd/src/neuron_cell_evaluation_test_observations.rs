@@ -167,7 +167,7 @@ pub(super) fn observations() -> (
 }
 
 pub(crate) fn signed(
-    runner: &CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>,
+    runner: &CellEvaluationRunnerV1<ObservedHoldoutStore>,
     receipt: &CellEvaluationReceiptV1,
 ) -> (
     ProductQualificationContextV1,

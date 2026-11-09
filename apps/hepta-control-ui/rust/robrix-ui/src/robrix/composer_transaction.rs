@@ -14,6 +14,19 @@ pub(crate) struct ComposerTransaction {
 }
 
 impl ComposerTransaction {
+    /// Observe the event before the SDK consumes it. A full-state commit can
+    /// clear preedit without changing text, in which case the pinned TextInput
+    /// emits no Changed action. The owner must still receive the committed text.
+    /// A cancel that removes the preview changes text and uses normal Changed.
+    pub(crate) fn commits_unchanged_preedit(input: &TextInputRef, event: &Event) -> bool {
+        let Event::TextInput(event) = event else {
+            return false;
+        };
+        event.full_state_sync.as_ref().is_some_and(|state| {
+            state.composition.is_none() && input.is_composing() && input.text() == state.text
+        })
+    }
+
     /// Run before the widget consumes input. Actions are delivered later, so a
     /// snapshot is valid only while the editor still equals the sole draft.
     pub(crate) fn checkpoint(

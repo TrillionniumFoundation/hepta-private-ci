@@ -1,0 +1,64 @@
+    Checking hepta-joint-v4-scoped-lint v0.0.0 (/tmp/ndu-joint-v4-986c-20261108-source-v2-lint)
+warning: this boolean expression can be simplified
+  --> codex-rs/hepta-ndu/src/finite_entropic.rs:49:12
+   |
+49 |           if !self.risk.is_finite()
+   |  ____________^
+50 | |             || self.risk < 0.0
+51 | |             || !self.latency_weight.is_finite()
+52 | |             || self.latency_weight < 0.0
+53 | |             || !self.discount_per_second.is_finite()
+54 | |             || !(0.0 < self.discount_per_second && self.discount_per_second <= 1.0)
+   | |___________________________________________________________________________________^ help: try: `!(self.risk.is_finite() && self.risk >= 0.0 && self.latency_weight.is_finite() && self.latency_weight >= 0.0 && self.discount_per_second.is_finite() && 0.0 < self.discount_per_second && self.discount_per_second <= 1.0)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#nonminimal_bool
+   = note: `-D clippy::nonminimal-bool` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::nonminimal_bool)]`
+
+warning: `hepta-joint-v4-scoped-lint` (lib) generated 1 warning
+warning: this boolean expression can be simplified
+   --> codex-rs/hepta-infer-worker-host/src/bin/../joint_generation/planner.rs:175:12
+    |
+175 |           if !risk.is_finite()
+    |  ____________^
+176 | |             || risk < 0.0
+177 | |             || !discount.is_finite()
+178 | |             || !(0.0 < discount && discount <= 1.0)
+179 | |             || !latency_weight.is_finite()
+180 | |             || latency_weight < 0.0
+    | |___________________________________^ help: try: `!(risk.is_finite() && risk >= 0.0 && discount.is_finite() && 0.0 < discount && discount <= 1.0 && latency_weight.is_finite() && latency_weight >= 0.0)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#nonminimal_bool
+    = note: `-D clippy::nonminimal-bool` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::nonminimal_bool)]`
+
+warning: this boolean expression can be simplified
+   --> codex-rs/hepta-infer-worker-host/src/bin/../joint_generation/planner.rs:175:12
+    |
+175 |           if !risk.is_finite()
+    |  ____________^
+176 | |             || risk < 0.0
+177 | |             || !discount.is_finite()
+178 | |             || !(0.0 < discount && discount <= 1.0)
+179 | |             || !latency_weight.is_finite()
+    | |__________________________________________^ help: try: `!(risk.is_finite() && risk >= 0.0 && discount.is_finite() && 0.0 < discount && discount <= 1.0 && latency_weight.is_finite())`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#nonminimal_bool
+
+warning: this boolean expression can be simplified
+   --> codex-rs/hepta-infer-worker-host/src/bin/../joint_generation/planner.rs:175:12
+    |
+175 |           if !risk.is_finite()
+    |  ____________^
+176 | |             || risk < 0.0
+177 | |             || !discount.is_finite()
+178 | |             || !(0.0 < discount && discount <= 1.0)
+    | |___________________________________________________^ help: try: `!(risk.is_finite() && risk >= 0.0 && discount.is_finite() && 0.0 < discount && discount <= 1.0)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#nonminimal_bool
+
+warning: `hepta-joint-v4-scoped-lint` (bin "hepta-joint-propose") generated 3 warnings
+       Fixed codex-rs/hepta-infer-worker-host/src/bin/../joint_generation/observed_tests.rs (1 fix)
+warning: `hepta-joint-v4-scoped-lint` (bin "hepta-joint-propose" test) generated 3 warnings (3 duplicates)
+warning: `hepta-joint-v4-scoped-lint` (lib test) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.18s

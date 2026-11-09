@@ -1,0 +1,56 @@
+{
+  "schema": "hcsn.final-legacy-public-summary.v1",
+  "observed_start_utc": "2026-11-08T05:37:07.903Z",
+  "observed_end_utc": "2026-11-08T05:37:24.288Z",
+  "original_170": {
+    "completed": 47,
+    "registered": 170,
+    "status": "running",
+    "active_stage": "full",
+    "global_qualification": "open",
+    "progress_updated_utc": "2026-11-08T05:37:05.788156+00:00",
+    "progress_raw_sha256": "cf546a8861379951b71c95204bd37db9f38f0f9414e38c54a351fe6e2e36b683",
+    "progress_raw_bytes": 14153,
+    "owner_state": "running",
+    "watcher_state": "running",
+    "registered_index": {
+      "completed": 47,
+      "failed": 0,
+      "unavailable": 0
+    },
+    "historical_original_b_fullshape_exit_code": 1
+  },
+  "original_s81": {
+    "remote_state": "UNKNOWN",
+    "submission_state": "UNKNOWN",
+    "remote_submission_state": "MAY_HAVE_BEEN_SENT",
+    "identity_verified": false,
+    "request_raw_sha256": "7243fc1f9b99cc0d9064185fb775b1f9d9b4fbeb430fd045979cf53b8ef26646",
+    "request_updated_utc": "2026-11-07T23:52:51.428244+00:00",
+    "request_bytes_unchanged_from_prior_review": true,
+    "owner_ledger_raw_sha256": "2451e57c9255929c5c074227bcac05b4f0669100a0cf865b5a4734a50afdbf57",
+    "owner_ledger_updated_utc": "2026-11-07T23:52:51.470503+00:00",
+    "local_fit_states": {
+      "RESERVED": 20,
+      "UNSTARTED": 140
+    },
+    "verified_completed_fits": 0,
+    "actual_remote_completed_fits": null,
+    "actual_remote_optimizer_updates": null,
+    "remote_stop_proven": false
+  },
+  "effects": {
+    "provider_get_calls": 0,
+    "provider_other_calls": 0,
+    "owner_budget_changes": 0,
+    "ledger_writes": 0,
+    "automations_created": 0,
+    "new_candidate_owner_actions": 0
+  },
+  "limits": [
+    "The 47/170 value is a dated progress observation, not final qualification or a fresh 47-key cost reconciliation.",
+    "Registered-index failed=0 does not erase the historical original-B full-shape failure.",
+    "Local states and zero verified completion credit do not establish zero remote execution.",
+    "The independent new candidate adds no completion credit to legacy campaigns."
+  ]
+}

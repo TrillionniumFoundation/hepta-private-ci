@@ -1,0 +1,140 @@
+{
+  "schema": "hcsn-framework-campaign-readonly-audit-v1",
+  "scope": "read-only host inspection; no install, training, retries, process cancellation or lock mutation",
+  "observed_progress": {
+    "schema": "hcsn-gated-cuda-campaign-v2",
+    "status": "waiting_for_pinned_runtime",
+    "started_utc": "2026-11-05T17:59:19.201114+00:00",
+    "pid": 357002,
+    "stages": [],
+    "completed_cuda_runs": 0,
+    "requested_cuda_runs": 170,
+    "global_qualification": "open",
+    "source_branch_ci_not_claimed": true,
+    "no_automatic_training_retries": true,
+    "budget_change_permitted": false,
+    "physical_energy_missing_is_not_zero": true,
+    "updated_utc": "2026-11-06T07:35:34.994482+00:00",
+    "disk_free_bytes": 22460559360,
+    "control_filesystem_free_bytes": 39964336128
+  },
+  "progress_sha256": "bf50e3d2d3579e04b017029fb3f4da8c4ef4cbeb2d519c44063e2a58e791ef1b",
+  "campaign": {
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "state": "running",
+    "systemd_main_pid": 356991,
+    "campaign_pid": 357002
+  },
+  "source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "evidence_branch_head": "9e690be8963d326b87d301993b43adbe116e0ff0",
+  "ci": {
+    "run_id": 42078258351,
+    "head_sha": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "status": "completed",
+    "conclusion": "success",
+    "updated_at": "2026-11-05T23:14:10Z"
+  },
+  "dependencies": {
+    "torch": {
+      "job_id": "1a1aca78192-fc05-562f",
+      "state": "failed",
+      "completed_bytes": 3918339031,
+      "total_bytes": 3918339031,
+      "artifact_count": 25,
+      "commands": [],
+      "error": "RuntimeError('wheel METADATA identity is ambiguous')",
+      "finished_at": "2026-11-05T19:11:25.818954+00:00",
+      "status_sha256": "9c67cd2611b26e7ce3fc469bd5bb0878e7eb70b47d56e39dff2733486bc01f94",
+      "script_sha256": "a01f4a9bed417e97fe9446b670d5ba40ca4fecda3cf6910d860f8258588f3da3",
+      "ready_marker_exists": false
+    },
+    "mamba": {
+      "download_job_id": "1a1aca7f6ba-fc05-5631",
+      "download_state": "succeeded",
+      "waiter_job_id": "1a1acadd69c-fc05-5654",
+      "waiter_state": "blocked_dependency_terminal",
+      "automatic_install_attempts": 0,
+      "error": "RuntimeError('torch owned job did not succeed; no automatic retry or installation')",
+      "status_sha256": "8f355bbb5bbf09751757ea48ae7e5e7b94b675089a598bf4971327b2c1ce1627",
+      "ready_marker_exists": false
+    }
+  },
+  "wheel_and_lock_snapshot": [
+    {
+      "wheelhouse_exists": true
+    },
+    {
+      "filename": "setuptools-78.1.0-py3-none-any.whl",
+      "size": 1256108,
+      "all_metadata_count": 17,
+      "top_level_metadata": [
+        "setuptools-78.1.0.dist-info/METADATA"
+      ],
+      "metadata_names": [
+        "setuptools-78.1.0.dist-info/METADATA",
+        "setuptools/_vendor/autocommand-2.2.2.dist-info/METADATA",
+        "setuptools/_vendor/backports.tarfile-1.2.0.dist-info/METADATA",
+        "setuptools/_vendor/importlib_metadata-8.0.0.dist-info/METADATA",
+        "setuptools/_vendor/inflect-7.3.1.dist-info/METADATA",
+        "setuptools/_vendor/jaraco.collections-5.1.0.dist-info/METADATA",
+        "setuptools/_vendor/jaraco.context-5.3.0.dist-info/METADATA",
+        "setuptools/_vendor/jaraco.functools-4.0.1.dist-info/METADATA",
+        "setuptools/_vendor/jaraco.text-3.12.1.dist-info/METADATA",
+        "setuptools/_vendor/more_itertools-10.3.0.dist-info/METADATA",
+        "setuptools/_vendor/packaging-24.2.dist-info/METADATA",
+        "setuptools/_vendor/platformdirs-4.2.2.dist-info/METADATA",
+        "setuptools/_vendor/tomli-2.0.1.dist-info/METADATA",
+        "setuptools/_vendor/typeguard-4.3.0.dist-info/METADATA",
+        "setuptools/_vendor/typing_extensions-4.12.2.dist-info/METADATA",
+        "setuptools/_vendor/wheel-0.45.1.dist-info/METADATA",
+        "setuptools/_vendor/zipp-3.19.2.dist-info/METADATA"
+      ]
+    },
+    {
+      "lock_name": "campaign.lock",
+      "inode": 56237231,
+      "kernel_locks": [
+        "34: FLOCK  ADVISORY  WRITE 357002 08:13:56237231 0 EOF"
+      ]
+    },
+    {
+      "lock_name": "install.lock",
+      "inode": 56229910,
+      "kernel_locks": []
+    },
+    {
+      "lock_name": "mamba-offline-waiter.lock",
+      "inode": 56237159,
+      "kernel_locks": []
+    },
+    {
+      "lock_name": "mamba-download.lock",
+      "inode": 56230273,
+      "kernel_locks": []
+    },
+    {
+      "lock_name": "storage-observer.lock",
+      "inode": 56237792,
+      "kernel_locks": []
+    }
+  ],
+  "diagnosis": "The installer selects every ZIP path ending in .dist-info/METADATA, so the setuptools wheel's 16 vendored records are misclassified as additional distribution metadata. Exactly one root-level METADATA is present. No pip installation was attempted.",
+  "safe_next_step": "Qualify a separate offline recovery installer using the unchanged downloaded wheel manifest/hashes and root-level matching dist-info metadata, require durable failed predecessor receipts and exclusive install.lock, preserve all old source/status/receipts, then run once. The existing Mamba waiter is terminal and permanently bound to old Torch job/script, so do not restart it unchanged. Use a distinct bounded successor with exact identities. The existing campaign can continue when unchanged manifest READY receipts exist; do not launch another campaign.",
+  "research_constraints": {
+    "runs": 170,
+    "model_count": 17,
+    "task_count": 2,
+    "seeds": 5,
+    "updates": 400,
+    "batch": 64,
+    "length": 64,
+    "hidden": 64,
+    "no_budget_reduction": true,
+    "no_model_retry": true,
+    "physical_gpu_energy_missing_must_remain_null": true
+  },
+  "audit_jobs": [
+    "1a1afc9c522-fc05-6b9f",
+    "1a1afcbfe71-fc05-6bb2"
+  ]
+}

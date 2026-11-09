@@ -26,6 +26,7 @@ pub(crate) fn request() -> LearningIterationRequestV1 {
         source_run_id: id("run:source"),
         completed_task_receipt: digest("task-receipt"),
         selected_artifact_digest: digest("base"),
+        evaluation_profile: digest("evaluation-profile"),
         selected_bundle: CellCompatibilityBundleV1 {
             artifact_id: id("artifact:base"),
             generation: Generation::new(1).fixture("generation"),

@@ -298,6 +298,15 @@ impl Fixture {
         stem: &str,
         config: CellGenerationConfigV2,
     ) -> CellGenerationJournalV2<FileAnchorWitnessStore> {
+        self.journal_with_mapped_witness(stem, config, |witness| witness)
+    }
+
+    pub(super) fn journal_with_mapped_witness<W: AnchorWitnessStore>(
+        &self,
+        stem: &str,
+        config: CellGenerationConfigV2,
+        map: impl FnOnce(FileAnchorWitnessStore) -> W,
+    ) -> CellGenerationJournalV2<W> {
         let open = |name: &str| {
             checked(
                 OpenOptions::new()
@@ -319,7 +328,7 @@ impl Fixture {
         ));
         checked(CellGenerationJournalV2::open(
             open(&format!("{stem}-journal")),
-            witness,
+            map(witness),
             config,
             /*max_records*/ 256,
         ))

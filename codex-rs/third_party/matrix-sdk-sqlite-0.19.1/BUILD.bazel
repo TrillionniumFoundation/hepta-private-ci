@@ -1,0 +1,35 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+filegroup(
+    name = "package-files",
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "BUILD.bazel",
+            "target/**",
+        ],
+    ),
+    visibility = ["//visibility:public"],
+)
+
+# Match the stores selected by matrix-sdk/e2e-encryption and matrix-sdk/sqlite.
+# Upstream dev-tests are not emitted into the ordinary Bazel //... graph.
+rust_library(
+    name = "matrix-sdk-sqlite",
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = glob(["migrations/**/*.sql"]),
+    crate_features = [
+        "crypto-store",
+        "event-cache-store",
+        "media-store",
+        "state-store",
+    ],
+    crate_name = "matrix_sdk_sqlite",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    proc_macro_deps = all_crate_deps(proc_macro = True),
+    version = "0.19.1",
+    visibility = ["//visibility:public"],
+    deps = all_crate_deps(),
+)

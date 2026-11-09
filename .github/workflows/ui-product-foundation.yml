@@ -25,6 +25,7 @@ on:
       - scripts/just-shell.py
       - scripts/hepta_ci_dependencies.py
       - scripts/hepta_ci_exec.py
+      - scripts/hepta_ci_junit.py
       - scripts/hepta_ci_git_objects.py
       - scripts/hepta_ci_module_paths.py
       - scripts/test_hepta_ci_module_path_scopes.py
@@ -146,6 +147,176 @@ jobs:
           node --test apps/hepta-control-ui/test/font-diagnostic-browser-identity.test.mjs
           node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs
           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
+      - id: sdk_composition_tests
+        name: Execute the explicitly enabled SDK composition regressions
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+          SDK_EVIDENCE_DIR: ${{ runner.temp }}/ui-sdk-composition-${{ matrix.lane }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/ui-sdk-target-${{ matrix.lane }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$SDK_EVIDENCE_DIR"
+          export TESTED_SHA="$(git rev-parse HEAD)"
+          # These are the pkg-config probes and Linux link libraries of the
+          # pinned ui-only SDK, without the unrelated native-host dependencies.
+          sudo apt-get update 2>&1 | tee "$SDK_EVIDENCE_DIR/system-preparation.log"
+          sudo apt-get install -y pkg-config libwayland-dev libxkbcommon-dev libx11-dev libxcursor-dev libasound2-dev libpulse-dev libglx-dev libssl-dev 2>&1 | tee -a "$SDK_EVIDENCE_DIR/system-preparation.log"
+          dpkg-query -W pkg-config libwayland-dev libxkbcommon-dev libx11-dev libxcursor-dev libasound2-dev libpulse-dev libglx-dev libssl-dev > "$SDK_EVIDENCE_DIR/system-inputs.log"
+          # The ui-only build requires the hash-pinned desktop fonts. Keep those
+          # generated inputs in a separate exact-source worktree, with the full
+          # repository layout required by the existing Cargo path patches.
+          git worktree add --detach "$SDK_EVIDENCE_DIR/source" "$TESTED_SHA"
+          test -z "$(git -C "$SDK_EVIDENCE_DIR/source" status --porcelain --untracked-files=all)"
+          python3 apps/hepta-control-ui/tools/prepare-fonts.py --cache "$SDK_EVIDENCE_DIR/font-cache" --install "$SDK_EVIDENCE_DIR/source/apps/hepta-control-ui/rust/robrix-ui/resources/fonts" > "$SDK_EVIDENCE_DIR/fonts.json"
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          directory = Path(os.environ["SDK_EVIDENCE_DIR"])
+          source = directory / "source"
+          def git(*args):
+              return subprocess.check_output(["git", "-C", str(source), *args], text=True).strip()
+          if git("rev-parse", "HEAD") != os.environ["TESTED_SHA"]:
+              raise SystemExit("staged checkout differs from the tested source")
+          subprocess.run(["git", "-C", str(source), "diff", "--exit-code", "HEAD", "--"], check=True)
+          fonts = json.loads((directory / "fonts.json").read_text())
+          expected = sorted("apps/hepta-control-ui/rust/robrix-ui/resources/fonts/" + asset["file"] for asset in fonts["assets"])
+          untracked = sorted(git("ls-files", "--others", "--exclude-standard").splitlines())
+          if untracked != expected:
+              raise SystemExit("unexpected source staging inputs")
+          before = {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}"), "untracked_resource_files": untracked, "font_manifest_sha256": fonts["manifestSha256"]}
+          with (directory / "staged-source-before.json").open("x") as stream:
+              json.dump(before, stream, indent=2)
+              stream.write("\n")
+          with (directory / "nextest.toml").open("x") as stream:
+              stream.write("[store]\ndir = " + json.dumps(str(directory / "nextest-store")) + "\n[profile.local.junit]\npath = \"junit.xml\"\nreport-name = \"hepta-ui-sdk-composition\"\n")
+          PY
+          python3 scripts/hepta_ci_exec.py --output "$SDK_EVIDENCE_DIR/execution.json" --minimum-tests 7 --timeout-seconds 1200 -- just test --locked --manifest-path "$SDK_EVIDENCE_DIR/source/apps/hepta-control-ui/rust/Cargo.toml" -p hepta-robrix-ui --no-default-features --features ui --lib -E 'test(composer_transaction::tests::)' --tool-config-file "hepta-ui-sdk:$SDK_EVIDENCE_DIR/nextest.toml" --profile local --retries 0 --no-tests fail
+      - name: Require all seven SDK cases in the fresh native report
+        if: always() && steps.sdk_composition_tests.outcome != 'skipped'
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+          SDK_EVIDENCE_DIR: ${{ runner.temp }}/ui-sdk-composition-${{ matrix.lane }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from datetime import datetime, timedelta
+          import hashlib, json, math, os, runpy, stat, subprocess, sys, uuid
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          sys.path.insert(0, "scripts")
+          from hepta_ci_junit import NoDoctypeTreeBuilder
+          directory = Path(os.environ["SDK_EVIDENCE_DIR"])
+          source = directory / "source"
+          required = {"robrix::composer_transaction::tests::" + name for name in (
+              "rejected_selection_replacement_restores_the_exact_sdk_editor_state",
+              "stale_room_cannot_restore_another_rooms_selection_or_undo",
+              "actual_sdk_preedit_preserves_committed_draft_title_and_checkpoint_until_commit",
+              "actual_sdk_cancel_preserves_committed_draft_after_ignored_previews",
+              "actual_sdk_full_state_same_text_commit_reaches_owner_without_changed_action",
+              "actual_sdk_full_state_cancel_does_not_commit_the_ignored_preview",
+              "actual_sdk_full_state_commit_retains_the_original_room_guard",
+          )}
+          result = {"status": "rejected", "scope": "Seven native SDK regressions with exact source and resource inputs; not browser or research qualification"}
+          def require(value, message):
+              if not value:
+                  raise ValueError(message)
+          def git(*args):
+              return subprocess.check_output(["git", "-C", str(source), *args], text=True).strip()
+          def date(value):
+              stamp = datetime.fromisoformat(value)
+              require(stamp.tzinfo is not None, "timestamp has no timezone")
+              return stamp
+          try:
+              raw_execution = (directory / "execution.json").read_bytes()
+              receipt = json.loads(raw_execution)
+              before = json.loads((directory / "staged-source-before.json").read_text())
+              subprocess.run(["git", "-C", str(source), "diff", "--exit-code", "HEAD", "--"], check=True)
+              fonts = runpy.run_path("apps/hepta-control-ui/tools/prepare-fonts.py")
+              manifest, font_identity = fonts["manifest"]()
+              expected_resources = sorted("apps/hepta-control-ui/rust/robrix-ui/resources/fonts/" + asset["file"] for asset in manifest["assets"])
+              after = {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}"), "untracked_resource_files": sorted(git("ls-files", "--others", "--exclude-standard").splitlines()), "font_manifest_sha256": font_identity}
+              result["staged_source_after"] = after
+              require(after == before and after["untracked_resource_files"] == expected_resources, "staged source or resource inventory changed")
+              for asset in manifest["assets"]:
+                  resource = source / "apps/hepta-control-ui/rust/robrix-ui/resources/fonts" / asset["file"]
+                  require(not resource.is_symlink(), "font input became a symlink")
+                  fonts["check"](resource.read_bytes(), asset, asset["file"])
+              require(receipt["before"] == receipt["after"] and receipt["before"]["dirty"] is False, "original source changed")
+              require(after["commit"] == receipt["tested_sha"] == receipt["before"]["commit"] and after["tree"] == receipt["before"]["tree"], "staging differs from the recorded source")
+              for field, variable in (("source_sha", "SOURCE_SHA"), ("base_sha", "BASE_SHA"), ("lane", "HEPTA_CI_LANE")):
+                  require(receipt[field] == os.environ[variable], "execution lane identity differs")
+              expected_command = ["just", "test", "--locked", "--manifest-path", str(source / "apps/hepta-control-ui/rust/Cargo.toml"), "-p", "hepta-robrix-ui", "--no-default-features", "--features", "ui", "--lib", "-E", "test(composer_transaction::tests::)", "--tool-config-file", "hepta-ui-sdk:" + str(directory / "nextest.toml"), "--profile", "local", "--retries", "0", "--no-tests", "fail"]
+              require(receipt["command"] == expected_command, "SDK command or feature scope differs")
+              require(receipt["status"] == "passed" and all(receipt[field] == 0 for field in ("exit_code", "command_exit_code", "returncode", "observed_failed_tests")), "native execution did not pass")
+              require(receipt["timed_out"] is False and receipt["output_limit_exceeded"] is False and receipt["observed_passed_tests"] == 7, "exact seven passing cases were not observed")
+              log_name = receipt["log_file"]
+              require(Path(log_name).name == log_name, "execution log is not a sibling file")
+              log = (directory / log_name).read_bytes()
+              require(len(log) == receipt["log_bytes"] and hashlib.sha256(log).hexdigest() == receipt["log_sha256"], "original execution log changed")
+              started, finished = date(receipt["started_at"]), date(receipt["finished_at"])
+              require(started <= finished, "invalid execution interval")
+              junit = directory / "nextest-store/local/junit.xml"
+              require(not junit.is_symlink(), "JUnit must be a fresh regular file")
+              with junit.open("rb") as stream:
+                  state_before = os.fstat(stream.fileno())
+                  raw = stream.read(8 * 1024 * 1024 + 1)
+                  state_after = os.fstat(stream.fileno())
+              require(len(raw) <= 8 * 1024 * 1024 and stat.S_ISREG(state_before.st_mode), "JUnit exceeded its bound")
+              require(all(getattr(state_before, field) == getattr(state_after, field) for field in ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")), "JUnit changed while reading")
+              require(started.timestamp() <= state_after.st_mtime <= finished.timestamp(), "JUnit is outside this execution interval")
+              root = ET.fromstring(raw, parser=ET.XMLParser(target=NoDoctypeTreeBuilder()))
+              require(root.tag == "testsuites" and root.get("name") == "hepta-ui-sdk-composition", "unexpected SDK report")
+              run_uuid = str(uuid.UUID(root.attrib["uuid"]))
+              stamp = date(root.attrib["timestamp"])
+              require(started - timedelta(milliseconds=1) <= stamp <= finished, "stale JUnit timestamp")
+              suites = root.findall("testsuite")
+              require(len(suites) == 1 and suites[0].get("name") == "hepta-robrix-ui", "foreign library suite")
+              cases = suites[0].findall("testcase")
+              require(len(root.findall(".//testcase")) == len(cases), "nested or foreign test cases")
+              for aggregate in (root, suites[0]):
+                  require(aggregate.get("tests") == str(len(cases)) and aggregate.get("failures") == aggregate.get("errors") == "0", "unsuccessful or inconsistent aggregate")
+              names, passed = set(), set()
+              for case in cases:
+                  name = case.get("name")
+                  require(name and name not in names and case.get("classname") == "hepta-robrix-ui", "duplicate or foreign test case")
+                  names.add(name)
+                  require(all(child.tag in {"skipped", "system-out", "system-err", "properties"} for child in case), "failed or retried test case")
+                  if case.find("skipped") is not None:
+                      require(name not in required, "required SDK case was skipped")
+                      continue
+                  require(name in required, "unexpected unfiltered passing case")
+                  elapsed = float(case.attrib["time"])
+                  require(math.isfinite(elapsed) and elapsed >= 0 and stamp <= date(case.attrib["timestamp"]) <= finished, "invalid native case timing")
+                  passed.add(name)
+              require(passed == required, "required SDK cases are missing or did not execute")
+              result.update(status="passed", source_sha=receipt["source_sha"], tested_sha=receipt["tested_sha"], lane=receipt["lane"], source_tree=after["tree"], execution_sha256=hashlib.sha256(raw_execution).hexdigest(), junit_sha256=hashlib.sha256(raw).hexdigest(), junit_bytes=len(raw), run_uuid=run_uuid, passed_tests=7, required_passed_tests=sorted(passed))
+          except (OSError, ValueError, KeyError, TypeError, ET.ParseError, subprocess.CalledProcessError) as error:
+              result["error"] = str(error)
+          with (directory / "junit-gate.json").open("x") as stream:
+              json.dump(result, stream, indent=2, sort_keys=True)
+              stream.write("\n")
+          print(json.dumps(result, sort_keys=True))
+          raise SystemExit(0 if result["status"] == "passed" else 1)
+          PY
+      - name: Preserve exact SDK regression evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-sdk-composition-${{ matrix.lane }}-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/ui-sdk-composition-${{ matrix.lane }}/*.json
+            ${{ runner.temp }}/ui-sdk-composition-${{ matrix.lane }}/*.log
+            ${{ runner.temp }}/ui-sdk-composition-${{ matrix.lane }}/nextest.toml
+            ${{ runner.temp }}/ui-sdk-composition-${{ matrix.lane }}/nextest-store/local/junit.xml
+          if-no-files-found: warn
       - id: default_build
         name: Build canonical strict-CSP no-threads artifact
         run: |

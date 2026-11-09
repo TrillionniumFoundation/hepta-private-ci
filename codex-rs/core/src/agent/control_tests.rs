@@ -67,6 +67,12 @@ use codex_thread_store::LocalThreadStoreConfig;
 use codex_thread_store::PersistContext;
 use codex_thread_store::ThreadStore;
 use codex_utils_path_uri::PathUri;
+use core_test_support::responses::ev_assistant_message;
+use core_test_support::responses::ev_completed;
+use core_test_support::responses::ev_response_created;
+use core_test_support::responses::mount_sse_once;
+use core_test_support::responses::sse;
+use core_test_support::responses::start_mock_server;
 use core_test_support::responses::strip_response_item_ids;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
@@ -3651,7 +3657,19 @@ async fn resume_agent_from_rollout_reads_archived_rollout_path() {
 
 #[tokio::test]
 async fn resume_agent_from_paginated_rollout_loads_model_context() {
-    let harness = AgentControlHarness::new().await;
+    let server = start_mock_server().await;
+    let request_log = mount_sse_once(
+        &server,
+        sse(vec![
+            ev_response_created("resp-paginated-resume-fixture"),
+            ev_assistant_message("msg-paginated-resume-fixture", "resume fixture ready"),
+            ev_completed("resp-paginated-resume-fixture"),
+        ]),
+    )
+    .await;
+    let (home, mut config) = test_config().await;
+    config.model_provider.base_url = Some(format!("{}/v1", server.uri()));
+    let harness = AgentControlHarness::new_with_config(home, config).await;
     let (parent_thread_id, parent_thread) = harness.start_paginated_thread().await;
     let child_thread_id = harness
         .spawn_anonymous_child(
@@ -3671,6 +3689,29 @@ async fn resume_agent_from_paginated_rollout_loads_model_context() {
         child_thread.config_snapshot().await.history_mode,
         ThreadHistoryMode::Paginated
     );
+    // This fixture tests paginated persistence and resume. Finish the initial prompt
+    // before persisting it instead of racing an unrelated provider turn's abort.
+    timeout(Duration::from_secs(10), async {
+        let completed_turn_id = loop {
+            let event = child_thread.next_event().await.expect("child event");
+            if let EventMsg::TurnComplete(event) = event.msg {
+                assert_eq!(event.error, None);
+                assert_eq!(
+                    event.last_agent_message.as_deref(),
+                    Some("resume fixture ready")
+                );
+                break event.turn_id;
+            }
+        };
+        if let Some(completion) =
+            child_thread.pending_normal_turn_finish_completion(&completed_turn_id)
+        {
+            completion.await;
+        }
+    })
+    .await
+    .expect("initial child turn and its finish owner should complete before persisting context");
+    assert_eq!(request_log.requests().len(), 1);
     persist_thread_for_tree_resume(&child_thread, "persist before resume").await;
     let _ = harness
         .control

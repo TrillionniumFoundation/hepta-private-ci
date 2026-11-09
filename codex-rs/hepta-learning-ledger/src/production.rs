@@ -166,6 +166,24 @@ pub struct LedgerWriter {
 }
 
 impl LedgerWriter {
+    /// Physical custody observation for the existing qualification surface.
+    /// Both original file locks remain held; no mutable backend or file handle
+    /// escapes. Segmented backends are explicitly unsupported by this oracle.
+    #[cfg(feature = "qualification-legacy-write")]
+    #[doc(hidden)]
+    pub fn retained_bytes_for_qualification(
+        &mut self,
+    ) -> Result<[Vec<u8>; 2], ProductionLedgerError> {
+        let LedgerBackend::Durable(ledger) = &mut self.backend else {
+            return Err(ProductionLedgerError::Binding(
+                "durable qualification byte observation",
+            ));
+        };
+        let ledger = ledger.retained_bytes_for_qualification()?;
+        let witness = self.witness.retained_bytes_for_qualification()?;
+        Ok([ledger, witness])
+    }
+
     pub fn from_durable(
         ledger: DurableLedger,
         witness: LedgerWitnessStore,

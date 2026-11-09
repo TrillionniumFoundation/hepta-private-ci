@@ -959,5 +959,10 @@ fn create_config_toml(
     if matches!(mode, ImagegenTestMode::CodeModeOnly) {
         config = config.enable_feature(Feature::CodeModeOnly);
     }
+    #[cfg(windows)]
+    {
+        // Local image fixtures use the supported Windows filesystem isolation owner.
+        config = config.with_extra_config("[windows]\nsandbox = \"elevated\"");
+    }
     config.write(codex_home)
 }

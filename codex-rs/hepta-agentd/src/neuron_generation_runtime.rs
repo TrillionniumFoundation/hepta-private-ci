@@ -33,6 +33,14 @@ use crate::neuron_generation_service::GenerationRuntimeOwner;
 use crate::state::neuron_generation::NeuronGenerationProjection;
 
 #[cfg(unix)]
+#[path = "neuron_generation_learning_readback.rs"]
+mod learning_readback;
+#[cfg(unix)]
+pub use learning_readback::AgentdGenerationLearningUseReadbackV1;
+#[cfg(all(test, unix))]
+pub(crate) use learning_readback::test_support::verify_original_bytes as verify_learning_use_readback_test_bytes;
+
+#[cfg(unix)]
 #[path = "neuron_generation_learning_runtime.rs"]
 mod learning;
 #[cfg(unix)]
@@ -74,11 +82,18 @@ pub(crate) enum GenerationCommand {
         response: Response<()>,
     },
     Snapshot(Response<CellRuntimeSnapshotV2>),
+    #[cfg(test)]
+    RetainedBytes(Response<Vec<u8>>),
     ObserveGeneration(Response<CellGenerationObservationV1>),
     #[cfg(unix)]
     LearningRead {
         request: Box<GenerationLearningReadV1>,
         response: Response<Result<LearningIterationObservationV1, AgentdError>>,
+    },
+    #[cfg(unix)]
+    LearningReadback {
+        request: Box<GenerationLearningReadV1>,
+        response: Response<Result<AgentdGenerationLearningUseReadbackV1, AgentdError>>,
     },
     PendingRequest(Response<Option<CellGenerationRequestV2>>),
     PendingOutput(Response<Option<CellOutputChunkV2>>),
@@ -108,6 +123,13 @@ pub struct NeuronGenerationRuntimeHandleV2 {
 }
 
 impl NeuronGenerationRuntimeHandleV2 {
+    // Test custody observation shares the real service queue and owner guards.
+    // It is not a transport method or a product-facing readback capability.
+    #[cfg(test)]
+    pub(crate) async fn retained_bytes_for_test(&self) -> Result<Vec<u8>, CellGenerationErrorV2> {
+        self.call(GenerationCommand::RetainedBytes).await
+    }
+
     pub async fn step(
         &self,
         request: CellGenerationRequestV2,

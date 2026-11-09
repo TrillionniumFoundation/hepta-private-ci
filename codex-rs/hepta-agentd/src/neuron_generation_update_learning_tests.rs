@@ -73,6 +73,7 @@ pub(crate) fn decision(
         source_run_id: StableId::new(&scope.run_id)?,
         completed_task_receipt: d("fixture-completed-task"),
         selected_artifact_digest: baseline.components.base,
+        evaluation_profile: d("evaluation"),
         selected_bundle: baseline,
         envelope: IterationEnvelopeV1 {
             envelope_id: StableId::new("learning-envelope")?,

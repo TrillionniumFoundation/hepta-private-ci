@@ -28,6 +28,7 @@ type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 struct Serving {
     client: AgentdClient,
+    observation: crate::NeuronGenerationRuntimeHandleV2,
     tasks: RuntimeTasks,
     cancellation: CancellationToken,
     server: tokio::task::JoinHandle<Result<(), crate::AgentdError>>,
@@ -43,7 +44,7 @@ impl Serving {
             /*capacity*/ 4,
         )?;
         let bootstrap = bootstrap.with_control_endpoint()?;
-        drop(handle); // The process caller need not retain a second owner handle.
+        // Keep only a private test observation channel; all actions below use the real socket client.
         let (mut tasks, lifetime) = host();
         spawn_neuron_generation_service(
             &mut tasks,
@@ -67,6 +68,7 @@ impl Serving {
         )?;
         Ok(Self {
             client,
+            observation: handle,
             tasks,
             cancellation,
             server,
@@ -175,13 +177,15 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
         serving.client.generation(acknowledgement.clone()).await?,
         Response::Acknowledged {}
     );
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let durable = fs::read(&journal_path)?;
+    let durable = serving.observation.retained_bytes_for_test().await?;
     assert_eq!(
         serving.client.generation(acknowledgement.clone()).await?,
         Response::Acknowledged {}
     );
-    assert_eq!(fs::read(&journal_path)?, durable);
+    assert_eq!(
+        serving.observation.retained_bytes_for_test().await?,
+        durable
+    );
     assert!(status(&serving.client).await?.drained);
 
     fixture.ticks.store(20_000, Ordering::SeqCst);
@@ -195,7 +199,10 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
         reopened.client.generation(acknowledgement).await?,
         Response::Acknowledged {}
     );
-    assert_eq!(fs::read(&journal_path)?, durable);
+    assert_eq!(
+        reopened.observation.retained_bytes_for_test().await?,
+        durable
+    );
     let Response::Cost(cost) = reopened.client.generation(Request::Cost {}).await? else {
         return Err(std::io::Error::other("expected task cost").into());
     };
@@ -216,15 +223,17 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
     let fixture = Fixture::new().await;
     let serving = Serving::start(&fixture).await?;
     let initial = status(&serving.client).await?;
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let pristine = fs::read(&journal_path)?;
+    let pristine = serving.observation.retained_bytes_for_test().await?;
     let mut oversized = step(&fixture, &initial, "oversized");
     let Request::Step { request } = &mut oversized else {
         unreachable!()
     };
     request.input = vec![1; MAX_GENERATION_CONTROL_INPUT_BYTES + 1];
     assert!(serving.client.generation(oversized).await.is_err());
-    assert_eq!(fs::read(&journal_path)?, pristine);
+    assert_eq!(
+        serving.observation.retained_bytes_for_test().await?,
+        pristine
+    );
     let stale_client = AgentdClient::new(
         fixture.directory.path().join("generation.ctl"),
         fixture.identity.agent_id.clone(),
@@ -236,10 +245,13 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
             .await
             .is_err()
     );
-    assert_eq!(fs::read(&journal_path)?, pristine);
+    assert_eq!(
+        serving.observation.retained_bytes_for_test().await?,
+        pristine
+    );
     let original = step(&fixture, &initial, "same-client-key");
     serving.client.generation(original.clone()).await?;
-    let committed = fs::read(&journal_path)?;
+    let committed = serving.observation.retained_bytes_for_test().await?;
     let mut changed = original;
     let Request::Step { request } = &mut changed else {
         unreachable!()
@@ -260,7 +272,10 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
     ] {
         assert!(serving.client.generation(request).await.is_err());
     }
-    assert_eq!(fs::read(&journal_path)?, committed);
+    assert_eq!(
+        serving.observation.retained_bytes_for_test().await?,
+        committed
+    );
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
     serving.finish().await
 }
@@ -429,10 +444,7 @@ async fn typed_operation_with_same_derived_id_cannot_impersonate_control_intent(
             .await
             .is_err()
     );
-    assert_eq!(
-        fs::read(fixture.directory.path().join("generation-journal"))?,
-        before
-    );
+    assert_eq!(serving.observation.retained_bytes_for_test().await?, before);
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
     serving.finish().await
 }
@@ -508,7 +520,7 @@ async fn pending_typed_operation_with_same_derived_id_rejects_control_intent_wit
             .await
             .is_err()
     );
-    assert_eq!(fs::read(&journal_path)?, before);
+    assert_eq!(serving.observation.retained_bytes_for_test().await?, before);
     assert_eq!(
         status(&serving.client).await?.pending,
         Some(pending.clone())

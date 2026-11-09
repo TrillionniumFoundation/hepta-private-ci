@@ -1,6 +1,10 @@
 //! Real native owner and Memory fixtures; locally scoped test keys are not
 //! production training or adoption evidence.
 
+#[cfg(unix)]
+#[path = "terminal_learning_job_tests.rs"]
+mod durable_tests;
+
 use std::future::Future;
 use std::future::poll_fn;
 use std::sync::Arc;

@@ -939,7 +939,19 @@ async fn run_review_on_session(
             had_prior_review_context: had_prior_review_context(&prompt_mode),
         });
     if send_followup_reminder {
-        append_guardian_followup_reminder(review_session).await;
+        let append_reminder = async {
+            // TurnComplete can arrive before its finish owner releases the idle-injection fence.
+            if let Some(completion) = review_session.session.pending_admission_fence_completion() {
+                completion.await;
+            }
+            append_guardian_followup_reminder(review_session).await;
+        };
+        if let Err(outcome) =
+            run_before_review_deadline(deadline, params.external_cancel.as_ref(), append_reminder)
+                .await
+        {
+            return (outcome, false, analytics_result);
+        }
     }
     let prompt_items = run_before_review_deadline(
         deadline,
@@ -2227,7 +2239,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn run_review_on_reused_session_waits_for_submitted_turn() {
+    async fn run_review_on_reused_session_waits_for_finish_before_followup_reminder() {
         let (review_session, tx_event, rx_sub) = test_review_session().await;
         {
             let mut state = review_session.state.lock().await;
@@ -2238,17 +2250,83 @@ mod tests {
             });
         }
         let params = test_review_params().await;
+        let session = Arc::clone(&review_session.session);
+        let finish_identity = Arc::new(());
+        let finish_completion = crate::state::StartTransitionCompletion::new();
+        session
+            .pending_task_terminalization_completions
+            .lock()
+            .expect("terminalizer registry")
+            .push((
+                Arc::clone(&finish_identity),
+                Arc::clone(&finish_completion),
+                crate::state::TaskTerminalizationKind::Finish,
+                None,
+                None,
+                None,
+                "prior-turn".to_string(),
+            ));
 
+        let deadline = tokio::time::Instant::now() + Duration::from_secs(1);
         let review = tokio::spawn(async move {
             run_review_on_session(
                 &review_session,
                 &params,
                 GuardianReviewSessionKind::TrunkReused,
-                tokio::time::Instant::now() + Duration::from_secs(1),
+                deadline,
             )
             .await
         });
+        // The fixture and registry own two references. An observer must hold a third
+        // before the test releases the fence, so a delayed first poll cannot hide a lost reminder.
+        tokio::time::timeout_at(deadline, async {
+            while Arc::strong_count(&finish_completion) < 3 {
+                tokio::task::yield_now().await;
+            }
+        })
+        .await
+        .expect("reused review should observe the prior finish fence");
+        assert_eq!(Arc::strong_count(&finish_completion), 3);
+        assert!(rx_sub.is_empty());
+        assert!(session.has_pending_task_terminalization());
+        session
+            .pending_task_terminalization_completions
+            .lock()
+            .expect("terminalizer registry")
+            .retain(|(identity, ..)| !Arc::ptr_eq(identity, &finish_identity));
+        finish_completion.complete();
         let submission = rx_sub.recv().await.expect("guardian submission");
+        let history = session.clone_history().await;
+        let recorded_items = history.raw_items().collect::<Vec<_>>();
+        assert_eq!(
+            recorded_items.len(),
+            1,
+            "the reminder must be recorded exactly once"
+        );
+        let recorded = recorded_items[0];
+        let reminder_id = recorded.id().cloned().expect("durable reminder item ID");
+        assert!(
+            reminder_id
+                .as_str()
+                .strip_prefix("msg_")
+                .is_some_and(|suffix| !suffix.is_empty())
+        );
+        // This fresh fixture's first idle injection uses its first internal turn.
+        assert_eq!(recorded.turn_id(), Some("auto-compact-0"));
+        let create_time = recorded
+            .executed_tool_call_metadata()
+            .and_then(|metadata| metadata.create_time.clone())
+            .expect("durable reminder creation time");
+        assert!(create_time.as_f64().is_some_and(|seconds| seconds > 0.0));
+
+        // History supplies these three generated fields. Compare the entire
+        // reminder, including its role, content kind and remaining metadata.
+        let mut reminder: ResponseItem =
+            ContextualUserFragment::into(GuardianFollowupReviewReminder);
+        reminder.set_id(Some(reminder_id));
+        reminder.set_turn_id_if_missing("auto-compact-0");
+        reminder.set_create_time_if_missing(create_time);
+        assert_eq!(recorded_items, vec![&reminder]);
         let id = submission.id;
         let Op::TurnInput { reply, .. } = submission.op else {
             panic!("expected turn-input submission");

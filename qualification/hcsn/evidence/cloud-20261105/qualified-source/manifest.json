@@ -1,0 +1,33 @@
+{
+  "source_commit": "14c8974bab7050518f86b76021e613303a6369e3",
+  "source_hashes_verified_against_git": true,
+  "interpreter": "work/hcsn-venv/bin/python",
+  "thread_env": {
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "evidence_directory": "qualification/hcsn/evidence/cloud-20261105/qualified-source",
+  "commands": [
+    "python -m qualification.hcsn.checks --require-torch --output <evidence>/tests.json",
+    "python -m qualification.hcsn.validate --output <evidence>/kernel.json",
+    "python -m qualification.hcsn.mechanisms --output <evidence>/mechanisms.json",
+    "python -m qualification.hcsn.benchmark --config qualification/hcsn/configs/smoke.json --output <evidence>/smoke.json",
+    "python -m qualification.hcsn.benchmark --config qualification/hcsn/configs/full.json --output <evidence>/full.json",
+    "python -m qualification.hcsn.audit_population --benchmark <evidence>/smoke.json --output <evidence>/population-audit.json"
+  ],
+  "receipts_sha256": {
+    "tests.json": "954aec86b2480a4b649e035c5dc3662f0c3843fabff9ab85f56f7e3b502f6639",
+    "switch-probes.json": "6b1f305ad3d96504ad3c0e412211425b746cf1f2679ae033982809731e8573cb",
+    "summary.json": "66ab1a3e1ebf56c2f1e00758f522ddef7f7c99fa308823c7629d407a4075c269",
+    "mechanisms.json": "6763e36b4ef137197d1c41f8906aa49f1ea78521904fe78a9545e6e9622982e6",
+    "kernel.json": "edba134b5d40993b8f29f5112e5f928e01e861b8ec0ea5f475f9dc5ad65ccc76",
+    "full.json": "c541998181684274cd579216c0dc7b24877b77cb526d073be01b4f81c086dc91",
+    "population-audit.json": "1278c4c6d42e09d42680e7d9d870753e6f71d1eb8a5f60567bcab6a1c53349a3",
+    "smoke.json": "f1b226881e21c7f4007ddbbcec80ac5b33f9a50589912096d0274db0b5540735"
+  },
+  "environment": "../environment.json",
+  "software": "../pip-freeze.txt",
+  "unavailability_exit_code": 2,
+  "smoke_exit_code": 0,
+  "smoke_resume_verified": true
+}

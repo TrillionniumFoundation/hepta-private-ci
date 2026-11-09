@@ -46,6 +46,20 @@ pub(crate) fn openssh_keygen() -> &'static Path {
     })
 }
 
+/// Prepare only this fixture child with the OS-defined OpenSSH startup path.
+pub(crate) fn openssh_keygen_command() -> std::process::Command {
+    #[cfg(windows)]
+    {
+        let mut command = std::process::Command::new(openssh_keygen());
+        let program_data = crate::openssh_windows::program_data_directory()
+            .unwrap_or_else(|error| panic!("resolve OpenSSH fixture ProgramData: {error}"));
+        command.env("ProgramData", program_data);
+        command
+    }
+    #[cfg(not(windows))]
+    std::process::Command::new(openssh_keygen())
+}
+
 #[cfg(not(windows))]
 pub(crate) type PrivateTempDir = TempDir;
 

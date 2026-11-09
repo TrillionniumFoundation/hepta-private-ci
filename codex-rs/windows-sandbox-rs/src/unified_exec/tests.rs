@@ -57,9 +57,12 @@ static TEST_HOME_COUNTER: AtomicU64 = AtomicU64::new(0);
 static LEGACY_PROCESS_TEST_LOCK: Mutex<()> = Mutex::new(());
 
 fn legacy_process_test_guard() -> MutexGuard<'static, ()> {
+    // This lock owns only a serialization token. A previous assertion failure
+    // remains a failed test, but must not prevent another backend from running
+    // its own checks after the fixture's thread and owned-object guards unwind.
     LEGACY_PROCESS_TEST_LOCK
         .lock()
-        .expect("legacy Windows sandbox process test lock poisoned")
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 fn current_thread_runtime() -> tokio::runtime::Runtime {

@@ -1,0 +1,388 @@
+{
+  "schema": "hepta.cell-causal.ace-capability-audit.v1",
+  "observed_utc": "2026-11-08T09:21:54.828810+00:00",
+  "scope": "Read-only review of the current local Python runner and A/C/E checking interfaces; no real A/C/E execution or owner authentication performed.",
+  "source": {
+    "candidate_root": "/workspace/scratch/cf0b0141e32e/candidate",
+    "baseline_parent_commit": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+    "candidate_commit": null,
+    "candidate_tree": null,
+    "identity_limit": "These are exact local file-byte bindings. The baseline parent does not identify the modified candidate as an executed Git commit/tree.",
+    "baseline_verification_path": "/workspace/scratch/cf0b0141e32e/baseline-verification.json",
+    "baseline_verification_sha256": "882b8e1f9e9aa64aa2b860d7f3da3bedfdbd5d8b65e6b7816bc7edb4687e2385",
+    "files": [
+      {
+        "path": "scripts/ndu_real_runtime/_causal_checks.py",
+        "bytes": 1644,
+        "sha256": "c17c073a94cf29ba442926b2def9e52008b226c13658480f9110e29bc9aa410d",
+        "git_blob_sha1": "40fd99815b6d5fa6bb0693e91e1cd45b4ab8f995"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/causal_ace.py",
+        "bytes": 8400,
+        "sha256": "09150a7722e76d116a5761927f9687ba53e7ec1fe7718bb364fd5a39dbad2c65",
+        "git_blob_sha1": "d9ed004cc968170f6f12ee583411866aa0ff08a0"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/causal_composition.py",
+        "bytes": 15465,
+        "sha256": "7735155426f12ff31fe31b453a7a29da9ca8e18b1e8593884dd0a0379895d90a",
+        "git_blob_sha1": "365d92b50332aab9d56a0cad0cd3b589dc6009de"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/causal_improver.py",
+        "bytes": 23492,
+        "sha256": "d07e75fcfec61393427e138ed39ecfd0ec284ec6600364b889abd404d6b29ea0",
+        "git_blob_sha1": "4a40adb5ee53d6e8614579de4bdd7acab11f5ac7"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/causal_protocol.py",
+        "bytes": 10162,
+        "sha256": "a450ca58bdb923cc7dd11ecf5ef08fbca55a975ad41e9475df8b0ce8327df8a2",
+        "git_blob_sha1": "e845140f751d3d143b426b5ff385dae5db1dd7ca"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/causal_analysis.py",
+        "bytes": 9284,
+        "sha256": "2c29852eefe11d3e5294e43bb27974037455754650402ca2ed931fb195c09f3e",
+        "git_blob_sha1": "15e75f4cb3b2c57d6ddf4e97c9af557c7b65632e"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/causal_b.py",
+        "bytes": 14618,
+        "sha256": "6f270394edd7f474810fbbefcf3638cca43d03ddc2476ec81a17879e26dd8f6a",
+        "git_blob_sha1": "db052032b55c0226f4b170a3ebbbb5ad8f7416cd"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/causal_b_contract.py",
+        "bytes": 8128,
+        "sha256": "953e946c9d0c020c5aa1ceb9e1d41e7030f91729260f01e81895b76cdc6d290c",
+        "git_blob_sha1": "01d928ad5ad55455eaa740972c2ad815f1e428ca"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/training_grid.py",
+        "bytes": 13262,
+        "sha256": "57ef934ed6950e5270471c3a79e33396038f0dca844b29222a4ff339875ea960",
+        "git_blob_sha1": "9071bf33ea0b12bda23a260be1c4f16accd5020e"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/training.py",
+        "bytes": 36667,
+        "sha256": "3231186d09da00f2d78dbb3f25590085055ccd81cff578bfe934e52085469ffe",
+        "git_blob_sha1": "8408d8c038e10e272893c2a434811797d2a18e5e"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/fit_loop.py",
+        "bytes": 12969,
+        "sha256": "ffed1b606594e637812a01d004c394518d88e497b7ba9720c13466027f1bf8e5",
+        "git_blob_sha1": "f980a001392fb9ce07d482991ccf907453a08f33"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/matrix.py",
+        "bytes": 25671,
+        "sha256": "c3f1792e73a0c92f953568a924f686e1865f97f728210982eee51b5dbfbe4d10",
+        "git_blob_sha1": "167d62442a8b92f3f31c086ea7bf121f1f895fa2"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/pipeline.py",
+        "bytes": 15985,
+        "sha256": "a22dc843b9c48b35a65f07e0d72a48b9ec7d6185e74657696b63f7609ef9ce6a",
+        "git_blob_sha1": "362400b41be8620832e3bd17b4ea42fd35dcb8a0"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/study.py",
+        "bytes": 17478,
+        "sha256": "3c475c7c36927819b646df001399c68fd30dc03541c355f1f20e55c8c2cbfdd0",
+        "git_blob_sha1": "9b006bdedcdb9df68724fb281131ee93bec2e8da"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/neural.py",
+        "bytes": 10671,
+        "sha256": "816cf398cb8fa76e13bec7f699a1bf56324788de99c400c9c0a96d2a9484b6f4",
+        "git_blob_sha1": "50c0c34d1da91ad0c27f2dfd1b703ac289692e06"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/actor.py",
+        "bytes": 17418,
+        "sha256": "14a368da5cfb218c99ec4eb390aee2c2a386ebac45c362b3f483f8995fad999b",
+        "git_blob_sha1": "412001e04d9e021fca34a50c8e7c4d2510f21166"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/trajectory.py",
+        "bytes": 6000,
+        "sha256": "700a66b30d24dbe39d75c2cd1293cd0ae2719526695a3fa71e725eb56670320e",
+        "git_blob_sha1": "5fdccbfa12b8efa4918d0007ca56092576447cb5"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/recursive_objective.py",
+        "bytes": 7204,
+        "sha256": "c811ddff6f4bb31aeae28a47b23265fb7b0255a8a1cc7250a5ff591e96f946f9",
+        "git_blob_sha1": "d2a8d66d8ded7f55d09aad82830a78a9ac2237a1"
+      }
+    ],
+    "files_sha256": "43f3c57c4ab95125e00f445c179e839b49fb1cf61e850558ce9df9fe7dc9a1ab",
+    "stable_during_binding_write": true
+  },
+  "actions": {
+    "candidate_files_modified_by_this_audit": false,
+    "experiments_or_attempts_dispatched": false,
+    "unknown_attempts_replayed": false,
+    "tests_executed_by_this_audit": false,
+    "owner_registry_receipts_or_evaluator_results_created": false,
+    "authority_granted": false
+  },
+  "b_and_statistics_review": [
+    {
+      "id": "B_INITIALIZATION_SCOPE",
+      "severity": "INTERPRETATION_BOUNDARY",
+      "blocks_current_training_only_smoke": false,
+      "finding": "实际相同的初始化指 seeded constructor、尚未预训练或加载 content 的参数字节。reset/persistent 各自有 mode-bound content 预训练，fit 加载同一 mode 的 checkpoint；prefit 参数可以不同。",
+      "existing_protection": "training.py 分别记录 initial_parameter_sha256、pretrained_content_sha256、prefit_parameter_sha256；paired_audit 明示初始化 scope 与 memory_specific_pretrained_content_may_differ。",
+      "allowed_interpretation": "相同随机起点、相同数据和训练机会下，完整 matched_training 处理的总效应。",
+      "not_established": "在同一个已训练 checkpoint 上，仅切换部署状态的净效应。",
+      "necessary_followup": "若执行 deployment_state_ablation，必须增加同一 checkpoint 的独立部署 profile/readback，并固定训练 mode；现有 matched-training profile 严格绑定 train/deploy mode，不应通过删校验混用。",
+      "evidence": [
+        {
+          "path": "scripts/ndu_real_runtime/training.py",
+          "symbols": [
+            "run"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/training_grid.py",
+          "symbols": [
+            "fit_grid"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/causal_b_contract.py",
+          "symbols": [
+            "paired_audit",
+            "initialization_audit"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/causal_protocol.py",
+          "symbols": [
+            "protocol"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/matrix.py",
+          "symbols": [
+            "profile_candidates"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B_MATCHED_ROWS_AND_BATCHES",
+      "severity": "PROTECTED_WITH_RUNTIME_RECEIPT_GATE",
+      "blocks_current_training_only_smoke": false,
+      "finding": "matched_episodes 两侧保留全部相同 v2 rows，并统一按完整 episode 分组；使用同 seed 的 shuffle 和 grouped_batches。reset 在 observed_states 中改变状态使用，不再通过只保留 first_content 改变训练样本或 optimizer 边界。",
+      "existing_protection": "训练记录 records/source/config/observation_partition_sha256/batch_schedule_sha256/optimizer_steps；完整双侧配对收据比较这些值。Control plans 只能在 memory_mode 上不同。",
+      "necessary_followup": "运行后只对 complete=true 且签名匹配的双侧配对陈述匹配通过；未完成 seed、失败依赖和 planned job 必须继续保留。原始收据的真实性由真实 runner/owner 证明，结构 hash 本身不证明。",
+      "evidence": [
+        {
+          "path": "scripts/ndu_real_runtime/fit_loop.py",
+          "symbols": [
+            "training_sequences",
+            "train_epochs"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/trajectory.py",
+          "symbols": [
+            "episode_groups",
+            "grouped_batches"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/recursive_objective.py",
+          "symbols": [
+            "observed_states"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/causal_b_contract.py",
+          "symbols": [
+            "paired_audit"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/training_grid.py",
+          "symbols": [
+            "fit_grid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B_FAILURE_DENOMINATORS_AND_ANALYSIS_ADAPTER",
+      "severity": "FUTURE_DEPLOYMENT_ANALYSIS_GATE_REQUIRED",
+      "blocks_current_training_only_smoke": false,
+      "finding": "已知失败保留预定负效用；Unresolved/NotStarted 保留未知效用。pilot 补齐整个计划 roster，paired_contrast 要求完整 fit × condition × case，未知或缺行阻断估计。没有发现把这些失败行直接删除后宣布增益的当前路径。",
+      "remaining_interface_requirements": [
+        "matrix.compact_row 输出 arm/core/controller/memory_mode/regime，paired_contrast 输入 condition_id。真实结果分析前需显式绑定到冻结 protocol condition，并分别按 regime 与 estimand 分区；当前没有发现该映射 adapter。",
+        "tune 可以在部分 search trial 不完整时仍为每个 arm 选出一个完整 profile，因此 complete_profile_selection=true 不等于 all_search_trials_complete=true。不能只看选中 profile 完整，就宣称调优机会和全预算比较已经完整。",
+        "后续统计调用者必须绑定 selection-lock、训练结果账本、所有搜索尝试与失败成本；不得让训练失败或缺失调参结果仅留在旁路日志而从效率比较中消失。"
+      ],
+      "current_scientific_status": "HOLD; current training-only run does not estimate a real deployment gain.",
+      "evidence": [
+        {
+          "path": "scripts/ndu_real_runtime/matrix.py",
+          "symbols": [
+            "retained_rows",
+            "tune",
+            "pilot",
+            "compact_row"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/causal_analysis.py",
+          "symbols": [
+            "paired_contrast"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/causal_b.py",
+          "symbols": [
+            "run_matched_grid"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/study.py",
+          "symbols": [
+            "run_requests"
+          ]
+        }
+      ]
+    }
+  ],
+  "experiments": {
+    "A": {
+      "status": "BLOCKED_UNIMPLEMENTED",
+      "implemented_now": [
+        "source-bound capability consistency checks",
+        "matching resource declarations",
+        "required main arms and state/differentiation/role ablation checks",
+        "shared-head/local-state/local-parameter counterexample rejection"
+      ],
+      "engineering_work_without_new_owner_authority": [
+        "在现有 runner 中实现真正的 single-agent、固定多角色与可学习局部分化 Cell 架构；绑定各 Cell 的实际 module、局部状态 owner 与局部可训练参数。",
+        "实现真实 ablation 控制与相同模型/信息/记忆/工具/训练/调参资源的执行 profile，并记录每组实际消费的参数、状态和训练机会。",
+        "从已审代码与真实执行读回建立 capability registry；不得给 monolithic shared heads 改标签来填满实验组。"
+      ],
+      "external_inputs_needed_for_scientific_run": [
+        "同一冻结任务与训练/调优/独立评价数据合同、独立训练重复以及完整实际成本计量。"
+      ],
+      "owner_access_is_not_a_substitute_for_missing_architecture": true,
+      "evidence": [
+        {
+          "path": "scripts/ndu_real_runtime/causal_ace.py",
+          "symbols": [
+            "assess_a_capabilities"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/neural.py",
+          "symbols": [
+            "ReceiptPortfolioModel"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/actor.py",
+          "symbols": []
+        }
+      ]
+    },
+    "C": {
+      "status": "BLOCKED_IMPLEMENTATION_AND_ORIGINAL_OWNER_INPUTS",
+      "implemented_now": [
+        "dense/low-rank composition manifest checks",
+        "base, component, shape/rank/scale/order/version/schema consistency",
+        "none/A/B/AB/shared_base crossed with reset/migrate contract",
+        "independent original NextUse/state-owner readback interface"
+      ],
+      "engineering_work_without_new_owner_authority": [
+        "实现并训练两个真实相依 Cell 的 none/A-only/B-only/joint-AB/shared-base-then-recombine 更新路径，连接现有训练与执行器。",
+        "由实际加载的 weights/tensor inventory 产生并验证完整组合 manifest，接到原生完整 bundle/backend 的真实 adapter，不能用 manifest 验证通过代替 checkpoint 消费。",
+        "实现真实 reset/migrate 状态转换与独立回退观测；将模型恢复和外部效果恢复分开记录。"
+      ],
+      "requires_original_owner_or_evaluator_inputs": [
+        "已有原 owner 的 current selected bundle、principal/agent/cell/task/partition/checkpoint 身份与选择/提交收据。",
+        "具备真实信任和 currentness 校验的 read_original 与 verify_owner 端口；NextUse 必须证明另一任务实际消费所选完整 bundle。",
+        "真实 state owner 的 cutover/task-publication 与迁移 qualification，以及分别覆盖模型恢复、外部效果恢复的既有 owner 证据。"
+      ],
+      "authority_boundary": "Missing original owner instances, trust configuration and existing object/receipt access are not supplied by hashes, fixtures or a new local signing key. User verbal confirmation would not manufacture them.",
+      "evidence": [
+        {
+          "path": "scripts/ndu_real_runtime/causal_composition.py",
+          "symbols": [
+            "validate_composition_manifest",
+            "validate_c_design",
+            "check_next_use"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/causal_ace.py",
+          "symbols": []
+        },
+        {
+          "path": "scripts/ndu_real_runtime/training.py",
+          "symbols": [
+            "run"
+          ]
+        }
+      ]
+    },
+    "E": {
+      "status": "BLOCKED_IMPLEMENTATION_AND_INDEPENDENT_EVALUATION",
+      "implemented_now": [
+        "parent/child improver artifact-lineage and common-start checks",
+        "matched full-budget declarations",
+        "actual-registry complete denominators including failed/cancelled/UNKNOWN",
+        "separate unconditional and conditional acceptance rates and unresolved bounds",
+        "explicit per-stage cost observations and overheads",
+        "independent acceptance/final-heldout interfaces and rollback-aware final selection"
+      ],
+      "engineering_work_without_new_owner_authority": [
+        "将改进器自身的 trainer/search/mutation/tool policy 打包和版本化，实际产生后代改进器；目标模型的权重谱系不能代替改进器谱系。",
+        "沿已有 runner 对共同 target bundle/seed/data/budget 执行 parent/child 比较，记录所有原始已启动尝试、失败和回退，并计入 child construction/setup 成本。",
+        "实现最终候选选择冻结、独立 heldout 调用及按完整 run pair 汇总的适配，不通过增加同一训练产物上的 episode 伪造独立重复。"
+      ],
+      "requires_original_owner_or_evaluator_inputs": [
+        "原独立 evaluator 的受控数据/评价 profile/认证读回；生产者自己声明 accepted=true 不能作为独立接受。",
+        "真实 owner 的 selection/rollback/currentness 证据，以及未见任务的独立评价；缺少这些接口时保持 HOLD。",
+        "覆盖准备、采集、训练、搜索、控制器、消息、重复编码、图编译、评价、迁移、恢复、I/O 的实际计量；未知 energy/provider/setup 成本不补零。"
+      ],
+      "evidence": [
+        {
+          "path": "scripts/ndu_real_runtime/causal_improver.py",
+          "symbols": [
+            "compare_improvers",
+            "_improver_runs",
+            "_evaluation",
+            "_reported_costs"
+          ]
+        },
+        {
+          "path": "scripts/ndu_real_runtime/causal_protocol.py",
+          "symbols": [
+            "protocol"
+          ]
+        }
+      ]
+    }
+  },
+  "conclusion": {
+    "contract_checks_are_real_executable_code": true,
+    "contract_tests_are_efficacy_or_adoption_evidence": false,
+    "actual_a_architectures_demonstrated": false,
+    "actual_c_bundle_composition_and_next_task_use_demonstrated": false,
+    "actual_parent_child_improver_advantage_demonstrated": false,
+    "scientific_efficacy_qualified": false,
+    "adoption_authorized": false,
+    "next_work_distinction": "Architectures, training paths and runner adapters are engineering work within the requested scope. Existing original owner/evaluator authority and evidence must be connected through their actual services; no substitute grants or receipts are created by this audit."
+  }
+}

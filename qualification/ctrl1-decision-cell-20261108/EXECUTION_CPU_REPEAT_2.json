@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.ctrl1.campaign-invocation.v1",
+  "status": "COMPLETED_AND_AUDITED",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "ndu_ctrl1.sensitivity_run",
+    "--output",
+    "/tmp/ctrl1-cpu-repeat-2-s0cbtuks/run"
+  ],
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "started_utc": "2026-11-08T11:58:27.797228+00:00",
+  "sources_sha256": "f9ed764f50edfc4a6a6e1408eeba964f7a0c75e11a5d2a5621f9f9bf185b30ee",
+  "core_code_commit": "472c825a87220574acc5338afe59558e1ad2038f",
+  "auditor_sha256": "184c4c368328dc7e7e916f26ccc35bd8cd825f5f4a40e5c31d82eaab6281007b",
+  "isolated_directory": "/tmp/ctrl1-cpu-repeat-2-s0cbtuks",
+  "published_directory": "/workspace/scratch/839e1cbe28dd/hepta-private-ci/qualification/ctrl1-decision-cell-20261108/cpu_repeat_2",
+  "reason": "First CPU archive has460/576 rows,116/144events and mismatched retained checkpoints. Repeat all72workers withsamefrozenplan/source/seeds in isolated directory; auditbeforecopy; preservefirstoriginalsunchanged. Not extra independentseeds.",
+  "campaign_returncode": 0,
+  "same_plan_as_first_attempt": true,
+  "prepublication_audit_returncode": 0,
+  "published_audit_returncode": 0,
+  "finished_utc": "2026-11-08T12:02:34.334759+00:00",
+  "elapsed_wall_seconds": 246.53593276299944,
+  "source_unchanged": true,
+  "log_sha256": "8105659614cbecff91ce34152f8fc873750931315baa97a4ee139e3e6efb63d8"
+}

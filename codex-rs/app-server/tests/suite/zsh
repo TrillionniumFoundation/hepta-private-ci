@@ -1,73 +1,79 @@
 #!/usr/bin/env dotslash
 
-// This is the patched zsh fork corresponding to
-// `codex-rs/shell-escalation/patches/zsh-exec-wrapper.patch`.
-// Fetching the prebuilt version via DotSlash makes it easier to write
-// integration tests that exercise the zsh fork behavior in app-server tests.
-//
-// This checked-in fixture is still pinned to the latest released bundle that
-// contains this binary. New releases publish standalone `codex-zsh-*.tar.gz`
-// assets plus a generated `codex-zsh` DotSlash release asset, so this file can
-// be retargeted when a newer fork build needs to be exercised in tests.
 {
   "name": "codex-zsh",
   "platforms": {
-    // macOS 13 builds (and therefore x86_64) were dropped in
-    // https://github.com/openai/codex/pull/7295, so we only provide an
-    // Apple Silicon build for now.
     "macos-aarch64": {
-      "size": 53771483,
-      "hash": "blake3",
-      "digest": "ff664f63f5e1fa62762c9aff0aafa66cf196faf9b157f98ec98f59c152fc7bd3",
+      "size": 358832,
+      "hash": "sha256",
+      "digest": "c90afc01dca1880787815bc6b211563a188c86fce90ead76ffd89d07e95937ea",
       "format": "tar.gz",
-      "path": "package/vendor/aarch64-apple-darwin/zsh/macos-15/zsh",
+      "path": "codex-zsh/bin/zsh",
       "providers": [
         {
-          "url": "https://github.com/openai/codex/releases/download/rust-v0.104.0/codex-shell-tool-mcp-npm-0.104.0.tgz"
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/codex-zsh-v0.1.2/codex-zsh-aarch64-apple-darwin.tar.gz"
         },
         {
           "type": "github-release",
-          "repo": "openai/codex",
-          "tag": "rust-v0.104.0",
-          "name": "codex-shell-tool-mcp-npm-0.104.0.tgz"
+          "repo": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+          "tag": "codex-zsh-v0.1.2",
+          "name": "codex-zsh-aarch64-apple-darwin.tar.gz"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "size": 391225,
+      "hash": "sha256",
+      "digest": "fa20fa3d9f33e6446eb1138cf1746f460afd62eae211722abb265ca533c8f1cd",
+      "format": "tar.gz",
+      "path": "codex-zsh/bin/zsh",
+      "providers": [
+        {
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/codex-zsh-v0.1.2/codex-zsh-x86_64-apple-darwin.tar.gz"
+        },
+        {
+          "type": "github-release",
+          "repo": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+          "tag": "codex-zsh-v0.1.2",
+          "name": "codex-zsh-x86_64-apple-darwin.tar.gz"
         }
       ]
     },
     "linux-x86_64": {
-      "size": 53771483,
-      "hash": "blake3",
-      "digest": "ff664f63f5e1fa62762c9aff0aafa66cf196faf9b157f98ec98f59c152fc7bd3",
+      "size": 434188,
+      "hash": "sha256",
+      "digest": "bf3efa0215ea97b2e9d00529d698c83962d80a9b92a1b9fd44492812095734bd",
       "format": "tar.gz",
-      "path": "package/vendor/x86_64-unknown-linux-musl/zsh/ubuntu-24.04/zsh",
+      "path": "codex-zsh/bin/zsh",
       "providers": [
         {
-          "url": "https://github.com/openai/codex/releases/download/rust-v0.104.0/codex-shell-tool-mcp-npm-0.104.0.tgz"
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/codex-zsh-v0.1.2/codex-zsh-x86_64-unknown-linux-musl.tar.gz"
         },
         {
           "type": "github-release",
-          "repo": "openai/codex",
-          "tag": "rust-v0.104.0",
-          "name": "codex-shell-tool-mcp-npm-0.104.0.tgz"
+          "repo": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+          "tag": "codex-zsh-v0.1.2",
+          "name": "codex-zsh-x86_64-unknown-linux-musl.tar.gz"
         }
       ]
     },
     "linux-aarch64": {
-      "size": 53771483,
-      "hash": "blake3",
-      "digest": "ff664f63f5e1fa62762c9aff0aafa66cf196faf9b157f98ec98f59c152fc7bd3",
+      "size": 412448,
+      "hash": "sha256",
+      "digest": "64f75ce5725d70e56ff942822c14750e361ad9a63bbe92be394a790846cba650",
       "format": "tar.gz",
-      "path": "package/vendor/aarch64-unknown-linux-musl/zsh/ubuntu-24.04/zsh",
+      "path": "codex-zsh/bin/zsh",
       "providers": [
         {
-          "url": "https://github.com/openai/codex/releases/download/rust-v0.104.0/codex-shell-tool-mcp-npm-0.104.0.tgz"
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/codex-zsh-v0.1.2/codex-zsh-aarch64-unknown-linux-musl.tar.gz"
         },
         {
           "type": "github-release",
-          "repo": "openai/codex",
-          "tag": "rust-v0.104.0",
-          "name": "codex-shell-tool-mcp-npm-0.104.0.tgz"
+          "repo": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+          "tag": "codex-zsh-v0.1.2",
+          "name": "codex-zsh-aarch64-unknown-linux-musl.tar.gz"
         }
       ]
-    },
+    }
   }
 }

@@ -1,6 +1,9 @@
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
@@ -22,6 +25,22 @@ use crate::cell_task_cost::*;
 use crate::cell_test_support::checked;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
+
+// Keep the physical-byte assertions on the lock-owning handle. Reopening the
+// path is excluded by Windows byte-range locks, even in this process.
+impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
+    pub(crate) fn locked_bytes_for_test(&self) -> Vec<u8> {
+        let mut file: &File = &self.file;
+        let position = checked(file.stream_position());
+        checked(file.rewind());
+        let mut bytes = Vec::new();
+        let read = file.read_to_end(&mut bytes);
+        let restore = file.seek(SeekFrom::Start(position));
+        checked(read);
+        checked(restore);
+        bytes
+    }
+}
 
 pub(super) struct Fixture(pub(super) PathBuf);
 

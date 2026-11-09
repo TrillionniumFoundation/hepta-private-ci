@@ -20,7 +20,16 @@ class AuthorityFields(dict[tuple[str, str], str]):
         self.aliases = aliases
 
 
-def _end(code: str, start: int, opening: str, closing: str) -> int:
+def _end(
+    code: str,
+    start: int,
+    opening: str,
+    closing: str,
+    bounds: dict[tuple[int, str, str], int] | None = None,
+) -> int:
+    key = (start, opening, closing)
+    if bounds is not None and key in bounds:
+        return bounds[key]
     depth = 0
     for index in range(start, len(code)):
         if code[index] == opening:
@@ -28,6 +37,8 @@ def _end(code: str, start: int, opening: str, closing: str) -> int:
         elif code[index] == closing:
             depth -= 1
             if depth == 0:
+                if bounds is not None:
+                    bounds[key] = index
                 return index
     raise UnresolvedTypedReceiver("unbalanced Rust authority context")
 
@@ -88,30 +99,38 @@ def _type(raw: str, target: str) -> str | None:
     return names[-1] if names else None
 
 
-def _impl_owner(code: str, position: int) -> str | None:
+def _impl_owner(
+    code: str,
+    position: int,
+    bounds: dict[tuple[int, str, str], int],
+) -> str | None:
     owner = None
     for match in re.finditer(
         r"\bimpl(?:\s*<[^{}]*>)?\s+(?:[\w:]+(?:\s*<[^{}]*>)?\s+for\s+)?([\w:]+)(?:\s*<[^{}]*>)?\s*\{",
         code[:position],
     ):
-        if _end(code, match.end() - 1, "{", "}") >= position:
+        if _end(code, match.end() - 1, "{", "}", bounds) >= position:
             owner = match.group(1).split("::")[-1]
     return owner
 
 
-def _function_start(code: str, position: int) -> int:
+def _function_start(
+    code: str,
+    position: int,
+    bounds: dict[tuple[int, str, str], int],
+) -> int:
     start = 0
     for match in re.finditer(r"\bfn\s+\w+", code[:position]):
         opening = code.find("(", match.end())
         if opening < 0:
             continue
-        closing = _end(code, opening, "(", ")")
+        closing = _end(code, opening, "(", ")", bounds)
         brace = code.find("{", closing)
         semicolon = code.find(";", closing)
         if (
             brace >= 0
             and (semicolon < 0 or brace < semicolon)
-            and _end(code, brace, "{", "}") >= position
+            and _end(code, brace, "{", "}", bounds) >= position
         ):
             start = match.start()
     return start
@@ -136,8 +155,9 @@ def _bindings(
     target: str,
     owner: str | None,
     fields: dict[tuple[str, str], str],
+    bounds: dict[tuple[int, str, str], int],
 ) -> dict[str, str | None]:
-    scope = code[_function_start(code, position) : position]
+    scope = code[_function_start(code, position, bounds) : position]
     bindings = {}
     for parameter in re.finditer(r"\b(\w+)\s*:\s*([^,;={}]+)", scope):
         bindings[parameter.group(1)] = _type(parameter.group(2), target)
@@ -185,6 +205,16 @@ def _bindings(
 def has_authority_call(
     code: str, target: str, method: str, fields: AuthorityFields
 ) -> bool:
+    # Alias normalization only introduces the target name. A different plain
+    # identifier absent from the original source cannot appear afterwards.
+    # Keep other spellings on the original path: raw identifiers and qualified
+    # queries can contain an alias that normalization replaces with the target.
+    if (
+        re.fullmatch(r"[A-Za-z_]\w*", method)
+        and method != target
+        and method not in code
+    ):
+        return False
     code = _normalize_aliases(code, target, fields.aliases)
     # The field index is derived from type declarations, including declarations
     # in a parent module. A typed variable/impl must name either the authority
@@ -195,9 +225,12 @@ def has_authority_call(
     qualified = rf"\b{re.escape(target)}\s*::\s*{re.escape(method)}\s*\("
     found = bool(re.search(qualified, code))
     potential = re.compile(rf"\.\s*{re.escape(method)}\s*\(")
+    # Every query here uses this exact immutable normalized source. Reuse only
+    # successful delimiter scans; unresolved contexts still fail at the same call.
+    bounds: dict[tuple[int, str, str], int] = {}
     for call in potential.finditer(code):
-        owner = _impl_owner(code, call.start())
-        bindings = _bindings(code, call.start(), target, owner, fields)
+        owner = _impl_owner(code, call.start(), bounds)
+        bindings = _bindings(code, call.start(), target, owner, fields, bounds)
         receiver = re.search(
             r"\b(?:self|[A-Za-z_]\w*)(?:\s*\.\s*\w+)*\s*$", code[: call.start()]
         )

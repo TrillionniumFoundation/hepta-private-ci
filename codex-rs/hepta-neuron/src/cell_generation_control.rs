@@ -64,7 +64,7 @@ pub struct ControlledCellGenerationConfigV2 {
 /// binding and clock epoch, and never recreates a dispatch token.
 pub struct ControlledCellGenerationPortV2 {
     config: Arc<ControlledCellGenerationConfigV2>,
-    commands: Option<mpsc::SyncSender<Command>>,
+    commands: Option<mpsc::SyncSender<ActorCommand>>,
     stopping: Arc<AtomicBool>,
     closed: Arc<AtomicBool>,
     completion: mpsc::Receiver<Result<(), CellGenerationErrorV2>>,
@@ -161,6 +161,32 @@ impl ControlledCellGenerationPortV2 {
         self.closed.load(Ordering::Acquire)
     }
 
+    /// Observe original physical bytes through the control actor's held lock.
+    /// Possession of this port comes from supplying its owner at construction;
+    /// this method grants no path access, new owner, dispatch, or publication.
+    /// The existing bounded queue, stop check and RPC deadline still apply.
+    /// Owner I/O uncertainty poisons writes; queue refusal does not touch it.
+    pub fn retained_bytes(&mut self) -> Result<Vec<u8>, CellGenerationErrorV2> {
+        if self.stopping.load(Ordering::Acquire) {
+            return Err(CellGenerationErrorV2::Unavailable);
+        }
+        let (reply, response) = mpsc::sync_channel(1);
+        self.commands
+            .as_ref()
+            .ok_or(CellGenerationErrorV2::Unavailable)?
+            .try_send(ActorCommand::RetainedBytes(reply))
+            .map_err(|error| match error {
+                mpsc::TrySendError::Full(_) => CellGenerationErrorV2::Capacity,
+                mpsc::TrySendError::Disconnected(_) => CellGenerationErrorV2::Unavailable,
+            })?;
+        response
+            .recv_timeout(self.config.rpc_timeout)
+            .map_err(|error| match error {
+                mpsc::RecvTimeoutError::Timeout => CellGenerationErrorV2::CommitUncertain,
+                mpsc::RecvTimeoutError::Disconnected => CellGenerationErrorV2::Unavailable,
+            })?
+    }
+
     fn rpc(&mut self, kind: CommandKind, request: &CellGenerationRequestV2) -> Reply {
         if self.stopping.load(Ordering::Acquire) {
             return Err(CellGenerationErrorV2::Unavailable);
@@ -178,7 +204,7 @@ impl ControlledCellGenerationPortV2 {
         self.commands
             .as_ref()
             .ok_or(CellGenerationErrorV2::Unavailable)?
-            .try_send(command)
+            .try_send(ActorCommand::Generation(Box::new(command)))
             .map_err(|error| match error {
                 mpsc::TrySendError::Full(_) => CellGenerationErrorV2::Capacity,
                 mpsc::TrySendError::Disconnected(_) => CellGenerationErrorV2::Unavailable,
@@ -230,6 +256,11 @@ enum CommandKind {
     Cancel,
 }
 
+enum ActorCommand {
+    Generation(Box<Command>),
+    RetainedBytes(mpsc::SyncSender<Result<Vec<u8>, CellGenerationErrorV2>>),
+}
+
 struct Command {
     kind: CommandKind,
     request: Box<CellGenerationRequestV2>,
@@ -254,7 +285,7 @@ struct Actor {
     config: Arc<ControlledCellGenerationConfigV2>,
     worker: Arc<dyn CellGenerationWorkerV2>,
     clock: Clock,
-    commands: mpsc::Receiver<Command>,
+    commands: mpsc::Receiver<ActorCommand>,
     stopping: Arc<AtomicBool>,
     active: Option<Running>,
 }
@@ -277,7 +308,7 @@ impl Actor {
                 }
             }
             match self.commands.recv_timeout(Duration::from_millis(5)) {
-                Ok(command) => {
+                Ok(ActorCommand::Generation(command)) => {
                     let result = if self.stopping.load(Ordering::Acquire) {
                         Err(CellGenerationErrorV2::Unavailable)
                     } else {
@@ -288,6 +319,14 @@ impl Actor {
                         }
                     };
                     let _ = command.reply.try_send(result);
+                }
+                Ok(ActorCommand::RetainedBytes(reply)) => {
+                    let result = if self.stopping.load(Ordering::Acquire) {
+                        Err(CellGenerationErrorV2::Unavailable)
+                    } else {
+                        self.control.retained_bytes().map_err(control_error)
+                    };
+                    let _ = reply.try_send(result);
                 }
                 Err(mpsc::RecvTimeoutError::Timeout) => {}
                 Err(mpsc::RecvTimeoutError::Disconnected) => {

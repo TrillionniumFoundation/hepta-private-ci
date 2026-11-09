@@ -1,0 +1,438 @@
+{
+  "by_case": {
+    "case-7d1d04f874a2336a8d1d87ba": {
+      "action_invocation_counts": {
+        "PREPARE_ROI": 2,
+        "STOP": 80,
+        "WRITE_TEXT": 60
+      },
+      "action_sequences": [
+        {
+          "actions": [
+            "STOP"
+          ],
+          "episodes": 28
+        },
+        {
+          "actions": [
+            "WRITE_TEXT",
+            "STOP"
+          ],
+          "episodes": 50
+        },
+        {
+          "actions": [
+            "WRITE_TEXT",
+            "WRITE_TEXT",
+            "WRITE_TEXT",
+            "WRITE_TEXT",
+            "WRITE_TEXT",
+            "PREPARE_ROI",
+            "STOP"
+          ],
+          "episodes": 2
+        }
+      ],
+      "episodes_containing_action": {
+        "PREPARE_ROI": 2,
+        "STOP": 80,
+        "WRITE_TEXT": 52
+      },
+      "final_image_absent": 80,
+      "rows": 80,
+      "score_component_counts": {
+        "committed_output_preserved": {
+          "True": 80
+        },
+        "image_pass": {
+          "False": 80
+        },
+        "image_pixels_verified": {
+          "False": 80
+        },
+        "image_quality": {
+          "0.0": 80
+        },
+        "image_target_coverage": {
+          "0.0": 80
+        },
+        "text_quality": {
+          "0.0": 80
+        }
+      }
+    },
+    "case-90d8e9e33583f409ee15b6cb": {
+      "action_invocation_counts": {
+        "PREPARE_ROI": 1,
+        "STOP": 80,
+        "WRITE_TEXT": 65
+      },
+      "action_sequences": [
+        {
+          "actions": [
+            "STOP"
+          ],
+          "episodes": 19
+        },
+        {
+          "actions": [
+            "WRITE_TEXT",
+            "STOP"
+          ],
+          "episodes": 60
+        },
+        {
+          "actions": [
+            "WRITE_TEXT",
+            "WRITE_TEXT",
+            "WRITE_TEXT",
+            "WRITE_TEXT",
+            "WRITE_TEXT",
+            "PREPARE_ROI",
+            "STOP"
+          ],
+          "episodes": 1
+        }
+      ],
+      "episodes_containing_action": {
+        "PREPARE_ROI": 1,
+        "STOP": 80,
+        "WRITE_TEXT": 61
+      },
+      "final_image_absent": 80,
+      "rows": 80,
+      "score_component_counts": {
+        "committed_output_preserved": {
+          "True": 80
+        },
+        "image_pass": {
+          "False": 80
+        },
+        "image_pixels_verified": {
+          "False": 80
+        },
+        "image_quality": {
+          "0.0": 80
+        },
+        "image_target_coverage": {
+          "0.0": 80
+        },
+        "text_quality": {
+          "0.0": 80
+        }
+      }
+    }
+  },
+  "by_controller": {
+    "light": {
+      "action_invocation_counts": {
+        "STOP": 32
+      },
+      "action_sequences": [
+        {
+          "actions": [
+            "STOP"
+          ],
+          "episodes": 32
+        }
+      ],
+      "episodes_containing_action": {
+        "STOP": 32
+      },
+      "final_image_absent": 32,
+      "rows": 32,
+      "score_component_counts": {
+        "committed_output_preserved": {
+          "True": 32
+        },
+        "image_pass": {
+          "False": 32
+        },
+        "image_pixels_verified": {
+          "False": 32
+        },
+        "image_quality": {
+          "0.0": 32
+        },
+        "image_target_coverage": {
+          "0.0": 32
+        },
+        "text_quality": {
+          "0.0": 32
+        }
+      }
+    },
+    "mpc": {
+      "action_invocation_counts": {
+        "PREPARE_ROI": 3,
+        "STOP": 32,
+        "WRITE_TEXT": 39
+      },
+      "action_sequences": [
+        {
+          "actions": [
+            "STOP"
+          ],
+          "episodes": 5
+        },
+        {
+          "actions": [
+            "WRITE_TEXT",
+            "STOP"
+          ],
+          "episodes": 24
+        },
+        {
+          "actions": [
+            "WRITE_TEXT",
+            "WRITE_TEXT",
+            "WRITE_TEXT",
+            "WRITE_TEXT",
+            "WRITE_TEXT",
+            "PREPARE_ROI",
+            "STOP"
+          ],
+          "episodes": 3
+        }
+      ],
+      "episodes_containing_action": {
+        "PREPARE_ROI": 3,
+        "STOP": 32,
+        "WRITE_TEXT": 27
+      },
+      "final_image_absent": 32,
+      "rows": 32,
+      "score_component_counts": {
+        "committed_output_preserved": {
+          "True": 32
+        },
+        "image_pass": {
+          "False": 32
+        },
+        "image_pixels_verified": {
+          "False": 32
+        },
+        "image_quality": {
+          "0.0": 32
+        },
+        "image_target_coverage": {
+          "0.0": 32
+        },
+        "text_quality": {
+          "0.0": 32
+        }
+      }
+    },
+    "ndu": {
+      "action_invocation_counts": {
+        "STOP": 32,
+        "WRITE_TEXT": 28
+      },
+      "action_sequences": [
+        {
+          "actions": [
+            "STOP"
+          ],
+          "episodes": 4
+        },
+        {
+          "actions": [
+            "WRITE_TEXT",
+            "STOP"
+          ],
+          "episodes": 28
+        }
+      ],
+      "episodes_containing_action": {
+        "STOP": 32,
+        "WRITE_TEXT": 28
+      },
+      "final_image_absent": 32,
+      "rows": 32,
+      "score_component_counts": {
+        "committed_output_preserved": {
+          "True": 32
+        },
+        "image_pass": {
+          "False": 32
+        },
+        "image_pixels_verified": {
+          "False": 32
+        },
+        "image_quality": {
+          "0.0": 32
+        },
+        "image_target_coverage": {
+          "0.0": 32
+        },
+        "text_quality": {
+          "0.0": 32
+        }
+      }
+    },
+    "tuned_fixed": {
+      "action_invocation_counts": {
+        "STOP": 32,
+        "WRITE_TEXT": 32
+      },
+      "action_sequences": [
+        {
+          "actions": [
+            "WRITE_TEXT",
+            "STOP"
+          ],
+          "episodes": 32
+        }
+      ],
+      "episodes_containing_action": {
+        "STOP": 32,
+        "WRITE_TEXT": 32
+      },
+      "final_image_absent": 32,
+      "rows": 32,
+      "score_component_counts": {
+        "committed_output_preserved": {
+          "True": 32
+        },
+        "image_pass": {
+          "False": 32
+        },
+        "image_pixels_verified": {
+          "False": 32
+        },
+        "image_quality": {
+          "0.0": 32
+        },
+        "image_target_coverage": {
+          "0.0": 32
+        },
+        "text_quality": {
+          "0.0": 32
+        }
+      }
+    },
+    "voi": {
+      "action_invocation_counts": {
+        "STOP": 32,
+        "WRITE_TEXT": 26
+      },
+      "action_sequences": [
+        {
+          "actions": [
+            "STOP"
+          ],
+          "episodes": 6
+        },
+        {
+          "actions": [
+            "WRITE_TEXT",
+            "STOP"
+          ],
+          "episodes": 26
+        }
+      ],
+      "episodes_containing_action": {
+        "STOP": 32,
+        "WRITE_TEXT": 26
+      },
+      "final_image_absent": 32,
+      "rows": 32,
+      "score_component_counts": {
+        "committed_output_preserved": {
+          "True": 32
+        },
+        "image_pass": {
+          "False": 32
+        },
+        "image_pixels_verified": {
+          "False": 32
+        },
+        "image_quality": {
+          "0.0": 32
+        },
+        "image_target_coverage": {
+          "0.0": 32
+        },
+        "text_quality": {
+          "0.0": 32
+        }
+      }
+    }
+  },
+  "cpu_seconds": 0.060687168999999985,
+  "episodes_rerun": false,
+  "original_evaluation_job_id": "1a1ba90eccb-12894-1ba3",
+  "original_results_unchanged": true,
+  "overall": {
+    "action_invocation_counts": {
+      "PREPARE_ROI": 3,
+      "STOP": 160,
+      "WRITE_TEXT": 125
+    },
+    "action_sequences": [
+      {
+        "actions": [
+          "STOP"
+        ],
+        "episodes": 47
+      },
+      {
+        "actions": [
+          "WRITE_TEXT",
+          "STOP"
+        ],
+        "episodes": 110
+      },
+      {
+        "actions": [
+          "WRITE_TEXT",
+          "WRITE_TEXT",
+          "WRITE_TEXT",
+          "WRITE_TEXT",
+          "WRITE_TEXT",
+          "PREPARE_ROI",
+          "STOP"
+        ],
+        "episodes": 3
+      }
+    ],
+    "episodes_containing_action": {
+      "PREPARE_ROI": 3,
+      "STOP": 160,
+      "WRITE_TEXT": 113
+    },
+    "final_image_absent": 160,
+    "rows": 160,
+    "score_component_counts": {
+      "committed_output_preserved": {
+        "True": 160
+      },
+      "image_pass": {
+        "False": 160
+      },
+      "image_pixels_verified": {
+        "False": 160
+      },
+      "image_quality": {
+        "0.0": 160
+      },
+      "image_target_coverage": {
+        "0.0": 160
+      },
+      "text_quality": {
+        "0.0": 160
+      }
+    }
+  },
+  "prior_read_only_diagnostic": {
+    "error": "KeyError: evaluator_sha256; compact-only metadata is not a raw episode result field",
+    "exit_code": 1,
+    "job_id": "1a1baafda8c-12894-1c87",
+    "terminal_status": "failed"
+  },
+  "reference_files_read": false,
+  "schema": "hepta.causal-b.retention-zero-diagnostic.v1",
+  "source_paired_rows_sha256": "7a553992aa057475887482021f00d9ab5f9cb837215ee29b909ee1c0dcfa1add",
+  "source_results_verified": 160,
+  "wall_seconds": 0.07872616196982563
+}

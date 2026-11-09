@@ -1,0 +1,143 @@
+{
+  "schema": "hepta.third-party-source-port.v1",
+  "package": "rama-crypto",
+  "version": "0.3.0",
+  "upstream_repository": "https://github.com/plabayo/rama",
+  "upstream_source_commit": "1e094e455b9fa29d7ad4bc5d597139934cb73978",
+  "upstream_archive": "https://static.crates.io/crates/rama-crypto/rama-crypto-0.3.0.crate",
+  "upstream_archive_sha256": "bdbb5a0371fe925e240d925ed5feecfc7ba5ef6843c66f66420ec6b77aa37bae",
+  "upstream_accepted_change": {
+    "pull_request": "https://github.com/plabayo/rama/pull/1220",
+    "constraint_commit": "7af8c3a83075e948c342b7a258bead35c9182007",
+    "merge_commit": "4ba2015fce25609d1cf54722059f330fdfafc62c",
+    "merged_at": "2026-09-30T19:12:32Z",
+    "reviewed_commit": "151e1c04e412f571732bf09fac2ac9c2f310e684",
+    "approved_by": "GlenDC",
+    "final_head_ci": "https://github.com/plabayo/rama/actions/runs/36736575087/job/110114625187"
+  },
+  "changes": [
+    {
+      "path": "Cargo.toml",
+      "dependency": "dependencies.time.version",
+      "from": "=0.3.47",
+      "to": "0.3.55",
+      "before_sha256": "ce6dce0e52814c4194168ad690b01086997ccf9d69c40828b70e04288a2fe6fc",
+      "after_sha256": "f757e7a0e1d5b56674402e54c15fda00d44bb4ef93dfc18419c34a22e1a969c8"
+    }
+  ],
+  "reason": "Backport the upstream-accepted time 0.3.55 minimum. The temporary 0.3.47 pin worked around time#783; 0.3.49 fixed that compiler interaction. This lower bound excludes the broken 0.3.48 release.",
+  "unchanged_runtime_source": true,
+  "original_files": {
+    ".cargo_vcs_info.json": {
+      "bytes": 105,
+      "sha256": "30a1ce70025f955d308da9186f1240c1f231c38a85db04517cd684df7f5b2836",
+      "mode": "0o644"
+    },
+    "Cargo.lock": {
+      "bytes": 48266,
+      "sha256": "44ea35b35e16fcf65a0c8d4299d3ea78938de3fb16e7ab6d58c299301f54cf1d",
+      "mode": "0o644"
+    },
+    "Cargo.toml": {
+      "bytes": 5305,
+      "sha256": "ce6dce0e52814c4194168ad690b01086997ccf9d69c40828b70e04288a2fe6fc",
+      "mode": "0o644"
+    },
+    "Cargo.toml.orig": {
+      "bytes": 2102,
+      "sha256": "7fad26d991fd99dd21474755c97784f6a4c3c2996d50eeca8ee306ba15ac67ce",
+      "mode": "0o644"
+    },
+    "README.md": {
+      "bytes": 2688,
+      "sha256": "d9e803466101b8f547a03474d41363e4d153bfa88e2525d5d23ed5468f398a62",
+      "mode": "0o644"
+    },
+    "src/cert/boring.rs": {
+      "bytes": 25339,
+      "sha256": "d0a12bf58665de5485c350107ff50ff86afdfa2ea2ccefa78556cad4a0314652",
+      "mode": "0o644"
+    },
+    "src/cert/boring_tests.rs": {
+      "bytes": 40128,
+      "sha256": "5bfd4c8616ca234a5157a3df806c66801358359aa3b6f56280072ddf19cb4cda",
+      "mode": "0o644"
+    },
+    "src/cert/mod.rs": {
+      "bytes": 5491,
+      "sha256": "9f5be8444b27e95d779ed8dd1fcc45b7a33414ffb84b2a257dd9f9181b5f0123",
+      "mode": "0o644"
+    },
+    "src/cert/rcgen.rs": {
+      "bytes": 4635,
+      "sha256": "8ff9d95f9eedbf122821386529f5a54d164fca0d8cc673eeb56764e23d2334eb",
+      "mode": "0o644"
+    },
+    "src/crl.rs": {
+      "bytes": 12218,
+      "sha256": "a3471c402778106c97ec5925b27b4283dfa0d5c09d743930d42894b1e7286301",
+      "mode": "0o644"
+    },
+    "src/jose/constants.rs": {
+      "bytes": 3105,
+      "sha256": "cb31d73fd8e83f9f4a7cb68318f94a8b6c1b6ea98b5ddc2b82d4a9834ee5fc5e",
+      "mode": "0o644"
+    },
+    "src/jose/jwa.rs": {
+      "bytes": 6254,
+      "sha256": "0b774d43ed75b00387fb9cce05b9c11b74ec81939b904c4da0e2306ba71d3cc9",
+      "mode": "0o644"
+    },
+    "src/jose/jwk.rs": {
+      "bytes": 17607,
+      "sha256": "4cf9d2aa14948ab3bd2c14797d694025a6ecd1f85f15215715d83e0f7498931c",
+      "mode": "0o644"
+    },
+    "src/jose/jwk_utils.rs": {
+      "bytes": 6375,
+      "sha256": "c30734c326b31a5784b7d2778902617bad793128e8995e9aa451638aeebf06c3",
+      "mode": "0o644"
+    },
+    "src/jose/jws.rs": {
+      "bytes": 36876,
+      "sha256": "3e3388bff375032c6d67dde5d492a72a48fac0c0150fb42cb8fcf0719a43b540",
+      "mode": "0o644"
+    },
+    "src/jose/mod.rs": {
+      "bytes": 2073,
+      "sha256": "9aa9f16c3784ca3d3de134d1ed438175dc254b2c94815ca993eabd9ecfb4189f",
+      "mode": "0o644"
+    },
+    "src/lib.rs": {
+      "bytes": 2474,
+      "sha256": "ae603df4fb65619f00b31500a334bba685ef0afb715dc318670f65c1ecc7f0a7",
+      "mode": "0o644"
+    },
+    "src/native_certs/macos.rs": {
+      "bytes": 2587,
+      "sha256": "b28e63c7d13b530ecf9404f6eb1944445758d945f42955b1ffc548599fb6d726",
+      "mode": "0o644"
+    },
+    "src/native_certs/mod.rs": {
+      "bytes": 14389,
+      "sha256": "ed1f7a4ba3bba3311f40ee7c6f86637a16babf61fb6520ff5dac2b23627f66dc",
+      "mode": "0o644"
+    },
+    "src/native_certs/unix.rs": {
+      "bytes": 271,
+      "sha256": "81f21d7721289420daa11d594032cd4853f27f86633cdf997284e44826efa982",
+      "mode": "0o644"
+    },
+    "src/native_certs/windows.rs": {
+      "bytes": 1989,
+      "sha256": "69214eca0daaaf6406ffbf03a066b1f1da3e29ed38828fb802a114cbb3f95742",
+      "mode": "0o644"
+    },
+    "src/ocsp.rs": {
+      "bytes": 28532,
+      "sha256": "9175f57e760fcc96878de50b32b8b428bc4586b3abaa1e8a9059158fe3114adc",
+      "mode": "0o644"
+    }
+  },
+  "qualification": "Source preparation only. The common candidate must regenerate both locks and run package, network-proxy/TLS, Matrix migration and complete cargo-deny checks."
+}

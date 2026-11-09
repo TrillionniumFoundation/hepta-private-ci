@@ -32,6 +32,8 @@ mod cell_inference;
 #[cfg(target_os = "linux")]
 mod cell_joint_generation;
 #[cfg(target_os = "linux")]
+mod cell_joint_observed;
+#[cfg(target_os = "linux")]
 mod cell_joint_process;
 #[cfg(target_os = "linux")]
 mod cell_joint_protocol;
@@ -51,10 +53,17 @@ mod cell_v13_generation;
 mod cell_v13_process;
 #[cfg(target_os = "linux")]
 mod cell_v13_protocol;
+mod continuous_time;
 mod deletion;
 mod inference_control;
 mod journal;
 mod journal_lock;
+mod perception;
+mod perception_encoder;
+mod perception_proposal;
+mod perception_source;
+#[cfg(test)]
+mod perception_test_support;
 mod plasticity;
 mod population_v2;
 mod protocol;
@@ -105,6 +114,12 @@ pub use cell_joint_generation::JointGenerationProcessConfigV1;
 pub use cell_joint_generation::JointGenerationProcessFilesV1;
 #[cfg(target_os = "linux")]
 pub use cell_joint_generation::JointGenerationProcessWorkerV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_observed::JointGenerationCommandV2;
+#[cfg(target_os = "linux")]
+pub use cell_joint_observed::JointGenerationDeliveryContractV2;
+#[cfg(target_os = "linux")]
+pub use cell_joint_observed::JointGenerationInputV2;
 #[cfg(target_os = "linux")]
 pub use cell_joint_protocol::JointGenerationActionV1;
 #[cfg(target_os = "linux")]
@@ -167,6 +182,16 @@ pub use cell_v13_generation::V13GenerationProcessWorkerV1;
 pub use cell_v13_protocol::V13LearningClosureV1;
 #[cfg(target_os = "linux")]
 pub use cell_v13_protocol::V13TaskInputV1;
+pub use continuous_time::HcsnClockCheckpointV1;
+pub use continuous_time::HcsnClockIdentityV1;
+pub use continuous_time::HcsnIntegrationV1;
+pub use continuous_time::HcsnIntervalPlanV1;
+pub use continuous_time::HcsnTimeError;
+pub use continuous_time::HcsnTimeProfileV1;
+pub use continuous_time::commit_hcsn_batch_v1;
+pub use continuous_time::commit_hcsn_interval_v1;
+pub use continuous_time::plan_hcsn_batch_v1;
+pub use continuous_time::plan_hcsn_interval_v1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;
@@ -177,6 +202,23 @@ pub use journal::JournalAnchor;
 pub use journal::JournalError;
 pub use journal::JournalScope;
 pub use journal::SparseJournal;
+pub use perception::PerceptionEncoderBindingV1;
+pub use perception::PerceptionLatentV1;
+pub use perception::PerceptionObservationV1;
+pub use perception::PerceptionRepresentationV1;
+pub use perception_encoder::PerceptionCellEncoderV1;
+pub use perception_proposal::PerceptionObservationProposalV1;
+pub use perception_proposal::PerceptionObservationTargetV1;
+pub use perception_proposal::PerceptionProposalAssessmentV1;
+pub use perception_proposal::PerceptionProposalDispositionV1;
+pub use perception_proposal::PerceptionProposalErrorV1;
+pub use perception_proposal::PerceptionProposalPolicyV1;
+pub use perception_source::PerceptionActorSourceV1;
+pub use perception_source::PerceptionCoordinatesV1;
+pub use perception_source::PerceptionErrorV1;
+pub use perception_source::PerceptionEvidenceV1;
+pub use perception_source::PerceptionSourceLayoutV1;
+pub use perception_source::PerceptionSourcePinV1;
 pub use plasticity::EligibilityTraceSampleV1;
 pub use plasticity::IndependentModulatorV1;
 pub use plasticity::ParameterGroupDeltaV1;

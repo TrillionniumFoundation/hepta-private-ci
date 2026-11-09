@@ -1,0 +1,83 @@
+{
+  "schema": "hepta.ctrl1.integrity-observation.v1",
+  "observed_utc": "2026-11-08T11:48:00.152983+00:00",
+  "status": "HOLD",
+  "expected_rows": 864,
+  "observed_rows": 860,
+  "source_unmodified": true,
+  "observations": {
+    "EXECUTION_PRIMARY.json": {
+      "bytes": 838,
+      "sha256": "599af138664adf52c642ec386d90afa7b02251de87f71650c30f88be5ba6303b",
+      "mtime_ns": 1794138219564059386,
+      "ctime_ns": 1794138219564059386,
+      "mtime_utc": "2026-11-08T11:43:39.564059+00:00",
+      "ctime_utc": "2026-11-08T11:43:39.564059+00:00",
+      "inode": 1581898
+    },
+    "primary/PLAN.json": {
+      "bytes": 8220,
+      "sha256": "7fb7e51050c04e9c0d99adc92fa56119d1af58fdefb9810a0d272f3dd8ab192c",
+      "mtime_ns": 1794138120392832178,
+      "ctime_ns": 1794138120392832178,
+      "mtime_utc": "2026-11-08T11:42:00.392832+00:00",
+      "ctime_utc": "2026-11-08T11:42:00.392832+00:00",
+      "inode": 1581728
+    },
+    "primary/REPORT.json": {
+      "bytes": 35223,
+      "sha256": "31b32b84098ef747a89fb63cfda9d1089b38ea2cc239eded2a907acd7468ef9c",
+      "mtime_ns": 1794138219516165104,
+      "ctime_ns": 1794138219516165104,
+      "mtime_utc": "2026-11-08T11:43:39.516165+00:00",
+      "ctime_utc": "2026-11-08T11:43:39.516165+00:00",
+      "inode": 1581896
+    },
+    "primary/ARTIFACTS.json": {
+      "bytes": 11808,
+      "sha256": "966c19793fc2fc23577b48707ba330e781577cd086397a00d58f259d7de10458",
+      "mtime_ns": 1794138219523707160,
+      "ctime_ns": 1794138219523707160,
+      "mtime_utc": "2026-11-08T11:43:39.523707+00:00",
+      "ctime_utc": "2026-11-08T11:43:39.523707+00:00",
+      "inode": 1581897
+    },
+    "primary/results-29d3a0540d92-17.jsonl": {
+      "bytes": 126158,
+      "sha256": "d68fa2d68d39523054c932eeeb9d8ee82b94d9f690cef6ae5c77d7919f3e7e0c",
+      "mtime_ns": 1794138152002950327,
+      "ctime_ns": 1794138152002950327,
+      "mtime_utc": "2026-11-08T11:42:32.002950+00:00",
+      "ctime_utc": "2026-11-08T11:42:32.002950+00:00",
+      "inode": 1581777
+    },
+    "primary/results-29d3a0540d92-23.jsonl": {
+      "bytes": 118950,
+      "sha256": "1fe75ae12cc7d802907dd083bb577c816b307ff49629c617914559089e05b7b5",
+      "mtime_ns": 1794138159327144966,
+      "ctime_ns": 1794138162187220948,
+      "mtime_utc": "2026-11-08T11:42:39.327145+00:00",
+      "ctime_utc": "2026-11-08T11:42:42.187221+00:00",
+      "inode": 1581828
+    },
+    "primary/results-29d3a0540d92-41.jsonl": {
+      "bytes": 126194,
+      "sha256": "02621990d35499f2447374db45477c42edeb978125a7602d13591a16f2e544c1",
+      "mtime_ns": 1794138168463387652,
+      "ctime_ns": 1794138168463387652,
+      "mtime_utc": "2026-11-08T11:42:48.463388+00:00",
+      "ctime_utc": "2026-11-08T11:42:48.463388+00:00",
+      "inode": 1581818
+    },
+    "primary/results-6d077dda5bd1-41.jsonl": {
+      "bytes": 126401,
+      "sha256": "849b73c1858be991d2c61a5e85c7448e27c0ab980c7c88168d230572a4af7b6e",
+      "mtime_ns": 1794138219500744996,
+      "ctime_ns": 1794138219500744996,
+      "mtime_utc": "2026-11-08T11:43:39.500745+00:00",
+      "ctime_utc": "2026-11-08T11:43:39.500745+00:00",
+      "inode": 1581893
+    }
+  },
+  "missing": "Four final controller rows for29d3a0540d92/seed23/scenario confirmation-b36bc99a2f685f7b. Data not repaired or imputed. Cause not established."
+}

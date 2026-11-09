@@ -1,0 +1,25 @@
+{
+  "actual_fresh_v2_gpu_qualification_read": false,
+  "actual_v2_plan_frozen": false,
+  "errors": 0,
+  "failures": 0,
+  "formal_training_fits": 0,
+  "full_physical_energy_joules": null,
+  "model_or_task_data_executed": false,
+  "new_source_pins": {
+    "qualification/hcsn_regenerative/resource_migration_v2/RESOURCE_AMENDMENT.json": "89e947693595129c3d26595239b0362227a8eb8d1da3667b24f8e20a0054f334",
+    "qualification/hcsn_regenerative/resource_migration_v2/__init__.py": "31178c6c215ca52cfc3a1e89574dff97f07e759003fbcbed85e29c6896ea3109",
+    "qualification/hcsn_regenerative/resource_migration_v2/freeze_v2.py": "5c19b57498a4d6ff594ffd7da3b8e75b66e11250e126fdc4bf4aa3bcc956f540",
+    "qualification/hcsn_regenerative/resource_migration_v2/rawdiff_guard.py": "767f65e31ae6ac02fec67fb13c8d5cedd0b6d7994f7ac80e3d166db284330f83",
+    "qualification/hcsn_regenerative/resource_migration_v2/test_resource_migration.py": "8fa59991cfd401880cf9ec11563cd1b49a4bb3e55a9d9fe56873f2f7c4fdd552"
+  },
+  "original42_source_bytes_match_parent": true,
+  "parent_plan_sha256": "cc2fe01594bd77721eda1f2a3130257ba5dbfa61c498a9f469f91195598c2550",
+  "provider_submissions": 0,
+  "raw_log_sha256": "15390ca1f9050b93aca8346be7a9b758e6b32a30eef9ecdf2e0f25512bf3ef9d",
+  "schema": "hcsn-v2-resource-guard-qualification-v1",
+  "scope": "14 exact source/budget/identity/archive guards; includes nonexistent new output exclusion and verified archive bytes versus subsequent path replacement. No GPU or broad numerical retesting.",
+  "skips": 0,
+  "status": "pass",
+  "test_methods_run": 14
+}

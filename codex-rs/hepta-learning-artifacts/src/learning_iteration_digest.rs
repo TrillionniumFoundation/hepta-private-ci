@@ -10,7 +10,7 @@ pub(crate) fn initial_digest(
     request: &LearningIterationRequestV1,
     owners: &LearningIterationOwnersV1,
 ) -> Result<Digest32, LearningIterationError> {
-    let mut bytes = b"hepta.learning.iteration-checkpoint.v1\0".to_vec();
+    let mut bytes = b"hepta.learning.iteration-checkpoint.v2\0".to_vec();
     for id in [
         &request.operation_id,
         &request.principal_id,
@@ -32,6 +32,7 @@ pub(crate) fn initial_digest(
     for digest in [
         request.completed_task_receipt,
         request.selected_artifact_digest,
+        request.evaluation_profile,
         request.selected_bundle.digest()?,
         envelope.base_commit,
         envelope.base_tree,

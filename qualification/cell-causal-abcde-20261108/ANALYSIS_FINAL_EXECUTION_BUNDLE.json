@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.causal-b.analysis-final-execution-bundle.v1",
+  "bound_utc": "2026-11-08T10:00:38.004559+00:00",
+  "helper": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/analyze_b.py",
+    "sha256": "c65f3eef739d1994aefedd6ef114d867d94b5f529470dc03ec78d4d329bcf29a",
+    "bytes": 36582
+  },
+  "launcher": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/run_analysis_remote.py",
+    "sha256": "20bb28e6bce810ffd3efe2dbf3bcac4df0121a7919d0a8570da1963f76e8969f",
+    "bytes": 6639
+  },
+  "policy": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/ANALYSIS_POLICY.json",
+    "sha256": "b05b153725976e581e971cc5e10fcb2e71a8c78b8dbde8ce05e2f250afacc0e3",
+    "bytes": 2647
+  },
+  "prior_execution_binding": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/ACE_ANALYSIS_EXECUTION_BINDING.json",
+    "sha256": "c608f47e6f2ad59a79d846cc717f648040603ccc9dc147c401cc70c44faa15fd",
+    "bytes": 19902
+  },
+  "launcher_format_receipt": {
+    "path": "/workspace/scratch/cf0b0141e32e/helper-format-v2/launcher-receipt.json",
+    "sha256": "45d50d0102f6d9d08072ac2f3fcbde4dc176cb56d8d94c6bb21538a10e14841e",
+    "bytes": 197
+  },
+  "original_plan_readback": {
+    "path": "/workspace/scratch/cf0b0141e32e/execution/ANALYSIS_ORIGINAL_PLAN_READBACK.json",
+    "sha256": "7f1f66beda0860b18c1320cff4a69b72ffc295766e1234bbbceb258246e995d6",
+    "bytes": 25190
+  },
+  "host": "ai395",
+  "evaluation_root": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1",
+  "python": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+  "idempotency_key": "cell-causal-b-analysis-20261108-cf0-v1",
+  "resource_limits": {
+    "cpu_quota_percent": 100,
+    "memory_max_bytes": 1073741824,
+    "timeout_seconds": 600
+  },
+  "required_before_submission": "Original native evaluation terminal record and independently read-back SHA256/byte bindings for plan, selected sources, selection lock, paired rows and fit results.",
+  "unknown_submission_policy": "Reconcile this original idempotency key/job only; do not issue a replacement analysis or episode key.",
+  "execute_status": "NOT_SUBMITTED",
+  "candidate_modified": false,
+  "adoption_authorized": false
+}

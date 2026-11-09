@@ -1,0 +1,70 @@
+name: Hepta PRED-1 CPU checks
+
+on:
+  pull_request:
+    paths:
+      - "scripts/hepta_pred1/**"
+      - "qualification/pred1/**"
+      - ".github/workflows/hepta-pred1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-pred1-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  pred1:
+    name: PRED-1 (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - name: Enable Git long paths before checkout (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
+
+      - name: Read back numerical runtime versions
+        shell: bash
+        run: |
+          uv run --no-project --python 3.12 --with numpy==2.3.5 python - <<'PY'
+          import json
+          import platform
+          import sys
+
+          import numpy
+
+          print(json.dumps({
+              "python": sys.version,
+              "numpy": numpy.__version__,
+              "platform": platform.platform(),
+          }, sort_keys=True))
+          assert sys.version_info[:2] == (3, 12)
+          assert numpy.__version__ == "2.3.5"
+          PY
+
+      - name: Test PRED-1 contracts and numerical kernels
+        run: >-
+          uv run --no-project --python 3.12 --with numpy==2.3.5
+          python -m unittest discover -s scripts/hepta_pred1
+          -p 'test_*.py' -t scripts -v

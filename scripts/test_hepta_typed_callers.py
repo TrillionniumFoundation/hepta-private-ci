@@ -77,6 +77,24 @@ class TypedAuthorityCallTests(unittest.TestCase):
         child = "use parent::Chained; fn f(any_name: &Chained) { any_name.enter(); }"
         self.assertTrue(self.match(child, {"parent": parent, "child": child}))
 
+    def test_imported_alias_can_introduce_a_method_named_like_the_target(self):
+        parent = "use module::Gate as Renamed;"
+        child = "fn f() { Renamed::Renamed(); }"
+        fields = authority_fields({"parent": parent, "child": child}, "Gate")
+        self.assertTrue(has_authority_call(child, "Gate", "Gate", fields))
+
+    def test_imported_alias_can_introduce_a_raw_receiver_method(self):
+        parent = "use module::Gate as Renamed;"
+        child = "fn f(x: &Gate) { x.r#Renamed(); }"
+        fields = authority_fields({"parent": parent, "child": child}, "Gate")
+        self.assertTrue(has_authority_call(child, "Gate", "r#Gate", fields))
+
+    def test_imported_alias_can_introduce_a_raw_associated_method(self):
+        parent = "use module::Gate as Renamed;"
+        child = "fn f() { Renamed::r#Renamed(); }"
+        fields = authority_fields({"parent": parent, "child": child}, "Gate")
+        self.assertTrue(has_authority_call(child, "Gate", "r#Gate", fields))
+
     def test_explicit_unrelated_type_does_not_manufacture_authority(self):
         self.assertFalse(
             self.match("fn f(known: &Gate, other: &Other) { other.enter(); }")
@@ -86,6 +104,20 @@ class TypedAuthorityCallTests(unittest.TestCase):
         with self.assertRaises(UnresolvedTypedReceiver):
             self.match(
                 "fn f(known: &Gate) { let opaque = opaque_factory(known); opaque.enter(); }"
+            )
+
+    def test_later_unresolved_call_is_not_hidden_by_an_earlier_valid_call(self):
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(
+                "fn first(known: &Gate) { known.enter(); } "
+                "fn later(known: &Gate) { let opaque = unknown(known); opaque.enter(); }"
+            )
+
+    def test_later_unbalanced_context_still_refuses_closed(self):
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(
+                "fn first(known: &Gate) { known.enter(); } "
+                "fn later(known: &Gate) { known.enter();"
             )
 
     def test_same_variable_name_in_other_function_does_not_hide_call(self):

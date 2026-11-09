@@ -26,12 +26,18 @@ fn state_prefix_outbox_cost_and_replay_survive_owner_reopen() {
     let mut owner = fixture.open();
     let req = request(&owner, "one");
     assert_eq!(owner.admit(req.clone(), /*now_micros*/ 11), Ok(None));
+    let cursor = checked(owner.file.seek(SeekFrom::Start(1)));
+    let retained = checked(owner.retained_bytes());
+    assert_eq!(checked(owner.file.stream_position()), cursor);
+    assert!(retained.len() > owner.header.len());
     let proposed = proposal(&req);
     let receipt = checked(owner.commit(proposed.clone(), /*now_micros*/ 20));
     let snapshot = checked(owner.snapshot()).clone();
     let chunk = checked(checked(owner.pending_output()).cloned().ok_or("outbox"));
     let costs = checked(owner.task_cost()).clone();
+    let retained_after = checked(owner.retained_bytes());
     drop(owner);
+    assert_eq!(fixture.bytes(), retained_after);
     let mut reopened = fixture.open();
     assert_eq!(reopened.snapshot(), Ok(&snapshot));
     assert_eq!(reopened.pending_output(), Ok(Some(&chunk)));
@@ -52,9 +58,9 @@ fn state_prefix_outbox_cost_and_replay_survive_owner_reopen() {
         Err(CellGenerationErrorV2::Conflict)
     );
     checked(reopened.acknowledge(chunk.clone(), [1; 32], cost()));
-    let bytes = fixture.bytes();
+    let bytes = reopened.locked_bytes_for_test();
     checked(reopened.acknowledge(chunk, [1; 32], cost()));
-    assert_eq!(fixture.bytes(), bytes);
+    assert_eq!(reopened.locked_bytes_for_test(), bytes);
     let next = request(&reopened, "two");
     checked(reopened.admit(next.clone(), /*now_micros*/ 21));
     let mut final_proposal = proposal(&next);
@@ -62,6 +68,24 @@ fn state_prefix_outbox_cost_and_replay_survive_owner_reopen() {
     final_proposal.disposition = CellGenerationDispositionV2::Stopped;
     checked(reopened.commit(final_proposal, /*now_micros*/ 25));
     assert_eq!(checked(reopened.snapshot()).prefix, "中🙂\ntail".as_bytes());
+}
+
+#[test]
+fn retained_byte_length_drift_restores_cursor_and_poison_blocks_original_writer() {
+    let fixture = Fixture::new();
+    let mut owner = fixture.open();
+    let request = request(&owner, "length-drift");
+    let cursor = checked(owner.file.seek(SeekFrom::Start(3)));
+    let changed_length = checked(owner.file.metadata()).len() + 1;
+    // Exercise the original live handle: no second open, unlock, or mock.
+    checked(owner.file.set_len(changed_length));
+    assert_eq!(owner.retained_bytes(), Err(CellGenerationErrorV2::Corrupt));
+    assert_eq!(checked(owner.file.stream_position()), cursor);
+    assert_eq!(
+        owner.admit(request, /*now_micros*/ 11),
+        Err(CellGenerationErrorV2::CommitUncertain)
+    );
+    assert_eq!(checked(owner.file.metadata()).len(), changed_length);
 }
 
 #[test]
@@ -122,7 +146,7 @@ fn whole_witnessed_suffix_loss_is_rejected_without_repairing_evidence() {
     let mut owner = fixture.open();
     let req = request(&owner, "one");
     checked(owner.admit(req.clone(), /*now_micros*/ 11));
-    let prefix = fixture.bytes();
+    let prefix = owner.locked_bytes_for_test();
     checked(owner.commit(proposal(&req), /*now_micros*/ 20));
     drop(owner);
     checked(fs::write(fixture.0.join("journal"), &prefix));
@@ -221,13 +245,13 @@ fn torn_unwitnessed_commit_tail_restores_exact_pending_admission() {
     ));
     let req = request(&owner, "torn");
     checked(owner.admit(req.clone(), /*now_micros*/ 11));
-    let admitted = fixture.bytes();
+    let admitted = owner.locked_bytes_for_test();
     fail.store(true, Ordering::SeqCst);
     assert_eq!(
         owner.commit(proposal(&req), /*now_micros*/ 20),
         Err(CellGenerationErrorV2::CommitUncertain)
     );
-    let full = fixture.bytes();
+    let full = owner.locked_bytes_for_test();
     drop(owner);
     let tail = full.len() - admitted.len();
     for retained in [1, 3, 4, tail / 2, tail - 1] {
@@ -244,7 +268,7 @@ fn torn_unwitnessed_commit_tail_restores_exact_pending_admission() {
             reopened.admit(req.clone(), /*now_micros*/ 30),
             Err(CellGenerationErrorV2::Pending)
         );
-        assert_eq!(fixture.bytes(), admitted);
+        assert_eq!(reopened.locked_bytes_for_test(), admitted);
     }
 }
 
@@ -259,7 +283,7 @@ fn acknowledged_delivery_rejects_changed_bytes_ack_and_cost_after_reopen() {
     checked(owner.acknowledge(chunk.clone(), [1; 32], cost()));
     drop(owner);
     let mut reopened = fixture.open();
-    let original = fixture.bytes();
+    let original = reopened.locked_bytes_for_test();
     let mut changed = chunk.clone();
     changed.bytes.push(0);
     assert_eq!(
@@ -280,7 +304,7 @@ fn acknowledged_delivery_rejects_changed_bytes_ack_and_cost_after_reopen() {
     );
     checked(reopened.acknowledge(chunk, [1; 32], cost()));
     assert_eq!(reopened.pending_output(), Ok(None));
-    assert_eq!(fixture.bytes(), original);
+    assert_eq!(reopened.locked_bytes_for_test(), original);
 }
 
 #[test]
@@ -320,7 +344,7 @@ fn independent_process_second_writer_cannot_acquire_the_owner_journal() {
     let mut owner = fixture.open();
     let req = request(&owner, "held");
     checked(owner.admit(req.clone(), /*now_micros*/ 11));
-    let original = fixture.bytes();
+    let original = owner.locked_bytes_for_test();
     let child = checked(Command::new(checked(std::env::current_exe()))
         .args(["--exact", "cell_generation_journal::tests::independent_process_second_writer_cannot_acquire_the_owner_journal", "--nocapture"])
         .env(CONTENDER, &fixture.0).output());
@@ -331,7 +355,7 @@ fn independent_process_second_writer_cannot_acquire_the_owner_journal() {
         String::from_utf8_lossy(&child.stderr)
     );
     assert!(String::from_utf8_lossy(&child.stdout).contains("1 passed"));
-    assert_eq!(fixture.bytes(), original);
+    assert_eq!(owner.locked_bytes_for_test(), original);
     drop(owner);
     assert_eq!(fixture.open().pending_request(), Ok(Some(&req)));
 }
@@ -383,13 +407,13 @@ fn bounded_journal_reserves_cancellation_drain_settlement_and_delivery_ack() {
     let req = request(&owner, "cancel");
     checked(owner.admit(req.clone(), /*now_micros*/ 11));
     let overhead = saturate_cost_records(&mut owner, "overhead", /*max_attempts*/ 7);
-    let before = fixture.bytes();
+    let before = owner.locked_bytes_for_test();
     assert_eq!(
         owner.record_cost(charge("excess", CellCostStageV2::Persistence)),
         Err(CellGenerationErrorV2::Capacity)
     );
     checked(owner.record_cost(overhead));
-    assert_eq!(fixture.bytes(), before);
+    assert_eq!(owner.locked_bytes_for_test(), before);
     checked(owner.observe_dispatch_time(checked(req.digest()), /*observed_at_micros*/ 12));
     checked(owner.cancel(checked(req.digest())));
     checked(owner.drain());
@@ -417,9 +441,9 @@ fn bounded_journal_reserves_cancellation_drain_settlement_and_delivery_ack() {
     checked(owner.drain());
     checked(owner.acknowledge(chunk.clone(), [1; 32], cost()));
     assert_eq!(owner.is_drained(), Ok(true));
-    let final_bytes = fixture.bytes();
+    let final_bytes = owner.locked_bytes_for_test();
     checked(owner.acknowledge(chunk, [1; 32], cost()));
-    assert_eq!(fixture.bytes(), final_bytes);
+    assert_eq!(owner.locked_bytes_for_test(), final_bytes);
     drop(owner);
     assert_eq!(
         fixture.open_with(config(), /*max_records*/ 7).is_drained(),
@@ -433,7 +457,7 @@ fn unobserved_pending_work_never_becomes_fresh_admission_after_reopen() {
     let mut owner = fixture.open();
     let req = request(&owner, "unknown");
     assert_eq!(owner.admit(req.clone(), /*now_micros*/ 11), Ok(None));
-    let original = fixture.bytes();
+    let original = owner.locked_bytes_for_test();
     drop(owner);
     let mut reopened = fixture.open();
     assert_eq!(reopened.lookup(&req), Ok(None));
@@ -454,7 +478,7 @@ fn unobserved_pending_work_never_becomes_fresh_admission_after_reopen() {
         Err(CellGenerationErrorV2::Deadline)
     );
     assert_eq!(reopened.pending_output(), Ok(None));
-    assert_eq!(fixture.bytes(), original);
+    assert_eq!(reopened.locked_bytes_for_test(), original);
     assert_eq!(reopened.snapshot(), Ok(&req.predecessor));
 }
 
@@ -507,12 +531,12 @@ fn actual_admission_clock_floor_survives_reopen_and_rejects_early_settlement() {
     let mut owner = fixture.open();
     let req = request(&owner, "late-admission");
     checked(owner.admit(req.clone(), /*now_micros*/ 90));
-    let admitted = fixture.bytes();
+    let admitted = owner.locked_bytes_for_test();
     assert_eq!(
         owner.commit(proposal(&req), /*now_micros*/ 11),
         Err(CellGenerationErrorV2::Deadline)
     );
-    assert_eq!(fixture.bytes(), admitted);
+    assert_eq!(owner.locked_bytes_for_test(), admitted);
     drop(owner);
     let mut reopened = fixture.open();
     assert_eq!(
@@ -523,7 +547,7 @@ fn actual_admission_clock_floor_survives_reopen_and_rejects_early_settlement() {
     let chunk = checked(checked(reopened.pending_output()).cloned().ok_or("chunk"));
     checked(reopened.acknowledge(chunk, [1; 32], cost()));
     let next = request(&reopened, "next");
-    let before = fixture.bytes();
+    let before = reopened.locked_bytes_for_test();
     assert_eq!(
         reopened.admit(next.clone(), /*now_micros*/ 90),
         Err(CellGenerationErrorV2::Deadline)
@@ -532,7 +556,7 @@ fn actual_admission_clock_floor_survives_reopen_and_rejects_early_settlement() {
         reopened.commit(proposal(&req), /*now_micros*/ 11),
         Ok(receipt)
     );
-    assert_eq!(fixture.bytes(), before);
+    assert_eq!(reopened.locked_bytes_for_test(), before);
     assert_eq!(reopened.admit(next, /*now_micros*/ 92), Ok(None));
 }
 
@@ -560,14 +584,14 @@ fn task_cost_capacity_is_reserved_before_model_work_and_kept_for_acknowledgement
     req.admitted_at_micros = 2_000;
     req.deadline_micros = 2_100;
     checked(owner.admit(req.clone(), /*now_micros*/ 2_001));
-    let before = fixture.bytes();
+    let before = owner.locked_bytes_for_test();
     assert_eq!(
         owner.record_cost(charge("squeeze", CellCostStageV2::Persistence)),
         Err(CellGenerationErrorV2::Capacity)
     );
     let replay = checked(owner.task_cost()).entries()[0].clone();
     checked(owner.record_cost(replay));
-    assert_eq!(fixture.bytes(), before);
+    assert_eq!(owner.locked_bytes_for_test(), before);
     let mut result = proposal(&req);
     result.cost = charges(
         "reserved-work",
@@ -609,7 +633,7 @@ fn reopen_with_lower_capacity_rejects_before_repairing_reserved_pending_history(
     checked(owner.admit(req.clone(), /*now_micros*/ 11));
     saturate_cost_records(&mut owner, "reopen-overhead", /*max_attempts*/ 10);
     let recorded_costs = checked(owner.task_cost()).entries().len();
-    let committed = fixture.bytes();
+    let committed = owner.locked_bytes_for_test();
     drop(owner);
     let mut with_torn_tail = committed.clone();
     with_torn_tail.push(0);
@@ -625,7 +649,7 @@ fn reopen_with_lower_capacity_rejects_before_repairing_reserved_pending_history(
     ));
     assert_eq!(fixture.bytes(), with_torn_tail);
     let mut reopened = fixture.open_with(config(), /*max_records*/ 10);
-    assert_eq!(fixture.bytes(), committed);
+    assert_eq!(reopened.locked_bytes_for_test(), committed);
     assert_eq!(reopened.pending_request(), Ok(Some(&req)));
     checked(reopened.observe_dispatch_time(checked(req.digest()), /*observed_at_micros*/ 12));
     checked(reopened.cancel(checked(req.digest())));
@@ -644,7 +668,7 @@ fn precontact_clock_floor_is_durable_and_observation_does_not_allow_redispatch()
     let mut owner = fixture.open();
     let req = request(&owner, "precontact");
     checked(owner.admit(req.clone(), /*now_micros*/ 11));
-    let admitted = fixture.bytes();
+    let admitted = owner.locked_bytes_for_test();
     assert_eq!(
         owner.observe_dispatch_time([99; 32], /*observed_at_micros*/ 12),
         Err(CellGenerationErrorV2::Conflict)
@@ -653,9 +677,9 @@ fn precontact_clock_floor_is_durable_and_observation_does_not_allow_redispatch()
         owner.observe_dispatch_time(checked(req.digest()), /*observed_at_micros*/ 100),
         Err(CellGenerationErrorV2::Deadline)
     );
-    assert_eq!(fixture.bytes(), admitted);
+    assert_eq!(owner.locked_bytes_for_test(), admitted);
     checked(owner.observe_dispatch_time(checked(req.digest()), /*observed_at_micros*/ 90));
-    let observed = fixture.bytes();
+    let observed = owner.locked_bytes_for_test();
     drop(owner);
     let mut reopened = fixture.open();
     assert_eq!(
@@ -671,7 +695,7 @@ fn precontact_clock_floor_is_durable_and_observation_does_not_allow_redispatch()
         Err(CellGenerationErrorV2::Pending)
     );
     assert_eq!(reopened.pending_request(), Ok(Some(&req)));
-    assert_eq!(fixture.bytes(), observed);
+    assert_eq!(reopened.locked_bytes_for_test(), observed);
     checked(reopened.commit(proposal(&req), /*now_micros*/ 91));
     assert_eq!(
         checked(checked(reopened.pending_output()).ok_or("chunk")).bytes,

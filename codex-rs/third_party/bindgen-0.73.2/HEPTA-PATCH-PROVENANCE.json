@@ -1,0 +1,66 @@
+{
+  "base_candidate_head": "cadc31bc50a749c3bc23069da5094448f113efb8",
+  "changed_files": [
+    "Cargo.toml"
+  ],
+  "crate": {
+    "archive": "bindgen-0.73.2.crate",
+    "archive_bytes": 250999,
+    "archive_sha256": "787ef8ef523575546b106a58213d6e6b06198a05c2f757258c68a74273670cfa",
+    "name": "bindgen",
+    "registry_source": "registry+https://github.com/rust-lang/crates.io-index",
+    "upstream_git_commit": "73c69d681eec90b84ffba4f993b5fb2f19580781",
+    "upstream_path_in_vcs": "bindgen",
+    "version": "0.73.2"
+  },
+  "dependency_ranges": {
+    "prettyplease": {
+      "after": ">=0.2.7, <0.3",
+      "before": ">=0.2.7, <0.4"
+    },
+    "syn": {
+      "after": ">=2, <3",
+      "before": ">=2, <4"
+    }
+  },
+  "files": 62,
+  "full_cost": {
+    "status": "unknown",
+    "value": null
+  },
+  "original_inventory_sha256": "3ba4bb0c45ab73023e38ae54da9cd298a60e043ad43f0897f33d3d852815e65c",
+  "original_manifest_sha256": "efdb20c81a66647de006f43cbeb6ea7964cc90d700e97295413f50ee2607ed69",
+  "patched_inventory_sha256": "49317de6691f7cc2a18af1902f69fbf68dc5d19cff222f60a0bb0d0b243ba686",
+  "patched_manifest_sha256": "d8c52477976af05eda3dd53c00c50e977e81d87eaa04458739f5406f0bb8a54b",
+  "preparation_observation_sha256": "4dc6d350be7ca6fd1ad13fc3da76dbf6485caff7af54651ac050f1a4babbcd60",
+  "primary_sources": [
+    "https://github.com/rust-lang/rust-bindgen/commit/73c69d681eec90b84ffba4f993b5fb2f19580781",
+    "https://github.com/rust-lang/rust-bindgen/commit/f531ae3f84b1b08a393402bde8eb41fe42a21691",
+    "https://github.com/rust-lang/rust-bindgen/commit/4ffa53d642c377047b98e239f84f6d40ba5141d4",
+    "https://github.com/rust-lang/rust-bindgen/pull/3447",
+    "https://github.com/dtolnay/prettyplease/tree/0.3.0"
+  ],
+  "research_advancement": false,
+  "schema": "hepta-vendored-dependency-observation-v1",
+  "scope": "engineering_dependency_compatibility_only",
+  "unchanged": [
+    "all 56 Rust source/build files and all other non-manifest content",
+    "default features",
+    "prettyplease verbatim feature",
+    "runtime support",
+    "package version",
+    "Cargo.toml.orig",
+    "upstream Cargo.lock"
+  ],
+  "upstream_bytes": 1172984,
+  "validation_at_preparation": {
+    "archive_checksum": "PASS",
+    "bazel_lock_generation": "NOT_RUN",
+    "file_inventory": "PASS",
+    "native_compilation": "NOT_RUN",
+    "only_two_dependency_ranges_change": "PASS",
+    "root_cargo_lock_generation": "NOT_RUN"
+  },
+  "vendor_path": "codex-rs/third_party/bindgen-0.73.2",
+  "vendored_bytes": 1172984
+}

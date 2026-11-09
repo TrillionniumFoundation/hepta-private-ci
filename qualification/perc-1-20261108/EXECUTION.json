@@ -1,0 +1,624 @@
+{
+  "schema": "hepta.perc1.execution.v1",
+  "native_test": {
+    "schema": "hepta.perc1.native-gates.v1",
+    "base": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+    "phase": "test",
+    "source_before": {
+      "head": "6745ba2c4da1657ab44b462857a9d010903b9d62",
+      "tree": "6369cd9417437fb7ac20225f28d165c115f55125",
+      "status": ""
+    },
+    "environment": {
+      "CARGO_TARGET_DIR": "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/target",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "LIBCLANG_PATH": "/usr/lib/llvm-21/lib",
+      "NEXTEST_PROFILE": "local",
+      "NEXTEST_TEST_THREADS": "2",
+      "RUSTUP_TOOLCHAIN": "1.96.0",
+      "RUST_MIN_STACK": "8388608",
+      "PATH": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin:/home/qian-qi/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+    },
+    "steps": [
+      {
+        "name": "helper",
+        "argv": [
+          "cargo",
+          "build",
+          "--locked",
+          "--message-format=json-render-diagnostics",
+          "-p",
+          "codex-hepta-infer-worker-host",
+          "--bin",
+          "hepta-joint-propose"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 148.474466988,
+        "log_sha256": "2201f75c13b8782861724e675a3459c3dba1ee3177be2eb9ebb231d0c4c97dc5",
+        "log_bytes": 1077945,
+        "source_after": {
+          "head": "6745ba2c4da1657ab44b462857a9d010903b9d62",
+          "tree": "6369cd9417437fb7ac20225f28d165c115f55125",
+          "status": ""
+        },
+        "helper": {
+          "path": "/home/qian-qi/work/perc-1-20261108-r1/evidence/test-r1/hepta-joint-propose",
+          "sha256": "1bd6f7fde9ed9fa9f0a11bec2149d63defef8321df834939f5cda690818794aa",
+          "compiler_artifact": {
+            "reason": "compiler-artifact",
+            "package_id": "path+file:///home/qian-qi/work/perc-1-20261108-r1/source/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+            "manifest_path": "/home/qian-qi/work/perc-1-20261108-r1/source/codex-rs/hepta-infer-worker-host/Cargo.toml",
+            "target": {
+              "kind": [
+                "bin"
+              ],
+              "crate_types": [
+                "bin"
+              ],
+              "name": "hepta-joint-propose",
+              "src_path": "/home/qian-qi/work/perc-1-20261108-r1/source/codex-rs/hepta-infer-worker-host/src/bin/hepta-joint-propose.rs",
+              "edition": "2024",
+              "doc": true,
+              "doctest": false,
+              "test": true
+            },
+            "profile": {
+              "opt_level": "0",
+              "debuginfo": 0,
+              "debug_assertions": true,
+              "overflow_checks": true,
+              "test": false
+            },
+            "features": [],
+            "filenames": [
+              "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/target/debug/hepta-joint-propose"
+            ],
+            "executable": "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/target/debug/hepta-joint-propose",
+            "fresh": false
+          }
+        }
+      },
+      {
+        "name": "neuron",
+        "argv": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-neuron",
+          "--lib",
+          "--test-threads",
+          "2"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 20.083228402,
+        "log_sha256": "7c2635d688c58d8229eb710cae8689a28a08d5e7d605b68740f5ce6cde58c738",
+        "log_bytes": 26316,
+        "source_after": {
+          "head": "6745ba2c4da1657ab44b462857a9d010903b9d62",
+          "tree": "6369cd9417437fb7ac20225f28d165c115f55125",
+          "status": ""
+        },
+        "tests": {
+          "total": 190,
+          "failed": 0,
+          "skipped": 0,
+          "perc_cases": [
+            "perception::tests::perception_cross_language_fixture_round_trips_and_binds_raw_evidence",
+            "perception::tests::perception_global_and_dense_retain_identical_raw_evidence_identity",
+            "perception::tests::perception_latents_require_nonempty_bounded_vectors_and_exact_evidence_links",
+            "perception::tests::perception_rebinding_forged_bytes_does_not_make_them_actor_observed",
+            "perception::tests::perception_residuals_require_the_hosts_separately_pinned_predictor",
+            "perception::tests::perception_wire_rejects_teacher_fields_duplicates_and_oversize_inputs",
+            "perception_encoder::tests::perception_adapter_checks_scope_frontier_encoder_and_actor_source_before_inference",
+            "perception_encoder::tests::perception_fixture_reaches_shared_inference_and_owner_replay_keeps_exact_evidence",
+            "perception_proposal::tests::perception_failed_attempts_remain_charged_while_exact_cost_replay_is_idempotent",
+            "perception_proposal::tests::perception_proposal_binds_observation_ndu_predictor_and_original_source_extent",
+            "perception_proposal::tests::perception_proposal_uses_task_ledger_without_dispatching_or_reserving_work",
+            "perception_proposal::tests::perception_unknown_cost_missing_stages_and_overflow_never_create_budget",
+            "perception_source::tests::perception_evidence_rejects_unknown_source_and_coordinate_fields",
+            "perception_source::tests::perception_image_and_video_regions_use_actual_rows_and_frame_timestamps",
+            "perception_source::tests::perception_original_offsets_preserve_exact_unicode_numbers_and_negation",
+            "perception_source::tests::perception_uncaptured_source_bytes_are_unavailable_even_with_valid_original_coordinates"
+          ],
+          "junit_sha256": "b87dabc94b8d4032c78dd809535f07d78a0222ed8a14d7fb7fc535fa013cd8a4"
+        }
+      }
+    ],
+    "all_passed": true,
+    "source_after": {
+      "head": "6745ba2c4da1657ab44b462857a9d010903b9d62",
+      "tree": "6369cd9417437fb7ac20225f28d165c115f55125",
+      "status": ""
+    }
+  },
+  "maintenance_first_attempt": {
+    "schema": "hepta.perc1.native-gates.v1",
+    "base": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+    "phase": "maintenance",
+    "source_before": {
+      "head": "6745ba2c4da1657ab44b462857a9d010903b9d62",
+      "tree": "6369cd9417437fb7ac20225f28d165c115f55125",
+      "status": ""
+    },
+    "environment": {
+      "CARGO_TARGET_DIR": "/home/qian-qi/work/chain-hepta-native-1f3ba4601505/target",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "LIBCLANG_PATH": "/usr/lib/llvm-21/lib",
+      "NEXTEST_PROFILE": "local",
+      "NEXTEST_TEST_THREADS": "2",
+      "RUSTUP_TOOLCHAIN": "1.96.0",
+      "RUST_MIN_STACK": "8388608",
+      "PATH": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/home/qian-qi/work/chain-hepta-native-1f3ba4601505/tools/bin:/home/qian-qi/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+    },
+    "steps": [
+      {
+        "name": "clippy",
+        "argv": [
+          "just",
+          "fix",
+          "--locked",
+          "-p",
+          "codex-hepta-neuron",
+          "--lib",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 6.502731828,
+        "log_sha256": "dda49656c179cdf6cbaa5cdfab97e14ebbac9f10380abb4f7afe0793d8f2621b",
+        "log_bytes": 1480,
+        "source_after": {
+          "head": "6745ba2c4da1657ab44b462857a9d010903b9d62",
+          "tree": "6369cd9417437fb7ac20225f28d165c115f55125",
+          "status": ""
+        }
+      },
+      {
+        "name": "fmt",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5"
+        ],
+        "exit_code": 1,
+        "elapsed_seconds": 0.149868163,
+        "log_sha256": "223bda7455509d79de6dbfb4cd26232fa41d0ff4e8fdbe3ed5eaeabd8c575bdf",
+        "log_bytes": 300,
+        "source_after": {
+          "head": "6745ba2c4da1657ab44b462857a9d010903b9d62",
+          "tree": "6369cd9417437fb7ac20225f28d165c115f55125",
+          "status": "M codex-rs/hepta-neuron/src/perception.rs\n M codex-rs/hepta-neuron/src/perception_encoder.rs\n M codex-rs/hepta-neuron/src/perception_encoder_tests.rs\n M codex-rs/hepta-neuron/src/perception_proposal.rs\n M codex-rs/hepta-neuron/src/perception_proposal_tests.rs\n M codex-rs/hepta-neuron/src/perception_source.rs\n M codex-rs/hepta-neuron/src/perception_source_tests.rs\n M codex-rs/hepta-neuron/src/perception_test_support.rs\n M codex-rs/hepta-neuron/src/perception_tests.rs"
+        }
+      }
+    ],
+    "all_passed": false,
+    "error": "fmt failed; see the retained log",
+    "source_after": {
+      "head": "6745ba2c4da1657ab44b462857a9d010903b9d62",
+      "tree": "6369cd9417437fb7ac20225f28d165c115f55125",
+      "status": "M codex-rs/hepta-neuron/src/perception.rs\n M codex-rs/hepta-neuron/src/perception_encoder.rs\n M codex-rs/hepta-neuron/src/perception_encoder_tests.rs\n M codex-rs/hepta-neuron/src/perception_proposal.rs\n M codex-rs/hepta-neuron/src/perception_proposal_tests.rs\n M codex-rs/hepta-neuron/src/perception_source.rs\n M codex-rs/hepta-neuron/src/perception_source_tests.rs\n M codex-rs/hepta-neuron/src/perception_test_support.rs\n M codex-rs/hepta-neuron/src/perception_tests.rs"
+    }
+  },
+  "python_native_test": {
+    "schema": "hepta.perc1.python-native-gate.v1",
+    "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "source_before": {
+      "head": "4f0c787764dddbf552f6ebde27a56dd2897cccc0",
+      "tree": "05b27dba7d061d0fb17d7f8f1c7536663bfe9d62",
+      "status": ""
+    },
+    "source_hashes": {
+      "codex-rs/hepta-neuron/BUILD.bazel": "30c98d5e945d3b9817828fc69ec8731957880fb8c7d09f71fbb3138b3d176a89",
+      "codex-rs/hepta-neuron/src/lib.rs": "f0ecaa7195dcf0e616087ec893797e2e943267ea633baaf61a1af560ed70197f",
+      "codex-rs/hepta-neuron/src/perception.rs": "7ef69cb5d19cb0557c76a503b225c371f6d21dbcab1138a5e6bbf5eabd130734",
+      "codex-rs/hepta-neuron/src/perception_encoder.rs": "916a8a08a4fab07bb02d0c59d140547a90408d6dc158a12414507ef20b3f447d",
+      "codex-rs/hepta-neuron/src/perception_encoder_tests.rs": "1139309772c1b078f566799c21fb7e447465a7aab465491a5b73dd241ae0c468",
+      "codex-rs/hepta-neuron/src/perception_proposal.rs": "cfda49d004df3184b338177e32bba95460ec4b10b584488ee804324d60f533b1",
+      "codex-rs/hepta-neuron/src/perception_proposal_tests.rs": "b424a84c742029140901bb5e5c0479bd0e9486b713d06b4410fa0183f5990848",
+      "codex-rs/hepta-neuron/src/perception_source.rs": "eb50dbcf3c610a727da210fbba02d401ea4f28c179a683f0dd0df24a6aef03aa",
+      "codex-rs/hepta-neuron/src/perception_source_tests.rs": "1f9d862b9a1fa8f2bce3cb7c1ac116ab349c3cbc6d60de678ddfefdc706366f7",
+      "codex-rs/hepta-neuron/src/perception_test_support.rs": "a08e0beaa3a013ae9c6b1b6d68f2eafd562bd155d923f92dcad70ecabd11d146",
+      "codex-rs/hepta-neuron/src/perception_tests.rs": "560757ed1b3bf4179c4618824343d7d7a0440f61535d68df50f87af9d63808eb",
+      "codex-rs/hepta-neuron/tests/fixtures/perception-bytes-v1.json": "a87e11092e824101aaccaddfe113d5461e5c105ad825c9ace59f363173bae41b",
+      "qualification/perc-1-20261108/PROTOCOL.md": "cd90a6c3078a8ce6937e06b9f005b66c05ea7ecacba42dbb1209878299dbd286",
+      "qualification/perc-1-20261108/README.md": "9ef93571a7122f4fad1aee8464e771b56c9af3eafa61effc258d1f31b06133b0",
+      "qualification/perc-1-20261108/SOURCE_AUDIT.json": "7f66642afcb23d716c3dc715530899f50dc31475a61756325d939477cb50d55a",
+      "scripts/perc1/__init__.py": "6f9ff4ec2288f33d9dd501d06e4b281d3b36d64cb753ee6fa85915da034844bf",
+      "scripts/perc1/__main__.py": "88e9ecf4de8d42565158fd703b31c8b9436d6f8d332bedf81b9c931c8f9ef5ec",
+      "scripts/perc1/example_manifest.json": "7b84919a4c8372b13fc7bf378b78ccab1046d7fa34e02e547546b6feceb5f090",
+      "scripts/perc1/experiment.py": "7174039e5c9b092aa2bea84dc330196e7f60e3de3bcf95c52dc6bb386ad22aba",
+      "scripts/perc1/fixture.py": "20ee94a2c35d5de254117a9dbacf628dd381bc8b5fa892f00013f1d9e1868101",
+      "scripts/perc1/native.py": "fb6a07145541857b41ccf710ec9eae60524021de43d85d9f2e853671219196c8",
+      "scripts/perc1/report.py": "ac7b5436ada639454e64740d891dc5904d2e513bbb8716a5496a60c864f964e7",
+      "scripts/perc1/schema.py": "2d968d7ea7599701a791d6484bbf0e890c9d48f2bff6db4b518c2071b24fbfd8",
+      "scripts/perc1_marginal.py": "78310c4156002d6b1bfd0aac1aa88833b2254ebd9d97ba62a7f88b09c04fc8bc",
+      "scripts/test_perc1.py": "9d65894fe017c61d884354c847eac2381008b771260b55ce44784f3c33d9f3fe",
+      "scripts/test_perc1_marginal.py": "e9b1eb1113c04ac146bd75c57bffd43f9e2d643f0d146e21d1a9785e8885c897"
+    },
+    "commits": [
+      {
+        "head": "f2808906012795855c26d87e393d4248bb359bf4",
+        "tree": "34cd19bdeb710e60cac3723af53d42ea8f39a931",
+        "status": ""
+      },
+      {
+        "head": "98d57c77f56079e28a80ff7a6ce00ea138484aea",
+        "tree": "d332a8aa22d3dd12ca61bf0ad4cca9613bf77b55",
+        "status": "?? qualification/perc-1-20261108/PROTOCOL.md\n?? qualification/perc-1-20261108/README.md\n?? qualification/perc-1-20261108/SOURCE_AUDIT.json\n?? scripts/perc1/__main__.py\n?? scripts/perc1/example_manifest.json\n?? scripts/perc1/fixture.py\n?? scripts/perc1/report.py\n?? scripts/perc1_marginal.py\n?? scripts/test_perc1.py\n?? scripts/test_perc1_marginal.py"
+      },
+      {
+        "head": "0c33f8a533c3ffff55e2f0aaa3cbddf8c8200c47",
+        "tree": "74db853716a4c83b9831d0aa09488e376db25614",
+        "status": "?? qualification/perc-1-20261108/PROTOCOL.md\n?? qualification/perc-1-20261108/README.md\n?? qualification/perc-1-20261108/SOURCE_AUDIT.json\n?? scripts/perc1_marginal.py\n?? scripts/test_perc1_marginal.py"
+      },
+      {
+        "head": "d4b254b1c8e75abc0151d092859936a99f0a0f6a",
+        "tree": "3736aae387d7e267b9d77c80bfdf8097ee4ff720",
+        "status": "?? qualification/perc-1-20261108/PROTOCOL.md\n?? qualification/perc-1-20261108/README.md\n?? qualification/perc-1-20261108/SOURCE_AUDIT.json"
+      },
+      {
+        "head": "4f0c787764dddbf552f6ebde27a56dd2897cccc0",
+        "tree": "05b27dba7d061d0fb17d7f8f1c7536663bfe9d62",
+        "status": ""
+      }
+    ],
+    "all_passed": true,
+    "test": {
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_perc1*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.587235163,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "00c9833e11e14c91ca39057cf5d10f6c49b0f943570ecbe00fea2f3be984c28f",
+      "count": 24
+    },
+    "source_after": {
+      "head": "4f0c787764dddbf552f6ebde27a56dd2897cccc0",
+      "tree": "05b27dba7d061d0fb17d7f8f1c7536663bfe9d62",
+      "status": ""
+    }
+  },
+  "format_second_attempt": {
+    "schema": "hepta.perc1.format-gate.v1",
+    "source_before": {
+      "head": "4f0c787764dddbf552f6ebde27a56dd2897cccc0",
+      "tree": "05b27dba7d061d0fb17d7f8f1c7536663bfe9d62",
+      "status": ""
+    },
+    "source_hashes_before": {
+      "codex-rs/hepta-neuron/BUILD.bazel": "30c98d5e945d3b9817828fc69ec8731957880fb8c7d09f71fbb3138b3d176a89",
+      "codex-rs/hepta-neuron/src/lib.rs": "f0ecaa7195dcf0e616087ec893797e2e943267ea633baaf61a1af560ed70197f",
+      "codex-rs/hepta-neuron/src/perception.rs": "7ef69cb5d19cb0557c76a503b225c371f6d21dbcab1138a5e6bbf5eabd130734",
+      "codex-rs/hepta-neuron/src/perception_encoder.rs": "916a8a08a4fab07bb02d0c59d140547a90408d6dc158a12414507ef20b3f447d",
+      "codex-rs/hepta-neuron/src/perception_encoder_tests.rs": "1139309772c1b078f566799c21fb7e447465a7aab465491a5b73dd241ae0c468",
+      "codex-rs/hepta-neuron/src/perception_proposal.rs": "cfda49d004df3184b338177e32bba95460ec4b10b584488ee804324d60f533b1",
+      "codex-rs/hepta-neuron/src/perception_proposal_tests.rs": "b424a84c742029140901bb5e5c0479bd0e9486b713d06b4410fa0183f5990848",
+      "codex-rs/hepta-neuron/src/perception_source.rs": "eb50dbcf3c610a727da210fbba02d401ea4f28c179a683f0dd0df24a6aef03aa",
+      "codex-rs/hepta-neuron/src/perception_source_tests.rs": "1f9d862b9a1fa8f2bce3cb7c1ac116ab349c3cbc6d60de678ddfefdc706366f7",
+      "codex-rs/hepta-neuron/src/perception_test_support.rs": "a08e0beaa3a013ae9c6b1b6d68f2eafd562bd155d923f92dcad70ecabd11d146",
+      "codex-rs/hepta-neuron/src/perception_tests.rs": "560757ed1b3bf4179c4618824343d7d7a0440f61535d68df50f87af9d63808eb",
+      "codex-rs/hepta-neuron/tests/fixtures/perception-bytes-v1.json": "a87e11092e824101aaccaddfe113d5461e5c105ad825c9ace59f363173bae41b",
+      "qualification/perc-1-20261108/PROTOCOL.md": "cd90a6c3078a8ce6937e06b9f005b66c05ea7ecacba42dbb1209878299dbd286",
+      "qualification/perc-1-20261108/README.md": "9ef93571a7122f4fad1aee8464e771b56c9af3eafa61effc258d1f31b06133b0",
+      "qualification/perc-1-20261108/SOURCE_AUDIT.json": "7f66642afcb23d716c3dc715530899f50dc31475a61756325d939477cb50d55a",
+      "scripts/perc1/__init__.py": "6f9ff4ec2288f33d9dd501d06e4b281d3b36d64cb753ee6fa85915da034844bf",
+      "scripts/perc1/__main__.py": "88e9ecf4de8d42565158fd703b31c8b9436d6f8d332bedf81b9c931c8f9ef5ec",
+      "scripts/perc1/example_manifest.json": "7b84919a4c8372b13fc7bf378b78ccab1046d7fa34e02e547546b6feceb5f090",
+      "scripts/perc1/experiment.py": "7174039e5c9b092aa2bea84dc330196e7f60e3de3bcf95c52dc6bb386ad22aba",
+      "scripts/perc1/fixture.py": "20ee94a2c35d5de254117a9dbacf628dd381bc8b5fa892f00013f1d9e1868101",
+      "scripts/perc1/native.py": "fb6a07145541857b41ccf710ec9eae60524021de43d85d9f2e853671219196c8",
+      "scripts/perc1/report.py": "ac7b5436ada639454e64740d891dc5904d2e513bbb8716a5496a60c864f964e7",
+      "scripts/perc1/schema.py": "2d968d7ea7599701a791d6484bbf0e890c9d48f2bff6db4b518c2071b24fbfd8",
+      "scripts/perc1_marginal.py": "78310c4156002d6b1bfd0aac1aa88833b2254ebd9d97ba62a7f88b09c04fc8bc",
+      "scripts/test_perc1.py": "9d65894fe017c61d884354c847eac2381008b771260b55ce44784f3c33d9f3fe",
+      "scripts/test_perc1_marginal.py": "e9b1eb1113c04ac146bd75c57bffd43f9e2d643f0d146e21d1a9785e8885c897"
+    },
+    "all_passed": true,
+    "format": {
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 8.900768269,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "python_ast_unchanged": true,
+    "native_wire_fixture_unchanged": true,
+    "format_commit": {
+      "head": "b647fc13e73f4116f202a15fdfcfc6a9113814c3",
+      "tree": "01df6d8b731728035ab298034a55b6b091c95c42",
+      "status": ""
+    },
+    "source_hashes_after": {
+      "codex-rs/hepta-neuron/BUILD.bazel": "30c98d5e945d3b9817828fc69ec8731957880fb8c7d09f71fbb3138b3d176a89",
+      "codex-rs/hepta-neuron/src/lib.rs": "f0ecaa7195dcf0e616087ec893797e2e943267ea633baaf61a1af560ed70197f",
+      "codex-rs/hepta-neuron/src/perception.rs": "7ef69cb5d19cb0557c76a503b225c371f6d21dbcab1138a5e6bbf5eabd130734",
+      "codex-rs/hepta-neuron/src/perception_encoder.rs": "916a8a08a4fab07bb02d0c59d140547a90408d6dc158a12414507ef20b3f447d",
+      "codex-rs/hepta-neuron/src/perception_encoder_tests.rs": "1139309772c1b078f566799c21fb7e447465a7aab465491a5b73dd241ae0c468",
+      "codex-rs/hepta-neuron/src/perception_proposal.rs": "cfda49d004df3184b338177e32bba95460ec4b10b584488ee804324d60f533b1",
+      "codex-rs/hepta-neuron/src/perception_proposal_tests.rs": "b424a84c742029140901bb5e5c0479bd0e9486b713d06b4410fa0183f5990848",
+      "codex-rs/hepta-neuron/src/perception_source.rs": "eb50dbcf3c610a727da210fbba02d401ea4f28c179a683f0dd0df24a6aef03aa",
+      "codex-rs/hepta-neuron/src/perception_source_tests.rs": "1f9d862b9a1fa8f2bce3cb7c1ac116ab349c3cbc6d60de678ddfefdc706366f7",
+      "codex-rs/hepta-neuron/src/perception_test_support.rs": "a08e0beaa3a013ae9c6b1b6d68f2eafd562bd155d923f92dcad70ecabd11d146",
+      "codex-rs/hepta-neuron/src/perception_tests.rs": "560757ed1b3bf4179c4618824343d7d7a0440f61535d68df50f87af9d63808eb",
+      "codex-rs/hepta-neuron/tests/fixtures/perception-bytes-v1.json": "a87e11092e824101aaccaddfe113d5461e5c105ad825c9ace59f363173bae41b",
+      "qualification/perc-1-20261108/PROTOCOL.md": "cd90a6c3078a8ce6937e06b9f005b66c05ea7ecacba42dbb1209878299dbd286",
+      "qualification/perc-1-20261108/README.md": "9ef93571a7122f4fad1aee8464e771b56c9af3eafa61effc258d1f31b06133b0",
+      "qualification/perc-1-20261108/SOURCE_AUDIT.json": "7f66642afcb23d716c3dc715530899f50dc31475a61756325d939477cb50d55a",
+      "scripts/perc1/__init__.py": "6f9ff4ec2288f33d9dd501d06e4b281d3b36d64cb753ee6fa85915da034844bf",
+      "scripts/perc1/__main__.py": "4a44317b8a0b40a7365b4d191effce2da1a1b5806388bb3d8b0636e90ae8d9d5",
+      "scripts/perc1/example_manifest.json": "7b84919a4c8372b13fc7bf378b78ccab1046d7fa34e02e547546b6feceb5f090",
+      "scripts/perc1/experiment.py": "8fec98009b6b449f651ab30549dfcffc3d3a0a862b799c3b66668def590f00bb",
+      "scripts/perc1/fixture.py": "284d06f89225de33379001151cc5c83cce9e88c50a8a49671cf4400f33cbe550",
+      "scripts/perc1/native.py": "b5b6e8e4d8301d90344f065796447b6e7eefa3cda524cb1b354de38d799ba355",
+      "scripts/perc1/report.py": "881066a82964329d1a734d697c2f9dfe18f68ed0db30e288b2d7b629a1795b5f",
+      "scripts/perc1/schema.py": "9ed8f7cab76407d7070a79ee3fbed00060447a68cef8726b60b266c4fffdf04e",
+      "scripts/perc1_marginal.py": "afd876898dd6197f775b8ce68bbd6f99219f770f7d5837aaacd781e8aa69e633",
+      "scripts/test_perc1.py": "a519a7963423f50beb64b6b0ba08cc9f8b065b98f66e1d5f5d2da80fbf94cd93",
+      "scripts/test_perc1_marginal.py": "ce4db2c3e38f06129815f8851b5389ced43e05d333c3ce963487049be511005a"
+    },
+    "source_after": {
+      "head": "b647fc13e73f4116f202a15fdfcfc6a9113814c3",
+      "tree": "01df6d8b731728035ab298034a55b6b091c95c42",
+      "status": ""
+    }
+  },
+  "format_review": {
+    "files": [
+      {
+        "after_git_blob_sha1": "a51169fb36c1f089f46b2e3b2cc961cd44010611",
+        "after_sha256": "7ef69cb5d19cb0557c76a503b225c371f6d21dbcab1138a5e6bbf5eabd130734",
+        "before_git_blob_sha1": "a85bcceb322444e0021dd74c145309825b79a10a",
+        "before_sha256": "487d79eda8bb4fe38ee384c162511b2efdcd058605d18f0778e141960c771a85",
+        "comments_exact_sequence_equal": true,
+        "formatted_lines": 234,
+        "imports_multiset_equal": true,
+        "nonstructural_tokens_equal_in_order": true,
+        "patch_after_blob_prefix": "a51169fb",
+        "patch_before_blob_prefix": "a85bcceb",
+        "patch_blob_identities_match": true,
+        "path": "codex-rs/hepta-neuron/src/perception.rs",
+        "structural_token_edits_reviewed": 15
+      },
+      {
+        "after_git_blob_sha1": "fb68848d82294df5e2944aa3757d6399dc76e9ed",
+        "after_sha256": "916a8a08a4fab07bb02d0c59d140547a90408d6dc158a12414507ef20b3f447d",
+        "before_git_blob_sha1": "6d9098d87be1fae726bc235596f472f98aea68ca",
+        "before_sha256": "6a8a6ce37f0470e0d15fd512e660cc01814c80630e139221e5d25cb13e48979c",
+        "comments_exact_sequence_equal": true,
+        "formatted_lines": 81,
+        "imports_multiset_equal": true,
+        "nonstructural_tokens_equal_in_order": true,
+        "patch_after_blob_prefix": "fb68848d",
+        "patch_before_blob_prefix": "6d9098d8",
+        "patch_blob_identities_match": true,
+        "path": "codex-rs/hepta-neuron/src/perception_encoder.rs",
+        "structural_token_edits_reviewed": 2
+      },
+      {
+        "after_git_blob_sha1": "b9afbbc6dbe6deb4ea1e3cd03185798d5e621cf5",
+        "after_sha256": "1139309772c1b078f566799c21fb7e447465a7aab465491a5b73dd241ae0c468",
+        "before_git_blob_sha1": "631ea09279c3d02a093473a236088696a6871333",
+        "before_sha256": "2d90190b57866120bb4456c01afc964bb327c99de43c76e111bd1438cb54c236",
+        "comments_exact_sequence_equal": true,
+        "formatted_lines": 165,
+        "imports_multiset_equal": true,
+        "nonstructural_tokens_equal_in_order": true,
+        "patch_after_blob_prefix": "b9afbbc6",
+        "patch_before_blob_prefix": "631ea092",
+        "patch_blob_identities_match": true,
+        "path": "codex-rs/hepta-neuron/src/perception_encoder_tests.rs",
+        "structural_token_edits_reviewed": 10
+      },
+      {
+        "after_git_blob_sha1": "6bf570c01ccb29407ae5e1beb1c0952da5e64a60",
+        "after_sha256": "cfda49d004df3184b338177e32bba95460ec4b10b584488ee804324d60f533b1",
+        "before_git_blob_sha1": "f1c33a8ebbc4d8442d165fe610288b227f113a8c",
+        "before_sha256": "b4b020f91c142a6e8aa98208596cef950e7f795265b53996aa207506b635ecc0",
+        "comments_exact_sequence_equal": true,
+        "formatted_lines": 239,
+        "imports_multiset_equal": true,
+        "nonstructural_tokens_equal_in_order": true,
+        "patch_after_blob_prefix": "6bf570c0",
+        "patch_before_blob_prefix": "f1c33a8e",
+        "patch_blob_identities_match": true,
+        "path": "codex-rs/hepta-neuron/src/perception_proposal.rs",
+        "structural_token_edits_reviewed": 9
+      },
+      {
+        "after_git_blob_sha1": "f01d25d181895224f2da8429024f9ea9363f7f0c",
+        "after_sha256": "b424a84c742029140901bb5e5c0479bd0e9486b713d06b4410fa0183f5990848",
+        "before_git_blob_sha1": "f8fd11a9ada12bf67aea99ea13202ca22452a589",
+        "before_sha256": "bc47f3aa4aea13d8e743855038668409ad2d046e6370ade2f80c87c7884bf37a",
+        "comments_exact_sequence_equal": true,
+        "formatted_lines": 196,
+        "imports_multiset_equal": true,
+        "nonstructural_tokens_equal_in_order": true,
+        "patch_after_blob_prefix": "f01d25d1",
+        "patch_before_blob_prefix": "f8fd11a9",
+        "patch_blob_identities_match": true,
+        "path": "codex-rs/hepta-neuron/src/perception_proposal_tests.rs",
+        "structural_token_edits_reviewed": 12
+      },
+      {
+        "after_git_blob_sha1": "357d82fd7fbd33a538b7cc43b3825e9eaee1abee",
+        "after_sha256": "eb50dbcf3c610a727da210fbba02d401ea4f28c179a683f0dd0df24a6aef03aa",
+        "before_git_blob_sha1": "dfb3c0a1c6f300ddb2c84f18bcdcb9cb77332e46",
+        "before_sha256": "1c8def58e90cf091c512ab051f4ca510deff6f8a03e0fd4b3499b51b49a8ba5c",
+        "comments_exact_sequence_equal": true,
+        "formatted_lines": 337,
+        "imports_multiset_equal": true,
+        "nonstructural_tokens_equal_in_order": true,
+        "patch_after_blob_prefix": "357d82fd",
+        "patch_before_blob_prefix": "dfb3c0a1",
+        "patch_blob_identities_match": true,
+        "path": "codex-rs/hepta-neuron/src/perception_source.rs",
+        "structural_token_edits_reviewed": 18
+      },
+      {
+        "after_git_blob_sha1": "de6741b8e94762be94cd64200105b8a769014874",
+        "after_sha256": "1f9d862b9a1fa8f2bce3cb7c1ac116ab349c3cbc6d60de678ddfefdc706366f7",
+        "before_git_blob_sha1": "ec67dc65c11c148b90dfb29427b6bfb9b6e50164",
+        "before_sha256": "28eb067ccf27fb7a14b4f08ae3e499e68928f4acbe225188fd974fb35bb2fcf5",
+        "comments_exact_sequence_equal": true,
+        "formatted_lines": 199,
+        "imports_multiset_equal": true,
+        "nonstructural_tokens_equal_in_order": true,
+        "patch_after_blob_prefix": "de6741b8",
+        "patch_before_blob_prefix": "ec67dc65",
+        "patch_blob_identities_match": true,
+        "path": "codex-rs/hepta-neuron/src/perception_source_tests.rs",
+        "structural_token_edits_reviewed": 23
+      },
+      {
+        "after_git_blob_sha1": "de6ee0f2b6686997f61736bc55b5b853e0ccb5b7",
+        "after_sha256": "a08e0beaa3a013ae9c6b1b6d68f2eafd562bd155d923f92dcad70ecabd11d146",
+        "before_git_blob_sha1": "69cca31641b8121f77f739895ff69c0c49daec32",
+        "before_sha256": "c132060d441e23b4895c21d51d707b9081a0c1b7633792ae5ec4c8f221e943c5",
+        "comments_exact_sequence_equal": true,
+        "formatted_lines": 32,
+        "imports_multiset_equal": true,
+        "nonstructural_tokens_equal_in_order": true,
+        "patch_after_blob_prefix": "de6ee0f2",
+        "patch_before_blob_prefix": "69cca316",
+        "patch_blob_identities_match": true,
+        "path": "codex-rs/hepta-neuron/src/perception_test_support.rs",
+        "structural_token_edits_reviewed": 1
+      },
+      {
+        "after_git_blob_sha1": "72f584b2c22aaae339b20de6515693932414c6a1",
+        "after_sha256": "560757ed1b3bf4179c4618824343d7d7a0440f61535d68df50f87af9d63808eb",
+        "before_git_blob_sha1": "09e223714c345ddb681841f9d1c643c997fcf290",
+        "before_sha256": "0b570b32fa4030a2f8a18c771de7f72d884c95b27a1bc8c7c6565389d6de0de5",
+        "comments_exact_sequence_equal": true,
+        "formatted_lines": 139,
+        "imports_multiset_equal": true,
+        "nonstructural_tokens_equal_in_order": true,
+        "patch_after_blob_prefix": "72f584b2",
+        "patch_before_blob_prefix": "09e22371",
+        "patch_blob_identities_match": true,
+        "path": "codex-rs/hepta-neuron/src/perception_tests.rs",
+        "structural_token_edits_reviewed": 0
+      }
+    ],
+    "patch": {
+      "bytes": 68139,
+      "path": "/workspace/scratch/2ce19174cd53/evidence/rustfmt.patch",
+      "sha256": "d96c24db179d3dcafa732399d30f2cc1909ee15c21cb1a90965b833cef79ba69"
+    },
+    "recorded_at_utc": "2026-11-08T10:53:36.752511+00:00",
+    "review": {
+      "all_before_after_blob_identities_match": true,
+      "candidate_files_modified": false,
+      "conclusion": "mechanical_formatting_only_no_semantic_change_observed",
+      "file_count": 9,
+      "functional_tests_rerun": false,
+      "imports_comments_and_nonstructural_token_checks_passed": true,
+      "method": "In-memory exact unified-patch reconstruction and Git blob checks; lexical invariants plus manual review of every brace/comma edit. No claim of formal compiler AST equivalence.",
+      "reviewed_changes": [
+        "whitespace_and_line_wrapping",
+        "import_order_only_same_import_multiset",
+        "legal_trailing_commas",
+        "equivalent_single_expression_closure_and_match_arm_blocks"
+      ]
+    },
+    "schema": "hepta.perc1.format-review.v1",
+    "source_root": "/workspace/scratch/2ce19174cd53/perc_impl",
+    "tool_observation": {
+      "bytes": 1642752,
+      "evidence_job_id": "1a1bac770a5-12894-1d2b",
+      "file_format": "ELF",
+      "host": "rog",
+      "installed_or_modified": false,
+      "mode": "0755",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/bin/dotslash",
+      "scan_directories": 210,
+      "scan_tool_roots": 13,
+      "sha256": "54a03b42f0337eba584bc33563237d45aeca11a34de2e7159f76d7695fe5b936",
+      "version_args": [
+        "--version"
+      ],
+      "version_exit_code": 0,
+      "version_stderr": "",
+      "version_stdout": "DotSlash 0.5.9\n"
+    }
+  },
+  "formatter_tools": {
+    "mode": "reused_existing_real_binaries",
+    "dotslash_source": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/bin/dotslash",
+    "dotslash_sha256": "54a03b42f0337eba584bc33563237d45aeca11a34de2e7159f76d7695fe5b936",
+    "dotslash_version": "DotSlash 0.5.9",
+    "uv_path": "/home/qian-qi/work/cell-rsi-p0p2-20261108-858e/tools/uv-0.11.3/uv",
+    "uv_sha256": "fa5fc652fa5ed5b44fa8e7dda507f27975c02f59643787fd8ab4bf36f1ba7438",
+    "uv_version": "uv 0.11.3 (x86_64-unknown-linux-gnu)",
+    "earlier_download_attempt": "official pinned v0.5.9 asset returned HTTP 503; no downloaded executable installed"
+  },
+  "final_diagnostic": {
+    "source": {
+      "head": "b647fc13e73f4116f202a15fdfcfc6a9113814c3",
+      "tree": "01df6d8b731728035ab298034a55b6b091c95c42",
+      "status": ""
+    },
+    "commands": [
+      {
+        "name": "smoke",
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "perc1",
+          "smoke",
+          "--output",
+          "/home/qian-qi/work/perc-1-20261108-r1/evidence/final-diagnostic/smoke"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.231271849,
+        "stdout_sha256": "aa221b4a0bc90e2b70c2d86bb60e1f12010242bcf72022897b18bf7ec31141c7",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "reload-report",
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "perc1",
+          "report",
+          "/home/qian-qi/work/perc-1-20261108-r1/evidence/final-diagnostic/smoke/manifest.json",
+          "/home/qian-qi/work/perc-1-20261108-r1/evidence/final-diagnostic/smoke/dataset.json",
+          "/home/qian-qi/work/perc-1-20261108-r1/evidence/final-diagnostic/smoke/traces.json",
+          "/home/qian-qi/work/perc-1-20261108-r1/evidence/final-diagnostic/smoke/evaluator.json",
+          "--output",
+          "/home/qian-qi/work/perc-1-20261108-r1/evidence/final-diagnostic/reloaded-report.json"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.204790553,
+        "stdout_sha256": "374631202d2cb2800caf3ee95bc77a08942fe3a6812a8aca26bbd5b444352262",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "report_reload_equal": true,
+    "manifest_sha256": "56f991b31cf0e07253c080422e16734f4654cdd8c611bea04e4758c75bb6f03b",
+    "trace_count": 32
+  }
+}

@@ -53,6 +53,76 @@ pub struct LedgerWitnessStore {
 }
 
 impl LedgerWitnessStore {
+    /// Read the exact physical bytes through this owner's original locked handle.
+    /// The caller must already own this value; no path, handle, write grant, or
+    /// provider-release authority is exposed. The exclusive borrow serializes
+    /// access, and the cursor is restored before bytes are returned. Any I/O or
+    /// retained-length uncertainty leaves subsequent writes poisoned.
+    /// The 8 MiB limit applies only to this qualification read. It does not change
+    /// witness append/recovery capacity; an oversized read returns Capacity before I/O.
+    #[cfg(feature = "qualification-legacy-write")]
+    pub(crate) fn retained_bytes_for_qualification(
+        &mut self,
+    ) -> Result<Vec<u8>, DurableLedgerError> {
+        if self.poisoned {
+            return Err(DurableLedgerError::Poisoned);
+        }
+        let expected = self.length;
+        let maximum = 8 * 1024 * 1024;
+        if expected > maximum {
+            return Err(DurableLedgerError::Capacity);
+        }
+        self.poisoned = true;
+        let result = (|| {
+            let cursor = self
+                .file
+                .stream_position()
+                .map_err(DurableLedgerError::from)?;
+            let read = (|| {
+                if self
+                    .file
+                    .metadata()
+                    .map_err(DurableLedgerError::from)?
+                    .len()
+                    != expected
+                {
+                    return Err(DurableLedgerError::Corrupt);
+                }
+                self.file
+                    .seek(SeekFrom::Start(0))
+                    .map_err(DurableLedgerError::from)?;
+                let mut bytes = Vec::new();
+                (&mut *self.file)
+                    .take(maximum + 1)
+                    .read_to_end(&mut bytes)
+                    .map_err(DurableLedgerError::from)?;
+                if bytes.len() as u64 != expected
+                    || self
+                        .file
+                        .metadata()
+                        .map_err(DurableLedgerError::from)?
+                        .len()
+                        != expected
+                {
+                    return Err(DurableLedgerError::Corrupt);
+                }
+                Ok(bytes)
+            })();
+            // Restore even when the read or either length check failed.
+            let restored = self
+                .file
+                .seek(SeekFrom::Start(cursor))
+                .map_err(DurableLedgerError::from)?;
+            if restored != cursor {
+                return Err(DurableLedgerError::Corrupt);
+            }
+            let bytes = read?;
+            Ok(bytes)
+        })();
+        self.poisoned = result.is_err();
+        result
+    }
+
     pub fn create(file: File, binding: Digest32) -> Result<Self, DurableLedgerError> {
         validate_binding(binding)?;
         let mut file = LockedFile::acquire(file)?;

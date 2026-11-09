@@ -182,7 +182,7 @@ fn oracle(
     let statement_path = fixture.root.join(format!("oracle-{hash}-{label}.message"));
     write_private(&statement_path, statement);
     let statement_file = std::fs::File::open(statement_path)?;
-    let status = Command::new("/usr/bin/ssh-keygen")
+    let status = std::process::Command::new("/usr/bin/ssh-keygen")
         .args(["-Y", "verify", "-f"])
         .arg(&fixture.allowed_signers)
         .args(["-I", principal, "-n", SSHSIG_NAMESPACE, "-s"])

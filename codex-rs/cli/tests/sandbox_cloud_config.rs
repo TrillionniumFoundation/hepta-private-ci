@@ -114,7 +114,8 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         staged
     };
     let chatgpt_base_url_override = format!("chatgpt_base_url=\"{chatgpt_base_url}\"");
-    let output = Command::new(&codex)
+    let mut command = Command::new(&codex);
+    command
         .current_dir(codex_home.path())
         .env("CODEX_HOME", codex_home.path())
         .env("NO_PROXY", "127.0.0.1,localhost")
@@ -122,7 +123,12 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         .env_remove("CODEX_ACCESS_TOKEN")
         .env_remove("OPENAI_API_KEY")
         .args(["-c", "cli_auth_credentials_store=\"file\""])
-        .args(["-c", chatgpt_base_url_override.as_str()])
+        .args(["-c", chatgpt_base_url_override.as_str()]);
+    // The positive Windows fixture uses the supported backend, which provisions
+    // its dedicated sandbox identity through the real staged native helpers.
+    #[cfg(windows)]
+    command.args(["-c", "windows.sandbox=\"elevated\""]);
+    let output = command
         .args([
             "sandbox",
             "-P",

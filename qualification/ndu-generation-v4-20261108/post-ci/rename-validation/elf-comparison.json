@@ -1,0 +1,69 @@
+{
+  "byte_identical": false,
+  "changed_sections": {
+    ".data.rel.ro": {
+      "after": {
+        "bytes": 30360,
+        "flags": 3,
+        "sha256": "6bca35a6f38cef8d6536b59ecff0cb528a1e994b325c950f1907552d445205fa",
+        "type": 1
+      },
+      "before": {
+        "bytes": 30360,
+        "flags": 3,
+        "sha256": "58e3062073a7fdd8068cf4ddf2362b1ab69db5b7f05c630a2d05f57db49100de",
+        "type": 1
+      }
+    },
+    ".note.gnu.build-id": {
+      "after": {
+        "bytes": 36,
+        "flags": 2,
+        "sha256": "546a9599cb7ada1979ff9768e9c46a20e89ba6ee6a549940e6a59483c313710b",
+        "type": 7
+      },
+      "before": {
+        "bytes": 36,
+        "flags": 2,
+        "sha256": "ab3533860a2973547a0ba4298f4bc64d2a62fc2e5bf5038c500b4e69c2021508",
+        "type": 7
+      }
+    }
+  },
+  "interpretation": "Section hashes are identity evidence only; no claim of whole-program binary equivalence.",
+  "new_sha256": "c44d366eb31ed86605ef1ce4b55206bde8352242aac929e56d7be5cb27b06bc7",
+  "prior_sha256": "0866ace1c10daa70abf95eaa5f45020293986ea00ec06bbc9e03dbd59f9f9967",
+  "schema": "hepta.delivery-successor-rename.elf-comparison.v1",
+  "unchanged_section_names": [
+    ".interp",
+    ".note.ABI-tag",
+    ".dynsym",
+    ".gnu.version",
+    ".gnu.version_r",
+    ".gnu.hash",
+    ".dynstr",
+    ".rela.dyn",
+    ".rela.plt",
+    ".gcc_except_table",
+    ".rodata",
+    ".eh_frame_hdr",
+    ".eh_frame",
+    ".text",
+    ".init",
+    ".fini",
+    ".plt",
+    ".tdata",
+    ".tbss",
+    ".fini_array",
+    ".init_array",
+    ".dynamic",
+    ".got",
+    ".got.plt",
+    ".relro_padding",
+    ".tm_clone_table",
+    ".data",
+    ".bss",
+    ".comment",
+    ".shstrtab"
+  ]
+}

@@ -7,6 +7,9 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::Weak;
 
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_neuron::*;
@@ -257,10 +260,50 @@ impl FinalHoldoutProviderV1 for Provider {
     }
 }
 
+// The runner owns the real locked CAS store. The fixture observes it weakly so
+// dropping the runner still releases the original owner before a cold reopen.
+pub(super) struct ObservedHoldoutStore(Arc<Mutex<LockedFileFinalHoldoutCasStoreV1>>);
+
+pub(super) fn observed_holdout(
+    store: LockedFileFinalHoldoutCasStoreV1,
+) -> (
+    ObservedHoldoutStore,
+    Weak<Mutex<LockedFileFinalHoldoutCasStoreV1>>,
+) {
+    let store = Arc::new(Mutex::new(store));
+    let observation = Arc::downgrade(&store);
+    (ObservedHoldoutStore(store), observation)
+}
+
+impl FinalHoldoutCasStoreV1 for ObservedHoldoutStore {
+    fn load(
+        &mut self,
+        binding: Digest32,
+    ) -> Result<Option<FinalHoldoutCasRecordV1>, FinalHoldoutCasStoreError> {
+        self.0
+            .lock()
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
+            .load(binding)
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        binding: Digest32,
+        expected: Option<Digest32>,
+        next: &FinalHoldoutCasRecordV1,
+    ) -> Result<(), FinalHoldoutCasStoreError> {
+        self.0
+            .lock()
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?
+            .compare_and_swap(binding, expected, next)
+    }
+}
+
 pub(super) struct Fixture {
+    pub(super) holdout: Weak<Mutex<LockedFileFinalHoldoutCasStoreV1>>,
     pub(super) candidate: Journal,
     pub(super) fixed: Journal,
-    pub(super) runner: CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>,
+    pub(super) runner: CellEvaluationRunnerV1<ObservedHoldoutStore>,
     pub(super) registration: CellEvaluationRegistrationV1,
     pub(super) candidate_temporal: TemporalEvaluationPlan,
     pub(super) baseline_temporal: TemporalEvaluationPlan,
@@ -277,6 +320,7 @@ impl Fixture {
             file(&path),
             digest("binding"),
         ));
+        let (store, holdout) = observed_holdout(store);
         let owner = checked(FencedFinalHoldoutOwnerV1::initialize(
             store,
             digest("binding"),
@@ -287,6 +331,7 @@ impl Fixture {
         let (registration, candidate_temporal, baseline_temporal, inputs) =
             observations::observations();
         Self {
+            holdout,
             candidate,
             fixed,
             runner,
@@ -335,6 +380,10 @@ impl Fixture {
         )
     }
     pub(super) fn holdout_bytes(&self) -> Vec<u8> {
-        checked(fs::read(self.directory.path().join("holdout")))
+        let Some(owner) = self.holdout.upgrade() else {
+            panic!("fixture holdout owner was dropped");
+        };
+        let mut owner = checked(owner.lock());
+        checked(owner.retained_bytes())
     }
 }

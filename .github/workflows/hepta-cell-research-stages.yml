@@ -1,0 +1,146 @@
+name: Hepta Cell research stage evidence
+
+on:
+  push:
+    branches:
+      - research/cell-research-stages-20261108-304d
+      - codex/cell-s0-common-20261108-898e
+  pull_request:
+    paths:
+      - scripts/hepta_cell_research_gate.py
+      - scripts/test_hepta_cell_research_gate.py
+      - scripts/hepta_cell_research_foundation.py
+      - scripts/test_hepta_cell_research_successor.py
+      - scripts/hepta_cell_joint_config.py
+      - scripts/test_hepta_cell_joint_config.py
+      - qualification/cell-research-stages-20261108/**
+      - .github/workflows/hepta-cell-research-stages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cell-research-stage-evidence-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evidence-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HEPTA_CI_LANE: source-head
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Verify the actual source and evidence gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          records="$RUNNER_TEMP/cell-research-stages"
+          mkdir -p "$records"
+          git rev-parse HEAD HEAD^{tree} > "$records/source.txt"
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 19 \
+            --output "$records/research-gate.json" \
+            -- python3 -B -m unittest discover -s scripts \
+            -p test_hepta_cell_research_gate.py -v
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 23 \
+            --output "$records/joint-configuration.json" \
+            -- python3 -B -m unittest discover -s scripts \
+            -p test_hepta_cell_joint_config.py -v
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 8 \
+            --output "$records/successor-binding.json" \
+            -- python3 -B -m unittest discover -s scripts \
+            -p test_hepta_cell_research_successor.py -v
+          python3 -B scripts/hepta_cell_research_gate.py \
+            qualification/cell-research-stages-20261108/CURRENT_INPUT.json \
+            --source-root . \
+            --artifact-root qualification/cell-research-stages-20261108 \
+            --output "$records/current-review.json"
+          python3 - "$records/current-review.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          expected = Path("qualification/cell-research-stages-20261108/CURRENT_RESULT.json")
+          if json.loads(Path(sys.argv[1]).read_text()) != json.loads(expected.read_text()):
+              raise SystemExit("Current research review differs from its retained result")
+          PY
+          test -z "$(git status --porcelain)"
+      - name: Retain the engineering-only common candidate observation
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/cell-research-stages"
+          mkdir -p "$records"
+          python3 - "$records" <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          records = Path(sys.argv[1])
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          tree = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip()
+          if source != os.environ["SOURCE_SHA"]:
+              raise SystemExit("Observed checkout differs from the tested source")
+          review_path = records / "current-review.json"
+          review = json.loads(review_path.read_text()) if review_path.exists() else None
+          files = {}
+          for name in (
+              "source.txt",
+              "research-gate.json",
+              "joint-configuration.json",
+              "successor-binding.json",
+              "current-review.json",
+          ):
+              path = records / name
+              if path.is_file():
+                  raw = path.read_bytes()
+                  files[name] = {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+          report = {
+              "schema": "hepta.cell-common-candidate-observation.v1",
+              "source": {"commit": source, "tree": tree},
+              "scope": "engineering-only source-head and evidence-integrity observation",
+              "records": files,
+              "review_produced": review is not None,
+              "stage_status": {
+                  stage: (
+                      "EVIDENCE_READY" if values.get("substantive_evidence_ready") is True
+                      else "HOLD" if values.get("substantive_evidence_ready") is False
+                      else "NOT_EVALUATED"
+                  )
+                  for stage in ("S0", "S1", "S2", "S3", "S4", "S5")
+                  for values in [(review or {}).get("stages", {}).get(stage, {})]
+              },
+              "no_update_is_valid_terminal_outcome": True,
+              "observed_terminal_outcome": None,
+              "full_physical_cost": None,
+              "complete_cost_available": False,
+              "research_advancement": False,
+              "production_qualification": False,
+              "authority_granted": False,
+          }
+          with (records / "common-candidate-observation.json").open("x") as stream:
+              json.dump(report, stream, sort_keys=True, indent=2, allow_nan=False)
+              stream.write("\n")
+          PY
+          test -z "$(git status --porcelain)"
+      - name: Retain results for the exact source
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-research-stages-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cell-research-stages
+          if-no-files-found: error
+          retention-days: 14

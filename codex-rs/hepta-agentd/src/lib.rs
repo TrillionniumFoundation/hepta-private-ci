@@ -387,6 +387,8 @@ mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
 mod plasticity_runtime;
 #[cfg(target_os = "linux")]
+mod pq_final_use;
+#[cfg(target_os = "linux")]
 mod production_authority;
 #[cfg(target_os = "linux")]
 mod production_composition;
@@ -396,6 +398,8 @@ mod production_launcher;
 mod production_root_composition;
 mod production_writer_host;
 mod prompt_runtime;
+#[cfg(target_os = "linux")]
+mod protected_file;
 mod qualification_writer;
 mod runtime;
 #[cfg(target_os = "linux")]
@@ -718,6 +722,8 @@ pub use neuron_generation_initial_forward::prepare_agentd_generation_initial_for
 pub use neuron_generation_process_bootstrap::load_neuron_generation_process_bootstrap_v1;
 pub use neuron_generation_process_bootstrap::neuron_generation_process_identity_digest_v1;
 #[cfg(unix)]
+pub use neuron_generation_runtime::AgentdGenerationLearningUseReadbackV1;
+#[cfg(unix)]
 pub use neuron_generation_runtime::NeuronGenerationLearningReadErrorV1;
 pub use neuron_generation_runtime::NeuronGenerationRuntimeBootstrapV2;
 pub use neuron_generation_runtime::NeuronGenerationRuntimeHandleV2;
@@ -945,10 +951,18 @@ use event_buffer::EventBuffer;
 use state::AgentdState;
 
 mod terminal_learning;
+#[cfg(unix)]
+mod terminal_learning_job;
 mod terminal_learning_runtime;
 mod terminal_learning_types;
 
 pub use terminal_learning::AgentdTerminalLearningOwnerV1;
+#[cfg(unix)]
+pub use terminal_learning_job::TERMINAL_LEARNING_JOB_RECORD_BYTES_V1;
+#[cfg(unix)]
+pub use terminal_learning_job::TerminalLearningJobOwnerV1;
+#[cfg(unix)]
+pub use terminal_learning_job::TerminalLearningJobRecordV1;
 pub use terminal_learning_runtime::TerminalLearningHandleV1;
 pub use terminal_learning_runtime::TerminalLearningRuntimeBootstrapV1;
 pub use terminal_learning_runtime::terminal_learning_channel_v1;

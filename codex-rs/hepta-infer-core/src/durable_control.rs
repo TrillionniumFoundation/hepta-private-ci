@@ -10,6 +10,7 @@ use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
 use std::io::Seek;
+use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -186,6 +187,55 @@ pub struct DurableInferenceControl {
 }
 
 impl DurableInferenceControl {
+    /// Read the exact physical bytes through this owner's original locked handle.
+    /// The caller must already own this value; no path, handle, write grant, or
+    /// provider-release authority is exposed. The exclusive borrow serializes
+    /// access, and the cursor is restored before bytes are returned. Any I/O or
+    /// retained-length uncertainty leaves subsequent writes poisoned.
+    pub fn retained_bytes(&mut self) -> Result<Vec<u8>, Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        let expected = self.journal_bytes;
+        let maximum = MAX_JOURNAL_BYTES;
+        if expected > maximum {
+            return Err(Error::CapacityExceeded);
+        }
+        self.poisoned = true;
+        let result = (|| {
+            let cursor = self.file.stream_position().map_err(Error::from)?;
+            let read = (|| {
+                if self.file.metadata().map_err(Error::from)?.len() != expected {
+                    return Err(Error::CorruptJournal("retained byte observation"));
+                }
+                self.file.seek(SeekFrom::Start(0)).map_err(Error::from)?;
+                let mut bytes = Vec::new();
+                (&mut self.file)
+                    .take(maximum + 1)
+                    .read_to_end(&mut bytes)
+                    .map_err(Error::from)?;
+                if bytes.len() as u64 != expected
+                    || self.file.metadata().map_err(Error::from)?.len() != expected
+                {
+                    return Err(Error::CorruptJournal("retained byte observation"));
+                }
+                Ok(bytes)
+            })();
+            // Restore even when the read or either length check failed.
+            let restored = self
+                .file
+                .seek(SeekFrom::Start(cursor))
+                .map_err(Error::from)?;
+            if restored != cursor {
+                return Err(Error::CorruptJournal("retained byte observation"));
+            }
+            let bytes = read?;
+            Ok(bytes)
+        })();
+        self.poisoned = result.is_err();
+        result
+    }
+
     pub fn open(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
         if capacity == 0 || capacity > MAX_RECORDS {
             return Err(Error::CapacityExceeded);

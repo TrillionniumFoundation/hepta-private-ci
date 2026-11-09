@@ -1,0 +1,29 @@
+{
+  "head": "4f32a14e12ccb738c65a511d05b36ac388fc328b",
+  "status": "NO_CHANGED_FILES_IN_EXACT_PRETTIER_GATE_SCOPE",
+  "workflow_command": "pnpm run format",
+  "expanded_package_command": "prettier --check *.json *.md docs/*.md .github/workflows/*.yml **/*.js",
+  "root_locked_prettier": "3.5.3",
+  "other_workspace_prettier_not_root": "3.6.2",
+  "ci_node_major": 22,
+  "package_manager": "pnpm@10.34.5",
+  "published_path_count": 178,
+  "qualification_paths": 103,
+  "qualification_json_markdown_paths": 54,
+  "matching_paths": [],
+  "qualification_excluded_by_command_selection_not_ignore": true,
+  "prettier_executable_run": false,
+  "reason_no_execution": "Changed relevant file set is empty; no available Prettier was needed or installed.",
+  "source_evidence_policies_ignores_modified": false,
+  "exact_text_configs_saved": [
+    ".github/workflows/repo-checks.yml",
+    ".npmrc",
+    ".prettierignore",
+    ".prettierrc.toml",
+    "package.json",
+    "pnpm-workspace.yaml"
+  ],
+  "lock_sha256": "42e7c955619977812c70b7b44c0aabaaae3d9249cf6777db942e589f2a043081",
+  "lock_git_blob": "48ba7c7f117e999a649fb66e4bb5c57e76243101",
+  "recommended_repair": "No introduced Prettier repair indicated. Preserve raw evidence bytes and current gate/ignore policies."
+}

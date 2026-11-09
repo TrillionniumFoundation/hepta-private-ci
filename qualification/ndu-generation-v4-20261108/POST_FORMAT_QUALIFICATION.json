@@ -1,0 +1,58 @@
+{
+  "formatter": "ruff 0.15.13",
+  "formatter_wheel_sha256": "cc411dfebe5eebe55ce041c6ae080eb7668955e866daa2fbb16692a784f1c4ca",
+  "numerical_logic": "The formatter changes no non-docstring AST nodes. The two raw function docstrings differ in indentation only; their cleaned text is equal. This does not imply that source-file hashes or all introspected text are unchanged.",
+  "observed_repository_ci": {
+    "blob_job_single_retry": "REJECTED_BY_GITHUB: containing workflow run is still running",
+    "blob_size_check": "NOT_RUN_SETUP_FAILED: Fence unsupported_resolver_layout before checkout",
+    "codespell": "PASS",
+    "full_caller_gate": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "full_workspace_ci_pass_claimed": false,
+    "head": "4f32a14e12ccb738c65a511d05b36ac388fc328b",
+    "rust_files_scanned": 5433,
+    "subsequent_format_check": "FAILED: 41 research files and 5 target-baseline files"
+  },
+  "original_numerical_candidate": "e2802a53a82529b9a206f77fcdfa98dd65918bfc",
+  "research_format_scope": {
+    "cleaned_docstring_text_equal": true,
+    "docstring_functions": [
+      "choose",
+      "policy_improvement_loss"
+    ],
+    "docstring_only_file": "scripts/joint_generation_v4_ndu.py",
+    "files": 41,
+    "non_docstring_ast_equal_files": 41,
+    "raw_docstring_changes_retained": true,
+    "record": "post-format/pr-reviewed-source.json",
+    "ruff_format_check": "PASS",
+    "strict_ast_equal_files": 40
+  },
+  "schema": "hepta.ndu.python-format-followup.v1",
+  "separate_baseline_format_scope": {
+    "base": "bf952042b3d31fc416f14adfea5c38181580498b",
+    "branch": "maintenance/ndu-ci-python-format-20261108-986c",
+    "files": [
+      "scripts/hepta_cell_joint_config.py",
+      "scripts/hepta_ci_chef.py",
+      "scripts/test_hepta_cell_joint_config.py",
+      "scripts/test_hepta_ci_chef.py",
+      "scripts/test_hepta_module_status_facts.py"
+    ],
+    "included_in_research_branch": false,
+    "reason": "Five failures originate in the target branch, including two files absent from the research parent. They belong in a separate mechanical proposal based on that target.",
+    "record": "post-format/baseline-reviewed-source.json",
+    "ruff_format_check": "PASS",
+    "strict_ast_equal_files": 5
+  },
+  "source_binding_effects": {
+    "complete_source_scope": "Use the original cloud capsule source manifest for the numerical run. Inner training and v4 diagnostic receipts do not alone enumerate the full import dependency closure.",
+    "direct_actor": "Direct loading checks weights, deployment profiles and strict tensor structure, but is not a substitute for the formal outer source-pin checks.",
+    "formal_execution": "Old study plans, code_pins and evaluator source pins remain enforced; a new execution must freeze its actual new source identities.",
+    "numeric_or_behavioral_tests_repeated": false,
+    "old_numerical_receipts_relabelled": false,
+    "pretrained_training": "Old receipt source_pins remain unchanged; resuming through --pretrained with newly formatted source is expected to reject the mismatch.",
+    "source_byte_hashes_changed": true,
+    "v4_packet": "HEPTAPK3 checksum binds metadata and tensor bytes, not Python source text. No new checkpoint load or numerical replay is claimed here."
+  },
+  "source_parent": "4f32a14e12ccb738c65a511d05b36ac388fc328b"
+}

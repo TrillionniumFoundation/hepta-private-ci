@@ -11,6 +11,7 @@ use codex_hepta_types::StableId;
 
 const Q: i64 = 1 << 24;
 
+#[track_caller]
 pub(crate) fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
     match result {
         Ok(value) => value,

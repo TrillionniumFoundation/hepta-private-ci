@@ -139,6 +139,11 @@ where
                 });
                 respond(state, response, result)
             }
+            #[cfg(test)]
+            GenerationCommand::RetainedBytes(response) => {
+                let result = self.owner.journal_mut().retained_bytes();
+                respond(state, response, result)
+            }
             GenerationCommand::Snapshot(response) => {
                 respond(state, response, self.owner.journal().snapshot().cloned())
             }
@@ -150,6 +155,13 @@ where
                 let result = self
                     .learning_publication
                     .read(self.owner.journal(), *request);
+                respond(state, response, Ok(result))
+            }
+            #[cfg(unix)]
+            GenerationCommand::LearningReadback { request, response } => {
+                let result = self
+                    .learning_publication
+                    .export(self.owner.journal(), *request);
                 respond(state, response, Ok(result))
             }
             GenerationCommand::PendingRequest(response) => respond(

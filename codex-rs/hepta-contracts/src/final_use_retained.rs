@@ -3,8 +3,6 @@
 //! caller still needs its authenticated effect-owner record to prove what was
 //! applied; a caller-supplied witness alone does not prove effect completion.
 
-use ed25519_dalek::Signature;
-
 use super::FinalUseAuthority;
 use super::FinalUseBinding;
 use super::FinalUseError;
@@ -12,7 +10,7 @@ use super::FinalUseFrontier;
 use super::FinalUseRevocations;
 use super::SignedFinalUseGrant;
 use super::final_use_binding_witness_sha256;
-use super::frontier_for_state;
+use super::frontier_for_state_with_profile;
 use crate::VerifiedUseAuthorityRefV1;
 use crate::VerifiedUseBoundaryV1;
 use crate::VerifiedUseTokenWitnessV1;
@@ -30,7 +28,7 @@ impl FinalUseAuthority {
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
         let state = self.0.ensure_current_effect_state(state)?;
-        Ok(frontier_for_state(&state))
+        Ok(frontier_for_state_with_profile(&state, self.0.profile))
     }
 
     /// Verify the exact original signature, consumed nonce, retained dispatch
@@ -47,19 +45,7 @@ impl FinalUseAuthority {
         if self.0.frontier_store.is_none() {
             return Err(FinalUseError::InvalidTrust);
         }
-        let input = signed.grant.signing_bytes()?;
-        if signed.grant.signer_id != self.0.signer_id || &signed.grant.binding != expected {
-            return Err(FinalUseError::BindingMismatch);
-        }
-        let signature = Signature::from_slice(&signed.signature)
-            .map_err(|_| FinalUseError::InvalidSignature)?;
-        if !self.0.issuer_keys.iter().any(|key| {
-            signed.grant.authority_epoch >= key.not_before_authority_epoch
-                && signed.grant.authority_epoch <= key.not_after_authority_epoch
-                && key.key.verify_strict(&input, &signature).is_ok()
-        }) {
-            return Err(FinalUseError::InvalidSignature);
-        }
+        self.grant_signing_input(signed, expected)?;
         witness
             .validate()
             .map_err(|_| FinalUseError::InvalidGrant)?;

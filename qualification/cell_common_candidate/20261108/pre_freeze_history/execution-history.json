@@ -1,0 +1,2256 @@
+{
+  "schema": "hepta.engineering-execution-history.v1",
+  "collector_sha256": "e99a96b5a303536e51d54f3d0dd525df525abe628869668dacf3a6413aed2067",
+  "records_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+  "collection_started_at": "2026-11-08T18:44:18.979540+00:00",
+  "collection_finished_at": "2026-11-08T18:44:19.823861+00:00",
+  "required_receipts": [
+    "baseline-terminal-tests-2.json",
+    "baseline-terminal-tests.json",
+    "common-core-v1.json",
+    "python-common-cadc/cell-research-stages/joint-configuration.json",
+    "python-common-cadc/cell-research-stages/research-gate.json",
+    "python-common-cadc/cell-research-stages/successor-binding.json",
+    "terminal-bellman-v1.json",
+    "terminal-native-v1.json",
+    "terminal-native-v2.json",
+    "terminal-native-v3.json",
+    "terminal-original-host-cas-v2.json",
+    "terminal-original-host-cas-v3.json",
+    "common-final-graph-bazel-v1.json",
+    "external-sources/b1ee2850e545e08a/baseline-private-mod-result.json"
+  ],
+  "required_receipts_missing": [],
+  "capture_status": "snapshot_created",
+  "completion_guard": "terminal record plus unchanged no-follow bytes/stat on two passes; per-event log_linkage distinguishes recorded hashes from explicitly paired unbound supplements",
+  "unsigned_local_records_are_external_authority": false,
+  "input_source_or_logs_modified": false,
+  "settle_seconds": 0.25,
+  "events": [
+    {
+      "id": "851d683fa26b27973e819643b48efd7f7bc30e93eb2ceae7bf23eb0ded8c886a",
+      "receipt": "python-common-cadc/current-result-comparison.json",
+      "adapter": "retained_result_comparison",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": null,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "evidence_comparison",
+        "command": [
+          "python3",
+          "-",
+          "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/python-common-cadc/cell-research-stages/current-review.json"
+        ],
+        "observed_passed_tests_as_reported": null,
+        "observed_failed_tests_as_reported": null,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": null,
+        "declared_tested_sha": null,
+        "observed_commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "observed_tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f",
+        "before": {
+          "commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+          "tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f",
+          "dirty_porcelain": ""
+        },
+        "after": {
+          "commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+          "tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f",
+          "dirty_porcelain": ""
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": null,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": null,
+        "finished_at_as_recorded": null,
+        "interval_known": false,
+        "elapsed_seconds_as_reported": 0.10705681494437158,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "python-common-cadc/current-result-comparison.json",
+        "python-common-cadc/current-result-comparison.log",
+        "python-common-cadc/cell-research-stages/current-review.json",
+        "python-common-cadc/CURRENT_RESULT.original.json"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "e314abb12b111417aeea483d14fa6138500e0a6b8f9b0d0e88b27132f34a7537",
+      "receipt": "baseline-terminal-tests.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "rejected",
+      "scope_as_recorded": null,
+      "command_exit_code": null,
+      "runner_exit_code": 2,
+      "error_as_recorded": "invalid source_sha",
+      "activity": {
+        "classification": "preflight_rejection_no_command_dispatched",
+        "command": [
+          "python3",
+          "scripts/hepta_ci_v8.py",
+          "--run",
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(terminal_learning)"
+        ],
+        "observed_passed_tests_as_reported": null,
+        "observed_failed_tests_as_reported": null,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": null,
+        "declared_tested_sha": null,
+        "observed_commit": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+        "observed_tree": "5c5f82905c0365bf8e9eaa8f0dc51335c1fc1051",
+        "before": {
+          "commit": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+          "dirty": false,
+          "parents": [
+            "99a4debea85e8f58f1697eb3a195a89045a40772"
+          ],
+          "tree": "5c5f82905c0365bf8e9eaa8f0dc51335c1fc1051"
+        },
+        "after": null,
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": false,
+        "declared_to_observed_identity_consistent": false,
+        "identity_before_after_equal_and_clean": false,
+        "scope": "preflight_observation_only",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T17:26:13.204125+00:00",
+        "finished_at_as_recorded": "2026-11-08T17:26:13.642530+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 0.43248042883351445,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "baseline-terminal-tests.json"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": false,
+      "log_linkage": "no_command_log"
+    },
+    {
+      "id": "3218cf731a45934bf6158fa6962ae579cabdeb4c677493834a8c04667078f146",
+      "receipt": "baseline-terminal-tests-2.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "test_execution_with_possible_build_work",
+        "command": [
+          "python3",
+          "scripts/hepta_ci_v8.py",
+          "--run",
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(terminal_learning)"
+        ],
+        "observed_passed_tests_as_reported": 4,
+        "observed_failed_tests_as_reported": 0,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+        "declared_tested_sha": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+        "observed_commit": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+        "observed_tree": "5c5f82905c0365bf8e9eaa8f0dc51335c1fc1051",
+        "before": {
+          "commit": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+          "dirty": false,
+          "parents": [
+            "99a4debea85e8f58f1697eb3a195a89045a40772"
+          ],
+          "tree": "5c5f82905c0365bf8e9eaa8f0dc51335c1fc1051"
+        },
+        "after": {
+          "commit": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+          "dirty": false,
+          "parents": [
+            "99a4debea85e8f58f1697eb3a195a89045a40772"
+          ],
+          "tree": "5c5f82905c0365bf8e9eaa8f0dc51335c1fc1051"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T17:28:13.026890+00:00",
+        "finished_at_as_recorded": "2026-11-08T17:36:34.266070+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 501.23433373798616,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "baseline-terminal-tests-2.json",
+        "baseline-terminal-tests-2.json.d42e59f822cc44fab720afa10fa42888.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "a5925bbabf3b74f0fe46a952d17e087df5b12abfdb62841152b45ccc1e81e1af",
+      "receipt": "terminal-native-v1.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "failed",
+      "scope_as_recorded": null,
+      "command_exit_code": 101,
+      "runner_exit_code": 101,
+      "error_as_recorded": "required tests were not observed passing",
+      "activity": {
+        "classification": "compilation_failure_before_observed_tests",
+        "command": [
+          "python3",
+          "scripts/hepta_ci_v8.py",
+          "--run",
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(terminal_learning)"
+        ],
+        "observed_passed_tests_as_reported": 0,
+        "observed_failed_tests_as_reported": 0,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "48cac6d1d8ad159e2823f75b73de208ec4c5ad18",
+        "declared_tested_sha": "48cac6d1d8ad159e2823f75b73de208ec4c5ad18",
+        "observed_commit": "48cac6d1d8ad159e2823f75b73de208ec4c5ad18",
+        "observed_tree": "d9106a89c870aa5049b700c240fd5ec6ae7567a9",
+        "before": {
+          "commit": "48cac6d1d8ad159e2823f75b73de208ec4c5ad18",
+          "dirty": false,
+          "parents": [
+            "1eb72a1131285f5de98beeb7c95a27eab72d647e"
+          ],
+          "tree": "d9106a89c870aa5049b700c240fd5ec6ae7567a9"
+        },
+        "after": {
+          "commit": "48cac6d1d8ad159e2823f75b73de208ec4c5ad18",
+          "dirty": false,
+          "parents": [
+            "1eb72a1131285f5de98beeb7c95a27eab72d647e"
+          ],
+          "tree": "d9106a89c870aa5049b700c240fd5ec6ae7567a9"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T17:36:37.185821+00:00",
+        "finished_at_as_recorded": "2026-11-08T17:41:35.992733+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 298.79230251698755,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "terminal-native-v1.json",
+        "terminal-native-v1.json.e4149eeb30ba4280ba0d711eea0292f3.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "5da8463012e7c28af0ff7c3a08d105189c2a7767edb2aa26dcd2b962336c08d2",
+      "receipt": "terminal-bellman-v1.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "test_execution_with_possible_build_work",
+        "command": [
+          "python3",
+          "scripts/hepta_ci_v8.py",
+          "--run",
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-bellman-operator",
+          "--lib",
+          "-E",
+          "test(loaded)"
+        ],
+        "observed_passed_tests_as_reported": 5,
+        "observed_failed_tests_as_reported": 0,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "48cac6d1d8ad159e2823f75b73de208ec4c5ad18",
+        "declared_tested_sha": "48cac6d1d8ad159e2823f75b73de208ec4c5ad18",
+        "observed_commit": "48cac6d1d8ad159e2823f75b73de208ec4c5ad18",
+        "observed_tree": "d9106a89c870aa5049b700c240fd5ec6ae7567a9",
+        "before": {
+          "commit": "48cac6d1d8ad159e2823f75b73de208ec4c5ad18",
+          "dirty": false,
+          "parents": [
+            "1eb72a1131285f5de98beeb7c95a27eab72d647e"
+          ],
+          "tree": "d9106a89c870aa5049b700c240fd5ec6ae7567a9"
+        },
+        "after": {
+          "commit": "48cac6d1d8ad159e2823f75b73de208ec4c5ad18",
+          "dirty": false,
+          "parents": [
+            "1eb72a1131285f5de98beeb7c95a27eab72d647e"
+          ],
+          "tree": "d9106a89c870aa5049b700c240fd5ec6ae7567a9"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T17:41:36.092523+00:00",
+        "finished_at_as_recorded": "2026-11-08T17:41:52.707291+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 16.60972505994141,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "terminal-bellman-v1.json",
+        "terminal-bellman-v1.json.b13faa0773df4129884cc3f1283a68ce.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "9238ed9d7417f4fbbafa56ae76f6031740b9278e32c2ddc8b590fee038d7068f",
+      "receipt": "terminal-native-v2.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "test_execution_with_possible_build_work",
+        "command": [
+          "python3",
+          "scripts/hepta_ci_v8.py",
+          "--run",
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(terminal_learning)"
+        ],
+        "observed_passed_tests_as_reported": 9,
+        "observed_failed_tests_as_reported": 0,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "2117457b969eba0458fdcc407e52d5caf8462eb2",
+        "declared_tested_sha": "2117457b969eba0458fdcc407e52d5caf8462eb2",
+        "observed_commit": "2117457b969eba0458fdcc407e52d5caf8462eb2",
+        "observed_tree": "5e8e429873cf390687b48e88755d51c0f2d8bad9",
+        "before": {
+          "commit": "2117457b969eba0458fdcc407e52d5caf8462eb2",
+          "dirty": false,
+          "parents": [
+            "48cac6d1d8ad159e2823f75b73de208ec4c5ad18"
+          ],
+          "tree": "5e8e429873cf390687b48e88755d51c0f2d8bad9"
+        },
+        "after": {
+          "commit": "2117457b969eba0458fdcc407e52d5caf8462eb2",
+          "dirty": false,
+          "parents": [
+            "48cac6d1d8ad159e2823f75b73de208ec4c5ad18"
+          ],
+          "tree": "5e8e429873cf390687b48e88755d51c0f2d8bad9"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T17:43:35.908548+00:00",
+        "finished_at_as_recorded": "2026-11-08T17:45:32.018808+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 116.06259754905477,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "terminal-native-v2.json",
+        "terminal-native-v2.json.4861baa408ad440ab8205596cecc5531.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "d78c88d15e7c7362199ff1e09b33c4b8640b97a8c344263e675cdf8f8db586cc",
+      "receipt": "terminal-original-host-cas-v2.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "failed",
+      "scope_as_recorded": null,
+      "command_exit_code": 100,
+      "runner_exit_code": 100,
+      "error_as_recorded": "required tests were not observed passing",
+      "activity": {
+        "classification": "test_execution_with_possible_build_work",
+        "command": [
+          "python3",
+          "scripts/hepta_ci_v8.py",
+          "--run",
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "--run-ignored",
+          "only",
+          "-E",
+          "test(durable_native_job_with_original_host_cas)",
+          "--retries",
+          "0",
+          "--no-tests",
+          "fail"
+        ],
+        "observed_passed_tests_as_reported": 0,
+        "observed_failed_tests_as_reported": 1,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "2117457b969eba0458fdcc407e52d5caf8462eb2",
+        "declared_tested_sha": "2117457b969eba0458fdcc407e52d5caf8462eb2",
+        "observed_commit": "2117457b969eba0458fdcc407e52d5caf8462eb2",
+        "observed_tree": "5e8e429873cf390687b48e88755d51c0f2d8bad9",
+        "before": {
+          "commit": "2117457b969eba0458fdcc407e52d5caf8462eb2",
+          "dirty": false,
+          "parents": [
+            "48cac6d1d8ad159e2823f75b73de208ec4c5ad18"
+          ],
+          "tree": "5e8e429873cf390687b48e88755d51c0f2d8bad9"
+        },
+        "after": {
+          "commit": "2117457b969eba0458fdcc407e52d5caf8462eb2",
+          "dirty": false,
+          "parents": [
+            "48cac6d1d8ad159e2823f75b73de208ec4c5ad18"
+          ],
+          "tree": "5e8e429873cf390687b48e88755d51c0f2d8bad9"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T17:46:12.962445+00:00",
+        "finished_at_as_recorded": "2026-11-08T17:46:24.324299+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 11.345226305071265,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "terminal-original-host-cas-v2.json",
+        "terminal-original-host-cas-v2.json.816da4f337bb4afa8d5fa7e3c289eb44.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "453addcd8608bec2a8ef86cf1d11b3dc1a531d4988747b1535692b8716c3a2bd",
+      "receipt": "terminal-native-v3.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "test_execution_with_possible_build_work",
+        "command": [
+          "python3",
+          "scripts/hepta_ci_v8.py",
+          "--run",
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(terminal_learning)"
+        ],
+        "observed_passed_tests_as_reported": 9,
+        "observed_failed_tests_as_reported": 0,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "d74efedeed3b3f5ec62e35ce6133eccf6e44256d",
+        "declared_tested_sha": "d74efedeed3b3f5ec62e35ce6133eccf6e44256d",
+        "observed_commit": "d74efedeed3b3f5ec62e35ce6133eccf6e44256d",
+        "observed_tree": "2603b006076e4ea045bf7281516ac56540526f41",
+        "before": {
+          "commit": "d74efedeed3b3f5ec62e35ce6133eccf6e44256d",
+          "dirty": false,
+          "parents": [
+            "2117457b969eba0458fdcc407e52d5caf8462eb2"
+          ],
+          "tree": "2603b006076e4ea045bf7281516ac56540526f41"
+        },
+        "after": {
+          "commit": "d74efedeed3b3f5ec62e35ce6133eccf6e44256d",
+          "dirty": false,
+          "parents": [
+            "2117457b969eba0458fdcc407e52d5caf8462eb2"
+          ],
+          "tree": "2603b006076e4ea045bf7281516ac56540526f41"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T17:49:35.847373+00:00",
+        "finished_at_as_recorded": "2026-11-08T17:50:54.012858+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 78.16056319791824,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "terminal-native-v3.json",
+        "terminal-native-v3.json.5386bf8653af467a9498736952133380.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "c0a354a063516260b0412d72f111b6c5114a127f2c0a279b6714cfa2c5bab179",
+      "receipt": "terminal-original-host-cas-v3.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "test_execution_with_possible_build_work",
+        "command": [
+          "python3",
+          "scripts/hepta_ci_v8.py",
+          "--run",
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "--run-ignored",
+          "only",
+          "-E",
+          "test(durable_native_job_with_original_host_cas)",
+          "--retries",
+          "0",
+          "--no-tests",
+          "fail"
+        ],
+        "observed_passed_tests_as_reported": 1,
+        "observed_failed_tests_as_reported": 0,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "d74efedeed3b3f5ec62e35ce6133eccf6e44256d",
+        "declared_tested_sha": "d74efedeed3b3f5ec62e35ce6133eccf6e44256d",
+        "observed_commit": "d74efedeed3b3f5ec62e35ce6133eccf6e44256d",
+        "observed_tree": "2603b006076e4ea045bf7281516ac56540526f41",
+        "before": {
+          "commit": "d74efedeed3b3f5ec62e35ce6133eccf6e44256d",
+          "dirty": false,
+          "parents": [
+            "2117457b969eba0458fdcc407e52d5caf8462eb2"
+          ],
+          "tree": "2603b006076e4ea045bf7281516ac56540526f41"
+        },
+        "after": {
+          "commit": "d74efedeed3b3f5ec62e35ce6133eccf6e44256d",
+          "dirty": false,
+          "parents": [
+            "2117457b969eba0458fdcc407e52d5caf8462eb2"
+          ],
+          "tree": "2603b006076e4ea045bf7281516ac56540526f41"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T17:50:54.127184+00:00",
+        "finished_at_as_recorded": "2026-11-08T17:51:15.758748+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 21.626730218995363,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "terminal-original-host-cas-v3.json",
+        "terminal-original-host-cas-v3.json.b740db882d8b4412aecfd7f38c8feab9.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "c49ee3ee7f850a28d34e8c6bcb23e3560a8bb9b3e232d5098013c3d470a836ca",
+      "receipt": "external-sources/b1ee2850e545e08a/baseline-private-mod-result.json",
+      "adapter": "explicit_external_completed_pair",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "dependency_preparation",
+        "command": [
+          "/home/qian-qi/.local/bin/bazel",
+          "--output_base=/home/qian-qi/work/hepta-cell-s0-bazel-20261108-898e/baseline-output",
+          "mod",
+          "deps",
+          "--lockfile_mode=update",
+          "--repo_contents_cache=/home/qian-qi/work/hepta-cell-s0-bazel-20261108-898e/repo-contents",
+          "--repository_cache=/home/qian-qi/work/hepta-cell-s0-bazel-20261108-898e/repository"
+        ],
+        "observed_passed_tests_as_reported": null,
+        "observed_failed_tests_as_reported": null,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": null,
+        "declared_tested_sha": null,
+        "observed_commit": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+        "observed_tree": null,
+        "before": {
+          ".bazelversion": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef",
+          ".bazelrc": "95ba599ca6df0de4cbec2751e19221a1e5c71dd9bf49c1f2e21ed3c56abf1487",
+          "MODULE.bazel": "6ba415cd3a19ed66dcb78eb916eb21a09e6d613832c6ddc09d0f3f7c0ea11cdf",
+          "MODULE.bazel.lock": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+          "codex-rs/Cargo.lock": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c"
+        },
+        "after": {
+          ".bazelversion": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef",
+          ".bazelrc": "95ba599ca6df0de4cbec2751e19221a1e5c71dd9bf49c1f2e21ed3c56abf1487",
+          "MODULE.bazel": "6ba415cd3a19ed66dcb78eb916eb21a09e6d613832c6ddc09d0f3f7c0ea11cdf",
+          "MODULE.bazel.lock": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+          "codex-rs/Cargo.lock": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c"
+        },
+        "observed_sha_shapes_valid": false,
+        "dirty_claims_consistent": false,
+        "declared_to_observed_identity_consistent": null,
+        "identity_before_after_equal_and_clean": false,
+        "scope": "partial_or_unknown",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T18:01:13.678680+00:00",
+        "finished_at_as_recorded": "2026-11-08T18:15:53.594613+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 879.8256440910045,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "external-sources/b1ee2850e545e08a/baseline-private-mod-result.json",
+        "external-sources/b1ee2850e545e08a/baseline-private-mod.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-bazel-20261108-898e",
+      "receipt_log_hash_verified": false,
+      "log_linkage": "explicit_pair_observed_hash_only_not_bound_by_receipt"
+    },
+    {
+      "id": "6e68a7ce7a379a55dff0897bb04db31e58da1bf91442ffcd51c3c6511f1afded",
+      "receipt": "common-core-v1.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "failed",
+      "scope_as_recorded": null,
+      "command_exit_code": 101,
+      "runner_exit_code": 101,
+      "error_as_recorded": "required tests were not observed passing",
+      "activity": {
+        "classification": "compilation_failure_before_observed_tests",
+        "command": [
+          "python3",
+          "scripts/hepta_ci_v8.py",
+          "--run",
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-contracts",
+          "-p",
+          "codex-hepta-neuron",
+          "-p",
+          "codex-hepta-automation",
+          "-p",
+          "codex-hepta-bellman-operator",
+          "--lib"
+        ],
+        "observed_passed_tests_as_reported": 0,
+        "observed_failed_tests_as_reported": 0,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "declared_tested_sha": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "observed_commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "observed_tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f",
+        "before": {
+          "commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+          "dirty": false,
+          "parents": [
+            "6f59287e1c2420fedc6f79e3972227d53e0b8e83",
+            "d74efedeed3b3f5ec62e35ce6133eccf6e44256d"
+          ],
+          "tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f"
+        },
+        "after": {
+          "commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+          "dirty": false,
+          "parents": [
+            "6f59287e1c2420fedc6f79e3972227d53e0b8e83",
+            "d74efedeed3b3f5ec62e35ce6133eccf6e44256d"
+          ],
+          "tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T18:06:32.890680+00:00",
+        "finished_at_as_recorded": "2026-11-08T18:06:46.570028+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 13.519833165919408,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "common-core-v1.json",
+        "common-core-v1.json.f0a743e5b4554c64a7fc68adcccdc688.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "048b1567ae97f84eb837f0776aff8a21dbfaf4fff4ddad11f29ceb5c42258daf",
+      "receipt": "python-common-cadc/execution-manifest.json",
+      "adapter": "workflow_container",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": null,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "workflow_container_not_an_additional_test_run",
+        "command": null,
+        "observed_passed_tests_as_reported": null,
+        "observed_failed_tests_as_reported": null,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": null,
+        "declared_tested_sha": null,
+        "observed_commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "observed_tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f",
+        "before": {
+          "commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+          "tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f",
+          "dirty_porcelain": ""
+        },
+        "after": {
+          "commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+          "tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f",
+          "dirty_porcelain": ""
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": null,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T18:13:51.397105+00:00",
+        "finished_at_as_recorded": "2026-11-08T18:14:29.175738+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 37.77799087204039,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "python-common-cadc/execution-manifest.json",
+        "python-common-cadc/workflow-console.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "0bce45b33d6c0e4511582e687ba441ddfc8b84b779ee024e6532d8f97763c56c",
+      "receipt": "python-common-cadc/cell-research-stages/research-gate.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "test_execution_with_possible_build_work",
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts",
+          "-p",
+          "test_hepta_cell_research_gate.py",
+          "-v"
+        ],
+        "observed_passed_tests_as_reported": 19,
+        "observed_failed_tests_as_reported": 0,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "declared_tested_sha": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "observed_commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "observed_tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f",
+        "before": {
+          "commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+          "dirty": false,
+          "parents": [
+            "6f59287e1c2420fedc6f79e3972227d53e0b8e83",
+            "d74efedeed3b3f5ec62e35ce6133eccf6e44256d"
+          ],
+          "tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f"
+        },
+        "after": {
+          "commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+          "dirty": false,
+          "parents": [
+            "6f59287e1c2420fedc6f79e3972227d53e0b8e83",
+            "d74efedeed3b3f5ec62e35ce6133eccf6e44256d"
+          ],
+          "tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T18:13:51.567601+00:00",
+        "finished_at_as_recorded": "2026-11-08T18:14:03.547295+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 11.914064209908247,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "python-common-cadc/cell-research-stages/research-gate.json",
+        "python-common-cadc/cell-research-stages/research-gate.json.378ae59d66424da0bef9a1bce4fa1825.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "2b5ef084f9714750ef8218f5e7b8a11a3370a778498b3992f6a22abb51a32552",
+      "receipt": "python-common-cadc/cell-research-stages/joint-configuration.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "test_execution_with_possible_build_work",
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts",
+          "-p",
+          "test_hepta_cell_joint_config.py",
+          "-v"
+        ],
+        "observed_passed_tests_as_reported": 23,
+        "observed_failed_tests_as_reported": 0,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "declared_tested_sha": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "observed_commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "observed_tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f",
+        "before": {
+          "commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+          "dirty": false,
+          "parents": [
+            "6f59287e1c2420fedc6f79e3972227d53e0b8e83",
+            "d74efedeed3b3f5ec62e35ce6133eccf6e44256d"
+          ],
+          "tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f"
+        },
+        "after": {
+          "commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+          "dirty": false,
+          "parents": [
+            "6f59287e1c2420fedc6f79e3972227d53e0b8e83",
+            "d74efedeed3b3f5ec62e35ce6133eccf6e44256d"
+          ],
+          "tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T18:14:03.974366+00:00",
+        "finished_at_as_recorded": "2026-11-08T18:14:26.579473+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 22.436915559927,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "python-common-cadc/cell-research-stages/joint-configuration.json",
+        "python-common-cadc/cell-research-stages/joint-configuration.json.7224d878ae1e4ef295d369844db18589.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "70d55998a01ebe390e4f7b2942936d4b60a24566564c07731a07accffebceff1",
+      "receipt": "python-common-cadc/cell-research-stages/successor-binding.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "test_execution_with_possible_build_work",
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts",
+          "-p",
+          "test_hepta_cell_research_successor.py",
+          "-v"
+        ],
+        "observed_passed_tests_as_reported": 8,
+        "observed_failed_tests_as_reported": 0,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "declared_tested_sha": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "observed_commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+        "observed_tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f",
+        "before": {
+          "commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+          "dirty": false,
+          "parents": [
+            "6f59287e1c2420fedc6f79e3972227d53e0b8e83",
+            "d74efedeed3b3f5ec62e35ce6133eccf6e44256d"
+          ],
+          "tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f"
+        },
+        "after": {
+          "commit": "cadc31bc50a749c3bc23069da5094448f113efb8",
+          "dirty": false,
+          "parents": [
+            "6f59287e1c2420fedc6f79e3972227d53e0b8e83",
+            "d74efedeed3b3f5ec62e35ce6133eccf6e44256d"
+          ],
+          "tree": "2e6960e6993f2155a2facec98cc9175d5f540c3f"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T18:14:26.674226+00:00",
+        "finished_at_as_recorded": "2026-11-08T18:14:28.839843+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 2.1534835880156606,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "python-common-cadc/cell-research-stages/successor-binding.json",
+        "python-common-cadc/cell-research-stages/successor-binding.json.945a98040887445fb3d6ebd6212f130e.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "e4437146c419ff24a4259c1495facded9ed33de7ed65272133ccb942dfc7ccc2",
+      "receipt": "dependency-admission-rustsec-unit-preflight.json",
+      "adapter": "legacy_completed_record_with_sibling_log_hash",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "test_command_with_unreported_test_count",
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "scripts.tests.test_hepta_rustsec_guard"
+        ],
+        "observed_passed_tests_as_reported": null,
+        "observed_failed_tests_as_reported": null,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": null,
+        "declared_tested_sha": null,
+        "observed_commit": "646cdd07e0e40a4d3704d6f4885107f93a27c3f2",
+        "observed_tree": null,
+        "before": {
+          "scripts/check_hepta_rustsec_advisories.py": "0efca9102d1e7c14093a094e2230320e53bc6b313c807b0b2f034ac962282946",
+          "scripts/tests/test_hepta_rustsec_guard.py": "b40cf2a546613669c6e6ac37b8db0239f74fc509f302104eebe0c2d0d44fe7c2",
+          "codex-rs/deny.toml": "af0034b06e026087026c967005082e2f8b4e0cb97f756bfc46df441e7bc6937f"
+        },
+        "after": {
+          "scripts/check_hepta_rustsec_advisories.py": "0efca9102d1e7c14093a094e2230320e53bc6b313c807b0b2f034ac962282946",
+          "scripts/tests/test_hepta_rustsec_guard.py": "b40cf2a546613669c6e6ac37b8db0239f74fc509f302104eebe0c2d0d44fe7c2",
+          "codex-rs/deny.toml": "af0034b06e026087026c967005082e2f8b4e0cb97f756bfc46df441e7bc6937f"
+        },
+        "observed_sha_shapes_valid": false,
+        "dirty_claims_consistent": false,
+        "declared_to_observed_identity_consistent": null,
+        "identity_before_after_equal_and_clean": false,
+        "scope": "partial_or_unknown",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T18:19:57.873643+00:00",
+        "finished_at_as_recorded": "2026-11-08T18:19:57.990318+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 0.11502188397571445,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "dependency-admission-rustsec-unit-preflight.json",
+        "dependency-admission-rustsec-unit-preflight.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "b86fc4dedc129ad28db6a02d348f1c61004fef67722a6302c6645fdc11995962",
+      "receipt": "common-final-graph-bazel-v1.json",
+      "adapter": "dependency_resolution_uncommitted_input_snapshot",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": "dependency-resolution-only-uncommitted-integration",
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "dependency_preparation",
+        "command": [
+          "/home/qian-qi/.local/bin/bazel",
+          "--output_base=/home/qian-qi/work/hepta-cell-s0-bazel-20261108-898e/common-output",
+          "mod",
+          "deps",
+          "--lockfile_mode=update",
+          "--repo_contents_cache=/home/qian-qi/work/hepta-cell-s0-bazel-20261108-898e/repo-contents",
+          "--repository_cache=/home/qian-qi/work/hepta-cell-s0-bazel-20261108-898e/repository"
+        ],
+        "observed_passed_tests_as_reported": null,
+        "observed_failed_tests_as_reported": null,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": null,
+        "declared_tested_sha": null,
+        "observed_commit": "646cdd07e0e40a4d3704d6f4885107f93a27c3f2",
+        "observed_tree": null,
+        "before": {
+          ".bazelrc": "1fb435555b4cb0b73f010ddc2fe83aca930d3881389cf86cb8215504a6284397",
+          ".bazelversion": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef",
+          "MODULE.bazel": "6ba415cd3a19ed66dcb78eb916eb21a09e6d613832c6ddc09d0f3f7c0ea11cdf",
+          "MODULE.bazel.lock": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+          "codex-rs/Cargo.lock": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4",
+          "codex-rs/Cargo.toml": "3a844832911c881ffd0283a68ecb44b68fc85d5b4c3ec92b41fa64adf8f76996"
+        },
+        "after": {
+          ".bazelrc": "1fb435555b4cb0b73f010ddc2fe83aca930d3881389cf86cb8215504a6284397",
+          ".bazelversion": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef",
+          "MODULE.bazel": "6ba415cd3a19ed66dcb78eb916eb21a09e6d613832c6ddc09d0f3f7c0ea11cdf",
+          "MODULE.bazel.lock": "3177178c20f6a8c56bca6c3d0a521b49d87b8d9a527328d181eca7c01e5cc888",
+          "codex-rs/Cargo.lock": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4",
+          "codex-rs/Cargo.toml": "3a844832911c881ffd0283a68ecb44b68fc85d5b4c3ec92b41fa64adf8f76996"
+        },
+        "observed_sha_shapes_valid": false,
+        "dirty_claims_consistent": false,
+        "declared_to_observed_identity_consistent": null,
+        "identity_before_after_equal_and_clean": false,
+        "scope": "partial_or_unknown",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T18:32:26.224823+00:00",
+        "finished_at_as_recorded": "2026-11-08T18:33:13.280415+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 47.0555751780048,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "common-final-graph-bazel-v1.json",
+        "common-final-graph-bazel-v1.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "4d216ca2e287f7503db89be0bea785d57dc68507ca7444511c2d925fc63a2c91",
+      "receipt": "common-native-fixes-v1-v8.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "command_with_unmeasured_phase_breakdown",
+        "command": [
+          "python3",
+          "/home/qian-qi/worktrees/hepta-cell-common-verify-20261108-898e/scripts/hepta_ci_v8.py"
+        ],
+        "observed_passed_tests_as_reported": 0,
+        "observed_failed_tests_as_reported": 0,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560",
+        "declared_tested_sha": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560",
+        "observed_commit": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560",
+        "observed_tree": "8bee48c2f84daca7d76860a5f9b3f211a89ed4c0",
+        "before": {
+          "commit": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560",
+          "dirty": false,
+          "parents": [
+            "1d762f58558429013a24d4e7ad170e5579a73b91"
+          ],
+          "tree": "8bee48c2f84daca7d76860a5f9b3f211a89ed4c0"
+        },
+        "after": {
+          "commit": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560",
+          "dirty": false,
+          "parents": [
+            "1d762f58558429013a24d4e7ad170e5579a73b91"
+          ],
+          "tree": "8bee48c2f84daca7d76860a5f9b3f211a89ed4c0"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T18:33:11.633086+00:00",
+        "finished_at_as_recorded": "2026-11-08T18:33:15.155664+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 3.404724504100159,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "common-native-fixes-v1-v8.json",
+        "common-native-fixes-v1-v8.json.06041a26cdf34102abaa6baaf8699c9a.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    },
+    {
+      "id": "08a47d1ee9141f1ec9c969d2f95f74ce3bdb69dd2f5acefeba0903d3136e6d2f",
+      "receipt": "common-native-fixes-v1-helper-build.json",
+      "adapter": "hepta_ci_exec",
+      "status_as_recorded_or_exit_derived": "passed",
+      "scope_as_recorded": null,
+      "command_exit_code": 0,
+      "runner_exit_code": 0,
+      "error_as_recorded": null,
+      "activity": {
+        "classification": "command_with_unmeasured_phase_breakdown",
+        "command": [
+          "python3",
+          "/home/qian-qi/worktrees/hepta-cell-common-verify-20261108-898e/scripts/hepta_cell_test_helpers.py",
+          "--package",
+          "codex-hepta-infer-worker-host",
+          "--output-dir",
+          "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/common-native-fixes-v1-helpers",
+          "--github-env",
+          "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/common-native-fixes-v1-helpers.env"
+        ],
+        "observed_passed_tests_as_reported": 0,
+        "observed_failed_tests_as_reported": 0,
+        "phase_cpu_or_wall_allocation_known": false
+      },
+      "source": {
+        "declared_source_sha": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560",
+        "declared_tested_sha": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560",
+        "observed_commit": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560",
+        "observed_tree": "8bee48c2f84daca7d76860a5f9b3f211a89ed4c0",
+        "before": {
+          "commit": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560",
+          "dirty": false,
+          "parents": [
+            "1d762f58558429013a24d4e7ad170e5579a73b91"
+          ],
+          "tree": "8bee48c2f84daca7d76860a5f9b3f211a89ed4c0"
+        },
+        "after": {
+          "commit": "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560",
+          "dirty": false,
+          "parents": [
+            "1d762f58558429013a24d4e7ad170e5579a73b91"
+          ],
+          "tree": "8bee48c2f84daca7d76860a5f9b3f211a89ed4c0"
+        },
+        "observed_sha_shapes_valid": true,
+        "dirty_claims_consistent": true,
+        "declared_to_observed_identity_consistent": true,
+        "identity_before_after_equal_and_clean": true,
+        "scope": "recorded_source_identity",
+        "source_checkout_reverified_by_collector": false,
+        "external_authentication": false
+      },
+      "time": {
+        "started_at_as_recorded": "2026-11-08T18:33:15.547454+00:00",
+        "finished_at_as_recorded": "2026-11-08T18:40:33.081970+00:00",
+        "interval_known": true,
+        "elapsed_seconds_as_reported": 437.3658205398824,
+        "elapsed_scope": "command_or_wrapper_wall_time_only",
+        "missing_timestamps_inferred": false
+      },
+      "raw_files": [
+        "common-native-fixes-v1-helper-build.json",
+        "common-native-fixes-v1-helper-build.json.b7783bddfb494f148ccebefc157fe1e5.log"
+      ],
+      "physical_cost": null,
+      "full_history_cost": null,
+      "full_history_cost_known": false,
+      "stage_qualification": false,
+      "record_root": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+      "receipt_log_hash_verified": true,
+      "log_linkage": "receipt_sha256"
+    }
+  ],
+  "overlapping_intervals": [
+    {
+      "left": "c49ee3ee7f850a28d34e8c6bcb23e3560a8bb9b3e232d5098013c3d470a836ca",
+      "right": "6e68a7ce7a379a55dff0897bb04db31e58da1bf91442ffcd51c3c6511f1afded",
+      "relation": "overlapping_recorded_wall_intervals",
+      "workflow_container_involved": false,
+      "parallel_cpu_execution_proven": false
+    },
+    {
+      "left": "c49ee3ee7f850a28d34e8c6bcb23e3560a8bb9b3e232d5098013c3d470a836ca",
+      "right": "048b1567ae97f84eb837f0776aff8a21dbfaf4fff4ddad11f29ceb5c42258daf",
+      "relation": "overlapping_recorded_wall_intervals",
+      "workflow_container_involved": true,
+      "parallel_cpu_execution_proven": false
+    },
+    {
+      "left": "c49ee3ee7f850a28d34e8c6bcb23e3560a8bb9b3e232d5098013c3d470a836ca",
+      "right": "0bce45b33d6c0e4511582e687ba441ddfc8b84b779ee024e6532d8f97763c56c",
+      "relation": "overlapping_recorded_wall_intervals",
+      "workflow_container_involved": false,
+      "parallel_cpu_execution_proven": false
+    },
+    {
+      "left": "c49ee3ee7f850a28d34e8c6bcb23e3560a8bb9b3e232d5098013c3d470a836ca",
+      "right": "2b5ef084f9714750ef8218f5e7b8a11a3370a778498b3992f6a22abb51a32552",
+      "relation": "overlapping_recorded_wall_intervals",
+      "workflow_container_involved": false,
+      "parallel_cpu_execution_proven": false
+    },
+    {
+      "left": "c49ee3ee7f850a28d34e8c6bcb23e3560a8bb9b3e232d5098013c3d470a836ca",
+      "right": "70d55998a01ebe390e4f7b2942936d4b60a24566564c07731a07accffebceff1",
+      "relation": "overlapping_recorded_wall_intervals",
+      "workflow_container_involved": false,
+      "parallel_cpu_execution_proven": false
+    },
+    {
+      "left": "048b1567ae97f84eb837f0776aff8a21dbfaf4fff4ddad11f29ceb5c42258daf",
+      "right": "0bce45b33d6c0e4511582e687ba441ddfc8b84b779ee024e6532d8f97763c56c",
+      "relation": "overlapping_recorded_wall_intervals",
+      "workflow_container_involved": true,
+      "parallel_cpu_execution_proven": false
+    },
+    {
+      "left": "048b1567ae97f84eb837f0776aff8a21dbfaf4fff4ddad11f29ceb5c42258daf",
+      "right": "2b5ef084f9714750ef8218f5e7b8a11a3370a778498b3992f6a22abb51a32552",
+      "relation": "overlapping_recorded_wall_intervals",
+      "workflow_container_involved": true,
+      "parallel_cpu_execution_proven": false
+    },
+    {
+      "left": "048b1567ae97f84eb837f0776aff8a21dbfaf4fff4ddad11f29ceb5c42258daf",
+      "right": "70d55998a01ebe390e4f7b2942936d4b60a24566564c07731a07accffebceff1",
+      "relation": "overlapping_recorded_wall_intervals",
+      "workflow_container_involved": true,
+      "parallel_cpu_execution_proven": false
+    },
+    {
+      "left": "b86fc4dedc129ad28db6a02d348f1c61004fef67722a6302c6645fdc11995962",
+      "right": "4d216ca2e287f7503db89be0bea785d57dc68507ca7444511c2d925fc63a2c91",
+      "relation": "overlapping_recorded_wall_intervals",
+      "workflow_container_involved": false,
+      "parallel_cpu_execution_proven": false
+    }
+  ],
+  "source_commits_as_recorded": [
+    "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+    "2117457b969eba0458fdcc407e52d5caf8462eb2",
+    "48cac6d1d8ad159e2823f75b73de208ec4c5ad18",
+    "646cdd07e0e40a4d3704d6f4885107f93a27c3f2",
+    "cadc31bc50a749c3bc23069da5094448f113efb8",
+    "d74efedeed3b3f5ec62e35ce6133eccf6e44256d",
+    "e8c0a79d9efe07cd7e55ed82cdd3f8de90b2e560"
+  ],
+  "status_counts": {
+    "passed": 15,
+    "rejected": 1,
+    "failed": 3
+  },
+  "unrecognized_json_not_archived": [
+    "bindgen-compat-v1/PROVENANCE.json",
+    "bindgen-compat-v1/bindgen-0.73.2/.cargo_vcs_info.json",
+    "caller-memo-fixture-results.json",
+    "common-native-fixes-bindgen-cargo-update.json",
+    "common-native-fixes-bindgen-commit.json",
+    "common-native-fixes-hcsn-commit.json",
+    "common-native-fixes-v1-helpers/env.json",
+    "common-native-fixes-v1-helpers/manifest.json",
+    "common-native-fixes-v1-pipeline.json",
+    "dependency-admission-tool-probe.json",
+    "historical-matrix-packet-b36/INDEX.json",
+    "historical-matrix-packet-b36/PUBLICATION.json",
+    "historical-matrix-packet-b36/ROOT_RESTORATION_REVIEW.json",
+    "historical-matrix-packet-download.json",
+    "historical-matrix-replay/fixture/expected.json",
+    "historical-matrix-replay/fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/session.json",
+    "historical-matrix-replay/historical-RESULT.json",
+    "historical-matrix-replay/historical-fixture-layout.json",
+    "historical-matrix-replay/lineage.json",
+    "pin-vendor-blob-manifest.json",
+    "python-common-cadc/CURRENT_INPUT.original.json",
+    "python-common-cadc/evidence-inventory.json",
+    "python-common-cadc/source-after.json",
+    "python-common-cadc/source-before.json",
+    "rama-time-port/PREPARATION.json",
+    "rama-time-port/TREE_IDENTITY.json",
+    "rama-time-port/codex-rs/third_party/rama-crypto-0.3.0/.cargo_vcs_info.json",
+    "rama-time-port/codex-rs/third_party/rama-crypto-0.3.0/HEPTA_PROVENANCE.json"
+  ],
+  "excluded_subtrees": [
+    "history-checkpoint",
+    "history-checkpoint/capture-002"
+  ],
+  "explicit_external_roots": {
+    "external-sources/b1ee2850e545e08a/": "/home/qian-qi/work/hepta-cell-s0-bazel-20261108-898e"
+  },
+  "excluded": [
+    {
+      "path": "common-native-fixes-v1-tests.json",
+      "reason": "execution receipt is not terminal"
+    },
+    {
+      "path": "baseline-terminal-tests-2.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "baseline-terminal-tests.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "caller-memo-closed-set-tests.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "caller-memo-typed-tests.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "cargo-deny-check-help.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "cargo-deny-help.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-core-v1.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-final-format.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-hcsn-import-whitespace.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-hcsn-pin-bazel-update.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-hcsn-pin-cargo-update.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-matrix-bindgen-cargo-update.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-matrix-bindgen-rama-cargo-update.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-native-fixes-bindgen-cargo-update.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-native-fixes-bindgen-upstream-whitespace.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-native-fixes-hcsn-fmt.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-native-fixes-v1-helpers/codex-hepta-infer-worker-host.jsonl",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-native-fixes-v1-helpers/codex-hepta-infer-worker-host.stderr.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "common-native-fixes-v1-tests.json.59c58ce8c88940a5bbea735d8b8b8c68.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "historical-matrix-packet-driver.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "historical-matrix-prepare.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "matrix-donor-fetch.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-act1.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-causal-controls.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-ctrl1.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-evolve1.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-hcsn-credit-plasticity.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-learning-owner-checkpoint.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-mem1.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-ndu-cold-state.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-perc1.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-pred1.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-stage-gates-ci.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-terminal-durable.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "merge-verify1.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "terminal-bellman-v1.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "terminal-native-v1.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "terminal-native-v2.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "terminal-native-v3.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "terminal-original-host-cas-v2.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    },
+    {
+      "path": "terminal-original-host-cas-v3.log",
+      "reason": "not referenced by an accepted terminal receipt; completion or binding unknown"
+    }
+  ],
+  "physical_cost": null,
+  "full_history_cost": null,
+  "full_history_cost_known": false,
+  "complete_execution_history": false,
+  "command_wall_sum_seconds": null,
+  "cpu_seconds": null,
+  "learning_cost": null,
+  "final_candidate_pass": false,
+  "qualification_evaluation": "not_performed_by_collector",
+  "stage_advancement_claimed": false,
+  "cost_limitation": "Individual reported wall times are retained without summation or attribution to CPU, learning or complete historical cost. Missing timing stays unknown; overlapping intervals and differing source identities remain separate.",
+  "archive": {
+    "file": "execution-evidence.tar.gz",
+    "bytes": 36458,
+    "sha256": "beb50897c8155ec4e9affa503f0f80dcfa1afda6b6bb5a8a64796eafd8cdc10f",
+    "metadata": "regular inert files, mode 0444, uid/gid/mtime zero; original bytes unchanged"
+  },
+  "files": [
+    {
+      "path": "baseline-terminal-tests-2.json",
+      "bytes": 1588,
+      "sha256": "3218cf731a45934bf6158fa6962ae579cabdeb4c677493834a8c04667078f146",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905416,
+        "st_mode": 33152,
+        "st_size": 1588,
+        "st_mtime_ns": 1794159394266931145,
+        "st_ctime_ns": 1794159394271931052
+      }
+    },
+    {
+      "path": "baseline-terminal-tests-2.json.d42e59f822cc44fab720afa10fa42888.log",
+      "bytes": 65373,
+      "sha256": "286bb096d8c086ede6276c68c737d9117d3c0dd7ff3c8ac8a22f577251b51cc3",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905415,
+        "st_mode": 33152,
+        "st_size": 65373,
+        "st_mtime_ns": 1794159394183932672,
+        "st_ctime_ns": 1794159394183932672
+      }
+    },
+    {
+      "path": "baseline-terminal-tests.json",
+      "bytes": 924,
+      "sha256": "e314abb12b111417aeea483d14fa6138500e0a6b8f9b0d0e88b27132f34a7537",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905254,
+        "st_mode": 33152,
+        "st_size": 924,
+        "st_mtime_ns": 1794158773643110505,
+        "st_ctime_ns": 1794158773650970565
+      }
+    },
+    {
+      "path": "common-core-v1.json",
+      "bytes": 1825,
+      "sha256": "6e68a7ce7a379a55dff0897bb04db31e58da1bf91442ffcd51c3c6511f1afded",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905780,
+        "st_mode": 33152,
+        "st_size": 1825,
+        "st_mtime_ns": 1794161206570626994,
+        "st_ctime_ns": 1794161206630676587
+      }
+    },
+    {
+      "path": "common-core-v1.json.f0a743e5b4554c64a7fc68adcccdc688.log",
+      "bytes": 7386,
+      "sha256": "1fa775ce42bd457d19efb40139697c25c3320cea0c2dc01e32ecf72e4dbffae0",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905779,
+        "st_mode": 33152,
+        "st_size": 7386,
+        "st_mtime_ns": 1794161206432682554,
+        "st_ctime_ns": 1794161206432682554
+      }
+    },
+    {
+      "path": "common-final-graph-bazel-v1.json",
+      "bytes": 2011,
+      "sha256": "b86fc4dedc129ad28db6a02d348f1c61004fef67722a6302c6645fdc11995962",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4906130,
+        "st_mode": 33152,
+        "st_size": 2011,
+        "st_mtime_ns": 1794162793295604797,
+        "st_ctime_ns": 1794162793295604797
+      }
+    },
+    {
+      "path": "common-final-graph-bazel-v1.log",
+      "bytes": 2951,
+      "sha256": "d169b3000fed77ace415f3b1f98794de974f1c57b761aa3ce0cbc45b8102ff3c",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4906105,
+        "st_mode": 33152,
+        "st_size": 2951,
+        "st_mtime_ns": 1794162792542338965,
+        "st_ctime_ns": 1794162792542338965
+      }
+    },
+    {
+      "path": "common-native-fixes-v1-helper-build.json",
+      "bytes": 1773,
+      "sha256": "08a47d1ee9141f1ec9c969d2f95f74ce3bdb69dd2f5acefeba0903d3136e6d2f",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4906252,
+        "st_mode": 33152,
+        "st_size": 1773,
+        "st_mtime_ns": 1794163233082576743,
+        "st_ctime_ns": 1794163233177242110
+      }
+    },
+    {
+      "path": "common-native-fixes-v1-helper-build.json.b7783bddfb494f148ccebefc157fe1e5.log",
+      "bytes": 203,
+      "sha256": "4e8975704056d6102db60104d1c65c1f1bc2b7841b79ee12f9e35397a7377dff",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4906132,
+        "st_mode": 33152,
+        "st_size": 203,
+        "st_mtime_ns": 1794163232794541240,
+        "st_ctime_ns": 1794163232794541240
+      }
+    },
+    {
+      "path": "common-native-fixes-v1-v8.json",
+      "bytes": 1465,
+      "sha256": "4d216ca2e287f7503db89be0bea785d57dc68507ca7444511c2d925fc63a2c91",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4906131,
+        "st_mode": 33152,
+        "st_size": 1465,
+        "st_mtime_ns": 1794162795156541182,
+        "st_ctime_ns": 1794162795280259660
+      }
+    },
+    {
+      "path": "common-native-fixes-v1-v8.json.06041a26cdf34102abaa6baaf8699c9a.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4906129,
+        "st_mode": 33152,
+        "st_size": 0,
+        "st_mtime_ns": 1794162791817359964,
+        "st_ctime_ns": 1794162791817359964
+      }
+    },
+    {
+      "path": "dependency-admission-rustsec-unit-preflight.json",
+      "bytes": 1291,
+      "sha256": "e4437146c419ff24a4259c1495facded9ed33de7ed65272133ccb942dfc7ccc2",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905930,
+        "st_mode": 33152,
+        "st_size": 1291,
+        "st_mtime_ns": 1794161997990989941,
+        "st_ctime_ns": 1794161997990989941
+      }
+    },
+    {
+      "path": "dependency-admission-rustsec-unit-preflight.log",
+      "bytes": 1120,
+      "sha256": "2166161603ec6e44404f16de331aae7ecccf818b6e78218647577caf6d6f1970",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905929,
+        "st_mode": 33152,
+        "st_size": 1120,
+        "st_mtime_ns": 1794161997966001310,
+        "st_ctime_ns": 1794161997966001310
+      }
+    },
+    {
+      "path": "external-sources/b1ee2850e545e08a/baseline-private-mod-result.json",
+      "bytes": 1611,
+      "sha256": "c49ee3ee7f850a28d34e8c6bcb23e3560a8bb9b3e232d5098013c3d470a836ca",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 52995040,
+        "st_mode": 33152,
+        "st_size": 1611,
+        "st_mtime_ns": 1794161753605026095,
+        "st_ctime_ns": 1794161753605026095
+      }
+    },
+    {
+      "path": "external-sources/b1ee2850e545e08a/baseline-private-mod.log",
+      "bytes": 17897,
+      "sha256": "766b2881c803d50c3e2d8bf8c3eab72ede4617a287c1b01c4654dc9346f91a90",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 52995794,
+        "st_mode": 33152,
+        "st_size": 17897,
+        "st_mtime_ns": 1794161752750710349,
+        "st_ctime_ns": 1794161752750710349
+      }
+    },
+    {
+      "path": "python-common-cadc/CURRENT_RESULT.original.json",
+      "bytes": 7587,
+      "sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 5167182,
+        "st_mode": 33152,
+        "st_size": 7587,
+        "st_mtime_ns": 1794161631393619211,
+        "st_ctime_ns": 1794161631393619211
+      }
+    },
+    {
+      "path": "python-common-cadc/cell-research-stages/current-review.json",
+      "bytes": 7587,
+      "sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 5167188,
+        "st_mode": 33152,
+        "st_size": 7587,
+        "st_mtime_ns": 1794161668968612731,
+        "st_ctime_ns": 1794161668968612731
+      }
+    },
+    {
+      "path": "python-common-cadc/cell-research-stages/joint-configuration.json",
+      "bytes": 1605,
+      "sha256": "2b5ef084f9714750ef8218f5e7b8a11a3370a778498b3992f6a22abb51a32552",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 5167192,
+        "st_mode": 33152,
+        "st_size": 1605,
+        "st_mtime_ns": 1794161666580377682,
+        "st_ctime_ns": 1794161666585006389
+      }
+    },
+    {
+      "path": "python-common-cadc/cell-research-stages/joint-configuration.json.7224d878ae1e4ef295d369844db18589.log",
+      "bytes": 4114,
+      "sha256": "00ec4c02ee29ae621a2652d2092b754d91d305ca1cfd90ba8a479dc87e814164",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 5167191,
+        "st_mode": 33152,
+        "st_size": 4114,
+        "st_mtime_ns": 1794161666485009031,
+        "st_ctime_ns": 1794161666485009031
+      }
+    },
+    {
+      "path": "python-common-cadc/cell-research-stages/research-gate.json",
+      "bytes": 1603,
+      "sha256": "0bce45b33d6c0e4511582e687ba441ddfc8b84b779ee024e6532d8f97763c56c",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 5167190,
+        "st_mode": 33152,
+        "st_size": 1603,
+        "st_mtime_ns": 1794161643547613498,
+        "st_ctime_ns": 1794161643789607137
+      }
+    },
+    {
+      "path": "python-common-cadc/cell-research-stages/research-gate.json.378ae59d66424da0bef9a1bce4fa1825.log",
+      "bytes": 3423,
+      "sha256": "8a69e0df8fd93d81bffab01aebd6059b9704f19776396186635dbba2350cc26c",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 5167189,
+        "st_mode": 33152,
+        "st_size": 3423,
+        "st_mtime_ns": 1794161642925629848,
+        "st_ctime_ns": 1794161642925629848
+      }
+    },
+    {
+      "path": "python-common-cadc/cell-research-stages/successor-binding.json",
+      "bytes": 1610,
+      "sha256": "70d55998a01ebe390e4f7b2942936d4b60a24566564c07731a07accffebceff1",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 5167194,
+        "st_mode": 33152,
+        "st_size": 1610,
+        "st_mtime_ns": 1794161668840433659,
+        "st_ctime_ns": 1794161668854946406
+      }
+    },
+    {
+      "path": "python-common-cadc/cell-research-stages/successor-binding.json.945a98040887445fb3d6ebd6212f130e.log",
+      "bytes": 1670,
+      "sha256": "87c7de72f2fa985b840b7252550e9bc6d2ff72da9f83d0e8d6b00cacfe3a12f9",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 5167193,
+        "st_mode": 33152,
+        "st_size": 1670,
+        "st_mtime_ns": 1794161668742949366,
+        "st_ctime_ns": 1794161668742949366
+      }
+    },
+    {
+      "path": "python-common-cadc/current-result-comparison.json",
+      "bytes": 1769,
+      "sha256": "851d683fa26b27973e819643b48efd7f7bc30e93eb2ceae7bf23eb0ded8c886a",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 5167246,
+        "st_mode": 33152,
+        "st_size": 1769,
+        "st_mtime_ns": 1794161739226859042,
+        "st_ctime_ns": 1794161739226859042
+      }
+    },
+    {
+      "path": "python-common-cadc/current-result-comparison.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 5167245,
+        "st_mode": 33152,
+        "st_size": 0,
+        "st_mtime_ns": 1794161739162074933,
+        "st_ctime_ns": 1794161739162074933
+      }
+    },
+    {
+      "path": "python-common-cadc/execution-manifest.json",
+      "bytes": 4569,
+      "sha256": "048b1567ae97f84eb837f0776aff8a21dbfaf4fff4ddad11f29ceb5c42258daf",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 5167184,
+        "st_mode": 33152,
+        "st_size": 4569,
+        "st_mtime_ns": 1794161669179513450,
+        "st_ctime_ns": 1794161669179513450
+      }
+    },
+    {
+      "path": "python-common-cadc/workflow-console.log",
+      "bytes": 13553,
+      "sha256": "2c7dc57739133c5a50514d8ce3bd4a84a1c81ea005f82bdcbeec14d2103eb5f4",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 5167185,
+        "st_mode": 33152,
+        "st_size": 13553,
+        "st_mtime_ns": 1794161668968612731,
+        "st_ctime_ns": 1794161668968612731
+      }
+    },
+    {
+      "path": "terminal-bellman-v1.json",
+      "bytes": 1584,
+      "sha256": "5da8463012e7c28af0ff7c3a08d105189c2a7767edb2aa26dcd2b962336c08d2",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905439,
+        "st_mode": 33152,
+        "st_size": 1584,
+        "st_mtime_ns": 1794159712707087275,
+        "st_ctime_ns": 1794159712733086651
+      }
+    },
+    {
+      "path": "terminal-bellman-v1.json.b13faa0773df4129884cc3f1283a68ce.log",
+      "bytes": 3758,
+      "sha256": "23d180494fe3285f45cded5b00e3e3ebd37e3bffaf40a46cc0cd37a7a7326396",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905436,
+        "st_mode": 33152,
+        "st_size": 3758,
+        "st_mtime_ns": 1794159712634089027,
+        "st_ctime_ns": 1794159712634089027
+      }
+    },
+    {
+      "path": "terminal-native-v1.json",
+      "bytes": 1647,
+      "sha256": "a5925bbabf3b74f0fe46a952d17e087df5b12abfdb62841152b45ccc1e81e1af",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905434,
+        "st_mode": 33152,
+        "st_size": 1647,
+        "st_mtime_ns": 1794159695993677604,
+        "st_ctime_ns": 1794159695997486583
+      }
+    },
+    {
+      "path": "terminal-native-v1.json.e4149eeb30ba4280ba0d711eea0292f3.log",
+      "bytes": 68112,
+      "sha256": "d06e98578d436e0c761ac7b3d521b64783ac0546884bdf0b7fadbe77133eb867",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905418,
+        "st_mode": 33152,
+        "st_size": 68112,
+        "st_mtime_ns": 1794159695925488295,
+        "st_ctime_ns": 1794159695925488295
+      }
+    },
+    {
+      "path": "terminal-native-v2.json",
+      "bytes": 1586,
+      "sha256": "9238ed9d7417f4fbbafa56ae76f6031740b9278e32c2ddc8b590fee038d7068f",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905446,
+        "st_mode": 33152,
+        "st_size": 1586,
+        "st_mtime_ns": 1794159932019563004,
+        "st_ctime_ns": 1794159932025557097
+      }
+    },
+    {
+      "path": "terminal-native-v2.json.4861baa408ad440ab8205596cecc5531.log",
+      "bytes": 18395,
+      "sha256": "5cf77a1252c5b58119bcdbe174c24fad1ef43f5e3798d47075b4b386b9469b4c",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905422,
+        "st_mode": 33152,
+        "st_size": 18395,
+        "st_mtime_ns": 1794159931937559408,
+        "st_ctime_ns": 1794159931937559408
+      }
+    },
+    {
+      "path": "terminal-native-v3.json",
+      "bytes": 1585,
+      "sha256": "453addcd8608bec2a8ef86cf1d11b3dc1a531d4988747b1535692b8716c3a2bd",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905462,
+        "st_mode": 33152,
+        "st_size": 1585,
+        "st_mtime_ns": 1794160254013489449,
+        "st_ctime_ns": 1794160254041748317
+      }
+    },
+    {
+      "path": "terminal-native-v3.json.5386bf8653af467a9498736952133380.log",
+      "bytes": 18395,
+      "sha256": "7af613924c6c51ae0a7bb30a2f1a39b5c34ac5e063b032cdbb0498f1ed0a51e4",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905457,
+        "st_mode": 33152,
+        "st_size": 18395,
+        "st_mtime_ns": 1794160253953750802,
+        "st_ctime_ns": 1794160253953750802
+      }
+    },
+    {
+      "path": "terminal-original-host-cas-v2.json",
+      "bytes": 1771,
+      "sha256": "d78c88d15e7c7362199ff1e09b33c4b8640b97a8c344263e675cdf8f8db586cc",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905449,
+        "st_mode": 33152,
+        "st_size": 1771,
+        "st_mtime_ns": 1794159984324172528,
+        "st_ctime_ns": 1794159984329172394
+      }
+    },
+    {
+      "path": "terminal-original-host-cas-v2.json.816da4f337bb4afa8d5fa7e3c289eb44.log",
+      "bytes": 18018,
+      "sha256": "7a3791b7e087d33e574d5b9553ad010e1cebc4a3158ae1089b8cdc22173411d1",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905448,
+        "st_mode": 33152,
+        "st_size": 18018,
+        "st_mtime_ns": 1794159984265174102,
+        "st_ctime_ns": 1794159984265174102
+      }
+    },
+    {
+      "path": "terminal-original-host-cas-v3.json",
+      "bytes": 1710,
+      "sha256": "c0a354a063516260b0412d72f111b6c5114a127f2c0a279b6714cfa2c5bab179",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905466,
+        "st_mode": 33152,
+        "st_size": 1710,
+        "st_mtime_ns": 1794160275759391513,
+        "st_ctime_ns": 1794160275794133026
+      }
+    },
+    {
+      "path": "terminal-original-host-cas-v3.json.b740db882d8b4412aecfd7f38c8feab9.log",
+      "bytes": 17041,
+      "sha256": "be6bdb9db06586425b3c41d4c8e3ff8bb65554e15d1e59bec8537aa3d2a9c912",
+      "stat": {
+        "st_dev": 2050,
+        "st_ino": 4905465,
+        "st_mode": 33152,
+        "st_size": 17041,
+        "st_mtime_ns": 1794160275619137984,
+        "st_ctime_ns": 1794160275619137984
+      }
+    }
+  ]
+}

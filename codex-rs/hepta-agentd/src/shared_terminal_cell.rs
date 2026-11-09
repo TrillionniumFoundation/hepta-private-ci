@@ -57,6 +57,26 @@ pub struct SharedTerminalCandidateV1 {
 }
 
 impl SharedTerminalCandidateV1 {
+    /// Reattach a freshly obtained opaque Memory use to original protected data.
+    /// The job owner validates payload pins; native readback validates the Ledger.
+    #[cfg(unix)]
+    pub(crate) fn from_recovered(
+        artifact: TabularOperatorArtifactV1,
+        dataset: DatasetSnapshotReceiptV3,
+        source: SharedExperienceUseV1,
+        payload: &[u8],
+        training_samples: usize,
+    ) -> Self {
+        Self {
+            artifact,
+            dataset,
+            source,
+            payload_digest: Digest32::of_bytes(payload),
+            payload_bytes: payload.len() as u64,
+            training_samples,
+        }
+    }
+
     pub fn artifact(&self) -> &TabularOperatorArtifactV1 {
         &self.artifact
     }

@@ -1,0 +1,49 @@
+{
+  "adoption_authorized": false,
+  "complete_tuning": true,
+  "confirmation_access": false,
+  "cpu_seconds": 2226.787863,
+  "energy_joules": null,
+  "expected_pilot_episodes": 960,
+  "expected_profiles": 80,
+  "expected_tuning_episodes": 400,
+  "max_self_rss_kib": 285264,
+  "model_status_counts": {
+    "completed": 56
+  },
+  "models_retrained": false,
+  "native_outer_envelope_separately_required": true,
+  "phase_costs_overlap_total": true,
+  "phases": {
+    "pilot": {
+      "completed": true,
+      "cpu_seconds": 1376.002036,
+      "nested_episode_costs_are_included": true,
+      "wall_seconds": 554.8369154748507
+    },
+    "tune": {
+      "completed": true,
+      "cpu_seconds": 848.7209660000001,
+      "nested_episode_costs_are_included": true,
+      "wall_seconds": 301.7057671439834
+    }
+  },
+  "pilot_dispatched": 960,
+  "pilot_planned": 960,
+  "provider_charges": null,
+  "schema": "hepta.causal-b.evaluation-result.v1",
+  "scientific_admission": "HOLD",
+  "selected_profiles": 80,
+  "status": "evaluated",
+  "training_backend": "ai395_native",
+  "training_return": {
+    "artifact_manifest_sha256": "535894da37d67a7aedbdf29f25c7c230d48e68b0ba105e276f087c6a0a81871d",
+    "download_bytes": 4853053,
+    "execution_status": "COMMANDS_COMPLETED",
+    "request_id": "cell-causal-cf0-b-train-20261108-v1",
+    "schema": "cell-causal-cloud-return-v1",
+    "scientific_qualification": false,
+    "source_pins_verified": true
+  },
+  "wall_seconds": 858.688839948969
+}

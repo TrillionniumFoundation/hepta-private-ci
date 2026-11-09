@@ -12,6 +12,11 @@
 #[cfg(test)]
 mod effect_executor;
 
+mod action_skill;
+mod action_skill_driver;
+#[cfg(test)]
+#[path = "action_skill_tests.rs"]
+mod action_skill_tests;
 mod authorized_effect;
 mod automation_taskflow;
 mod circuit_admission;
@@ -27,6 +32,9 @@ mod circuit_state;
 mod circuit_store;
 mod dispatch_recovery;
 mod effect_dispatch_ledger;
+mod hcsn_job;
+mod hcsn_supervisor;
+mod hcsn_taskflow;
 mod lifecycle;
 mod model;
 mod neural_circuit;
@@ -42,6 +50,21 @@ mod taskflow_recovery;
 mod taskflow_step;
 mod timer_lifecycle;
 
+pub use action_skill::ACTION_SKILL_SCHEMA_VERSION;
+pub use action_skill::ActionCancellationStateV1;
+pub use action_skill::ActionConditionV1;
+pub use action_skill::ActionExecutionStateV1;
+pub use action_skill::ActionGoalStateV1;
+pub use action_skill::ActionInitiationObservationV1;
+pub use action_skill::ActionSkillBindingV1;
+pub use action_skill::ActionSkillBudgetV1;
+pub use action_skill::ActionSkillContractV1;
+pub use action_skill::ActionSkillError;
+pub use action_skill::ActionSkillInvocationV1;
+pub use action_skill::ActionSkillObservationV1;
+pub use action_skill::ActionSkillObserver;
+pub use action_skill::ActionSkillRecoveryV1;
+pub use action_skill_driver::GoalCheckedActionSkillDriver;
 pub use authorized_effect::AsyncAuthorizedEffectDriver;
 pub use authorized_effect::AuthorizedEffectDependency;
 pub use authorized_effect::AuthorizedEffectDispatchRequest;
@@ -88,6 +111,21 @@ pub use circuit_state::CircuitEventV2;
 pub use circuit_state::CircuitRunV2;
 pub use circuit_state::CircuitStartV2;
 pub use circuit_state::CircuitStopReasonV2;
+pub use hcsn_job::HCSN_MAX_TRAINING_PAYLOAD_BYTES;
+pub use hcsn_job::HCSN_SUPERVISOR_SCHEMA_VERSION;
+pub use hcsn_job::HcsnJobEvidenceV1;
+pub use hcsn_job::HcsnJobIdentityV1;
+pub use hcsn_job::HcsnJobObservationV1;
+pub use hcsn_job::HcsnJobStateV1;
+pub use hcsn_job::HcsnProcessIdentityV1;
+pub use hcsn_job::HcsnSupervisor;
+pub use hcsn_job::HcsnSupervisorActionV1;
+pub use hcsn_job::HcsnSupervisorCommandV1;
+pub use hcsn_job::HcsnSupervisorError;
+pub use hcsn_supervisor::HcsnProcessSupervisor;
+pub use hcsn_supervisor::HcsnProcessSupervisorConfig;
+pub use hcsn_taskflow::HcsnTaskFlowActionV1;
+pub use hcsn_taskflow::HcsnTaskFlowDriver;
 pub use lifecycle::AutomationMissedRunPolicy;
 pub use lifecycle::AutomationOccurrence;
 pub use lifecycle::AutomationOccurrenceState;
