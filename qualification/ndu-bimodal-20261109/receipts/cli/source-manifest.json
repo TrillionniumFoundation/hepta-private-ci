@@ -1,0 +1,136 @@
+{
+  "after": {
+    "files": {
+      "codex-rs/hepta-infer-worker-host/src/bin/hepta-joint-propose.rs": {
+        "bytes": 1732,
+        "sha256": "b11f8bb5c97f085ae6fd6a22c66c3ee1139cdf1f36c28a0b591eee02d28ce1bb"
+      },
+      "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py": {
+        "bytes": 14705,
+        "sha256": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978"
+      },
+      "scripts/joint_generation_v4_codecs.py": {
+        "bytes": 5520,
+        "sha256": "59f67ccaa36c4938d0fd9eeb4423c83409c2827af0a84b817bdeb3766d049e19"
+      },
+      "scripts/joint_generation_v4_diagnostic.py": {
+        "bytes": 19696,
+        "sha256": "7969c5c97c5cae61fde908ca7068da4481cdd0050ebc64fe4fddab28dda2ca81"
+      },
+      "scripts/joint_generation_v4_gradients.py": {
+        "bytes": 11301,
+        "sha256": "a4ccaaf6679cc6e3cca86f08563c9d348653a28169c3b6ef5ddee54340a18d8a"
+      },
+      "scripts/joint_generation_v4_io.py": {
+        "bytes": 9640,
+        "sha256": "f2d67927c9f2c7dbf729ff30d9d0c5b5b3477d4a0ff59c148348e45aae6b4fcf"
+      },
+      "scripts/joint_generation_v4_model.py": {
+        "bytes": 15430,
+        "sha256": "5b466399293dd825f9a3b9aaff6c51bdff30c3469e6a993f6339c3d573a05d51"
+      },
+      "scripts/joint_generation_v4_ndu.py": {
+        "bytes": 7586,
+        "sha256": "c0c8f86bd8c3ed8b24a3ca981b7de86d00d5251c127e8e90828596382b961223"
+      },
+      "scripts/joint_generation_v4_receipt.py": {
+        "bytes": 6153,
+        "sha256": "2882997ce3899db554bdbb530569c5f4f122cfa0e053da490f1994f49fdb8ff3"
+      },
+      "scripts/ndu_bimodal/__init__.py": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "scripts/ndu_bimodal/cli.py": {
+        "bytes": 5516,
+        "sha256": "29f3a3ec7bd15e9ffa17950d011308d3ad0d1c7648751c2380541484cf5eca7f"
+      },
+      "scripts/ndu_bimodal/generator_training.py": {
+        "bytes": 3570,
+        "sha256": "9372461d7d0a65cc2836f0674c776243ce2ceaa516557d22f814df301542ace0"
+      },
+      "scripts/ndu_bimodal/lifecycle.py": {
+        "bytes": 24512,
+        "sha256": "da047479568308e8ec0c008f00c3093ec9d54bde21f532b6eeb0569cddb85dc9"
+      },
+      "scripts/ndu_bimodal/native.py": {
+        "bytes": 16091,
+        "sha256": "9807b5b5073dc0dc9e61b831ed15f4e685ddf01288ca5bc00a97e5e853974a49"
+      }
+    },
+    "head": "a945af5202f61b9c0a7eeb241ca4c72afb5a275a",
+    "inventory_sha256": "6e716acc4092641fec2b91555f6ca3aae2707ae3aa28e3467ed0f07fd1c8e630",
+    "tracked_status": "M scripts/ndu_bimodal/evaluation.py\n M scripts/ndu_bimodal/learning.py\n M scripts/ndu_bimodal/test_learning.py"
+  },
+  "before": {
+    "files": {
+      "codex-rs/hepta-infer-worker-host/src/bin/hepta-joint-propose.rs": {
+        "bytes": 1732,
+        "sha256": "b11f8bb5c97f085ae6fd6a22c66c3ee1139cdf1f36c28a0b591eee02d28ce1bb"
+      },
+      "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py": {
+        "bytes": 14705,
+        "sha256": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978"
+      },
+      "scripts/joint_generation_v4_codecs.py": {
+        "bytes": 5520,
+        "sha256": "59f67ccaa36c4938d0fd9eeb4423c83409c2827af0a84b817bdeb3766d049e19"
+      },
+      "scripts/joint_generation_v4_diagnostic.py": {
+        "bytes": 19696,
+        "sha256": "7969c5c97c5cae61fde908ca7068da4481cdd0050ebc64fe4fddab28dda2ca81"
+      },
+      "scripts/joint_generation_v4_gradients.py": {
+        "bytes": 11301,
+        "sha256": "a4ccaaf6679cc6e3cca86f08563c9d348653a28169c3b6ef5ddee54340a18d8a"
+      },
+      "scripts/joint_generation_v4_io.py": {
+        "bytes": 9640,
+        "sha256": "f2d67927c9f2c7dbf729ff30d9d0c5b5b3477d4a0ff59c148348e45aae6b4fcf"
+      },
+      "scripts/joint_generation_v4_model.py": {
+        "bytes": 15430,
+        "sha256": "5b466399293dd825f9a3b9aaff6c51bdff30c3469e6a993f6339c3d573a05d51"
+      },
+      "scripts/joint_generation_v4_ndu.py": {
+        "bytes": 7586,
+        "sha256": "c0c8f86bd8c3ed8b24a3ca981b7de86d00d5251c127e8e90828596382b961223"
+      },
+      "scripts/joint_generation_v4_receipt.py": {
+        "bytes": 6153,
+        "sha256": "2882997ce3899db554bdbb530569c5f4f122cfa0e053da490f1994f49fdb8ff3"
+      },
+      "scripts/ndu_bimodal/__init__.py": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "scripts/ndu_bimodal/cli.py": {
+        "bytes": 5516,
+        "sha256": "29f3a3ec7bd15e9ffa17950d011308d3ad0d1c7648751c2380541484cf5eca7f"
+      },
+      "scripts/ndu_bimodal/generator_training.py": {
+        "bytes": 3570,
+        "sha256": "9372461d7d0a65cc2836f0674c776243ce2ceaa516557d22f814df301542ace0"
+      },
+      "scripts/ndu_bimodal/lifecycle.py": {
+        "bytes": 24512,
+        "sha256": "da047479568308e8ec0c008f00c3093ec9d54bde21f532b6eeb0569cddb85dc9"
+      },
+      "scripts/ndu_bimodal/native.py": {
+        "bytes": 16091,
+        "sha256": "9807b5b5073dc0dc9e61b831ed15f4e685ddf01288ca5bc00a97e5e853974a49"
+      }
+    },
+    "head": "a945af5202f61b9c0a7eeb241ca4c72afb5a275a",
+    "inventory_sha256": "6e716acc4092641fec2b91555f6ca3aae2707ae3aa28e3467ed0f07fd1c8e630",
+    "tracked_status": "M scripts/ndu_bimodal/evaluation.py\n M scripts/ndu_bimodal/learning.py\n M scripts/ndu_bimodal/test_learning.py"
+  },
+  "binary": {
+    "bytes": 4727208,
+    "path": "/workspace/scratch/f211ba6d7ef7/qualification-cloud-20261109/hepta-joint-propose",
+    "sha256": "e128d01a00dae260f4751ea628f124055c75dc4331dab36ed7e00bd66ec700be"
+  },
+  "cli_dependency_files_unchanged": true,
+  "repository": "/workspace/scratch/f211ba6d7ef7/hepta-bimodal",
+  "scope": "CLI module set plus v4 helper modules and Hepta core; finite-controller files are not imported by this CLI"
+}

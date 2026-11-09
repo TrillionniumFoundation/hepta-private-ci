@@ -1,0 +1,1539 @@
+{
+  "checkpoint": {
+    "active_pointer_unchanged": true,
+    "baseline_bundle_sha256": "fd889b3a4fc183e7f2ecbb6875d3f0e1ac2807bc44342de49e9b6cd367e06c32",
+    "candidate_bundle_sha256": "d60320f10d6ca77655962f563d50f0fbfa82b1d67384612ae7f7f7b9d65a7fc6",
+    "candidate_decision": {
+      "decision": "no-update",
+      "reasons": [
+        "nonprospective_or_fixture_evidence",
+        "net_gain_lcb_not_passed",
+        "retention_lcb_not_passed",
+        "constraints_pass_missing",
+        "parity_pass_missing",
+        "future_sample_pass_missing",
+        "unknown_rejection_pass_missing",
+        "candidate_not_measured"
+      ]
+    },
+    "cold_baseline_bytes_identical": true,
+    "cold_generator_load_passed": true,
+    "production_candidate_rollback": "HOLD_NOT_ADMITTED",
+    "rollback_protocol_test": "ndu_bimodal.test_lifecycle.LifecycleTests.test_checkpoint_cold_reload_and_real_cas_rollback",
+    "rollback_scope": "manufactured test evidence verifies mechanism only; no scientific admission or new admitted-version rollback"
+  },
+  "cli": {
+    "accounting": "Raw CLI/child/ledger clocks are retained; overlapping clocks are not additive. No semantic pass is asserted.",
+    "binary_sha256": "e128d01a00dae260f4751ea628f124055c75dc4331dab36ed7e00bd66ec700be",
+    "checks": {
+      "binary_hash_matches": true,
+      "dynamic_not_admitted": true,
+      "effective_static_quota": true,
+      "image_hash_matches": true,
+      "native_calls_passed": true,
+      "no_update": true,
+      "parity_error_finite": true,
+      "ppm_decodes_16x16_rgb": true,
+      "real_accounting_incompleteness_preserved": true,
+      "requested_dynamic": true,
+      "semantic_quality_unassessed": true,
+      "static_schedule_applied": true,
+      "weights_hash_matches": true
+    },
+    "commands_receipt": "commands.json",
+    "cost_receipt": "infer/execution.json",
+    "decoded_output": {
+      "format": "PPM",
+      "mode": "RGB",
+      "size": [
+        16,
+        16
+      ]
+    },
+    "dynamic_admitted": false,
+    "effective_policy": "static-quota",
+    "elapsed_seconds": 6.905524866000633,
+    "fallback_reason": "native state/semantic calibration and measured future net-gain absent",
+    "finished_at": "2026-11-09T08:43:24.907039+00:00",
+    "generated_image_sha256": "b6e6db6ba5ce660c77d0def8be18182b033f73c34e024cba3f0dba55b2b82389",
+    "generated_text_bytes": 128,
+    "input_created_after_checkpoint_freeze": true,
+    "input_disjoint_from_training_image_hashes": true,
+    "input_seed": 9100011,
+    "input_sha256": "684489fc04f9fdd47f519e8f280f2242bb69dec15f43a528d0bb1cce42c2dc81",
+    "native_calls": 4,
+    "production_update": "no-update",
+    "requested_policy": "dynamic",
+    "schema": "hepta.bimodal.public-cli-acceptance.v1",
+    "scientific_acceptance": "HOLD_NO_GO",
+    "scope": "actual train/infer CLI contract; no semantic efficacy evaluation",
+    "semantic_quality": null,
+    "semantic_quality_evaluated": false,
+    "source_commit": "a945af5202f61b9c0a7eeb241ca4c72afb5a275a",
+    "started_at": "2026-11-09T08:43:18.001564+00:00",
+    "state_max_abs_error": 6.106226635438361e-16,
+    "status": "passed_cli_contract_checks",
+    "weights_sha256": "b613a7d5be3bda45a4d75bdef03f6f513b66e997aca4cbbb75a35d11444c9c61",
+    "wrong_weight_sha": {
+      "exit_code": 1,
+      "output_created": false,
+      "rejected": true
+    }
+  },
+  "compressed_finite_reports": {
+    "attempt-001": {
+      "complete_binary_weights_and_checkpoint_store_in_external_evidence_bundle": true,
+      "copied_receipts": [
+        "rust-build.stdout.log",
+        "rust-build.command.json",
+        "content-training.json",
+        "rust-tests.command.json",
+        "rustc-version.txt",
+        "unittest.log",
+        "unittest.json",
+        "rust-tests.stderr.log",
+        "rust-test-build.stderr.log",
+        "rust-build.stderr.log",
+        "rust-test-build.command.json",
+        "qualification.json",
+        "rust-tests.stdout.log",
+        "rust-test-build.stdout.log",
+        "native-demo/initial.ppm",
+        "native-demo/read.ppm",
+        "native-demo/report.json",
+        "native-demo/prompt.txt",
+        "native-demo/delivery/generated.txt",
+        "native-demo/delivery/generated.ppm",
+        "native-demo/delivery/delivery.json"
+      ],
+      "finite_archive_sha256": "fa1e5666584a8a103483293c7dcef63c028a4550a2f5f187c4e2e5bc7eb9471e",
+      "source_directory": "qualification-cloud-20261109"
+    },
+    "cloud-final": {
+      "complete_binary_weights_and_checkpoint_store_in_external_evidence_bundle": true,
+      "copied_receipts": [
+        "rust-build.stdout.log",
+        "rust-build.command.json",
+        "content-training.json",
+        "rust-tests.command.json",
+        "rustc-version.txt",
+        "unittest.log",
+        "unittest.json",
+        "rust-tests.stderr.log",
+        "rust-test-build.stderr.log",
+        "rust-build.stderr.log",
+        "rust-test-build.command.json",
+        "qualification.json",
+        "rust-tests.stdout.log",
+        "rust-test-build.stdout.log",
+        "native-demo/initial.ppm",
+        "native-demo/read.ppm",
+        "native-demo/report.json",
+        "native-demo/prompt.txt",
+        "native-demo/delivery/generated.txt",
+        "native-demo/delivery/generated.ppm",
+        "native-demo/delivery/delivery.json"
+      ],
+      "finite_archive_sha256": "8b076262e719231ea6c2de38cc06a21230f8f244e31f8fec9509b9168ee09767",
+      "source_directory": "qualification-cloud-final-20261109"
+    }
+  },
+  "content_training": {
+    "baseline_sha256": "b2bb46e59c4c517b2d21ac1ac3353f61961277aa9d06c239f6815fe7d04423e7",
+    "candidate_sha256": "b613a7d5be3bda45a4d75bdef03f6f513b66e997aca4cbbb75a35d11444c9c61",
+    "changed_parameter_groups": [
+      "action_embedding",
+      "adapters",
+      "audio_encoder",
+      "core",
+      "emissions",
+      "encoder_fusion",
+      "feedback_projection",
+      "image_encoder",
+      "initial_slots",
+      "text_condition",
+      "text_recurrent",
+      "token_encoder",
+      "transition_input",
+      "video_encoder"
+    ],
+    "old_actor_trained": false,
+    "schema": "hepta.bimodal.content-training.v1",
+    "scope": "generated colour-card content training; no semantic or NDU gain claim",
+    "seed": 41,
+    "steps": 12,
+    "terminal_heads_trained": false,
+    "training_identity": "061509aece0aea2bdf5b6ceccdba111a6489ee57a8e01c227727901338550c49",
+    "wall_seconds": 0.30806195799959823
+  },
+  "decision": "no-update",
+  "evidence_bundle": {
+    "archive_manifest_verified": true,
+    "bytes": 9703347,
+    "filename": "hepta-ndu-bimodal-evidence-20261109.tar.gz",
+    "manifest_entries": 132,
+    "production_update": "no-update",
+    "retains_full_weights_binaries_checkpoints_and_raw_results": true,
+    "scientific_acceptance": "HOLD_NO_GO",
+    "sha256": "247e150a94ca2e7dc7e10c21c5f5e27a0323bc1938b9de8809269edd927ac3ed",
+    "tested_source_commit": "2b70482f55d1b2007f04ad8636add032229d5fa1"
+  },
+  "execution_label": "session-cloud-unattested",
+  "execution_status": "passed_auxiliary_checks",
+  "finite": {
+    "calibration": [
+      {
+        "alpha": 0.1,
+        "brier_score": null,
+        "ece": null,
+        "groups": 24,
+        "mode": "trained",
+        "pairs": 384,
+        "probability_prediction": false,
+        "radius": 0.1815149679194181,
+        "rank": 23,
+        "train": "fixed",
+        "training_seed": 11
+      },
+      {
+        "alpha": 0.1,
+        "brier_score": null,
+        "ece": null,
+        "groups": 24,
+        "mode": "reset",
+        "pairs": 384,
+        "probability_prediction": false,
+        "radius": 0.1815149679194181,
+        "rank": 23,
+        "train": "fixed",
+        "training_seed": 11
+      },
+      {
+        "alpha": 0.1,
+        "brier_score": null,
+        "ece": null,
+        "groups": 24,
+        "mode": "trained",
+        "pairs": 384,
+        "probability_prediction": false,
+        "radius": 0.17672421058248222,
+        "rank": 23,
+        "train": "trainable",
+        "training_seed": 11
+      },
+      {
+        "alpha": 0.1,
+        "brier_score": null,
+        "ece": null,
+        "groups": 24,
+        "mode": "reset",
+        "pairs": 384,
+        "probability_prediction": false,
+        "radius": 0.4256957729496662,
+        "rank": 23,
+        "train": "trainable",
+        "training_seed": 11
+      },
+      {
+        "alpha": 0.1,
+        "brier_score": null,
+        "ece": null,
+        "groups": 24,
+        "mode": "trained",
+        "pairs": 384,
+        "probability_prediction": false,
+        "radius": 0.1943552959698442,
+        "rank": 23,
+        "train": "fixed",
+        "training_seed": 29
+      },
+      {
+        "alpha": 0.1,
+        "brier_score": null,
+        "ece": null,
+        "groups": 24,
+        "mode": "reset",
+        "pairs": 384,
+        "probability_prediction": false,
+        "radius": 0.1943552959698442,
+        "rank": 23,
+        "train": "fixed",
+        "training_seed": 29
+      },
+      {
+        "alpha": 0.1,
+        "brier_score": null,
+        "ece": null,
+        "groups": 24,
+        "mode": "trained",
+        "pairs": 384,
+        "probability_prediction": false,
+        "radius": 0.10498743228420865,
+        "rank": 23,
+        "train": "trainable",
+        "training_seed": 29
+      },
+      {
+        "alpha": 0.1,
+        "brier_score": null,
+        "ece": null,
+        "groups": 24,
+        "mode": "reset",
+        "pairs": 384,
+        "probability_prediction": false,
+        "radius": 0.34153300349532734,
+        "rank": 23,
+        "train": "trainable",
+        "training_seed": 29
+      },
+      {
+        "alpha": 0.1,
+        "brier_score": null,
+        "ece": null,
+        "groups": 24,
+        "mode": "trained",
+        "pairs": 384,
+        "probability_prediction": false,
+        "radius": 0.18369907231366764,
+        "rank": 23,
+        "train": "fixed",
+        "training_seed": 47
+      },
+      {
+        "alpha": 0.1,
+        "brier_score": null,
+        "ece": null,
+        "groups": 24,
+        "mode": "reset",
+        "pairs": 384,
+        "probability_prediction": false,
+        "radius": 0.18369907231366764,
+        "rank": 23,
+        "train": "fixed",
+        "training_seed": 47
+      },
+      {
+        "alpha": 0.1,
+        "brier_score": null,
+        "ece": null,
+        "groups": 24,
+        "mode": "trained",
+        "pairs": 384,
+        "probability_prediction": false,
+        "radius": 0.13323714801941786,
+        "rank": 23,
+        "train": "trainable",
+        "training_seed": 47
+      },
+      {
+        "alpha": 0.1,
+        "brier_score": null,
+        "ece": null,
+        "groups": 24,
+        "mode": "reset",
+        "pairs": 384,
+        "probability_prediction": false,
+        "radius": 0.23218645586146672,
+        "rank": 23,
+        "train": "trainable",
+        "training_seed": 47
+      }
+    ],
+    "control_factorial": {
+      "additional_fits": 0,
+      "cells": {
+        "A": {
+          "execution": "fixed_execution",
+          "method": "static-quota",
+          "training": "fixed_hidden"
+        },
+        "B": {
+          "execution": "dynamic_execution",
+          "method": "dynamic/fixed/trained",
+          "training": "fixed_hidden"
+        },
+        "C": {
+          "execution": "fixed_execution",
+          "method": "static-quota",
+          "training": "trainable_hidden"
+        },
+        "D": {
+          "execution": "dynamic_execution",
+          "method": "dynamic/trainable/trained",
+          "training": "trainable_hidden"
+        }
+      },
+      "duplicated_matrix_values_are_new_executions": false,
+      "execution_factor": [
+        "fixed_execution",
+        "dynamic_execution"
+      ],
+      "fixed_execution_independent_of_fit": true,
+      "fixed_execution_physical_episodes": 48,
+      "scope": "finite controller representation training; not full Hepta or NDU joint training",
+      "training_factor": [
+        "fixed_hidden",
+        "trainable_hidden"
+      ],
+      "training_seeds": [
+        11,
+        29,
+        47
+      ]
+    },
+    "controller_fits": 6,
+    "costs": {
+      "action_credits": "identical immutable seven-category transition tariff for every method",
+      "controller_timing": "measured raw wall time extra to simulated tariffs; warm cache; inference/support checks included",
+      "energy_joules": null,
+      "fit_seconds": 3.0940415800032497,
+      "fixed_tuning_cpu_seconds": 0.5760140420000006,
+      "fixed_tuning_seconds": 0.5760187969972321,
+      "fixed_tuning_simulated_credits": 11901,
+      "nested_clocks_additive": false,
+      "provider_money": null,
+      "shared_DP_support_build_seconds": 0.8496656919996894,
+      "value_semantics": "terminal utility less all simulated fees; not flattened nested-entropic risk",
+      "whole_evaluation_cpu_seconds": 11.186869756,
+      "whole_evaluation_seconds": 11.188125983000646,
+      "whole_real_resource_budget_matched": false
+    },
+    "coverage": [
+      {
+        "covered": 764,
+        "empirical_pair_coverage": 0.9947916666666666,
+        "execution": "trained",
+        "pairs": 768,
+        "rejected": 0,
+        "scope": "future procedural finite-DP approximation; no conditional guarantee",
+        "train": "fixed",
+        "training_seed": 11
+      },
+      {
+        "covered": 764,
+        "empirical_pair_coverage": 0.9947916666666666,
+        "execution": "reset",
+        "pairs": 768,
+        "rejected": 0,
+        "scope": "future procedural finite-DP approximation; no conditional guarantee",
+        "train": "fixed",
+        "training_seed": 11
+      },
+      {
+        "covered": 767,
+        "empirical_pair_coverage": 0.9986979166666666,
+        "execution": "trained",
+        "pairs": 768,
+        "rejected": 0,
+        "scope": "future procedural finite-DP approximation; no conditional guarantee",
+        "train": "trainable",
+        "training_seed": 11
+      },
+      {
+        "covered": 763,
+        "empirical_pair_coverage": 0.9934895833333334,
+        "execution": "reset",
+        "pairs": 768,
+        "rejected": 0,
+        "scope": "future procedural finite-DP approximation; no conditional guarantee",
+        "train": "trainable",
+        "training_seed": 11
+      },
+      {
+        "covered": 764,
+        "empirical_pair_coverage": 0.9947916666666666,
+        "execution": "trained",
+        "pairs": 768,
+        "rejected": 0,
+        "scope": "future procedural finite-DP approximation; no conditional guarantee",
+        "train": "fixed",
+        "training_seed": 29
+      },
+      {
+        "covered": 764,
+        "empirical_pair_coverage": 0.9947916666666666,
+        "execution": "reset",
+        "pairs": 768,
+        "rejected": 0,
+        "scope": "future procedural finite-DP approximation; no conditional guarantee",
+        "train": "fixed",
+        "training_seed": 29
+      },
+      {
+        "covered": 765,
+        "empirical_pair_coverage": 0.99609375,
+        "execution": "trained",
+        "pairs": 768,
+        "rejected": 0,
+        "scope": "future procedural finite-DP approximation; no conditional guarantee",
+        "train": "trainable",
+        "training_seed": 29
+      },
+      {
+        "covered": 764,
+        "empirical_pair_coverage": 0.9947916666666666,
+        "execution": "reset",
+        "pairs": 768,
+        "rejected": 0,
+        "scope": "future procedural finite-DP approximation; no conditional guarantee",
+        "train": "trainable",
+        "training_seed": 29
+      },
+      {
+        "covered": 765,
+        "empirical_pair_coverage": 0.99609375,
+        "execution": "trained",
+        "pairs": 768,
+        "rejected": 0,
+        "scope": "future procedural finite-DP approximation; no conditional guarantee",
+        "train": "fixed",
+        "training_seed": 47
+      },
+      {
+        "covered": 765,
+        "empirical_pair_coverage": 0.99609375,
+        "execution": "reset",
+        "pairs": 768,
+        "rejected": 0,
+        "scope": "future procedural finite-DP approximation; no conditional guarantee",
+        "train": "fixed",
+        "training_seed": 47
+      },
+      {
+        "covered": 767,
+        "empirical_pair_coverage": 0.9986979166666666,
+        "execution": "trained",
+        "pairs": 768,
+        "rejected": 0,
+        "scope": "future procedural finite-DP approximation; no conditional guarantee",
+        "train": "trainable",
+        "training_seed": 47
+      },
+      {
+        "covered": 766,
+        "empirical_pair_coverage": 0.9973958333333334,
+        "execution": "reset",
+        "pairs": 768,
+        "rejected": 0,
+        "scope": "future procedural finite-DP approximation; no conditional guarantee",
+        "train": "trainable",
+        "training_seed": 47
+      }
+    ],
+    "decision": "no-update",
+    "dynamic_rows_per_variant": 144,
+    "factorial_contrasts": {
+      "dynamic_minus_fixed/fixed_hidden": {
+        "coefficients": {
+          "A": -1,
+          "B": 1
+        },
+        "fits": 3,
+        "interval": [
+          -0.07069444444444445,
+          0.07256944444444445
+        ],
+        "mean": -3.1803263726241462e-18,
+        "scope": "descriptive crossed procedural-source/initialization bootstrap",
+        "sources": 48
+      },
+      "dynamic_minus_fixed/trainable_hidden": {
+        "coefficients": {
+          "C": -1,
+          "D": 1
+        },
+        "fits": 3,
+        "interval": [
+          -0.048263888888888905,
+          0.0973611111111111
+        ],
+        "mean": 0.025416666666666667,
+        "scope": "descriptive crossed procedural-source/initialization bootstrap",
+        "sources": 48
+      },
+      "interaction": {
+        "coefficients": {
+          "A": 1,
+          "B": -1,
+          "C": -1,
+          "D": 1
+        },
+        "fits": 3,
+        "interval": [
+          -0.003541666666666665,
+          0.06604166666666667
+        ],
+        "mean": 0.025416666666666667,
+        "scope": "descriptive crossed procedural-source/initialization bootstrap",
+        "sources": 48
+      },
+      "training_difference/dynamic_execution": {
+        "coefficients": {
+          "B": -1,
+          "D": 1
+        },
+        "fits": 3,
+        "interval": [
+          -0.003541666666666665,
+          0.06604166666666667
+        ],
+        "mean": 0.025416666666666667,
+        "scope": "descriptive crossed procedural-source/initialization bootstrap",
+        "sources": 48
+      },
+      "training_difference/fixed_execution": {
+        "coefficients": {
+          "A": -1,
+          "C": 1
+        },
+        "fits": 3,
+        "interval": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "scope": "descriptive crossed procedural-source/initialization bootstrap",
+        "sources": 48
+      }
+    },
+    "finite_domain_gain_clears_descriptive_margin": false,
+    "fits": [
+      {
+        "device": "cpu",
+        "epochs": 240,
+        "feature_training": "fixed",
+        "final_mse": 0.004485139312160764,
+        "initial_mse": 0.15066914980025256,
+        "learning_rate": 0.015,
+        "model_id": "47c4969bd7320ad117620ff382e6576a4e7a82e32e61e476bc1e79bd19937738",
+        "observed_return_RL": false,
+        "parameters": 433,
+        "reachable_states": 1305,
+        "semantic_encoder_joint_training": false,
+        "support_identity": "95b2e6456358fa8ef4d3d198badd310007d257671b2e01acaa001a5716a1a640",
+        "supported_pairs": 1498,
+        "teacher": "exact_declared_finite_model_DP",
+        "terminal_training_targets": 0,
+        "torch": "2.8.0+cpu",
+        "training_cpu_seconds": 0.4966176039999999,
+        "training_seconds": 0.49668892699992284,
+        "training_seed": 11,
+        "uncertain_pair_coverage": 1.0,
+        "uncertain_pairs": 1498
+      },
+      {
+        "device": "cpu",
+        "epochs": 240,
+        "feature_training": "trainable",
+        "final_mse": 0.0030785988036662864,
+        "initial_mse": 0.15066914980025256,
+        "learning_rate": 0.015,
+        "model_id": "47c4969bd7320ad117620ff382e6576a4e7a82e32e61e476bc1e79bd19937738",
+        "observed_return_RL": false,
+        "parameters": 433,
+        "reachable_states": 1305,
+        "semantic_encoder_joint_training": false,
+        "support_identity": "95b2e6456358fa8ef4d3d198badd310007d257671b2e01acaa001a5716a1a640",
+        "supported_pairs": 1498,
+        "teacher": "exact_declared_finite_model_DP",
+        "terminal_training_targets": 0,
+        "torch": "2.8.0+cpu",
+        "training_cpu_seconds": 0.5378626779999998,
+        "training_seconds": 0.5378957859975344,
+        "training_seed": 11,
+        "uncertain_pair_coverage": 1.0,
+        "uncertain_pairs": 1498
+      },
+      {
+        "device": "cpu",
+        "epochs": 240,
+        "feature_training": "fixed",
+        "final_mse": 0.004662522167216118,
+        "initial_mse": 0.05278009450470356,
+        "learning_rate": 0.015,
+        "model_id": "47c4969bd7320ad117620ff382e6576a4e7a82e32e61e476bc1e79bd19937738",
+        "observed_return_RL": false,
+        "parameters": 433,
+        "reachable_states": 1305,
+        "semantic_encoder_joint_training": false,
+        "support_identity": "95b2e6456358fa8ef4d3d198badd310007d257671b2e01acaa001a5716a1a640",
+        "supported_pairs": 1498,
+        "teacher": "exact_declared_finite_model_DP",
+        "terminal_training_targets": 0,
+        "torch": "2.8.0+cpu",
+        "training_cpu_seconds": 0.49885950999999906,
+        "training_seconds": 0.4988765800007968,
+        "training_seed": 29,
+        "uncertain_pair_coverage": 1.0,
+        "uncertain_pairs": 1498
+      },
+      {
+        "device": "cpu",
+        "epochs": 240,
+        "feature_training": "trainable",
+        "final_mse": 0.001301099054758214,
+        "initial_mse": 0.05278009450470356,
+        "learning_rate": 0.015,
+        "model_id": "47c4969bd7320ad117620ff382e6576a4e7a82e32e61e476bc1e79bd19937738",
+        "observed_return_RL": false,
+        "parameters": 433,
+        "reachable_states": 1305,
+        "semantic_encoder_joint_training": false,
+        "support_identity": "95b2e6456358fa8ef4d3d198badd310007d257671b2e01acaa001a5716a1a640",
+        "supported_pairs": 1498,
+        "teacher": "exact_declared_finite_model_DP",
+        "terminal_training_targets": 0,
+        "torch": "2.8.0+cpu",
+        "training_cpu_seconds": 0.5269972900000006,
+        "training_seconds": 0.5269984620026662,
+        "training_seed": 29,
+        "uncertain_pair_coverage": 1.0,
+        "uncertain_pairs": 1498
+      },
+      {
+        "device": "cpu",
+        "epochs": 240,
+        "feature_training": "fixed",
+        "final_mse": 0.004279107357943474,
+        "initial_mse": 0.03199279129840019,
+        "learning_rate": 0.015,
+        "model_id": "47c4969bd7320ad117620ff382e6576a4e7a82e32e61e476bc1e79bd19937738",
+        "observed_return_RL": false,
+        "parameters": 433,
+        "reachable_states": 1305,
+        "semantic_encoder_joint_training": false,
+        "support_identity": "95b2e6456358fa8ef4d3d198badd310007d257671b2e01acaa001a5716a1a640",
+        "supported_pairs": 1498,
+        "teacher": "exact_declared_finite_model_DP",
+        "terminal_training_targets": 0,
+        "torch": "2.8.0+cpu",
+        "training_cpu_seconds": 0.48549644899999933,
+        "training_seconds": 0.4855063670001982,
+        "training_seed": 47,
+        "uncertain_pair_coverage": 1.0,
+        "uncertain_pairs": 1498
+      },
+      {
+        "device": "cpu",
+        "epochs": 240,
+        "feature_training": "trainable",
+        "final_mse": 0.0013687679077340645,
+        "initial_mse": 0.03199279129840019,
+        "learning_rate": 0.015,
+        "model_id": "47c4969bd7320ad117620ff382e6576a4e7a82e32e61e476bc1e79bd19937738",
+        "observed_return_RL": false,
+        "parameters": 433,
+        "reachable_states": 1305,
+        "semantic_encoder_joint_training": false,
+        "support_identity": "95b2e6456358fa8ef4d3d198badd310007d257671b2e01acaa001a5716a1a640",
+        "supported_pairs": 1498,
+        "teacher": "exact_declared_finite_model_DP",
+        "terminal_training_targets": 0,
+        "torch": "2.8.0+cpu",
+        "training_cpu_seconds": 0.5480650729999983,
+        "training_seconds": 0.5480754580021312,
+        "training_seed": 47,
+        "uncertain_pair_coverage": 1.0,
+        "uncertain_pairs": 1498
+      }
+    ],
+    "fixed_policy_tuning": {
+      "calibration_episodes": 960,
+      "calibration_seeds": [
+        100000,
+        100001,
+        100002,
+        100003,
+        100004,
+        100005,
+        100006,
+        100007,
+        100008,
+        100009,
+        100010,
+        100011,
+        100012,
+        100013,
+        100014,
+        100015,
+        100016,
+        100017,
+        100018,
+        100019,
+        100020,
+        100021,
+        100022,
+        100023
+      ],
+      "controller_seconds": 0.300083186946722,
+      "grid_sha256": "b4929f043029a500f0328a689778219fb318612dc152e89e1f4fdb14501e83cf",
+      "outcome_scope": "declared finite simulator; calibration only; no future reselection",
+      "schedule_attempts": 40,
+      "selected_index": 34,
+      "selected_schedule": [
+        "both",
+        "image",
+        "text"
+      ],
+      "selection": "highest calibration mean realized net utility; first registered schedule breaks ties",
+      "simulated_credits": 11901,
+      "tuning_cpu_seconds": 0.5760140420000006,
+      "tuning_seconds": 0.5760187969972321
+    },
+    "freeze": {
+      "calibrations_sha256": "4ce072806f1b321d78f84679d085b6b8f3f7d5db5b89c6251cd48553c97e4ed9",
+      "candidate_parameter_sha256": [
+        "af48c27dec1f19f3f343895357cfb5ca63d18a4dcf68a421c131dd8eff789dd3",
+        "85fd46fbac1ae23c29ef5faeb117ed845034ca8cf40dec283fa2335e16e90435",
+        "8b4193213afd45ac54020b3b9856f2030c007b92f3cfc5b0f00f022f7de3287d",
+        "eb4e543c2d687cfab79472f579aafa32fa46011862e7302f4cd6b6b582ca79eb",
+        "892b4c27c17f9543c95187613001fc37cea163b69009125a34eb0673a0bac332",
+        "098f455f5f1c3b7f247e54aff845ef56845cd881ded4e3c4bbbe92a92a49b31a"
+      ],
+      "fits_frozen_at": "2026-11-09T08:44:25.425880+00:00",
+      "fixed_tuning_sha256": "fbc8312655418f0b01f25124d2aaa6f5b2668c2b9eda8afefbc340c6ba83967c"
+    },
+    "future_source_count": 48,
+    "future_source_scope": "registered procedural RNG draws on known finite support; not real future distribution",
+    "independent_future_sources_are_not_144": true,
+    "methods": {
+      "dynamic/fixed/reset": {
+        "action_counts": {
+          "REPAIR:both": 175,
+          "REPAIR:image": 2,
+          "STOP": 69,
+          "SUBMIT": 75
+        },
+        "controller_ms_per_episode": 0.7071095623763944,
+        "controller_seconds": 0.1018237769822008,
+        "episodes": 144,
+        "fallback_decisions": 0,
+        "mean_cost_categories": {
+          "control": 1.75,
+          "coordination": 1.7361111111111112,
+          "generate": 4.888888888888889,
+          "observe": 0.0,
+          "recompute": 1.0347222222222223,
+          "residency": 3.076388888888889,
+          "reuse": 0.0
+        },
+        "mean_credits": 12.48611111111111,
+        "mean_net_utility": 0.37333333333333335,
+        "read_count": 0,
+        "unique_future_sources": 48,
+        "wait_count": 0
+      },
+      "dynamic/fixed/trained": {
+        "action_counts": {
+          "REPAIR:both": 175,
+          "REPAIR:image": 2,
+          "STOP": 69,
+          "SUBMIT": 75
+        },
+        "controller_ms_per_episode": 0.7269332916924517,
+        "controller_seconds": 0.10467839400371304,
+        "episodes": 144,
+        "fallback_decisions": 0,
+        "mean_cost_categories": {
+          "control": 1.75,
+          "coordination": 1.7361111111111112,
+          "generate": 4.888888888888889,
+          "observe": 0.0,
+          "recompute": 1.0347222222222223,
+          "residency": 3.076388888888889,
+          "reuse": 0.0
+        },
+        "mean_credits": 12.48611111111111,
+        "mean_net_utility": 0.37333333333333335,
+        "read_count": 0,
+        "unique_future_sources": 48,
+        "wait_count": 0
+      },
+      "dynamic/trainable/reset": {
+        "action_counts": {
+          "REPAIR:both": 32,
+          "STOP": 104,
+          "SUBMIT": 40
+        },
+        "controller_ms_per_episode": 0.38866020837405,
+        "controller_seconds": 0.055967070005863206,
+        "episodes": 144,
+        "fallback_decisions": 0,
+        "mean_cost_categories": {
+          "control": 0.5,
+          "coordination": 0.5,
+          "generate": 0.8888888888888888,
+          "observe": 0.0,
+          "recompute": 0.18055555555555555,
+          "residency": 1.0972222222222223,
+          "reuse": 0.0
+        },
+        "mean_credits": 3.1666666666666665,
+        "mean_net_utility": 0.23777777777777778,
+        "read_count": 0,
+        "unique_future_sources": 48,
+        "wait_count": 0
+      },
+      "dynamic/trainable/trained": {
+        "action_counts": {
+          "REPAIR:both": 172,
+          "REPAIR:image": 35,
+          "REPAIR:text": 11,
+          "STOP": 49,
+          "SUBMIT": 95
+        },
+        "controller_ms_per_episode": 0.7855946318563333,
+        "controller_seconds": 0.11312562698731199,
+        "episodes": 144,
+        "fallback_decisions": 0,
+        "mean_cost_categories": {
+          "control": 2.173611111111111,
+          "coordination": 1.8541666666666667,
+          "generate": 5.416666666666667,
+          "observe": 0.0,
+          "recompute": 1.0625,
+          "residency": 3.923611111111111,
+          "reuse": 0.0
+        },
+        "mean_credits": 14.430555555555555,
+        "mean_net_utility": 0.39875000000000005,
+        "read_count": 0,
+        "unique_future_sources": 48,
+        "wait_count": 0
+      },
+      "encoder-only": {
+        "action_counts": {
+          "STOP": 39,
+          "SUBMIT": 9
+        },
+        "controller_ms_per_episode": 0.10836568731065199,
+        "controller_seconds": 0.005201552990911296,
+        "episodes": 48,
+        "fallback_decisions": 0,
+        "mean_cost_categories": {
+          "control": 0.1875,
+          "coordination": 0.1875,
+          "generate": 0.0,
+          "observe": 0.0,
+          "recompute": 0.0,
+          "residency": 0.5625,
+          "reuse": 0.0
+        },
+        "mean_credits": 0.9375,
+        "mean_net_utility": 0.20020833333333335,
+        "read_count": 0,
+        "unique_future_sources": 48,
+        "wait_count": 0
+      },
+      "exact-DP": {
+        "action_counts": {
+          "REPAIR:both": 61,
+          "REPAIR:image": 27,
+          "REPAIR:text": 26,
+          "STOP": 11,
+          "SUBMIT": 37
+        },
+        "controller_ms_per_episode": 1.1017793131031794,
+        "controller_seconds": 0.052885407028952613,
+        "episodes": 48,
+        "fallback_decisions": 0,
+        "mean_cost_categories": {
+          "control": 3.1458333333333335,
+          "coordination": 2.0416666666666665,
+          "generate": 7.291666666666667,
+          "observe": 0.0,
+          "recompute": 1.7916666666666667,
+          "residency": 6.083333333333333,
+          "reuse": 0.0
+        },
+        "mean_credits": 20.354166666666668,
+        "mean_net_utility": 0.45812500000000006,
+        "read_count": 0,
+        "unique_future_sources": 48,
+        "wait_count": 0
+      },
+      "fixed-steps": {
+        "action_counts": {
+          "REPAIR:both": 65,
+          "STOP": 23,
+          "SUBMIT": 25
+        },
+        "controller_ms_per_episode": 0.23521310375447987,
+        "controller_seconds": 0.011290228980215034,
+        "episodes": 48,
+        "fallback_decisions": 0,
+        "mean_cost_categories": {
+          "control": 1.875,
+          "coordination": 1.875,
+          "generate": 5.416666666666667,
+          "observe": 0.0,
+          "recompute": 1.3333333333333333,
+          "residency": 3.5208333333333335,
+          "reuse": 0.0
+        },
+        "mean_credits": 14.020833333333334,
+        "mean_net_utility": 0.38645833333333335,
+        "read_count": 0,
+        "unique_future_sources": 48,
+        "wait_count": 0
+      },
+      "light": {
+        "action_counts": {
+          "REPAIR:both": 66,
+          "REPAIR:image": 27,
+          "REPAIR:text": 17,
+          "STOP": 11,
+          "SUBMIT": 37
+        },
+        "controller_ms_per_episode": 2.6354571042854027,
+        "controller_seconds": 0.12650194100569934,
+        "episodes": 48,
+        "fallback_decisions": 0,
+        "mean_cost_categories": {
+          "control": 3.0625,
+          "coordination": 2.1458333333333335,
+          "generate": 7.333333333333333,
+          "observe": 0.0,
+          "recompute": 1.75,
+          "residency": 6.125,
+          "reuse": 0.0
+        },
+        "mean_credits": 20.416666666666668,
+        "mean_net_utility": 0.47125,
+        "read_count": 0,
+        "unique_future_sources": 48,
+        "wait_count": 0
+      },
+      "privileged-oracle": {
+        "action_counts": {
+          "READ": 2,
+          "REPAIR:both": 28,
+          "REPAIR:image": 42,
+          "REPAIR:text": 37,
+          "SUBMIT": 48,
+          "WAIT": 12
+        },
+        "controller_ms_per_episode": 9.819539270741492,
+        "controller_seconds": 0.4713378849955916,
+        "episodes": 48,
+        "fallback_decisions": 0,
+        "mean_cost_categories": {
+          "control": 3.5208333333333335,
+          "coordination": 1.8333333333333333,
+          "generate": 5.625,
+          "observe": 0.08333333333333333,
+          "recompute": 1.5,
+          "residency": 7.104166666666667,
+          "reuse": 0.0625
+        },
+        "mean_credits": 19.729166666666668,
+        "mean_net_utility": 0.6639583333333333,
+        "read_count": 2,
+        "unique_future_sources": 48,
+        "wait_count": 12
+      },
+      "static-quota": {
+        "action_counts": {
+          "REPAIR:image": 57,
+          "REPAIR:text": 81,
+          "STOP": 15,
+          "SUBMIT": 33
+        },
+        "controller_ms_per_episode": 0.41127933369959163,
+        "controller_seconds": 0.019741408017580397,
+        "episodes": 48,
+        "fallback_decisions": 0,
+        "mean_cost_categories": {
+          "control": 3.5625,
+          "coordination": 0.6875,
+          "generate": 5.75,
+          "observe": 0.0,
+          "recompute": 1.3125,
+          "residency": 6.354166666666667,
+          "reuse": 0.0
+        },
+        "mean_credits": 17.666666666666668,
+        "mean_net_utility": 0.37333333333333335,
+        "read_count": 0,
+        "unique_future_sources": 48,
+        "wait_count": 0
+      },
+      "tuned-fixed": {
+        "action_counts": {
+          "REPAIR:both": 48,
+          "REPAIR:image": 33,
+          "REPAIR:text": 12,
+          "STOP": 20,
+          "SUBMIT": 28
+        },
+        "controller_ms_per_episode": 0.3196680214235433,
+        "controller_seconds": 0.015344065028330078,
+        "episodes": 48,
+        "fallback_decisions": 0,
+        "mean_cost_categories": {
+          "control": 2.5208333333333335,
+          "coordination": 1.5833333333333333,
+          "generate": 5.875,
+          "observe": 0.0,
+          "recompute": 1.4791666666666667,
+          "residency": 4.875,
+          "reuse": 0.0
+        },
+        "mean_credits": 16.333333333333332,
+        "mean_net_utility": 0.3745833333333333,
+        "read_count": 0,
+        "unique_future_sources": 48,
+        "wait_count": 0
+      }
+    },
+    "ordinary_policy_read_count": 0,
+    "ordinary_policy_wait_count": 0,
+    "paired_contrasts": {
+      "encoder-only": {
+        "fits": 3,
+        "interval": [
+          0.1282638888888889,
+          0.2754861111111111
+        ],
+        "mean": 0.1985416666666667,
+        "scope": "descriptive crossed procedural-source/initialization bootstrap",
+        "sources": 48
+      },
+      "fixed-steps": {
+        "fits": 3,
+        "interval": [
+          -0.03874999999999999,
+          0.07104166666666668
+        ],
+        "mean": 0.012291666666666668,
+        "scope": "descriptive crossed procedural-source/initialization bootstrap",
+        "sources": 48
+      },
+      "light": {
+        "fits": 3,
+        "interval": [
+          -0.14166666666666664,
+          -0.007083333333333315
+        ],
+        "mean": -0.07249999999999997,
+        "scope": "descriptive crossed procedural-source/initialization bootstrap",
+        "sources": 48
+      },
+      "static-quota": {
+        "fits": 3,
+        "interval": [
+          -0.07236111111111111,
+          0.11972222222222222
+        ],
+        "mean": 0.025416666666666667,
+        "scope": "descriptive crossed procedural-source/initialization bootstrap",
+        "sources": 48
+      },
+      "tuned-fixed": {
+        "fits": 3,
+        "interval": [
+          -0.04895833333333331,
+          0.10291666666666666
+        ],
+        "mean": 0.024166666666666673,
+        "scope": "descriptive crossed procedural-source/initialization bootstrap",
+        "sources": 48
+      }
+    },
+    "policy_voi_gain_established": false,
+    "production_adoption": false,
+    "reachable_states": 1305,
+    "reason": "no robust net gain over all registered fixed/light controls",
+    "registration": {
+      "alpha": 0.1,
+      "calibration_seeds": [
+        100000,
+        100001,
+        100002,
+        100003,
+        100004,
+        100005,
+        100006,
+        100007,
+        100008,
+        100009,
+        100010,
+        100011,
+        100012,
+        100013,
+        100014,
+        100015,
+        100016,
+        100017,
+        100018,
+        100019,
+        100020,
+        100021,
+        100022,
+        100023
+      ],
+      "epochs": 240,
+      "frozen_at": "2026-11-09T08:44:19.207746+00:00",
+      "future_outcomes_materialized_after_freeze": true,
+      "future_seeds": [
+        200000,
+        200001,
+        200002,
+        200003,
+        200004,
+        200005,
+        200006,
+        200007,
+        200008,
+        200009,
+        200010,
+        200011,
+        200012,
+        200013,
+        200014,
+        200015,
+        200016,
+        200017,
+        200018,
+        200019,
+        200020,
+        200021,
+        200022,
+        200023,
+        200024,
+        200025,
+        200026,
+        200027,
+        200028,
+        200029,
+        200030,
+        200031,
+        200032,
+        200033,
+        200034,
+        200035,
+        200036,
+        200037,
+        200038,
+        200039,
+        200040,
+        200041,
+        200042,
+        200043,
+        200044,
+        200045,
+        200046,
+        200047
+      ],
+      "future_seeds_registered_before_fit": true,
+      "margin": 0.002,
+      "model": {
+        "deadline": 6,
+        "favored_success": 0.9,
+        "max_steps": 6,
+        "other_success": 0.2,
+        "risk": 0.25,
+        "signal_probability": 0.5,
+        "unread_success": 0.5,
+        "utility_per_credit": 0.01
+      },
+      "model_id": "47c4969bd7320ad117620ff382e6576a4e7a82e32e61e476bc1e79bd19937738",
+      "no_semantic_source_holdout_claim": true,
+      "oracle": "prophet sees future counter draws; extra information and search cost; excluded from fair promotion",
+      "representation_ablation": "separate trained/reset hidden execution features; identical backbone",
+      "schema": "hepta.bimodal.finite-evaluation.v1",
+      "training_and_execution_ablation": "fixed/trainable hidden training crossed with fixed/dynamic execution",
+      "training_seeds": [
+        11,
+        29,
+        47
+      ],
+      "training_source": "declared_finite_model_exhaustive_DP_support"
+    },
+    "representation_ablation": {
+      "contrasts": {
+        "dynamic/fixed/trained minus dynamic/fixed/reset": {
+          "fits": 3,
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "mean": 0.0,
+          "scope": "descriptive crossed procedural-source/initialization bootstrap",
+          "sources": 48
+        },
+        "dynamic/trainable/trained minus dynamic/fixed/trained": {
+          "fits": 3,
+          "interval": [
+            -0.003541666666666665,
+            0.06604166666666667
+          ],
+          "mean": 0.025416666666666667,
+          "scope": "descriptive crossed procedural-source/initialization bootstrap",
+          "sources": 48
+        },
+        "dynamic/trainable/trained minus dynamic/trainable/reset": {
+          "fits": 3,
+          "interval": [
+            0.07854166666666668,
+            0.24604166666666666
+          ],
+          "mean": 0.16097222222222224,
+          "scope": "descriptive crossed procedural-source/initialization bootstrap",
+          "sources": 48
+        }
+      },
+      "execution_levels": [
+        "trained",
+        "reset"
+      ]
+    },
+    "uncertain_pairs": 1498
+  },
+  "limitations": [
+    "Same 48 procedural future sources reused across three fits and across correctness reruns; not 144 independent future samples or a new blind holdout.",
+    "Finite-DP residual coverage is not probability calibration; Brier/ECE null, no conditional or semantic OOD guarantee.",
+    "No ordinary finite policy selected READ or WAIT; no policy-level future-information gain demonstrated.",
+    "Nested-risk DP model optimum is not global generation optimality; oracle has extra information and search.",
+    "Warm-cache controller timings and equal simulated credits do not match complete physical budgets; overlapping clocks must not be added.",
+    "Logical named residency excludes complete heap/RSS; energy and money remain unknown.",
+    "Actual native output is u followed by 127 e characters; semantic_quality null.",
+    "Finite representation learning and colour-card content training are separate; no full Hepta/NDU joint training.",
+    "Audio/video parameter groups may change in shared numerical graph, but no AV data, synchronized training or validation.",
+    "Native CLI dynamic executes static-quota fallback; fixture candidate never admitted; rollback verified only as mechanism.",
+    "Current cloud session has no independent project-specific Codex environment attestation."
+  ],
+  "native": {
+    "accounting": "whole-demo and ledger clocks overlap; do not sum. Child CPU is separate from parent CPU.",
+    "call_scope": "local loader/native requests; not provider invoice events",
+    "energy_joules": null,
+    "future_packet": {
+      "arrival_ns": 1794213872073154668,
+      "deadline_ns": 1794213886073154668,
+      "event_ns": 1794213871073154668,
+      "media_clock": null,
+      "media_time_ns": null,
+      "modality": "image",
+      "packet_id": "future-image",
+      "resident_bytes": 781,
+      "schema_version": 1,
+      "sequence": 1,
+      "sha256": "57a98c0150b1bf422f5a486a9f9f137b53b7f5af49939e499576d66316c5694b",
+      "sync_group": null
+    },
+    "generator_sha256": "b613a7d5be3bda45a4d75bdef03f6f513b66e997aca4cbbb75a35d11444c9c61",
+    "loader_calls": [
+      "future-image"
+    ],
+    "postfreeze_source_seeds": [
+      9100001,
+      9100002
+    ],
+    "prearrival_read_rejected": true,
+    "production_update": "no-update",
+    "provider_money": null,
+    "read_replay": [
+      {
+        "action": "REPAIR",
+        "after_sha256": "28fe1f9e8df8143b6cd396b1c60d239af3733d4a6cc848a9207bf3f6b9e3d872",
+        "before_sha256": "895d2fa8b73a0bb03d3c751a68edc95cfee4e2631a4dee40112b89cc883b1572",
+        "continuous_candidate_changed": true,
+        "continuous_candidate_max_abs_change": {
+          "image": 0.8599977012829744,
+          "text": 1.279459437171046
+        },
+        "modality": "text",
+        "quality_improvement_certified": false
+      }
+    ],
+    "repair_image": {
+      "action": "REPAIR",
+      "after_sha256": "15fafc8ca2628ea24790b28e0d43a57e4fce8fac940282158c671354ed8a9552",
+      "before_sha256": "28fe1f9e8df8143b6cd396b1c60d239af3733d4a6cc848a9207bf3f6b9e3d872",
+      "continuous_candidate_changed": true,
+      "continuous_candidate_max_abs_change": {
+        "image": 0.7723225610439224,
+        "text": 1.2816090272738918
+      },
+      "modality": "image",
+      "quality_improvement_certified": false
+    },
+    "repair_text": {
+      "action": "REPAIR",
+      "after_sha256": "6de503b6c828a8c7ad7c45157d74a330e8a1d8369bcb43162500b4fe5e4cab25",
+      "before_sha256": "4dae6fd37a9cdd04effb817991010ca266a7af518042cf4cbf31c29616bcb05f",
+      "continuous_candidate_changed": true,
+      "continuous_candidate_max_abs_change": {
+        "image": 0.859997718485263,
+        "text": 1.2794593808106585
+      },
+      "modality": "text",
+      "quality_improvement_certified": false
+    },
+    "residency_scope": "logical named payload bytes, not complete Python/Torch/native heap or RSS",
+    "scope": "procedural 16x16 colour-card diagnostic; not semantic efficacy",
+    "training_identity": "061509aece0aea2bdf5b6ceccdba111a6489ee57a8e01c227727901338550c49",
+    "whole_demo_child_cpu_seconds": 0.45619199999999704,
+    "whole_demo_parent_cpu_seconds": 0.1603307280000017,
+    "whole_demo_wall_seconds": 1.5962166949975654
+  },
+  "native_cost_categories": {
+    "control": {
+      "calls": 0,
+      "cpu_seconds": 0.09303129099999552,
+      "events": 13,
+      "wall_seconds": 0.09300648600037675
+    },
+    "coordination": {
+      "calls": 0,
+      "cpu_seconds": 0.00037228300000435866,
+      "events": 2,
+      "wall_seconds": 1.0003618379996624
+    },
+    "generate": {
+      "calls": 2,
+      "cpu_seconds": 0.015064019999996958,
+      "events": 2,
+      "wall_seconds": 0.1717922419993556
+    },
+    "observation": {
+      "calls": 3,
+      "cpu_seconds": 0.01312257199999678,
+      "events": 5,
+      "wall_seconds": 0.15194957100175088
+    },
+    "recompute": {
+      "calls": 1,
+      "cpu_seconds": 0.005061708999999581,
+      "events": 1,
+      "wall_seconds": 0.07094057799986331
+    },
+    "residency": {
+      "calls": 0,
+      "cpu_seconds": 0.0,
+      "events": 60,
+      "wall_seconds": 0.0
+    },
+    "submit": {
+      "calls": 1,
+      "cpu_seconds": 0.007140851999999143,
+      "events": 2,
+      "wall_seconds": 0.08158712699878379
+    }
+  },
+  "native_delivery": {
+    "action": "SUBMIT",
+    "allocation": {
+      "both": 0,
+      "image": 1,
+      "text": 1
+    },
+    "binary_sha256": "e128d01a00dae260f4751ea628f124055c75dc4331dab36ed7e00bd66ec700be",
+    "checkpoint_sha256": "b613a7d5be3bda45a4d75bdef03f6f513b66e997aca4cbbb75a35d11444c9c61",
+    "cursors": [
+      16,
+      0,
+      0,
+      128
+    ],
+    "image_sha256": "b6e6db6ba5ce660c77d0def8be18182b033f73c34e024cba3f0dba55b2b82389",
+    "production_update": "no-update",
+    "public_sha256": "beb4b6e8ef607f40582ed9ab2e8780f71da4d277899d3af1ee1a5bc3b02e37cb",
+    "semantic_quality": null,
+    "state_max_abs_error": 4.440892098500626e-16,
+    "state_sha256": "1739cd8f8aa334992e80b60d8e44319086a1d6f8bd20cdebd2ba095522f72b6f",
+    "text_utf8": "ueeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "native_ledger": {
+    "byte_seconds": 8082512.383379516,
+    "calls": 7,
+    "cpu_seconds": 0.13379272699999234,
+    "elapsed_seconds": 1.596166561001155,
+    "monetary": null,
+    "resident_bytes": 5073101,
+    "wall_seconds": 1.5696378419997927
+  },
+  "native_subprocess_calls": 6,
+  "native_total_ledger_calls": 7,
+  "project_cloud_environment_verified": false,
+  "python_tests": {
+    "errors": 0,
+    "failures": 0,
+    "loaded_by_module": {
+      "ndu_bimodal.test_finite": 8,
+      "ndu_bimodal.test_learning": 12,
+      "ndu_bimodal.test_lifecycle": 10,
+      "ndu_bimodal.test_native": 9
+    },
+    "skipped": 0,
+    "successful": true,
+    "tests_run": 39
+  },
+  "runtime": {
+    "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  },
+  "rust_passed": 25,
+  "schema": "hepta.bimodal.evidence-summary.v1",
+  "scientific_acceptance": "HOLD_NO_GO",
+  "source_commit": "2b70482f55d1b2007f04ad8636add032229d5fa1",
+  "source_identity_unchanged": true,
+  "source_inventory_sha256": "9e5ca305cb0ad6a109d638d6270816268bf31667c80c4ba3359df5da49ba618d",
+  "source_reports": {
+    "cli": {
+      "commands.json": {
+        "path": "/workspace/scratch/f211ba6d7ef7/cli-validation-20261109/commands.json",
+        "sha256": "567559db89684409a1e65a39c1848e57b6e7f4526b53b241c4e9524997258a98"
+      },
+      "report.json": {
+        "path": "/workspace/scratch/f211ba6d7ef7/cli-validation-20261109/report.json",
+        "sha256": "896ebc49d4fbcae800f3c238a4c68891fb5f270de24d2a598f671841675694f4"
+      },
+      "source-manifest.json": {
+        "path": "/workspace/scratch/f211ba6d7ef7/cli-validation-20261109/source-manifest.json",
+        "sha256": "a97f2d36c08f6a4074d3ac08fcb5a871758d70382b52c2cd51cfbc60a1558e90"
+      }
+    },
+    "final": {
+      "baseline.weights": {
+        "path": "/workspace/scratch/f211ba6d7ef7/qualification-cloud-final-20261109/baseline.weights",
+        "sha256": "b2bb46e59c4c517b2d21ac1ac3353f61961277aa9d06c239f6815fe7d04423e7"
+      },
+      "candidate.weights": {
+        "path": "/workspace/scratch/f211ba6d7ef7/qualification-cloud-final-20261109/candidate.weights",
+        "sha256": "b613a7d5be3bda45a4d75bdef03f6f513b66e997aca4cbbb75a35d11444c9c61"
+      },
+      "content-training.json": {
+        "path": "/workspace/scratch/f211ba6d7ef7/qualification-cloud-final-20261109/content-training.json",
+        "sha256": "9599fac5fa721dcdcade20e9437533e8fe0d0e545f1f3b558736f2796f9c8079"
+      },
+      "finite-study/report.json": {
+        "path": "/workspace/scratch/f211ba6d7ef7/qualification-cloud-final-20261109/finite-study/report.json",
+        "sha256": "994b9762e068f28d7a57be7f4c8495aa3d1b4a8b88d0e708d05159bbeb5cbf08"
+      },
+      "hepta-joint-propose": {
+        "path": "/workspace/scratch/f211ba6d7ef7/qualification-cloud-final-20261109/hepta-joint-propose",
+        "sha256": "e128d01a00dae260f4751ea628f124055c75dc4331dab36ed7e00bd66ec700be"
+      },
+      "native-demo/report.json": {
+        "path": "/workspace/scratch/f211ba6d7ef7/qualification-cloud-final-20261109/native-demo/report.json",
+        "sha256": "378137707c08cee0a73f2bf1e535144a5c24975a02f43f967505ade291a5f9ea"
+      },
+      "qualification.json": {
+        "path": "/workspace/scratch/f211ba6d7ef7/qualification-cloud-final-20261109/qualification.json",
+        "sha256": "28881525a1e6f46da4ce5c58ecbd080de999fa001477644be7016cfddf9a92a8"
+      }
+    },
+    "superseded": {
+      "finite-study/report.json": {
+        "path": "/workspace/scratch/f211ba6d7ef7/qualification-cloud-20261109/finite-study/report.json",
+        "sha256": "45acb87ad9a86fab2eebc6e8162169f37a9d7fc2939b61bebad23e1bf65b0e9e"
+      },
+      "qualification.json": {
+        "path": "/workspace/scratch/f211ba6d7ef7/qualification-cloud-20261109/qualification.json",
+        "sha256": "1ce50dd98bd8d5bba064475b58af97d262ed684758133e761420324679ca3a13"
+      }
+    }
+  }
+}

@@ -1,0 +1,469 @@
+{
+  "artifact_inventory_excludes": [
+    "qualification.json"
+  ],
+  "artifact_sha256_inventory": {
+    "baseline.weights": {
+      "bytes": 4981111,
+      "sha256": "b2bb46e59c4c517b2d21ac1ac3353f61961277aa9d06c239f6815fe7d04423e7"
+    },
+    "candidate.weights": {
+      "bytes": 4981111,
+      "sha256": "b613a7d5be3bda45a4d75bdef03f6f513b66e997aca4cbbb75a35d11444c9c61"
+    },
+    "checkpoint-store/active.json": {
+      "bytes": 131,
+      "sha256": "55c1d546a8eba6bea60b178624d0c6972833aa4cd4fe4e5d341d4210c9683933"
+    },
+    "checkpoint-store/candidate.json": {
+      "bytes": 108,
+      "sha256": "b463caa55a749401e8085c2dbe67f3150aa91a071de2061bbaac0c4ae2e624c3"
+    },
+    "checkpoint-store/objects/d60320f10d6ca77655962f563d50f0fbfa82b1d67384612ae7f7f7b9d65a7fc6/manifest.json": {
+      "bytes": 171,
+      "sha256": "d60320f10d6ca77655962f563d50f0fbfa82b1d67384612ae7f7f7b9d65a7fc6"
+    },
+    "checkpoint-store/objects/d60320f10d6ca77655962f563d50f0fbfa82b1d67384612ae7f7f7b9d65a7fc6/weights.bin": {
+      "bytes": 4981111,
+      "sha256": "b613a7d5be3bda45a4d75bdef03f6f513b66e997aca4cbbb75a35d11444c9c61"
+    },
+    "checkpoint-store/objects/fd889b3a4fc183e7f2ecbb6875d3f0e1ac2807bc44342de49e9b6cd367e06c32/manifest.json": {
+      "bytes": 172,
+      "sha256": "fd889b3a4fc183e7f2ecbb6875d3f0e1ac2807bc44342de49e9b6cd367e06c32"
+    },
+    "checkpoint-store/objects/fd889b3a4fc183e7f2ecbb6875d3f0e1ac2807bc44342de49e9b6cd367e06c32/weights.bin": {
+      "bytes": 4981111,
+      "sha256": "b2bb46e59c4c517b2d21ac1ac3353f61961277aa9d06c239f6815fe7d04423e7"
+    },
+    "content-training.json": {
+      "bytes": 3047,
+      "sha256": "747e39b5a35534c098518483b8de811e4c4012dbf9b4109f0c914eb80c3413ac"
+    },
+    "finite-study/advantage-fixed-11.json": {
+      "bytes": 81216,
+      "sha256": "d005fcac36662087df03414e10185292730c3b0402ab46e5afbf4a140862b973"
+    },
+    "finite-study/advantage-fixed-29.json": {
+      "bytes": 81145,
+      "sha256": "521f7584b011a921a268aa5a30bbc615e2f56dece70a301b8de376d830315ff4"
+    },
+    "finite-study/advantage-fixed-47.json": {
+      "bytes": 81234,
+      "sha256": "aead7530495fda6f5d001cbf4c658ba5794d530a01ad037333c7dc6b1193a312"
+    },
+    "finite-study/advantage-trainable-11.json": {
+      "bytes": 81180,
+      "sha256": "e9f7a9491ae17291001f8aaa392f84c2be6b35fee9918bfadd2e989d354da04a"
+    },
+    "finite-study/advantage-trainable-29.json": {
+      "bytes": 81164,
+      "sha256": "4b7cee263b7a8d35cdb438dfb58ebff2d150bc44930c1de2a7d8eb141210423c"
+    },
+    "finite-study/advantage-trainable-47.json": {
+      "bytes": 81198,
+      "sha256": "c5b753771f4f160f0acf59e3423d49d7a4a65f716379e2611fd071b681720612"
+    },
+    "finite-study/candidate-freeze.json": {
+      "bytes": 715,
+      "sha256": "e3ac90a0658f58be87e81a41f8ce3b2fabc885f8f111b8bb0a3486fa0267e120"
+    },
+    "finite-study/registration.json": {
+      "bytes": 6375,
+      "sha256": "5a729368435fc1cb51a777a721586555b9ac6df03d3d41c05d32775f1915a807"
+    },
+    "finite-study/report.json": {
+      "bytes": 1475252,
+      "sha256": "45acb87ad9a86fab2eebc6e8162169f37a9d7fc2939b61bebad23e1bf65b0e9e"
+    },
+    "hepta-joint-propose": {
+      "bytes": 4727208,
+      "sha256": "e128d01a00dae260f4751ea628f124055c75dc4331dab36ed7e00bd66ec700be"
+    },
+    "hepta-joint-propose-tests": {
+      "bytes": 7427616,
+      "sha256": "890184c91a72232f8f59a150b1a3376d10b16ca9bfa0b8bdd0dd918d1a84169f"
+    },
+    "native-demo/delivery/delivery.json": {
+      "bytes": 5370,
+      "sha256": "0f42e88e3de7580471357bb608c7805fe2a3847a7befee725b54b63c935834bf"
+    },
+    "native-demo/delivery/generated.ppm": {
+      "bytes": 781,
+      "sha256": "b6e6db6ba5ce660c77d0def8be18182b033f73c34e024cba3f0dba55b2b82389"
+    },
+    "native-demo/delivery/generated.txt": {
+      "bytes": 128,
+      "sha256": "662f6dbfdd11be4b3fb852784aa905bf801be8c18b5a047eb638744418cbcfae"
+    },
+    "native-demo/final-prefix.bin": {
+      "bytes": 943,
+      "sha256": "3af4cf2c32ae633f317fc3a1e0fc704b58d9081f552136fa057ee171d5e48a93"
+    },
+    "native-demo/final-public.bin": {
+      "bytes": 78436,
+      "sha256": "beb4b6e8ef607f40582ed9ab2e8780f71da4d277899d3af1ee1a5bc3b02e37cb"
+    },
+    "native-demo/final-state.bin": {
+      "bytes": 11364,
+      "sha256": "ee4f9a68988b5e8793b91f6cc5cbff3c95cea36d88bc5d59fe063e50f26b2ca4"
+    },
+    "native-demo/initial.ppm": {
+      "bytes": 781,
+      "sha256": "c65a87e928a60cad41b3fa4cd6a6be4d8200c8790a5df9a38b1bde8c75ad88c9"
+    },
+    "native-demo/prompt.txt": {
+      "bytes": 33,
+      "sha256": "28197e46ef7b2ebd62adb6b9e0751173e5d4a633fe7e61ed06aafb5fc4bc9ca1"
+    },
+    "native-demo/read.ppm": {
+      "bytes": 781,
+      "sha256": "57a98c0150b1bf422f5a486a9f9f137b53b7f5af49939e499576d66316c5694b"
+    },
+    "native-demo/report.json": {
+      "bytes": 29427,
+      "sha256": "38b124553d88ba8369662b753a0d7110762faa0e9d82464ac070333c3210b01a"
+    },
+    "rust-build.command.json": {
+      "bytes": 431,
+      "sha256": "b211f4341e3193c5a8d5c29468e58cbe5ff262782452261e578a8a0fc6d92f61"
+    },
+    "rust-build.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rust-build.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rust-test-build.command.json": {
+      "bytes": 450,
+      "sha256": "3460fd689ebffc9b3327a4ec42566d2d872e21a1f928eeb2b9088dc455d9b76e"
+    },
+    "rust-test-build.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rust-test-build.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rust-tests.command.json": {
+      "bytes": 169,
+      "sha256": "d77d93492d0be6347c0a824dffd07ae269da002996d9730d01c562e05322ef26"
+    },
+    "rust-tests.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rust-tests.stdout.log": {
+      "bytes": 2296,
+      "sha256": "fcbb6ddb3cdf0fa385fd28527c9086bf9c2de42fc8a43a937074691f45752b83"
+    },
+    "rustc-version.txt": {
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+    },
+    "unittest.json": {
+      "bytes": 4218,
+      "sha256": "ce6398b0e7d9d8ebec3f36638a5662584f168413b61a7933d9787f0d8d0b9a6f"
+    },
+    "unittest.log": {
+      "bytes": 6189,
+      "sha256": "b86e33e178de68075c946aabf1bc5c430bef7bedea646844e24bf9d794584dbe"
+    }
+  },
+  "checkpoint": {
+    "active_pointer_unchanged": true,
+    "baseline_bundle_sha256": "fd889b3a4fc183e7f2ecbb6875d3f0e1ac2807bc44342de49e9b6cd367e06c32",
+    "candidate_bundle_sha256": "d60320f10d6ca77655962f563d50f0fbfa82b1d67384612ae7f7f7b9d65a7fc6",
+    "candidate_decision": {
+      "decision": "no-update",
+      "reasons": [
+        "nonprospective_or_fixture_evidence",
+        "net_gain_lcb_not_passed",
+        "retention_lcb_not_passed",
+        "constraints_pass_missing",
+        "parity_pass_missing",
+        "future_sample_pass_missing",
+        "unknown_rejection_pass_missing",
+        "candidate_not_measured"
+      ]
+    },
+    "cold_baseline_bytes_identical": true,
+    "cold_generator_load_passed": true,
+    "production_candidate_rollback": "HOLD_NOT_ADMITTED",
+    "rollback_protocol_test": "ndu_bimodal.test_lifecycle.LifecycleTests.test_checkpoint_cold_reload_and_real_cas_rollback",
+    "rollback_scope": "manufactured test evidence verifies mechanism only; no scientific admission or new admitted-version rollback"
+  },
+  "execution_label": "session-cloud-unattested",
+  "execution_scope": "auxiliary executor; no project-specific environment attestation",
+  "execution_status": "passed_auxiliary_checks",
+  "finite_study": {
+    "decision": "no-update",
+    "production_adoption": false,
+    "report": "finite-study/report.json",
+    "scope": "registered procedural RNG draws on known finite support; not real future distribution"
+  },
+  "native_demo": {
+    "production_update": "no-update",
+    "report": "native-demo/report.json"
+  },
+  "production_update": "no-update",
+  "project_cloud_environment_verified": false,
+  "python_tests": {
+    "errors": 0,
+    "failures": 0,
+    "loaded_by_module": {
+      "ndu_bimodal.test_finite": 8,
+      "ndu_bimodal.test_learning": 10,
+      "ndu_bimodal.test_lifecycle": 10,
+      "ndu_bimodal.test_native": 9
+    },
+    "skipped": 0,
+    "successful": true,
+    "test_ids": [
+      "ndu_bimodal.test_finite.FiniteContractTests.test_every_reachable_edge_pays_once_and_reserves_termination",
+      "ndu_bimodal.test_finite.FiniteContractTests.test_features_have_public_causal_state_and_no_future_draw",
+      "ndu_bimodal.test_finite.FiniteContractTests.test_joint_repair_marginals_and_modality_allocation",
+      "ndu_bimodal.test_finite.FiniteContractTests.test_memoized_dp_matches_independent_exhaustive_tree",
+      "ndu_bimodal.test_finite.FiniteContractTests.test_one_repair_closed_form_and_risk_penalty",
+      "ndu_bimodal.test_finite.FiniteContractTests.test_rejects_unknown_and_nonfinite_contract_inputs",
+      "ndu_bimodal.test_finite.FiniteContractTests.test_uncertainty_tracks_future_opportunity_not_only_next_branch",
+      "ndu_bimodal.test_finite.FiniteContractTests.test_wait_then_read_obeys_arrival_and_cannot_repeat",
+      "ndu_bimodal.test_lifecycle.LifecycleTests.test_checkpoint_cold_reload_and_real_cas_rollback",
+      "ndu_bimodal.test_lifecycle.LifecycleTests.test_complete_file_manifest_and_byte_only_loading",
+      "ndu_bimodal.test_lifecycle.LifecycleTests.test_fixture_candidate_cannot_change_pointer_and_tamper_is_rejected",
+      "ndu_bimodal.test_lifecycle.LifecycleTests.test_future_bytes_require_read_after_arrival",
+      "ndu_bimodal.test_lifecycle.LifecycleTests.test_gate_rejects_fixtures_negative_gain_and_missing_future",
+      "ndu_bimodal.test_lifecycle.LifecycleTests.test_late_or_corrupted_reads_are_paid_and_not_retained",
+      "ndu_bimodal.test_lifecycle.LifecycleTests.test_overrun_is_charged_and_result_rejected",
+      "ndu_bimodal.test_lifecycle.LifecycleTests.test_residency_recompute_reuse_are_paid_without_wall_double_count",
+      "ndu_bimodal.test_lifecycle.LifecycleTests.test_strict_public_packet_and_media_extension",
+      "ndu_bimodal.test_lifecycle.LifecycleTests.test_unknown_money_failures_and_finalization_reserve",
+      "ndu_bimodal.test_learning.LearningTests.test_calibration_source_and_small_sample_boundary",
+      "ndu_bimodal.test_learning.LearningTests.test_control_factorial_distinguishes_fixed_execution_from_hidden_reset",
+      "ndu_bimodal.test_learning.LearningTests.test_finite_fees_and_prophet_coupling_bound",
+      "ndu_bimodal.test_learning.LearningTests.test_fixed_features_and_reset_execution_do_not_mutate",
+      "ndu_bimodal.test_learning.LearningTests.test_online_candidate_does_not_read_teacher_scores",
+      "ndu_bimodal.test_learning.LearningTests.test_pinned_cold_checkpoint_and_changed_bytes",
+      "ndu_bimodal.test_learning.LearningTests.test_small_matrix_freezes_before_future_and_retains_no_update",
+      "ndu_bimodal.test_learning.LearningTests.test_training_updates_only_uncertain_support",
+      "ndu_bimodal.test_learning.LearningTests.test_tuned_fixed_uses_registered_calibration_grid_and_freezes_selection",
+      "ndu_bimodal.test_learning.LearningTests.test_unknown_support_rejects_uncertain_continuation",
+      "ndu_bimodal.test_native.NativeIntegrationTests.test_actual_training_updates_content_and_cold_load_keeps_terminal_heads",
+      "ndu_bimodal.test_native.NativeIntegrationTests.test_call_and_time_reserve_allow_only_finalization",
+      "ndu_bimodal.test_native.NativeIntegrationTests.test_failed_read_replay_restores_candidate_but_keeps_real_spend",
+      "ndu_bimodal.test_native.NativeIntegrationTests.test_public_tensors_are_snapshotted_before_native_state_binding",
+      "ndu_bimodal.test_native.NativeIntegrationTests.test_read_preflight_preserves_current_candidate_and_terminal_call",
+      "ndu_bimodal.test_native.NativeIntegrationTests.test_read_replays_actual_calls_and_charges_sequential_events",
+      "ndu_bimodal.test_native.NativeIntegrationTests.test_real_encoding_repair_and_terminal_byte_parity",
+      "ndu_bimodal.test_native.NativeIntegrationTests.test_terminal_bytes_ignore_legacy_learned_terminal_and_action_heads",
+      "ndu_bimodal.test_native.NativeIntegrationTests.test_unknown_and_malformed_inputs_reject_before_native_dispatch"
+    ],
+    "tests_run": 37
+  },
+  "runtime": {
+    "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  },
+  "rust_build": {
+    "argv": [
+      "/workspace/scratch/ac851b3fedf0/toolchains/rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "--edition=2024",
+      "-O",
+      "/workspace/scratch/f211ba6d7ef7/hepta-bimodal/codex-rs/hepta-infer-worker-host/src/bin/hepta-joint-propose.rs",
+      "-o",
+      "/workspace/scratch/f211ba6d7ef7/qualification-cloud-20261109/hepta-joint-propose"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.884509308001725
+  },
+  "rust_test_count": 25,
+  "schema": "hepta.bimodal.qualification.v1",
+  "scientific_acceptance": "HOLD_NO_GO",
+  "source_after": {
+    "commit": "a945af5202f61b9c0a7eeb241ca4c72afb5a275a",
+    "inventory_sha256": "6af86cb02cfe7d779056343347a64e6849cc3bfe5d5b92c8d8363baaefa3a7e8",
+    "python_rust_sha256_inventory": {
+      "codex-rs/hepta-infer-worker-host/src/bin/hepta-joint-propose.rs": {
+        "bytes": 1732,
+        "sha256": "b11f8bb5c97f085ae6fd6a22c66c3ee1139cdf1f36c28a0b591eee02d28ce1bb"
+      },
+      "scripts/joint_generation_v4_codecs.py": {
+        "bytes": 5520,
+        "sha256": "59f67ccaa36c4938d0fd9eeb4423c83409c2827af0a84b817bdeb3766d049e19"
+      },
+      "scripts/joint_generation_v4_diagnostic.py": {
+        "bytes": 19696,
+        "sha256": "7969c5c97c5cae61fde908ca7068da4481cdd0050ebc64fe4fddab28dda2ca81"
+      },
+      "scripts/joint_generation_v4_gradients.py": {
+        "bytes": 11301,
+        "sha256": "a4ccaaf6679cc6e3cca86f08563c9d348653a28169c3b6ef5ddee54340a18d8a"
+      },
+      "scripts/joint_generation_v4_io.py": {
+        "bytes": 9640,
+        "sha256": "f2d67927c9f2c7dbf729ff30d9d0c5b5b3477d4a0ff59c148348e45aae6b4fcf"
+      },
+      "scripts/joint_generation_v4_model.py": {
+        "bytes": 15430,
+        "sha256": "5b466399293dd825f9a3b9aaff6c51bdff30c3469e6a993f6339c3d573a05d51"
+      },
+      "scripts/joint_generation_v4_ndu.py": {
+        "bytes": 7586,
+        "sha256": "c0c8f86bd8c3ed8b24a3ca981b7de86d00d5251c127e8e90828596382b961223"
+      },
+      "scripts/joint_generation_v4_receipt.py": {
+        "bytes": 6153,
+        "sha256": "2882997ce3899db554bdbb530569c5f4f122cfa0e053da490f1994f49fdb8ff3"
+      },
+      "scripts/ndu_bimodal/__init__.py": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "scripts/ndu_bimodal/cli.py": {
+        "bytes": 5516,
+        "sha256": "29f3a3ec7bd15e9ffa17950d011308d3ad0d1c7648751c2380541484cf5eca7f"
+      },
+      "scripts/ndu_bimodal/evaluation.py": {
+        "bytes": 25233,
+        "sha256": "9366c7bb1450a65f10a926f6b0fabfc3b0419d660e3edef53e37628493e1f538"
+      },
+      "scripts/ndu_bimodal/finite.py": {
+        "bytes": 14483,
+        "sha256": "44a6c399736bb7958d2c97143bf3282d5ec5129a9b62e9cfc2e1a27fea93bcfa"
+      },
+      "scripts/ndu_bimodal/generator_training.py": {
+        "bytes": 3570,
+        "sha256": "9372461d7d0a65cc2836f0674c776243ce2ceaa516557d22f814df301542ace0"
+      },
+      "scripts/ndu_bimodal/learning.py": {
+        "bytes": 12164,
+        "sha256": "2c657faf08330672c6c64904ae71ec32e8a69252d0f5917e1f28fa98c30fbffb"
+      },
+      "scripts/ndu_bimodal/lifecycle.py": {
+        "bytes": 24512,
+        "sha256": "da047479568308e8ec0c008f00c3093ec9d54bde21f532b6eeb0569cddb85dc9"
+      },
+      "scripts/ndu_bimodal/native.py": {
+        "bytes": 16091,
+        "sha256": "9807b5b5073dc0dc9e61b831ed15f4e685ddf01288ca5bc00a97e5e853974a49"
+      },
+      "scripts/ndu_bimodal/run.py": {
+        "bytes": 19495,
+        "sha256": "dea4021ffb8c153e8538bec80cebf8f6fbadb3edd1e40df9fbc2f7c9c6bb3c09"
+      },
+      "scripts/ndu_bimodal/test_finite.py": {
+        "bytes": 9409,
+        "sha256": "a3c9ca55335ed150b7a4688d535f769f0399e0f37de13da4ef8a6108a59b4580"
+      },
+      "scripts/ndu_bimodal/test_learning.py": {
+        "bytes": 9679,
+        "sha256": "c2d0fcdf1fd973a899eb46a525fb37e93279dc5dca0114351f07aea9fae4dc8f"
+      },
+      "scripts/ndu_bimodal/test_lifecycle.py": {
+        "bytes": 11573,
+        "sha256": "300df843ac3eb61781d8bd0a4e154369593e283835eb37e3d8c04032d5bb2fd4"
+      },
+      "scripts/ndu_bimodal/test_native.py": {
+        "bytes": 10437,
+        "sha256": "36e8de341115bb28c1f6427d81261bce86025ca324411910e4c92080c8595796"
+      }
+    },
+    "scope": "all package and untracked Python/Rust plus v4 adapters/entry; other tracked files pinned by commit",
+    "tracked_clean": true
+  },
+  "source_before": {
+    "commit": "a945af5202f61b9c0a7eeb241ca4c72afb5a275a",
+    "inventory_sha256": "6af86cb02cfe7d779056343347a64e6849cc3bfe5d5b92c8d8363baaefa3a7e8",
+    "python_rust_sha256_inventory": {
+      "codex-rs/hepta-infer-worker-host/src/bin/hepta-joint-propose.rs": {
+        "bytes": 1732,
+        "sha256": "b11f8bb5c97f085ae6fd6a22c66c3ee1139cdf1f36c28a0b591eee02d28ce1bb"
+      },
+      "scripts/joint_generation_v4_codecs.py": {
+        "bytes": 5520,
+        "sha256": "59f67ccaa36c4938d0fd9eeb4423c83409c2827af0a84b817bdeb3766d049e19"
+      },
+      "scripts/joint_generation_v4_diagnostic.py": {
+        "bytes": 19696,
+        "sha256": "7969c5c97c5cae61fde908ca7068da4481cdd0050ebc64fe4fddab28dda2ca81"
+      },
+      "scripts/joint_generation_v4_gradients.py": {
+        "bytes": 11301,
+        "sha256": "a4ccaaf6679cc6e3cca86f08563c9d348653a28169c3b6ef5ddee54340a18d8a"
+      },
+      "scripts/joint_generation_v4_io.py": {
+        "bytes": 9640,
+        "sha256": "f2d67927c9f2c7dbf729ff30d9d0c5b5b3477d4a0ff59c148348e45aae6b4fcf"
+      },
+      "scripts/joint_generation_v4_model.py": {
+        "bytes": 15430,
+        "sha256": "5b466399293dd825f9a3b9aaff6c51bdff30c3469e6a993f6339c3d573a05d51"
+      },
+      "scripts/joint_generation_v4_ndu.py": {
+        "bytes": 7586,
+        "sha256": "c0c8f86bd8c3ed8b24a3ca981b7de86d00d5251c127e8e90828596382b961223"
+      },
+      "scripts/joint_generation_v4_receipt.py": {
+        "bytes": 6153,
+        "sha256": "2882997ce3899db554bdbb530569c5f4f122cfa0e053da490f1994f49fdb8ff3"
+      },
+      "scripts/ndu_bimodal/__init__.py": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "scripts/ndu_bimodal/cli.py": {
+        "bytes": 5516,
+        "sha256": "29f3a3ec7bd15e9ffa17950d011308d3ad0d1c7648751c2380541484cf5eca7f"
+      },
+      "scripts/ndu_bimodal/evaluation.py": {
+        "bytes": 25233,
+        "sha256": "9366c7bb1450a65f10a926f6b0fabfc3b0419d660e3edef53e37628493e1f538"
+      },
+      "scripts/ndu_bimodal/finite.py": {
+        "bytes": 14483,
+        "sha256": "44a6c399736bb7958d2c97143bf3282d5ec5129a9b62e9cfc2e1a27fea93bcfa"
+      },
+      "scripts/ndu_bimodal/generator_training.py": {
+        "bytes": 3570,
+        "sha256": "9372461d7d0a65cc2836f0674c776243ce2ceaa516557d22f814df301542ace0"
+      },
+      "scripts/ndu_bimodal/learning.py": {
+        "bytes": 12164,
+        "sha256": "2c657faf08330672c6c64904ae71ec32e8a69252d0f5917e1f28fa98c30fbffb"
+      },
+      "scripts/ndu_bimodal/lifecycle.py": {
+        "bytes": 24512,
+        "sha256": "da047479568308e8ec0c008f00c3093ec9d54bde21f532b6eeb0569cddb85dc9"
+      },
+      "scripts/ndu_bimodal/native.py": {
+        "bytes": 16091,
+        "sha256": "9807b5b5073dc0dc9e61b831ed15f4e685ddf01288ca5bc00a97e5e853974a49"
+      },
+      "scripts/ndu_bimodal/run.py": {
+        "bytes": 19495,
+        "sha256": "dea4021ffb8c153e8538bec80cebf8f6fbadb3edd1e40df9fbc2f7c9c6bb3c09"
+      },
+      "scripts/ndu_bimodal/test_finite.py": {
+        "bytes": 9409,
+        "sha256": "a3c9ca55335ed150b7a4688d535f769f0399e0f37de13da4ef8a6108a59b4580"
+      },
+      "scripts/ndu_bimodal/test_learning.py": {
+        "bytes": 9679,
+        "sha256": "c2d0fcdf1fd973a899eb46a525fb37e93279dc5dca0114351f07aea9fae4dc8f"
+      },
+      "scripts/ndu_bimodal/test_lifecycle.py": {
+        "bytes": 11573,
+        "sha256": "300df843ac3eb61781d8bd0a4e154369593e283835eb37e3d8c04032d5bb2fd4"
+      },
+      "scripts/ndu_bimodal/test_native.py": {
+        "bytes": 10437,
+        "sha256": "36e8de341115bb28c1f6427d81261bce86025ca324411910e4c92080c8595796"
+      }
+    },
+    "scope": "all package and untracked Python/Rust plus v4 adapters/entry; other tracked files pinned by commit",
+    "tracked_clean": true
+  }
+}
