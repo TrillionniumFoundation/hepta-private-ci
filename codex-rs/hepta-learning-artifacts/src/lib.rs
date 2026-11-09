@@ -17,6 +17,7 @@ mod iteration;
 mod iteration_ledger;
 mod learning_iteration;
 mod learning_iteration_digest;
+mod learning_iteration_scope;
 #[cfg(test)]
 mod learning_iteration_test_support;
 mod learning_iteration_types;
@@ -107,6 +108,8 @@ pub use iteration_ledger::MAX_ITERATION_EVENTS;
 pub use learning_iteration::LearningIterationCoordinatorV1;
 pub use learning_iteration::LearningIterationError;
 pub use learning_iteration_digest::learning_iteration_receipt_signing_bytes_v1;
+pub use learning_iteration_scope::FrozenLearningScopeV2;
+pub use learning_iteration_scope::LearningUpdateScopeV2;
 pub use learning_iteration_types::LearningEvaluationDispositionV1;
 pub use learning_iteration_types::LearningIterationBudgetV1;
 pub use learning_iteration_types::LearningIterationDispositionV1;

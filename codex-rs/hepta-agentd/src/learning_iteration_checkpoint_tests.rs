@@ -13,6 +13,9 @@ use support::OWNER;
 use support::owner;
 use support::snapshots;
 
+#[path = "learning_iteration_checkpoint_scope_tests.rs"]
+mod scope_tests;
+
 #[test]
 fn maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound() -> anyhow::Result<()>
 {
@@ -29,8 +32,8 @@ fn maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound() 
         let last = snapshots.last().unwrap();
         let bytes = codec::encode(last)?;
         let expected_bytes = match decision {
-            Decision::EvaluatedNoUpdate => 6420,
-            Decision::Update | Decision::ProposedNoUpdate => 6945,
+            Decision::EvaluatedNoUpdate => 6452,
+            Decision::Update | Decision::ProposedNoUpdate => 6977,
         };
         assert_eq!(bytes.len(), expected_bytes);
         let record = LearningIterationCheckpointRecordV1 {

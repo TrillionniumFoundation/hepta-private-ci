@@ -8,7 +8,8 @@ use codex_hepta_types::StableId;
 use super::LearningIterationCheckpointErrorV1 as Error;
 
 pub(super) const MAX_BYTES: usize = 8192;
-const MAGIC: &[u8; 8] = b"HEPLCP01";
+// V1 did not freeze an evaluation profile. Do not infer one from later work.
+const MAGIC: &[u8; 8] = b"HEPLCP02";
 pub(super) const MAX_RECEIPTS: usize = 7;
 const MAX_ID_BYTES: usize = 128;
 
@@ -30,6 +31,7 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
     }
     w.digest(request.completed_task_receipt)?;
     w.digest(request.selected_artifact_digest)?;
+    w.digest(request.evaluation_profile)?;
     w.bundle(&request.selected_bundle)?;
     let e = &request.envelope;
     w.id(&e.envelope_id)?;
@@ -209,6 +211,7 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LearningIterationSnapshotV1, Error>
         source_run_id: r.id()?,
         completed_task_receipt: r.digest()?,
         selected_artifact_digest: r.digest()?,
+        evaluation_profile: r.digest()?,
         selected_bundle: r.bundle()?,
         envelope: IterationEnvelopeV1 {
             envelope_id: r.id()?,

@@ -20,6 +20,8 @@ use crate::AgentdGenerationUpdateRuntimeOptionsV1;
 use crate::AgentdGenerationUpdateRuntimeV1;
 use crate::learning_updated_task_operation_id_v1;
 use crate::neuron_generation_current::test_support::Fixture;
+use crate::neuron_generation_runtime::verify_completed_learning_readback_test_bytes;
+use crate::neuron_generation_runtime::verify_learning_use_readback_test_bytes;
 use crate::neuron_generation_update_bootstrap::learning_test_baseline;
 use crate::neuron_generation_update_bootstrap::learning_test_decision;
 use crate::neuron_generation_update_bootstrap::learning_test_receipt;
@@ -266,8 +268,37 @@ async fn updated_candidate_uses_original_actor_and_recovers_without_another_rese
     );
     let intent = request.intent()?;
     assert!(f.read_use(&f.coordinator, &intent).await.is_err());
+    assert!(
+        f.runtime
+            .handle
+            .read_learning_updated_next_use_readback(&f.coordinator, &baseline_manifest, &intent)
+            .await
+            .is_err()
+    );
     let receipt = f.runtime.handle.step(request.clone()).await?;
     let observed = f.runtime.handle.observe_generation().await?;
+    let pending = f
+        .runtime
+        .handle
+        .read_learning_updated_next_use_readback(&f.coordinator, &baseline_manifest, &intent)
+        .await?;
+    verify_learning_use_readback_test_bytes(
+        &pending,
+        &f.coordinator,
+        &f.publication.target_config.manifest,
+        &receipt,
+        &observed,
+        "adopted_pending",
+    )?;
+    let mut wrong_manifest = baseline_manifest.clone();
+    wrong_manifest.runtime_digest = d("unrelated original runtime").into_array();
+    assert!(
+        f.runtime
+            .handle
+            .read_learning_updated_next_use_readback(&f.coordinator, &wrong_manifest, &intent)
+            .await
+            .is_err()
+    );
     let chunk = observed.pending_output().cloned().unwrap();
     let output_path = f.host.directory.path().join("updated-learning-output");
     std::fs::write(&output_path, &chunk.bytes)?;
@@ -300,6 +331,20 @@ async fn updated_candidate_uses_original_actor_and_recovers_without_another_rese
         *state_cutover_receipt,
         f.runtime.publication.intent_digest()
     );
+    let exported = f
+        .runtime
+        .handle
+        .read_learning_updated_next_use_readback(&f.coordinator, &baseline_manifest, &intent)
+        .await?;
+    verify_learning_use_readback_test_bytes(
+        &exported,
+        &f.coordinator,
+        &f.publication.target_config.manifest,
+        &receipt,
+        &f.runtime.handle.observe_generation().await?,
+        "adopted_acked",
+    )?;
+    assert_ne!(pending, exported);
     let retained = (
         f.publication.bytes("current.json")?,
         f.publication.bytes("target-journal")?,
@@ -334,10 +379,24 @@ async fn updated_candidate_uses_original_actor_and_recovers_without_another_rese
     )?;
     let (mut tasks, _lifetime) = support::start(&mut f.runtime, &f.host)?;
     assert_eq!(f.read_use(&f.coordinator, &intent).await?, first);
+    assert_eq!(
+        f.runtime
+            .handle
+            .read_learning_updated_next_use_readback(&f.coordinator, &baseline_manifest, &intent)
+            .await?,
+        exported
+    );
     assert_eq!(f.runtime.handle.step(request).await?, receipt);
     let mut wrong = intent.clone();
     wrong.input_digest = d("uncommitted input").into_array();
     assert!(f.read_use(&f.coordinator, &wrong).await.is_err());
+    assert!(
+        f.runtime
+            .handle
+            .read_learning_updated_next_use_readback(&f.coordinator, &baseline_manifest, &wrong)
+            .await
+            .is_err()
+    );
     assert_eq!(
         (
             f.control.executions.load(Ordering::SeqCst),
@@ -371,11 +430,19 @@ async fn updated_candidate_uses_original_actor_and_recovers_without_another_rese
         completed.disposition(),
         LearningIterationDispositionV1::UsedByNextTask
     );
+    verify_completed_learning_readback_test_bytes(&exported, &completed, "adopted_acked")?;
     assert_eq!(
         learning_updated_task_operation_id_v1(&completed)?,
         operation
     );
     assert!(f.read_use(&completed, &intent).await.is_err());
+    assert!(
+        f.runtime
+            .handle
+            .read_learning_updated_next_use_readback(&completed, &baseline_manifest, &intent)
+            .await
+            .is_err()
+    );
     tasks.shutdown().await;
     Ok(())
 }
@@ -400,6 +467,14 @@ async fn updated_actor_rechecks_current_withdrawal_and_revocation() -> anyhow::R
             f.read_use(&f.coordinator, &intent).await?,
             LearningIterationObservationV1::NextUse { .. }
         ));
+        f.runtime
+            .handle
+            .read_learning_updated_next_use_readback(
+                &f.coordinator,
+                &f.publication.old_config.manifest,
+                &intent,
+            )
+            .await?;
         let retained = (
             f.publication.bytes("target-journal")?,
             f.publication.bytes("target-witness")?,
@@ -422,6 +497,18 @@ async fn updated_actor_rechecks_current_withdrawal_and_revocation() -> anyhow::R
         );
         assert!(
             f.read_use(&f.coordinator, &intent).await.is_err(),
+            "{change}"
+        );
+        assert!(
+            f.runtime
+                .handle
+                .read_learning_updated_next_use_readback(
+                    &f.coordinator,
+                    &f.publication.old_config.manifest,
+                    &intent
+                )
+                .await
+                .is_err(),
             "{change}"
         );
         assert_eq!(f.control.executions.load(Ordering::SeqCst), 1);

@@ -13,6 +13,7 @@ use base64::engine::general_purpose::STANDARD_NO_PAD;
 use codex_hepta_contracts::AuthorityFrontierStore;
 use codex_hepta_contracts::AuthorityTrustError;
 use codex_hepta_contracts::HostAuthorityFrontierStore;
+use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationError;
 use codex_hepta_learning_artifacts::LearningIterationOwnersV1;
@@ -66,6 +67,22 @@ pub struct LearningIterationCheckpointRecordV1 {
 }
 
 impl LearningIterationCheckpointRecordV1 {
+    /// Separate Root profile; the original schema-1 owner refuses this record.
+    /// Registration still belongs to the existing authorized Root broker.
+    pub fn vacant_scoped_v2(
+        request: LearningIterationRequestV1,
+        owners: LearningIterationOwnersV1,
+        scope: &FrozenLearningScopeV2,
+    ) -> Result<Self, Error> {
+        scope
+            .validate_request(&request, &owners)
+            .map_err(Error::Snapshot)?;
+        let mut record = Self::vacant(request, owners)?;
+        record.schema = 2;
+        record.binding = scope.binding().to_string();
+        Ok(record)
+    }
+
     /// Describe one not-yet-started iteration. Only the existing authorized
     /// broker may register this data; this function performs no registration.
     pub fn vacant(
@@ -96,12 +113,33 @@ pub struct LearningIterationCheckpointOwnerV1 {
     owner_id: String,
     store: Store,
     initial: LearningIterationSnapshotV1,
+    scope: Option<FrozenLearningScopeV2>,
 }
 
 impl LearningIterationCheckpointOwnerV1 {
     #[cfg(target_os = "linux")]
     pub(crate) fn registered_agent_id(&self) -> &str {
         self.initial.request.agent_id.as_str()
+    }
+
+    /// An isolated research test's file owner, never a production Root grant.
+    #[cfg(test)]
+    pub(crate) fn from_research_store(
+        store: std::sync::Arc<dyn AuthorityFrontierStore<LearningIterationCheckpointRecordV1>>,
+        original_owner_id: String,
+        request: LearningIterationRequestV1,
+        owners: LearningIterationOwnersV1,
+    ) -> Result<Self, Error> {
+        let initial =
+            LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
+        let owner = Self {
+            owner_id: original_owner_id,
+            store: Store::Test(store),
+            initial: initial.snapshot().clone(),
+            scope: None,
+        };
+        owner.load()?;
+        Ok(owner)
     }
 
     /// Load the already registered original owner and verify its current data.
@@ -119,9 +157,69 @@ impl LearningIterationCheckpointOwnerV1 {
             owner_id: original_owner_id,
             store: Store::Host(store),
             initial: initial.snapshot().clone(),
+            scope: None,
         };
         owner.load()?;
         Ok(owner)
+    }
+
+    /// Open only a registered schema-2 record with this exact frozen scope.
+    /// No schema-1 conversion, migration or re-registration occurs here.
+    pub fn from_registered_scoped_v2(
+        store: HostAuthorityFrontierStore<LearningIterationCheckpointRecordV1>,
+        original_owner_id: String,
+        request: LearningIterationRequestV1,
+        owners: LearningIterationOwnersV1,
+        scope: FrozenLearningScopeV2,
+    ) -> Result<Self, Error> {
+        scope
+            .validate_request(&request, &owners)
+            .map_err(Error::Snapshot)?;
+        let initial =
+            LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
+        let owner = Self {
+            owner_id: original_owner_id,
+            store: Store::Host(store),
+            initial: initial.snapshot().clone(),
+            scope: Some(scope),
+        };
+        owner.load()?;
+        Ok(owner)
+    }
+
+    /// Isolated file-backed test custody for the same schema-2 checks.
+    #[cfg(test)]
+    pub(crate) fn from_research_store_scoped_v2(
+        store: std::sync::Arc<dyn AuthorityFrontierStore<LearningIterationCheckpointRecordV1>>,
+        original_owner_id: String,
+        request: LearningIterationRequestV1,
+        owners: LearningIterationOwnersV1,
+        scope: FrozenLearningScopeV2,
+    ) -> Result<Self, Error> {
+        scope
+            .validate_request(&request, &owners)
+            .map_err(Error::Snapshot)?;
+        let initial =
+            LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
+        let owner = Self {
+            owner_id: original_owner_id,
+            store: Store::Test(store),
+            initial: initial.snapshot().clone(),
+            scope: Some(scope),
+        };
+        owner.load()?;
+        Ok(owner)
+    }
+
+    pub fn frozen_scope_binding(&self) -> Option<Digest32> {
+        self.scope.as_ref().map(FrozenLearningScopeV2::binding)
+    }
+
+    fn profile_identity(&self) -> (u8, String) {
+        match self.frozen_scope_binding() {
+            Some(binding) => (2, binding.to_string()),
+            None => (1, self.initial.head_digest.to_string()),
+        }
     }
 
     /// Recover only this exact iteration from a fresh durable CURRENT read.
@@ -153,6 +251,9 @@ impl LearningIterationCheckpointOwnerV1 {
             return Err(Error::WrongScope);
         }
         LearningIterationCoordinatorV1::from_snapshot(next.clone()).map_err(Error::Snapshot)?;
+        if let Some(scope) = &self.scope {
+            scope.validate_snapshot(next).map_err(Error::Snapshot)?;
+        }
         let predecessor = next
             .receipts
             .last()
@@ -160,9 +261,10 @@ impl LearningIterationCheckpointOwnerV1 {
         if predecessor != expected_head {
             return Err(Error::Conflict);
         }
+        let (schema, binding) = self.profile_identity();
         let record = LearningIterationCheckpointRecordV1 {
-            schema: 1,
-            binding: self.initial.head_digest.to_string(),
+            schema,
+            binding,
             predecessor: expected_head.to_string(),
             snapshot: Some(STANDARD_NO_PAD.encode(codec::encode(next)?)),
         };
@@ -212,7 +314,8 @@ impl LearningIterationCheckpointOwnerV1 {
             Store::Test(store) => store.load(&self.owner_id),
         }
         .map_err(Error::Store)?;
-        if record.schema != 1 || record.binding != self.initial.head_digest.to_string() {
+        let (schema, binding) = self.profile_identity();
+        if record.schema != schema || record.binding != binding {
             return Err(Error::WrongScope);
         }
         let Some(encoded) = &record.snapshot else {
@@ -233,6 +336,11 @@ impl LearningIterationCheckpointOwnerV1 {
             return Err(Error::InvalidRecord);
         }
         let snapshot = codec::decode(bytes)?;
+        if let Some(scope) = &self.scope {
+            scope
+                .validate_snapshot(&snapshot)
+                .map_err(Error::Snapshot)?;
+        }
         if snapshot.request != self.initial.request || snapshot.owners != self.initial.owners {
             return Err(Error::WrongScope);
         }
@@ -254,3 +362,7 @@ mod tests;
 #[cfg(test)]
 #[path = "learning_iteration_checkpoint_ports_tests.rs"]
 mod ports_tests;
+
+#[cfg(test)]
+#[path = "learning_iteration_checkpoint_profile_tests.rs"]
+mod profile_tests;
