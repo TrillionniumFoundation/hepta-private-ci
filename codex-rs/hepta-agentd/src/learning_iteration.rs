@@ -56,7 +56,13 @@ impl From<LearningIterationError> for LearningIterationRuntimeErrorV1 {
     }
 }
 
+enum LearningIterationModeV1 {
+    Submit,
+    Readback,
+}
+
 struct LearningIterationCommandV1 {
+    mode: LearningIterationModeV1,
     request: Box<LearningIterationRequestV1>,
     response: oneshot::Sender<Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1>>,
 }
@@ -72,9 +78,27 @@ impl LearningIterationHandleV1 {
         &self,
         request: LearningIterationRequestV1,
     ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
+        self.call(request, LearningIterationModeV1::Submit).await
+    }
+
+    /// Authenticate only the original durable snapshot. Missing state remains
+    /// uncertain; this cannot create a checkpoint or execute another stage.
+    pub async fn readback(
+        &self,
+        request: LearningIterationRequestV1,
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
+        self.call(request, LearningIterationModeV1::Readback).await
+    }
+
+    async fn call(
+        &self,
+        request: LearningIterationRequestV1,
+        mode: LearningIterationModeV1,
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
         let (response, receive) = oneshot::channel();
         self.sender
             .try_send(LearningIterationCommandV1 {
+                mode,
                 request: Box::new(request),
                 response,
             })
@@ -172,7 +196,7 @@ impl LearningIterationRuntimeBootstrapV1 {
                     let _ = command.response.send(Err(LearningIterationRuntimeErrorV1::CommitUncertain));
                     return Ok(());
                 }
-                result = self.process_with_deadline(&state, *command.request) => result,
+                result = self.process_with_deadline(&state, *command.request, command.mode) => result,
             };
             let _ = command.response.send(result);
         }
@@ -182,6 +206,7 @@ impl LearningIterationRuntimeBootstrapV1 {
         &self,
         state: &AgentdState,
         request: LearningIterationRequestV1,
+        mode: LearningIterationModeV1,
     ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
         let remaining = request
             .envelope
@@ -192,12 +217,54 @@ impl LearningIterationRuntimeBootstrapV1 {
         }
         // Expired operations may reconcile a completed receipt. New stages and
         // create-if-absent checkpoints are still rejected inside process.
-        tokio::time::timeout(
-            Duration::from_secs(remaining.max(1)),
-            self.process(state, request, now_unix_seconds),
-        )
+        tokio::time::timeout(Duration::from_secs(remaining.max(1)), async {
+            match mode {
+                LearningIterationModeV1::Readback => {
+                    self.process_readback(state, request, now_unix_seconds)
+                        .await
+                }
+                LearningIterationModeV1::Submit => {
+                    self.process(state, request, now_unix_seconds).await
+                }
+            }
+        })
         .await
         .map_err(|_| LearningIterationRuntimeErrorV1::CommitUncertain)?
+    }
+
+    pub(super) async fn process_readback(
+        &self,
+        state: &AgentdState,
+        request: LearningIterationRequestV1,
+        clock: impl Fn() -> Result<u64, LearningIterationRuntimeErrorV1> + Send + Sync,
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
+        if request.agent_id.as_str() != self.agent_id.to_string()
+            || state.identity().agent_id != self.agent_id
+            || state.identity().spawn_generation != self.spawn_generation
+        {
+            return Err(LearningIterationRuntimeErrorV1::WrongScope);
+        }
+        LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?;
+        require_ready(state)?;
+        let snapshot = self
+            .ports
+            .restore(&request)
+            .await?
+            .ok_or(LearningIterationRuntimeErrorV1::CommitUncertain)?;
+        if snapshot.request != request || snapshot.owners != self.owners {
+            return Err(LearningIterationRuntimeErrorV1::WrongScope);
+        }
+        let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
+        crate::learning_iteration_auth::authenticate_restored_iteration_v1(
+            state,
+            self.ports.as_ref(),
+            &self.verifier,
+            &restored,
+            &clock,
+        )
+        .await?;
+        require_ready(state)?;
+        Ok(restored.snapshot().clone())
     }
 
     pub(super) async fn process(

@@ -207,6 +207,11 @@ async fn completed_recovery_reauthenticates_all_signed_stages_without_reproposin
             .await);
         assert_eq!(recovered, snapshot);
         assert_no_work_or_checkpoint(&ports, &snapshot);
+        let readonly = ok(runtime(&daemon, &ports)
+            .process_readback(&daemon.state(), snapshot.request.clone(), || Ok(60))
+            .await);
+        assert_eq!(readonly, snapshot);
+        assert_no_work_or_checkpoint(&ports, &snapshot);
         let attested = ok(ports.attested.lock());
         assert!(!attested.contains(&LearningIterationStageV1::Proposal));
         for receipt in &snapshot.receipts {
@@ -270,6 +275,13 @@ async fn completed_recovery_checks_current_revocation_controller_and_signature_e
             other => panic!("recovery must reject invalid current evidence: {other:?}"),
         };
         assert_eq!(actual, expected);
+        assert_no_work_or_checkpoint(&ports, &snapshot);
+        let readonly = runtime(&daemon, &ports)
+            .process_readback(&daemon.state(), snapshot.request.clone(), || Ok(now))
+            .await;
+        assert!(
+            matches!(readonly, Err(LearningIterationRuntimeErrorV1::Evidence(error)) if error == expected)
+        );
         assert_no_work_or_checkpoint(&ports, &snapshot);
     }
 }
@@ -464,4 +476,199 @@ async fn fresh_receipt_wait_rechecks_time_and_ready_before_checkpointing() {
             &[LearningIterationStageV1::Experience]
         );
     }
+}
+
+#[tokio::test]
+async fn readback_missing_or_partial_checkpoint_never_creates_or_resumes_work() {
+    let daemon = AgentdFixture::new();
+    let ports = Arc::new(recovery_ports(
+        Decision::EvaluatedNoUpdate,
+        Trust::Independent,
+    ));
+    let request = iteration_request(&daemon);
+    let owner = runtime(&daemon, &ports);
+    assert!(matches!(
+        owner
+            .process_readback(&daemon.state(), request.clone(), || Ok(60))
+            .await,
+        Err(LearningIterationRuntimeErrorV1::CommitUncertain)
+    ));
+    assert!(ok(ports.checkpoint.lock()).is_none());
+    assert!(ok(ports.executed.lock()).is_empty());
+    assert!(ok(ports.checkpoint_calls.lock()).is_empty());
+    let partial = ok(LearningIterationCoordinatorV1::new(
+        request.clone(),
+        ports.owners(),
+    ))
+    .snapshot()
+    .clone();
+    install_checkpoint(&ports, &partial);
+    assert_eq!(
+        ok(owner
+            .process_readback(&daemon.state(), request, || Ok(60))
+            .await),
+        partial
+    );
+    assert_no_work_or_checkpoint(&ports, &partial);
+}
+
+#[tokio::test]
+async fn actual_delivery_preserves_pending_without_backend_and_claimed_with_closed_owner() {
+    use codex_hepta_automation::AutomationStore;
+    use codex_hepta_automation::CircuitCommandV2;
+    use codex_hepta_automation::CircuitEventV2;
+    use codex_hepta_automation::CircuitStartV2;
+    use codex_hepta_automation::TaskFlowFence;
+    use codex_hepta_contracts::Sha256Digest;
+    let daemon = AgentdFixture::new();
+    let store = ok(AutomationStore::open(&daemon.identity.layout).await);
+    let ports = Arc::new(recovery_ports(
+        Decision::EvaluatedNoUpdate,
+        Trust::Independent,
+    ));
+    let mut request = iteration_request(&daemon);
+    let (mut definition, _) = crate::circuit_cell::tests::configuration();
+    let fallback = definition.programs[0].fallback_node.clone();
+    definition.programs[0].entry_node = fallback.clone();
+    definition.programs[0]
+        .nodes
+        .retain(|node| node.node_id == fallback);
+    definition.programs[0].edges.clear();
+    let fence = ok(TaskFlowFence::new(
+        daemon.identity.agent_id.clone(),
+        "outbox-test",
+        /*owner_epoch*/ 1,
+        /*generation*/ 1,
+        "outbox-fence",
+    ));
+    let start = CircuitStartV2 {
+        run_id: "outbox-consumer".into(),
+        scope_digest: Sha256Digest::for_bytes(b"test-scope"),
+        input_digest: Sha256Digest::for_bytes(b"test-input"),
+        created_at_ms: 10,
+        lease_duration_ms: 100,
+    };
+    let created = ok(store
+        .create_bounded_circuit_run(&definition, &start, &fence)
+        .await);
+    ok(store
+        .apply_bounded_circuit_command(&CircuitCommandV2 {
+            run_id: start.run_id.clone(),
+            command_id: "abstain".into(),
+            fence,
+            expected_revision: created.run.revision(),
+            now_ms: 11,
+            event: CircuitEventV2::Advance { quantum: 1 },
+        })
+        .await);
+    let trace =
+        ok(store.bounded_circuit_committed_trace(&start.run_id).await).expect("committed trace");
+    let intent = ok(store
+        .enqueue_circuit_learning(
+            &trace,
+            ok(Sha256Digest::parse(
+                request.envelope.objective_digest.to_string(),
+            )),
+        )
+        .await);
+    request.source_run_id = id(&intent.source_run_id);
+    request.operation_id = id(&intent.operation_id);
+    request.completed_task_receipt = ok(intent.completed_task_receipt.as_str().parse());
+    let unavailable = crate::deliver_circuit_learning_v1(
+        &store,
+        /*backend*/ None,
+        request.clone(),
+        ports.owners(),
+    )
+    .await;
+    assert!(matches!(
+        unavailable,
+        Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(_))
+    ));
+    assert_eq!(
+        ok(store.pending_circuit_learning(/*limit*/ 1).await)[0].request_digest,
+        None
+    );
+    let (handle, owner) = ok(learning_iteration_channel_v1(
+        daemon.identity.agent_id.clone(),
+        /*spawn_generation*/ 1,
+        ports.owners(),
+        ports.clone(),
+        ports.verifier.clone(),
+        /*capacity*/ 1,
+    ));
+    drop(owner);
+    assert!(matches!(
+        crate::deliver_circuit_learning_v1(&store, Some(&handle), request.clone(), ports.owners())
+            .await,
+        Err(LearningIterationRuntimeErrorV1::Unavailable)
+    ));
+    let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
+    assert!(claimed[0].request_digest.is_some());
+    assert_eq!(claimed[0].acknowledged_head, None);
+    assert!(matches!(
+        crate::deliver_circuit_learning_v1(&store, Some(&handle), request.clone(), ports.owners())
+            .await,
+        Err(LearningIterationRuntimeErrorV1::Unavailable)
+    ));
+    assert!(matches!(
+        crate::reconcile_circuit_learning_v1(
+            &store,
+            Some(&handle),
+            request.clone(),
+            ports.owners()
+        )
+        .await,
+        Err(LearningIterationRuntimeErrorV1::Unavailable)
+    ));
+    assert_eq!(
+        ok(store.pending_circuit_learning(/*limit*/ 1).await),
+        claimed
+    );
+    assert!(ok(ports.executed.lock()).is_empty());
+    assert!(ok(ports.checkpoint_calls.lock()).is_empty());
+
+    // A replacement worker receives only readback for the original durable
+    // claim. Neither absent state nor an initial checkpoint permits another fit.
+    let (live_handle, live_owner) = ok(learning_iteration_channel_v1(
+        daemon.identity.agent_id.clone(),
+        /*spawn_generation*/ 1,
+        ports.owners(),
+        ports.clone(),
+        ports.verifier.clone(),
+        /*capacity*/ 1,
+    ));
+    let cancellation = CancellationToken::new();
+    let worker = tokio::spawn(live_owner.run(daemon.state(), cancellation.clone()));
+    assert!(matches!(
+        crate::deliver_circuit_learning_v1(
+            &store,
+            Some(&live_handle),
+            request.clone(),
+            ports.owners(),
+        )
+        .await,
+        Err(LearningIterationRuntimeErrorV1::CommitUncertain)
+    ));
+    assert!(ok(ports.checkpoint.lock()).is_none());
+    let partial = ok(LearningIterationCoordinatorV1::new(
+        request.clone(),
+        ports.owners(),
+    ))
+    .snapshot()
+    .clone();
+    install_checkpoint(&ports, &partial);
+    assert!(matches!(
+        crate::reconcile_circuit_learning_v1(&store, Some(&live_handle), request, ports.owners(),)
+            .await,
+        Err(LearningIterationRuntimeErrorV1::CommitUncertain)
+    ));
+    assert_no_work_or_checkpoint(&ports, &partial);
+    assert_eq!(
+        ok(store.pending_circuit_learning(/*limit*/ 1).await),
+        claimed
+    );
+    cancellation.cancel();
+    ok(ok(worker.await));
+    store.close().await;
 }
