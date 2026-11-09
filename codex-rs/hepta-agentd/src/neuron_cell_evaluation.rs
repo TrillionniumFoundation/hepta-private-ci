@@ -12,6 +12,10 @@ use codex_hepta_intelligence_eval::FinalHoldoutProviderV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
 use codex_hepta_intelligence_eval::ProductEvaluationError;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionAttestorV1;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionErrorV1;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionRequestV1;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreV1;
 use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;
 use codex_hepta_intelligence_eval::ProductFrozenEvaluationPlanV1;
 use codex_hepta_intelligence_eval::ProductMetricSourceContractV1;
@@ -79,6 +83,28 @@ impl CellEvaluationPlanV1 {
     }
     pub fn product_plan(&self) -> &ProductFrozenEvaluationPlanV1 {
         &self.product
+    }
+
+    fn require_journals<C: AnchorWitnessStore, F: AnchorWitnessStore>(
+        &self,
+        journals: CellEvaluationJournalsV1<'_, C, F>,
+    ) -> Result<(), CellEvaluationErrorV1> {
+        let candidate = CellEvaluationArmRecordV1::read(
+            journals.candidate,
+            &self.record.comparison.candidate,
+            &self.record.comparison.cost_coverage,
+        )?;
+        let fixed_expert = CellEvaluationArmRecordV1::read(
+            journals.fixed_expert,
+            &self.record.comparison.fixed_expert,
+            &self.record.comparison.cost_coverage,
+        )?;
+        if candidate != self.record.candidate || fixed_expert != self.record.fixed_expert {
+            return Err(CellEvaluationErrorV1::Binding(
+                "Cell journal changed after registration",
+            ));
+        }
+        Ok(())
     }
 }
 
@@ -199,21 +225,7 @@ impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
         baseline_temporal: &TemporalEvaluationPlan,
         provider: &mut P,
     ) -> Result<CellEvaluationReceiptV1, CellEvaluationErrorV1> {
-        let candidate = CellEvaluationArmRecordV1::read(
-            journals.candidate,
-            &plan.record.comparison.candidate,
-            &plan.record.comparison.cost_coverage,
-        )?;
-        let fixed_expert = CellEvaluationArmRecordV1::read(
-            journals.fixed_expert,
-            &plan.record.comparison.fixed_expert,
-            &plan.record.comparison.cost_coverage,
-        )?;
-        if candidate != plan.record.candidate || fixed_expert != plan.record.fixed_expert {
-            return Err(CellEvaluationErrorV1::Binding(
-                "Cell journal changed after registration",
-            ));
-        }
+        plan.require_journals(journals)?;
         // No provider method or holdout mutation precedes the Cell checks.
         let temporal = self
             .product
@@ -224,6 +236,43 @@ impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
                 provider,
             )
             .map_err(CellEvaluationErrorV1::Product)?;
+        Ok(CellEvaluationReceiptV1 {
+            plan: plan.clone(),
+            temporal,
+        })
+    }
+
+    /// Execute or recover the original signed result only while both drained
+    /// Cell journals still match the frozen comparison. The execution request
+    /// must name this exact product plan; all Cell checks precede any claim,
+    /// provider call or holdout mutation. Completed readback retains the original
+    /// evaluator and current fence checks, and never releases the holdout again.
+    /// Pending work and qualification retain the existing Product semantics.
+    pub fn evaluate_or_readback<
+        C: AnchorWitnessStore,
+        F: AnchorWitnessStore,
+        P: FinalHoldoutProviderV1,
+        E: ProductEvaluationExecutionStoreV1,
+        A: ProductEvaluationExecutionAttestorV1,
+    >(
+        &mut self,
+        plan: &CellEvaluationPlanV1,
+        journals: CellEvaluationJournalsV1<'_, C, F>,
+        request: &ProductEvaluationExecutionRequestV1<'_>,
+        provider: &mut P,
+        executions: &mut E,
+        attestor: &mut A,
+    ) -> Result<CellEvaluationReceiptV1, CellEvaluationErrorV1> {
+        plan.require_journals(journals)?;
+        if request.plan != &plan.product {
+            return Err(CellEvaluationErrorV1::Binding(
+                "Cell execution product plan",
+            ));
+        }
+        let temporal = self
+            .product
+            .evaluate_or_readback_temporal_comparison(request, provider, executions, attestor)
+            .map_err(CellEvaluationErrorV1::Execution)?;
         Ok(CellEvaluationReceiptV1 {
             plan: plan.clone(),
             temporal,
@@ -272,6 +321,7 @@ pub enum CellEvaluationErrorV1 {
     Binding(&'static str),
     Journal(CellGenerationErrorV2),
     Product(ProductEvaluationError),
+    Execution(ProductEvaluationExecutionErrorV1),
 }
 
 impl fmt::Display for CellEvaluationErrorV1 {
