@@ -1,0 +1,121 @@
+{
+  "schema": "ndu.conditional-stop.source-qualification.v1",
+  "observed_at_utc": "2026-11-09 08:08:06 UTC",
+  "disposition": "HOLD",
+  "base": {
+    "commit": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "branch": "engineering/cell-integrated-20261109-08b6",
+    "pr": 5433
+  },
+  "source_head": "6f6d76b78349448015655de7fbba9ac89c0b94fb",
+  "stages": [
+    {
+      "pr": 5441,
+      "commit": "efc656c44122f8bb6983f6919ed7d721e6c5e6a6",
+      "scope": "conditional residual bank"
+    },
+    {
+      "pr": 5442,
+      "commit": "20be1e3b8efe2903912785850d68e936d0066ae6",
+      "scope": "horizon-one stopped controller"
+    },
+    {
+      "pr": 5443,
+      "commit": "70fcf0b6ed863b3c544c80e5c27c9fabaad84ad2",
+      "scope": "frozen checkpoint and observed macro adapter"
+    },
+    {
+      "pr": 5444,
+      "commit": "55f4e9fae9920bc5e72ccd921b5c365fed4c223b",
+      "scope": "registered prediction diagnostics"
+    },
+    {
+      "pr": 5445,
+      "commit": "e093caea48f4e1b4aaaa534158050e894592132f",
+      "scope": "frozen calibration runner"
+    },
+    {
+      "pr": 5446,
+      "commit": "cc7f724b5d477e20a2f359500b38c8326bfc017c",
+      "scope": "fresh collection evidence contract"
+    },
+    {
+      "pr": 5447,
+      "commit": "6f6d76b78349448015655de7fbba9ac89c0b94fb",
+      "scope": "bounded collection runner"
+    }
+  ],
+  "source_bundle": {
+    "files": 81,
+    "bytes": 244264,
+    "sha256": "73bd281f8728191aab9865f700455f3f65bc324a03c3e1cedf5ff1aeec986ae4",
+    "model_source_sha256": "4c361d044d6c9ee675ef2a148f27542755cad27efa78dc107e3a8af1314ac955",
+    "profile_sha256": "0ce0dbbd8827167cf45b49eeacb7cd015844758a62ef93a8041f4df68b5860d0",
+    "frozen_at_utc": "2026-11-09T07:57:20.311043+00:00"
+  },
+  "registration": {
+    "sha256": "561f29a64c47995e45d5934202fad7be10645354df40ca2f6330d768c4257836",
+    "fit_sources": 40,
+    "calibration_sources": 6,
+    "diagnostic_sources": 6,
+    "core": "ordinary",
+    "memory_mode": "reset",
+    "seed": 19,
+    "neighbor_groups": 6,
+    "particles": 8,
+    "risk_settings": [
+      0,
+      0.25,
+      1,
+      4
+    ],
+    "feature_width": 40,
+    "feature_scale": "all 1.0",
+    "latency_weight": 0.01,
+    "discount_per_second": 1,
+    "practical_margin": 0.02,
+    "parameters_frozen_before_fresh_outcomes": true
+  },
+  "behavior": {
+    "weights_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+    "original_receipt_sha256": "53d1494186db9e43b1e9c8d2f004f5dfadd86d44c4614ba10841179da5bde74f",
+    "status": "CONTENT_PRETRAINED",
+    "stage": "content",
+    "parameter_count": 15132,
+    "content_parameters": 8093,
+    "auxiliary_parameters": 7039,
+    "trained_critic_baseline_established": false
+  },
+  "local_validation": {
+    "tests_run": 44,
+    "passed": 44,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "python": "3.12.14",
+    "torch": "2.11.0+cpu",
+    "cuda_available": false,
+    "envelope_wall_seconds": 0.26388114699875587,
+    "raw_log_sha256": "6b9a83816047d0ec2aa756f543b2c7178889e903a8aa03afa3a931b57d77f75a",
+    "source_unchanged_after_tests": true,
+    "format_command": "just fmt",
+    "format_exit_code": 0,
+    "source_unchanged_after_format": true,
+    "raw_log_availability": "Recorded in the shared workspace before its subsequent disconnection; the digest is preserved here. This document does not recreate the raw log."
+  },
+  "publication_readback": {
+    "files_compared": 81,
+    "all_git_blob_hashes_match": true,
+    "all_frozen_sha256_match": true,
+    "commit": "6f6d76b78349448015655de7fbba9ac89c0b94fb"
+  },
+  "scientific_limits": {
+    "independent_training_repeats": 0,
+    "counterfactual_policy_outcomes_observed": false,
+    "closed_loop_controller_dispatch_integrated": false,
+    "conditional_coverage_proved": false,
+    "architecture_superiority_established": false,
+    "full_lifecycle_net_benefit_established": false,
+    "scope": "Original frozen content generator, empirical conditional prediction, and horizon-one action-plus-STOP research selection. Complete collection and provider results are reported separately."
+  }
+}
