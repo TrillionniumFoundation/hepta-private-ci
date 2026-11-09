@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.learning-resource-assessment.v1",
+  "source_job_id": "1a1c0229f75-5e21-91e",
+  "observation_time": "2026-11-09T11:47:53.078063+00:00",
+  "elapsed_seconds": 14.332,
+  "command": "hepta-compute evaluate --accelerator cpu --timeout 120 --json",
+  "candidates": [
+    {
+      "candidate_index": 1,
+      "provider": "kaggle",
+      "authenticated": true,
+      "ready": false,
+      "blockers": [
+        "NOTEBOOK_LIST_SCOPE"
+      ],
+      "accelerator": "cpu",
+      "eligible": true
+    },
+    {
+      "candidate_index": 2,
+      "provider": "kaggle",
+      "authenticated": true,
+      "ready": false,
+      "blockers": [
+        "NOTEBOOK_LIST_SCOPE"
+      ],
+      "accelerator": "cpu",
+      "eligible": true
+    },
+    {
+      "candidate_index": 3,
+      "provider": "kaggle",
+      "authenticated": true,
+      "ready": false,
+      "blockers": [
+        "NOTEBOOK_LIST_SCOPE"
+      ],
+      "accelerator": "cpu",
+      "eligible": true
+    },
+    {
+      "candidate_index": 4,
+      "provider": "colab",
+      "authenticated": true,
+      "ready": false,
+      "blockers": [
+        "ALLOCATION_LEDGER_BLOCKED"
+      ],
+      "accelerator": "cpu",
+      "eligible": true
+    },
+    {
+      "candidate_index": 5,
+      "provider": "colab",
+      "authenticated": true,
+      "ready": true,
+      "blockers": [],
+      "accelerator": "cpu",
+      "eligible": true
+    },
+    {
+      "candidate_index": 6,
+      "provider": "colab",
+      "authenticated": true,
+      "ready": true,
+      "blockers": [],
+      "accelerator": "cpu",
+      "eligible": true
+    }
+  ],
+  "cloud_training_submitted": false,
+  "existing_unknown_allocations_resubmitted": false,
+  "native_validation_host": "configured desktop",
+  "operator_independence_established": false
+}

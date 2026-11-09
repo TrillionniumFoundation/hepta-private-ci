@@ -1,0 +1,179 @@
+{
+  "schema": "hepta.product-evaluation-execution-recovery.qualification.v1",
+  "document_status": "NATIVE_AND_SOURCE_EVIDENCE_RECORDED",
+  "source": {
+    "base_commit": "e2e20033daa67d9d9826d4942e4d6bdd15ba4ab5",
+    "candidate_commit": "715dfcecd10afcdaf9db4d2559c306c11282ba7b",
+    "tested_tree": "e45ae8e339cc01dd4133d695e642ff04dfdd75a3",
+    "tested_source_inventory_sha256": "a757b5efe1832adfe260f8c699146610c15b14b53c681538d56d1bf52c7b5e43",
+    "objects_compared_to_base_git_or_candidate_sha256": 10615,
+    "inventory_unchanged_across_behavior_tests": true,
+    "maintained_tree": "449a94a5d583248a97d00605a77c5a54592f05e2",
+    "maintained_source_inventory_sha256": "72831fb1c133a0b2045043db4765e682901011f196ddfc2d157774d3ed1fe708",
+    "tested_to_maintained_delta": [
+      "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+      "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_file_tests.rs",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_process_tests.rs",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_store.rs",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_tests.rs"
+    ],
+    "maintained_native_objects_compared_to_local": 10615
+  },
+  "evidence_scope": "native_execution_recovery_mechanism_with_synthetic_cohorts_and_test_keys",
+  "authored_test_inventory": {
+    "parent_cases": 19,
+    "authenticated_execution_cases": 11,
+    "file_journal_cases": 7,
+    "signed_process_recovery_cases": 1,
+    "nested_process_invocations_are_additional_parent_cases": false
+  },
+  "native_validation": {
+    "status": "PASS_PRE_MAINTENANCE",
+    "host_identity": "configured desktop; x86_64-unknown-linux-gnu",
+    "toolchain": {
+      "rustc": "1.96.0",
+      "just": "1.51.0",
+      "nextest": "0.9.137"
+    },
+    "command": "just test --locked --offline -p codex-hepta-intelligence-eval --lib --test-threads 2",
+    "attempts": [
+      {
+        "attempt_id": "attempt01",
+        "stage": "COMPILE",
+        "exit_code": 101,
+        "tests_executed": 0,
+        "diagnostic_code": "E0659",
+        "diagnostic_count": 33,
+        "failure_reason": "assert_eq macro ambiguity in two test submodules",
+        "resolution": "explicit macro imports",
+        "log_path": "native-evidence-v1.tar.xz:attempt-01/test.log",
+        "log_sha256": "cf9b4a65d910d7ece4b1c25afa02dc4e74311b3c40e28a151b66a9d37d198f37"
+      },
+      {
+        "attempt_id": "attempt02",
+        "stage": "BEHAVIOR_TESTS",
+        "exit_code": 0,
+        "full_crate_passed": 141,
+        "full_crate_failed": 0,
+        "full_crate_skipped": 0,
+        "included_new_parent_cases_passed": 19,
+        "elapsed_seconds": 12.011754,
+        "nextest_execution_seconds": 3.558,
+        "source_inventory_sha256": "a757b5efe1832adfe260f8c699146610c15b14b53c681538d56d1bf52c7b5e43",
+        "log_path": "native-evidence-v1.tar.xz:attempt-02/test.log",
+        "log_sha256": "4cc9b694b5af2bcf96d8b03fe68e53b12ece242937f6eeed5d75f722e2332afe"
+      }
+    ],
+    "maintenance": {
+      "scoped_fix_exit_code": 0,
+      "format_exit_code": 0,
+      "post_maintenance_compiler_check": "PASS",
+      "behavior_tests_rerun_after_maintenance": false,
+      "workflow_basis": "repository AGENTS.md",
+      "compiler_check": {
+        "command": [
+          "cargo",
+          "check",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-intelligence-eval",
+          "--lib"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 6.110220670700073,
+        "behavior_tests_rerun": false,
+        "source_unchanged": true
+      }
+    }
+  },
+  "mechanism_contract": {
+    "durable_claim_precedes_holdout_release": true,
+    "completed_readback_requires_original_evaluator_signature": true,
+    "exact_body_bytes_authenticated_before_private_decode": true,
+    "host_pinned_current_trust_and_clock": true,
+    "original_signature_validity_preserved": true,
+    "current_original_holdout_fence_rechecked": true,
+    "completed_readback_releases_holdout_again": false,
+    "completed_readback_reexecutes_estimator": false,
+    "completed_readback_requests_new_signature": false,
+    "pending_automatically_retried": false,
+    "original_owner_pending_reconciliation_implemented": false,
+    "journal_hash_is_owner_authentication": false,
+    "restored_receipt_grants_adoption_authority": false
+  },
+  "qualification": {
+    "execution_recovery_native_mechanism": "PASS_BOUNDED_TEST_SCOPE",
+    "ordinary_daemon_owner_assembly": "HOLD",
+    "root_session_recovery": "HOLD",
+    "independent_evaluator_custody": "HOLD",
+    "real_private_head_improvement": "HOLD",
+    "old_ability_retention": "HOLD",
+    "complete_training_economics": "HOLD",
+    "published_generation_and_next_task": "HOLD",
+    "descendant_improver_superiority": "HOLD",
+    "production": "HOLD"
+  },
+  "actual_round_actions": {
+    "real_model_training": false,
+    "independent_qualification": false,
+    "adopt": false,
+    "deployment": false
+  },
+  "storage_assumptions": [
+    "caller_admits_path_permissions_and_parent_directory_durability",
+    "unique_open_file_description_without_retained_writable_aliases",
+    "cooperating_writers_honor_the_os_lock",
+    "cross_host_semantics_not_qualified",
+    "live_readback_is_synced_cached_state_with_length_check",
+    "full_frame_integrity_is_checked_on_reopen",
+    "minimum_anchor_is_retained_in_an_independent_admitted_recovery_domain",
+    "joint_rollback_of_journal_and_all_anchors_is_not_detected"
+  ],
+  "publication": {
+    "pull_requests": [
+      5503,
+      5504,
+      5505,
+      5506,
+      5507,
+      5508
+    ],
+    "main_merged": false,
+    "deployed": false,
+    "observed_at": "2026-11-09T12:17:43.897769+00:00"
+  },
+  "source_closure": {
+    "command": [
+      "python3",
+      "scripts/verify_hepta_callers.py",
+      "verify"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 820.7967846393585,
+    "inputs_unchanged": true,
+    "input_files": 6300,
+    "inputs_sha256": "b12e59197a6dd449ec7dd014c82d129038b183a305183167d7b78536860bd4d1",
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "rust_files": 6153,
+    "boundaries": 179,
+    "protected_rows": 164,
+    "authority_granted": false
+  },
+  "archives": [
+    {
+      "path": "native-evidence-v1.tar.xz",
+      "bytes": 756844,
+      "sha256": "2f6261133202c18b98dd45a551e4fa7d3091afe03da12d90c65f415495288ea2"
+    },
+    {
+      "path": "source-and-review-evidence-v1.tar.xz",
+      "bytes": 279336,
+      "sha256": "739297ceaba97333fed3740afc5de27b5c0df8d412dc78e407451b6bada34943"
+    }
+  ]
+}
