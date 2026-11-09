@@ -29,6 +29,8 @@ use support::scope;
 mod clock_tests;
 #[path = "circuit_credit_tests.rs"]
 mod credit_tests;
+#[path = "circuit_cell_ports_tests.rs"]
+mod ports_tests;
 
 fn fence() -> TaskFlowFence {
     checked(TaskFlowFence::new(
