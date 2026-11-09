@@ -1,5 +1,7 @@
-//! Fixed root observation channel. Bootstrap alone inspects procfs; every
+//! Fixed Root-pinned framing. Bootstrap alone inspects procfs; every
 //! exchange is bounded asynchronous I/O on the original held descriptors.
+//! Private clients select their own purpose-bound protocol; a learning client
+//! uses a separately transferred socket, never the original observation lane.
 
 use std::fs::File;
 use std::io::Read;
@@ -120,8 +122,9 @@ impl RootObservationStream {
         Arc::clone(&self.root)
     }
 
-    /// Private operation selection: callers cannot forward renderer bytes or
-    /// ask this observation lane to issue a grant or modify an owner.
+    /// Private operation selection belongs to the client owning this exact
+    /// lane. The observation client remains read-only; learning mutations use
+    /// a separately bound Root socket and validate the complete typed reply.
     pub(crate) async fn read<R: serde::de::DeserializeOwned>(
         &self,
         request: &impl serde::Serialize,

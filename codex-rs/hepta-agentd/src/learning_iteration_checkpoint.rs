@@ -25,6 +25,12 @@ use serde::Serialize;
 #[path = "learning_iteration_checkpoint_codec.rs"]
 mod codec;
 
+#[cfg(target_os = "linux")]
+#[path = "learning_iteration_checkpoint_transport.rs"]
+mod transport;
+#[cfg(target_os = "linux")]
+pub use transport::AgentdLearningCheckpointClientV1;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LearningIterationCheckpointErrorV1 {
     Capacity,
@@ -90,6 +96,11 @@ pub struct LearningIterationCheckpointOwnerV1 {
 }
 
 impl LearningIterationCheckpointOwnerV1 {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn registered_agent_id(&self) -> &str {
+        self.initial.request.agent_id.as_str()
+    }
+
     /// Load the already registered original owner and verify its current data.
     /// Missing, foreign, corrupt or uncertain records never initialize genesis.
     /// The host supplies custody; Device/Notes owners are not interchangeable.
