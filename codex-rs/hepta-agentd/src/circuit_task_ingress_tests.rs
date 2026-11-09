@@ -17,6 +17,7 @@ use codex_hepta_neuron::*;
 use codex_hepta_objective::canonical_objective_intent_digest_v1;
 use codex_hepta_objective::decode_source_envelope_json_v1;
 use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
@@ -384,6 +385,7 @@ async fn signed_objective_sink_ack_loss_replays_original_circuit_and_cell_result
 -> anyhow::Result<()> {
     let mut f = fixture(/*lose_ack*/ true, /*expire*/ false).await?;
     let state = Arc::clone(&f.runtime.state);
+    state.attach_circuit_learning_source(StableId::new(RUN)?)?;
     assert!(
         state
             .response(
@@ -422,7 +424,7 @@ async fn signed_objective_sink_ack_loss_replays_original_circuit_and_cell_result
         .objective_runtime
         .get()
         .expect("original objective owner")
-        .reconcile_learning_outbox(&f.store)
+        .reconcile_learning_outbox(&f.store, state.circuit_learning_source())
         .await?;
     let pending = f.store.pending_circuit_learning(/*limit*/ 1).await.unwrap();
     assert_eq!(pending.len(), 1);
@@ -545,6 +547,7 @@ async fn historical_completion_repair_does_not_renew_revoked_objective_authority
 -> anyhow::Result<()> {
     let mut f = fixture(/*lose_ack*/ true, /*expire*/ false).await?;
     let state = Arc::clone(&f.runtime.state);
+    state.attach_circuit_learning_source(StableId::new(RUN)?)?;
     assert!(
         state
             .response(
@@ -565,7 +568,7 @@ async fn historical_completion_repair_does_not_renew_revoked_objective_authority
         .objective_runtime
         .get()
         .expect("objective owner")
-        .reconcile_learning_outbox(&f.store)
+        .reconcile_learning_outbox(&f.store, state.circuit_learning_source())
         .await?;
     let pending = f.store.pending_circuit_learning(/*limit*/ 1).await.unwrap();
     assert_eq!(pending.len(), 1);
@@ -590,5 +593,55 @@ async fn historical_completion_repair_does_not_renew_revoked_objective_authority
     );
     f.stop().await;
     f.store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn ordinary_completion_without_matching_learning_source_does_not_enqueue()
+-> anyhow::Result<()> {
+    for configured in [None, Some("another-learning-source")] {
+        let mut f = fixture(/*lose_ack*/ false, /*expire*/ false).await?;
+        let state = Arc::clone(&f.runtime.state);
+        if let Some(source) = configured {
+            state.attach_circuit_learning_source(StableId::new(source)?)?;
+        }
+        let response = state
+            .response(
+                /*request_id*/ 1,
+                /*spawn_generation*/ 1,
+                AgentdMethod::ObjectiveStart {
+                    request: f.request.clone(),
+                },
+            )
+            .await?;
+        let AgentdPayload::ObjectiveRun(admission) = response.payload else {
+            panic!("ordinary objective admission");
+        };
+        assert_eq!(admission.disposition, "circuit_succeeded");
+        assert_eq!(f.calls.load(Ordering::SeqCst), 1);
+        assert!(
+            f.store
+                .pending_circuit_learning(/*limit*/ 1)
+                .await
+                .unwrap()
+                .is_empty()
+        );
+        state
+            .objective_runtime
+            .get()
+            .expect("original objective owner")
+            .reconcile_learning_outbox(&f.store, state.circuit_learning_source())
+            .await?;
+        assert!(
+            f.store
+                .pending_circuit_learning(/*limit*/ 1)
+                .await
+                .unwrap()
+                .is_empty()
+        );
+        assert_eq!(f.calls.load(Ordering::SeqCst), 1);
+        f.stop().await;
+        f.store.close().await;
+    }
     Ok(())
 }

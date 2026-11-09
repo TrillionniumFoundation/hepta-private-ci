@@ -7,6 +7,9 @@ use pretty_assertions::assert_eq;
 
 use super::*;
 
+#[path = "learning_iteration_delivery_runtime_tests.rs"]
+mod delivery_runtime_tests;
+
 #[derive(Clone, Copy)]
 enum Decision {
     EvaluatedNoUpdate,
@@ -612,7 +615,13 @@ async fn actual_delivery_preserves_pending_without_backend_and_claimed_with_clos
         Err(LearningIterationRuntimeErrorV1::Unavailable)
     ));
     assert!(matches!(
-        crate::reconcile_circuit_learning_v1(&store, Some(&handle), request, ports.owners()).await,
+        crate::reconcile_circuit_learning_v1(
+            &store,
+            Some(&handle),
+            request.clone(),
+            ports.owners()
+        )
+        .await,
         Err(LearningIterationRuntimeErrorV1::Unavailable)
     ));
     assert_eq!(
@@ -621,5 +630,48 @@ async fn actual_delivery_preserves_pending_without_backend_and_claimed_with_clos
     );
     assert!(ok(ports.executed.lock()).is_empty());
     assert!(ok(ports.checkpoint_calls.lock()).is_empty());
+
+    // A replacement worker receives only readback for the original durable
+    // claim. Neither absent state nor an initial checkpoint permits another fit.
+    let (live_handle, live_owner) = ok(learning_iteration_channel_v1(
+        daemon.identity.agent_id.clone(),
+        /*spawn_generation*/ 1,
+        ports.owners(),
+        ports.clone(),
+        ports.verifier.clone(),
+        /*capacity*/ 1,
+    ));
+    let cancellation = CancellationToken::new();
+    let worker = tokio::spawn(live_owner.run(daemon.state(), cancellation.clone()));
+    assert!(matches!(
+        crate::deliver_circuit_learning_v1(
+            &store,
+            Some(&live_handle),
+            request.clone(),
+            ports.owners(),
+        )
+        .await,
+        Err(LearningIterationRuntimeErrorV1::CommitUncertain)
+    ));
+    assert!(ok(ports.checkpoint.lock()).is_none());
+    let partial = ok(LearningIterationCoordinatorV1::new(
+        request.clone(),
+        ports.owners(),
+    ))
+    .snapshot()
+    .clone();
+    install_checkpoint(&ports, &partial);
+    assert!(matches!(
+        crate::reconcile_circuit_learning_v1(&store, Some(&live_handle), request, ports.owners(),)
+            .await,
+        Err(LearningIterationRuntimeErrorV1::CommitUncertain)
+    ));
+    assert_no_work_or_checkpoint(&ports, &partial);
+    assert_eq!(
+        ok(store.pending_circuit_learning(/*limit*/ 1).await),
+        claimed
+    );
+    cancellation.cancel();
+    ok(ok(worker.await));
     store.close().await;
 }

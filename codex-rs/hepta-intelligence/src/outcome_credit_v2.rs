@@ -12,11 +12,13 @@ use std::fmt;
 
 use codex_hepta_learning_ledger::AppendReceipt;
 use codex_hepta_learning_ledger::AuthenticatedOutcomeV1;
+use codex_hepta_learning_ledger::CausalV2Error;
 use codex_hepta_learning_ledger::CreditAllocationBatchV1;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::OutcomeTerminalityV1;
 use codex_hepta_learning_ledger::ProductionLedgerError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::finalize_credit_batch;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -49,6 +51,7 @@ pub struct OutcomeCreditClosureReceiptV2 {
 #[derive(Debug)]
 pub enum OutcomeCreditClosureErrorV2 {
     Binding(&'static str),
+    InvalidCredit(CausalV2Error),
     Outcome(ProductionLedgerError),
     Credit {
         outcome: AppendReceipt,
@@ -66,6 +69,7 @@ impl StdError for OutcomeCreditClosureErrorV2 {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
             Self::Binding(_) => None,
+            Self::InvalidCredit(error) => Some(error),
             Self::Outcome(error) => Some(error),
             Self::Credit { error, .. } => Some(error),
         }
@@ -109,17 +113,17 @@ pub fn append_outcome_credit_v2(
     now: u64,
 ) -> Result<OutcomeCreditClosureReceiptV2, OutcomeCreditClosureErrorV2> {
     validate_terminal_request(&request)?;
+    // Reject malformed or nonconserved allocations before committing an Outcome.
+    // This is structural validation only; the ledger still authenticates the
+    // allocator and checks its independence against the actual durable facts.
+    finalize_credit_batch(request.credit.clone(), now)
+        .map_err(OutcomeCreditClosureErrorV2::InvalidCredit)?;
     let run_id = request.outcome.run_id.clone();
     let episode_id = request.outcome.outcome.episode_id.clone();
 
     let outcome_receipt = append_observed_outcome_v2(ledger, request.outcome, now)?;
     let credit_receipt = ledger
-        .append_credit_batch(
-            outcome_receipt.chain_digest,
-            request.credit,
-            &request.credit_evidence,
-            now,
-        )
+        .append_credit_batch_current(request.credit, &request.credit_evidence, now)
         .map_err(|error| OutcomeCreditClosureErrorV2::Credit {
             outcome: outcome_receipt.clone(),
             error,
@@ -142,6 +146,10 @@ pub fn append_outcome_credit_v2(
         authority: AuthorityPosture::DENY_ALL,
     })
 }
+
+#[cfg(test)]
+#[path = "outcome_credit_preflight_tests.rs"]
+mod preflight_tests;
 
 fn validate_terminal_request(
     request: &OutcomeCreditClosureRequestV2,
@@ -443,7 +451,7 @@ pub(crate) mod tests {
         }
     }
 
-    fn append_decision(writer: &mut LedgerWriter) -> AppendReceipt {
+    pub(super) fn append_decision(writer: &mut LedgerWriter) -> AppendReceipt {
         let request = decision();
         let payload = decision_signing_payload_v2(&request).expect("decision payload");
         let evidence = sign(
@@ -503,7 +511,7 @@ pub(crate) mod tests {
         }
     }
 
-    fn credit(outcome_id: &str, value: i64) -> CreditAllocationBatchV1 {
+    pub(super) fn credit(outcome_id: &str, value: i64) -> CreditAllocationBatchV1 {
         CreditAllocationBatchV1 {
             batch_id: id(&format!("credit-{outcome_id}")),
             episode_id: id("episode-v2"),
@@ -520,7 +528,7 @@ pub(crate) mod tests {
         }
     }
 
-    fn closure_request(
+    pub(super) fn closure_request(
         writer: &LedgerWriter,
         expected: Digest32,
         outcome: AuthenticatedOutcomeV1,

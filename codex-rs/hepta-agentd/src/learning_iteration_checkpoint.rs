@@ -25,6 +25,15 @@ use serde::Serialize;
 #[path = "learning_iteration_checkpoint_codec.rs"]
 mod codec;
 
+#[path = "learning_iteration_checkpoint_ports.rs"]
+mod ports;
+
+#[cfg(target_os = "linux")]
+#[path = "learning_iteration_checkpoint_transport.rs"]
+mod transport;
+#[cfg(target_os = "linux")]
+pub use transport::AgentdLearningCheckpointClientV1;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LearningIterationCheckpointErrorV1 {
     Capacity,
@@ -81,8 +90,8 @@ enum Store {
 }
 
 /// Consumes the original concrete Root CAS capability, pinned to one exact
-/// request and owner set. It neither issues attestations nor implements the
-/// missing complete production LearningIterationOwnerPortsV1 adapter.
+/// request and owner set. Compose it with the original stage owners through
+/// `with_stage_owners`; this capability never issues learning attestations.
 pub struct LearningIterationCheckpointOwnerV1 {
     owner_id: String,
     store: Store,
@@ -90,6 +99,11 @@ pub struct LearningIterationCheckpointOwnerV1 {
 }
 
 impl LearningIterationCheckpointOwnerV1 {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn registered_agent_id(&self) -> &str {
+        self.initial.request.agent_id.as_str()
+    }
+
     /// Load the already registered original owner and verify its current data.
     /// Missing, foreign, corrupt or uncertain records never initialize genesis.
     /// The host supplies custody; Device/Notes owners are not interchangeable.
@@ -236,3 +250,7 @@ impl LearningIterationCheckpointOwnerV1 {
 #[cfg(test)]
 #[path = "learning_iteration_checkpoint_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "learning_iteration_checkpoint_ports_tests.rs"]
+mod ports_tests;
