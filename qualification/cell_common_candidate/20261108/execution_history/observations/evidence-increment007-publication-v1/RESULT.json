@@ -1,0 +1,266 @@
+{
+  "status": "published_and_all_new_metadata_commit_blobs_remote_readback_verified",
+  "finished_at": "2026-11-09T08:02:22.839595+00:00",
+  "branch": "codex/cell-s0-evidence-20261108-898e",
+  "commit": "e781fbebad63968adf18cce97dd04657b3854917",
+  "tree": "ebe2226e8b63d261fd04ae56d4859617301c264a",
+  "parent": "02f75555a857b161275ea5c6f7c960dde6cf8b13",
+  "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+  "packet_count": 83,
+  "file_member_count_with_overlap": 9469,
+  "original_81_packet_paths_bytes_and_index_entries_unchanged": true,
+  "all_parent_files_unchanged_except_explicit_manifest_and_readme": true,
+  "original_006_correction_and_failure_history_unchanged": true,
+  "permitted_existing_changes": [
+    "qualification/cell_common_candidate/20261108/execution_history/README.md",
+    "qualification/cell_common_candidate/20261108/execution_history/manifest.json"
+  ],
+  "new_paths": [
+    "qualification/cell_common_candidate/20261108/execution_history/increment-007a-inputs.json",
+    "qualification/cell_common_candidate/20261108/execution_history/increment-007a-pattern-review.json",
+    "qualification/cell_common_candidate/20261108/execution_history/increment007-metadata.json",
+    "qualification/cell_common_candidate/20261108/execution_history/increment007-publication-index-closure.json",
+    "qualification/cell_common_candidate/20261108/execution_history/increment007-publication-pattern-review.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/append-evidence-increment-007-v1.py",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/build-increment007a-inputs-v1.py",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-007a-launch-v1/REQUEST.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-007a-launch-v1/RESULT.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-007a-launch-v1/stderr",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-007a-launch-v1/stdout",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-007a/PATTERN_REVIEW.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-007a/RESULT.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-007a/VERIFY.log",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-increment006-metadata-correction-independent-readback-v1/RESULT.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-increment006-metadata-correction-independent-readback-v1/commands.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-increment006-metadata-correction-publication-v1/RESULT.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-increment006-metadata-correction-publication-v1/commands.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/increment007-preparation-v1/ARCHIVE_INPUTS_BEFORE_AFTER.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/increment007-preparation-v1/INPUT_PREPARATION.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/increment007-preparation-v1/REQUIRED_JSON_PINS.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/increment007-preparation-v1/REVERSE_REVIEW.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/increment007-preparation-v1/SUPPLEMENTARY_INPUTS_BEFORE_AFTER.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/increment007-preparation-v1/SUPPLEMENTARY_OBSERVATION_SCOPE.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/increment007a-inputs.json",
+    "qualification/cell_common_candidate/20261108/execution_history/observations/publish-evidence-increment-007-v1.py",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/archive.part001",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/archive.part002",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/archive.part003",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/archive.part004",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/archive.part005",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/archive.part006",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/archive.part007",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/archive.part008",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/archive.part009",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/archive.part010",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/archive.part011",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/archive.part012",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-3fc4725-native-history-v1/manifest.json",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-callers-3fc4725-desktop-history-v1/archive.part001",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-callers-3fc4725-desktop-history-v1/archive.part002",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-callers-3fc4725-desktop-history-v1/archive.part003",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-callers-3fc4725-desktop-history-v1/archive.part004",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-callers-3fc4725-desktop-history-v1/archive.part005",
+    "qualification/cell_common_candidate/20261108/execution_history/packets/combined-callers-3fc4725-desktop-history-v1/manifest.json"
+  ],
+  "new_path_count": 45,
+  "all_new_metadata_verified_in_index_and_commit": true,
+  "original_metadata_observations": [
+    {
+      "path": "observations/evidence-increment006-metadata-correction-publication-v1/RESULT.json",
+      "bytes": 35619,
+      "sha256": "c157d9441a26d97046dce8d9431ee28b4e4c5207894e74a8b39bcb815da45fc2"
+    },
+    {
+      "path": "observations/evidence-increment006-metadata-correction-publication-v1/commands.json",
+      "bytes": 263769,
+      "sha256": "97e8e4975faf656eb82fb91bd585767a9a647972ed4149a0a05cad1a8fb5bcc5"
+    },
+    {
+      "path": "observations/evidence-increment006-metadata-correction-independent-readback-v1/RESULT.json",
+      "bytes": 2582,
+      "sha256": "d53377d9418e110fa90eaa71a6d2e42f828e99579362d7ac83df76bb0717dfd4"
+    },
+    {
+      "path": "observations/evidence-increment006-metadata-correction-independent-readback-v1/commands.json",
+      "bytes": 120380,
+      "sha256": "beb068206fafa4f1b4e2e5de74e555a059f12709de8e4a27f05ec0f6ca3869de"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-007a/RESULT.json",
+      "bytes": 5116,
+      "sha256": "a865cb5e8b8923f62adeaa7203ac18d8fa6e2c31d0a11d4624b8c36af824131e"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-007a/PATTERN_REVIEW.json",
+      "bytes": 356,
+      "sha256": "cfae8ee98ad8f3b6a7fc73aaee28163b01d61d8813c37aabbb3a7dc828b55b45"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-007a/VERIFY.log",
+      "bytes": 6336,
+      "sha256": "9d10f1c6195bfafb18378d6e67d0b961f2fd6d83682ec4234b313908d4788b76"
+    },
+    {
+      "path": "observations/increment007a-inputs.json",
+      "bytes": 189198,
+      "sha256": "64eb49094b22708bd0f845b245acefd109f1c138e3687a0ef3680beb2b58555f"
+    },
+    {
+      "path": "observations/append-evidence-increment-007-v1.py",
+      "bytes": 19235,
+      "sha256": "c4529c86758cf767f7ad8333d2467c5e14eb4a6e8d33fb9a232123f1b3c37c3c"
+    },
+    {
+      "path": "observations/build-increment007a-inputs-v1.py",
+      "bytes": 22678,
+      "sha256": "4c908812eb9fa34a75d9ec3338961b30519e2f5d0a1d670407008d35662634be"
+    },
+    {
+      "path": "observations/increment007-preparation-v1/INPUT_PREPARATION.json",
+      "bytes": 2233,
+      "sha256": "3e3b1968f6c54cf05711fc14e49383b0ff16a72de3047df98fcb446b661c6b03"
+    },
+    {
+      "path": "observations/increment007-preparation-v1/REVERSE_REVIEW.json",
+      "bytes": 2177,
+      "sha256": "768b20bef9943a96b1b2398d00e6caf68ddb34f2cdc1fb5d744a82e28a539b0f"
+    },
+    {
+      "path": "observations/increment007-preparation-v1/REQUIRED_JSON_PINS.json",
+      "bytes": 2878,
+      "sha256": "9529d7f7a836cb614fcf1c469317e0f68534f7bac441d81f3dbafd9eb141565c"
+    },
+    {
+      "path": "observations/increment007-preparation-v1/ARCHIVE_INPUTS_BEFORE_AFTER.json",
+      "bytes": 1568,
+      "sha256": "4cc85eae4fdd7104eec34aac23be62276e12fe86250b8606a6a3af035b4089de"
+    },
+    {
+      "path": "observations/increment007-preparation-v1/SUPPLEMENTARY_INPUTS_BEFORE_AFTER.json",
+      "bytes": 2779,
+      "sha256": "fbcca9f5d85f1550fffbd39400903e7d787cd67d4c19f5033286262e91700c07"
+    },
+    {
+      "path": "observations/increment007-preparation-v1/SUPPLEMENTARY_OBSERVATION_SCOPE.json",
+      "bytes": 1118,
+      "sha256": "07c3e0994c281b9889c874493f342ec8b0a524d11ba4ee2bdf386fe170d90ed1"
+    },
+    {
+      "path": "observations/publish-evidence-increment-007-v1.py",
+      "bytes": 43384,
+      "sha256": "5317ef32fdc2e042db8fcba45d308943620d70da13eb056f397c1706e9ad3262"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-007a-launch-v1/REQUEST.json",
+      "bytes": 854,
+      "sha256": "8114502840228f987a4a59fd8263d583bd2a849b9d5d182274d349e6df96e861"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-007a-launch-v1/RESULT.json",
+      "bytes": 1453,
+      "sha256": "1622aea8e3ad6858297c694604ad31ff14cb4dc15a4fffe1c6b152c77e07f377"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-007a-launch-v1/stdout",
+      "bytes": 4658,
+      "sha256": "ecc256d383f448aca3dabbfbc5847e250252d18ba058273d30d601821c6a2b21"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-007a-launch-v1/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "metadata_observation_count": 21,
+  "index_closure_sha256": "a427b219ed3e113753bb1f40ce4c0604375d5401366af980d99debe69110c247",
+  "publication_pattern_review_sha256": "0ec09340bf72567c582296f5afc92d742fdcfba01acd0cafa6f59b38f807a624",
+  "published_file_count": 1281,
+  "published_file_count_source": "exact committed Git tree",
+  "parent_committed_root_file_count": 1236,
+  "max_committed_file_bytes": 490000,
+  "manifest_sha256": "6a1a7c2ed7cf55f72b0e9beff24b01be09c326a7097fdd32af6ab09352b89aed",
+  "readme_sha256": "d41ee5d23ed72fa35b4f3303ec65c26fb4f2ef3cd91da97db15fd9eddbe52df9",
+  "metadata_sha256": "e2269605992af896e379daaed2c832304d71bc5b66d8ff42cd1d5f8addcacba7",
+  "append_receipt_sha256": "a865cb5e8b8923f62adeaa7203ac18d8fa6e2c31d0a11d4624b8c36af824131e",
+  "append_manifest_sha256": "3150d6cd10baefb2eb21759fb28286e76f16ef9dcc5a9d69a85ecdd09d0eda6d",
+  "input_sha256": "64eb49094b22708bd0f845b245acefd109f1c138e3687a0ef3680beb2b58555f",
+  "appender_sha256": "c4529c86758cf767f7ad8333d2467c5e14eb4a6e8d33fb9a232123f1b3c37c3c",
+  "supplementary_006_scope": {
+    "source_commit": "02f75555a857b161275ea5c6f7c960dde6cf8b13",
+    "source_tree": "456903461ff59e9fca71ba1fed2dcc5701d21b78",
+    "parent_commit": "a9116a22d4cc429e9b34a1327bcb3945280d72d4",
+    "files_included": "Only both RESULT.json files and both complete commands.json indexes",
+    "complete_stdout_stderr_prefixes_archived_here": false,
+    "external_original_prefixes": [
+      "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment006-metadata-correction-publication-v1",
+      "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment006-metadata-correction-independent-readback-v1"
+    ],
+    "original_raw_log_hashes_referenced_by_commands": true,
+    "raw_bytes_not_promoted_from_hash_references_to_archived_content": true,
+    "original_a911_1140_local_vs_1139_committed_preserved": true,
+    "corrected_1236_committed_files_verified": true,
+    "original_15_observations_verified": true,
+    "packet_count_changed_by_metadata_correction": false,
+    "publication_or_readback_is_not_native_validation": true,
+    "new_tests_executed": false,
+    "physical_cost": null,
+    "full_history_cost": null
+  },
+  "transport_admission": {
+    "observed_at": "2026-11-09T08:01:35.608422+00:00",
+    "related_processes": [],
+    "memory": {
+      "MemTotal_bytes": 134923063296,
+      "MemAvailable_bytes": 94610530304
+    },
+    "signals_sent": false,
+    "scope": "observable Git or evidence publisher processes",
+    "request_local_http_version": "HTTP/1.1",
+    "request_local_post_buffer_bytes": 268435456,
+    "reachable_new_object_uncompressed_bytes": 8954791,
+    "network_cause_not_established": true,
+    "tls_auth_proxy_and_endpoint_unchanged": true,
+    "global_git_configuration_modified": false
+  },
+  "new_git_objects": {
+    "observed_at": "2026-11-09T08:01:35.555963+00:00",
+    "old_commit": "02f75555a857b161275ea5c6f7c960dde6cf8b13",
+    "new_commit": "e781fbebad63968adf18cce97dd04657b3854917",
+    "reachable_new_object_count": 59,
+    "reachable_new_object_uncompressed_bytes": 8954791,
+    "object_type_counts": {
+      "commit": 1,
+      "tree": 14,
+      "blob": 44,
+      "tag": 0
+    },
+    "object_ids_sha256": "7afba74866e6beed36e8496985827caf7e622d1d57b340d1f0ef6d40a2601a12",
+    "object_sizes_sha256": "c1b7190bdc89c15bcaada47df8199c535cd2253d88d7431bb4d2e60fd7b5c9aa",
+    "request_local_post_buffer_bytes": 268435456,
+    "reserved_overhead_bytes": 33554432,
+    "is_actual_pack_or_network_byte_count": false,
+    "not_a_network_root_cause_claim": true
+  },
+  "normal_push_attempt_count": 1,
+  "automatic_retry": false,
+  "no_amend_or_force_push": true,
+  "git_add_force_limited_to_exact_verifier_log": "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-007a/VERIFY.log",
+  "publication_receipt_is_external_to_its_own_commit": true,
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "physical_cost": null,
+  "native_tests_executed_by_publisher": false,
+  "stage_advancement_claimed": false,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "commands_receipt_sha256": "52c1210628d3dde6d22ec20ea33d41c5e50adb3459a0ff6f78536a72f9605257",
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/e781fbebad63968adf18cce97dd04657b3854917/qualification/cell_common_candidate/20261108/execution_history"
+}

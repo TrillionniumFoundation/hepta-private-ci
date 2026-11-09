@@ -749,6 +749,42 @@
       "file_member_count": 24,
       "manifest_path": "packets/combined-callers-3fc4725-desktop-history-v1/manifest.json",
       "manifest_sha256": "20a508eec5961f4211694d0687455762122d70d27776fbbc5e37bde40f8d0f58"
+    },
+    {
+      "packet_id": "core-output-45a50bf-ai-failed-owning-history-v1",
+      "scope": "Original failed 45a whole-core execution, strict preparation and failure-aware closed-set accounting; FAIL retained, 3827 selected/9 ignored, fourteen executable bytes host-only",
+      "archive_bytes": 3559024,
+      "archive_sha256": "f5ad5116de21dc92dfb5946e9487ce2577bd7c14e77cd505a1956efb25ace436",
+      "file_member_count": 187,
+      "manifest_path": "packets/core-output-45a50bf-ai-failed-owning-history-v1/manifest.json",
+      "manifest_sha256": "6b24def29fb5f64bbb9d65d3f84039500054fe399901db4ba0b1d6ed382112e1"
+    },
+    {
+      "packet_id": "core-output-45a50bf-desktop-preparation-caller-history-v3",
+      "scope": "45a desktop source, formatting, full caller and unexecuted timer preparation history; original collector failures retained, no native execution in this scope",
+      "archive_bytes": 2830716,
+      "archive_sha256": "b5aa757ab9003bb6d8bdae47dd0903f3a30e3cd116624e2dfb7d69d6e657103c",
+      "file_member_count": 278,
+      "manifest_path": "packets/core-output-45a50bf-desktop-preparation-caller-history-v3/manifest.json",
+      "manifest_sha256": "62f5708acbb2ef49055e06be4cb088dae354a340fca26cad0a9f2f108671de63"
+    },
+    {
+      "packet_id": "core-output-6ec5993-ai-two-checksum-failures-environment-history-v2",
+      "scope": "Both same-source strict attempts ended in official checksum HTTP504; no helper, lint or native case launched. One explicit dependency recovery remains FAIL. Collector-v1 failed on an incorrect null-field schema assumption; original FAIL receipt, console, invocation and collector/spec are preserved. No native was run by that collector.",
+      "archive_bytes": 1076276,
+      "archive_sha256": "8a19f8d2a2bb455240d079dbc61187aaef456735cd83c4b92da381c4d1f461c3",
+      "file_member_count": 61,
+      "manifest_path": "packets/core-output-6ec5993-ai-two-checksum-failures-environment-history-v2/manifest.json",
+      "manifest_sha256": "9aa28a8e9e1508e8bd1f7093e749a29193526479f5f2c82bfb9d8ded14f37a65"
+    },
+    {
+      "packet_id": "core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1",
+      "scope": "6ec source freeze, original full caller and unexecuted control/admission preparation; later desktop V8 recovery and native attempts excluded",
+      "archive_bytes": 2383948,
+      "archive_sha256": "eb49b7680e375f3d5090be457911a0f01a85fdbac23a0c2f534b2ece1c7dac39",
+      "file_member_count": 109,
+      "manifest_path": "packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/manifest.json",
+      "manifest_sha256": "f4f49a8d9e4691f7a493da10378e377729685dcfdfea2ce091ae8198864d8524"
     }
   ],
   "max_chunk_bytes": 490000,
@@ -770,7 +806,7 @@
   "publication_commit_location": "external_git_readback_receipt",
   "source_branch_mutated_by_publication": false,
   "counts_and_wall_times_must_not_be_added_across_packets": true,
-  "preceding_evidence_commit": "02f75555a857b161275ea5c6f7c960dde6cf8b13",
+  "preceding_evidence_commit": "e781fbebad63968adf18cce97dd04657b3854917",
   "latest_reviewed_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
   "latest_reviewed_common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
   "increment003_original_metadata_observations": [
@@ -1994,6 +2030,205 @@
         "physical_cost": null,
         "full_history_cost": null,
         "full_history_cost_complete": false
+      },
+      "core_output_45a_failed_history": {
+        "source_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+        "source_tree": "60fd0cc181f3f34dbbb3a4a9a63226b920260ce2",
+        "parents": [
+          "3fc4725343dccfc9487e937f77e30bc6a5d80dbc"
+        ],
+        "original_native_execution_status": "FAIL",
+        "strict_preparation": {
+          "steps_passed": 9,
+          "source_unchanged": true,
+          "scope": "owning preparation and read-only strict checks; not a native pass",
+          "finished_at": "2026-11-09T07:02:21.854640+00:00"
+        },
+        "counts": {
+          "executed": 3827,
+          "passed": 3274,
+          "failed_exit101": 6,
+          "signal_aborted": 545,
+          "timed_out": 2,
+          "failed_including_timeouts": 553,
+          "original_ignored_not_executed": 9,
+          "retries": 0,
+          "leaks": 0
+        },
+        "required_four": {
+          "passed": 2,
+          "failed_exit101": 1,
+          "signal_aborted": 1,
+          "all_passed": false,
+          "subset_of_3827": true
+        },
+        "original_exit_codes": {
+          "test_command": 100,
+          "collector": 1,
+          "driver": 1
+        },
+        "failure_payload_classification": {
+          "sigabrt_constructor_enospc_text_matches": 545,
+          "ordinary_exit101_enospc_text_matches": 5,
+          "ordinary_exit101_timing_assertion": 1,
+          "timeouts_both_proven_same_constructor_cause": false,
+          "all_failures_explained": false,
+          "all_failures_fixed": false,
+          "environment_change_proven_to_fix_any_case": false
+        },
+        "original_large_output_integration_case_passed": false,
+        "original_ci_large_output_race_proven": false,
+        "original_large_output_integration_case_status": "SIGABRT",
+        "negative_control": {
+          "source_sha": "d27431b69195a2a6331a77d19e22ebeb4cf910c7",
+          "executed": false,
+          "prepared_only": true
+        },
+        "published_source": false,
+        "common_source_advanced": false,
+        "scientific_acceptance": false,
+        "physical_cost": null,
+        "full_history_cost": null,
+        "full_history_cost_complete": false,
+        "native_packet_id": "core-output-45a50bf-ai-failed-owning-history-v1",
+        "desktop_packet_id": "core-output-45a50bf-desktop-preparation-caller-history-v3",
+        "original_native_finished_at": "2026-11-09T07:17:20.326890+00:00",
+        "historical_cutoff": "Original 45a execution and independent classification; later 6ec or desktop recovery is excluded",
+        "original_required_four": [
+          {
+            "binary_id": "codex-core",
+            "name": "unified_exec::async_watcher::tests::terminal_summary_retains_output_published_before_streaming_subscribes",
+            "raw_status": "PASS",
+            "time_seconds": "0.201",
+            "timestamp": "2026-11-09T15:06:28.973+08:00",
+            "passed": true,
+            "failure": null
+          },
+          {
+            "binary_id": "codex-core",
+            "name": "unified_exec::process::observation_tests::native_output_keeps_both_prefilled_streams_through_eof",
+            "raw_status": "PASS",
+            "time_seconds": "0.012",
+            "timestamp": "2026-11-09T15:06:29.183+08:00",
+            "passed": true,
+            "failure": null
+          },
+          {
+            "binary_id": "codex-core",
+            "name": "unified_exec::process::remote_observation_tests::remote_transcript_records_accepted_output_once_without_treating_exit_as_eof",
+            "raw_status": "FAIL",
+            "time_seconds": "0.169",
+            "timestamp": "2026-11-09T15:06:29.376+08:00",
+            "passed": false,
+            "failure": {
+              "message": "thread 'unified_exec::process::remote_observation_tests::remote_transcript_records_accepted_output_once_without_treating_exit_as_eof' (2357972) panicked at core/src/unified_exec/process_remote_observation_tests.rs:408:5",
+              "type": "test failure with exit code 101"
+            }
+          },
+          {
+            "binary_id": "codex-core::all",
+            "name": "suite::unified_exec::unified_exec_formats_large_output_summary",
+            "raw_status": "SIGABRT",
+            "time_seconds": "4.065",
+            "timestamp": "2026-11-09T15:15:31.860+08:00",
+            "passed": false,
+            "failure": {
+              "message": "2 errors occurred executing test",
+              "type": "test abort"
+            }
+          }
+        ],
+        "binary_bytes_archived": false,
+        "host_only_binary_count": 14,
+        "caller_gate": {
+          "passed": true,
+          "wall_seconds_not_full_cost": 381.88922152481973,
+          "timeout_seconds": 600,
+          "unit_tests_executed": false,
+          "rust_files_scanned": 6480,
+          "boundaries": 173,
+          "protected_files": 160
+        }
+      },
+      "remote_timer_6ec_dependency_failure_history": {
+        "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+        "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+        "parents": [
+          "45a50bffd1631d502889069fc3f713b8a5e775d8"
+        ],
+        "source_change_scope": "timer-only regression oracle; production code and original20ms deadline unchanged",
+        "dependency_attempt_count": 2,
+        "explicit_recovery_count": 1,
+        "dependency_result": "Both original AI preparations failed fetching the V8 checksum with HTTP504",
+        "helper_executed": 0,
+        "lint_executed": 0,
+        "native_executed": 0,
+        "negative_native_executed": 0,
+        "caller_gate": {
+          "passed": true,
+          "timeout_seconds": 600,
+          "wall_seconds_as_reported": 408.24210778297856,
+          "wall_time_is_not_complete_cost": true,
+          "rust_files_scanned": 6480,
+          "boundaries": 173,
+          "protected_files": 160,
+          "source_unchanged": true,
+          "unit_test_count": null,
+          "source_entries_before_after_equal": 15010
+        },
+        "later_desktop_precheck_included": false,
+        "published_source": false,
+        "common_source_advanced": false,
+        "scientific_acceptance": false,
+        "physical_cost": null,
+        "full_history_cost": null,
+        "full_history_cost_complete": false,
+        "preparation_field_mapping": {
+          "original_preparation_returncode": null,
+          "overall_preparation_returncode": 1,
+          "v8_returncode": 1,
+          "applies_to_both_original_AI_attempts": true,
+          "derived_summary_preparation_returncode": 1,
+          "derived_summary_value_refers_to": "original overall preparation.json returncode, not its internal preparation_returncode field",
+          "original_summary_bytes_preserved": true,
+          "original_null_is_not_relabelled_zero": true,
+          "internal_null_semantics": "No owning lint command was reached after the V8 failure",
+          "actual_original_JSON_binding_required_before_append": true
+        },
+        "ai_packet_id": "core-output-6ec5993-ai-two-checksum-failures-environment-history-v2",
+        "desktop_packet_id": "core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1",
+        "actual_original_AI_attempts": [
+          {
+            "attempt": 1,
+            "status": "preparation_failed",
+            "original_preparation_returncode": null,
+            "overall_preparation_returncode": 1,
+            "v8_returncode": 1,
+            "helper_executed": 0,
+            "lint_executed": 0,
+            "native_executed": 0,
+            "source_unchanged": true,
+            "finished_at": "2026-11-09T07:48:03.671363+00:00",
+            "preparation_member": "originals/core-output-6ec5993-strict-v1/preparation.json",
+            "v8_receipt_member": "originals/core-output-6ec5993-strict-v1/v8.json"
+          },
+          {
+            "attempt": 2,
+            "status": "preparation_failed",
+            "original_preparation_returncode": null,
+            "overall_preparation_returncode": 1,
+            "v8_returncode": 1,
+            "helper_executed": 0,
+            "lint_executed": 0,
+            "native_executed": 0,
+            "source_unchanged": true,
+            "finished_at": "2026-11-09T07:55:18.337377+00:00",
+            "preparation_member": "originals/core-output-6ec5993-strict-v2/preparation.json",
+            "v8_receipt_member": "originals/core-output-6ec5993-strict-v2/v8.json"
+          }
+        ],
+        "collector_v1_schema_failure_preserved": true,
+        "historical_cutoff": "Exactly two original AI checksum failures and completed desktop freeze/caller preparation; subsequent desktop V8 or native work is excluded"
       }
     }
   },
@@ -2340,6 +2575,232 @@
     },
     {
       "path": "observations/evidence-addendum-increment-007a-launch-v1/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "increment008a_supplementary_metadata_observations": [
+    {
+      "path": "observations/evidence-increment007-publication-v1/RESULT.json",
+      "bytes": 15831,
+      "sha256": "4aad75f1910cc76eeada06bb45f7abf874d10fca3a65009ce9f81bd0606f2792"
+    },
+    {
+      "path": "observations/evidence-increment007-publication-v1/commands.json",
+      "bytes": 53135,
+      "sha256": "52c1210628d3dde6d22ec20ea33d41c5e50adb3459a0ff6f78536a72f9605257"
+    },
+    {
+      "path": "observations/evidence-increment007-independent-readback-v1/RESULT.json",
+      "bytes": 2999,
+      "sha256": "a66ae2e39b0aabf283fcce40413295f8871b431f151e01836d8f9da66c8aa08b"
+    },
+    {
+      "path": "observations/evidence-increment007-independent-readback-v1/commands.json",
+      "bytes": 93897,
+      "sha256": "1e19a400ce4db5deec685351883df7d68365e678954763da35a727d50fc9b9e0"
+    },
+    {
+      "path": "reviewed_changes/core-output-45a-reviewed.patch",
+      "bytes": 25852,
+      "sha256": "b7e4cfb754a4c0bad55dc15ad9ee67a2932dc4a386223845a5686be275e04e6f"
+    },
+    {
+      "path": "reviewed_changes/remote-timer-6ec-reviewed.patch",
+      "bytes": 1651,
+      "sha256": "4b7a8813bd83b07a26050d9859bbbf5d0f20a914ca1d378804cf5530dae88a42"
+    },
+    {
+      "path": "reviewed_changes/remote-timer-6ec-frozen.patch",
+      "bytes": 1919,
+      "sha256": "4a5b2dba27bc88ca5ad16a909dc66a7368f08c23096917e3139618a609fb3866"
+    }
+  ],
+  "increment008a_supplementary_metadata_scope": {
+    "source_commit": "e781fbebad63968adf18cce97dd04657b3854917",
+    "source_tree": "ebe2226e8b63d261fd04ae56d4859617301c264a",
+    "parent_commit": "02f75555a857b161275ea5c6f7c960dde6cf8b13",
+    "files_included": "Both original 007 RESULT.json files and complete commands.json indexes, plus three exact directly readable source patches",
+    "complete_stdout_stderr_prefixes_archived_here": false,
+    "external_original_prefixes": [
+      "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment007-publication-v1",
+      "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment007-independent-readback-v1"
+    ],
+    "original_raw_log_hashes_referenced_by_commands": true,
+    "raw_bytes_not_promoted_from_hash_references_to_archived_content": true,
+    "original_21_metadata_observations_and_1281_actual_committed_files_verified": true,
+    "source_patch_bytes_not_execution_or_native_pass": true,
+    "reviewed_1651_byte_timer_patch_and_frozen_1919_byte_diff_are_distinct": true,
+    "reviewed_patch_bytes_overlap_packet_members_not_additional_execution": true,
+    "new_patch_files_need_index_and_commit_blob_verification_at_publication": true,
+    "publication_or_readback_is_not_native_validation": true,
+    "new_tests_executed": false,
+    "physical_cost": null,
+    "full_history_cost": null
+  },
+  "increment008_original_metadata_observations": [
+    {
+      "path": "observations/evidence-increment007-publication-v1/RESULT.json",
+      "bytes": 15831,
+      "sha256": "4aad75f1910cc76eeada06bb45f7abf874d10fca3a65009ce9f81bd0606f2792"
+    },
+    {
+      "path": "observations/evidence-increment007-publication-v1/commands.json",
+      "bytes": 53135,
+      "sha256": "52c1210628d3dde6d22ec20ea33d41c5e50adb3459a0ff6f78536a72f9605257"
+    },
+    {
+      "path": "observations/evidence-increment007-independent-readback-v1/RESULT.json",
+      "bytes": 2999,
+      "sha256": "a66ae2e39b0aabf283fcce40413295f8871b431f151e01836d8f9da66c8aa08b"
+    },
+    {
+      "path": "observations/evidence-increment007-independent-readback-v1/commands.json",
+      "bytes": 93897,
+      "sha256": "1e19a400ce4db5deec685351883df7d68365e678954763da35a727d50fc9b9e0"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-008a/RESULT.json",
+      "bytes": 7259,
+      "sha256": "94e6126437a45b8c21fbd1fc50760cdd7593778a64b1f28f358c7cf28718ea76"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-008a/PATTERN_REVIEW.json",
+      "bytes": 356,
+      "sha256": "56fc2309b12129e729ba6c950f94ee472bbdf8e9aa4ab3ce0a41e6e0c1cc51c8"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-008a/VERIFY.log",
+      "bytes": 6733,
+      "sha256": "70f8781712635528536c471d807f90d479fdbd48eb309e47d50ef51473b9cfe9"
+    },
+    {
+      "path": "observations/increment008a-inputs.json",
+      "bytes": 335257,
+      "sha256": "66dabd527f8bf092fbaf4b8c3201f26cdc5fc94ecd5b5a0307ef601bdb9d2d05"
+    },
+    {
+      "path": "observations/append-evidence-increment-008-draft-v1.py",
+      "bytes": 21989,
+      "sha256": "5cd48d4e5cf34dcd75a362f03377a5f7671d5dedf8e1775a5d7ee38d400568bc"
+    },
+    {
+      "path": "observations/build-increment008a-inputs-v1.py",
+      "bytes": 39814,
+      "sha256": "4c423d5445c22353f36a6bf22dcc02e70410142f33e3b03fd41c8d8d9aac8a96"
+    },
+    {
+      "path": "observations/review-increment008a-inputs-v1.py",
+      "bytes": 6873,
+      "sha256": "8380da4736eebc3e36d85bea9c32511275c117de1b9fe6a99daca4e9a791472d"
+    },
+    {
+      "path": "observations/increment008-preparation-v1/INPUT_PREPARATION.json",
+      "bytes": 3973,
+      "sha256": "74848dcde960f2e9b494501fc2fd395fdd3ac8148ab1f37ccd1d50c48831a786"
+    },
+    {
+      "path": "observations/increment008-preparation-v1/REVERSE_REVIEW.json",
+      "bytes": 2848,
+      "sha256": "f6e7c01bb5cabe201d32eae366be4a0aeff61f37043cbaf919e845dab9e33b3b"
+    },
+    {
+      "path": "observations/increment008-preparation-v1/REQUIRED_JSON_PINS.json",
+      "bytes": 7285,
+      "sha256": "3433be18025d8b009b185178409410f094e15b9509df037c2fbfabb5b51333e6"
+    },
+    {
+      "path": "observations/increment008-preparation-v1/ARCHIVE_INPUTS_BEFORE_AFTER.json",
+      "bytes": 3391,
+      "sha256": "1ef8e0c317940d690729803295759c1520ec96de680cb9e8c19851cd52d1eac3"
+    },
+    {
+      "path": "observations/increment008-preparation-v1/SUPPLEMENTARY_INPUTS_BEFORE_AFTER.json",
+      "bytes": 4761,
+      "sha256": "115194a16be16e70597deac0e5a8185c730f398273fc3b6024159c69816d8a12"
+    },
+    {
+      "path": "observations/increment008-preparation-v1/SUPPLEMENTARY_OBSERVATION_SCOPE.json",
+      "bytes": 1304,
+      "sha256": "26a6968c59fc8f034e42822439ba0d18d1e403f4c8d40ac645a69de669eb1e58"
+    },
+    {
+      "path": "observations/increment008-preparation-v1/INDEPENDENT_READBACK_PINS.json",
+      "bytes": 1422,
+      "sha256": "9295c9779138909613399e308705180f6749cd58cb4f513640c24db9c8b78330"
+    },
+    {
+      "path": "observations/increment008-preparation-v1/INDEPENDENT_READBACK_INPUTS_BEFORE_AFTER.json",
+      "bytes": 2061,
+      "sha256": "e01b3b8e6cfbed595e54457fa329b43660d18d8e1ad2549eb743269dab218564"
+    },
+    {
+      "path": "observations/increment008-preparation-v1/ORIGINAL_PATCH_WHITESPACE.json",
+      "bytes": 1175,
+      "sha256": "f5f2b5bbe71b0f0986da69256b7938ea8cd68891f5d66d948a4073cdca99eca5"
+    },
+    {
+      "path": "observations/core-output-45a50bf-packets-independent-verification-v1/RESULT.json",
+      "bytes": 20681,
+      "sha256": "61a3a47db1f214adaa50d9479e8928ed31ecd5ad6bbdf66dd86577a6c57a4160"
+    },
+    {
+      "path": "observations/core-output-6ec5993-ai-history-desktop-readback-v1/RESULT.json",
+      "bytes": 10591,
+      "sha256": "88e3cd246e85c590f98e2a27e03d2694cc069dbf2ced1ea61bc990f595de88b0"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-history-independent-readback-v1/RESULT.json",
+      "bytes": 5945,
+      "sha256": "398821514942d2400a434e314bf14cbcc2b6272de3f0002cece784af8f3e6ff6"
+    },
+    {
+      "path": "observations/increment008-input-preparation-execution-v1/RESULT.json",
+      "bytes": 986,
+      "sha256": "4e72d87361ecf1107f8cfaca408bf23f57172e7e719f6cb40308cbc4c3e23b15"
+    },
+    {
+      "path": "observations/increment008-input-preparation-execution-v1/stdout",
+      "bytes": 3583,
+      "sha256": "5df9544f5c31fb32b59ea5843f6bffc747980704cbbe00f510c02ed14ded83c7"
+    },
+    {
+      "path": "observations/increment008-input-preparation-execution-v1/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observations/increment008-appender-independent-stage-review-v1.json",
+      "bytes": 2460,
+      "sha256": "c4bb5df149936d2f34dd08114508c12d9b90b33ce3be6088bb2cf701d1dfa1f8"
+    },
+    {
+      "path": "observations/publish-evidence-increment-008-v1.py",
+      "bytes": 48175,
+      "sha256": "6efcf1bd3ca88e4334fcd273ec6adee8126512ac27b906b7e3b93e725fe89271"
+    },
+    {
+      "path": "observations/increment008-publication-draft-v1/CHECKS.json",
+      "bytes": 11320,
+      "sha256": "6917a6780909f2e423292740d99ae70a59083f106cfd777a6d06cb8f3e80520a"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-008a-launch-v1/REQUEST.json",
+      "bytes": 23338,
+      "sha256": "ea534cd2305ab5fca68f7929b4d70a8e2b0aeab1ff552083cbf817382e0201e5"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-008a-launch-v1/RESULT.json",
+      "bytes": 1573,
+      "sha256": "3ad69bff3f7b13459ac12a0c06ffa18897b75dd31aaaf1542c43742c6428af1b"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-008a-launch-v1/stdout",
+      "bytes": 6609,
+      "sha256": "8d9a8c141ff097c98298136557963f1631b39da4732a87b831ad9931d725e820"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-008a-launch-v1/stderr",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }

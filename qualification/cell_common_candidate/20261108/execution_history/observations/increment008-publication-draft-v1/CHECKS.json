@@ -1,0 +1,227 @@
+{
+  "status": "static_contract_and_exact_whitespace_negative_controls_passed",
+  "driver_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/publish-evidence-increment-008-draft-v1.py",
+  "driver_bytes": 48143,
+  "driver_sha256": "333ab83ee68623801492d51909e768c658efd65f82683a69dede7475f93f4d76",
+  "driver_stage": "Unbound review draft; actual append result and manifest pins remain mandatory before final source is executable",
+  "check_count": 15,
+  "checks": [
+    {
+      "name": "deep bool is not integer",
+      "passed": true
+    },
+    {
+      "name": "deep null is not zero",
+      "passed": true
+    },
+    {
+      "name": "deep retained object identical",
+      "passed": true
+    },
+    {
+      "name": "actual publisher script recognized",
+      "passed": true
+    },
+    {
+      "name": "python command text is not publisher",
+      "passed": true
+    },
+    {
+      "name": "python module is not script",
+      "passed": true
+    },
+    {
+      "name": "stdin script is not basename",
+      "passed": true
+    },
+    {
+      "name": "unrelated script ignored",
+      "passed": true
+    },
+    {
+      "name": "prior recovery recognized",
+      "passed": true
+    },
+    {
+      "name": "unrestricted check detects original patch context whitespace",
+      "passed": true
+    },
+    {
+      "name": "exact three pinned patch exclusions accept clean authored input",
+      "passed": true
+    },
+    {
+      "name": "nonexempt authored whitespace remains rejected",
+      "passed": true
+    },
+    {
+      "name": "another patch path is not implicitly exempt",
+      "passed": true
+    },
+    {
+      "name": "same path modified patch cannot match pinned whole bytes",
+      "passed": true
+    },
+    {
+      "name": "draft append pins remain deliberately unbound",
+      "passed": true
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment008-publication-draft-v1/whitespace-fixture",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        "."
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment008-publication-draft-v1/whitespace-fixture",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment008-publication-draft-v1/whitespace-fixture",
+      "exit_code": 2,
+      "stdout": "qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:6: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:12: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:28: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:34: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:47: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:80: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:104: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:110: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:199: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:227: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:239: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:281: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:307: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:342: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:411: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch:420: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-frozen.patch:6: trailing whitespace.\n+ \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-reviewed.patch:4: trailing whitespace.\n+ \n",
+      "stderr": "",
+      "stdout_sha256": "861801a1f9c7ad1c9722e45060561f0fbc45b8cd266c1d6df03eaaf6f592c8f7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        ".",
+        ":(exclude)qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch",
+        ":(exclude)qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-frozen.patch",
+        ":(exclude)qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-reviewed.patch"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment008-publication-draft-v1/whitespace-fixture",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        "qualification/cell_common_candidate/20261108/execution_history/README.md"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment008-publication-draft-v1/whitespace-fixture",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        ".",
+        ":(exclude)qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch",
+        ":(exclude)qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-frozen.patch",
+        ":(exclude)qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-reviewed.patch"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment008-publication-draft-v1/whitespace-fixture",
+      "exit_code": 2,
+      "stdout": "qualification/cell_common_candidate/20261108/execution_history/README.md:1: trailing whitespace.\n+Authored unexpected trailing space. \n",
+      "stderr": "",
+      "stdout_sha256": "7b9fc9c16ded324fb4f0d20fdef9a90177fe0e08c93ce6b5ad82b541bc68d073",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        "qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/not-exempt.patch"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment008-publication-draft-v1/whitespace-fixture",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        ".",
+        ":(exclude)qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch",
+        ":(exclude)qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-frozen.patch",
+        ":(exclude)qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-reviewed.patch"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment008-publication-draft-v1/whitespace-fixture",
+      "exit_code": 2,
+      "stdout": "qualification/cell_common_candidate/20261108/execution_history/README.md:1: trailing whitespace.\n+Authored unexpected trailing space. \nqualification/cell_common_candidate/20261108/execution_history/reviewed_changes/not-exempt.patch:1: trailing whitespace.\n+not exempt \n",
+      "stderr": "",
+      "stdout_sha256": "190f7ab337b202714f152ad6088ef3eec357e73ba5d5764497dc1621285a2e1c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "whitespace_exemptions": [
+    {
+      "relative_path": "qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch",
+      "bytes": 25852,
+      "sha256": "b7e4cfb754a4c0bad55dc15ad9ee67a2932dc4a386223845a5686be275e04e6f",
+      "reason": "Preserve original Git diff context-only blank lines"
+    },
+    {
+      "relative_path": "qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-reviewed.patch",
+      "bytes": 1651,
+      "sha256": "4b7a8813bd83b07a26050d9859bbbf5d0f20a914ca1d378804cf5530dae88a42",
+      "reason": "Preserve original Git diff context-only blank lines"
+    },
+    {
+      "relative_path": "qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-frozen.patch",
+      "bytes": 1919,
+      "sha256": "4a5b2dba27bc88ca5ad16a909dc66a7368f08c23096917e3139618a609fb3866",
+      "reason": "Preserve original Git diff context-only blank lines"
+    }
+  ],
+  "git_index_touched": "Only a newly created local fixture repository in records",
+  "evidence_worktree_modified": false,
+  "publisher_executed": false,
+  "network_calls": 0,
+  "native_tests_executed": false,
+  "source_modified": false,
+  "physical_cost": null,
+  "full_history_cost": null,
+  "finished_at": "2026-11-09T09:03:59.243576+00:00"
+}

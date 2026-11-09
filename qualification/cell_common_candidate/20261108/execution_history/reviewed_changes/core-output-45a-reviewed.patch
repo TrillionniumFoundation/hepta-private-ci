@@ -1,0 +1,674 @@
+diff --git a/codex-rs/core/src/unified_exec/async_watcher.rs b/codex-rs/core/src/unified_exec/async_watcher.rs
+index c0a25db2fe1..a232b48edc0 100644
+--- a/codex-rs/core/src/unified_exec/async_watcher.rs
++++ b/codex-rs/core/src/unified_exec/async_watcher.rs
+@@ -49,18 +49,12 @@ struct Emitter {
+ 
+ struct Buffer<const MAX_BYTES: usize = UNIFIED_EXEC_OUTPUT_DELTA_MAX_BYTES> {
+     pending: Vec<u8>,
+-    transcript: Arc<Mutex<HeadTailBuffer>>,
+     emitter: Emitter,
+ }
+ 
+-/// Spawn a background task that continuously reads from the PTY, appends to the
+-/// shared transcript, and emits ExecCommandOutputDelta events on UTF‑8
+-/// boundaries.
+-pub(crate) fn start_streaming_output(
+-    process: &UnifiedExecProcess,
+-    context: &UnifiedExecContext,
+-    transcript: Arc<Mutex<HeadTailBuffer>>,
+-) {
++/// Emit ExecCommandOutputDelta events on UTF-8 boundaries. The process producer
++/// records the bounded transcript before publishing these best-effort deltas.
++pub(crate) fn start_streaming_output(process: &UnifiedExecProcess, context: &UnifiedExecContext) {
+     let mut receiver = process.output_receiver();
+     let output_drained = process.output_drained_notify();
+     let exit_token = process.cancellation_token();
+@@ -82,7 +76,6 @@ pub(crate) fn start_streaming_output(
+ 
+         let mut output: Buffer = Buffer {
+             pending: Vec::new(),
+-            transcript,
+             emitter,
+         };
+ 
+@@ -247,13 +240,7 @@ impl<const MAX_BYTES: usize> Buffer<MAX_BYTES> {
+                 "a frame must fit one UTF-8 scalar"
+             )
+         };
+-        let Self {
+-            pending,
+-            transcript,
+-            emitter,
+-        } = self;
+-
+-        transcript.lock().await.push_chunk(&bytes);
++        let Self { pending, emitter } = self;
+ 
+         // Reuse a producer chunk when it fits, retaining only an incomplete
+         // UTF-8 suffix for the next push.
+@@ -288,7 +275,6 @@ impl<const MAX_BYTES: usize> Buffer<MAX_BYTES> {
+     async fn finish(self) {
+         let Self {
+             pending,
+-            transcript: _,
+             mut emitter,
+         } = self;
+         debug_assert!(
+diff --git a/codex-rs/core/src/unified_exec/async_watcher_tests.rs b/codex-rs/core/src/unified_exec/async_watcher_tests.rs
+index bffc5cf9f80..8dfed478596 100644
+--- a/codex-rs/core/src/unified_exec/async_watcher_tests.rs
++++ b/codex-rs/core/src/unified_exec/async_watcher_tests.rs
+@@ -3,11 +3,14 @@ use std::sync::Arc;
+ use super::Buffer;
+ use super::Emitter;
+ use super::TRAILING_OUTPUT_GRACE;
++use super::emit_exec_end_for_unified_exec;
+ use super::spawn_exit_watcher;
+ use super::start_streaming_output;
+ use super::utf8_boundary;
+ use crate::session::tests::make_session_and_context_with_rx;
++use crate::unified_exec::UNIFIED_EXEC_OUTPUT_MAX_BYTES;
+ use crate::unified_exec::UnifiedExecContext;
++use crate::unified_exec::UnifiedExecProcessManager;
+ use crate::unified_exec::head_tail_buffer::HeadTailBuffer;
+ use crate::unified_exec::process::NoopSpawnLifecycle;
+ use crate::unified_exec::process::UnifiedExecProcess;
+@@ -32,7 +35,19 @@ struct StreamingOutputHarness {
+     rx_event: async_channel::Receiver<Event>,
+ }
+ 
++impl StreamingOutputHarness {
++    fn start_streaming(&self) {
++        start_streaming_output(&self.process, &self.context);
++    }
++}
++
+ async fn streaming_output_harness() -> anyhow::Result<StreamingOutputHarness> {
++    let harness = streaming_output_harness_without_consumer().await?;
++    harness.start_streaming();
++    Ok(harness)
++}
++
++async fn streaming_output_harness_without_consumer() -> anyhow::Result<StreamingOutputHarness> {
+     let (writer_tx, _writer_rx) = tokio::sync::mpsc::channel::<Vec<u8>>(1);
+     let (stdout_tx, stdout_rx) = tokio::sync::broadcast::channel::<Vec<u8>>(8);
+     let (exit_tx, exit_rx) = tokio::sync::oneshot::channel::<i32>();
+@@ -58,8 +73,7 @@ async fn streaming_output_harness() -> anyhow::Result<StreamingOutputHarness> {
+         tokio_util::sync::CancellationToken::new(),
+         "streaming-output-test".to_string(),
+     );
+-    let transcript = Arc::new(tokio::sync::Mutex::new(HeadTailBuffer::default()));
+-    start_streaming_output(&process, &context, Arc::clone(&transcript));
++    let transcript = process.output_transcript();
+ 
+     Ok(StreamingOutputHarness {
+         process,
+@@ -71,6 +85,89 @@ async fn streaming_output_harness() -> anyhow::Result<StreamingOutputHarness> {
+     })
+ }
+ 
++#[tokio::test]
++async fn terminal_summary_retains_output_published_before_streaming_subscribes()
++-> anyhow::Result<()> {
++    let harness = streaming_output_harness_without_consumer().await?;
++    // This independent receiver acknowledges actual producer publication. The
++    // presentation streamer deliberately does not exist for the prefix.
++    let mut published = harness.process.output_receiver();
++    let mut prefix = b"HEAD\n".to_vec();
++    prefix.extend(b"token token \n".repeat(100_000));
++    let total_bytes = prefix.len() + b"TAIL\n".len();
++    harness.stdout_tx.send(prefix.clone())?;
++    assert_eq!(published.recv().await?, prefix);
++    drop(published);
++
++    harness.start_streaming();
++    let StreamingOutputHarness {
++        process,
++        stdout_tx,
++        exit_tx,
++        transcript,
++        context,
++        rx_event,
++    } = harness;
++    let output_drained = process.output_drained_notify();
++    stdout_tx.send(b"TAIL\n".to_vec())?;
++    drop(stdout_tx);
++    exit_tx.send(0).expect("send actual exit");
++    output_drained.notified().await;
++
++    let collected = UnifiedExecProcessManager::collect_output_until_deadline(
++        process.output_handles(),
++        /*pause_state*/ None,
++        Instant::now(),
++    )
++    .await;
++    assert_eq!(
++        (
++            collected.total_bytes(),
++            collected.retained_bytes(),
++            collected.omitted_bytes(),
++        ),
++        (
++            total_bytes,
++            UNIFIED_EXEC_OUTPUT_MAX_BYTES,
++            total_bytes - UNIFIED_EXEC_OUTPUT_MAX_BYTES,
++        )
++    );
++    let fallback = String::from_utf8(collected.to_bytes_with_omission_marker())?;
++    #[allow(deprecated)]
++    let cwd = context.step_context.turn.cwd.clone().into();
++    emit_exec_end_for_unified_exec(
++        Arc::clone(&context.session),
++        Arc::clone(&context.step_context.turn),
++        context.call_id,
++        vec!["proof".to_string()],
++        cwd,
++        /*process_id*/ None,
++        /*plugin_attribution*/ None,
++        transcript,
++        fallback,
++        /*exit_code*/ 0,
++        Duration::ZERO,
++    )
++    .await;
++    loop {
++        let event = rx_event.recv().await?;
++        if let EventMsg::ItemCompleted(completed) = event.msg {
++            let TurnItem::CommandExecution(item) = completed.item else {
++                panic!("expected CommandExecution");
++            };
++            assert_eq!(item.status, CommandExecutionStatus::Completed);
++            assert_eq!(item.exit_code, Some(0));
++            let output = item.aggregated_output.expect("complete output");
++            assert!(output.starts_with("HEAD\n"));
++            assert!(output.ends_with("TAIL\n"));
++            let omitted = total_bytes - UNIFIED_EXEC_OUTPUT_MAX_BYTES;
++            assert!(output.contains(&format!("... {omitted} bytes omitted ...")));
++            break;
++        }
++    }
++    Ok(())
++}
++
+ #[tokio::test]
+ async fn streaming_output_preserves_multibyte_characters_across_chunks() -> anyhow::Result<()> {
+     let StreamingOutputHarness {
+@@ -300,25 +397,36 @@ fn utf8_boundary_batches_malformed_output() {
+ }
+ 
+ #[tokio::test]
+-async fn streaming_output_bounds_invalid_bytes_and_keeps_the_full_transcript() {
+-    let (session, turn, rx_event) = make_session_and_context_with_rx().await;
+-    let transcript = Arc::new(tokio::sync::Mutex::new(HeadTailBuffer::default()));
++async fn streaming_output_bounds_invalid_bytes_and_keeps_the_full_transcript() -> anyhow::Result<()>
++{
++    let StreamingOutputHarness {
++        process,
++        stdout_tx,
++        exit_tx,
++        transcript,
++        context,
++        rx_event,
++    } = streaming_output_harness_without_consumer().await?;
++    let mut published = process.output_receiver();
+     let mut output = Buffer::<8> {
+         pending: Vec::new(),
+-        transcript: Arc::clone(&transcript),
+         emitter: Emitter {
+             remaining_deltas: 2,
+-            session,
+-            turn,
++            session: Arc::clone(&context.session),
++            turn: Arc::clone(&context.step_context.turn),
+             call_id: "bounded-output-test".to_string(),
+         },
+     };
+ 
+     // The first frame splits 😀; the last allowed frame leaves é incomplete.
+     let bytes = b"\xff\xff\xff\xff\xff\xff\xf0\x9f\x98\x80\xff\xff\xff\xc3\xa9";
+-    output.push(bytes.to_vec()).await;
+-    output.push(vec![0xfe, 0xfe]).await;
++    stdout_tx.send(bytes.to_vec())?;
++    output.push(published.recv().await?).await;
++    stdout_tx.send(vec![0xfe, 0xfe])?;
++    output.push(published.recv().await?).await;
+     output.finish().await;
++    drop(stdout_tx);
++    exit_tx.send(0).expect("send exit");
+ 
+     let mut chunks = Vec::new();
+     while let Ok(event) = rx_event.try_recv() {
+@@ -341,4 +449,5 @@ async fn streaming_output_bounds_invalid_bytes_and_keeps_the_full_transcript() {
+         transcript.lock().await.to_bytes_with_omission_marker(),
+         expected_transcript
+     );
++    Ok(())
+ }
+diff --git a/codex-rs/core/src/unified_exec/process.rs b/codex-rs/core/src/unified_exec/process.rs
+index 549d118cfe0..111706e1c1a 100644
+--- a/codex-rs/core/src/unified_exec/process.rs
++++ b/codex-rs/core/src/unified_exec/process.rs
+@@ -6,6 +6,7 @@ use std::sync::atomic::Ordering;
+ use tokio::sync::Mutex;
+ use tokio::sync::Notify;
+ use tokio::sync::broadcast;
++use tokio::sync::mpsc;
+ use tokio::sync::oneshot::error::TryRecvError;
+ use tokio::sync::watch;
+ use tokio::task::JoinHandle;
+@@ -95,6 +96,9 @@ pub(crate) struct UnifiedExecProcess {
+     process_handle: ProcessHandle,
+     output_tx: broadcast::Sender<Vec<u8>>,
+     output: OutputHandles,
++    // The single output producer owns the bounded lifetime summary. Event
++    // subscribers may attach late or lag without changing the recorded bytes.
++    output_transcript: Arc<Mutex<HeadTailBuffer>>,
+     output_drained: Arc<Notify>,
+     interaction_lock: Arc<Mutex<()>>,
+     state_tx: watch::Sender<ProcessState>,
+@@ -135,6 +139,7 @@ impl UnifiedExecProcess {
+             process_handle,
+             output_tx,
+             output,
++            output_transcript: Arc::new(Mutex::new(HeadTailBuffer::default())),
+             output_drained,
+             interaction_lock: Arc::new(Mutex::new(())),
+             state_tx,
+@@ -182,6 +187,10 @@ impl UnifiedExecProcess {
+         &self.output
+     }
+ 
++    pub(super) fn output_transcript(&self) -> Arc<Mutex<HeadTailBuffer>> {
++        Arc::clone(&self.output_transcript)
++    }
++
+     pub(super) fn output_receiver(&self) -> tokio::sync::broadcast::Receiver<Vec<u8>> {
+         self.output_tx.subscribe()
+     }
+@@ -379,15 +388,16 @@ impl UnifiedExecProcess {
+             stderr_rx,
+             mut exit_rx,
+         } = spawned;
+-        let output_rx = codex_utils_pty::combine_output_receivers(stdout_rx, stderr_rx);
+         let mut managed = Self::new(
+             ProcessHandle::Local(Box::new(process_handle)),
+             sandbox_type,
+             Some(spawn_lifecycle),
+         );
+         managed.output_task = Some(Self::spawn_local_output_task(
+-            output_rx,
++            stdout_rx,
++            stderr_rx,
+             managed.output_handles().clone(),
++            managed.output_transcript(),
+             managed.output_tx.clone(),
+         ));
+ 
+@@ -450,6 +460,7 @@ impl UnifiedExecProcess {
+         managed.output_task = Some(Self::spawn_exec_server_output_task(
+             started,
+             output_handles,
++            managed.output_transcript(),
+             managed.output_tx.clone(),
+             managed.state_tx.clone(),
+         ));
+@@ -478,6 +489,7 @@ impl UnifiedExecProcess {
+     fn spawn_exec_server_output_task(
+         started: StartedExecProcess,
+         output_handles: OutputHandles,
++        transcript: Arc<Mutex<HeadTailBuffer>>,
+         output_tx: broadcast::Sender<Vec<u8>>,
+         state_tx: watch::Sender<ProcessState>,
+     ) -> JoinHandle<()> {
+@@ -560,6 +572,7 @@ impl UnifiedExecProcess {
+                     } = response;
+                     for chunk in chunks.into_iter().filter(|chunk| chunk.seq > last_seq) {
+                         let bytes = chunk.chunk.into_inner();
++                        transcript.lock().await.push_chunk(&bytes);
+                         let mut guard = output_buffer.lock().await;
+                         guard.push_chunk(&bytes);
+                         drop(guard);
+@@ -602,6 +615,7 @@ impl UnifiedExecProcess {
+                         }
+                         last_seq = chunk.seq;
+                         let bytes = chunk.chunk.into_inner();
++                        transcript.lock().await.push_chunk(&bytes);
+                         let mut guard = output_buffer.lock().await;
+                         guard.push_chunk(&bytes);
+                         drop(guard);
+@@ -646,8 +660,10 @@ impl UnifiedExecProcess {
+     }
+ 
+     fn spawn_local_output_task(
+-        mut receiver: tokio::sync::broadcast::Receiver<Vec<u8>>,
++        mut stdout: mpsc::Receiver<Vec<u8>>,
++        mut stderr: mpsc::Receiver<Vec<u8>>,
+         output_handles: OutputHandles,
++        transcript: Arc<Mutex<HeadTailBuffer>>,
+         output_tx: broadcast::Sender<Vec<u8>>,
+     ) -> JoinHandle<()> {
+         let OutputHandles {
+@@ -662,22 +678,38 @@ impl UnifiedExecProcess {
+                 output_closed: Arc::clone(&output_closed),
+                 output_closed_notify: Arc::clone(&output_closed_notify),
+             };
+-            loop {
+-                match receiver.recv().await {
+-                    Ok(chunk) => {
+-                        let mut guard = output_buffer.lock().await;
+-                        guard.push_chunk(&chunk);
+-                        drop(guard);
+-                        let _ = output_tx.send(chunk);
+-                        output_notify.notify_waiters();
++            let mut stdout_open = true;
++            let mut stderr_open = true;
++            while stdout_open || stderr_open {
++                // Preserve the bounded pipe receivers' backpressure. An
++                // intermediate broadcast could discard bytes before either
++                // authoritative buffer had observed them.
++                let chunk = tokio::select! {
++                    chunk = stdout.recv(), if stdout_open => {
++                        match chunk {
++                            Some(chunk) => chunk,
++                            None => {
++                                stdout_open = false;
++                                continue;
++                            }
++                        }
+                     }
+-                    Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => continue,
+-                    Err(tokio::sync::broadcast::error::RecvError::Closed) => {
+-                        output_closed.store(true, Ordering::Release);
+-                        output_closed_notify.notify_waiters();
+-                        break;
++                    chunk = stderr.recv(), if stderr_open => {
++                        match chunk {
++                            Some(chunk) => chunk,
++                            None => {
++                                stderr_open = false;
++                                continue;
++                            }
++                        }
+                     }
+                 };
++                // Recording precedes both polling visibility and publication.
++                // Never hold either buffer's lock while awaiting the other.
++                transcript.lock().await.push_chunk(&chunk);
++                output_buffer.lock().await.push_chunk(&chunk);
++                let _ = output_tx.send(chunk);
++                output_notify.notify_waiters();
+             }
+         })
+     }
+diff --git a/codex-rs/core/src/unified_exec/process_manager.rs b/codex-rs/core/src/unified_exec/process_manager.rs
+index 181551409d2..59bd75e4ab1 100644
+--- a/codex-rs/core/src/unified_exec/process_manager.rs
++++ b/codex-rs/core/src/unified_exec/process_manager.rs
+@@ -495,7 +495,7 @@ impl UnifiedExecProcessManager {
+             )
+         });
+ 
+-        let transcript = Arc::new(tokio::sync::Mutex::new(HeadTailBuffer::default()));
++        let transcript = process.output_transcript();
+         let event_ctx = ToolEventCtx::new(
+             context.session.as_ref(),
+             context.step_context.turn.as_ref(),
+@@ -530,7 +530,7 @@ impl UnifiedExecProcessManager {
+         );
+         emitter.emit(event_ctx, ToolEventStage::Begin).await;
+ 
+-        start_streaming_output(&process, context, Arc::clone(&transcript));
++        start_streaming_output(&process, context);
+         let start = Instant::now();
+         // Persist live sessions before the initial yield wait so interrupting the
+         // turn cannot drop the last Arc and terminate the background process.
+diff --git a/codex-rs/core/src/unified_exec/process_observation_tests.rs b/codex-rs/core/src/unified_exec/process_observation_tests.rs
+index 21f2bdf08c3..55f0ad7816d 100644
+--- a/codex-rs/core/src/unified_exec/process_observation_tests.rs
++++ b/codex-rs/core/src/unified_exec/process_observation_tests.rs
+@@ -1,6 +1,7 @@
+ use super::EXIT_OBSERVATION_LOST;
+ use super::NoopSpawnLifecycle;
+ use super::UnifiedExecProcess;
++use crate::unified_exec::UNIFIED_EXEC_OUTPUT_MAX_BYTES;
+ use crate::unified_exec::UnifiedExecError;
+ use anyhow::Result;
+ use codex_sandboxing::SandboxType;
+@@ -153,3 +154,83 @@ async fn observed_driver_exit_keeps_its_actual_code() -> Result<()> {
+     assert_eq!(process.failure_message(), None);
+     Ok(())
+ }
++
++#[tokio::test]
++async fn native_output_keeps_both_prefilled_streams_through_eof() -> Result<()> {
++    const CHUNKS_PER_STREAM: usize = 257;
++    const CHUNK_BYTES: usize = 4096;
++    let DriverFixture {
++        spawned,
++        exit_tx,
++        stdout_tx: driver_stdout,
++        ..
++    } = driver_fixture();
++    let SpawnedPty {
++        session, exit_rx, ..
++    } = spawned;
++    drop(driver_stdout);
++    // Exercise the native mpsc ingress directly, without an upstream driver's
++    // own broadcast or a presentation consumer. Both closed queues contain more
++    // messages than the old intermediate ring could retain.
++    let (stdout_tx, stdout_rx) = mpsc::channel(CHUNKS_PER_STREAM);
++    let (stderr_tx, stderr_rx) = mpsc::channel(CHUNKS_PER_STREAM);
++    for _ in 0..CHUNKS_PER_STREAM {
++        stdout_tx.try_send(vec![b'x'; CHUNK_BYTES])?;
++        stderr_tx.try_send(vec![b'x'; CHUNK_BYTES])?;
++    }
++    drop(stdout_tx);
++    drop(stderr_tx);
++    exit_tx.send(0).expect("send actual exit");
++    let process = UnifiedExecProcess::from_spawned(
++        SpawnedPty {
++            session,
++            stdout_rx,
++            stderr_rx,
++            exit_rx,
++        },
++        SandboxType::None,
++        Box::new(NoopSpawnLifecycle),
++    )
++    .await?;
++    let handles = process.output_handles();
++    tokio::time::timeout(Duration::from_secs(2), async {
++        loop {
++            let closed = handles.output_closed_notify.notified();
++            tokio::pin!(closed);
++            closed.as_mut().enable();
++            if handles.output_closed.load(Ordering::Acquire) {
++                break;
++            }
++            closed.await;
++        }
++    })
++    .await?;
++
++    let total_bytes = 2 * CHUNKS_PER_STREAM * CHUNK_BYTES;
++    let expected = (
++        total_bytes,
++        UNIFIED_EXEC_OUTPUT_MAX_BYTES,
++        total_bytes - UNIFIED_EXEC_OUTPUT_MAX_BYTES,
++    );
++    let polled = {
++        let output = handles.output_buffer.lock().await;
++        (
++            output.total_bytes(),
++            output.retained_bytes(),
++            output.omitted_bytes(),
++        )
++    };
++    let transcript = process.output_transcript();
++    let recorded = {
++        let output = transcript.lock().await;
++        (
++            output.total_bytes(),
++            output.retained_bytes(),
++            output.omitted_bytes(),
++        )
++    };
++    assert_eq!((polled, recorded), (expected, expected));
++    assert!(process.has_exited());
++    assert_eq!(process.exit_code(), Some(0));
++    Ok(())
++}
+diff --git a/codex-rs/core/src/unified_exec/process_remote_observation_tests.rs b/codex-rs/core/src/unified_exec/process_remote_observation_tests.rs
+index df7cbf7439d..780c0357893 100644
+--- a/codex-rs/core/src/unified_exec/process_remote_observation_tests.rs
++++ b/codex-rs/core/src/unified_exec/process_remote_observation_tests.rs
+@@ -1,14 +1,18 @@
+ use super::TERMINATION_NOT_OBSERVED;
+ use super::UnifiedExecProcess;
++use crate::unified_exec::UNIFIED_EXEC_OUTPUT_MAX_BYTES;
+ use crate::unified_exec::UnifiedExecError;
++use crate::unified_exec::UnifiedExecProcessManager;
+ use crate::unified_exec::process_state::ProcessState;
+ use anyhow::Result;
++use codex_exec_server::ExecOutputStream;
+ use codex_exec_server::ExecProcess;
+ use codex_exec_server::ExecProcessEvent;
+ use codex_exec_server::ExecProcessEventReceiver;
+ use codex_exec_server::ExecProcessFuture;
+ use codex_exec_server::ExecServerError;
+ use codex_exec_server::ProcessId;
++use codex_exec_server::ProcessOutputChunk;
+ use codex_exec_server::ProcessSignal;
+ use codex_exec_server::ReadResponse;
+ use codex_exec_server::StartedExecProcess;
+@@ -302,3 +306,129 @@ async fn logical_failure_before_native_exit_preserves_first_failure() -> Result<
+     );
+     Ok(())
+ }
++
++#[tokio::test]
++async fn remote_transcript_records_accepted_output_once_without_treating_exit_as_eof() -> Result<()>
++{
++    let fixture = RemoteFixture::new(WriteStatus::Accepted).await?;
++    let mut published = fixture.process.output_receiver();
++    let first = ProcessOutputChunk {
++        seq: 1,
++        stream: ExecOutputStream::Stdout,
++        chunk: b"HEAD\n".to_vec().into(),
++    };
++    fixture
++        .remote
++        .events
++        .send(ExecProcessEvent::Output(first.clone()))?;
++    assert_eq!(published.recv().await?, b"HEAD\n");
++
++    let body = b"token token \n".repeat(100_000);
++    let last = ProcessOutputChunk {
++        seq: 3,
++        stream: ExecOutputStream::Stdout,
++        chunk: b"TAIL\n".to_vec().into(),
++    };
++    *fixture.remote.read_response.lock().await = ReadResponse {
++        // Recovery includes seq 1 again; only the newly accepted suffix may
++        // affect either buffer or its byte count.
++        chunks: vec![
++            first,
++            ProcessOutputChunk {
++                seq: 2,
++                stream: ExecOutputStream::Stdout,
++                chunk: body.clone().into(),
++            },
++            last.clone(),
++        ],
++        next_seq: 4,
++        exited: false,
++        exit_code: None,
++        closed: false,
++        failure: None,
++        sandbox_denied: false,
++    };
++    fixture.remote.events.send(ExecProcessEvent::Output(last))?;
++    assert_eq!(published.recv().await?, body);
++    assert_eq!(published.recv().await?, b"TAIL\n");
++    fixture.remote.events.send(ExecProcessEvent::Exited {
++        seq: 4,
++        exit_code: 0,
++        sandbox_denied: Some(false),
++    })?;
++    fixture.wait_for_state(|state| state.has_exited).await?;
++
++    let handles = fixture.process.output_handles();
++    assert!(
++        !handles
++            .output_closed
++            .load(std::sync::atomic::Ordering::Acquire)
++    );
++    assert!(!handles.cancellation_token.is_cancelled());
++    let collected = UnifiedExecProcessManager::collect_output_until_deadline(
++        handles,
++        /*pause_state*/ None,
++        tokio::time::Instant::now(),
++    )
++    .await;
++    let total_bytes = b"HEAD\n".len() + body.len() + b"TAIL\n".len();
++    let transcript = fixture.process.output_transcript();
++    let recorded = {
++        let output = transcript.lock().await;
++        (
++            output.total_bytes(),
++            output.retained_bytes(),
++            output.omitted_bytes(),
++            output.to_bytes_with_omission_marker(),
++        )
++    };
++    assert_eq!(
++        recorded,
++        (
++            total_bytes,
++            UNIFIED_EXEC_OUTPUT_MAX_BYTES,
++            total_bytes - UNIFIED_EXEC_OUTPUT_MAX_BYTES,
++            collected.to_bytes_with_omission_marker(),
++        )
++    );
++
++    // A native exit does not close a remote pipe. The existing polling deadline
++    // must still bound an empty read; no new terminal wait is introduced.
++    tokio::time::pause();
++    let start = tokio::time::Instant::now();
++    let budget = Duration::from_millis(20);
++    let empty = UnifiedExecProcessManager::collect_output_until_deadline(
++        handles,
++        /*pause_state*/ None,
++        start + budget,
++    )
++    .await;
++    let elapsed = tokio::time::Instant::now().saturating_duration_since(start);
++    tokio::time::resume();
++    assert_eq!((empty.total_bytes(), elapsed), (0, budget));
++    assert!(
++        !handles
++            .output_closed
++            .load(std::sync::atomic::Ordering::Acquire)
++    );
++    fixture
++        .remote
++        .events
++        .send(ExecProcessEvent::Closed { seq: 5 })?;
++    tokio::time::timeout(Duration::from_secs(2), async {
++        loop {
++            let closed = handles.output_closed_notify.notified();
++            tokio::pin!(closed);
++            closed.as_mut().enable();
++            if handles
++                .output_closed
++                .load(std::sync::atomic::Ordering::Acquire)
++            {
++                break;
++            }
++            closed.await;
++        }
++    })
++    .await?;
++    Ok(())
++}

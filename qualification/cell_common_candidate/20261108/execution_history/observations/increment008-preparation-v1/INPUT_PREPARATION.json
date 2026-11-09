@@ -1,0 +1,90 @@
+{
+  "status": "read_only_inputs_prepared_not_appended",
+  "inputs": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment008a-inputs.json",
+    "bytes": 335257,
+    "sha256": "66dabd527f8bf092fbaf4b8c3201f26cdc5fc94ecd5b5a0307ef601bdb9d2d05"
+  },
+  "packet_count_before": 83,
+  "packet_count_after_if_approved": 87,
+  "new_packet_count": 4,
+  "new_member_entries_with_overlap": 635,
+  "all_member_entries_with_prior_overlap": 10104,
+  "archive_bytes_total": 9849964,
+  "required_json_member_count": 27,
+  "supplementary_json_observations": 4,
+  "directly_readable_source_patches": 3,
+  "all_required_json_bound_by_exact_bytes_and_whole_typed_object": true,
+  "archive_hashes_and_file_counts_match": true,
+  "all_inputs_before_after_unchanged": true,
+  "all_old_bf42_validation_and_historical_cutoffs_retained_typed": true,
+  "parent_publication_and_readback_commands_hash_links_verified": true,
+  "independent_packet_readback_originals": [
+    {
+      "source_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-packets-independent-verification-v1/RESULT.json",
+      "bytes": 20681,
+      "sha256": "61a3a47db1f214adaa50d9479e8928ed31ecd5ad6bbdf66dd86577a6c57a4160",
+      "status": "TWO_COMPLETED_FAILURE_HISTORY_PACKETS_INDEPENDENTLY_VERIFIED",
+      "returncode": 0,
+      "scope": "Independent archive/member readback, not product test success",
+      "original_bytes_copied_to_preparation": true
+    },
+    {
+      "source_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-ai-history-desktop-readback-v1/RESULT.json",
+      "bytes": 10591,
+      "sha256": "88e3cd246e85c590f98e2a27e03d2694cc069dbf2ced1ea61bc990f595de88b0",
+      "status": "TRANSPORTED_ORIGINALS_AND_ALL_61_MEMBERS_VERIFIED",
+      "returncode": 0,
+      "scope": "Independent archive/member readback, not product test success",
+      "original_bytes_copied_to_preparation": true
+    },
+    {
+      "source_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-history-independent-readback-v1/RESULT.json",
+      "bytes": 5945,
+      "sha256": "398821514942d2400a434e314bf14cbcc2b6272de3f0002cece784af8f3e6ff6",
+      "status": "DESKTOP_ORIGINALS_AND_ALL_109_MEMBERS_VERIFIED",
+      "returncode": 0,
+      "scope": "Independent archive/member readback, not product test success",
+      "original_bytes_copied_to_preparation": true
+    }
+  ],
+  "derived_AI_summary_field_mapping_note_preserves_original_null_and_overall_one": true,
+  "new_desktop_dependency_or_native_observations_included": false,
+  "common_and_evidence_before": {
+    "common": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "branch": "codex/cell-s0-common-20261108-898e",
+      "dirty": "",
+      "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+    },
+    "evidence": {
+      "head": "e781fbebad63968adf18cce97dd04657b3854917",
+      "tree": "ebe2226e8b63d261fd04ae56d4859617301c264a",
+      "branch": "codex/cell-s0-evidence-20261108-898e",
+      "dirty": ""
+    }
+  },
+  "common_and_evidence_after": {
+    "common": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "branch": "codex/cell-s0-common-20261108-898e",
+      "dirty": "",
+      "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+    },
+    "evidence": {
+      "head": "e781fbebad63968adf18cce97dd04657b3854917",
+      "tree": "ebe2226e8b63d261fd04ae56d4859617301c264a",
+      "branch": "codex/cell-s0-evidence-20261108-898e",
+      "dirty": ""
+    }
+  },
+  "appender_executed": false,
+  "new_tests_executed": false,
+  "network_calls": 0,
+  "source_mutation": false,
+  "full_history_cost": null,
+  "scientific_advancement_claimed": false,
+  "finished_at": "2026-11-09T08:57:02.910497+00:00"
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.independent-static-review.v1",
+  "reviewer": "stage_acceptance_audit",
+  "scope": "Entire increment008 appender draft and its 007-to-008 delta, read only",
+  "review_status": "NO_NEW_MATERIAL_BLOCKER_IN_REVIEWED_SOURCE",
+  "inputs": [
+    {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/append-evidence-increment-008-draft-v1.py",
+      "bytes": 21989,
+      "sha256": "5cd48d4e5cf34dcd75a362f03377a5f7671d5dedf8e1775a5d7ee38d400568bc"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment008-appender-draft-v1/append007-to-008-draft.patch",
+      "bytes": 14466,
+      "sha256": "c4b1629a60cf224b0edfac46094a09db2a58388095cd8ed396cecc5f7d19809f"
+    }
+  ],
+  "findings": [
+    "Evidence parent e781 and original 83 packet entries are fixed; existing nonmanifest bytes remain protected.",
+    "Only separate-source 45a failed-history and 6ec dependency-failure observations are added; prior current-common typed object remains identical.",
+    "45a preserves the exact 3827 original outcomes, including 545 signal aborts and two timeouts; 6ec scoped dependency attempts preserve zero native cases.",
+    "Four new archive inputs require whole-byte hashes, member closures and exact required JSON bindings; seven supplementary observations have closed paths and fixed patch pins.",
+    "Original 007 publication and independent readback identities, command receipt links, 83 packets, 1281 committed files and 21 metadata observations are checked.",
+    "Original source patches are copied as reviewed bytes and are not executed or treated as native acceptance.",
+    "Append status remains uncommitted; index/commit object closure is explicitly deferred to the separate publisher.",
+    "All scientific stages remain HOLD; full history and physical cost remain null."
+  ],
+  "limitations": [
+    "Actual increment008 INPUTS and its final four packet binding objects were not part of this static review.",
+    "No appender, publisher, test, Rust build or source mutation was performed.",
+    "Bounded pattern scanning is not a complete credential-detection guarantee.",
+    "The later desktop 6ec V8 recovery is outside the two older AI dependency-failure attempts and must not relabel their cutoff."
+  ],
+  "tests_executed": false,
+  "appender_executed": false,
+  "publisher_executed": false,
+  "source_modified": false,
+  "scientific_acceptance": false,
+  "full_cost": null
+}

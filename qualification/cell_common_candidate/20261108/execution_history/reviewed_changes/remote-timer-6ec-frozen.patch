@@ -1,0 +1,42 @@
+diff --git a/codex-rs/core/src/unified_exec/process_remote_observation_tests.rs b/codex-rs/core/src/unified_exec/process_remote_observation_tests.rs
+index 780c0357893..e096e8ffdd7 100644
+--- a/codex-rs/core/src/unified_exec/process_remote_observation_tests.rs
++++ b/codex-rs/core/src/unified_exec/process_remote_observation_tests.rs
+@@ -394,18 +394,29 @@ async fn remote_transcript_records_accepted_output_once_without_treating_exit_as
+ 
+     // A native exit does not close a remote pipe. The existing polling deadline
+     // must still bound an empty read; no new terminal wait is introduced.
++    // Compare with an independent timer at that exact deadline so the oracle
++    // observes the runtime's timer precision without changing the budget.
+     tokio::time::pause();
+     let start = tokio::time::Instant::now();
+     let budget = Duration::from_millis(20);
+-    let empty = UnifiedExecProcessManager::collect_output_until_deadline(
+-        handles,
+-        /*pause_state*/ None,
+-        start + budget,
+-    )
+-    .await;
+-    let elapsed = tokio::time::Instant::now().saturating_duration_since(start);
++    let deadline = start + budget;
++    let ((empty, collector_finished_at), timer_finished_at) = tokio::join!(
++        async {
++            let empty = UnifiedExecProcessManager::collect_output_until_deadline(
++                handles, /*pause_state*/ None, deadline,
++            )
++            .await;
++            (empty, tokio::time::Instant::now())
++        },
++        async {
++            tokio::time::sleep_until(deadline).await;
++            tokio::time::Instant::now()
++        }
++    );
+     tokio::time::resume();
+-    assert_eq!((empty.total_bytes(), elapsed), (0, budget));
++    assert_eq!(empty.total_bytes(), 0);
++    assert!(collector_finished_at >= deadline);
++    assert_eq!(collector_finished_at, timer_finished_at);
+     assert!(
+         !handles
+             .output_closed

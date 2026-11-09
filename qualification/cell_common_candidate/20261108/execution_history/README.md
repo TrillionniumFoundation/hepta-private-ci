@@ -1,3 +1,110 @@
+# Increment 008: retained core failure and blocked timer history
+
+This checkpoint adds four completed historical packets to the 83 packets in evidence commit `e781fbebad63968adf18cce97dd04657b3854917`. The result is **87 packets and 10,104 file-member entries, including overlaps**. Those entries are archive contents, not unique tests, tasks, experiments, improvements, or cost observations. All four archives, every enumerated file member, and 27 selected original JSON objects are bound by bytes and SHA-256. The prior 83 packet entries and bytes remain unchanged.
+
+**The common product source is still `bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d`, tree `f7b65a747a1d2f585be38a4665ab2b4f1b07efb6`. Its original full repository validation remains failed. S0, S1, S2, S3, S4 and S5 remain HOLD.** The formal `CURRENT_RESULT.json` SHA-256 remains `c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4`. Physical cost and complete historical cost remain `null`.
+
+The new histories concern two separate local candidate sources. They do not replace the common bf42 result or inherit results from the previously retained 3fc source:
+
+| Source                                     | Exact tree                                 | Retained scope and outcome                                                                                                                                                                                                              |
+| ------------------------------------------ | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `45a50bffd1631d502889069fc3f713b8a5e775d8` | `60fd0cc181f3f34dbbb3a4a9a63226b920260ce2` | Nine strict preparation stages passed; the full core owning execution **failed**. Its separate original desktop caller gate passed.                                                                                                     |
+| `6ec5993fec3dcd6a3c569498a1d5b4c277f1c142` | `b0ddbe6b6f83dc42657260b266774f79c9d1ed90` | Timer-only test successor of 45a. Both retained AI preparation attempts failed during the official V8 checksum download; no helper build, owning lint, or native case began in those attempts. Its separate desktop caller gate passed. |
+
+The four packets deliberately stop at their recorded historical cutoffs. Subsequent desktop V8 readiness, recovery, strict preparation, or native execution is outside these archives and is not inferred from them.
+
+## Four additional immutable packets
+
+| Packet                                                                                                                                                                  | Original archive SHA-256                                           | Original archive bytes | File members |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ---------------------: | -----------: |
+| [45a AI failed owning history](packets/core-output-45a50bf-ai-failed-owning-history-v1/manifest.json)                                                                   | `f5ad5116de21dc92dfb5946e9487ce2577bd7c14e77cd505a1956efb25ace436` |              3,559,024 |          187 |
+| [45a desktop preparation and caller history](packets/core-output-45a50bf-desktop-preparation-caller-history-v3/manifest.json)                                           | `b5aa757ab9003bb6d8bdae47dd0903f3a30e3cd116624e2dfb7d69d6e657103c` |              2,830,716 |          278 |
+| [6ec AI checksum failures and environment preparation](packets/core-output-6ec5993-ai-two-checksum-failures-environment-history-v2/manifest.json)                       | `8a19f8d2a2bb455240d079dbc61187aaef456735cd83c4b92da381c4d1f461c3` |              1,076,276 |           61 |
+| [6ec desktop source, caller, and unexecuted control preparation](packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/manifest.json) | `eb49b7680e375f3d5090be457911a0f01a85fdbac23a0c2f534b2ece1c7dac39` |              2,383,948 |          109 |
+
+Their 635 additional member entries include copied source lineage, repeated runner inputs, independent readers, and retained preparation failures. The total original archive size is 9,849,964 bytes. Neither value is a count of independent experiments or a resource-cost measurement.
+
+## The original 45a full core result remains FAIL
+
+The original full core selection executed 3,827 distinct cases and left nine original ignored cases unexecuted. The original command returned **100**, its collection step returned **1**, and its owning driver returned **1**. Later independent readers returned zero only after proving the failed execution's discovery, raw status, and fresh JUnit closed sets. Their zero exits do not change the original outcome.
+
+| Original terminal classification                   | Distinct cases |
+| -------------------------------------------------- | -------------: |
+| PASS                                               |          3,274 |
+| Ordinary FAIL, exit 101                            |              6 |
+| SIGABRT                                            |            545 |
+| TIMEOUT                                            |              2 |
+| Total executed                                     |      **3,827** |
+| Original ignored, not executed and not added above |              9 |
+
+The 551 failures in the original Nextest summary are the six ordinary failures plus 545 aborts. Including the two timeouts gives **553 nonpassing executed cases**. Original progress lines and final-output copies are not additional executions. The retained reader found no selected retries, LEAK records, or the known explicit early-return guards; these checks establish accounting limits, not a clean pass.
+
+The four required output cases are a subset of this same execution:
+
+| Binary and original case                                                                                                                      | Actual result  |
+| --------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `codex-core` / `unified_exec::async_watcher::tests::terminal_summary_retains_output_published_before_streaming_subscribes`                    | PASS           |
+| `codex-core` / `unified_exec::process::observation_tests::native_output_keeps_both_prefilled_streams_through_eof`                             | PASS           |
+| `codex-core` / `unified_exec::process::remote_observation_tests::remote_transcript_records_accepted_output_once_without_treating_exit_as_eof` | FAIL, exit 101 |
+| `codex-core::all` / `suite::unified_exec::unified_exec_formats_large_output_summary`                                                          | SIGABRT        |
+
+Every one of the 545 original abort payloads contained the test CODEX_HOME constructor's ENOSPC failure. Five of the six ordinary exit-101 failures also contained ENOSPC text. The other ordinary failure was the remote collector's 21 ms versus 20 ms clock assertion. The two timeouts retain their full original payloads and are **not** both proven to have the same constructor failure.
+
+A later filesystem observation found no free inodes on the affected temporary filesystem while byte capacity remained. That was a post-run measurement, not a resource time series during all cases. It does not identify the process that consumed the inodes, explain both timeouts, or prove that an environment change fixes all failures. The archived classifications explicitly keep `all_failures_explained=false`, `all_failures_fixed=false`, and `environment_change_proven_to_fix_any_case=false`.
+
+The native packet preserves the strict receipts, source and selection inventories, original merged raw, original JUnit, failed reader preparation, failure-aware accounting, per-failure readback, and binary retention metadata. Ten helper executables and four actual test executables were retained on their host; **their executable bytes are not in this archive**. Their exact paths, sizes, and hashes identify the retention scope and do not imply that an archive alone reproduces the complete host environment.
+
+The separate 45a desktop packet preserves source and format preparation, its original caller gate, unexecuted timer-oracle preparation, and both rejected collector attempts before the successful bounded archive. Its caller observation was 381.8892215 seconds under the original 600-second bound, scanning 6,480 Rust files against 173 boundaries and 160 protected-file entries. That gate is not another native case or a complete cost record.
+
+## Directly readable production and oracle changes
+
+Reviewers can inspect the exact proposed changes without unpacking an archive:
+
+| File                                                                               |  Bytes | SHA-256                                                            | Scope                                                                                            |
+| ---------------------------------------------------------------------------------- | -----: | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| [Producer-owned transcript patch](reviewed_changes/core-output-45a-reviewed.patch) | 25,852 | `b7e4cfb754a4c0bad55dc15ad9ee67a2932dc4a386223845a5686be275e04e6f` | Six-path production change and three regressions, reviewed and frozen from 3fc into 45a.         |
+| [Reviewed timer oracle patch](reviewed_changes/remote-timer-6ec-reviewed.patch)    |  1,651 | `4b7a8813bd83b07a26050d9859bbbf5d0f20a914ca1d378804cf5530dae88a42` | Test-only adjustment based on the original 45a remote-clock failure.                             |
+| [Actual frozen timer diff](reviewed_changes/remote-timer-6ec-frozen.patch)         |  1,919 | `4a5b2dba27bc88ca5ad16a909dc66a7368f08c23096917e3139618a609fb3866` | Exact canonical Git diff used for the 6ec child; distinct from the reviewed diff representation. |
+
+The production change places the bounded authoritative output transcript in `UnifiedExecProcess`. The producer records accepted output before publishing it to streaming consumers, and terminal summaries read that retained producer state. Local output handling preserves bounded backpressure while independently draining stdout and stderr to EOF. Remote normal and recovery paths record accepted output once according to the existing sequence checks; replayed output is not counted again. Presentation limits do not determine the authoritative transcript's total output accounting.
+
+The patch does not add a grace period, enlarge the original execution budgets, add retries, weaken authorization, or change the original large-output integration test. It addresses a concrete output-ownership design risk. **The exact race responsible for the earlier common CI large-output failure remains unproven**, and the original large-output case aborted in the 45a execution. Therefore this checkpoint does not claim that the original integration failure has been resolved.
+
+The 6ec change is limited to the remote test's clock oracle. It retains the original 20 ms collector deadline and compares completion against an independently observed timer at that same deadline, while retaining the no-output and no-early-completion assertions. It does not change production code. Its retained AI attempts never reached native execution, so the prepared oracle has no native pass in these four packets.
+
+The patch files overlap source material inside the archives. They are review conveniences with their original bytes preserved, not additional implementations or executions. Git diff context-only blank lines contain meaningful leading spaces. Publication permits that whitespace only at these three exact paths with these whole-file hashes; all other staged paths remain subject to the normal whitespace check, and every new path still undergoes index and committed-blob byte verification.
+
+## The two original 6ec AI dependency attempts remain failures
+
+Both original same-source AI preparations stopped while fetching the official V8 checksum with HTTP 504. The second was one explicitly authorized dependency recovery. There was no automatic retry loop and no third AI attempt in this history. The original resolver and checksum requirements remained in force.
+
+| Original AI attempt   | Overall preparation exit | Internal `preparation_returncode` | V8 exit | Helpers / lint / native executed |
+| --------------------- | -----------------------: | --------------------------------- | ------: | -------------------------------- |
+| Initial preparation   |                        1 | `null`                            |       1 | 0 / 0 / 0                        |
+| One explicit recovery |                        1 | `null`                            |       1 | 0 / 0 / 0                        |
+
+The distinction between the two preparation fields is preserved. The sealed derived `SUMMARY.json` uses `facts.strict_attempts[*].preparation_returncode=1` for the original object's **overall** `returncode`. The original internal field with that name is **null**, because the owning preparation never began. This checkpoint retains the sealed summary bytes unchanged, binds the original preparation objects, and records the schema note explicitly. It does not relabel null as zero or as a completed lint attempt.
+
+The first AI archiver itself failed because it assumed that internal field was one. That collector failure, its invocation, and its original bytes remain in the successful v2 historical packet. Successful archival and independent member verification are integrity results, not passing product tests.
+
+The separate 6ec desktop packet retains the source freeze, unexecuted control and admission preparation, and the actual caller gate. The caller completed in 408.2421078 seconds under the original 600-second bound, with 6,480 Rust files, 173 boundaries, 160 protected-file entries, and 15,010 unchanged source entries. The prepared negative source `d27431b69195a2a6331a77d19e22ebeb4cf910c7` was not executed within this retained scope. Source and prior comparison copies are lineage, not additional passes.
+
+## Source, metadata, and publication limits
+
+The [root manifest](manifest.json) retains all previous bf42 validation and historical-cutoff values with their original JSON types. The only new validation entries describe the separate 45a failed history and the two original 6ec AI dependency failures with their independent desktop preparation. Prior 3fc native results remain associated with 3fc; none of them is transferred to 45a or 6ec.
+
+The [008 metadata](increment008-metadata.json), [append inputs](increment-008a-inputs.json), and [publication index closure](increment008-publication-index-closure.json) identify the exact packet and metadata objects. The prior 007 publication and independent readback are retained as their original two RESULT files and two complete command indexes. The command indexes refer to raw-output hashes; this addition does **not** claim to archive their entire external stdout/stderr prefixes merely by including those references.
+
+Publication verifies every permitted new or changed Git index blob and the corresponding committed blob against the prepared bytes and modes. Only the exact verifier log is force-added where necessary. The original corrected metadata history and all old packet objects remain intact; publication uses a normal evidence-branch successor, with no amend, force push, common-source update, or test dispatch.
+
+The complete historical cost, physical cost, and full execution-history completeness remain unknown. Partial wall times are preserved as observations and are not summed into compute, learning, or adoption cost. There is no claim of demonstrated improvement, successful successor consumption, multi-generation adoption, or improved effectiveness of the improver.
+
+The previously exercised Learning-checkpoint transport and real Root-held fixtures remain bounded engineering evidence. They do not supply all ordinary daemon composition ports, complete a production registration flow, or prove candidate adoption and actual successor use. **S0–S5 remain HOLD under the unchanged formal result.**
+
+The preceding README follows verbatim, including its original source identities, counts, failures, corrections, and historical cutoffs.
+
+---
+
 # Increment 007a: separate combined-source engineering records
 
 This checkpoint retains **83 bounded evidence packets and 9,469 file-member entries with overlap**. It adds the two completed records below to the corrected 81-packet checkpoint at evidence commit `02f75555a857b161275ea5c6f7c960dde6cf8b13`. The two new archives contain 333 member entries and 7,770,256 compressed archive bytes. These are archival counts; they are neither unique tasks nor a measurement of complete execution cost.

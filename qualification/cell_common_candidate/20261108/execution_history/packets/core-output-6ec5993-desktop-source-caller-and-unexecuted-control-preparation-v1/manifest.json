@@ -1,0 +1,1615 @@
+{
+  "packet_id": "core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1",
+  "scope": "6ec source freeze, original full caller and unexecuted control/admission preparation; later desktop V8 recovery and native attempts excluded",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-freeze-caller-preparation-history-v1/core-output-6ec5993-desktop-freeze-caller-preparation-history.tar.xz",
+  "bytes": 2383948,
+  "sha256": "eb49b7680e375f3d5090be457911a0f01a85fdbac23a0c2f534b2ece1c7dac39",
+  "file_member_count": 109,
+  "required_json_members": [
+    {
+      "path": "SUMMARY.json",
+      "bytes": 3180,
+      "sha256": "07ca82291f564168a18451d2943f52011e5550d6f8a13f1b3f49c6679f1f5685",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "packet_id": "core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1",
+            "scope": "6ec local source frozen, full caller passed; source admission/negative script static preparation is historical at its timestamp, not a new native result.",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "parent_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "original_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "formal_CURRENT_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+            "facts": {
+              "source_freeze": {
+                "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+                "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+                "parent_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+                "only_changed_path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+                "protected_inputs_unchanged": 9,
+                "native_executed_by_freeze": false,
+                "published_at_freeze": false
+              },
+              "caller_gate_status": "PASS",
+              "caller_wall_seconds_partial_not_full_cost": 408.24210778297856,
+              "caller_timeout_seconds": 600,
+              "caller_rust_files": 6480,
+              "caller_boundaries": 173,
+              "caller_protected_files": 160,
+              "caller_source_entries_before_after_equal": 15010,
+              "native_test_cases_executed_by_this_desktop_scope": 0,
+              "negative_native": "prepared_only_not_executed",
+              "negative_source_sha": "d27431b69195a2a6331a77d19e22ebeb4cf910c7",
+              "negative_source_tree": "b1cf50c33f5ec9101217ae3f6a7ff987e3aba973",
+              "common_positive_negative_case": {
+                "bytes": 2841,
+                "sha256": "cccd41df340c5776dd078eac87418c25a5816dde4d43bd6946861331d4065879"
+              },
+              "admission_static_receipt_is_historical": "This original static receipt predates the AI execution; the AI packet preserves its later actual FAIL.",
+              "source_publication_performed_by_this_packet": false
+            },
+            "static_unexecuted_runners": [
+              "run-core-output-negative-d27431b-temp-v3.py"
+            ],
+            "overlap_is_input_lineage_not_new_execution": [
+              "parent-freeze-original.json, preparation-original.json and reviewed.patch preserve 45a/timer preparation lineage in Stage's preceding packet; no new execution",
+              "caller prior-e54-INPUTS.json and prior-e54-caller-full-scan.json are comparison inputs, not 6ec passes",
+              "baseline admission/strict and negative-v2 source copies are static diff inputs",
+              "recovery script and strict ad66 source copies duplicate the AI execution's exact runner source"
+            ],
+            "source_or_original_evidence_modified": false,
+            "archiver_runs_native_or_subprocess_or_network": false,
+            "actual_cache_and_binary_bytes_included": false,
+            "caller_bin_suffix_files_are_git_metadata_not_native_binaries": true,
+            "later_desktop_V8_readiness_or_preflight_included": false,
+            "all_scientific_stages": "HOLD",
+            "scientific_acceptance": false,
+            "full_history_cost": null,
+            "physical_cost": null,
+            "observed_phase_seconds_are_partial_not_full_historical_cost": true,
+            "both_AI_failures_and_zero_execution_remain_failures": true,
+            "negative_control_native_outcome": "not_run"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/RESULT.json",
+      "bytes": 2567,
+      "sha256": "5a3e155c7008606b276f7643be1b9ba8b53a11ce8e8a5fe0fe84682add1c9f8c",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "authority_granted": false,
+            "base_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "caller_gate_passed": true,
+            "caller_receipt": {
+              "authority_granted": false,
+              "boundaries": 173,
+              "privileged_inventory": 173,
+              "protected_files_entries": 160,
+              "rust_files_scanned": 6480,
+              "schema": "hepta.caller-proof-receipt.v2",
+              "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+            },
+            "command": [
+              "python3",
+              "scripts/verify_hepta_callers.py",
+              "verify"
+            ],
+            "command_exit_code": 0,
+            "command_launched_at": "2026-11-09T07:43:23.098376+00:00",
+            "command_wall_seconds": 408.24210778297856,
+            "coordinator_wall_seconds": 413.54676136001945,
+            "cost_scope": "observed command wall time only, not CPU, learning or full history cost",
+            "execution_receipt": {
+              "bytes": 1471,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-callers-6ec5993-desktop-v1/caller-full-scan.json",
+              "sha256": "72103cfa6a783b7edcc4c3fe0428b815d84350079888c3f7b9e114d32bcf867a"
+            },
+            "finished_at": "2026-11-09T07:50:14.000223+00:00",
+            "full_history_cost": null,
+            "full_history_cost_complete": false,
+            "host": "desktop",
+            "minimum_tests": 0,
+            "ordinary_daemon_qualified": false,
+            "physical_cost": null,
+            "raw_log": {
+              "bytes": 80458,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-callers-6ec5993-desktop-v1/caller-full-scan.json.688fce489b504fb49a5b235f2889dbc4.log",
+              "sha256": "d61bcafc35a5f86900470549071b35f6cc0868bcdedebd42c7a0eaa829043d7d",
+              "stderr": "merged by unchanged source hepta_ci_exec.py"
+            },
+            "schema": "hepta.combined-caller-gate-execution.v1",
+            "scientific_acceptance": false,
+            "scope": "unchanged full caller closed-set engineering gate",
+            "source_after": {
+              "files_sha256": "8984bcae9d4752fe9442a11914c393dd11d985a2125dd62743c785fa7ad73e4d",
+              "index_sha256": "760781e90cd434c0aa1122fc62ab73bc0104b47b653bb499a23b886e601e3123",
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-callers-6ec5993-desktop-v1/source-after.json",
+              "tracked_count": 15010
+            },
+            "source_checkout": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "source_unchanged": true,
+            "started_at": "2026-11-09T07:43:20.453516+00:00",
+            "status": "passed",
+            "tested_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "timeout_seconds": 600,
+            "unit_tests_executed": false,
+            "wrapper_exit_code": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/RESULT.json",
+      "bytes": 22743,
+      "sha256": "faf1cd529dc930f34049645c36d7bac5ee41dd671af5cad57170a6890ed64027",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "branch": "codex/core-output-clock-oracle-45a-20261109-898e",
+            "bundle": {
+              "bytes": 1086,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-clock-oracle-source-freeze-v1/source-45a-increment.bundle",
+              "prerequisite": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+              "sha256": "be8dab5d055493750131677792e811485791bfb37ce014bbbf3c666d9620651d"
+            },
+            "common_after": {
+              "commit": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+              "parents": [
+                "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca"
+              ],
+              "status": "",
+              "tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            "common_before": {
+              "commit": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+              "parents": [
+                "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca"
+              ],
+              "status": "",
+              "tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            "common_final": {
+              "commit": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+              "parents": [
+                "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca"
+              ],
+              "status": "",
+              "tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            "finished_at": "2026-11-09T07:39:52.354425+00:00",
+            "format_tool": {
+              "bytes": 5347728,
+              "path": "/home/qian-qi/.cargo/bin/just",
+              "sha256": "b73359690704c2aaa0cdfb5b262e6fbf819a8be8cdea2d87565dd441dc7b3f8d"
+            },
+            "formatted_patch": {
+              "bytes": 1919,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-clock-oracle-source-freeze-v1/formatted.patch",
+              "sha256": "4a5b2dba27bc88ca5ad16a909dc66a7368f08c23096917e3139618a609fb3866"
+            },
+            "full_history_cost": null,
+            "native_executed": false,
+            "parent": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "parent_after": {
+              "commit": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+              "parents": [
+                "3fc4725343dccfc9487e937f77e30bc6a5d80dbc"
+              ],
+              "status": "",
+              "tree": "60fd0cc181f3f34dbbb3a4a9a63226b920260ce2"
+            },
+            "parent_before": {
+              "commit": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+              "parents": [
+                "3fc4725343dccfc9487e937f77e30bc6a5d80dbc"
+              ],
+              "status": "",
+              "tree": "60fd0cc181f3f34dbbb3a4a9a63226b920260ce2"
+            },
+            "parent_final": {
+              "commit": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+              "parents": [
+                "3fc4725343dccfc9487e937f77e30bc6a5d80dbc"
+              ],
+              "status": "",
+              "tree": "60fd0cc181f3f34dbbb3a4a9a63226b920260ce2"
+            },
+            "parent_tree": "60fd0cc181f3f34dbbb3a4a9a63226b920260ce2",
+            "parents": [
+              "45a50bffd1631d502889069fc3f713b8a5e775d8"
+            ],
+            "physical_cost": null,
+            "predecessor_failure_is_not_relabelled": true,
+            "predecessor_native_failure_receipt": {
+              "bytes": 11294,
+              "host": "ai395",
+              "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-45a50bf-owning-v1/RESULT.json",
+              "sha256": "08cdb1dc07ac689c287a326495aace745fe4838d374f7050929be5d69fc2edc9"
+            },
+            "predecessor_native_result": "FAIL",
+            "protected": {
+              "CALLERS.toml": {
+                "bytes": 230122,
+                "sha256": "c62896c63f4c8b2ab751bf7f2987fe2251118c82b103468e22fbecab9080df08"
+              },
+              "MODULE.bazel.lock": {
+                "bytes": 1791053,
+                "sha256": "3177178c20f6a8c56bca6c3d0a521b49d87b8d9a527328d181eca7c01e5cc888"
+              },
+              "apps/hepta-control-ui/rust/Cargo.lock": {
+                "bytes": 64892,
+                "sha256": "99d22c4031512530e66b1e1cbec256d069e6e613e158f37d247d9307de265734"
+              },
+              "codex-rs/Cargo.lock": {
+                "bytes": 421501,
+                "sha256": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4"
+              },
+              "codex-rs/core/tests/suite/unified_exec.rs": {
+                "bytes": 122872,
+                "sha256": "f0a7b68275efe2f54f06a8e96edd39ffa58aaf84460cf79e20df7d2a2c9f258c"
+              },
+              "docs/CURRENT.json": {
+                "bytes": 2423,
+                "sha256": "2fc2e23f78755006a1893ccfec4d6a7b51de437e09e3410330ad3aba35156463"
+              },
+              "pnpm-lock.yaml": {
+                "bytes": 188964,
+                "sha256": "42e7c955619977812c70b7b44c0aabaaae3d9249cf6777db942e589f2a043081"
+              },
+              "qualification/cell-research-stages-20261108/CURRENT_RESULT.json": {
+                "bytes": 7587,
+                "sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+              },
+              "qualification/evolve-1-20261108/CURRENT.json": {
+                "bytes": 9354,
+                "sha256": "ef165a9726f8144faef334da72c80e49376a66f43ed929cc738e018d3850a756"
+              }
+            },
+            "protected_after": {
+              "CALLERS.toml": {
+                "bytes": 230122,
+                "sha256": "c62896c63f4c8b2ab751bf7f2987fe2251118c82b103468e22fbecab9080df08"
+              },
+              "MODULE.bazel.lock": {
+                "bytes": 1791053,
+                "sha256": "3177178c20f6a8c56bca6c3d0a521b49d87b8d9a527328d181eca7c01e5cc888"
+              },
+              "apps/hepta-control-ui/rust/Cargo.lock": {
+                "bytes": 64892,
+                "sha256": "99d22c4031512530e66b1e1cbec256d069e6e613e158f37d247d9307de265734"
+              },
+              "codex-rs/Cargo.lock": {
+                "bytes": 421501,
+                "sha256": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4"
+              },
+              "codex-rs/core/tests/suite/unified_exec.rs": {
+                "bytes": 122872,
+                "sha256": "f0a7b68275efe2f54f06a8e96edd39ffa58aaf84460cf79e20df7d2a2c9f258c"
+              },
+              "docs/CURRENT.json": {
+                "bytes": 2423,
+                "sha256": "2fc2e23f78755006a1893ccfec4d6a7b51de437e09e3410330ad3aba35156463"
+              },
+              "pnpm-lock.yaml": {
+                "bytes": 188964,
+                "sha256": "42e7c955619977812c70b7b44c0aabaaae3d9249cf6777db942e589f2a043081"
+              },
+              "qualification/cell-research-stages-20261108/CURRENT_RESULT.json": {
+                "bytes": 7587,
+                "sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+              },
+              "qualification/evolve-1-20261108/CURRENT.json": {
+                "bytes": 9354,
+                "sha256": "ef165a9726f8144faef334da72c80e49376a66f43ed929cc738e018d3850a756"
+              }
+            },
+            "published": false,
+            "returncode": 0,
+            "reviewed_patch": {
+              "bytes": 1651,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-remote-timer-oracle-45a-preparation-v1/remote-collector-clock-oracle.patch",
+              "sha256": "4b7a8813bd83b07a26050d9859bbbf5d0f20a914ca1d378804cf5530dae88a42"
+            },
+            "rust_started": false,
+            "scientific_acceptance": false,
+            "source_after": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "status": "",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90"
+            },
+            "source_final": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "status": "",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90"
+            },
+            "source_pins": [
+              {
+                "bytes": 14788,
+                "git_blob": "e096e8ffdd7cb86de7fc2cce4b11eba78703aad9",
+                "path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+                "sha256": "7a3a9d7fe4211b3e5bfcf0305e35f89d9640625394cd3c331a131a17ce191c28"
+              }
+            ],
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "started_at": "2026-11-09T07:39:48.499068+00:00",
+            "status": "local_source_frozen_not_published",
+            "steps": [
+              {
+                "argv": [
+                  "git",
+                  "show-ref",
+                  "--verify",
+                  "--quiet",
+                  "refs/heads/codex/core-output-clock-oracle-45a-20261109-898e"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-summary-3fc-20261109-898e",
+                "finished_at": "2026-11-09T07:39:48.503908+00:00",
+                "name": "require-absent-branch",
+                "returncode": 1,
+                "started_at": "2026-11-09T07:39:48.499768+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "wall_seconds_not_full_cost": 0.0035657731350511312
+              },
+              {
+                "argv": [
+                  "git",
+                  "worktree",
+                  "add",
+                  "-b",
+                  "codex/core-output-clock-oracle-45a-20261109-898e",
+                  "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                  "45a50bffd1631d502889069fc3f713b8a5e775d8"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-summary-3fc-20261109-898e",
+                "finished_at": "2026-11-09T07:39:50.200396+00:00",
+                "name": "create-isolated-child",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:48.512620+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 1621,
+                  "sha256": "62b9b727b6efd4e1a50906b7aeb13b97d08aec8e8e05f8adf29a291c0ab0b32f"
+                },
+                "stdout": {
+                  "bytes": 85,
+                  "sha256": "5f143dcc09c7b252c8d131a34754035a1ac0b6cce5df4e8e7c36639124d13b6a"
+                },
+                "wall_seconds_not_full_cost": 1.6871312889270484
+              },
+              {
+                "argv": [
+                  "git",
+                  "apply",
+                  "--check",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-remote-timer-oracle-45a-preparation-v1/remote-collector-clock-oracle.patch"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:50.434372+00:00",
+                "name": "reviewed-patch-check",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:50.429509+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "wall_seconds_not_full_cost": 0.003675776068121195
+              },
+              {
+                "argv": [
+                  "git",
+                  "apply",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-remote-timer-oracle-45a-preparation-v1/remote-collector-clock-oracle.patch"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:50.447321+00:00",
+                "name": "apply-reviewed-single-test-patch",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:50.442914+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "wall_seconds_not_full_cost": 0.003474202938377857
+              },
+              {
+                "argv": [
+                  "git",
+                  "diff",
+                  "--name-only",
+                  "HEAD"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:50.603326+00:00",
+                "name": "changed-before-format",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:50.449527+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 67,
+                  "sha256": "c7ced79d326162adeaa586525450c649a574ce49d6834a560b8eaddcd51959fc"
+                },
+                "wall_seconds_not_full_cost": 0.15196391800418496
+              },
+              {
+                "argv": [
+                  "/home/qian-qi/.cargo/bin/just",
+                  "fmt"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e/codex-rs",
+                "finished_at": "2026-11-09T07:39:51.115121+00:00",
+                "name": "canonical-just-fmt",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:50.673516+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "wall_seconds_not_full_cost": 0.4409169848076999
+              },
+              {
+                "argv": [
+                  "git",
+                  "diff",
+                  "--name-only",
+                  "HEAD"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:51.285826+00:00",
+                "name": "changed-after-format",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:51.116594+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 67,
+                  "sha256": "c7ced79d326162adeaa586525450c649a574ce49d6834a560b8eaddcd51959fc"
+                },
+                "wall_seconds_not_full_cost": 0.1571162068285048
+              },
+              {
+                "argv": [
+                  "git",
+                  "ls-files",
+                  "--others",
+                  "--exclude-standard"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:51.347977+00:00",
+                "name": "untracked-after-format",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:51.288415+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "wall_seconds_not_full_cost": 0.04775183112360537
+              },
+              {
+                "argv": [
+                  "git",
+                  "diff",
+                  "--check"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:51.524619+00:00",
+                "name": "diff-check",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:51.371891+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "wall_seconds_not_full_cost": 0.1514692830387503
+              },
+              {
+                "argv": [
+                  "git",
+                  "diff",
+                  "--binary",
+                  "--no-ext-diff",
+                  "HEAD"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:51.690031+00:00",
+                "name": "formatted-diff",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:51.526207+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 1919,
+                  "sha256": "4a5b2dba27bc88ca5ad16a909dc66a7368f08c23096917e3139618a609fb3866"
+                },
+                "wall_seconds_not_full_cost": 0.15173139399848878
+              },
+              {
+                "argv": [
+                  "git",
+                  "add",
+                  "--",
+                  "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:51.866665+00:00",
+                "name": "stage-one-reviewed-test",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:51.691177+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "wall_seconds_not_full_cost": 0.16365692811086774
+              },
+              {
+                "argv": [
+                  "git",
+                  "diff",
+                  "--cached",
+                  "--name-only"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:51.891152+00:00",
+                "name": "staged-paths",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:51.868708+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 67,
+                  "sha256": "c7ced79d326162adeaa586525450c649a574ce49d6834a560b8eaddcd51959fc"
+                },
+                "wall_seconds_not_full_cost": 0.009640042902901769
+              },
+              {
+                "argv": [
+                  "git",
+                  "diff",
+                  "--cached",
+                  "--check"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:51.904661+00:00",
+                "name": "staged-diff-check",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:51.892544+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "wall_seconds_not_full_cost": 0.010540842078626156
+              },
+              {
+                "argv": [
+                  "git",
+                  "commit",
+                  "-m",
+                  "test(core): compare output polling with its deadline timer"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:51.967405+00:00",
+                "name": "normal-local-commit",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:51.906673+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 172,
+                  "sha256": "2d6740eef3b428d43f0fc7017d1750a54d9c3945b084b91ca696662d3625eabd"
+                },
+                "wall_seconds_not_full_cost": 0.059152097906917334
+              },
+              {
+                "argv": [
+                  "git",
+                  "diff",
+                  "--name-only",
+                  "45a50bffd1631d502889069fc3f713b8a5e775d8",
+                  "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:52.045933+00:00",
+                "name": "committed-paths",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:52.038815+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 67,
+                  "sha256": "c7ced79d326162adeaa586525450c649a574ce49d6834a560b8eaddcd51959fc"
+                },
+                "wall_seconds_not_full_cost": 0.0053384818602353334
+              },
+              {
+                "argv": [
+                  "git",
+                  "rev-parse",
+                  "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142:codex-rs/core/src/unified_exec/process_remote_observation_tests.rs"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:52.059066+00:00",
+                "name": "committed-blob",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:52.053006+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 41,
+                  "sha256": "fb037eb941713292f9fa329edcf9cb8e5057f5462ef17fb40965c2b99f4519b1"
+                },
+                "wall_seconds_not_full_cost": 0.00454742694273591
+              },
+              {
+                "argv": [
+                  "git",
+                  "bundle",
+                  "create",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-clock-oracle-source-freeze-v1/source-45a-increment.bundle",
+                  "45a50bffd1631d502889069fc3f713b8a5e775d8..HEAD"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:52.097956+00:00",
+                "name": "source-bundle-create",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:52.081620+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "wall_seconds_not_full_cost": 0.014679154148325324
+              },
+              {
+                "argv": [
+                  "git",
+                  "bundle",
+                  "verify",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-clock-oracle-source-freeze-v1/source-45a-increment.bundle"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:52.118074+00:00",
+                "name": "source-bundle-verify",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:52.101772+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 133,
+                  "sha256": "6da0946a3247ef00daca5872008d696ee32c5014d26d5a81a8c0c0ebc359523d"
+                },
+                "stdout": {
+                  "bytes": 190,
+                  "sha256": "59a8516168c53143f46a78037e1a296132cc8e6c9e589b1e23b5729cd53ba477"
+                },
+                "wall_seconds_not_full_cost": 0.01395035907626152
+              },
+              {
+                "argv": [
+                  "git",
+                  "bundle",
+                  "list-heads",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-clock-oracle-source-freeze-v1/source-45a-increment.bundle"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:52.125365+00:00",
+                "name": "source-bundle-heads",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:52.120059+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 46,
+                  "sha256": "c44fca3328ff76837d2c4da7ea93be7be72e4556daa16ad24af6d191dc4c79b5"
+                },
+                "wall_seconds_not_full_cost": 0.003605050966143608
+              },
+              {
+                "argv": [
+                  "git",
+                  "rev-list",
+                  "45a50bffd1631d502889069fc3f713b8a5e775d8..6ec5993fec3dcd6a3c569498a1d5b4c277f1c142"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "finished_at": "2026-11-09T07:39:52.132956+00:00",
+                "name": "source-closure",
+                "returncode": 0,
+                "started_at": "2026-11-09T07:39:52.127366+00:00",
+                "status": "finished",
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 41,
+                  "sha256": "3bc611dfdd7865506e1e790e36c41a13755cc15886d3cef379e9e90d986bf836"
+                },
+                "wall_seconds_not_full_cost": 0.003846121020615101
+              }
+            ],
+            "worktree": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/RESULT.json",
+      "bytes": 3794,
+      "sha256": "6f32dada9822b96d66192f4f1e95958440501036e8404b4e13ec9772cea78f19",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "admission": {
+              "bytes": 15180,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/admit-core-output-clock-oracle-6ec5993-and-prepare-v1.py",
+              "sha256": "f36e50b61f93daeb1e70bfee89b470482fe46f66b2d04297d8221d93f10eb147"
+            },
+            "admission_ast_unchanged_by_formatting": true,
+            "admission_executed": false,
+            "admission_mechanical_diff": {
+              "bytes": 9105,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-clock-oracle-admission-static-v1/admission-45a-to-6ec-mechanical.patch",
+              "sha256": "a106b9c51f45966db4b95ab6724fe641ec3e5e62ebced419932330b0841ae353"
+            },
+            "admission_raw_diff": {
+              "bytes": 10192,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-clock-oracle-admission-static-v1/admission-45a-to-6ec-unformatted.patch",
+              "sha256": "d3d279d1ab4748f0d614f4d513e727fcd29217c9bf0cab28096e6e15159113e5"
+            },
+            "environment_change": "Only this new execution's TMPDIR is set explicitly to /var/tmp/h898e-t1, pinned by original 2544-byte receipt and dev/inode/owner/mode. HOME/CODEX_HOME unchanged.",
+            "native_executed": false,
+            "new_task_temp_identity": {
+              "device": 66306,
+              "gid": 1000,
+              "inode": 119799809,
+              "mode": 448,
+              "uid": 1000
+            },
+            "no_global_tmp_cleanup": true,
+            "old_45a_native_result": "FAIL",
+            "old_result_not_relabelled": true,
+            "original_task_temp_receipt_sha256": "2f804cbdaad191f7f669965c664ef58a9b0586eaf474937fd0609ba84bbd4c8c",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "status": "STATIC_REVIEW_ONLY_NOT_EXECUTED",
+            "steps": [
+              {
+                "argv": [
+                  "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e/scripts/.venv/bin/ruff",
+                  "--version"
+                ],
+                "name": "ruff-version",
+                "returncode": 0
+              },
+              {
+                "argv": [
+                  "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e/scripts/.venv/bin/ruff",
+                  "format",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/admit-core-output-clock-oracle-6ec5993-and-prepare-v1.py",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-clock-oracle-admission-static-v1/admission-baseline-format-only.py"
+                ],
+                "name": "ruff-format",
+                "returncode": 0
+              },
+              {
+                "argv": [
+                  "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e/scripts/.venv/bin/ruff",
+                  "check",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/admit-core-output-clock-oracle-6ec5993-and-prepare-v1.py"
+                ],
+                "name": "ruff-check",
+                "returncode": 0
+              }
+            ],
+            "strict_added_ast_nodes": [
+              "temporary_capacity"
+            ],
+            "strict_changed_ast_nodes": [
+              "main"
+            ],
+            "strict_delta": {
+              "bytes": 4123,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-clock-oracle-admission-static-v1/strict-e09-to-temp-v2.patch",
+              "sha256": "94ea156ae23680149eb11f870a056c605b7322c815a82c37c5f27ccaaac5040c"
+            },
+            "strict_driver_executed": false,
+            "strict_original_child_command_calls_byte_ast_equal": true,
+            "strict_unchanged_ast_nodes": [
+              "COMMANDS",
+              "HELPER_PACKAGES",
+              "HELPER_BINARIES",
+              "HELPER_ENV",
+              "V8_ENV",
+              "utc_now",
+              "git",
+              "identity",
+              "digest_file",
+              "snapshot"
+            ],
+            "strict_v1": {
+              "bytes": 15989,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-clock-strict-baseline-e09-original.py",
+              "sha256": "e09e572c7b9a59bf67eab49787775f47d16b985f9973ae7192229509feb3807c"
+            },
+            "strict_v2": {
+              "bytes": 18201,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-clock-strict-temp-v2-original.py",
+              "sha256": "ad66c27261350d7cf724634a593ed53de6cef9394efffc97791899a39f284a5b"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-clock-oracle-positive-negative-source-comparison-v1/RESULT.json",
+      "bytes": 3301,
+      "sha256": "0bd5e347b09b5c1425d54ce9616d3179180a0efa08c4aba564f550ebfe76abbc",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "common_case": {
+              "bytes": 2841,
+              "function": "terminal_summary_retains_output_published_before_streaming_subscribes",
+              "sha256": "cccd41df340c5776dd078eac87418c25a5816dde4d43bd6946861331d4065879"
+            },
+            "full_history_cost": null,
+            "native_executed": false,
+            "negative_not_executed": true,
+            "observed_at": "2026-11-09T07:50:34.961516+00:00",
+            "original_45a_native_result": "FAIL",
+            "positive_qualification_inherited": false,
+            "production_files": [
+              {
+                "negative_and_3fc_bytes": 26968,
+                "negative_and_3fc_sha256": "342d7bb7ed3b4038687f34cce451f985af68dd25b6bf31d9436df4cdf7981394",
+                "negative_d274_equals_3fc": true,
+                "path": "codex-rs/core/src/unified_exec/process.rs",
+                "positive_6ec_equals_45a": true,
+                "positive_and_45a_bytes": 28410,
+                "positive_and_45a_sha256": "9e0fa4ddbd4bcfeb0313c0408f9a07d503527f7d11f8f3154e397b0e89d095a4"
+              },
+              {
+                "negative_and_3fc_bytes": 15463,
+                "negative_and_3fc_sha256": "14991242eb6702cf45cf2f137f652310977bb871d22c3986f3c50de60dde7d40",
+                "negative_d274_equals_3fc": true,
+                "path": "codex-rs/core/src/unified_exec/async_watcher.rs",
+                "positive_6ec_equals_45a": true,
+                "positive_and_45a_bytes": 15192,
+                "positive_and_45a_sha256": "0415ae4d866996031e4080dc28e56c72f850ad323f819914ed825e633bc77120"
+              },
+              {
+                "negative_and_3fc_bytes": 62256,
+                "negative_and_3fc_sha256": "7ae992c634e0cf431122f2a806b1fa6b172030b5fe2652afaaac400c2385f2df",
+                "negative_d274_equals_3fc": true,
+                "path": "codex-rs/core/src/unified_exec/process_manager.rs",
+                "positive_6ec_equals_45a": true,
+                "positive_and_45a_bytes": 62198,
+                "positive_and_45a_sha256": "169f8fbcbdec1604d9699691ca0add3ee8f73b85f1d022197e164d59e21f0537"
+              }
+            ],
+            "source_after": {
+              "negative": {
+                "source": "d27431b69195a2a6331a77d19e22ebeb4cf910c7",
+                "status": "",
+                "tree": "b1cf50c33f5ec9101217ae3f6a7ff987e3aba973"
+              },
+              "positive": {
+                "source": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+                "status": "",
+                "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90"
+              },
+              "preceding_positive": {
+                "source": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+                "status": "",
+                "tree": "60fd0cc181f3f34dbbb3a4a9a63226b920260ce2"
+              }
+            },
+            "source_before": {
+              "negative": {
+                "source": "d27431b69195a2a6331a77d19e22ebeb4cf910c7",
+                "status": "",
+                "tree": "b1cf50c33f5ec9101217ae3f6a7ff987e3aba973"
+              },
+              "positive": {
+                "source": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+                "status": "",
+                "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90"
+              },
+              "preceding_positive": {
+                "source": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+                "status": "",
+                "tree": "60fd0cc181f3f34dbbb3a4a9a63226b920260ce2"
+              }
+            },
+            "status": "READ_ONLY_BYTES_VERIFIED_NO_NATIVE_EXECUTION",
+            "test_files": {
+              "negative": {
+                "bytes": 14277,
+                "path": "codex-rs/core/src/unified_exec/async_watcher_tests.rs",
+                "sha256": "101d43e8b7441391d601784c28ce55a1ba2e1111a8cefbf2d1d2e2526e7585af"
+              },
+              "positive": {
+                "bytes": 14517,
+                "path": "codex-rs/core/src/unified_exec/async_watcher_tests.rs",
+                "sha256": "47fbb0c10d9a90b972604d6e90b24b9cbed6192015e1a106b96bad761e33202d"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "INPUTS_SPEC.json",
+      "bytes": 19346,
+      "sha256": "d397f8e7858e4ae6d13293ad7594fe62038425acc9068db902a5db263a5edf66"
+    },
+    {
+      "path": "SUMMARY.json",
+      "bytes": 3180,
+      "sha256": "07ca82291f564168a18451d2943f52011e5550d6f8a13f1b3f49c6679f1f5685"
+    },
+    {
+      "path": "archiver.py",
+      "bytes": 28167,
+      "sha256": "464763b8d49f7ab5ab0e94ccb6de749c3cdecdfb17ecc397de24bbef55e89e7a"
+    },
+    {
+      "path": "originals/admit-core-output-clock-oracle-6ec5993-and-prepare-v1.py",
+      "bytes": 15180,
+      "sha256": "f36e50b61f93daeb1e70bfee89b470482fe46f66b2d04297d8221d93f10eb147"
+    },
+    {
+      "path": "originals/compare-core-output-6ec-d274-source-v1.py",
+      "bytes": 3738,
+      "sha256": "54608c1d11fccd8837716882117d40edc7cf7680d3cafb657ee69d6d9fb033f9"
+    },
+    {
+      "path": "originals/core-clock-admission-baseline-45a-original.py",
+      "bytes": 8933,
+      "sha256": "2f633f9e07dbeadf11afdd2c6936777e59b787c634b7c31b071b334452a79561"
+    },
+    {
+      "path": "originals/core-clock-strict-baseline-e09-original.py",
+      "bytes": 15989,
+      "sha256": "e09e572c7b9a59bf67eab49787775f47d16b985f9973ae7192229509feb3807c"
+    },
+    {
+      "path": "originals/core-clock-strict-temp-v2-original.py",
+      "bytes": 18201,
+      "sha256": "ad66c27261350d7cf724634a593ed53de6cef9394efffc97791899a39f284a5b"
+    },
+    {
+      "path": "originals/core-negative-d274-v2-original-for-temp-review.py",
+      "bytes": 33825,
+      "sha256": "1687977f4109de08a2ffda983d510f38781899d340ea298ad95cd1b7016f7275"
+    },
+    {
+      "path": "originals/core-output-6ec5993-recovery-v1-independent-review.json",
+      "bytes": 1182,
+      "sha256": "38494c4696c6e978ee03086b518eef494dfca98aad33a43cf5413bc586f77fab"
+    },
+    {
+      "path": "originals/core-output-6ec5993-recovery-v1-readonly-original.py",
+      "bytes": 9754,
+      "sha256": "ccf25e704cd067be2fb460784bbd9fa4525dd66be618945c0598da8dde4706ae"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/COMMAND.json",
+      "bytes": 629,
+      "sha256": "7d050c6a77b69cd99ec7c84c249bca28d214b477952a96b5e767ea827678a42e"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/ENVIRONMENT.json",
+      "bytes": 665,
+      "sha256": "cf4de7e6f482d191c879331a6855b9dbad1a0c5702e3fdd640644e46edda5e4f"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/LAUNCH.json",
+      "bytes": 1128,
+      "sha256": "e94b35d81d78ecea20f7749fb9c3bfc975f62dd3503eaa3fdf736d72da44689e"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/RESULT.json",
+      "bytes": 2567,
+      "sha256": "5a3e155c7008606b276f7643be1b9ba8b53a11ce8e8a5fe0fe84682add1c9f8c"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/caller-full-scan.json",
+      "bytes": 1471,
+      "sha256": "72103cfa6a783b7edcc4c3fe0428b815d84350079888c3f7b9e114d32bcf867a"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/caller-full-scan.json.688fce489b504fb49a5b235f2889dbc4.log",
+      "bytes": 80458,
+      "sha256": "d61bcafc35a5f86900470549071b35f6cc0868bcdedebd42c7a0eaa829043d7d"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/driver.py",
+      "bytes": 14937,
+      "sha256": "87655776c2ef3cf363812d05d8c2fd0a2a80f36d11bff6922ca452a9e82492a1"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/prior-e54-INPUTS.json",
+      "bytes": 616,
+      "sha256": "3fa8a8dc2e5e3b5655c95bd0cfa06c02a80a7ec93804cf08da5980625dd7c2a7"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/prior-e54-caller-full-scan.json",
+      "bytes": 1472,
+      "sha256": "e0a38bf322f582f135b11811abdb29962a9ee63e4ccf6d0592564f25e8e7f0d0"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/source-after.files.json",
+      "bytes": 6183502,
+      "sha256": "8984bcae9d4752fe9442a11914c393dd11d985a2125dd62743c785fa7ad73e4d"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/source-after.head-tree.bin",
+      "bytes": 1845838,
+      "sha256": "5351152009bc351582b4a053a9f98fb5f9799f8fa785b04cadabccc4d595dafc"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/source-after.index.bin",
+      "bytes": 1800808,
+      "sha256": "760781e90cd434c0aa1122fc62ab73bc0104b47b653bb499a23b886e601e3123"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/source-after.json",
+      "bytes": 5574,
+      "sha256": "a547c174a09dc47dfab6783c38410214db56729e9aefc48decc44373f01c7090"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/source-after.untracked.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/source-before.files.json",
+      "bytes": 6183502,
+      "sha256": "8984bcae9d4752fe9442a11914c393dd11d985a2125dd62743c785fa7ad73e4d"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/source-before.head-tree.bin",
+      "bytes": 1845838,
+      "sha256": "5351152009bc351582b4a053a9f98fb5f9799f8fa785b04cadabccc4d595dafc"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/source-before.index.bin",
+      "bytes": 1800808,
+      "sha256": "760781e90cd434c0aa1122fc62ab73bc0104b47b653bb499a23b886e601e3123"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/source-before.json",
+      "bytes": 5574,
+      "sha256": "c54440da55ea6c8c33fb6f945be29990541daf3156d78c7116bc4f42a0e0f229"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/source-before.untracked.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/wrapper.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-callers-6ec5993-desktop-v1/wrapper.stdout",
+      "bytes": 81793,
+      "sha256": "188a9ab357243c38a6d003193ef9d2007bcda804042ebf058a643d029a0d04d7"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/RESULT.json",
+      "bytes": 3794,
+      "sha256": "6f32dada9822b96d66192f4f1e95958440501036e8404b4e13ec9772cea78f19"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/admission-45a-to-6ec-mechanical.patch",
+      "bytes": 9105,
+      "sha256": "a106b9c51f45966db4b95ab6724fe641ec3e5e62ebced419932330b0841ae353"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/admission-45a-to-6ec-unformatted.patch",
+      "bytes": 10192,
+      "sha256": "d3d279d1ab4748f0d614f4d513e727fcd29217c9bf0cab28096e6e15159113e5"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/admission-baseline-format-only.py",
+      "bytes": 11461,
+      "sha256": "97fdfddb73531e73d822e7d1196c1af8db4881258c28a418b251897e76540a0a"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/admission-unformatted-original.py",
+      "bytes": 12363,
+      "sha256": "3bd44fd1cf35aa4c084ff0851ef53471ffa05d32cab30cba193067d83db3bab9"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/ruff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/ruff-check.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/ruff-format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/ruff-format.stdout",
+      "bytes": 20,
+      "sha256": "96a977f329ec3c59092d40e041a019b49dcf03ca04055e177aa0ccb8c27234df"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/ruff-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/ruff-version.stdout",
+      "bytes": 13,
+      "sha256": "0e5c455ef40e6fb922d42f5ea8cd386e3c19cca81ca91d7697a6c81d2583846c"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-admission-static-v1/strict-e09-to-temp-v2.patch",
+      "bytes": 4123,
+      "sha256": "94ea156ae23680149eb11f870a056c605b7322c815a82c37c5f27ccaaac5040c"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-positive-negative-source-comparison-v1/RESULT.json",
+      "bytes": 3301,
+      "sha256": "0bd5e347b09b5c1425d54ce9616d3179180a0efa08c4aba564f550ebfe76abbc"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-positive-negative-source-comparison-v1/driver.py",
+      "bytes": 3738,
+      "sha256": "54608c1d11fccd8837716882117d40edc7cf7680d3cafb657ee69d6d9fb033f9"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-positive-negative-source-comparison-v1/negative-test-original.rs",
+      "bytes": 14277,
+      "sha256": "101d43e8b7441391d601784c28ce55a1ba2e1111a8cefbf2d1d2e2526e7585af"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-positive-negative-source-comparison-v1/positive-test-original.rs",
+      "bytes": 14517,
+      "sha256": "47fbb0c10d9a90b972604d6e90b24b9cbed6192015e1a106b96bad761e33202d"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-positive-negative-source-comparison-v1/shared-late-subscription-case.rs",
+      "bytes": 2841,
+      "sha256": "cccd41df340c5776dd078eac87418c25a5816dde4d43bd6946861331d4065879"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/RESULT.json",
+      "bytes": 22743,
+      "sha256": "faf1cd529dc930f34049645c36d7bac5ee41dd671af5cad57170a6890ed64027"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/apply-reviewed-single-test-patch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/apply-reviewed-single-test-patch.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/canonical-just-fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/canonical-just-fmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/changed-after-format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/changed-after-format.stdout",
+      "bytes": 67,
+      "sha256": "c7ced79d326162adeaa586525450c649a574ce49d6834a560b8eaddcd51959fc"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/changed-before-format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/changed-before-format.stdout",
+      "bytes": 67,
+      "sha256": "c7ced79d326162adeaa586525450c649a574ce49d6834a560b8eaddcd51959fc"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/committed-blob.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/committed-blob.stdout",
+      "bytes": 41,
+      "sha256": "fb037eb941713292f9fa329edcf9cb8e5057f5462ef17fb40965c2b99f4519b1"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/committed-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/committed-paths.stdout",
+      "bytes": 67,
+      "sha256": "c7ced79d326162adeaa586525450c649a574ce49d6834a560b8eaddcd51959fc"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/create-isolated-child.stderr",
+      "bytes": 1621,
+      "sha256": "62b9b727b6efd4e1a50906b7aeb13b97d08aec8e8e05f8adf29a291c0ab0b32f"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/create-isolated-child.stdout",
+      "bytes": 85,
+      "sha256": "5f143dcc09c7b252c8d131a34754035a1ac0b6cce5df4e8e7c36639124d13b6a"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/diff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/diff-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/driver.py",
+      "bytes": 9707,
+      "sha256": "e7204e38d7715ff85531c5559ab116e28d821215de27d94e120237460c381cd3"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/formatted-diff.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/formatted-diff.stdout",
+      "bytes": 1919,
+      "sha256": "4a5b2dba27bc88ca5ad16a909dc66a7368f08c23096917e3139618a609fb3866"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/formatted.patch",
+      "bytes": 1919,
+      "sha256": "4a5b2dba27bc88ca5ad16a909dc66a7368f08c23096917e3139618a609fb3866"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/normal-local-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/normal-local-commit.stdout",
+      "bytes": 172,
+      "sha256": "2d6740eef3b428d43f0fc7017d1750a54d9c3945b084b91ca696662d3625eabd"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/parent-freeze-original.json",
+      "bytes": 12609,
+      "sha256": "17f94bf08c499ea218e9f54829b7cb629ced97a5b4fcc284b6283fdb266d5018"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/preparation-original.json",
+      "bytes": 5024,
+      "sha256": "d59171557076b2efe394172052dbd1cc7ffff1b87a68831269aa567b1a72baa9"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/require-absent-branch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/require-absent-branch.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/reviewed-patch-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/reviewed-patch-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/reviewed.patch",
+      "bytes": 1651,
+      "sha256": "4b7a8813bd83b07a26050d9859bbbf5d0f20a914ca1d378804cf5530dae88a42"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/source-45a-increment.bundle",
+      "bytes": 1086,
+      "sha256": "be8dab5d055493750131677792e811485791bfb37ce014bbbf3c666d9620651d"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/source-bundle-create.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/source-bundle-create.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/source-bundle-heads.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/source-bundle-heads.stdout",
+      "bytes": 46,
+      "sha256": "c44fca3328ff76837d2c4da7ea93be7be72e4556daa16ad24af6d191dc4c79b5"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/source-bundle-verify.stderr",
+      "bytes": 133,
+      "sha256": "6da0946a3247ef00daca5872008d696ee32c5014d26d5a81a8c0c0ebc359523d"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/source-bundle-verify.stdout",
+      "bytes": 190,
+      "sha256": "59a8516168c53143f46a78037e1a296132cc8e6c9e589b1e23b5729cd53ba477"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/source-closure.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/source-closure.stdout",
+      "bytes": 41,
+      "sha256": "3bc611dfdd7865506e1e790e36c41a13755cc15886d3cef379e9e90d986bf836"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/stage-one-reviewed-test.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/stage-one-reviewed-test.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/staged-diff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/staged-diff-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/staged-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/staged-paths.stdout",
+      "bytes": 67,
+      "sha256": "c7ced79d326162adeaa586525450c649a574ce49d6834a560b8eaddcd51959fc"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/untracked-after-format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-clock-oracle-source-freeze-v1/untracked-after-format.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-negative-temp-v3-static-review/RESULT.json",
+      "bytes": 2731,
+      "sha256": "2ed9377d4843ce98bfe36b1f06d437b2809bec24ecea9ad99c76fbc9a009fe42"
+    },
+    {
+      "path": "originals/core-output-negative-temp-v3-static-review/negative-v2-to-temp-v3.patch",
+      "bytes": 8336,
+      "sha256": "14b728072f6a0c1050cb634950884aeab2d7a3b71d6c7ced69f2665868b2fccf"
+    },
+    {
+      "path": "originals/core-output-negative-temp-v3-static-review/ruff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-negative-temp-v3-static-review/ruff-check.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "originals/core-output-negative-temp-v3-static-review/ruff-format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-negative-temp-v3-static-review/ruff-format.stdout",
+      "bytes": 19,
+      "sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127"
+    },
+    {
+      "path": "originals/core-output-negative-temp-v3-static-review/unformatted-original.py",
+      "bytes": 37630,
+      "sha256": "c133ad10d7fc4401d3543dad82c6fce3d399f0523ae74309961ee8645bc420d4"
+    },
+    {
+      "path": "originals/freeze-core-output-clock-oracle-child-v1.py",
+      "bytes": 9707,
+      "sha256": "e7204e38d7715ff85531c5559ab116e28d821215de27d94e120237460c381cd3"
+    },
+    {
+      "path": "originals/prepare-core-clock-oracle-admission-static-v1.py",
+      "bytes": 5269,
+      "sha256": "98c70e87b4a0332974e2f032a55f069a72c0aa68ded5ed9f1a515b7615f9fe3c"
+    },
+    {
+      "path": "originals/review-core-output-6ec5993-recovery-v1-static.py",
+      "bytes": 1933,
+      "sha256": "a8da233dbe7a685708de0b3b06dc3a28a1adb16f58c4710558160fb53de798d6"
+    },
+    {
+      "path": "originals/review-core-output-negative-temp-v3-static.py",
+      "bytes": 5496,
+      "sha256": "4d122d60675f68c11b8abcff10334f2df1f193989dedc95dd4a9ef9a9a7e393a"
+    },
+    {
+      "path": "originals/run-core-output-negative-d27431b-temp-v3.py",
+      "bytes": 37946,
+      "sha256": "4b082b2e27bc312f207f5fc3c91de1376e2a869c5d38c7c696328973d52b5302"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 40823,
+      "sha256": "b7926b1c9e2892fe2c6c53b302f490903acdca564fa1ee691dde21fa42be6172"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "a7bb796a8dbdc6529136bc3e4228aef6b973aa751f5c2b66b541d012a95c80ee"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "c6f6ffd4d11ba27e3cf0507d20586ce844b5b8ff5be97c18d9be69867e4f5df6"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "f437f94c17c840c481bb942ce0a27f8ee083b037c9cfdc66af0a2b877416bd0c"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "1d3b1011391254d6a551669fc38cf71add76502d73aae0ff0f2b6cc8b1c18cca"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 423948,
+      "sha256": "01d60319e0a4ecf70844e9f8adfc2533d9a5670e36c1dfc76aed98661d9491dd"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

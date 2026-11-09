@@ -1,0 +1,1451 @@
+{
+  "packet_id": "core-output-6ec5993-ai-two-checksum-failures-environment-history-v2",
+  "scope": "Both same-source strict attempts ended in official checksum HTTP504; no helper, lint or native case launched. One explicit dependency recovery remains FAIL. Collector-v1 failed on an incorrect null-field schema assumption; original FAIL receipt, console, invocation and collector/spec are preserved. No native was run by that collector.",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-ai-dependency-failure-history-v2/core-output-6ec5993-ai-dependency-failure-history.tar.xz",
+  "bytes": 1076276,
+  "sha256": "8a19f8d2a2bb455240d079dbc61187aaef456735cd83c4b92da381c4d1f461c3",
+  "file_member_count": 61,
+  "required_json_members": [
+    {
+      "path": "SUMMARY.json",
+      "bytes": 7376,
+      "sha256": "435bcd5ff2dc1cf345900b76ad12fd7567334d659cf5d5e572a78d9c94366d5a",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "packet_id": "core-output-6ec5993-ai-two-checksum-failures-environment-history-v2",
+            "scope": "Both same-source strict attempts ended in official checksum HTTP504; no helper, lint or native case launched. One explicit dependency recovery remains FAIL. Collector-v1 failed on an incorrect null-field schema assumption; original FAIL receipt, console, invocation and collector/spec are preserved. No native was run by that collector.",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "parent_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "original_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "formal_CURRENT_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+            "facts": {
+              "prior_collector_v1_failure": {
+                "status": "incomplete",
+                "returncode": 1,
+                "new_tests_executed": false,
+                "reason": "Collector schema assumption incorrectly required preparation_returncode=1; original field is null because V8 failed before owning preparation.",
+                "original_failure_preserved": true
+              },
+              "source_freeze": {
+                "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+                "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+                "parent_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+                "only_changed_path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+                "protected_inputs_unchanged": 9,
+                "native_executed_by_freeze": false,
+                "published_at_freeze": false
+              },
+              "source_admission_status": "FAIL",
+              "source_admission_returncode": 1,
+              "strict_attempts": [
+                {
+                  "attempt": 1,
+                  "preparation_status": "preparation_failed",
+                  "preparation_returncode": 1,
+                  "v8_status": "failed",
+                  "v8_returncode": 1,
+                  "failure_phase": "official_checksum_download_HTTP_504",
+                  "source_unchanged": true,
+                  "helper_commands_executed": 0,
+                  "owning_lint_commands_executed": 0,
+                  "native_test_cases_executed": 0,
+                  "native_retry_count": null,
+                  "native_retry_note": "No native case launched; no test retry is inferred.",
+                  "v8_elapsed_seconds_partial_not_full_cost": 13.816123864846304,
+                  "preparation": {
+                    "source_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/preparation.json",
+                    "archive_path": "originals/core-output-6ec5993-strict-v1/preparation.json",
+                    "bytes": 7621,
+                    "sha256": "74fa9a89fdb8ed8d5f8c6311be06b7d1d6f3dc7232df8a6917a99fa5baaa87e2",
+                    "mode": 384
+                  },
+                  "v8_receipt": {
+                    "source_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/v8.json",
+                    "archive_path": "originals/core-output-6ec5993-strict-v1/v8.json",
+                    "bytes": 1510,
+                    "sha256": "74680ff5935a07d291050a543dd810dc9e12c7d3e792ba1c8e90fceca923010f",
+                    "mode": 384
+                  },
+                  "raw": {
+                    "source_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/v8.json.b363b53ba69e4d3690209c0b3c12db26.log",
+                    "archive_path": "originals/core-output-6ec5993-strict-v1/v8.json.b363b53ba69e4d3690209c0b3c12db26.log",
+                    "bytes": 2436,
+                    "sha256": "f41c3bf5c8916da47c6238e28c5ab59f35062c2ece23f61233ba9c8744e09298",
+                    "mode": 384
+                  }
+                },
+                {
+                  "attempt": 2,
+                  "preparation_status": "preparation_failed",
+                  "preparation_returncode": 1,
+                  "v8_status": "failed",
+                  "v8_returncode": 1,
+                  "failure_phase": "official_checksum_download_HTTP_504",
+                  "source_unchanged": true,
+                  "helper_commands_executed": 0,
+                  "owning_lint_commands_executed": 0,
+                  "native_test_cases_executed": 0,
+                  "native_retry_count": null,
+                  "native_retry_note": "No native case launched; no test retry is inferred.",
+                  "v8_elapsed_seconds_partial_not_full_cost": 13.445190971018746,
+                  "preparation": {
+                    "source_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v2/preparation.json",
+                    "archive_path": "originals/core-output-6ec5993-strict-v2/preparation.json",
+                    "bytes": 7619,
+                    "sha256": "d330d6ec89e827e37b37a00666eccf5195fce004dc5f0187b9fe9dafb3b7ebef",
+                    "mode": 384
+                  },
+                  "v8_receipt": {
+                    "source_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v2/v8.json",
+                    "archive_path": "originals/core-output-6ec5993-strict-v2/v8.json",
+                    "bytes": 1510,
+                    "sha256": "be85d89adb6163239cdb44d277a345943833de62db27f5b10d04fa5ba2f165c6",
+                    "mode": 384
+                  },
+                  "raw": {
+                    "source_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v2/v8.json.0f1efc00f74842cebf4401e4b7a9802e.log",
+                    "archive_path": "originals/core-output-6ec5993-strict-v2/v8.json.0f1efc00f74842cebf4401e4b7a9802e.log",
+                    "bytes": 2436,
+                    "sha256": "f41c3bf5c8916da47c6238e28c5ab59f35062c2ece23f61233ba9c8744e09298",
+                    "mode": 384
+                  }
+                }
+              ],
+              "explicit_recovery": {
+                "status": "DEPENDENCY_RECOVERY_FAILED",
+                "returncode": 1,
+                "strict_returncode": 1,
+                "attempt_count": 1,
+                "cache_metadata_only": true,
+                "artifact_bytes_excluded": true,
+                "original_checksums_still_required": true
+              },
+              "total_native_cases_executed": 0,
+              "total_helper_commands_executed": 0,
+              "total_owning_lint_commands_executed": 0,
+              "positive_native_v2_and_v3": "prepared_only_not_executed",
+              "task_temp": {
+                "path": "/var/tmp/h898e-t1",
+                "device": 66306,
+                "inode": 119799809,
+                "uid": 1000,
+                "gid": 1000,
+                "mode": 448,
+                "creation_returncode": 0,
+                "write_probe_verified": true
+              },
+              "admission_v1_finalization_review_note": "The original admission recorded final identities without a final equality gate. Its actual result was FAIL. This readback independently compares admitted/final and base-before/final; no original receipt is rewritten.",
+              "source_unchanged_in_both_attempts": true
+            },
+            "static_unexecuted_runners": [
+              "run-core-output-owning-temp-v2.py",
+              "run-core-output-owning-temp-v3.py"
+            ],
+            "overlap_is_input_lineage_not_new_execution": [
+              "source-freeze-original.json and source-increment-original.bundle duplicate desktop freeze lineage",
+              "task-temp-admission-original.json duplicates the actual TMPDIR creation receipt",
+              "core-output-45a50bf-temp-capacity-readonly-v1.json is preceding environment observation only, not re-executed 45a tests"
+            ],
+            "source_or_original_evidence_modified": false,
+            "archiver_runs_native_or_subprocess_or_network": false,
+            "actual_cache_and_binary_bytes_included": false,
+            "caller_bin_suffix_files_are_git_metadata_not_native_binaries": true,
+            "later_desktop_V8_readiness_or_preflight_included": false,
+            "all_scientific_stages": "HOLD",
+            "scientific_acceptance": false,
+            "full_history_cost": null,
+            "physical_cost": null,
+            "observed_phase_seconds_are_partial_not_full_historical_cost": true,
+            "both_AI_failures_and_zero_execution_remain_failures": true,
+            "negative_control_native_outcome": "not_run"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/preparation.json",
+      "bytes": 7621,
+      "sha256": "74fa9a89fdb8ed8d5f8c6311be06b7d1d6f3dc7232df8a6917a99fa5baaa87e2",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "scope": "same_source_core_appserver_agentd_lint_and_complete_helper_preparation",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "base_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "commands": [
+              [
+                "core-owning-strict-fix",
+                [
+                  "just",
+                  "fix",
+                  "--locked",
+                  "-p",
+                  "codex-core",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "core-owning-readonly-strict-clippy",
+                [
+                  "cargo",
+                  "clippy",
+                  "--tests",
+                  "--locked",
+                  "-p",
+                  "codex-core",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "appserver-owning-strict-fix",
+                [
+                  "just",
+                  "fix",
+                  "--locked",
+                  "-p",
+                  "codex-app-server",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "appserver-owning-readonly-strict-clippy",
+                [
+                  "cargo",
+                  "clippy",
+                  "--tests",
+                  "--locked",
+                  "-p",
+                  "codex-app-server",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "agentd-owning-strict-fix",
+                [
+                  "just",
+                  "fix",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "agentd-owning-readonly-strict-clippy",
+                [
+                  "cargo",
+                  "clippy",
+                  "--tests",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ]
+            ],
+            "formatting": "root already ran canonical just fmt before freezing this exact source; no repeat",
+            "helper_packages": [
+              "codex-cli",
+              "codex-exec",
+              "codex-app-server",
+              "codex-code-mode-host",
+              "codex-rmcp-client",
+              "codex-linux-sandbox",
+              "codex-shell-escalation",
+              "codex-hepta-infer-worker-host"
+            ],
+            "helper_scope": "all ten original CI helper binaries, rebuilt and pinned to this exact source",
+            "owning_package_lints": [
+              "codex-core",
+              "codex-app-server",
+              "codex-hepta-agentd"
+            ],
+            "owning_package_features": [],
+            "canonical_fix_followed_by_nonmutating_strict_clippy": true,
+            "prior_lint_results_not_relabelled_to_this_source": true,
+            "tests_run": false,
+            "scientific_qualification_performed": false,
+            "full_workspace_lint_performed": false,
+            "full_cost": null,
+            "minimum_free_bytes_before_build": 4294967296,
+            "minimum_task_temp_available_bytes_before_child": 4294967296,
+            "minimum_task_temp_available_inodes_before_child": 100000,
+            "explicit_task_tmpdir": "/var/tmp/h898e-t1",
+            "temporary_environment_change_from_failed_45a": true,
+            "old_45a_failure_is_not_relabelled": true,
+            "cargo_profile": "dev",
+            "build_jobs": 6,
+            "status": "preparation_failed",
+            "started_at": "2026-11-09T07:47:48.239139+00:00",
+            "steps": [
+              {
+                "name": "v8",
+                "argv": [
+                  "python3",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/core-output-source-6ec5993/scripts/hepta_ci_v8.py"
+                ],
+                "free_bytes_before": 585198845952,
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-t1",
+                  "device": 66306,
+                  "inode": 119799809,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 585198845952,
+                  "free_bytes": 685179097088,
+                  "user_available_inodes": 113519815,
+                  "free_inodes": 113519815,
+                  "observed_at": "2026-11-09T07:47:49.510630+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "observed_at": "2026-11-09T07:47:49.510637+00:00",
+                "status": "finished",
+                "returncode": 1,
+                "free_bytes_after": 585198809088,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-t1",
+                  "device": 66306,
+                  "inode": 119799809,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 585198809088,
+                  "free_bytes": 685179060224,
+                  "user_available_inodes": 113519811,
+                  "free_inodes": 113519811,
+                  "observed_at": "2026-11-09T07:48:03.372080+00:00",
+                  "not_a_historical_resource_attribution": true
+                }
+              }
+            ],
+            "preparation_returncode": null,
+            "driver_sha256": "ad66c27261350d7cf724634a593ed53de6cef9394efffc97791899a39f284a5b",
+            "tool_files": {
+              "just": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/just-1.58.0/just",
+                "sha256": "3ad66571feae522db2cad31b9613bf21035b8a06d2738d6fc8fe6089856f2042"
+              },
+              "cargo-nextest": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/nextest-0.9.103/cargo-nextest",
+                "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+              }
+            },
+            "selected_environment": {
+              "PATH": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/just-1.58.0:/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/nextest-0.9.103:/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/uv-0.13.5:/home/qq/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "RUSTUP_TOOLCHAIN": "1.96.0",
+              "CARGO_TARGET_DIR": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/target-ci-test-bf42d2a-fresh",
+              "CARGO_BUILD_JOBS": "6",
+              "CARGO_PROFILE_DEV_DEBUG": "0",
+              "CARGO_PROFILE_TEST_DEBUG": "0",
+              "CARGO_INCREMENTAL": "0",
+              "LIBCLANG_PATH": "/usr/lib/x86_64-linux-gnu",
+              "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/clang-21-resources/usr/lib/llvm-21/lib/clang/21",
+              "TMPDIR": "/var/tmp/h898e-t1"
+            },
+            "source_before": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": "",
+              "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/source-before.files.json",
+              "files_sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+              "files_count": 15010,
+              "regular_file_bytes": 200422945,
+              "untracked_count": 0,
+              "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/source-before.diff.patch",
+              "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "identity_stable_during_capture": true,
+              "capture_elapsed_seconds": 1.2490337730851024,
+              "observed_at": "2026-11-09T07:47:49.507035+00:00",
+              "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+            },
+            "error": "RuntimeError: same-source V8 preparation failed",
+            "source_after": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": "",
+              "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/source-after.files.json",
+              "files_sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+              "files_count": 15010,
+              "regular_file_bytes": 200422945,
+              "untracked_count": 0,
+              "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/source-after.diff.patch",
+              "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "identity_stable_during_capture": true,
+              "capture_elapsed_seconds": 0.2958671150263399,
+              "observed_at": "2026-11-09T07:48:03.668218+00:00",
+              "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+            },
+            "source_unchanged": true,
+            "returncode": 1,
+            "finished_at": "2026-11-09T07:48:03.671363+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/v8.json",
+      "bytes": 1510,
+      "sha256": "74680ff5935a07d291050a543dd810dc9e12c7d3e792ba1c8e90fceca923010f",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "after": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "dirty": false,
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90"
+            },
+            "base_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "before": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "dirty": false,
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90"
+            },
+            "command": [
+              "python3",
+              "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/core-output-source-6ec5993/scripts/hepta_ci_v8.py"
+            ],
+            "command_exit_code": 1,
+            "elapsed_seconds": 13.816123864846304,
+            "exit_code": 1,
+            "finished_at": "2026-11-09T07:48:03.363757+00:00",
+            "job": null,
+            "lane": "source-head",
+            "log_bytes": 2436,
+            "log_file": "v8.json.b363b53ba69e4d3690209c0b3c12db26.log",
+            "log_sha256": "f41c3bf5c8916da47c6238e28c5ab59f35062c2ece23f61233ba9c8744e09298",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 1,
+            "run_attempt": null,
+            "run_id": null,
+            "schema_version": 1,
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "started_at": "2026-11-09T07:47:49.541374+00:00",
+            "status": "failed",
+            "tested_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "timed_out": false,
+            "working_directory": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/core-output-source-6ec5993"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/preparation.json",
+      "bytes": 7619,
+      "sha256": "d330d6ec89e827e37b37a00666eccf5195fce004dc5f0187b9fe9dafb3b7ebef",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "scope": "same_source_core_appserver_agentd_lint_and_complete_helper_preparation",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "base_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "commands": [
+              [
+                "core-owning-strict-fix",
+                [
+                  "just",
+                  "fix",
+                  "--locked",
+                  "-p",
+                  "codex-core",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "core-owning-readonly-strict-clippy",
+                [
+                  "cargo",
+                  "clippy",
+                  "--tests",
+                  "--locked",
+                  "-p",
+                  "codex-core",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "appserver-owning-strict-fix",
+                [
+                  "just",
+                  "fix",
+                  "--locked",
+                  "-p",
+                  "codex-app-server",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "appserver-owning-readonly-strict-clippy",
+                [
+                  "cargo",
+                  "clippy",
+                  "--tests",
+                  "--locked",
+                  "-p",
+                  "codex-app-server",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "agentd-owning-strict-fix",
+                [
+                  "just",
+                  "fix",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "agentd-owning-readonly-strict-clippy",
+                [
+                  "cargo",
+                  "clippy",
+                  "--tests",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ]
+            ],
+            "formatting": "root already ran canonical just fmt before freezing this exact source; no repeat",
+            "helper_packages": [
+              "codex-cli",
+              "codex-exec",
+              "codex-app-server",
+              "codex-code-mode-host",
+              "codex-rmcp-client",
+              "codex-linux-sandbox",
+              "codex-shell-escalation",
+              "codex-hepta-infer-worker-host"
+            ],
+            "helper_scope": "all ten original CI helper binaries, rebuilt and pinned to this exact source",
+            "owning_package_lints": [
+              "codex-core",
+              "codex-app-server",
+              "codex-hepta-agentd"
+            ],
+            "owning_package_features": [],
+            "canonical_fix_followed_by_nonmutating_strict_clippy": true,
+            "prior_lint_results_not_relabelled_to_this_source": true,
+            "tests_run": false,
+            "scientific_qualification_performed": false,
+            "full_workspace_lint_performed": false,
+            "full_cost": null,
+            "minimum_free_bytes_before_build": 4294967296,
+            "minimum_task_temp_available_bytes_before_child": 4294967296,
+            "minimum_task_temp_available_inodes_before_child": 100000,
+            "explicit_task_tmpdir": "/var/tmp/h898e-t1",
+            "temporary_environment_change_from_failed_45a": true,
+            "old_45a_failure_is_not_relabelled": true,
+            "cargo_profile": "dev",
+            "build_jobs": 6,
+            "status": "preparation_failed",
+            "started_at": "2026-11-09T07:55:04.214271+00:00",
+            "steps": [
+              {
+                "name": "v8",
+                "argv": [
+                  "python3",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/core-output-source-6ec5993/scripts/hepta_ci_v8.py"
+                ],
+                "free_bytes_before": 584990076928,
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-t1",
+                  "device": 66306,
+                  "inode": 119799809,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 584990076928,
+                  "free_bytes": 684970328064,
+                  "user_available_inodes": 113519675,
+                  "free_inodes": 113519675,
+                  "observed_at": "2026-11-09T07:55:04.546157+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "observed_at": "2026-11-09T07:55:04.546163+00:00",
+                "status": "finished",
+                "returncode": 1,
+                "free_bytes_after": 584990052352,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-t1",
+                  "device": 66306,
+                  "inode": 119799809,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 584990052352,
+                  "free_bytes": 684970303488,
+                  "user_available_inodes": 113519673,
+                  "free_inodes": 113519673,
+                  "observed_at": "2026-11-09T07:55:18.031649+00:00",
+                  "not_a_historical_resource_attribution": true
+                }
+              }
+            ],
+            "preparation_returncode": null,
+            "driver_sha256": "ad66c27261350d7cf724634a593ed53de6cef9394efffc97791899a39f284a5b",
+            "tool_files": {
+              "just": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/just-1.58.0/just",
+                "sha256": "3ad66571feae522db2cad31b9613bf21035b8a06d2738d6fc8fe6089856f2042"
+              },
+              "cargo-nextest": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/nextest-0.9.103/cargo-nextest",
+                "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+              }
+            },
+            "selected_environment": {
+              "PATH": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/just-1.58.0:/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/nextest-0.9.103:/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/uv-0.13.5:/home/qq/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "RUSTUP_TOOLCHAIN": "1.96.0",
+              "CARGO_TARGET_DIR": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/target-ci-test-bf42d2a-fresh",
+              "CARGO_BUILD_JOBS": "6",
+              "CARGO_PROFILE_DEV_DEBUG": "0",
+              "CARGO_PROFILE_TEST_DEBUG": "0",
+              "CARGO_INCREMENTAL": "0",
+              "LIBCLANG_PATH": "/usr/lib/x86_64-linux-gnu",
+              "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/clang-21-resources/usr/lib/llvm-21/lib/clang/21",
+              "TMPDIR": "/var/tmp/h898e-t1"
+            },
+            "source_before": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": "",
+              "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v2/source-before.files.json",
+              "files_sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+              "files_count": 15010,
+              "regular_file_bytes": 200422945,
+              "untracked_count": 0,
+              "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v2/source-before.diff.patch",
+              "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "identity_stable_during_capture": true,
+              "capture_elapsed_seconds": 0.312939974013716,
+              "observed_at": "2026-11-09T07:55:04.543516+00:00",
+              "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+            },
+            "error": "RuntimeError: same-source V8 preparation failed",
+            "source_after": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": "",
+              "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v2/source-after.files.json",
+              "files_sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+              "files_count": 15010,
+              "regular_file_bytes": 200422945,
+              "untracked_count": 0,
+              "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v2/source-after.diff.patch",
+              "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "identity_stable_during_capture": true,
+              "capture_elapsed_seconds": 0.302010826067999,
+              "observed_at": "2026-11-09T07:55:18.334049+00:00",
+              "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+            },
+            "source_unchanged": true,
+            "returncode": 1,
+            "finished_at": "2026-11-09T07:55:18.337377+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/v8.json",
+      "bytes": 1510,
+      "sha256": "be85d89adb6163239cdb44d277a345943833de62db27f5b10d04fa5ba2f165c6",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "after": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "dirty": false,
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90"
+            },
+            "base_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "before": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "dirty": false,
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90"
+            },
+            "command": [
+              "python3",
+              "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/core-output-source-6ec5993/scripts/hepta_ci_v8.py"
+            ],
+            "command_exit_code": 1,
+            "elapsed_seconds": 13.445190971018746,
+            "exit_code": 1,
+            "finished_at": "2026-11-09T07:55:18.022301+00:00",
+            "job": null,
+            "lane": "source-head",
+            "log_bytes": 2436,
+            "log_file": "v8.json.0f1efc00f74842cebf4401e4b7a9802e.log",
+            "log_sha256": "f41c3bf5c8916da47c6238e28c5ab59f35062c2ece23f61233ba9c8744e09298",
+            "minimum_tests": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 0,
+            "output_limit_exceeded": false,
+            "returncode": 1,
+            "run_attempt": null,
+            "run_id": null,
+            "schema_version": 1,
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "started_at": "2026-11-09T07:55:04.575575+00:00",
+            "status": "failed",
+            "tested_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "timed_out": false,
+            "working_directory": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/core-output-source-6ec5993"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-dependency-recovery-v1/RESULT.json",
+      "bytes": 14079,
+      "sha256": "f6f90bba6b9f11c40b96597e34d12e94a963b564d4b12df62f5f76945b70cd6a",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "status": "DEPENDENCY_RECOVERY_FAILED",
+            "started_at": "2026-11-09T07:55:04.081907+00:00",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "base_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "original_dependency_failure": "HTTP 504 downloading the V8 checksum, before helpers/lints/native",
+            "original_native_executions": 0,
+            "native_executions": 0,
+            "explicit_recovery_attempt": 1,
+            "automatic_retry_loop": false,
+            "native_test_retries": 0,
+            "resolver_bypassed": false,
+            "checksums_copied_to_destination": false,
+            "V8_overrides_preseeded": false,
+            "original_budgets_unchanged": true,
+            "prior_failure_relabelled": false,
+            "scientific_acceptance": false,
+            "physical_cost": null,
+            "full_history_cost": null,
+            "cache_copies": [
+              {
+                "original": {
+                  "path": "/tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+                  "bytes": 29366352,
+                  "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+                  "device": 50,
+                  "inode": 4352073,
+                  "mode": 384,
+                  "mtime_ns": 1793901182363517614,
+                  "ctime_ns": 1793901182364517578
+                },
+                "copied": {
+                  "path": "/var/tmp/h898e-t1/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+                  "bytes": 29366352,
+                  "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+                  "device": 66306,
+                  "inode": 119799812,
+                  "mode": 384,
+                  "mtime_ns": 1794210904126562443,
+                  "ctime_ns": 1794210904132562225
+                },
+                "old_checksum_manifest": {
+                  "path": "/tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+                  "bytes": 262,
+                  "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be",
+                  "device": 50,
+                  "inode": 13185201,
+                  "mode": 384,
+                  "mtime_ns": 1794207820900805509,
+                  "ctime_ns": 1794207820900805509
+                },
+                "fresh_original_resolver_checksum_still_required": true
+              },
+              {
+                "original": {
+                  "path": "/tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+                  "bytes": 39884,
+                  "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+                  "device": 50,
+                  "inode": 4352074,
+                  "mode": 384,
+                  "mtime_ns": 1793901185436407851,
+                  "ctime_ns": 1793901185436407851
+                },
+                "copied": {
+                  "path": "/var/tmp/h898e-t1/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+                  "bytes": 39884,
+                  "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+                  "device": 66306,
+                  "inode": 119799813,
+                  "mode": 384,
+                  "mtime_ns": 1794210904147622543,
+                  "ctime_ns": 1794210904147622543
+                },
+                "old_checksum_manifest": {
+                  "path": "/tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+                  "bytes": 262,
+                  "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be",
+                  "device": 50,
+                  "inode": 13185201,
+                  "mode": 384,
+                  "mtime_ns": 1794207820900805509,
+                  "ctime_ns": 1794207820900805509
+                },
+                "fresh_original_resolver_checksum_still_required": true
+              }
+            ],
+            "source_before": {
+              "sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "dirty": "",
+              "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+            },
+            "task_temp_identity": {
+              "device": 66306,
+              "inode": 119799809,
+              "uid": 1000,
+              "gid": 1000,
+              "mode": 448
+            },
+            "inputs_before": {
+              "core-output-6ec5993-strict-v1/preparation.json": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/preparation.json",
+                "bytes": 7621,
+                "sha256": "74fa9a89fdb8ed8d5f8c6311be06b7d1d6f3dc7232df8a6917a99fa5baaa87e2",
+                "device": 66306,
+                "inode": 61776704,
+                "mode": 384,
+                "mtime_ns": 1794210483671455401,
+                "ctime_ns": 1794210483671455401
+              },
+              "core-output-6ec5993-strict-v1/v8.json": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/v8.json",
+                "bytes": 1510,
+                "sha256": "74680ff5935a07d291050a543dd810dc9e12c7d3e792ba1c8e90fceca923010f",
+                "device": 66306,
+                "inode": 61776701,
+                "mode": 384,
+                "mtime_ns": 1794210483364181395,
+                "ctime_ns": 1794210483364181395
+              },
+              "core-output-6ec5993-strict-v1/v8.json.b363b53ba69e4d3690209c0b3c12db26.log": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/v8.json.b363b53ba69e4d3690209c0b3c12db26.log",
+                "bytes": 2436,
+                "sha256": "f41c3bf5c8916da47c6238e28c5ab59f35062c2ece23f61233ba9c8744e09298",
+                "device": 66306,
+                "inode": 61776700,
+                "mode": 384,
+                "mtime_ns": 1794210483337914223,
+                "ctime_ns": 1794210483337914223
+              },
+              "core-output-6ec5993-source-admission-v1/RESULT.json": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-source-admission-v1/RESULT.json",
+                "bytes": 10351,
+                "sha256": "f14eb087500b9314756c5259a703286c862d336d3000dcad01172922102f22a9",
+                "device": 66306,
+                "inode": 61776690,
+                "mode": 384,
+                "mtime_ns": 1794210483717870544,
+                "ctime_ns": 1794210483717870544
+              },
+              "core-output-successor-task-temp-admission-v1/RESULT.json": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-successor-task-temp-admission-v1/RESULT.json",
+                "bytes": 2544,
+                "sha256": "2f804cbdaad191f7f669965c664ef58a9b0586eaf474937fd0609ba84bbd4c8c",
+                "device": 66306,
+                "inode": 61776669,
+                "mode": 384,
+                "mtime_ns": 1794210079070730680,
+                "ctime_ns": 1794210079070730680
+              },
+              "core-output-45a50bf-strict-v1/v8.env": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-45a50bf-strict-v1/v8.env",
+                "bytes": 295,
+                "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc",
+                "device": 66306,
+                "inode": 73180111,
+                "mode": 384,
+                "mtime_ns": 1794206778368274077,
+                "ctime_ns": 1794206778368274077
+              }
+            },
+            "old_cache_unchanged_after_copy": true,
+            "explicit_environment": {
+              "TMPDIR": "/var/tmp/h898e-t1"
+            },
+            "HOME_and_CODEX_HOME_not_changed": true,
+            "command": [
+              "/usr/bin/python3",
+              "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/prepare-output-summary-successor-strict-temp-v2.py",
+              "--repo",
+              "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/core-output-source-6ec5993",
+              "--source-sha",
+              "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "--source-tree",
+              "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "--base-sha",
+              "45a50bffd1631d502889069fc3f713b8a5e775d8",
+              "--records",
+              "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v2",
+              "--target",
+              "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/target-ci-test-bf42d2a-fresh",
+              "--execute"
+            ],
+            "recovery_command_started_at": "2026-11-09T07:55:04.163594+00:00",
+            "strict_returncode": 1,
+            "recovery_command_wall_seconds_not_full_cost": 14.18186764116399,
+            "strict_stdout": {
+              "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-dependency-recovery-v1/strict.stdout",
+              "bytes": 13016,
+              "sha256": "98395b584e641898716f1d6a0cabfc7b3d2bfc3c5fdd01c772b2222ef008bc48",
+              "device": 66306,
+              "inode": 61645556,
+              "mode": 384,
+              "mtime_ns": 1794210918337486007,
+              "ctime_ns": 1794210918337486007
+            },
+            "strict_stderr": {
+              "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-dependency-recovery-v1/strict.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "device": 66306,
+              "inode": 61645558,
+              "mode": 384,
+              "mtime_ns": 1794210904163689558,
+              "ctime_ns": 1794210904163689558
+            },
+            "preparation": {
+              "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v2/preparation.json",
+              "bytes": 7619,
+              "sha256": "d330d6ec89e827e37b37a00666eccf5195fce004dc5f0187b9fe9dafb3b7ebef",
+              "device": 66306,
+              "inode": 61645571,
+              "mode": 384,
+              "mtime_ns": 1794210918337486007,
+              "ctime_ns": 1794210918337486007
+            },
+            "error": "AssertionError: ",
+            "traceback": "Traceback (most recent call last):\n  File \"/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/recover-core-output-6ec5993-strict-dependency-v1.py\", line 120, in <module>\n    assert child.returncode==0 and new[\"status\"]==\"prepared_clean\" and new[\"returncode\"]==0 and new[\"source_unchanged\"] is True\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+            "source_after": {
+              "sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "dirty": "",
+              "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+            },
+            "task_temp_after": {
+              "device": 66306,
+              "inode": 119799809,
+              "uid": 1000,
+              "gid": 1000,
+              "mode": 448
+            },
+            "inputs_after": {
+              "core-output-6ec5993-strict-v1/preparation.json": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/preparation.json",
+                "bytes": 7621,
+                "sha256": "74fa9a89fdb8ed8d5f8c6311be06b7d1d6f3dc7232df8a6917a99fa5baaa87e2",
+                "device": 66306,
+                "inode": 61776704,
+                "mode": 384,
+                "mtime_ns": 1794210483671455401,
+                "ctime_ns": 1794210483671455401
+              },
+              "core-output-6ec5993-strict-v1/v8.json": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/v8.json",
+                "bytes": 1510,
+                "sha256": "74680ff5935a07d291050a543dd810dc9e12c7d3e792ba1c8e90fceca923010f",
+                "device": 66306,
+                "inode": 61776701,
+                "mode": 384,
+                "mtime_ns": 1794210483364181395,
+                "ctime_ns": 1794210483364181395
+              },
+              "core-output-6ec5993-strict-v1/v8.json.b363b53ba69e4d3690209c0b3c12db26.log": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-strict-v1/v8.json.b363b53ba69e4d3690209c0b3c12db26.log",
+                "bytes": 2436,
+                "sha256": "f41c3bf5c8916da47c6238e28c5ab59f35062c2ece23f61233ba9c8744e09298",
+                "device": 66306,
+                "inode": 61776700,
+                "mode": 384,
+                "mtime_ns": 1794210483337914223,
+                "ctime_ns": 1794210483337914223
+              },
+              "core-output-6ec5993-source-admission-v1/RESULT.json": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-6ec5993-source-admission-v1/RESULT.json",
+                "bytes": 10351,
+                "sha256": "f14eb087500b9314756c5259a703286c862d336d3000dcad01172922102f22a9",
+                "device": 66306,
+                "inode": 61776690,
+                "mode": 384,
+                "mtime_ns": 1794210483717870544,
+                "ctime_ns": 1794210483717870544
+              },
+              "core-output-successor-task-temp-admission-v1/RESULT.json": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-successor-task-temp-admission-v1/RESULT.json",
+                "bytes": 2544,
+                "sha256": "2f804cbdaad191f7f669965c664ef58a9b0586eaf474937fd0609ba84bbd4c8c",
+                "device": 66306,
+                "inode": 61776669,
+                "mode": 384,
+                "mtime_ns": 1794210079070730680,
+                "ctime_ns": 1794210079070730680
+              },
+              "core-output-45a50bf-strict-v1/v8.env": {
+                "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-45a50bf-strict-v1/v8.env",
+                "bytes": 295,
+                "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc",
+                "device": 66306,
+                "inode": 73180111,
+                "mode": 384,
+                "mtime_ns": 1794206778368274077,
+                "ctime_ns": 1794206778368274077
+              }
+            },
+            "original_inputs_unchanged": true,
+            "old_cache_after": {
+              "rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256": {
+                "path": "/tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+                "bytes": 262,
+                "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be",
+                "device": 50,
+                "inode": 13185201,
+                "mode": 384,
+                "mtime_ns": 1794207820900805509,
+                "ctime_ns": 1794207820900805509
+              },
+              "librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz": {
+                "path": "/tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+                "bytes": 29366352,
+                "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+                "device": 50,
+                "inode": 4352073,
+                "mode": 384,
+                "mtime_ns": 1793901182363517614,
+                "ctime_ns": 1793901182364517578
+              },
+              "src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs": {
+                "path": "/tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+                "bytes": 39884,
+                "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+                "device": 50,
+                "inode": 4352074,
+                "mode": 384,
+                "mtime_ns": 1793901185436407851,
+                "ctime_ns": 1793901185436407851
+              }
+            },
+            "returncode": 1,
+            "finished_at": "2026-11-09T07:55:18.382115+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-ai-dependency-failure-history-v1/RESULT.json",
+      "bytes": 274,
+      "sha256": "6e8818d384d32b6a345e519b026de25281c046f36cdefb3818ddd779206073e6",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "status": "incomplete",
+            "new_tests_executed": false,
+            "source_modified": false,
+            "scientific_acceptance": false,
+            "full_cost": null,
+            "archive_success_is_not_test_success": true,
+            "error": "AssertionError()",
+            "finished_at": "2026-11-09T08:23:36.561180+00:00"
+          }
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "INPUTS_SPEC.json",
+      "bytes": 20574,
+      "sha256": "56c4e394d7f82029794f10901ed7d79987132df41613b01b24fa22f767d53d5b"
+    },
+    {
+      "path": "SUMMARY.json",
+      "bytes": 7376,
+      "sha256": "435bcd5ff2dc1cf345900b76ad12fd7567334d659cf5d5e572a78d9c94366d5a"
+    },
+    {
+      "path": "archiver.py",
+      "bytes": 29282,
+      "sha256": "ec0095f41701080436fe1b77580e268b17837de71d5db0a8ccc472b25e34ac47"
+    },
+    {
+      "path": "originals/collect-core-output-6ec-terminal-history-v1.py",
+      "bytes": 28167,
+      "sha256": "464763b8d49f7ab5ab0e94ccb6de749c3cdecdfb17ecc397de24bbef55e89e7a"
+    },
+    {
+      "path": "originals/core-output-45a50bf-temp-capacity-readonly-v1.json",
+      "bytes": 3197,
+      "sha256": "41733db1d713420e8a109e238dee5f7362f72e3dbf09d20675a3e0e18734b571"
+    },
+    {
+      "path": "originals/core-output-6ec-history-inputs-v1.json",
+      "bytes": 19346,
+      "sha256": "d397f8e7858e4ae6d13293ad7594fe62038425acc9068db902a5db263a5edf66"
+    },
+    {
+      "path": "originals/core-output-6ec5993-ai-dependency-failure-history-v1/RESULT.json",
+      "bytes": 274,
+      "sha256": "6e8818d384d32b6a345e519b026de25281c046f36cdefb3818ddd779206073e6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-ai-history-collector-console-v1.log",
+      "bytes": 1213,
+      "sha256": "543d9af4785c02de5b300a2f57e9062a6af39a05c27792e16e302f9d5ee50e1c"
+    },
+    {
+      "path": "originals/core-output-6ec5993-ai-history-collector-execution-v1.json",
+      "bytes": 1299,
+      "sha256": "7996a6d178a8a972895a8f041123c3575496a86ae75c2979a205defafb23acdc"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/RESULT.json",
+      "bytes": 10351,
+      "sha256": "f14eb087500b9314756c5259a703286c862d336d3000dcad01172922102f22a9"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/blob-0.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/blob-0.stdout",
+      "bytes": 41,
+      "sha256": "fb037eb941713292f9fa329edcf9cb8e5057f5462ef17fb40965c2b99f4519b1"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/bundle-heads.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/bundle-heads.stdout",
+      "bytes": 46,
+      "sha256": "c44fca3328ff76837d2c4da7ea93be7be72e4556daa16ad24af6d191dc4c79b5"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/bundle-verify.stderr",
+      "bytes": 111,
+      "sha256": "bcf9e32edd13f95db1afc0391da40cac85a81a564114c787987afd614e6ee665"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/bundle-verify.stdout",
+      "bytes": 190,
+      "sha256": "59a8516168c53143f46a78037e1a296132cc8e6c9e589b1e23b5729cd53ba477"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/changed-source-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/changed-source-paths.stdout",
+      "bytes": 67,
+      "sha256": "c7ced79d326162adeaa586525450c649a574ce49d6834a560b8eaddcd51959fc"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/create-detached-source.stderr",
+      "bytes": 44,
+      "sha256": "cbf4a1e4c2196229c7452c5cd4180a4f2bb309d0e4918191679011a5f4b68e25"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/create-detached-source.stdout",
+      "bytes": 83,
+      "sha256": "f686edea81208a85d1ba0032669931aae35186ca2bd2d343bcd3c76ed268fdd9"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/driver.py",
+      "bytes": 15180,
+      "sha256": "f36e50b61f93daeb1e70bfee89b470482fe46f66b2d04297d8221d93f10eb147"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/fetch-source-bundle.stderr",
+      "bytes": 156,
+      "sha256": "9bbd0e5aa489f5d76505bbce1580ff1810e2e57ac32a0d500408491472e9e8dd"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/fetch-source-bundle.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/same-source-strict.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/same-source-strict.stdout",
+      "bytes": 13018,
+      "sha256": "4d69f55f841f2641bcb1a095444b06785c23826b703e92959e6ddbda6c7fc036"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/source-ancestor-closure.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/source-ancestor-closure.stdout",
+      "bytes": 41,
+      "sha256": "3bc611dfdd7865506e1e790e36c41a13755cc15886d3cef379e9e90d986bf836"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/source-freeze-original.json",
+      "bytes": 22743,
+      "sha256": "faf1cd529dc930f34049645c36d7bac5ee41dd671af5cad57170a6890ed64027"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/source-increment-original.bundle",
+      "bytes": 1086,
+      "sha256": "be8dab5d055493750131677792e811485791bfb37ce014bbbf3c666d9620651d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-source-admission-v1/task-temp-admission-original.json",
+      "bytes": 2544,
+      "sha256": "2f804cbdaad191f7f669965c664ef58a9b0586eaf474937fd0609ba84bbd4c8c"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-dependency-recovery-v1/RESULT.json",
+      "bytes": 14079,
+      "sha256": "f6f90bba6b9f11c40b96597e34d12e94a963b564d4b12df62f5f76945b70cd6a"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-dependency-recovery-v1/driver.py",
+      "bytes": 9754,
+      "sha256": "ccf25e704cd067be2fb460784bbd9fa4525dd66be618945c0598da8dde4706ae"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-dependency-recovery-v1/strict.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-dependency-recovery-v1/strict.stdout",
+      "bytes": 13016,
+      "sha256": "98395b584e641898716f1d6a0cabfc7b3d2bfc3c5fdd01c772b2222ef008bc48"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/driver.py",
+      "bytes": 18201,
+      "sha256": "ad66c27261350d7cf724634a593ed53de6cef9394efffc97791899a39f284a5b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/preparation.json",
+      "bytes": 7621,
+      "sha256": "74fa9a89fdb8ed8d5f8c6311be06b7d1d6f3dc7232df8a6917a99fa5baaa87e2"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/source-after.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/source-after.json",
+      "bytes": 854,
+      "sha256": "4f56593361156aeaa4034fc9e9e98ed06e56fb74c1e7578a0d076004d7f1529f"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/source-before.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/source-before.json",
+      "bytes": 856,
+      "sha256": "995268685e0ddfd270118bbd7e7d93ac8b111482184198844c0b13b4c743bf98"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/v8.env",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/v8.json",
+      "bytes": 1510,
+      "sha256": "74680ff5935a07d291050a543dd810dc9e12c7d3e792ba1c8e90fceca923010f"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v1/v8.json.b363b53ba69e4d3690209c0b3c12db26.log",
+      "bytes": 2436,
+      "sha256": "f41c3bf5c8916da47c6238e28c5ab59f35062c2ece23f61233ba9c8744e09298"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/driver.py",
+      "bytes": 18201,
+      "sha256": "ad66c27261350d7cf724634a593ed53de6cef9394efffc97791899a39f284a5b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/preparation.json",
+      "bytes": 7619,
+      "sha256": "d330d6ec89e827e37b37a00666eccf5195fce004dc5f0187b9fe9dafb3b7ebef"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/source-after.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/source-after.json",
+      "bytes": 853,
+      "sha256": "39b84543fcb755909a467ef2f2827457a15761ee77d5841ec00abfc73a13b2ad"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/source-before.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/source-before.json",
+      "bytes": 855,
+      "sha256": "bd216d5c24fabb00e1695b031ea5e55c26a54da4e1a6ef9f56f028b63de43770"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/v8.env",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/v8.json",
+      "bytes": 1510,
+      "sha256": "be85d89adb6163239cdb44d277a345943833de62db27f5b10d04fa5ba2f165c6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-strict-v2/v8.json.0f1efc00f74842cebf4401e4b7a9802e.log",
+      "bytes": 2436,
+      "sha256": "f41c3bf5c8916da47c6238e28c5ab59f35062c2ece23f61233ba9c8744e09298"
+    },
+    {
+      "path": "originals/core-output-successor-task-temp-admission-v1/RESULT.json",
+      "bytes": 2544,
+      "sha256": "2f804cbdaad191f7f669965c664ef58a9b0586eaf474937fd0609ba84bbd4c8c"
+    },
+    {
+      "path": "originals/core-output-successor-task-temp-admission-v1/driver.py",
+      "bytes": 3502,
+      "sha256": "17b50669624eafe7e66c6de82ec11cef7179ddd728e43567eec4f5b7f5e1c04d"
+    },
+    {
+      "path": "originals/run-core-output-owning-temp-v2.py",
+      "bytes": 21464,
+      "sha256": "b6b520dc56c749bc73282c20385e7914c810e6d6dc7adbf5650f2e46ced3e94d"
+    },
+    {
+      "path": "originals/run-core-output-owning-temp-v3.py",
+      "bytes": 22453,
+      "sha256": "dbab8f729e8165fc288a87861b7dae7cb258061b06033354280c24c576c7d48a"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 21744,
+      "sha256": "424ad26c747b444dc09f06a1019fc21422d7b7648a13827b0b937116a7639f71"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/core-output-6ec5993-ai-two-checksum-failures-environment-history-v2/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "e84624e6e8f53c2d21f1802c6ea8fa6ec7c16c7488bd52d0e83c5218e3c7bfb3"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/core-output-6ec5993-ai-two-checksum-failures-environment-history-v2/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "5866473643fc9fd1ce3a5d110275269127f8b04f28dad1fd0543972964f4591b"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/core-output-6ec5993-ai-two-checksum-failures-environment-history-v2/archive.part003",
+      "offset": 980000,
+      "bytes": 96276,
+      "sha256": "2d8bbc7579f36075172b651b6c6b6ddb96f580ee78b5d752ae5e3bf6b3996864"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

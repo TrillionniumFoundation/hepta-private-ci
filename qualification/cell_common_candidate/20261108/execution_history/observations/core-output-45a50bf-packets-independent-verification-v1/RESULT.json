@@ -1,0 +1,488 @@
+{
+  "archive_success_is_not_test_success": true,
+  "finished_at": "2026-11-09T08:45:41.966729+00:00",
+  "full_history_cost": null,
+  "input_stat_and_bytes_unchanged": true,
+  "native_executions": 0,
+  "original_native_execution_status": "FAIL",
+  "packets": [
+    {
+      "actual_counts": {
+        "all_failures_explained": false,
+        "all_failures_fixed": false,
+        "counts": {
+          "executed": 3827,
+          "failed_exit101": 6,
+          "failed_including_timeouts": 553,
+          "leaks": 0,
+          "original_ignored_not_executed": 9,
+          "passed": 3274,
+          "retries": 0,
+          "signal_aborted": 545,
+          "timed_out": 2
+        },
+        "environment_change_proven_to_fix_any_case": false,
+        "final_output_duplicates_not_additional_executions": true,
+        "first_summary_only_execution_accounting": true,
+        "full_history_cost": null,
+        "native_tests_executed_by_collector": 0,
+        "ordinary_exit101_enospc_text_matches": 5,
+        "original_collector_exit_code": 1,
+        "original_driver_exit_code": 1,
+        "original_execution_status": "FAIL",
+        "original_ignored_not_executed": [
+          {
+            "binary_id": "codex-core",
+            "filter_match": {
+              "reason": "ignored",
+              "status": "mismatch"
+            },
+            "ignored": true,
+            "name": "tools::handlers::multi_agents::tests::spawn_agent_reapplies_runtime_sandbox_after_role_config"
+          },
+          {
+            "binary_id": "codex-core::all",
+            "filter_match": {
+              "reason": "ignored",
+              "status": "mismatch"
+            },
+            "ignored": true,
+            "name": "suite::code_mode_elicitation::code_mode_holds_yielded_result_during_permission_request"
+          },
+          {
+            "binary_id": "codex-core::all",
+            "filter_match": {
+              "reason": "ignored",
+              "status": "mismatch"
+            },
+            "ignored": true,
+            "name": "suite::compact::manual_compact_non_context_failure_retries_then_emits_task_error"
+          },
+          {
+            "binary_id": "codex-core::all",
+            "filter_match": {
+              "reason": "ignored",
+              "status": "mismatch"
+            },
+            "ignored": true,
+            "name": "suite::compact_remote::remote_compact_persists_replacement_history_in_rollout"
+          },
+          {
+            "binary_id": "codex-core::all",
+            "filter_match": {
+              "reason": "ignored",
+              "status": "mismatch"
+            },
+            "ignored": true,
+            "name": "suite::live_cli::live_create_file_hello_txt"
+          },
+          {
+            "binary_id": "codex-core::all",
+            "filter_match": {
+              "reason": "ignored",
+              "status": "mismatch"
+            },
+            "ignored": true,
+            "name": "suite::live_cli::live_print_working_directory"
+          },
+          {
+            "binary_id": "codex-core::all",
+            "filter_match": {
+              "reason": "ignored",
+              "status": "mismatch"
+            },
+            "ignored": true,
+            "name": "suite::pending_input::injected_user_input_triggers_follow_up_request_with_deltas"
+          },
+          {
+            "binary_id": "codex-core::all",
+            "filter_match": {
+              "reason": "ignored",
+              "status": "mismatch"
+            },
+            "ignored": true,
+            "name": "suite::shell_snapshot::macos_unified_exec_uses_shell_snapshot"
+          },
+          {
+            "binary_id": "codex-core::all",
+            "filter_match": {
+              "reason": "ignored",
+              "status": "mismatch"
+            },
+            "ignored": true,
+            "name": "suite::shell_snapshot::windows_unified_exec_uses_shell_snapshot"
+          }
+        ],
+        "original_test_exit_code": 100,
+        "per_abort_constructor_enospc_text_matches": 545,
+        "physical_cost": null,
+        "raw_sha256": "5ee15cc9dce8321b46ad3e232623fd95572f2c43b5c0424f2b766c65d3d18a8a",
+        "raw_summary": "     Summary [ 681.770s] 3827 tests run: 3274 passed, 551 failed, 2 timed out, 9 skipped",
+        "required_four_actual_results": [
+          {
+            "binary_id": "codex-core",
+            "failure": null,
+            "name": "unified_exec::async_watcher::tests::terminal_summary_retains_output_published_before_streaming_subscribes",
+            "passed": true,
+            "raw_status": "PASS",
+            "time_seconds": "0.201",
+            "timestamp": "2026-11-09T15:06:28.973+08:00"
+          },
+          {
+            "binary_id": "codex-core",
+            "failure": null,
+            "name": "unified_exec::process::observation_tests::native_output_keeps_both_prefilled_streams_through_eof",
+            "passed": true,
+            "raw_status": "PASS",
+            "time_seconds": "0.012",
+            "timestamp": "2026-11-09T15:06:29.183+08:00"
+          },
+          {
+            "binary_id": "codex-core",
+            "failure": {
+              "message": "thread 'unified_exec::process::remote_observation_tests::remote_transcript_records_accepted_output_once_without_treating_exit_as_eof' (2357972) panicked at core/src/unified_exec/process_remote_observation_tests.rs:408:5",
+              "type": "test failure with exit code 101"
+            },
+            "name": "unified_exec::process::remote_observation_tests::remote_transcript_records_accepted_output_once_without_treating_exit_as_eof",
+            "passed": false,
+            "raw_status": "FAIL",
+            "time_seconds": "0.169",
+            "timestamp": "2026-11-09T15:06:29.376+08:00"
+          },
+          {
+            "binary_id": "codex-core::all",
+            "failure": {
+              "message": "2 errors occurred executing test",
+              "type": "test abort"
+            },
+            "name": "suite::unified_exec::unified_exec_formats_large_output_summary",
+            "passed": false,
+            "raw_status": "SIGABRT",
+            "time_seconds": "4.065",
+            "timestamp": "2026-11-09T15:15:31.860+08:00"
+          }
+        ],
+        "source_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+        "source_tree": "60fd0cc181f3f34dbbb3a4a9a63226b920260ce2",
+        "timeouts": [
+          {
+            "binary_id": "codex-core::all",
+            "combined_flags": {
+              "codex_home_constructor_message": false,
+              "enospc_message": false,
+              "error_28": false,
+              "non_unwinding_abort": false,
+              "test_tmp_path": false
+            },
+            "failure_attributes": {
+              "type": "test timeout"
+            },
+            "failure_flags": {
+              "codex_home_constructor_message": false,
+              "enospc_message": false,
+              "error_28": false,
+              "non_unwinding_abort": false,
+              "test_tmp_path": false
+            },
+            "failure_text_bytes": 0,
+            "failure_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "full_original_raw_block": {
+              "bytes": 543,
+              "ctime_ns": 1794210378803911962,
+              "device": 66306,
+              "inode": 61645546,
+              "mode": 384,
+              "mtime_ns": 1794210378803911962,
+              "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-45a50bf-failure-cause-readback-v1/c4756d468d486eb9e829-timeout.raw.log",
+              "sha256": "fafbf8629fcd3fb9ffb61d0685f29e791a27b8abadfaff2e935a85b378ff920e"
+            },
+            "full_xml_payload": {
+              "bytes": 882,
+              "ctime_ns": 1794210378803997079,
+              "device": 66306,
+              "inode": 61645547,
+              "mode": 384,
+              "mtime_ns": 1794210378803997079,
+              "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-45a50bf-failure-cause-readback-v1/c4756d468d486eb9e829-timeout.payload.json",
+              "sha256": "ee85d018b8f5976231e67dd34bdd59be9dcef7c6d8241b4727dd3e302695e84e"
+            },
+            "matching_error_lines": [],
+            "name": "suite::prompt_caching::send_user_turn_with_no_changes_does_not_send_environment_context",
+            "payload_representation": "JSON contains decoded XML text/attributes; authoritative XML and full raw are separately pinned unchanged",
+            "raw_block_binding": {
+              "boundary": "Exact final case header through byte before next final case header; original ANSI/newline bytes retained",
+              "end_byte_exclusive": 11534878,
+              "first_line_1_based": 49136,
+              "last_line_1_based": 49144,
+              "source_raw_sha256": "5ee15cc9dce8321b46ad3e232623fd95572f2c43b5c0424f2b766c65d3d18a8a",
+              "start_byte": 11534335
+            },
+            "raw_terminal": {
+              "duration": "60.005s",
+              "line": 3378,
+              "status": "TIMEOUT"
+            },
+            "same_test_codex_home_enospc_text": false,
+            "stderr_flags": {
+              "codex_home_constructor_message": false,
+              "enospc_message": false,
+              "error_28": false,
+              "non_unwinding_abort": false,
+              "test_tmp_path": false
+            },
+            "stderr_text_bytes": 329,
+            "stderr_text_sha256": "5e26c8e48595b6ad2a92b0cf44deff9235b11e1ddd8293c0c637b7d831eb3c16",
+            "stdout_text_bytes": 16,
+            "stdout_text_sha256": "daf071121a9ffe32bbce44190e37a068c96d08bff63fd7b660dd95b77d786dca"
+          },
+          {
+            "binary_id": "codex-core::all",
+            "combined_flags": {
+              "codex_home_constructor_message": false,
+              "enospc_message": false,
+              "error_28": false,
+              "non_unwinding_abort": false,
+              "test_tmp_path": false
+            },
+            "failure_attributes": {
+              "type": "test timeout"
+            },
+            "failure_flags": {
+              "codex_home_constructor_message": false,
+              "enospc_message": false,
+              "error_28": false,
+              "non_unwinding_abort": false,
+              "test_tmp_path": false
+            },
+            "failure_text_bytes": 0,
+            "failure_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "full_original_raw_block": {
+              "bytes": 195,
+              "ctime_ns": 1794210378809269189,
+              "device": 66306,
+              "inode": 61645548,
+              "mode": 384,
+              "mtime_ns": 1794210378809269189,
+              "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-45a50bf-failure-cause-readback-v1/94516fb453f3f05994e5-timeout.raw.log",
+              "sha256": "f68024e857e13483f2edd8958f9049587e0e49326667138db62b17d698fb1f07"
+            },
+            "full_xml_payload": {
+              "bytes": 556,
+              "ctime_ns": 1794210378809312557,
+              "device": 66306,
+              "inode": 61645549,
+              "mode": 384,
+              "mtime_ns": 1794210378809312557,
+              "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/core-output-45a50bf-failure-cause-readback-v1/94516fb453f3f05994e5-timeout.payload.json",
+              "sha256": "4039235ff8940ab0a167a20ba572b1004597265749b8246ccbab7c40d2259fe5"
+            },
+            "matching_error_lines": [],
+            "name": "suite::realtime_conversation::conversation_close_routes_only_remaining_transcript_tail_once",
+            "payload_representation": "JSON contains decoded XML text/attributes; authoritative XML and full raw are separately pinned unchanged",
+            "raw_block_binding": {
+              "boundary": "Exact final case header through byte before next final case header; original ANSI/newline bytes retained",
+              "end_byte_exclusive": 11538200,
+              "first_line_1_based": 49195,
+              "last_line_1_based": 49201,
+              "source_raw_sha256": "5ee15cc9dce8321b46ad3e232623fd95572f2c43b5c0424f2b766c65d3d18a8a",
+              "start_byte": 11538005
+            },
+            "raw_terminal": {
+              "duration": "60.005s",
+              "line": 3381,
+              "status": "TIMEOUT"
+            },
+            "same_test_codex_home_enospc_text": false,
+            "stderr_flags": {
+              "codex_home_constructor_message": false,
+              "enospc_message": false,
+              "error_28": false,
+              "non_unwinding_abort": false,
+              "test_tmp_path": false
+            },
+            "stderr_text_bytes": 0,
+            "stderr_text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_text_bytes": 16,
+            "stdout_text_sha256": "daf071121a9ffe32bbce44190e37a068c96d08bff63fd7b660dd95b77d786dca"
+          }
+        ],
+        "xml_sha256": "95e32aa0e37978def4e7861f5e932b6085fbeb0f92b7ff88154000448880471a"
+      },
+      "all_members_mode_size_sha256_verified": true,
+      "archive": {
+        "bytes": 3559024,
+        "ctime_ns": "1794213939845442072",
+        "device": 2050,
+        "inode": 6328517,
+        "mode": 384,
+        "mtime_ns": "1794213939845442072",
+        "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-failed-native-history-import-v1/core-output-45a50bf-failed-native-history.tar.xz",
+        "sha256": "f5ad5116de21dc92dfb5946e9487ce2577bd7c14e77cd505a1956efb25ace436"
+      },
+      "assigned_packet_id": "core-output-45a50bf-ai-failed-owning-history-v1",
+      "member_count": 187,
+      "original_native_execution_status": "FAIL",
+      "original_seal": {
+        "bytes": 2340,
+        "ctime_ns": "1794213705880546650",
+        "device": 2050,
+        "inode": 6328512,
+        "mode": 384,
+        "mtime_ns": "1794213705867029189",
+        "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-failed-native-history-import-v1/ORIGINAL_AI_SEAL_RESULT.json",
+        "sha256": "ee10362cf4e8ea87c06b0f91e00b9f38a00991ce356f95386d38d5f34b03da4f"
+      },
+      "role": "ai_failed_native",
+      "sidecars": {
+        "COUNT_BINDINGS.json": {
+          "bytes": 11068,
+          "ctime_ns": "1794213941074211144",
+          "device": 2050,
+          "inode": 6328519,
+          "mode": 384,
+          "mtime_ns": "1794213941074211144",
+          "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-failed-native-history-import-v1/COUNT_BINDINGS.json",
+          "sha256": "c23dd472897129559bc16bacedc860bc8c17fc29559f1e59d1aea8ca6a113b54"
+        },
+        "HOST_ONLY_BINARIES.json": {
+          "bytes": 16563,
+          "ctime_ns": "1794213941075857491",
+          "device": 2050,
+          "inode": 6328520,
+          "mode": 384,
+          "mtime_ns": "1794213941075857491",
+          "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-failed-native-history-import-v1/HOST_ONLY_BINARIES.json",
+          "sha256": "9f8992c3b5e1fa05a5fe9ae70e0523bb0c5d4f866a718106a496dac974b0f809"
+        },
+        "MANIFEST.json": {
+          "bytes": 63110,
+          "ctime_ns": "1794213941060031812",
+          "device": 2050,
+          "inode": 6328518,
+          "mode": 384,
+          "mtime_ns": "1794213941060031812",
+          "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-failed-native-history-import-v1/MANIFEST.json",
+          "sha256": "2677c21b6e693e7f11e9f5d28feb456d2f1bd7667fca6fffa51ae973c35f366e"
+        },
+        "SCOPE.json": {
+          "bytes": 15994,
+          "ctime_ns": "1794213941078445842",
+          "device": 2050,
+          "inode": 6328521,
+          "mode": 384,
+          "mtime_ns": "1794213941078445842",
+          "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-failed-native-history-import-v1/SCOPE.json",
+          "sha256": "2d4b377124aa6d5ce0324607cbebc0ad6aa9c10209ce2e7f904b14a2a5cec537"
+        }
+      }
+    },
+    {
+      "actual_counts": {
+        "actual_command_wall_seconds_not_full_cost": 381.88922152481973,
+        "automatic_retries": 0,
+        "caller_passed": true,
+        "clock_oracle_preparation_not_executed": true,
+        "command": [
+          "python3",
+          "scripts/verify_hepta_callers.py",
+          "verify"
+        ],
+        "full_history_cost": null,
+        "gate": {
+          "authority_granted": false,
+          "boundaries": 173,
+          "privileged_inventory": 173,
+          "protected_files_entries": 160,
+          "rust_files_scanned": 6480,
+          "schema": "hepta.caller-proof-receipt.v2",
+          "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+        },
+        "native_tests_executed_by_collector": 0,
+        "original_native_failure_not_changed": true,
+        "raw_sha256": "d61bcafc35a5f86900470549071b35f6cc0868bcdedebd42c7a0eaa829043d7d",
+        "scope": "desktop original full caller gate and preparation only",
+        "timeout_seconds": 600,
+        "unit_tests_count": null
+      },
+      "all_members_mode_size_sha256_verified": true,
+      "archive": {
+        "bytes": 2830716,
+        "ctime_ns": "1794213516411288245",
+        "device": 2050,
+        "inode": 5827392,
+        "mode": 384,
+        "mtime_ns": "1794213516411288245",
+        "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-desktop-context-history-v3/core-output-45a50bf-desktop-context-history.tar.xz",
+        "sha256": "b5aa757ab9003bb6d8bdae47dd0903f3a30e3cd116624e2dfb7d69d6e657103c"
+      },
+      "assigned_packet_id": "core-output-45a50bf-desktop-preparation-caller-history-v3",
+      "member_count": 278,
+      "original_native_execution_status": "FAIL",
+      "original_seal": {
+        "bytes": 2343,
+        "ctime_ns": "1794213517374676394",
+        "device": 2050,
+        "inode": 5827398,
+        "mode": 384,
+        "mtime_ns": "1794213517374676394",
+        "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-desktop-context-history-v3/RESULT.json",
+        "sha256": "ce9bf350514bff6305a4cc33fab359322de9acbe407116bd291745fdf162cca8"
+      },
+      "role": "desktop_context",
+      "sidecars": {
+        "COUNT_BINDINGS.json": {
+          "bytes": 848,
+          "ctime_ns": "1794213517255611658",
+          "device": 2050,
+          "inode": 5827395,
+          "mode": 384,
+          "mtime_ns": "1794213517255611658",
+          "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-desktop-context-history-v3/COUNT_BINDINGS.json",
+          "sha256": "28592f00d087aceaf4b1e2cce39c044ef5ba572a907fd45680b25f0833a35975"
+        },
+        "HOST_ONLY_BINARIES.json": {
+          "bytes": 3,
+          "ctime_ns": "1794213517257177140",
+          "device": 2050,
+          "inode": 5827396,
+          "mode": 384,
+          "mtime_ns": "1794213517257177140",
+          "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-desktop-context-history-v3/HOST_ONLY_BINARIES.json",
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+        },
+        "MANIFEST.json": {
+          "bytes": 95217,
+          "ctime_ns": "1794213517252193057",
+          "device": 2050,
+          "inode": 5827393,
+          "mode": 384,
+          "mtime_ns": "1794213517252193057",
+          "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-desktop-context-history-v3/MANIFEST.json",
+          "sha256": "5d89bb0ba4af6bf92d4cdf555d2516a084ec754c980473e6ca218aa0ad48d95e"
+        },
+        "SCOPE.json": {
+          "bytes": 6823,
+          "ctime_ns": "1794213517254058734",
+          "device": 2050,
+          "inode": 5827394,
+          "mode": 384,
+          "mtime_ns": "1794213517254058734",
+          "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-45a50bf-desktop-context-history-v3/SCOPE.json",
+          "sha256": "5ecc30c529a87ab29753c5884a12f8f391649f0577372a86f34aeeed8dc76f5d"
+        }
+      }
+    }
+  ],
+  "physical_cost": null,
+  "readback_wall_seconds_not_native_or_full_cost": 2.179917227011174,
+  "returncode": 0,
+  "scientific_acceptance": false,
+  "source_modified": false,
+  "started_at": "2026-11-09T08:45:39.786840+00:00",
+  "status": "TWO_COMPLETED_FAILURE_HISTORY_PACKETS_INDEPENDENTLY_VERIFIED",
+  "verified_member_counts": [
+    187,
+    278
+  ],
+  "whole_archives_verified": true
+}
