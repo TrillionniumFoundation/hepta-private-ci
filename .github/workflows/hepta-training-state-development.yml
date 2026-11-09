@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - proposals/localization-v2/**
+      - scripts/ndu_real_runtime/**
       - scripts/hepta_ci_exec.py
       - .github/workflows/hepta-training-state-development.yml
   workflow_dispatch:
@@ -101,6 +102,13 @@ jobs:
             --output "$RUNNER_TEMP/training-state-development/gradient-diagnostics.json" \
             -- python -m unittest discover -s proposals/localization-v2 \
             -p test_training_diagnostics.py -v
+
+      - name: Verify trained state across reference graph operations
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 5 \
+            --output "$RUNNER_TEMP/training-state-development/structural-state.json" \
+            -- python -m unittest discover -s proposals/localization-v2 \
+            -p test_structural_state.py -v
 
       - name: Retain original logs on every outcome
         if: always()
