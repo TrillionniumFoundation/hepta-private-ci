@@ -54,6 +54,8 @@ const RUN_START_FILE: &str = "journal.bin";
 
 #[path = "objective_history.rs"]
 mod history;
+#[path = "objective_learning_outbox.rs"]
+mod learning_outbox;
 
 #[path = "objective_submission.rs"]
 mod submission;
