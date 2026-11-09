@@ -9,7 +9,10 @@ from .causal_protocol import COST_STAGES, COST_UNITS
 
 
 def number(value):
-    return type(value) in (int, float) and math.isfinite(value)
+    try:
+        return type(value) in (int, float) and math.isfinite(value)
+    except OverflowError:
+        return False
 
 
 def cost_inventory(events, methods, required_stages=COST_STAGES):
@@ -141,8 +144,12 @@ def paired_contrast(rows, coefficients, fits, cases, *, draws=2000, seed=3245284
         if row["fit_id"] not in fits or row["case_id"] not in case_map:
             raise ValueError("Observed result outside frozen contrast roster")
         case = case_map[row["case_id"]]
-        if any(row[k] != case[k] for k in ("source_group_id", "split")):
-            raise ValueError("Observed case crossed its frozen source group or split")
+        if any(
+            row.get(k) != case[k] for k in ("source_group_id", "split", "task_family")
+        ):
+            raise ValueError(
+                "Observed case crossed its frozen source group, split or family"
+            )
         key = (row["fit_id"], row["condition_id"], row["case_id"])
         if key in selected:
             raise ValueError(
@@ -180,20 +187,27 @@ def paired_contrast(rows, coefficients, fits, cases, *, draws=2000, seed=3245284
     }
     if missing or unknown:
         return {**report, "status": "INCOMPLETE", "mean": None, "interval": None}
+    paired_values = {}
+    try:
+        for fit in fits:
+            for case in case_map:
+                value = math.fsum(
+                    coefficients[condition]
+                    * selected[(fit, condition, case)]["analysis_utility"]
+                    for condition in coefficients
+                )
+                if not number(value):
+                    raise ValueError("Contrast arithmetic exceeds finite range")
+                paired_values[(fit, case)] = value
+    except (OverflowError, ValueError) as error:
+        raise ValueError("Contrast arithmetic exceeds finite range") from error
     groups = defaultdict(lambda: defaultdict(list))
     for case in cases:
         groups[case["source_group_id"]][case["task_family"]].append(case["case_id"])
     values = [
         [
             statistics.mean(
-                statistics.mean(
-                    sum(
-                        coefficients[condition]
-                        * selected[(fit, condition, case)]["analysis_utility"]
-                        for condition in coefficients
-                    )
-                    for case in family_cases
-                )
+                statistics.mean(paired_values[(fit, case)] for case in family_cases)
                 for family_cases in group_families.values()
             )
             for group_families in groups.values()
@@ -214,6 +228,12 @@ def paired_contrast(rows, coefficients, fits, cases, *, draws=2000, seed=3245284
             samples[int(0.025 * (draws - 1))],
             samples[int(0.975 * (draws - 1))],
         ]
+    try:
+        fit_variance = statistics.variance(per_fit) if len(per_fit) > 1 else None
+    except OverflowError as error:
+        raise ValueError("Contrast variance exceeds finite range") from error
+    if fit_variance is not None and not number(fit_variance):
+        raise ValueError("Contrast variance exceeds finite range")
     return {
         **report,
         "status": "DESCRIPTIVE_PILOT",
@@ -221,9 +241,7 @@ def paired_contrast(rows, coefficients, fits, cases, *, draws=2000, seed=3245284
         "per_fit": dict(zip(fits, per_fit)),
         "interval": interval,
         "interval_scope": "unadjusted descriptive crossed paired bootstrap",
-        "fit_sample_variance": statistics.variance(per_fit)
-        if len(per_fit) > 1
-        else None,
+        "fit_sample_variance": fit_variance,
         "full_cost_adjusted": False,
         "limit": "deployment utility is not total improvement efficiency; full cost gate remains separate",
     }
