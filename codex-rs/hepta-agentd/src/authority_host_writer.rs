@@ -15,6 +15,11 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 #[path = "authority_host_bootstrap_capture.rs"]
 mod bootstrap;
 
+#[path = "authority_host_learning_registration.rs"]
+mod learning_registration;
+pub use learning_registration::HostAuthorityLearningRegistrationV1;
+pub(crate) use learning_registration::RegisteredHostLearningCheckpointV1;
+
 #[path = "authority_host_fresh.rs"]
 mod fresh;
 pub use fresh::FreshHostCognitiveState;

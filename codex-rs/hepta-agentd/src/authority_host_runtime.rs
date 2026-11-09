@@ -303,6 +303,21 @@ pub fn register_host_writer_authorization(
     issuer.register_writer_authorization(writer, &leases.verifier())
 }
 
+/// Explicit Root administration creates the dedicated learning registration
+/// once under the live original writer and actual daemon pidfd. Runtime reopen
+/// is separate; an existing/partial registration is never reset or repaired.
+pub fn register_host_learning_checkpoint(
+    config_file: &Path,
+    registration_file: &Path,
+    profile_file: &Path,
+    owner_pidfd: &OwnedFd,
+) -> io::Result<crate::HostAuthorityLearningRegistrationV1> {
+    let config = read_root_json(config_file)?;
+    let registration = read_root_json(registration_file)?;
+    let service = open_registered_writer(&config, &registration, owner_pidfd)?;
+    service.register_learning_checkpoint(&config, &registration, owner_pidfd, profile_file)
+}
+
 pub(super) fn open_registered_issuer(
     config: &HostAuthorityServiceConfig,
 ) -> io::Result<(
