@@ -2,6 +2,7 @@
 
 from dataclasses import replace
 from itertools import product
+import hashlib
 import json
 from pathlib import Path
 import random
@@ -16,6 +17,8 @@ from .evaluation import (
     rollout,
     run_experiment,
     control_factorial,
+    draw,
+    sampled_transition,
     tune_fixed,
 )
 from .learning import (
@@ -101,6 +104,78 @@ class LearningTests(unittest.TestCase):
             path.write_bytes(path.read_bytes() + b" ")
             with self.assertRaisesRegex(ValueError, "pin differs"):
                 load_candidate(path, receipt["sha256"], self.model)
+
+    def test_cold_load_rejects_inconsistent_calibration_and_feature_profile(self):
+        calibrate(self.candidate, self.model, self.groups)
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "model.json"
+            save_candidate(self.candidate, path)
+            original = json.loads(path.read_bytes())
+            record = original["calibrations"]["trained"]
+            changes = (
+                ("radius", -0.1),
+                ("radius", False),
+                ("radius", float("nan")),
+                ("radius", float("inf")),
+                ("radius", record["radius"] + 1),
+                ("radius", None),
+                ("groups", record["groups"] + 1),
+                ("groups", True),
+                ("rank", record["rank"] - 1),
+                ("rank", True),
+                ("pairs", record["groups"] - 1),
+                ("source_ids", [record["source_ids"][0]] * record["groups"]),
+                ("group_max_residuals", [False] * record["groups"]),
+                ("residual_cdf", [[0.0, 0.0]] * record["groups"]),
+                ("mode", "reset"),
+                ("alpha", float("nan")),
+                ("conditional_coverage_guarantee", True),
+            )
+            for field, value in changes:
+                with self.subTest(field=field, value=value):
+                    modified = json.loads(json.dumps(original))
+                    modified["calibrations"]["trained"][field] = value
+                    raw = json.dumps(modified).encode()
+                    path.write_bytes(raw)
+                    with self.assertRaises(ValueError):
+                        load_candidate(
+                            path, hashlib.sha256(raw).hexdigest(), self.model
+                        )
+            modified = json.loads(json.dumps(original))
+            for row in modified["weights"]["hidden.weight"]:
+                row.append(0.0)
+            for row in modified["initial"][0]:
+                row.append(0.0)
+            raw = json.dumps(modified).encode()
+            path.write_bytes(raw)
+            with self.assertRaisesRegex(ValueError, "network shape"):
+                load_candidate(path, hashlib.sha256(raw).hexdigest(), self.model)
+            # A genuine n+1 small-sample refusal remains a valid checkpoint.
+            calibrate(self.candidate, self.model, {"one": self.pairs[:1]}, mode="reset")
+            small_path = Path(temp) / "small.json"
+            receipt = save_candidate(self.candidate, small_path)
+            loaded = load_candidate(small_path, receipt["sha256"], self.model)
+            self.assertIsNone(loaded.calibrations["reset"]["radius"])
+            _, observation = loaded.choose(self.roots[0], self.model, mode="reset")
+            self.assertTrue(observation["fallback"])
+
+    def test_delayed_read_keeps_the_same_pending_packet(self):
+        ready = f.State(budget=24, time=1, steps=1, ready_at=1)
+        delayed = replace(ready, budget=20, time=2, steps=2)
+        for seed in (3, 5, 7, 11, 19):
+            with self.subTest(seed=seed):
+                early, _ = sampled_transition(ready, f.READ, self.model, seed)
+                later, _ = sampled_transition(delayed, f.READ, self.model, seed)
+                self.assertEqual(early.signal, later.signal)
+                self.assertEqual(draw(seed, ready, f.READ), draw(seed, delayed, f.READ))
+                self.assertNotEqual(
+                    draw(seed, ready, f.REPAIR_IMAGE),
+                    draw(seed, delayed, f.REPAIR_IMAGE),
+                )
+                self.assertNotEqual(
+                    draw(seed, ready, f.READ),
+                    draw(seed, replace(ready, ready_at=0), f.READ),
+                )
 
     def test_unknown_support_rejects_uncertain_continuation(self):
         calibrate(self.candidate, self.model, self.groups)

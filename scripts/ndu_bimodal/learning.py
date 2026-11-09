@@ -260,6 +260,96 @@ def save_candidate(candidate, path):
     }
 
 
+def _validate_calibrations(calibrations):
+    """Validate the v1 residual-radius contract, including small-sample refusal."""
+    if not isinstance(calibrations, dict) or set(calibrations) - set(MODES):
+        raise ValueError("Unknown checkpoint calibration modes")
+    required = {
+        "mode",
+        "alpha",
+        "groups",
+        "pairs",
+        "source_ids",
+        "radius",
+        "rank",
+        "group_max_residuals",
+        "residual_cdf",
+        "scope",
+        "conditional_coverage_guarantee",
+        "ood_coverage_guarantee",
+        "probability_prediction",
+        "brier_score",
+        "ece",
+        "calibration_seconds",
+    }
+
+    def nonnegative(value):
+        return type(value) in (int, float) and math.isfinite(value) and value >= 0
+
+    for mode, record in calibrations.items():
+        if not isinstance(record, dict) or set(record) != required:
+            raise ValueError("Checkpoint calibration schema differs")
+        alpha, groups, sources = record["alpha"], record["groups"], record["source_ids"]
+        if (
+            record["mode"] != mode
+            or type(alpha) not in (int, float)
+            or not math.isfinite(alpha)
+            or not 0 < alpha < 1
+            or type(groups) is not int
+            or groups < 1
+            or type(record["pairs"]) is not int
+            or record["pairs"] < groups
+            or not isinstance(sources, list)
+            or len(sources) != groups
+            or any(not isinstance(source, str) or not source for source in sources)
+            or sources != sorted(set(sources))
+        ):
+            raise ValueError("Checkpoint calibration groups/source roster differs")
+        residuals = record["group_max_residuals"]
+        if (
+            not isinstance(residuals, list)
+            or len(residuals) != groups
+            or not all(nonnegative(value) for value in residuals)
+            or residuals != sorted(residuals)
+        ):
+            raise ValueError("Invalid checkpoint calibration residuals")
+        rank = math.ceil((groups + 1) * (1 - alpha))
+        radius = record["radius"]
+        if (
+            type(record["rank"]) is not int
+            or record["rank"] != rank
+            or (radius is not None and not nonnegative(radius))
+            or radius != (residuals[rank - 1] if rank <= groups else None)
+        ):
+            raise ValueError("Checkpoint calibration radius/rank differs")
+        cdf = record["residual_cdf"]
+        if (
+            not isinstance(cdf, list)
+            or len(cdf) != groups
+            or any(
+                not isinstance(row, list)
+                or len(row) != 2
+                or not all(nonnegative(value) for value in row)
+                or row != [residuals[index], (index + 1) / groups]
+                for index, row in enumerate(cdf)
+            )
+            or not nonnegative(record["calibration_seconds"])
+            or record["scope"]
+            != "exchangeable procedural sources in declared finite model; DP approximation errors"
+            or any(
+                record[key] is not False
+                for key in (
+                    "conditional_coverage_guarantee",
+                    "ood_coverage_guarantee",
+                    "probability_prediction",
+                )
+            )
+            or record["brier_score"] is not None
+            or record["ece"] is not None
+        ):
+            raise ValueError("Checkpoint calibration profile/CDF differs")
+
+
 def load_candidate(path, expected_sha256, model):
     path = Path(path)
     if (
@@ -276,9 +366,11 @@ def load_candidate(path, expected_sha256, model):
         "model_id"
     ] != model_identity(model):
         raise ValueError("Checkpoint source/model profile differs")
+    _validate_calibrations(value.get("calibrations"))
     weights = value["weights"]
     width, hidden = len(weights["hidden.weight"][0]), len(weights["hidden.weight"])
-    if not 1 <= width <= 256 or not 1 <= hidden <= 256:
+    expected_width = len(f.numeric_features(f.State(), f.STOP))
+    if width != expected_width or not 1 <= hidden <= 256:
         raise ValueError("Checkpoint network shape outside bounded profile")
     network = AdvantageNet(width, hidden)
     tensors = {k: torch.tensor(v, dtype=torch.float64) for k, v in weights.items()}

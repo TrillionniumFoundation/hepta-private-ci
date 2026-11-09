@@ -38,8 +38,17 @@ BASELINES = (
 
 
 def draw(seed, state, action):
-    """Common counter randomness; only prophet may read future draws."""
-    raw = hashlib.sha256(json.dumps([seed, state.time, action.name]).encode()).digest()
+    """Common counters; delaying READ cannot change its pending packet.
+
+    This finite profile has one packet per episode, identified by ready_at.
+    Only the prophet may inspect a counter before the legal action releases it.
+    """
+    key = (
+        [seed, "pending-signal", state.ready_at]
+        if action == f.READ
+        else [seed, state.time, action.name]
+    )
+    raw = hashlib.sha256(json.dumps(key).encode()).digest()
     return int.from_bytes(raw[:8], "big") / 2**64
 
 
