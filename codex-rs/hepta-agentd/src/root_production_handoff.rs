@@ -24,6 +24,12 @@ pub use writer::RootProductionWriterDescriptor;
 pub use writer::receive_root_production_writer_handoff;
 pub use writer::send_root_production_writer_handoff;
 
+#[path = "root_production_learning_handoff.rs"]
+mod learning;
+pub use learning::RootLearningHandoffV1;
+pub use learning::receive_root_learning_handoff;
+pub use learning::send_root_learning_handoff;
+
 /// Consume exactly one inherited unnamed pair. The retained creator must be
 /// actual UID0, and the second transferred descriptor must pin that same Root.
 /// All received rights close on malformed/truncated frames. This function does

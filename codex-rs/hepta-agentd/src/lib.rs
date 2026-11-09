@@ -187,11 +187,17 @@ pub use config::PreparedRootAgentdConfig;
 #[cfg(target_os = "linux")]
 pub use config::drop_root_native_owner_credentials;
 #[cfg(target_os = "linux")]
+pub use root_production_handoff::RootLearningHandoffV1;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::RootProductionWriterDescriptor;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::receive_root_learning_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_writer_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_learning_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_production_handoff;
 #[cfg(target_os = "linux")]
