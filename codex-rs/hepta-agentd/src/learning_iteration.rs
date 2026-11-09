@@ -313,6 +313,7 @@ impl LearningIterationRuntimeBootstrapV1 {
         {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
+        self.require_frozen_scope(&request)?;
         LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?;
         require_ready(state)?;
         let snapshot = self
@@ -324,6 +325,9 @@ impl LearningIterationRuntimeBootstrapV1 {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
         let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
+        if let Some(scope) = &self.scope {
+            scope.validate_snapshot(restored.snapshot())?;
+        }
         crate::learning_iteration_auth::authenticate_restored_iteration_v1(
             state,
             self.ports.as_ref(),
@@ -348,14 +352,7 @@ impl LearningIterationRuntimeBootstrapV1 {
         {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
-        if self.ports.frozen_scope_binding()
-            != self.scope.as_ref().map(FrozenLearningScopeV2::binding)
-        {
-            return Err(LearningIterationRuntimeErrorV1::WrongScope);
-        }
-        if let Some(scope) = &self.scope {
-            scope.validate_request(&request, &self.owners)?;
-        }
+        self.require_frozen_scope(&request)?;
         let initial = LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?;
         require_ready(state)?;
         let mut coordinator = match self.ports.restore(&request).await? {
@@ -450,6 +447,21 @@ impl LearningIterationRuntimeBootstrapV1 {
             }
         }
         Ok(coordinator.snapshot().clone())
+    }
+
+    fn require_frozen_scope(
+        &self,
+        request: &LearningIterationRequestV1,
+    ) -> Result<(), LearningIterationRuntimeErrorV1> {
+        if self.ports.frozen_scope_binding()
+            != self.scope.as_ref().map(FrozenLearningScopeV2::binding)
+        {
+            return Err(LearningIterationRuntimeErrorV1::WrongScope);
+        }
+        if let Some(scope) = &self.scope {
+            scope.validate_request(request, &self.owners)?;
+        }
+        Ok(())
     }
 
     fn require_stage_admission(

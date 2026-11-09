@@ -37,6 +37,8 @@ impl LearningIterationRuntimeBootstrapV1 {
                 "Circuit learning request belongs to another agent".into(),
             ));
         }
+        self.require_frozen_scope(&request)
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         self.circuit_delivery_request = Some(request);
