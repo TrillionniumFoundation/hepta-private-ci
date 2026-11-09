@@ -2541,9 +2541,11 @@ mod tests {
             Err(DurableRegistryError::StateLocked)
         ));
         drop(first);
-        let successor =
-            DurablePromptRegistry::open_state_dir(&root, 64).must("successor owner");
-        assert_eq!(successor.registry().must("registry").snapshot_digest(), before);
+        let successor = DurablePromptRegistry::open_state_dir(&root, 64).must("successor owner");
+        assert_eq!(
+            successor.registry().must("registry").snapshot_digest(),
+            before
+        );
         drop(retained);
         assert!(matches!(
             DurablePromptRegistry::open_state_dir(&root, 64),

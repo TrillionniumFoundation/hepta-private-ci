@@ -139,7 +139,9 @@ impl AgentdLearningCheckpointClientV1 {
                         return Err(Error::WrongScope);
                     }
                     if let Some(scope) = &self.scope {
-                        scope.validate_snapshot(&snapshot).map_err(Error::Snapshot)?;
+                        scope
+                            .validate_snapshot(&snapshot)
+                            .map_err(Error::Snapshot)?;
                     }
                     Ok(snapshot)
                 })

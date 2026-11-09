@@ -23,19 +23,28 @@ class TaskInputsTests(unittest.TestCase):
 
     def test_source_and_successor_use_distinct_frozen_content(self):
         context = validate_frozen_task_inputs(self.config, self.frozen)
-        source, successor = (context["task_inputs"][key] for key in ("source-task", "next-task"))
+        source, successor = (
+            context["task_inputs"][key] for key in ("source-task", "next-task")
+        )
         self.assertEqual(source["prompt"], self.config["source_prompt"])
         self.assertEqual(successor["prompt"], self.next_prompt)
         self.assertNotEqual(source["prompt"], successor["prompt"])
         for inputs in (source, successor):
             validate_probe_inputs(context, inputs)
-            validate_probe_inputs(context, copy.deepcopy(inputs))  # Cold readback keeps the exact input.
+            validate_probe_inputs(
+                context, copy.deepcopy(inputs)
+            )  # Cold readback keeps the exact input.
 
     def test_probe_refuses_prompt_role_request_id_and_extra_field_changes(self):
         for label in ("source-task", "next-task"):
             for key, value in (
                 ("prompt", "a different prompt"),
-                ("prompt", self.next_prompt if label == "source-task" else self.config["source_prompt"]),
+                (
+                    "prompt",
+                    self.next_prompt
+                    if label == "source-task"
+                    else self.config["source_prompt"],
+                ),
                 ("request_id", "unregistered-task"),
                 ("mode", "another-mode"),
                 ("caller_claim", True),
@@ -67,7 +76,9 @@ class TaskInputsTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_frozen_task_inputs(self.config, changed)
         with self.assertRaises(ValueError):
-            validate_frozen_task_inputs(dict(self.config, source_prompt="replacement"), self.frozen)
+            validate_frozen_task_inputs(
+                dict(self.config, source_prompt="replacement"), self.frozen
+            )
         with self.assertRaises(ValueError):
             validate_frozen_task_inputs(self.config, {"next_prompt": self.next_prompt})
 
@@ -75,12 +86,22 @@ class TaskInputsTests(unittest.TestCase):
         config = {"operation": "legacy-task-input-test"}
         context = validate_frozen_task_inputs(config, {"next_prompt": self.next_prompt})
         self.assertEqual(context["task_input_profile"], LEGACY_TASK_INPUTS)
-        self.assertEqual(context["task_inputs"]["source-task"]["prompt"], self.next_prompt)
-        self.assertEqual(context["task_inputs"]["next-task"]["prompt"], self.next_prompt)
+        self.assertEqual(
+            context["task_inputs"]["source-task"]["prompt"], self.next_prompt
+        )
+        self.assertEqual(
+            context["task_inputs"]["next-task"]["prompt"], self.next_prompt
+        )
         with self.assertRaises(ValueError):
-            freeze_task_inputs(dict(config, source_prompt="ignored source would be unsafe"), self.next_prompt)
+            freeze_task_inputs(
+                dict(config, source_prompt="ignored source would be unsafe"),
+                self.next_prompt,
+            )
         with self.assertRaises(ValueError):
-            freeze_task_inputs(dict(config, task_input_profile="caller-defined-profile"), self.next_prompt)
+            freeze_task_inputs(
+                dict(config, task_input_profile="caller-defined-profile"),
+                self.next_prompt,
+            )
 
 
 if __name__ == "__main__":

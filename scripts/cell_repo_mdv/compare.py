@@ -26,7 +26,11 @@ ARMS = ("candidate", "no_update", "bm25", "fixed_expert")
 def _usage():
     own = resource.getrusage(resource.RUSAGE_SELF)
     child = resource.getrusage(resource.RUSAGE_CHILDREN)
-    return time.monotonic(), own.ru_utime + own.ru_stime, child.ru_utime + child.ru_stime
+    return (
+        time.monotonic(),
+        own.ru_utime + own.ru_stime,
+        child.ru_utime + child.ru_stime,
+    )
 
 
 def _costs(start):
@@ -84,7 +88,8 @@ def compare(
         and candidate["parent_sha256"] == digest(parent)
         and candidate_receipt.get("state_before_digest") == digest(parent)
         and candidate_receipt.get("training_updates_consumed") == 1
-        and candidate_receipt.get("feedback_sha256") == candidate["last_feedback_sha256"],
+        and candidate_receipt.get("feedback_sha256")
+        == candidate["last_feedback_sha256"],
         "candidate must be the immediate child of the frozen no-update state",
     )
     require(
@@ -138,7 +143,9 @@ def compare(
         "parent_state_sha256": digest(parent),
         "candidate_state_sha256": digest(candidate),
         "candidate_result_sha256": digest(candidate_receipt),
-        "parent_result_sha256": None if parent_receipt is None else digest(parent_receipt),
+        "parent_result_sha256": None
+        if parent_receipt is None
+        else digest(parent_receipt),
         "arm_order": list(arm_order),
         "policies": policies,
         "setup_timeout_seconds_per_command": 120,
@@ -165,14 +172,23 @@ def compare(
                 with chdir(cwd):
                     row.update(
                         subprocess_supervisor.run_logged(
-                            command, stdout=stdout, stderr=stderr, timeout=120, env=dict(os.environ)
+                            command,
+                            stdout=stdout,
+                            stderr=stderr,
+                            timeout=120,
+                            env=dict(os.environ),
                         )
                     )
         row["costs"] = _costs(before)
         row["logs"] = {}
         for stream in ("stdout", "stderr"):
-            raw = read_bound(prefix.with_suffix("." + stream), subprocess_supervisor.STREAM_LIMIT)
-            row["logs"][stream] = {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+            raw = read_bound(
+                prefix.with_suffix("." + stream), subprocess_supervisor.STREAM_LIMIT
+            )
+            row["logs"][stream] = {
+                "bytes": len(raw),
+                "sha256": hashlib.sha256(raw).hexdigest(),
+            }
         write_new(prefix.with_suffix(".result.json"), row)
         require(
             row["error"] is None and row["cleanup_complete"] and row["returncode"] == 0,
@@ -184,8 +200,14 @@ def compare(
     source_verified = False
     try:
         expected = task["source"]["head"] + "\n" + task["source"]["tree"] + "\n"
-        require(git(["rev-parse", "HEAD", "HEAD^{tree}"], source) == expected, "source identity mismatch")
-        require(git(["status", "--porcelain=v1", "--untracked-files=all"], source) == "", "source is not clean")
+        require(
+            git(["rev-parse", "HEAD", "HEAD^{tree}"], source) == expected,
+            "source identity mismatch",
+        )
+        require(
+            git(["status", "--porcelain=v1", "--untracked-files=all"], source) == "",
+            "source is not clean",
+        )
         for arm in arm_order:
             arm_start = _usage()
             directory = output / arm
@@ -194,7 +216,17 @@ def compare(
             record = {"terminal": "unknown", "result": None, "error": None}
             arms[arm] = record
             try:
-                git(["clone", "--shared", "--no-checkout", "--", str(source), str(workspace)], source)
+                git(
+                    [
+                        "clone",
+                        "--shared",
+                        "--no-checkout",
+                        "--",
+                        str(source),
+                        str(workspace),
+                    ],
+                    source,
+                )
                 git(["checkout", "--detach", task["source"]["head"]], workspace)
                 arm_task = copy.deepcopy(task)
                 arm_task["workspace"] = str(workspace)
@@ -203,25 +235,42 @@ def compare(
                     corpus,
                     directory / "execution",
                     state=candidate if arm == "candidate" else parent,
-                    state_receipt=candidate_receipt if arm == "candidate" else parent_receipt,
+                    state_receipt=candidate_receipt
+                    if arm == "candidate"
+                    else parent_receipt,
                     policy=policies[arm],
                 )
-                record.update(terminal=result["terminal"], result={
-                    "path": f"{arm}/execution/result.json",
-                    "sha256": hashlib.sha256(read_bound(directory / "execution" / "result.json")).hexdigest(),
-                    "selected_document": result.get("selected_document"),
-                    "state_before_digest": result["state_before_digest"],
-                    "state_after_digest": result["state_after_digest"],
-                    "training_updates_consumed": result["training_updates_consumed"],
-                })
+                record.update(
+                    terminal=result["terminal"],
+                    result={
+                        "path": f"{arm}/execution/result.json",
+                        "sha256": hashlib.sha256(
+                            read_bound(directory / "execution" / "result.json")
+                        ).hexdigest(),
+                        "selected_document": result.get("selected_document"),
+                        "state_before_digest": result["state_before_digest"],
+                        "state_after_digest": result["state_after_digest"],
+                        "training_updates_consumed": result[
+                            "training_updates_consumed"
+                        ],
+                    },
+                )
             except Exception as error:
                 record["error"] = {"type": type(error).__name__, "message": str(error)}
             record["costs"] = _costs(arm_start)
             write_new(directory / "receipt.json", record)
             if preparation and preparation[-1].get("cleanup_complete") is not True:
-                raise ValueError("unresolved preparation cleanup; later arms not started")
-        require(git(["rev-parse", "HEAD", "HEAD^{tree}"], source) == expected, "source identity changed")
-        require(git(["status", "--porcelain=v1", "--untracked-files=all"], source) == "", "source changed during comparison")
+                raise ValueError(
+                    "unresolved preparation cleanup; later arms not started"
+                )
+        require(
+            git(["rev-parse", "HEAD", "HEAD^{tree}"], source) == expected,
+            "source identity changed",
+        )
+        require(
+            git(["status", "--porcelain=v1", "--untracked-files=all"], source) == "",
+            "source changed during comparison",
+        )
         source_verified = True
     except Exception as error:
         errors.append({"type": type(error).__name__, "message": str(error)})
@@ -233,7 +282,8 @@ def compare(
         "registered_arms": list(arm_order),
         "unstarted_arms": [arm for arm in arm_order if arm not in arms],
         "source_unchanged_verified": source_verified,
-        "terminal_comparison_complete": source_verified and len(arms) == len(ARMS)
+        "terminal_comparison_complete": source_verified
+        and len(arms) == len(ARMS)
         and all(row["terminal"] in {"proved", "refuted"} for row in arms.values()),
         "errors": errors,
         "costs": _costs(started),
@@ -251,17 +301,29 @@ def compare(
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("task", "corpus", "parent", "candidate", "candidate-receipt", "fixed-document", "output"):
+    for name in (
+        "task",
+        "corpus",
+        "parent",
+        "candidate",
+        "candidate-receipt",
+        "fixed-document",
+        "output",
+    ):
         parser.add_argument("--" + name, required=True)
     parser.add_argument("--parent-receipt")
     parser.add_argument("--arm-order", nargs=4, choices=ARMS, default=ARMS)
     args = parser.parse_args()
     report = compare(
-        load(args.task), load(args.corpus), args.output,
-        parent=load(args.parent), candidate=load(args.candidate),
+        load(args.task),
+        load(args.corpus),
+        args.output,
+        parent=load(args.parent),
+        candidate=load(args.candidate),
         candidate_receipt=load(args.candidate_receipt),
         parent_receipt=load(args.parent_receipt) if args.parent_receipt else None,
-        fixed_document=args.fixed_document, arm_order=args.arm_order,
+        fixed_document=args.fixed_document,
+        arm_order=args.arm_order,
     )
     print("complete" if report["terminal_comparison_complete"] else "unresolved")
     return 0 if report["terminal_comparison_complete"] else 2

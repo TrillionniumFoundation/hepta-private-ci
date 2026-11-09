@@ -58,7 +58,11 @@ def freeze_task_inputs(config, next_prompt):
     else:
         source_prompt = config.get("source_prompt")
     for prompt in (source_prompt, next_prompt):
-        if not isinstance(prompt, str) or not prompt.strip() or len(prompt.encode()) > 2048:
+        if (
+            not isinstance(prompt, str)
+            or not prompt.strip()
+            or len(prompt.encode()) > 2048
+        ):
             raise ValueError("bounded explicit source and next prompts required")
     if profile == DISTINCT_TASK_INPUTS and source_prompt == next_prompt:
         raise ValueError("source and next prompt content must differ")
@@ -66,8 +70,13 @@ def freeze_task_inputs(config, next_prompt):
     if not isinstance(operation, str) or not operation:
         raise ValueError("task operation required")
     inputs = {
-        label: dict(mode="conditional_binary", request_id=operation + "-" + label, prompt=prompt)
-        for label, prompt in (("source-task", source_prompt), ("next-task", next_prompt))
+        label: dict(
+            mode="conditional_binary", request_id=operation + "-" + label, prompt=prompt
+        )
+        for label, prompt in (
+            ("source-task", source_prompt),
+            ("next-task", next_prompt),
+        )
     }
     if any(len(canonical(value)) > 4096 for value in inputs.values()):
         raise ValueError("task input exceeds native input bound")

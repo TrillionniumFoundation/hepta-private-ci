@@ -130,12 +130,25 @@ fn root_learning_registration_reopens_without_replacing_original_history() -> an
     let (_fixture, _identity, mut coordinator) = fixture()?;
     let initial = coordinator.snapshot().clone();
     let path = root.path().join("learning-checkpoint");
-    assert!(learning_store(root.path(), &initial, /*scope*/ None, StoreMode::Reopen).is_err());
+    assert!(
+        learning_store(
+            root.path(),
+            &initial,
+            /*scope*/ None,
+            StoreMode::Reopen
+        )
+        .is_err()
+    );
     assert!(
         !path.exists(),
         "open-only recovery must not register a missing owner"
     );
-    let owner = learning_store(root.path(), &initial, /*scope*/ None, StoreMode::Register)?;
+    let owner = learning_store(
+        root.path(),
+        &initial,
+        /*scope*/ None,
+        StoreMode::Register,
+    )?;
     assert_eq!(owner.restore(&initial.request)?, None);
     assert_eq!(
         owner.checkpoint(Digest32::ZERO, &initial)?,
@@ -150,14 +163,35 @@ fn root_learning_registration_reopens_without_replacing_original_history() -> an
     drop(owner);
 
     let before = retained_files(&path)?;
-    assert!(learning_store(root.path(), &initial, /*scope*/ None, StoreMode::Register).is_err());
+    assert!(
+        learning_store(
+            root.path(),
+            &initial,
+            /*scope*/ None,
+            StoreMode::Register
+        )
+        .is_err()
+    );
     let mut changed = initial.request.clone();
     changed.operation_id = StableId::new("different-unregistered-learning-operation")?;
     let changed = LearningIterationCoordinatorV1::new(changed, initial.owners.clone())?;
-    assert!(learning_store(root.path(), changed.snapshot(), /*scope*/ None, StoreMode::Reopen).is_err());
+    assert!(
+        learning_store(
+            root.path(),
+            changed.snapshot(),
+            /*scope*/ None,
+            StoreMode::Reopen
+        )
+        .is_err()
+    );
     assert_eq!(retained_files(&path)?, before);
 
-    let reopened = learning_store(root.path(), &initial, /*scope*/ None, StoreMode::Reopen)?;
+    let reopened = learning_store(
+        root.path(),
+        &initial,
+        /*scope*/ None,
+        StoreMode::Reopen,
+    )?;
     assert_eq!(reopened.restore(&initial.request)?, Some(progress.clone()));
     assert_eq!(
         reopened.checkpoint(initial.head_digest, &progress)?,
@@ -193,11 +227,18 @@ async fn sealed_checkpoint_recovery(scope: Option<LearningUpdateScopeV2>) -> any
     let initial = coordinator.snapshot().clone();
     let profile = match scope {
         Some(scope) => HostAuthorityLearningProfileV1::new_scoped_v2(
-            &identity, [7; 32], initial.request.clone(), initial.owners.clone(),
-            scope, Digest32::from_array([8; 32]),
+            &identity,
+            [7; 32],
+            initial.request.clone(),
+            initial.owners.clone(),
+            scope,
+            Digest32::from_array([8; 32]),
         ),
         None => HostAuthorityLearningProfileV1::new(
-            &identity, [7; 32], initial.request.clone(), initial.owners.clone(),
+            &identity,
+            [7; 32],
+            initial.request.clone(),
+            initial.owners.clone(),
         ),
     }?;
     let frozen = profile.frozen_scope(&initial)?;
@@ -248,15 +289,27 @@ async fn sealed_checkpoint_recovery(scope: Option<LearningUpdateScopeV2>) -> any
     let worker = serve_registered_store(server, owner)?;
     let client = match recovered_scope {
         Some(scope) => AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2(
-            stream, actual, delivered.root_pidfd, initial.clone(), scope,
-            Duration::from_millis(500), Duration::from_secs(10),
+            stream,
+            actual,
+            delivered.root_pidfd,
+            initial.clone(),
+            scope,
+            Duration::from_millis(500),
+            Duration::from_secs(10),
         ),
         None => AgentdLearningCheckpointClientV1::from_root_stream(
-            stream, actual, delivered.root_pidfd, initial.clone(),
-            Duration::from_millis(500), Duration::from_secs(10),
+            stream,
+            actual,
+            delivered.root_pidfd,
+            initial.clone(),
+            Duration::from_millis(500),
+            Duration::from_secs(10),
         ),
     }?;
-    assert_eq!(client.frozen_scope_binding(), frozen.as_ref().map(FrozenLearningScopeV2::binding));
+    assert_eq!(
+        client.frozen_scope_binding(),
+        frozen.as_ref().map(FrozenLearningScopeV2::binding)
+    );
     assert_eq!(client.restore(&initial.request).await?, None);
     let mut foreign = initial.request.clone();
     foreign.source_run_id = StableId::new("another-source-run")?;
@@ -284,14 +337,28 @@ async fn sealed_checkpoint_recovery(scope: Option<LearningUpdateScopeV2>) -> any
         .map_err(|_| anyhow::anyhow!("Root checkpoint worker failed"))??;
     let before = retained_files(&root.path().join("learning-checkpoint"))?;
     if let Some(scope) = scope {
-        assert!(learning_store(root.path(), &initial, /*scope*/ None, StoreMode::Reopen).is_err());
+        assert!(
+            learning_store(
+                root.path(),
+                &initial,
+                /*scope*/ None,
+                StoreMode::Reopen
+            )
+            .is_err()
+        );
         let changed = FrozenLearningScopeV2::freeze(
-            &initial.request, &initial.owners, scope, Digest32::from_array([9; 32]),
+            &initial.request,
+            &initial.owners,
+            scope,
+            Digest32::from_array([9; 32]),
         )?;
         assert!(learning_store(root.path(), &initial, Some(&changed), StoreMode::Reopen).is_err());
     }
     let reopened = learning_store(root.path(), &initial, frozen.as_ref(), StoreMode::Reopen)?;
     assert_eq!(reopened.restore(&initial.request)?, Some(progress));
-    assert_eq!(retained_files(&root.path().join("learning-checkpoint"))?, before);
+    assert_eq!(
+        retained_files(&root.path().join("learning-checkpoint"))?,
+        before
+    );
     Ok(())
 }

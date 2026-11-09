@@ -5,8 +5,7 @@ use pretty_assertions::assert_eq;
 
 use super::*;
 
-#[path = "learning_iteration_checkpoint_test_support.rs"]
-mod support;
+use crate::learning_iteration_checkpoint::test_support as support;
 use support::Decision;
 use support::FileCas;
 use support::OWNER;

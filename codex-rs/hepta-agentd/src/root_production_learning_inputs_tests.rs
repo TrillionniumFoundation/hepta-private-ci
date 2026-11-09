@@ -219,12 +219,16 @@ fn learning_bundle_refuses_other_agent_initial_operation_and_profile_bytes() -> 
 }
 
 #[test]
-fn scoped_learning_bundle_requires_matching_schema_operation_and_frozen_scope() -> anyhow::Result<()> {
+fn scoped_learning_bundle_requires_matching_schema_operation_and_frozen_scope() -> anyhow::Result<()>
+{
     let (_directory, identity, original, mut learning) = bundles()?;
     let initial = learning.decode_initial()?;
     let pin: Digest32 = learning.writer_proof_digest.parse()?;
     let profile = HostAuthorityLearningProfileV1::new_scoped_v2(
-        &identity, pin.into_array(), initial.request.clone(), initial.owners.clone(),
+        &identity,
+        pin.into_array(),
+        initial.request.clone(),
+        initial.owners.clone(),
         codex_hepta_learning_artifacts::LearningUpdateScopeV2::Cell,
         Digest32::from_array([8; 32]),
     )?;
@@ -232,20 +236,32 @@ fn scoped_learning_bundle_requires_matching_schema_operation_and_frozen_scope() 
     learning.schema_version = schema;
     learning.operation = operation.into();
     learning.update_scope = scope;
-    assert_eq!(validate_binding(&learning, &original, &identity, original.root.pid)?, initial);
-    assert_eq!(learning.decode_frozen_scope(&initial)?, profile.frozen_scope(&initial)?);
+    assert_eq!(
+        validate_binding(&learning, &original, &identity, original.root.pid)?,
+        initial
+    );
+    assert_eq!(
+        learning.decode_frozen_scope(&initial)?,
+        profile.frozen_scope(&initial)?
+    );
     for case in 0..5 {
         let mut changed = serde_json::to_value(&learning)?;
         match case {
             0 => changed["schema_version"] = serde_json::json!(1),
-            1 => changed["operation"] = serde_json::json!(crate::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V1),
+            1 => {
+                changed["operation"] =
+                    serde_json::json!(crate::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V1)
+            }
             2 => changed["update_scope"] = serde_json::Value::Null,
             3 => changed["update_scope"]["update_scope"] = serde_json::json!("organ"),
             4 => changed["update_scope"]["binding"] = serde_json::json!(Digest32::ZERO.to_string()),
             _ => unreachable!(),
         }
         let changed: HostAuthorityLearningBootstrapV1 = serde_json::from_value(changed)?;
-        assert!(validate_binding(&changed, &original, &identity, original.root.pid).is_err(), "case {case}");
+        assert!(
+            validate_binding(&changed, &original, &identity, original.root.pid).is_err(),
+            "case {case}"
+        );
     }
     Ok(())
 }

@@ -7,8 +7,8 @@ use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
 
-use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
+use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 
 use crate::AgentdError;
@@ -93,10 +93,21 @@ impl RootLearningHandoffV1 {
         let stream = stream.into_std()?;
         let client = match &scope {
             Some(scope) => AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2(
-                stream, peer, self.root_pidfd, initial.clone(), scope.clone(), timeout, remaining(end)?,
+                stream,
+                peer,
+                self.root_pidfd,
+                initial.clone(),
+                scope.clone(),
+                timeout,
+                remaining(end)?,
             ),
             None => AgentdLearningCheckpointClientV1::from_root_stream(
-                stream, peer, self.root_pidfd, initial.clone(), timeout, remaining(end)?,
+                stream,
+                peer,
+                self.root_pidfd,
+                initial.clone(),
+                timeout,
+                remaining(end)?,
             ),
         }
         .map_err(|error| refused(format!("learning Root transport: {error}")))?;
@@ -176,12 +187,21 @@ impl AgentdRootLearningInputsV1 {
         let ports = self.client.with_stage_owners(stages);
         let (handle, bootstrap) = match self.scope {
             Some(scope) => crate::learning_iteration_channel_scoped_v2(
-                self.identity.agent_id, self.identity.spawn_generation, self.initial.owners,
-                ports, verifier, capacity, scope,
+                self.identity.agent_id,
+                self.identity.spawn_generation,
+                self.initial.owners,
+                ports,
+                verifier,
+                capacity,
+                scope,
             ),
             None => crate::learning_iteration_channel_v1(
-                self.identity.agent_id, self.identity.spawn_generation, self.initial.owners,
-                ports, verifier, capacity,
+                self.identity.agent_id,
+                self.identity.spawn_generation,
+                self.initial.owners,
+                ports,
+                verifier,
+                capacity,
             ),
         }?;
         Ok((

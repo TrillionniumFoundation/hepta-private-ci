@@ -9,8 +9,8 @@ use std::time::Instant;
 
 use codex_hepta_contracts::HostAuthorityFrontierStore;
 use codex_hepta_contracts::RootAuthorityDirectory;
-use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
+use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
 use serde::Serialize;
 
@@ -62,7 +62,12 @@ impl HostAuthorityService {
             owner_pidfd,
             &profile,
             |initial, scope, proof| {
-                learning_store(&config.state_dir, &initial, scope.as_ref(), StoreMode::Register)?;
+                learning_store(
+                    &config.state_dir,
+                    &initial,
+                    scope.as_ref(),
+                    StoreMode::Register,
+                )?;
                 Ok(HostAuthorityLearningRegistrationV1 {
                     schema_version: if scope.is_some() { 2 } else { 1 },
                     initial_head: initial.head_digest.to_string(),
@@ -87,7 +92,14 @@ impl HostAuthorityService {
             registration,
             owner_pidfd,
             &profile,
-            |initial, scope, _| learning_store(&config.state_dir, &initial, scope.as_ref(), StoreMode::Reopen),
+            |initial, scope, _| {
+                learning_store(
+                    &config.state_dir,
+                    &initial,
+                    scope.as_ref(),
+                    StoreMode::Reopen,
+                )
+            },
         )?;
         let socket_path = config
             .sockets
@@ -132,7 +144,8 @@ impl HostAuthorityService {
                     .and_then(|value| value.parse::<u64>().ok())
                     .filter(|value| *value != 0)
                     .ok_or_else(|| io::Error::other("missing Root process identity"))?;
-                let (schema_version, operation, update_scope) = learning.profile.bootstrap_profile();
+                let (schema_version, operation, update_scope) =
+                    learning.profile.bootstrap_profile();
                 let bundle = HostAuthorityLearningBootstrapV1 {
                     schema_version,
                     operation: operation.into(),
@@ -177,7 +190,11 @@ impl HostAuthorityService {
         registration: &HostAuthorityRegistration,
         owner_pidfd: &OwnedFd,
         profile: &HostAuthorityLearningProfileV1,
-        action: impl FnOnce(LearningIterationSnapshotV1, Option<FrozenLearningScopeV2>, String) -> io::Result<T>,
+        action: impl FnOnce(
+            LearningIterationSnapshotV1,
+            Option<FrozenLearningScopeV2>,
+            String,
+        ) -> io::Result<T>,
     ) -> io::Result<T> {
         config.required_bind.verify()?;
         RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?;
@@ -285,10 +302,13 @@ fn learning_store(
             File::open(state_dir)?.sync_all()?;
             let vacant = match scope {
                 Some(scope) => LearningIterationCheckpointRecordV1::vacant_scoped_v2(
-                    initial.request.clone(), initial.owners.clone(), scope,
+                    initial.request.clone(),
+                    initial.owners.clone(),
+                    scope,
                 ),
                 None => LearningIterationCheckpointRecordV1::vacant(
-                    initial.request.clone(), initial.owners.clone(),
+                    initial.request.clone(),
+                    initial.owners.clone(),
                 ),
             }
             .map_err(io::Error::other)?;
@@ -306,10 +326,17 @@ fn learning_store(
     .map_err(io::Error::other)?;
     match scope {
         Some(scope) => LearningIterationCheckpointOwnerV1::from_registered_scoped_v2(
-            store, OWNER.into(), initial.request.clone(), initial.owners.clone(), scope.clone(),
+            store,
+            OWNER.into(),
+            initial.request.clone(),
+            initial.owners.clone(),
+            scope.clone(),
         ),
         None => LearningIterationCheckpointOwnerV1::from_registered(
-            store, OWNER.into(), initial.request.clone(), initial.owners.clone(),
+            store,
+            OWNER.into(),
+            initial.request.clone(),
+            initial.owners.clone(),
         ),
     }
     .map_err(io::Error::other)

@@ -3,8 +3,8 @@
 use std::io;
 use std::path::PathBuf;
 
-use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
 use codex_hepta_learning_artifacts::LearningUpdateScopeV2;
+use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
 
 use super::*;
 use crate::AgentdIdentity;
@@ -28,13 +28,15 @@ impl HostAuthorityLearningScopeV2 {
         scope: LearningUpdateScopeV2,
         update_rule: Digest32,
     ) -> io::Result<Self> {
-        let frozen = FrozenLearningScopeV2::freeze(
-            &initial.request, &initial.owners, scope, update_rule,
-        ).map_err(io::Error::other)?;
+        let frozen =
+            FrozenLearningScopeV2::freeze(&initial.request, &initial.owners, scope, update_rule)
+                .map_err(io::Error::other)?;
         let update_scope = match scope {
             LearningUpdateScopeV2::Cell => "cell",
             LearningUpdateScopeV2::Organ => "organ",
-            LearningUpdateScopeV2::BaseRelease => return Err(io::Error::other("slow release required")),
+            LearningUpdateScopeV2::BaseRelease => {
+                return Err(io::Error::other("slow release required"));
+            }
         };
         Ok(Self {
             update_scope: update_scope.into(),
@@ -49,10 +51,12 @@ impl HostAuthorityLearningScopeV2 {
             "organ" => LearningUpdateScopeV2::Organ,
             _ => return Err(io::Error::other("unsupported medium-cadence update scope")),
         };
-        let rule = self.update_rule.parse::<Digest32>().map_err(io::Error::other)?;
-        let frozen = FrozenLearningScopeV2::freeze(
-            &initial.request, &initial.owners, scope, rule,
-        ).map_err(io::Error::other)?;
+        let rule = self
+            .update_rule
+            .parse::<Digest32>()
+            .map_err(io::Error::other)?;
+        let frozen = FrozenLearningScopeV2::freeze(&initial.request, &initial.owners, scope, rule)
+            .map_err(io::Error::other)?;
         if self.update_rule != rule.to_string() || self.binding != frozen.binding().to_string() {
             return Err(io::Error::other("learning frozen scope binding differs"));
         }
@@ -107,7 +111,11 @@ impl HostAuthorityLearningProfileV1 {
     ) -> io::Result<Self> {
         let mut profile = Self::new(identity, writer_proof_digest, request, owners)?;
         let initial = decode_initial(&profile.initial_snapshot)?;
-        profile.update_scope = Some(HostAuthorityLearningScopeV2::new(&initial, scope, update_rule)?);
+        profile.update_scope = Some(HostAuthorityLearningScopeV2::new(
+            &initial,
+            scope,
+            update_rule,
+        )?);
         profile.schema_version = 2;
         profile.require_binding(identity, &profile.writer_proof_digest)?;
         Ok(profile)
@@ -143,11 +151,16 @@ impl HostAuthorityLearningProfileV1 {
         &self.initial_snapshot
     }
 
-    pub(crate) fn frozen_scope(&self, initial: &LearningIterationSnapshotV1) -> io::Result<Option<FrozenLearningScopeV2>> {
+    pub(crate) fn frozen_scope(
+        &self,
+        initial: &LearningIterationSnapshotV1,
+    ) -> io::Result<Option<FrozenLearningScopeV2>> {
         decode_scope(self.schema_version, self.update_scope.as_ref(), initial)
     }
 
-    pub(crate) fn bootstrap_profile(&self) -> (u32, &'static str, Option<HostAuthorityLearningScopeV2>) {
+    pub(crate) fn bootstrap_profile(
+        &self,
+    ) -> (u32, &'static str, Option<HostAuthorityLearningScopeV2>) {
         let operation = if self.schema_version == 2 {
             HOST_AUTHORITY_LEARNING_BOOTSTRAP_V2
         } else {
@@ -179,14 +192,19 @@ impl HostAuthorityLearningBootstrapV1 {
         decode_initial(&self.initial_snapshot)
     }
 
-    pub(crate) fn decode_frozen_scope(&self, initial: &LearningIterationSnapshotV1) -> io::Result<Option<FrozenLearningScopeV2>> {
+    pub(crate) fn decode_frozen_scope(
+        &self,
+        initial: &LearningIterationSnapshotV1,
+    ) -> io::Result<Option<FrozenLearningScopeV2>> {
         let expected = match self.schema_version {
             1 => HOST_AUTHORITY_LEARNING_BOOTSTRAP_V1,
             2 => HOST_AUTHORITY_LEARNING_BOOTSTRAP_V2,
             _ => return Err(io::Error::other("unsupported learning bootstrap schema")),
         };
         if self.operation != expected {
-            return Err(io::Error::other("learning bootstrap operation differs from its schema"));
+            return Err(io::Error::other(
+                "learning bootstrap operation differs from its schema",
+            ));
         }
         decode_scope(self.schema_version, self.update_scope.as_ref(), initial)
     }
@@ -200,7 +218,9 @@ fn decode_scope(
     match (schema, scope) {
         (1, None) => Ok(None),
         (2, Some(scope)) => scope.freeze(initial).map(Some),
-        _ => Err(io::Error::other("learning schema and frozen scope must match exactly")),
+        _ => Err(io::Error::other(
+            "learning schema and frozen scope must match exactly",
+        )),
     }
 }
 

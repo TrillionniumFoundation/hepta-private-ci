@@ -57,7 +57,9 @@ class V8DownloadTests(unittest.TestCase):
         self.assertIn("attempt 1/3", self.log.getvalue())
         self.assertIn("attempt 2/3", self.log.getvalue())
 
-    def test_three_failures_preserve_destination_and_raise_last_http_error(self) -> None:
+    def test_three_failures_preserve_destination_and_raise_last_http_error(
+        self,
+    ) -> None:
         self.dest.write_bytes(b"existing destination")
         self.temp.write_bytes(b"stale partial download")
         errors = [http_error(502), http_error(503), http_error(504)]
@@ -118,7 +120,9 @@ class V8DownloadTests(unittest.TestCase):
         self.assertEqual(self.dest.read_bytes(), b"complete")
         self.assertFalse(self.temp.exists())
 
-    def test_checksum_mismatch_after_recovery_remains_fatal_without_redownload(self) -> None:
+    def test_checksum_mismatch_after_recovery_remains_fatal_without_redownload(
+        self,
+    ) -> None:
         self.open.side_effect = [http_error(504), io.BytesIO(b"wrong artifact")]
         with self.assertRaisesRegex(RuntimeError, "failed checksum validation"):
             v8.ensure_valid_artifact(

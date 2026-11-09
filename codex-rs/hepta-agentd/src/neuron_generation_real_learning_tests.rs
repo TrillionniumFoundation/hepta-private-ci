@@ -76,23 +76,35 @@ fn unavailable(error: impl std::fmt::Display) -> LearningIterationRuntimeErrorV1
 }
 
 fn task_input(operation: &str, prepared: &Value, label: &str) -> anyhow::Result<Value> {
-    anyhow::ensure!(matches!(label, "source-task" | "next-task"), "unknown task stage");
+    anyhow::ensure!(
+        matches!(label, "source-task" | "next-task"),
+        "unknown task stage"
+    );
     for stage in ["source-task", "next-task"] {
         let input = &prepared["task_inputs"][stage];
-        let prompt = input["prompt"].as_str().ok_or_else(|| anyhow::anyhow!("task prompt"))?;
+        let prompt = input["prompt"]
+            .as_str()
+            .ok_or_else(|| anyhow::anyhow!("task prompt"))?;
         anyhow::ensure!(
-            !prompt.trim().is_empty() && prompt.len() <= 2048 && input == &json!({
-                "mode":"conditional_binary", "request_id":format!("{operation}-{stage}"),
-                "prompt":prompt,
-            }),
+            !prompt.trim().is_empty()
+                && prompt.len() <= 2048
+                && input
+                    == &json!({
+                        "mode":"conditional_binary", "request_id":format!("{operation}-{stage}"),
+                        "prompt":prompt,
+                    }),
             "task input differs from its frozen stage"
         );
     }
     let distinct = prepared["task_inputs"]["source-task"]["prompt"]
         != prepared["task_inputs"]["next-task"]["prompt"];
     match prepared["task_input_profile"].as_str() {
-        Some("distinct-source-next-v2") => anyhow::ensure!(distinct, "distinct profile reused the same prompt"),
-        Some("shared-next-prompt-v1") => anyhow::ensure!(!distinct, "legacy profile changed task content"),
+        Some("distinct-source-next-v2") => {
+            anyhow::ensure!(distinct, "distinct profile reused the same prompt")
+        }
+        Some("shared-next-prompt-v1") => {
+            anyhow::ensure!(!distinct, "legacy profile changed task content")
+        }
         _ => anyhow::bail!("missing or unsupported task input profile"),
     }
     Ok(prepared["task_inputs"][label].clone())
@@ -118,7 +130,10 @@ fn learning_iteration_real_model_task_input_routing_is_stage_bound() -> anyhow::
     prepared["task_inputs"]["source-task"]["prompt"] = next["prompt"].clone();
     assert!(task_input("op", &prepared, "source-task").is_err());
     prepared["task_input_profile"] = json!("shared-next-prompt-v1");
-    assert_eq!(task_input("op", &prepared, "source-task")?["prompt"], next["prompt"]);
+    assert_eq!(
+        task_input("op", &prepared, "source-task")?["prompt"],
+        next["prompt"]
+    );
     Ok(())
 }
 
@@ -412,7 +427,10 @@ impl ResearchPorts {
                     running.runtime.handle.snapshot().await?,
                     "next-task",
                 )?;
-                persist(&self.driver.evidence.join("next-task-input.json"), &request.input)?;
+                persist(
+                    &self.driver.evidence.join("next-task-input.json"),
+                    &request.input,
+                )?;
                 let intent = request.intent()?;
                 anyhow::ensure!(
                     adoption::next_use(
@@ -958,7 +976,10 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         "source-task",
     )?;
     let source_input = source_request.input.clone();
-    persist(&driver.evidence.join("source-task-input.json"), &source_input)?;
+    persist(
+        &driver.evidence.join("source-task-input.json"),
+        &source_input,
+    )?;
     let source_receipt = source_handle.step(source_request).await?;
     acknowledge(&driver, &source_handle, "source-use").await?;
     let completed = d(&serde_json::to_vec(&source_receipt)?);
@@ -1198,7 +1219,11 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         Err(_) if !updated => "NO_UPDATE_ADOPT_NOT_QUALIFIED",
         Err(_) => "FAIL_ADOPT_BINDING",
     };
-    let next_input = &running.request.as_ref().ok_or_else(|| anyhow::anyhow!("next input"))?.input;
+    let next_input = &running
+        .request
+        .as_ref()
+        .ok_or_else(|| anyhow::anyhow!("next input"))?
+        .input;
     let source_value: Value = serde_json::from_slice(&source_input)?;
     let next_value: Value = serde_json::from_slice(next_input)?;
     anyhow::ensure!(

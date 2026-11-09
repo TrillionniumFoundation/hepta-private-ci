@@ -345,9 +345,10 @@ def run(task, corpus, output, *, state=None, state_receipt=None, policy=None):
     report["training_updates_consumed"] = (
         state["updates"] - report["state_updates_before"]
     )
-    report["baseline_executed"] = (
-        policy["kind"] == "bm25" and report["terminal"] in {"proved", "refuted"}
-    )
+    report["baseline_executed"] = policy["kind"] == "bm25" and report["terminal"] in {
+        "proved",
+        "refuted",
+    }
     report["raw_spans_sha256"] = replay["record_sha256"]
     report["costs"] = {
         "envelope_wall_seconds": replay["envelope"]["inclusive_wall_ns"] / 1e9,
@@ -402,4 +403,3 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
