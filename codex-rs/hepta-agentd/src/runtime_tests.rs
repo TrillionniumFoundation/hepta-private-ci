@@ -632,7 +632,10 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     .expect("logical request");
     let fixture_started = std::time::Instant::now();
     let minted_at = SystemTime::now().duration_since(UNIX_EPOCH).expect("clock");
-    let expires_at = minted_at.as_secs() + 1;
+    // Lease expiry is stored in whole Unix seconds. Round the intended one-second
+    // deadline up so subsecond minting cannot consume the fixture's setup window.
+    // The resulting [1, 2) seconds still expire during the unchanged two-second wait.
+    let expires_at = minted_at.as_secs() + 1 + u64::from(minted_at.subsec_nanos() != 0);
     let expiry_stage = |stage: &str| {
         let observed_at = SystemTime::now()
             .duration_since(UNIX_EPOCH)

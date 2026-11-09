@@ -23,6 +23,46 @@ use super::MatrixSidecarConfig;
 use super::load_session;
 use super::persist_session;
 
+pub(super) fn trace_startup_error<E: Error + 'static>(stage: &'static str, error: &E) {
+    // Retain bounded error-chain identity without paths, credentials, payloads,
+    // or arbitrary Display/Debug strings. Enum discriminants refer to the
+    // exact pinned SDK source; this diagnostic does not change the error result.
+    eprintln!(
+        "matrix_startup_failure stage={stage} root_type={}",
+        std::any::type_name::<E>()
+    );
+    let mut current: Option<&(dyn Error + 'static)> = Some(error);
+    for depth in 0..8 {
+        let Some(cause) = current else {
+            return;
+        };
+        if let Some(io) = cause.downcast_ref::<std::io::Error>() {
+            eprintln!(
+                "matrix_startup_cause stage={stage} depth={depth} io_kind={:?} raw_os_error={:?}",
+                io.kind(),
+                io.raw_os_error()
+            );
+        } else if let Some(build) = cause.downcast_ref::<matrix_sdk::ClientBuildError>() {
+            eprintln!(
+                "matrix_startup_cause stage={stage} depth={depth} client_build_variant={:?}",
+                std::mem::discriminant(build)
+            );
+            if let matrix_sdk::ClientBuildError::SqliteStore(store) = build {
+                eprintln!(
+                    "matrix_startup_cause stage={stage} depth={depth} sqlite_open_variant={:?}",
+                    std::mem::discriminant(store)
+                );
+            }
+        } else {
+            eprintln!("matrix_startup_cause stage={stage} depth={depth} category=other");
+        }
+        current = cause.source();
+    }
+    if current.is_some() {
+        eprintln!("matrix_startup_cause stage={stage} truncated=true limit=8");
+    }
+}
+
 fn fixture() -> Result<(tempfile::TempDir, HeptaAgentLayout, MatrixSidecarConfig), Box<dyn Error>> {
     let root = tempfile::tempdir()?;
     let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;

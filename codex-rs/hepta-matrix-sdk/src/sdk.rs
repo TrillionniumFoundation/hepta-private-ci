@@ -188,6 +188,8 @@ impl MatrixSdkClient {
         startup_deadline: tokio::time::Instant,
     ) -> Result<Self, MatrixSdkError> {
         if tokio::time::Instant::now() >= startup_deadline {
+            #[cfg(test)]
+            eprintln!("matrix_startup_failure stage=deadline_before_build");
             return Err(MatrixSdkError::Initialization);
         }
         let sidecar = tokio::time::timeout_at(
@@ -195,10 +197,18 @@ impl MatrixSdkClient {
             Self::build(layout, config, store_passphrase),
         )
         .await
-        .map_err(|_| MatrixSdkError::Initialization)??;
+        .map_err(|error| {
+            #[cfg(test)]
+            startup_deadline_tests::trace_startup_error("build_deadline_elapsed", &error);
+            #[cfg(not(test))]
+            let _ = error;
+            MatrixSdkError::Initialization
+        })??;
         // A synchronous KDF can finish a poll after the timer expires. Reject
         // that result before activating a session or starting a fresh request.
         if tokio::time::Instant::now() >= startup_deadline {
+            #[cfg(test)]
+            eprintln!("matrix_startup_failure stage=deadline_after_build");
             return Err(MatrixSdkError::Initialization);
         }
         Ok(sidecar)
@@ -235,7 +245,13 @@ impl MatrixSdkClient {
             .handle_refresh_tokens()
             .build()
             .await
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| {
+                #[cfg(test)]
+                startup_deadline_tests::trace_startup_error("sdk_client_build", &error);
+                #[cfg(not(test))]
+                let _ = error;
+                MatrixSdkError::Initialization
+            })?;
         // The SDK's own sync token is only an optimization for its normal
         // sync loop.  Hepta persists the authoritative cursor in its durable
         // inbox store and always supplies that cursor explicitly.  Clear a
@@ -246,7 +262,13 @@ impl MatrixSdkClient {
             .state_store()
             .remove_kv_data(StateStoreDataKey::SyncToken)
             .await
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| {
+                #[cfg(test)]
+                startup_deadline_tests::trace_startup_error("clear_sdk_sync_token", &error);
+                #[cfg(not(test))]
+                let _ = error;
+                MatrixSdkError::Initialization
+            })?;
         let save_session_path = paths.session().to_path_buf();
         let reload_session_path = paths.session().to_path_buf();
         client
@@ -272,7 +294,13 @@ impl MatrixSdkClient {
                     })
                 }),
             )
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| {
+                #[cfg(test)]
+                startup_deadline_tests::trace_startup_error("set_session_callbacks", &error);
+                #[cfg(not(test))]
+                let _ = error;
+                MatrixSdkError::Initialization
+            })?;
         verify_homeserver(&config, &client)?;
         Ok(Self {
             client,

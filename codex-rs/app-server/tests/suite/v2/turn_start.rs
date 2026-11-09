@@ -4413,10 +4413,12 @@ async fn turn_start_file_change_approval_accept_for_session_persists_v2() -> Res
         create_final_assistant_message_sse_response("patch 2 applied")?,
     ];
     let server = create_mock_responses_server_sequence(responses).await;
-    MockResponsesConfig::new(&server.uri())
+    let config = MockResponsesConfig::new(&server.uri())
         .with_approval_policy("on-request")
-        .with_sandbox_mode("read-only")
-        .write(&codex_home)?;
+        .with_sandbox_mode("read-only");
+    #[cfg(windows)]
+    let config = config.with_extra_config("[windows]\nsandbox = \"elevated\"");
+    config.write(&codex_home)?;
 
     let mut mcp = TestAppServer::builder()
         .with_codex_home(&codex_home)

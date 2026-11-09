@@ -3,12 +3,16 @@ use app_test_support::MockResponsesConfig;
 use app_test_support::TestAppServer;
 use app_test_support::write_models_cache;
 use codex_app_server_protocol::ClientRequest;
+use codex_app_server_protocol::CollabAgentTool;
+use codex_app_server_protocol::CollabAgentToolCallStatus;
+use codex_app_server_protocol::ItemCompletedNotification;
 use codex_app_server_protocol::JSONRPCMessage;
 use codex_app_server_protocol::JSONRPCNotification;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxMode;
 use codex_app_server_protocol::SandboxPolicy;
 use codex_app_server_protocol::ThreadHistoryMode;
+use codex_app_server_protocol::ThreadItem;
 use codex_app_server_protocol::ThreadLoadedListParams;
 use codex_app_server_protocol::ThreadLoadedListResponse;
 use codex_app_server_protocol::ThreadReadParams;
@@ -22,6 +26,7 @@ use codex_app_server_protocol::ThreadTokenUsageUpdatedNotification;
 use codex_app_server_protocol::ThreadUnsubscribeParams;
 use codex_app_server_protocol::ThreadUnsubscribeResponse;
 use codex_app_server_protocol::ThreadUnsubscribeStatus;
+use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
@@ -621,6 +626,9 @@ async fn cold_resume_preserves_effective_developer_instructions_for_worker(
         ),
         None => "[features.multi_agent_v2]\nenabled = true".to_string(),
     };
+    // wait_agent observes mailbox activity, which may already have been consumed.
+    // Bound an empty-mailbox wait; the worker completion below is the actual barrier.
+    feature_config.push_str("\nmin_wait_timeout_ms = 1000\ndefault_wait_timeout_ms = 1000");
     let codex_home = TempDir::new()?;
     let role_path = codex_home.path().join("worker.toml");
     if let Some(agent_type) = agent_type {
@@ -655,17 +663,79 @@ async fn cold_resume_preserves_effective_developer_instructions_for_worker(
                 ..Default::default()
             })
             .await?;
-        timeout(
-            READ_TIMEOUT,
-            app_server.start_turn_and_wait_for_completion(TurnStartParams {
-                thread_id: thread.id.clone(),
-                input: vec![UserInput::Text {
-                    text: INITIAL_PROMPT.to_string(),
-                    text_elements: Vec::new(),
-                }],
-                ..Default::default()
-            }),
-        )
+        let child_thread_id = timeout(READ_TIMEOUT, async {
+            let parent_completed = app_server
+                .start_turn_and_wait_for_completion(TurnStartParams {
+                    thread_id: thread.id.clone(),
+                    input: vec![UserInput::Text {
+                        text: INITIAL_PROMPT.to_string(),
+                        text_elements: Vec::new(),
+                    }],
+                    ..Default::default()
+                })
+                .await?;
+            assert_eq!(parent_completed.turn.status, TurnStatus::Completed);
+
+            // The helper buffers unmatched notifications, so either completion order
+            // is valid. Bind the worker to this parent turn's exact spawn call first.
+            let spawn_completed = app_server
+                .read_stream_until_matching_notification("initial worker spawn", |notification| {
+                    notification.method == "item/completed"
+                        && notification.params.as_ref().is_some_and(|params| {
+                            serde_json::from_value::<ItemCompletedNotification>(params.clone())
+                                .is_ok_and(|completed| {
+                                    completed.thread_id == thread.id
+                                        && completed.turn_id == parent_completed.turn.id
+                                        && matches!(
+                                            completed.item,
+                                            ThreadItem::CollabAgentToolCall { id, .. }
+                                                if id == SPAWN_CALL_ID
+                                        )
+                                })
+                        })
+                })
+                .await?;
+            let spawn_completed: ItemCompletedNotification =
+                serde_json::from_value(spawn_completed.params.expect("spawn parameters"))?;
+            let ThreadItem::CollabAgentToolCall {
+                tool,
+                status,
+                sender_thread_id,
+                receiver_thread_ids,
+                ..
+            } = spawn_completed.item
+            else {
+                unreachable!("the matching notification is the initial spawn call");
+            };
+            assert_eq!(tool, CollabAgentTool::SpawnAgent);
+            assert_eq!(status, CollabAgentToolCallStatus::Completed);
+            assert_eq!(sender_thread_id, thread.id);
+            let [child_thread_id] = receiver_thread_ids.as_slice() else {
+                anyhow::bail!("initial spawn must identify exactly one worker");
+            };
+            let child_thread_id = child_thread_id.clone();
+            assert_ne!(child_thread_id, thread.id);
+
+            let child_completed = app_server
+                .read_stream_until_matching_notification(
+                    "initial worker completion",
+                    |notification| {
+                        notification.method == "turn/completed"
+                            && notification.params.as_ref().is_some_and(|params| {
+                                serde_json::from_value::<TurnCompletedNotification>(params.clone())
+                                    .is_ok_and(|completed| completed.thread_id == child_thread_id)
+                            })
+                    },
+                )
+                .await?;
+            let child_completed: TurnCompletedNotification = serde_json::from_value(
+                child_completed
+                    .params
+                    .expect("worker completion parameters"),
+            )?;
+            assert_eq!(child_completed.turn.status, TurnStatus::Completed);
+            Ok::<_, anyhow::Error>(child_thread_id)
+        })
         .await??;
         let initial_child_request = initial_child_request
             .requests()
@@ -681,9 +751,10 @@ async fn cold_resume_preserves_effective_developer_instructions_for_worker(
             assert!(has_shell_tool(&initial_parent_request.single_request()));
             assert!(!has_shell_tool(&initial_child_request));
         }
-        let child_thread_id = initial_child_request
-            .header("thread-id")
-            .expect("initial worker thread ID");
+        assert_eq!(
+            initial_child_request.header("thread-id").as_deref(),
+            Some(child_thread_id.as_str())
+        );
         let baseline: ThreadResumeResponse = app_server
             .request(|request_id| ClientRequest::ThreadResume {
                 request_id,

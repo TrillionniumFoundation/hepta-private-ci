@@ -237,7 +237,7 @@ fn original(fixture: &Fixture, clock: &Clock) -> CellGenerationRequestV2 {
     original
 }
 
-// Called only after the original explicit runtime drain has retired the owners.
+// Called only after the original runtime tasks have joined and dropped their owners.
 fn retired_bytes(fixture: &Fixture) -> [Vec<u8>; 3] {
     ["generation-journal", "generation-witness", CONTROL_FILE]
         .map(|name| checked(fs::read(fixture.directory.path().join(name))))
@@ -302,9 +302,12 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
         )
         .await,
     ));
-    let drained_bytes = retired_bytes(&fixture);
     tasks.shutdown().await;
     drop(handle);
+    // A zero drain-blocker count is not a task join or a file-owner drop.
+    assert!(custody.witness.upgrade().is_none());
+    assert!(custody.control.upgrade().is_none());
+    let drained_bytes = retired_bytes(&fixture);
 
     fixture.reopen_state().await;
     let (handle, mut tasks, custody) = start(
