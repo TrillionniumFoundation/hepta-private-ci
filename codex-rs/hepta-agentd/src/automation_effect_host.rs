@@ -61,6 +61,22 @@ mod hcsn_pq;
 #[path = "automation_hcsn_source.rs"]
 mod hcsn_source;
 
+#[cfg(target_os = "linux")]
+#[path = "automation_joint_text_host.rs"]
+mod joint;
+
+#[cfg(target_os = "linux")]
+#[path = "automation_joint_text_pq.rs"]
+mod joint_pq;
+
+#[cfg(target_os = "linux")]
+#[path = "automation_joint_text_source.rs"]
+mod joint_source;
+
+#[cfg(target_os = "linux")]
+#[path = "automation_joint_text_owner_host.rs"]
+mod joint_owner;
+
 #[cfg(all(test, unix))]
 #[path = "automation_effect_recovery_tests.rs"]
 mod recovery_tests;
@@ -69,6 +85,8 @@ mod recovery_tests;
 enum EffectProvider {
     Http(HttpProviderEffectAdapter),
     Hcsn(hcsn::HcsnProvider),
+    #[cfg(target_os = "linux")]
+    JointText(joint::JointTextProvider),
 }
 
 #[derive(Deserialize)]
@@ -78,6 +96,8 @@ enum AutomationEffectHostFile {
     Hcsn(hcsn::HcsnHostFileV2),
     #[cfg(target_os = "linux")]
     HcsnPq(Box<hcsn_pq::HcsnPqHostFileV3>),
+    #[cfg(target_os = "linux")]
+    JointTextPq(Box<joint_pq::JointTextPqHostFileV4>),
 }
 
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
@@ -149,6 +169,10 @@ impl AgentdAutomationEffectHost {
             #[cfg(target_os = "linux")]
             AutomationEffectHostFile::HcsnPq(config) => {
                 return Self::open_hcsn_pq(identity, *config);
+            }
+            #[cfg(target_os = "linux")]
+            AutomationEffectHostFile::JointTextPq(config) => {
+                return Self::open_joint_text_pq(identity, *config);
             }
         };
         if config.schema_version != AUTOMATION_EFFECT_HOST_SCHEMA_VERSION {
@@ -303,6 +327,24 @@ impl AgentdAutomationEffectHost {
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         let adapter = match &self.adapter {
             EffectProvider::Http(adapter) => adapter.clone(),
+            #[cfg(target_os = "linux")]
+            EffectProvider::JointText(provider) => {
+                return self
+                    .execute_joint_text(
+                        store,
+                        provider,
+                        AuthorizedEffectDispatchRequest {
+                            intent,
+                            wire_payload,
+                            fence: &fence,
+                            signed_grant,
+                            expected_binding: &binding,
+                            command_id,
+                            now_ms,
+                        },
+                    )
+                    .await;
+            }
             EffectProvider::Hcsn(provider) => {
                 let mut driver = provider.driver(&intent.operation_id)?;
                 #[cfg(target_os = "linux")]
@@ -419,6 +461,8 @@ impl AgentdAutomationEffectHost {
             }
         }
         let terminal = match &self.adapter {
+            #[cfg(target_os = "linux")]
+            EffectProvider::JointText(provider) => self.lookup_joint_text(provider, &pending)?,
             EffectProvider::Http(adapter) => {
                 let provider_intent = self.provider_intent(&pending)?;
                 match adapter.lookup_for_intent(&provider_intent).await {
