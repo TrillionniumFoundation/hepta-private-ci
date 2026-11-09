@@ -1,0 +1,45 @@
+{
+  "config_sha256": "3380171a5e53f7a1efafedfbc6239bdeffe5b05f2bf444e789c52024e542d621",
+  "confirmation_data_read": false,
+  "confirmation_samples_generated": 0,
+  "factor_cells": 27,
+  "fit_count": 189,
+  "frozen_at_utc": "2026-11-09T12:19:11.117814+00:00",
+  "id": "PRED1-CACHED-REPLAY-001-20261109",
+  "new_fits": 0,
+  "original_qualification": "HOLD_UNCHANGED",
+  "outcomes_read_before_registration": false,
+  "panels": {
+    "cached_adaptive136": [
+      1,
+      3,
+      6
+    ],
+    "cached_short13": [
+      1,
+      3
+    ],
+    "matched_cached_fixed1": [
+      1
+    ]
+  },
+  "registration_scope": "Supplementary development replay registered before inspecting the 189-fit formal outcomes; fresh tiny software fixtures excluded. Actual execution commit is captured in the outer receipt; this file binds the 11-file closure without a circular commit reference.",
+  "replay_base_commit": "a667400c6376d60e02fc8d391e81dd7a83224c47",
+  "schema": "pred1-cached-replay-freeze-v1",
+  "source_files": {
+    "__init__.py": "38cec1b3caecce48bd2a710e2e527eed5204888f5cec8867aa2c7aaea8b59ca0",
+    "cached_preparation.py": "054116de5c60aa67f5299e7fc30266169edbda48bf1b617549b67de6e05eab3e",
+    "cached_replay.py": "d7c52d2445a56a5074d99cb208cb5708d4ba3b2d8c34545f87bdef73e69fd62c",
+    "contracts.py": "9822cdf685b016b9b0dbf0a9fdde656fdc4d54237b0dd6ba7c71e404fd8b92e0",
+    "crossed_design.py": "4cc65332dbd84c1ed6a005e392c3f15fb7c05c100e2faf0bb0cdf576e3226e58",
+    "crossed_training.py": "2779142a7e787a5e277d33a7e0d764dbcaf9b9ec00f70a7331ece3ce99a6b065",
+    "crossed_training_fit.py": "62e841a34e68c5a833d228e8c769b69adb124f5e9e42cc455fb88d6da7cd6fe5",
+    "evaluation.py": "934a5dd74ab3262f1732bf0f04c0ba21c971997512e3f6df235e1b3321c49fc7",
+    "models.py": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7",
+    "preparation.py": "2fde00681d626b39ba020f18de922b090a746ca28ead4f413f2c9d5b6212c05a",
+    "simulator.py": "eef85855968f61c87e02c2e706b36fd7b3470bb588d790ead05371880b6237e7"
+  },
+  "training_execution_source_commit": "d5f30f0a15af065281f80a10e4cbc210af07b8fb",
+  "training_freeze_sha256": "5b8f29ca0da28ba196996dcf40416831bcf55c702e2a8100396303564841768c",
+  "training_registration_commit": "d2e39332b28a7c1564330bad95ff651fcc276bab"
+}
