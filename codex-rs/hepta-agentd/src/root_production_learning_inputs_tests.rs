@@ -217,3 +217,52 @@ fn learning_bundle_refuses_other_agent_initial_operation_and_profile_bytes() -> 
     assert!(validate_binding(&learning, &original, &identity, original.root.pid).is_err());
     Ok(())
 }
+
+#[test]
+fn scoped_learning_handoff_requires_its_complete_original_profile() -> anyhow::Result<()> {
+    let (_directory, identity, original, mut learning) = bundles()?;
+    let initial = learning.decode_initial()?;
+    let pin: Digest32 = learning.writer_proof_digest.parse()?;
+    let profile = HostAuthorityLearningProfileV1::new_scoped_v2(
+        &identity,
+        pin.into_array(),
+        initial.request.clone(),
+        initial.owners.clone(),
+        codex_hepta_learning_artifacts::LearningUpdateScopeV2::Cell,
+        Digest32::of_bytes(b"rule"),
+    )?;
+    learning.schema_version = 2;
+    learning.operation = crate::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V2.into();
+    learning.update_scope = profile.update_scope.clone();
+    assert_eq!(
+        validate_binding(&learning, &original, &identity, original.root.pid)?,
+        initial
+    );
+    assert_eq!(
+        learning.frozen_scope(&initial)?,
+        profile.frozen_scope(&initial)?
+    );
+    for mutation in 0..5 {
+        let mut changed = serde_json::to_value(&learning)?;
+        match mutation {
+            0 => changed["schema_version"] = serde_json::json!(1),
+            1 => {
+                changed["operation"] =
+                    serde_json::json!(crate::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V1)
+            }
+            2 => changed["update_scope"] = serde_json::Value::Null,
+            3 => changed["update_scope"]["scope"] = serde_json::json!("organ"),
+            4 => {
+                changed["update_scope"]["update_rule"] =
+                    serde_json::json!(Digest32::of_bytes(b"other-rule").to_string())
+            }
+            _ => unreachable!(),
+        }
+        let changed = serde_json::from_value(changed)?;
+        assert!(
+            validate_binding(&changed, &original, &identity, original.root.pid).is_err(),
+            "mutation {mutation}"
+        );
+    }
+    Ok(())
+}
