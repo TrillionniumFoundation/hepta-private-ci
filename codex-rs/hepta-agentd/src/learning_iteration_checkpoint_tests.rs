@@ -7,6 +7,9 @@ use super::*;
 
 #[path = "learning_iteration_checkpoint_test_support.rs"]
 mod support;
+
+#[path = "learning_iteration_checkpoint_scope_tests.rs"]
+mod scope_tests;
 use support::Decision;
 use support::FileCas;
 use support::OWNER;

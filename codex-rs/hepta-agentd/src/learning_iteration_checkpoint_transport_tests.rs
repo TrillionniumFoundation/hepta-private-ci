@@ -71,6 +71,7 @@ fn client(initial: &LearningIterationSnapshotV1) -> (AgentdLearningCheckpointCli
                 next_request_id: 1,
             })),
             initial: initial.clone(),
+            scope: None,
         },
         server,
     )
