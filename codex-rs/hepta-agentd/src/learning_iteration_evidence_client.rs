@@ -28,6 +28,13 @@ use crate::root_observation_stream::RootObservationStream;
 #[path = "learning_iteration_evidence_wire.rs"]
 mod wire;
 
+#[path = "learning_iteration_evaluation_evidence.rs"]
+mod evaluation;
+pub use evaluation::AuthenticatedCellLearningEvaluationV1;
+pub use evaluation::CellLearningEvaluationReadbackErrorV1;
+pub use evaluation::CellLearningEvaluationReadbackRequestV1;
+pub use evaluation::read_cell_learning_evaluation_v1;
+
 /// Selected by the original host, before transfer of the connected stream and
 /// pidfd. Neither a reply nor a model-selected pathname can select this owner.
 pub struct LearningIterationEvidencePeerV1 {

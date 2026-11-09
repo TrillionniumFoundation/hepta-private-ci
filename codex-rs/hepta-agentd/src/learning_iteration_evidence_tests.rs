@@ -9,6 +9,9 @@ use std::sync::Arc;
 mod support;
 use support::*;
 
+#[path = "learning_iteration_evaluation_evidence_tests.rs"]
+mod evaluation;
+
 #[tokio::test]
 async fn exact_receipt_readback_supports_recovery_without_sending_a_signing_payload()
 -> anyhow::Result<()> {
