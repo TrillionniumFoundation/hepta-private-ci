@@ -472,6 +472,30 @@ impl LedgerWriter {
         self.commit(expected_predecessor, event)
     }
 
+    /// Append conserved, independently authenticated credit at this owner's
+    /// current head. Recovery of an already committed batch uses its original
+    /// predecessor; a new batch may follow unrelated intervening facts. The
+    /// existing append path still validates active Outcome and independent
+    /// roles for new credit, and exact historical identity for replay. Current
+    /// signatures and the durable witness are required in both cases.
+    pub fn append_credit_batch_current(
+        &mut self,
+        batch: CreditAllocationBatchV1,
+        evidence: &SignedLearningEvidenceV1,
+        now: u64,
+    ) -> Result<AppendReceipt, ProductionLedgerError> {
+        let core = self.backend.core()?;
+        let predecessor = core.record_by_id(&batch.batch_id)?.map_or_else(
+            || {
+                core.records()
+                    .last()
+                    .map_or(Digest32::ZERO, |record| record.chain_digest)
+            },
+            |record| record.predecessor_chain_digest,
+        );
+        self.append_credit_batch(predecessor, batch, evidence, now)
+    }
+
     pub fn append_unlearning(
         &mut self,
         expected_predecessor: Digest32,
