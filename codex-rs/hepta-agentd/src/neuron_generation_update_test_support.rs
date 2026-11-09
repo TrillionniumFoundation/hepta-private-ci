@@ -205,10 +205,11 @@ impl Fixture {
         Ok(self.directory.path())
     }
 
-    pub(crate) fn research_checkpoint(
+    pub(crate) fn research_checkpoint_scoped_v2(
         &self,
         request: codex_hepta_learning_artifacts::LearningIterationRequestV1,
         owners: codex_hepta_learning_artifacts::LearningIterationOwnersV1,
+        scope: codex_hepta_learning_artifacts::FrozenLearningScopeV2,
         create: bool,
     ) -> anyhow::Result<crate::LearningIterationCheckpointOwnerV1> {
         anyhow::ensure!(
@@ -221,20 +222,22 @@ impl Fixture {
             FileCas::create(
                 &path,
                 owner_id.clone(),
-                &crate::LearningIterationCheckpointRecordV1::vacant(
+                &crate::LearningIterationCheckpointRecordV1::vacant_scoped_v2(
                     request.clone(),
                     owners.clone(),
+                    &scope,
                 )?,
             )?
         } else {
             FileCas::reopen(&path, owner_id.clone())?
         };
         Ok(
-            crate::LearningIterationCheckpointOwnerV1::from_research_store(
+            crate::LearningIterationCheckpointOwnerV1::from_research_store_scoped_v2(
                 Arc::new(store),
                 owner_id,
                 request,
                 owners,
+                scope,
             )?,
         )
     }

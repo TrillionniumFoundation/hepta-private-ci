@@ -35,7 +35,7 @@ use crate::LearningIterationRuntimeErrorV1;
 use crate::NeuronGenerationRuntimeHandleV2;
 use crate::PreparedLearningIterationProposalV1;
 use crate::RuntimeTasks;
-use crate::learning_iteration_channel_v1;
+use crate::learning_iteration_channel_scoped_v2;
 use crate::learning_iteration_research_external::ResearchExternalTrainedArtifactOwnerV1;
 use crate::learning_retained_task_operation_id_v1;
 use crate::neuron_generation_channel_v2;
@@ -600,6 +600,10 @@ impl ResearchPorts {
 }
 
 impl LearningIterationOwnerPortsV1 for ResearchPorts {
+    fn frozen_scope_binding(&self) -> Option<Digest32> {
+        self.checkpoint.lock().ok()?.frozen_scope_binding()
+    }
+
     fn restore<'a>(
         &'a self,
         request: &'a LearningIterationRequestV1,
@@ -968,8 +972,13 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         ))?;
     }
     let initial = LearningIterationCoordinatorV1::new(learning_request.clone(), owners.clone())?;
-    let checkpoint =
-        publication.research_checkpoint(learning_request.clone(), owners.clone(), true)?;
+    let frozen_scope = FrozenLearningScopeV2::freeze(
+        &learning_request, &owners, LearningUpdateScopeV2::Cell,
+        digest(&prepared["source_digest"])?,
+    )?;
+    let checkpoint = publication.research_checkpoint_scoped_v2(
+        learning_request.clone(), owners.clone(), frozen_scope.clone(), /*create*/ true,
+    )?;
     let control = ProcessControl::new(driver.clone(), publication.target_config.manifest.clone());
     let external_owner = match flow {
         ResearchFlow::RetainedOnly => None,
@@ -1002,6 +1011,7 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         &driver.evidence.join("native-before-training.json"),
         &serde_json::to_vec(&json!({"operation":driver.operation,
         "initial_learning_head":initial.snapshot().head_digest.to_string(),"evaluation_profile":objective.to_string(),
+        "frozen_update_scope":frozen_scope.binding().to_string(),"checkpoint_profile":2,
         "source_commit":driver.source_commit,"source_tree":driver.source_tree,"envelope_git_digest_encoding":"sha256-canonical-lowercase-git-object-id-text",
         "frozen_plan_sha256":driver.frozen,"created_unix_seconds":now()?,
         "created_unix_ns":u64::try_from(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_nanos())?,
@@ -1009,13 +1019,14 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         "maximum_training_milliseconds":learning_request.budget.maximum_training_milliseconds,
         "current_research_owner":serde_json::from_slice::<Value>(&publication.bytes("current.json")?)?}))?,
     )?;
-    let (handle, bootstrap) = learning_iteration_channel_v1(
+    let (handle, bootstrap) = learning_iteration_channel_scoped_v2(
         host.identity.agent_id.clone(),
         host.identity.spawn_generation,
         owners.clone(),
         ports.clone(),
         ports.trust.verifier.clone(),
         1,
+        frozen_scope.clone(),
     )?;
     let cancellation = CancellationToken::new();
     let task = tokio::spawn(bootstrap.run(Arc::clone(host.state()), cancellation.clone()));
@@ -1038,14 +1049,17 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         .checkpoint
         .lock()
         .map_err(|_| anyhow::anyhow!("checkpoint poisoned"))? =
-        publication.research_checkpoint(learning_request.clone(), owners.clone(), false)?;
-    let (recovered, bootstrap) = learning_iteration_channel_v1(
+        publication.research_checkpoint_scoped_v2(
+            learning_request.clone(), owners.clone(), frozen_scope.clone(), /*create*/ false,
+        )?;
+    let (recovered, bootstrap) = learning_iteration_channel_scoped_v2(
         host.identity.agent_id.clone(),
         host.identity.spawn_generation,
         owners,
         ports.clone(),
         ports.trust.verifier.clone(),
         1,
+        frozen_scope,
     )?;
     let cancellation = CancellationToken::new();
     let task = tokio::spawn(bootstrap.run(Arc::clone(host.state()), cancellation.clone()));
