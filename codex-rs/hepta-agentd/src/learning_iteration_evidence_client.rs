@@ -1,0 +1,212 @@
+//! Read existing attestations from an original, separately held evidence owner.
+//! This client cannot sign, train, adopt, or reconstruct an owner's history.
+//! A different UID is a custody boundary, not proof of scientific independence.
+
+use std::os::fd::OwnedFd;
+use std::os::unix::net::UnixStream;
+use std::sync::Mutex;
+use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
+use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
+use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
+use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
+use codex_hepta_learning_artifacts::LearningIterationStageV1;
+use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::SignedEvidenceError;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+
+use crate::AgentdRootAuthorityPeer;
+use crate::LearningIterationRuntimeErrorV1 as Error;
+use crate::root_observation_stream::RootObservationStream;
+
+#[path = "learning_iteration_evidence_wire.rs"]
+mod wire;
+
+/// Selected by the original host, before transfer of the connected stream and
+/// pidfd. Neither a reply nor a model-selected pathname can select this owner.
+pub struct LearningIterationEvidencePeerV1 {
+    pub pid: u32,
+    pub uid: u32,
+    pub boot_id: String,
+    pub process_start_ticks: u64,
+    pub actor_id: StableId,
+}
+
+struct Channel {
+    transport: RootObservationStream,
+    next_request_id: u64,
+}
+
+/// One read-only, purpose-bound connection. The external owner must resolve
+/// the exact committed result and its current withdrawal/revocation state.
+/// A signed reply authenticates its assertion, not the underlying experiment.
+/// Trust/controller separation is still checked by the iteration worker.
+pub struct LearningIterationEvidenceClientV1 {
+    channel: Mutex<Option<Channel>>,
+    initial: LearningIterationSnapshotV1,
+    actor_id: StableId,
+    verifier: LearningEvidenceVerifierV1,
+}
+
+impl LearningIterationEvidenceClientV1 {
+    /// Consume original capabilities; never connect, open a key or create an
+    /// evidence store. Same-UID or same-process ownership is refused. The
+    /// inherited transport bounds remain 500 ms per read and 300 s per session.
+    pub fn from_owner_stream(
+        stream: UnixStream,
+        peer: LearningIterationEvidencePeerV1,
+        owner_pidfd: OwnedFd,
+        initial: LearningIterationSnapshotV1,
+        verifier: LearningEvidenceVerifierV1,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> Result<Self, Error> {
+        let expected =
+            LearningIterationCoordinatorV1::new(initial.request.clone(), initial.owners.clone())?;
+        // SAFETY: these calls only observe this process's credentials.
+        let same_uid = peer.uid == unsafe { libc::getuid() }
+            || peer.uid == unsafe { libc::geteuid() };
+        if same_uid
+            || peer.pid == std::process::id()
+            || expected.snapshot() != &initial
+            || initial.owners.evidence_trust_digest != verifier.trust_digest()
+            || initial.request.envelope.objective_digest != verifier.objective_digest()
+            || ![
+                &initial.owners.experience,
+                &initial.owners.dataset,
+                &initial.owners.trainer,
+                &initial.owners.evaluator,
+                &initial.owners.selector,
+                &initial.owners.next_use_observer,
+            ]
+            .contains(&&peer.actor_id)
+        {
+            return Err(Error::WrongScope);
+        }
+        let transport = RootObservationStream::from_stream_for_uid(
+            stream,
+            AgentdRootAuthorityPeer {
+                pid: peer.pid,
+                boot_id: peer.boot_id,
+                process_start_ticks: peer.process_start_ticks,
+            },
+            owner_pidfd,
+            timeout,
+            lifetime,
+            peer.uid,
+        )
+        .map_err(|_| unavailable())?;
+        Ok(Self {
+            channel: Mutex::new(Some(Channel {
+                transport,
+                next_request_id: 1,
+            })),
+            initial,
+            actor_id: peer.actor_id,
+            verifier,
+        })
+    }
+
+    /// Look up already issued evidence by exact receipt digest. No arbitrary
+    /// signing payload is sent. Recovered receipts may be read after the work
+    /// deadline, but the returned signature must be valid at the current clock.
+    /// Cancellation, malformed replies and failed authentication permanently
+    /// consume this connection; only the original host can supply a new one.
+    pub async fn readback(
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+        receipt: &LearningIterationReceiptV1,
+    ) -> Result<SignedLearningEvidenceV1, Error> {
+        let stage = receipt.observation.stage();
+        let role = evidence_role(stage)?;
+        if snapshot.request != self.initial.request
+            || snapshot.owners != self.initial.owners
+            || receipt.actor_id != self.actor_id
+            || &receipt.actor_id != snapshot.owners.owner(stage)
+        {
+            return Err(Error::WrongScope);
+        }
+        let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
+        if !snapshot.receipts.contains(receipt) {
+            coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?;
+        }
+        let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
+        let mut channel = self
+            .channel
+            .try_lock()
+            .map_err(|_| unavailable())?
+            .take()
+            .ok_or_else(unavailable)?;
+        let request_id = channel.next_request_id;
+        channel.next_request_id = request_id.checked_add(1).ok_or_else(unavailable)?;
+        let request = wire::Request {
+            schema: 1,
+            operation: wire::OPERATION.into(),
+            request_id,
+            binding: self.initial.head_digest.to_string(),
+            snapshot_head: snapshot.head_digest.to_string(),
+            operation_id: receipt.operation_id.to_string(),
+            actor_id: self.actor_id.to_string(),
+            predecessor: receipt.predecessor.to_string(),
+            receipt_digest: Digest32::of_bytes(&payload).to_string(),
+        };
+        let response: wire::Response = channel
+            .transport
+            .read(&request)
+            .await
+            .map_err(|_| unavailable())?;
+        if response.schema != 1
+            || response.operation != request.operation
+            || response.request_id != request_id
+            || response.binding != request.binding
+            || response.snapshot_head != request.snapshot_head
+            || response.receipt_digest != request.receipt_digest
+        {
+            return Err(unavailable());
+        }
+        let signature = response.evidence.decode()?;
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|_| unavailable())?
+            .as_secs();
+        let verified = self
+            .verifier
+            .verify(role, &signature, &payload, now)
+            .map_err(Error::Evidence)?;
+        if verified.principal().principal_id != self.actor_id
+            || receipt.observed_unix_seconds > now
+        {
+            return Err(Error::Evidence(SignedEvidenceError::ContextMismatch));
+        }
+        crate::root_observation_stream::check_lifetime(
+            channel.transport.root_lifetime().get_ref(),
+        )
+        .map_err(|_| unavailable())?;
+        *self.channel.try_lock().map_err(|_| unavailable())? = Some(channel);
+        Ok(signature)
+    }
+}
+
+fn evidence_role(stage: LearningIterationStageV1) -> Result<LearningEvidenceRoleV1, Error> {
+    Ok(match stage {
+        LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator,
+        LearningIterationStageV1::Evaluation => LearningEvidenceRoleV1::Evaluator,
+        LearningIterationStageV1::Selection => LearningEvidenceRoleV1::Selector,
+        LearningIterationStageV1::Experience
+        | LearningIterationStageV1::Dataset
+        | LearningIterationStageV1::NextUse => LearningEvidenceRoleV1::Observer,
+        LearningIterationStageV1::Proposal => {
+            return Err(Error::Evidence(SignedEvidenceError::RoleMismatch));
+        }
+    })
+}
+
+fn unavailable() -> Error {
+    Error::OwnerUnavailable("original learning evidence owner")
+}
