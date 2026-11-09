@@ -84,11 +84,16 @@ separate research cost and is included in the campaign total.
 No energy or provider bill is imputed. This tariff is a local cost proxy; it cannot
 establish full commercial or lifetime efficiency.
 
-Before any held-out execution, development smoke runs exposed one retained
-1,000,000-microcredit reservation overrun; a subsequent dense observation cost
-936,757 microcredits even with one OCR thread. This motivated the uniform
+Before any held-out execution, development smoke runs exposed one
+1,000,000-microcredit reservation overrun. That temporary test directory was
+cleaned on exit: the session exception survives, but its raw failure receipt and
+exact overrun amount do not. A subsequent session observation cost 936,757
+microcredits for dense inference with one OCR thread. This motivated the uniform
 2,000,000 reservation / 4,000,000 cap. The call cap and utility tariff did not
 change, and no held-out score was used to choose the revised budget.
+The subsequent seven-condition TRAIN-document smoke retained all receipts and
+is the durable development evidence; earlier session observations are not
+represented as recoverable execution artifacts.
 
 ## Interpretation and promotion
 
