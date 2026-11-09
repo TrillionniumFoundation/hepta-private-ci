@@ -1,0 +1,29 @@
+{
+  "dataset_scope": "controlled_sqlite_ack_only_templates",
+  "features": "actual ACK prefix only",
+  "input_sha256": {
+    "assessments.jsonl": "9bdeef9a969681dee024a8f157f3841eea0d52097093e4ebefefe48f939fd627",
+    "attempts.jsonl": "acf97ea78bdb73332560acfa245c92e4594c789dbc8f9300d6780769e87bb803",
+    "decisions.jsonl": "649707cad1bc9082cd6c4ad4b7e67bb5fed3a33256fb95573dbadace7667a466",
+    "operations.jsonl": "b731f10675c8014d04ae08a7561ff786a6c4aa06c850a7c746b9f28d4a7b79c4",
+    "panel_labels.jsonl": "f4319bbab708ac2ae54d1d79232c934d134781adc5e900843121e1a7df27b3e5",
+    "plan.json": "2823c7f59fefb97e72c27d2a12ccb4d989e67480c1b07a91b95ab365ac7c841e",
+    "trajectory_attempts.jsonl": "3695c569aa0459853a4c7135c2081dab69b4579a87fd8858160758dd2927e10c",
+    "trajectory_rows.jsonl": "9bbbf2a36110caef8ac0e8ee22228c1990aaf411553bafbcc51d74985d87a997"
+  },
+  "prospective_protocol": false,
+  "retrospective": true,
+  "source_sha256": {
+    "model_audit.py": "a245eb86f080968fe8a8a5edc117ec3479be85f3eabc70a985723f4d362588df",
+    "model_decisions.py": "80172444f343d8a2fd2503cee50133abe09c74c2873a741f98d5712aef6e1264",
+    "model_protocol.py": "abc186c14d11cffbab2106eac44bd98a277c9900090902df01f80e32c6afc2d4",
+    "model_readbacks.py": "0736268d698dd73984d7bd56ac479c4e0d2baca00250aad9f57cc689171dc059",
+    "shadow_replay.py": "03c518017379d6bc19b72f6b9346283268aa9d5bc26fcc497430839aab555c74",
+    "shadow_risk.py": "157e1e1f4e4940bfa4c3fd8525dc1cf6e9ab48f1dbfc0a1df3d72ed64170798b"
+  },
+  "steps": [
+    0,
+    2
+  ],
+  "version": "verify-shadow-retained-replay-v1"
+}

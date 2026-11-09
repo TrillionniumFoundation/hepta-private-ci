@@ -1,0 +1,104 @@
+{
+  "calibration_risk_metrics": {
+    "0": {
+      "brier": 0.2227891156462585,
+      "infinite_log_loss_count": 0,
+      "log_loss": 0.6377616405797456,
+      "missing_labels": 0,
+      "predictions": 12,
+      "scored": 12,
+      "unsupported": 0
+    },
+    "2": {
+      "brier": 0.14583333333333334,
+      "infinite_log_loss_count": 0,
+      "log_loss": 0.4707841205631325,
+      "missing_labels": 0,
+      "predictions": 12,
+      "scored": 12,
+      "unsupported": 0
+    }
+  },
+  "ci": {
+    "macos_15": {
+      "status": "QUEUED"
+    },
+    "new_neural_inference_in_ci": false,
+    "observed_at_utc": "2026-11-09T12:13:50Z",
+    "tested_synthetic_merge_sha": "99b22a11dfbab525229d78cb5fed3473acc22c26",
+    "triggering_head_sha": "e6a4724d070f0216a25db0c23e2bedf050eb39ce",
+    "ubuntu_24_04": {
+      "sqlite_confirmation_rows": 72,
+      "sqlite_planned_rows": 72,
+      "status": "SUCCESS",
+      "tests": 132
+    },
+    "whole_matrix_passed": false,
+    "windows_2025": {
+      "sqlite_confirmation_rows": 72,
+      "sqlite_planned_rows": 72,
+      "status": "SUCCESS",
+      "tests": 132
+    },
+    "workflow_run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42614477333"
+  },
+  "code_commit": "e6a4724d070f0216a25db0c23e2bedf050eb39ce",
+  "components": {
+    "bound_shadow_scheduler": "IMPLEMENTED",
+    "horizon_risk_monitor": "IMPLEMENTED",
+    "one_check_bayes_voi": "IMPLEMENTED",
+    "paired_checker_effects": "IMPLEMENTED",
+    "retained_neural_channel_diagnostic": "COMPLETED",
+    "retained_risk_replay": "COMPLETED"
+  },
+  "historical_run": {
+    "confirmation_trajectories": 108,
+    "historical_neural_forwards": 652,
+    "historical_neural_forwards_are_new": false,
+    "missing_full_horizon_confirmation_labels": 42,
+    "native_operation_bindings": 1966,
+    "new_frequency_table_fits": 1,
+    "new_frequency_table_predictions": 240,
+    "new_neural_forwards": 0,
+    "new_original_effects": 0,
+    "observed_full_horizon_confirmation_labels": 66,
+    "uninterrupted_calibration_trajectories": 12,
+    "uninterrupted_train_trajectories": 12
+  },
+  "initial_forecast_channel_diagnostic": {
+    "all_empirical_gross_values_zero": true,
+    "channel_count": 6,
+    "class_counts_correct_error": [
+      4,
+      8
+    ],
+    "net_value": "gross_value minus supplied incremental cost; zero gross implies negative value for any positive supplied cost",
+    "paired_calibration_panels": 12,
+    "scope": "Identical empty-ACK initial view on controlled SQLite templates, thresholded neural forecast channels; excludes mandatory owner readback",
+    "threshold": 0.5
+  },
+  "interpretation": "Controlled retrospective diagnostics and scoped engineering validation; no population error bound, neural superiority, policy improvement or production qualification.",
+  "local_python_tests": 132,
+  "merged_to_main": false,
+  "observed_at_utc": "2026-11-09T12:12:20.204030+00:00",
+  "production_authority": "NONE",
+  "production_deployed": false,
+  "published_python_files_verified": 41,
+  "review_corrections": [
+    "Retain actions, losses, budget and hard-gate input in the decision digest.",
+    "Reference calibration panels have null policy acceptance metrics.",
+    "Preserve unknown terminal disposition independently of known outcome truth.",
+    "Use the same observable-context identity for fitted channels and composed scheduling."
+  ],
+  "schema": "hepta.verify2.qualification.v1",
+  "scientific_admission": "HOLD",
+  "status": "IMPLEMENTATION_AND_RETAINED_REPLAY_COMPLETE",
+  "unclosed_advancement_requirements": {
+    "acceptable_coverage_and_total_utility_change": false,
+    "frozen_scheduler_terminal_error_reduction": false,
+    "full_incremental_physical_cost_qualification": false,
+    "independent_external_terminal_labels_across_dispositions": false,
+    "production_owner_signer_and_evaluator_assembly": false,
+    "prospective_real_task_shadow_collection": false
+  }
+}

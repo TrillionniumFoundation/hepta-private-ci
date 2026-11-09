@@ -1,0 +1,217 @@
+{
+  "schema": "verify2-ci-observed-v1",
+  "observed_at_utc": "2026-11-09 12:01:55 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 5483,
+  "pull_request_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5483",
+  "workflow_filename": ".github/workflows/hepta-verify1.yml",
+  "workflow_run_id": 42612439752,
+  "workflow_run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42612439752",
+  "triggering_head_sha": "ff01a6d315163f0b17019bedeae7e303f134fb82",
+  "run_status_at_first_observation": "queued",
+  "run_conclusion_at_first_observation": null,
+  "scope": "First four VERIFY-2 implementation stages only; shadow_replay.py stage five is absent from this CI head.",
+  "no_rerun_or_cancellation_performed": true,
+  "jobs": [
+    {
+      "job_id": 129143988249,
+      "name": "VERIFY-1 (ubuntu-24.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42612439752/job/129143988249",
+      "tested_checkout_lines": [
+        "2026-11-09T11:53:09.6548802Z [command]/usr/bin/git log -1 --format=%H",
+        "2026-11-09T11:53:09.6575218Z a4226528745c3cdae78e3a2a91429306667589bb"
+      ],
+      "test_count": 116,
+      "test_elapsed_seconds": 11.607,
+      "skipped_test_lines": [],
+      "failed_test_lines": [],
+      "summary_log_excerpt": [
+        "2026-11-09T11:53:26.1845727Z Ran 116 tests in 11.607s",
+        "2026-11-09T11:53:26.1846137Z OK",
+        "2026-11-09T11:53:40.0992588Z {\"model_inferences_executed\":0,\"observed_confirmation_rows\":72,\"planned_confirmation_rows\":72,\"scientific_acceptance\":\"HOLD\",\"source_unchanged\":true,\"status\":\"ENGINEERING_SMOKE_PASS\"}"
+      ],
+      "sqlite_gate": {
+        "model_inferences_executed": 0,
+        "observed_confirmation_rows": 72,
+        "planned_confirmation_rows": 72,
+        "scientific_acceptance": "HOLD",
+        "source_unchanged": true,
+        "status": "ENGINEERING_SMOKE_PASS"
+      },
+      "uploaded_artifact_sha256": "5af93e6366829a22ba70f497c3dfc5586c88721f2e335bf6469bbb59e364774c",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Check out exact source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Prepare bounded experiment dependencies and output paths",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Bind source and execute counterexamples",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run bounded real SQLite effects",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Preserve all receipts including failures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Post Check out exact source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "job_id": 129143988671,
+      "name": "VERIFY-1 (macos-15)",
+      "status": "queued",
+      "conclusion": null,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42612439752/job/129143988671",
+      "tested_checkout_lines": [],
+      "test_count": null,
+      "test_elapsed_seconds": null,
+      "skipped_test_lines": null,
+      "failed_test_lines": null,
+      "summary_log_excerpt": null,
+      "sqlite_gate": null,
+      "uploaded_artifact_sha256": null,
+      "steps": null
+    },
+    {
+      "job_id": 129143988797,
+      "name": "VERIFY-1 (windows-2025)",
+      "status": "completed",
+      "conclusion": "success",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42612439752/job/129143988797",
+      "tested_checkout_lines": [
+        "2026-11-09T11:52:52.4638627Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H",
+        "2026-11-09T11:52:52.4986623Z a4226528745c3cdae78e3a2a91429306667589bb"
+      ],
+      "test_count": 116,
+      "test_elapsed_seconds": 56.128,
+      "skipped_test_lines": [],
+      "failed_test_lines": [],
+      "summary_log_excerpt": [
+        "2026-11-09T11:54:04.2569626Z Ran 116 tests in 56.128s",
+        "2026-11-09T11:54:04.2569850Z OK",
+        "2026-11-09T11:54:25.4415021Z {\"model_inferences_executed\":0,\"observed_confirmation_rows\":72,\"planned_confirmation_rows\":72,\"scientific_acceptance\":\"HOLD\",\"source_unchanged\":true,\"status\":\"ENGINEERING_SMOKE_PASS\"}"
+      ],
+      "sqlite_gate": {
+        "model_inferences_executed": 0,
+        "observed_confirmation_rows": 72,
+        "planned_confirmation_rows": 72,
+        "scientific_acceptance": "HOLD",
+        "source_unchanged": true,
+        "status": "ENGINEERING_SMOKE_PASS"
+      },
+      "uploaded_artifact_sha256": "0eb9779caf2aa2e3049c5af251468c30e4ec2ed16e48cb826d87801e2ce965a2",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Check out exact source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Prepare bounded experiment dependencies and output paths",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Bind source and execute counterexamples",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run bounded real SQLite effects",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Preserve all receipts including failures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Post Check out exact source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    }
+  ],
+  "tested_merge_sha": "a4226528745c3cdae78e3a2a91429306667589bb",
+  "tested_merge_note": "GitHub pull_request checkout uses synthetic merge commit; triggering head is ff01a6d315163f0b17019bedeae7e303f134fb82, not the checked out commit itself."
+}
