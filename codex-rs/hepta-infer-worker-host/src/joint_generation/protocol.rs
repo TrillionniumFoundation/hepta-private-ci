@@ -63,6 +63,7 @@ pub(crate) struct Request<'a> {
     pub(crate) prefix: &'a [u8],
     pub(crate) command: Command,
     pub(crate) owner: Option<OwnerContext>,
+    pub(crate) loading_attestation: bool,
 }
 
 pub(crate) fn parse(bytes: &[u8]) -> Result<Request<'_>> {
@@ -70,9 +71,10 @@ pub(crate) fn parse(bytes: &[u8]) -> Result<Request<'_>> {
         return Err("request too large".into());
     }
     let mut reader = Reader::new(bytes);
-    let observed = match reader.take(8)? {
-        b"HJREQV01" => false,
-        b"HJREQV02" => true,
+    let (observed, loading_attestation) = match reader.take(8)? {
+        b"HJREQV01" => (false, false),
+        b"HJREQV02" => (true, false),
+        b"HJREQV03" => (true, true),
         _ => return Err("unknown request ABI".into()),
     };
     let digest = reader
@@ -154,12 +156,14 @@ pub(crate) fn parse(bytes: &[u8]) -> Result<Request<'_>> {
         prefix,
         command,
         owner,
+        loading_attestation,
     })
 }
 
 #[derive(Debug)]
 pub(crate) struct Response {
     pub(crate) digest: [u8; 32],
+    pub(crate) loading_commitment: Option<[u8; 32]>,
     pub(crate) stopped: bool,
     /// Disjoint observed wall intervals: codec, encoder, inference, planning.
     pub(crate) phase_micros: [u64; 4],
@@ -172,8 +176,18 @@ impl Response {
         if self.state.len() > MAX_STATE_BYTES || self.delta.len() > MAX_DELTA_BYTES {
             return Err("response exceeds bounds".into());
         }
-        let mut bytes = b"HJRESV01".to_vec();
+        let mut bytes = if self.loading_commitment.is_some() {
+            b"HJRESV02".to_vec()
+        } else {
+            b"HJRESV01".to_vec()
+        };
         bytes.extend(self.digest);
+        if let Some(commitment) = self.loading_commitment {
+            if commitment == [0; 32] {
+                return Err("empty loading commitment".into());
+            }
+            bytes.extend(commitment);
+        }
         bytes.push(u8::from(self.stopped));
         for elapsed in self.phase_micros {
             bytes.extend(elapsed.to_le_bytes());

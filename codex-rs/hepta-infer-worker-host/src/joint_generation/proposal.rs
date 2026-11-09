@@ -56,6 +56,17 @@ pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
     }
     let public = canonical_packet(request.public)?;
     model.validate_input(&public)?;
+    // The attested profile derives this from the actual constructed Model, not
+    // a caller-supplied component map or the response's expected fingerprint.
+    let loading_commitment = if request.loading_attestation {
+        Some(
+            model
+                .joint_v4_projection()?
+                .loading_commitment_v1(request.weights)?,
+        )
+    } else {
+        None
+    };
     let weights_hash = sha256(request.weights);
     let input_hash = sha256(request.public);
     let prior = match request.command {
@@ -212,6 +223,7 @@ pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
         .ok_or("codec timer overflow")?;
     Ok(Response {
         digest: request.digest,
+        loading_commitment,
         stopped: state.model.stopped,
         phase_micros: phases,
         state: successor,

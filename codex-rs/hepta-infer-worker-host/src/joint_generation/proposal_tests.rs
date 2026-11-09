@@ -29,6 +29,9 @@ mod observed;
 #[path = "projection_tests.rs"]
 mod projection;
 
+#[path = "loading_tests.rs"]
+mod loading;
+
 fn init() -> Command {
     Command::Init(EmissionLaw {
         seed: 17,
