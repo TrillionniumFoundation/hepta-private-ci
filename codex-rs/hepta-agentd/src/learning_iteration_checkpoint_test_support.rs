@@ -163,6 +163,7 @@ pub(super) fn snapshots(decision: Decision) -> anyhow::Result<Vec<LearningIterat
         source_run_id: id("source-run")?,
         completed_task_receipt: d("completed"),
         selected_artifact_digest: d("artifact"),
+        evaluation_profile: d("profile"),
         selected_bundle: baseline.clone(),
         envelope: IterationEnvelopeV1 {
             envelope_id: id("envelope")?,

@@ -10,6 +10,9 @@ mod support;
 
 #[path = "learning_iteration_checkpoint_scope_tests.rs"]
 mod scope_tests;
+
+#[path = "learning_iteration_checkpoint_profile_tests.rs"]
+mod profile_tests;
 use support::Decision;
 use support::FileCas;
 use support::OWNER;
@@ -32,8 +35,8 @@ fn maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound() 
         let last = snapshots.last().unwrap();
         let bytes = codec::encode(last)?;
         let expected_bytes = match decision {
-            Decision::EvaluatedNoUpdate => 6420,
-            Decision::Update | Decision::ProposedNoUpdate => 6945,
+            Decision::EvaluatedNoUpdate => 6452,
+            Decision::Update | Decision::ProposedNoUpdate => 6977,
         };
         assert_eq!(bytes.len(), expected_bytes);
         let record = LearningIterationCheckpointRecordV1 {

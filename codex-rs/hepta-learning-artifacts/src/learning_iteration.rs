@@ -78,6 +78,7 @@ impl LearningIterationCoordinatorV1 {
         request.selected_bundle.digest()?;
         if request.completed_task_receipt.is_zero()
             || request.selected_artifact_digest.is_zero()
+            || request.evaluation_profile.is_zero()
             || owners.evidence_trust_digest.is_zero()
         {
             return Err(LearningIterationError::EmptyEvidence);
@@ -357,6 +358,7 @@ impl LearningIterationCoordinatorV1 {
                     && candidate.rollback_predecessor == Some(selected)
                     && candidate.training_lineage.as_ref().is_some_and(|lineage| {
                         lineage.source_bundle == selected
+                            && lineage.evaluation_profile == request.evaluation_profile
                             && matches!(source, Some(LearningIterationObservationV1::Dataset { snapshot_digest, .. }) if lineage.dataset == *snapshot_digest)
                     })
                     && (1..=b.maximum_training_steps).contains(steps)
@@ -369,6 +371,7 @@ impl LearningIterationCoordinatorV1 {
                 ..
             } => {
                 candidate_digest == Some(*candidate_bundle)
+                    && *evaluation_profile == request.evaluation_profile
                     && self
                         .candidate()
                         .and_then(|candidate| candidate.training_lineage.as_ref())
@@ -443,3 +446,7 @@ mod tests;
 #[cfg(test)]
 #[path = "learning_iteration_retained_tests.rs"]
 mod retained_tests;
+
+#[cfg(test)]
+#[path = "learning_iteration_profile_tests.rs"]
+mod profile_tests;
