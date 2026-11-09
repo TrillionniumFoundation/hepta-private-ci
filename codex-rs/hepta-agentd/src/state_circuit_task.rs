@@ -6,6 +6,7 @@ use std::sync::atomic::Ordering;
 
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_learning_ledger::RunStartRecordV1;
+use codex_hepta_types::StableId;
 
 use super::AgentdState;
 use super::poisoned_state;
@@ -46,6 +47,21 @@ pub trait AgentdCircuitTaskInvocationProviderV1: Send + Sync {
 }
 
 impl AgentdState {
+    /// Enable completion delivery only for the explicit learning bootstrap's
+    /// one source. Ordinary tasks cannot fill a learning queue by default.
+    pub(crate) fn attach_circuit_learning_source(
+        &self,
+        source_run_id: StableId,
+    ) -> Result<(), AgentdError> {
+        self.circuit_learning_source
+            .set(source_run_id)
+            .map_err(|_| AgentdError::Invalid("Circuit learning source already attached".into()))
+    }
+
+    pub(crate) fn circuit_learning_source(&self) -> Option<&StableId> {
+        self.circuit_learning_source.get()
+    }
+
     pub(crate) fn circuit_task_enabled(&self) -> bool {
         self.circuit_task.get().is_some() || self.circuit_task_invocation.get().is_some()
     }
@@ -153,6 +169,26 @@ impl AgentdState {
         }
         self.require_current_run_start(record)?;
         provider.publish_result(self.identity(), record, &receipt)?;
+        self.require_current_run_start(record)?;
+        // Only the explicitly configured iteration's source enters the outbox.
+        // This also runs on its completed-task readback path after ACK loss.
+        if self
+            .circuit_learning_source()
+            .is_some_and(|source| source.as_str() == record.snapshot.run_id.as_str())
+        {
+            let objective = codex_hepta_contracts::Sha256Digest::parse(
+                record.snapshot.objective_digest.to_string(),
+            )
+            .map_err(|error| {
+                AgentdError::Protocol(format!("Circuit learning objective: {error}"))
+            })?;
+            self.circuit_task_store()?
+                .enqueue_circuit_learning(receipt.trace(), objective)
+                .await
+                .map_err(|error| {
+                    AgentdError::Protocol(format!("Circuit learning outbox: {error:?}"))
+                })?;
+        }
         self.require_current_run_start(record)?;
         Ok(Some(receipt))
     }
