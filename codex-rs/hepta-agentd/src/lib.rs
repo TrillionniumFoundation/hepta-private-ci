@@ -157,6 +157,8 @@ pub use authority_host_runtime::initialize_host_authority;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::prepare_host_issuer_lease_renewal;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::register_host_learning_checkpoint;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::register_host_writer_authorization;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::rotate_host_writer_authorization;
@@ -168,6 +170,8 @@ pub use authority_host_runtime::serve_host_authority_session_with_text;
 pub use authority_host_service::FreshHostCognitiveState;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityLane;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityLearningRegistrationV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]

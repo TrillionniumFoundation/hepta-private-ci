@@ -7,7 +7,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args_os().skip(1);
     let command = args
         .next()
-        .ok_or("initialize, register-writer, serve-session, serve-fresh-session, diagnose-native, launch-native, provider-status or provider-login required")?;
+        .ok_or("initialize, register-writer, register-learning, serve-session, serve-fresh-session, diagnose-native, launch-native, provider-status or provider-login required")?;
     let mut options = std::collections::BTreeMap::new();
     let mut pidfd_stdin = false;
     while let Some(option) = args.next() {
@@ -94,6 +94,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         let proof = codex_hepta_agentd::register_host_writer_authorization(&config)?;
         println!("{}", serde_json::to_string(&proof)?);
+    } else if command == "register-learning" {
+        let config = take("--config")?;
+        let registration = take("--registration")?;
+        let profile = take("--learning-profile")?;
+        if !options.is_empty() || !pidfd_stdin {
+            return Err("learning registration requires original config, registration, Root profile and pre-held owner pidfd".into());
+        }
+        let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
+        let registered = codex_hepta_agentd::register_host_learning_checkpoint(
+            &config,
+            &registration,
+            &profile,
+            &owner,
+        )?;
+        println!("{}", serde_json::to_string(&registered)?);
     } else if command == "serve-session" || command == "serve-fresh-session" {
         let config = take("--config")?;
         let registration = take("--registration")?;
