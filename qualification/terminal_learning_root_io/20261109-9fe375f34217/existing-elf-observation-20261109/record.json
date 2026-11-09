@@ -1,0 +1,1031 @@
+{
+  "agents_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+  "agents_sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+  "all_listings_pinned_and_observed": true,
+  "all_selected_tests_pinned_and_observed": true,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "--no-replace-objects",
+        "checkout",
+        "--detach",
+        "756968dba94e969a1ee9bc151683682b6fb4da31"
+      ],
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217",
+      "exit_code": 0,
+      "label": "detach-tested",
+      "stderr": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/detach-tested.stderr",
+      "stderr_sha256": "c2434887d38c1e90c99af25e29e18f072fefcf6deb85fff7c25b91c9ae9641c7",
+      "stdout": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/detach-tested.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "--no-replace-objects",
+        "checkout",
+        "codex/hepta-terminal-root-io-20261109-9fe375f34217"
+      ],
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217",
+      "exit_code": 0,
+      "label": "restore-original-branch",
+      "stderr": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/restore-original-branch.stderr",
+      "stderr_sha256": "9fec5de26e2b17037ad1dfa0509859806ac574d6e40ca7f3621091256c74980f",
+      "stdout": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/restore-original-branch.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "complete_hepta_loop_qualified": false,
+  "current_list_matches_original_selected_set": true,
+  "distinct_native_test_count": 12,
+  "distinct_native_test_count_expected": 12,
+  "elf_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+  "elf_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+  "expected_elf_bytes": 165440216,
+  "expected_elf_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+  "explicit_environment": {
+    "CODEX_REPO_ROOT": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217",
+    "GIT_NO_LAZY_FETCH": "1",
+    "GIT_NO_REPLACE_OBJECTS": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    "JUST_SHELL": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/scripts/just-shell.py",
+    "NEXTEST_PROFILE": "local",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUST_MIN_STACK": "8388608",
+    "RUST_TEST_THREADS": "1"
+  },
+  "finished_unix_ns": 1794202344211053589,
+  "harness_scope": "one exact libtest case per fresh pinned process; supplemental identity observation",
+  "justfile_sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+  "listing": {
+    "all": {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "terminal_learning",
+        "--list",
+        "--format",
+        "terse"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/terminal-learning-list-all.log",
+      "log_sha256": "e2f24cd707b52d3603974fb48dd7113d65d1c77333e2b29fdb181b89c52f6c62",
+      "names": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_claim_lost_ack_and_competing_reopen_owners_cannot_start_twice",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_current_read_time_counts_before_any_native_admission",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_failed_commit_is_unknown_but_lost_ack_recovers_original_cost",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_native_result_reopens_without_refit_and_rechecks_current_permission",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_unfinished_fence_and_changed_binding_never_restart_native_work",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::cancelled_claim_yields_and_keeps_original_unfinished_operation",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::cancelled_current_read_retains_lane_until_io_returns_then_uses_same_job",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::queued_native_deadline_reconciles_without_claim_or_refit",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::process_tests::durable_native_job_child_readback",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::process_tests::durable_native_job_with_original_host_cas",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::exact_owner_evidence_and_dataset_budget_are_enforced",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::native_queue_refuses_overflow_and_lost_acknowledgement_remains_unknown",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::recovered_ledger_does_not_invent_a_durable_iteration_checkpoint",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::supervised_profile_freezes_fits_and_reads_back_actual_native_candidate"
+      ],
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1279979460819506,
+          "hash_finished_monotonic_ns": 1279979933684485,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1279979460737732,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3749695,
+            "start_ticks": 127997946
+          },
+          "process_binding_finished_monotonic_ns": 1279979460851178,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3749695,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      }
+    },
+    "ignored": {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "terminal_learning",
+        "--list",
+        "--format",
+        "terse",
+        "--ignored"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/terminal-learning-list-ignored.log",
+      "log_sha256": "c34de090b557a770b32f6f6a0f793505f36d85c24835f5c1a806c1b93f35dce2",
+      "names": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::process_tests::durable_native_job_child_readback",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::process_tests::durable_native_job_with_original_host_cas"
+      ],
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1279980902856795,
+          "hash_finished_monotonic_ns": 1279981396892848,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1279980902780960,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3749710,
+            "start_ticks": 127998090
+          },
+          "process_binding_finished_monotonic_ns": 1279980902895718,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3749710,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      }
+    }
+  },
+  "native": [
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_claim_lost_ack_and_competing_reopen_owners_cannot_start_twice",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--format=pretty"
+      ],
+      "complete_one_pass_summary_count": 1,
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/codex-rs/hepta-agentd",
+      "exact_name_match": true,
+      "executed_tests": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_claim_lost_ack_and_competing_reopen_owners_cannot_start_twice"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/test-01.log",
+      "log_bytes": 272,
+      "log_sha256": "ec6b31cd3cfb9ba00a3ed2c6cc5b3b94ba8852aa7bd7556569388744c75aac3e",
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1279982429528241,
+          "hash_finished_monotonic_ns": 1279982941486602,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1279982429460549,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3749774,
+            "start_ticks": 127998242
+          },
+          "process_binding_finished_monotonic_ns": 1279982429565074,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3749774,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      },
+      "observed_success": true,
+      "test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_claim_lost_ack_and_competing_reopen_owners_cannot_start_twice"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_current_read_time_counts_before_any_native_admission",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--format=pretty"
+      ],
+      "complete_one_pass_summary_count": 1,
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/codex-rs/hepta-agentd",
+      "exact_name_match": true,
+      "executed_tests": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_current_read_time_counts_before_any_native_admission"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/test-02.log",
+      "log_bytes": 263,
+      "log_sha256": "20f9c14d0d4371db84afaee4665c51969d238ded3052a2873097f42c2c4c43a5",
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1279984828359460,
+          "hash_finished_monotonic_ns": 1279985335196225,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1279984828292690,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3749929,
+            "start_ticks": 127998482
+          },
+          "process_binding_finished_monotonic_ns": 1279984828385207,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3749929,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      },
+      "observed_success": true,
+      "test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_current_read_time_counts_before_any_native_admission"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_failed_commit_is_unknown_but_lost_ack_recovers_original_cost",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--format=pretty"
+      ],
+      "complete_one_pass_summary_count": 1,
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/codex-rs/hepta-agentd",
+      "exact_name_match": true,
+      "executed_tests": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_failed_commit_is_unknown_but_lost_ack_recovers_original_cost"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/test-03.log",
+      "log_bytes": 271,
+      "log_sha256": "b406a6eda0a9ebbf565e27073ea757b856c8ff008259f0b8135d7748031d3cf9",
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1279988299471112,
+          "hash_finished_monotonic_ns": 1279988803363084,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1279988299391237,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3750077,
+            "start_ticks": 127998829
+          },
+          "process_binding_finished_monotonic_ns": 1279988299502473,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3750077,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      },
+      "observed_success": true,
+      "test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_failed_commit_is_unknown_but_lost_ack_recovers_original_cost"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_native_result_reopens_without_refit_and_rechecks_current_permission",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--format=pretty"
+      ],
+      "complete_one_pass_summary_count": 1,
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/codex-rs/hepta-agentd",
+      "exact_name_match": true,
+      "executed_tests": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_native_result_reopens_without_refit_and_rechecks_current_permission"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/test-04.log",
+      "log_bytes": 278,
+      "log_sha256": "cd58541708decbacbd1387d17877fbb9f1aed7986d3e47c626327aba2ef6864e",
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1279990758334985,
+          "hash_finished_monotonic_ns": 1279991266812368,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1279990758250150,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3750182,
+            "start_ticks": 127999075
+          },
+          "process_binding_finished_monotonic_ns": 1279990758364888,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3750182,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      },
+      "observed_success": true,
+      "test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_native_result_reopens_without_refit_and_rechecks_current_permission"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_unfinished_fence_and_changed_binding_never_restart_native_work",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--format=pretty"
+      ],
+      "complete_one_pass_summary_count": 1,
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/codex-rs/hepta-agentd",
+      "exact_name_match": true,
+      "executed_tests": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_unfinished_fence_and_changed_binding_never_restart_native_work"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/test-05.log",
+      "log_bytes": 273,
+      "log_sha256": "0e5d3ce211a39881529a73061ce0c919a4670a879e0444b8f8d95ed7a9bd0a72",
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1279992382153605,
+          "hash_finished_monotonic_ns": 1279992893458372,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1279992382052803,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3750276,
+            "start_ticks": 127999238
+          },
+          "process_binding_finished_monotonic_ns": 1279992382191615,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3750276,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      },
+      "observed_success": true,
+      "test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_unfinished_fence_and_changed_binding_never_restart_native_work"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::cancelled_claim_yields_and_keeps_original_unfinished_operation",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--format=pretty"
+      ],
+      "complete_one_pass_summary_count": 1,
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/codex-rs/hepta-agentd",
+      "exact_name_match": true,
+      "executed_tests": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::cancelled_claim_yields_and_keeps_original_unfinished_operation"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/test-06.log",
+      "log_bytes": 275,
+      "log_sha256": "fbb17437c7f6f14119cd9799c6d3690efe584bd7ea011ec20499e0970d8a36ce",
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1279993904553069,
+          "hash_finished_monotonic_ns": 1279994416330112,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1279993904486050,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3750321,
+            "start_ticks": 127999390
+          },
+          "process_binding_finished_monotonic_ns": 1279993904578146,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3750321,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      },
+      "observed_success": true,
+      "test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::cancelled_claim_yields_and_keeps_original_unfinished_operation"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::cancelled_current_read_retains_lane_until_io_returns_then_uses_same_job",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--format=pretty"
+      ],
+      "complete_one_pass_summary_count": 1,
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/codex-rs/hepta-agentd",
+      "exact_name_match": true,
+      "executed_tests": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::cancelled_current_read_retains_lane_until_io_returns_then_uses_same_job"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/test-07.log",
+      "log_bytes": 284,
+      "log_sha256": "9263a41082b47dc4f5986c496271ca0b6af38dbfadf0e32e42a5bdd80ea93518",
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1279995448158907,
+          "hash_finished_monotonic_ns": 1279995953259992,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1279995448092833,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3750399,
+            "start_ticks": 127999544
+          },
+          "process_binding_finished_monotonic_ns": 1279995448182747,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3750399,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      },
+      "observed_success": true,
+      "test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::cancelled_current_read_retains_lane_until_io_returns_then_uses_same_job"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::queued_native_deadline_reconciles_without_claim_or_refit",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--format=pretty"
+      ],
+      "complete_one_pass_summary_count": 1,
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/codex-rs/hepta-agentd",
+      "exact_name_match": true,
+      "executed_tests": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::queued_native_deadline_reconciles_without_claim_or_refit"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/test-08.log",
+      "log_bytes": 269,
+      "log_sha256": "031acfc871d80b01a3278801c3651e5bafbc1d5964daa02361a3e0c840f0d340",
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1279996976046887,
+          "hash_finished_monotonic_ns": 1279997483811861,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1279996975958129,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3750417,
+            "start_ticks": 127999697
+          },
+          "process_binding_finished_monotonic_ns": 1279996976074302,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3750417,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      },
+      "observed_success": true,
+      "test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::queued_native_deadline_reconciles_without_claim_or_refit"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::exact_owner_evidence_and_dataset_budget_are_enforced",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--format=pretty"
+      ],
+      "complete_one_pass_summary_count": 1,
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/codex-rs/hepta-agentd",
+      "exact_name_match": true,
+      "executed_tests": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::exact_owner_evidence_and_dataset_budget_are_enforced"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/test-09.log",
+      "log_bytes": 240,
+      "log_sha256": "0a41da41bafb6add56d1b4cd75140c2c53c8e9715a3d79009963f006f5578146",
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1280000753381759,
+          "hash_finished_monotonic_ns": 1280001276451553,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1280000753264297,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3750582,
+            "start_ticks": 128000075
+          },
+          "process_binding_finished_monotonic_ns": 1280000753430515,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3750582,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      },
+      "observed_success": true,
+      "test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::exact_owner_evidence_and_dataset_budget_are_enforced"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::native_queue_refuses_overflow_and_lost_acknowledgement_remains_unknown",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--format=pretty"
+      ],
+      "complete_one_pass_summary_count": 1,
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/codex-rs/hepta-agentd",
+      "exact_name_match": true,
+      "executed_tests": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::native_queue_refuses_overflow_and_lost_acknowledgement_remains_unknown"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/test-10.log",
+      "log_bytes": 258,
+      "log_sha256": "9f04927f87c7970363d0499ff94e8bf59969fabe3ee72355e4a84f19343380e3",
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1280002371471060,
+          "hash_finished_monotonic_ns": 1280002887617858,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1280002371364545,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3750683,
+            "start_ticks": 128000237
+          },
+          "process_binding_finished_monotonic_ns": 1280002371503441,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3750683,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      },
+      "observed_success": true,
+      "test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::native_queue_refuses_overflow_and_lost_acknowledgement_remains_unknown"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::recovered_ledger_does_not_invent_a_durable_iteration_checkpoint",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--format=pretty"
+      ],
+      "complete_one_pass_summary_count": 1,
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/codex-rs/hepta-agentd",
+      "exact_name_match": true,
+      "executed_tests": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::recovered_ledger_does_not_invent_a_durable_iteration_checkpoint"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/test-11.log",
+      "log_bytes": 251,
+      "log_sha256": "c31691e8a4f0d790a0a16424de0ecf8a27b0c93ba3265a11ab356fe9e7983814",
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1280003914072894,
+          "hash_finished_monotonic_ns": 1280004429098276,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1280003913958979,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3750705,
+            "start_ticks": 128000391
+          },
+          "process_binding_finished_monotonic_ns": 1280003914105228,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3750705,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      },
+      "observed_success": true,
+      "test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::recovered_ledger_does_not_invent_a_durable_iteration_checkpoint"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::supervised_profile_freezes_fits_and_reads_back_actual_native_candidate",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+        "--format=pretty"
+      ],
+      "complete_one_pass_summary_count": 1,
+      "cwd": "/home/qian-qi/worktrees/hepta-terminal-root-io-9fe375f34217/codex-rs/hepta-agentd",
+      "exact_name_match": true,
+      "executed_tests": [
+        "plasticity_runtime::lifetime_tests::terminal_learning_tests::supervised_profile_freezes_fits_and_reads_back_actual_native_candidate"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/work/hepta-terminal-elf-observation-9fe375f34217/individual/test-12.log",
+      "log_bytes": 258,
+      "log_sha256": "534fce232df54085f91c12aa1733eb834bde9ba28bbfd232250c97390735580e",
+      "native_execution": {
+        "build_provenance_verified_by_observer": false,
+        "child_reaped": true,
+        "descendant_execution_verified": false,
+        "dispatch_object": {
+          "bytes": 165440216,
+          "device": 2050,
+          "inode": 52773470,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95"
+        },
+        "dispatch_object_after_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "entire_lifetime_image_verified": false,
+        "expected_sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+        "libraries_sha256": null,
+        "loaded_memory_sha256": null,
+        "model_closure_sha256": null,
+        "native_exit_code": 0,
+        "observation": {
+          "bytes": 165440216,
+          "device": 2050,
+          "exe_link": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+          "executable_opened_monotonic_ns": 1280005461606477,
+          "hash_finished_monotonic_ns": 1280005969392137,
+          "inode": 52773470,
+          "observation_started_monotonic_ns": 1280005461527843,
+          "process": {
+            "parent_pid": 3749385,
+            "pid": 3750838,
+            "start_ticks": 128000546
+          },
+          "process_binding_finished_monotonic_ns": 1280005461635047,
+          "sha256": "935957f46aefb677732c508501a8566ccbb9b973eb012c11155ed2410fe43d95",
+          "status": "OBSERVED"
+        },
+        "owned_pid": 3750838,
+        "performance_measurement": false,
+        "requested_path": "/home/qian-qi/work/hepta-terminal-root-io-9fe375f34217-target/dev-small/deps/codex_hepta_agentd-1791ccae65de1a11",
+        "schema": "trnm-pinned-native-process-v1",
+        "status": "PINNED_AND_OBSERVED"
+      },
+      "observed_success": true,
+      "test": "plasticity_runtime::lifetime_tests::terminal_learning_tests::supervised_profile_freezes_fits_and_reads_back_actual_native_candidate"
+    }
+  ],
+  "new_source_or_build": false,
+  "nextest_invoked": false,
+  "observer_helpers": {
+    "pinned_native_process.py": "2f46137a7b74c8930e83114fc9844f540e81b3e4f95919f2a12c5256d76ab462",
+    "verify_ci_source.py": "0ddfd07719eae98913348c82b06d3e4522d721c353d9b01d6deac0dfda619946"
+  },
+  "observer_source_commit": "75dc7ec3973ce3661c27c895418efd5c6cc8b4a8",
+  "original-source-after": {
+    "base": null,
+    "candidate": "ebdc64a4cd4bfd67e53d2f88490185a47d1faeee",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "ebdc64a4cd4bfd67e53d2f88490185a47d1faeee",
+    "tested_tree": "5ab81e0901672c3fe23706028e06a0b2e9c5b20d",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 200409376,
+    "tracked_entries": 15007,
+    "tracked_worktree_verified": true
+  },
+  "original-source-before": {
+    "base": null,
+    "candidate": "ebdc64a4cd4bfd67e53d2f88490185a47d1faeee",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "ebdc64a4cd4bfd67e53d2f88490185a47d1faeee",
+    "tested_tree": "5ab81e0901672c3fe23706028e06a0b2e9c5b20d",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 200409376,
+    "tracked_entries": 15007,
+    "tracked_worktree_verified": true
+  },
+  "original_branch": "codex/hepta-terminal-root-io-20261109-9fe375f34217",
+  "original_head": "ebdc64a4cd4bfd67e53d2f88490185a47d1faeee",
+  "original_selection_binding": {
+    "binary_id": "codex-hepta-agentd",
+    "derived_json_is_not_an_additional_run": true,
+    "derived_selected_json_sha256": "a1a6b913d4edf6981eb8aa8d052046ae2b1035974f83322286a0369c98694c78",
+    "raw_discovery_sha256": "c8b5445b8175bfb72d317ad0806124a948fe1dc62485e35aefadda49bf376ec9",
+    "selected": [
+      "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_claim_lost_ack_and_competing_reopen_owners_cannot_start_twice",
+      "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_current_read_time_counts_before_any_native_admission",
+      "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_failed_commit_is_unknown_but_lost_ack_recovers_original_cost",
+      "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_native_result_reopens_without_refit_and_rechecks_current_permission",
+      "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::durable_unfinished_fence_and_changed_binding_never_restart_native_work",
+      "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::cancelled_claim_yields_and_keeps_original_unfinished_operation",
+      "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::cancelled_current_read_retains_lane_until_io_returns_then_uses_same_job",
+      "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::io_tests::queued_native_deadline_reconciles_without_claim_or_refit",
+      "plasticity_runtime::lifetime_tests::terminal_learning_tests::exact_owner_evidence_and_dataset_budget_are_enforced",
+      "plasticity_runtime::lifetime_tests::terminal_learning_tests::native_queue_refuses_overflow_and_lost_acknowledgement_remains_unknown",
+      "plasticity_runtime::lifetime_tests::terminal_learning_tests::recovered_ledger_does_not_invent_a_durable_iteration_checkpoint",
+      "plasticity_runtime::lifetime_tests::terminal_learning_tests::supervised_profile_freezes_fits_and_reads_back_actual_native_candidate"
+    ],
+    "selected_count": 12
+  },
+  "original_source_before_after_equal": true,
+  "performance_qualified": false,
+  "qualification": "HOLD",
+  "restoration_succeeded": true,
+  "restored_branch": "codex/hepta-terminal-root-io-20261109-9fe375f34217",
+  "restored_head": "ebdc64a4cd4bfd67e53d2f88490185a47d1faeee",
+  "restored_status": "",
+  "schema": "hepta-existing-elf-individual-observation-v2",
+  "selected_tests_executed": 12,
+  "selected_tests_observed_successfully": 12,
+  "started_unix_ns": 1794202309556848648,
+  "status": "observed_existing_12_test_execution",
+  "tested-source-after": {
+    "base": null,
+    "candidate": "756968dba94e969a1ee9bc151683682b6fb4da31",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "756968dba94e969a1ee9bc151683682b6fb4da31",
+    "tested_tree": "1348a43f8ced85980b39df46d2e995eca73f9f6f",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 200339694,
+    "tracked_entries": 15005,
+    "tracked_worktree_verified": true
+  },
+  "tested-source-before": {
+    "base": null,
+    "candidate": "756968dba94e969a1ee9bc151683682b6fb4da31",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "756968dba94e969a1ee9bc151683682b6fb4da31",
+    "tested_tree": "1348a43f8ced85980b39df46d2e995eca73f9f6f",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 200339694,
+    "tracked_entries": 15005,
+    "tracked_worktree_verified": true
+  },
+  "tested_commit": "756968dba94e969a1ee9bc151683682b6fb4da31",
+  "tested_source_before_after_equal": true,
+  "whole_chain_quantum_security_qualified": false
+}
