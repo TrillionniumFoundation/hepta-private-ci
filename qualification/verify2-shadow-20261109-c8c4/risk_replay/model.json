@@ -1,0 +1,48 @@
+{
+  "cells": [
+    [
+      0,
+      [],
+      8,
+      12
+    ],
+    [
+      2,
+      [
+        1.0,
+        0.0
+      ],
+      0,
+      2
+    ],
+    [
+      2,
+      [
+        1.0,
+        1.0
+      ],
+      8,
+      10
+    ]
+  ],
+  "data_sha256": "04241d9f394f63491e1e3df1cb0a638e36bd0e1c9365f0c96dfa37c1b5a8128c",
+  "evaluation_groups": [
+    "calibration/synthetic-template/0",
+    "calibration/synthetic-template/1",
+    "confirmation/synthetic-template/0",
+    "confirmation/synthetic-template/1"
+  ],
+  "missing_training_labels": 0,
+  "model_sha256": "313c85a687c2d920e0342f946a281b3ebbb0e60b994d41519385bb90f6ed938e",
+  "target": {
+    "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+    "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+    "event": "goal_value_error_at_step3_without_optional_interruption",
+    "horizon_end": 3
+  },
+  "training_groups": [
+    "train/synthetic-template/0",
+    "train/synthetic-template/1"
+  ],
+  "training_label_count": 12
+}

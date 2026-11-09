@@ -1,0 +1,222 @@
+{
+  "schema": "verify2-final-code-ci-observed-v1",
+  "observed_at_utc": "2026-11-09 12:13:50 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 5501,
+  "pull_request_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5501",
+  "workflow_filename": ".github/workflows/hepta-verify1.yml",
+  "workflow_run_id": 42614477333,
+  "workflow_run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42614477333",
+  "triggering_head_sha": "e6a4724d070f0216a25db0c23e2bedf050eb39ce",
+  "base_sha": "86fbc641fc468947414704414bd65415d35313fe",
+  "tested_merge_sha": "99b22a11dfbab525229d78cb5fed3473acc22c26",
+  "tested_merge_note": "The GitHub pull_request workflow checks out a synthetic merge. Triggering head and tested merge are distinct.",
+  "run_status_at_observation": "queued",
+  "run_conclusion_at_observation": null,
+  "scope": "Final code snapshot through PR #5501; reusable package fixture tests and bounded SQLite effects only. This CI does not establish the separately executed native retained-pilot replay.",
+  "native_retained_pilot_replay_executed_by_this_ci": false,
+  "neural_inference_qualification": false,
+  "no_rerun_or_cancellation_performed": true,
+  "jobs": [
+    {
+      "job_id": 129150811472,
+      "name": "VERIFY-1 (windows-2025)",
+      "status": "completed",
+      "conclusion": "success",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42614477333/job/129150811472",
+      "tested_checkout_lines": [
+        "2026-11-09T12:08:47.4108514Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" log -1 --format=%H",
+        "2026-11-09T12:08:47.4474069Z 99b22a11dfbab525229d78cb5fed3473acc22c26"
+      ],
+      "test_count": 132,
+      "test_elapsed_seconds": 58.211,
+      "skipped_test_lines": [],
+      "failed_test_lines": [],
+      "summary_log_excerpt": [
+        "2026-11-09T12:09:58.8861794Z Ran 132 tests in 58.211s",
+        "2026-11-09T12:09:58.8862264Z OK",
+        "2026-11-09T12:10:21.0337503Z {\"model_inferences_executed\":0,\"observed_confirmation_rows\":72,\"planned_confirmation_rows\":72,\"scientific_acceptance\":\"HOLD\",\"source_unchanged\":true,\"status\":\"ENGINEERING_SMOKE_PASS\"}"
+      ],
+      "sqlite_gate": {
+        "model_inferences_executed": 0,
+        "observed_confirmation_rows": 72,
+        "planned_confirmation_rows": 72,
+        "scientific_acceptance": "HOLD",
+        "source_unchanged": true,
+        "status": "ENGINEERING_SMOKE_PASS"
+      },
+      "uploaded_artifact_sha256": "0e3a6baeef75dcf404a6893f021879817c61f96e8c9f9ac7009692da3db8f3a3",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Check out exact source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Prepare bounded experiment dependencies and output paths",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Bind source and execute counterexamples",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run bounded real SQLite effects",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Preserve all receipts including failures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Post Check out exact source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "job_id": 129150811727,
+      "name": "VERIFY-1 (macos-15)",
+      "status": "queued",
+      "conclusion": null,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42614477333/job/129150811727",
+      "tested_checkout_lines": [],
+      "test_count": null,
+      "test_elapsed_seconds": null,
+      "skipped_test_lines": null,
+      "failed_test_lines": null,
+      "summary_log_excerpt": null,
+      "sqlite_gate": null,
+      "uploaded_artifact_sha256": null,
+      "steps": null
+    },
+    {
+      "job_id": 129150811764,
+      "name": "VERIFY-1 (ubuntu-24.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42614477333/job/129150811764",
+      "tested_checkout_lines": [
+        "2026-11-09T12:12:22.2697562Z [command]/usr/bin/git log -1 --format=%H",
+        "2026-11-09T12:12:22.2721347Z 99b22a11dfbab525229d78cb5fed3473acc22c26"
+      ],
+      "test_count": 132,
+      "test_elapsed_seconds": 12.472,
+      "skipped_test_lines": [],
+      "failed_test_lines": [],
+      "summary_log_excerpt": [
+        "2026-11-09T12:12:39.6098857Z Ran 132 tests in 12.472s",
+        "2026-11-09T12:12:39.6099200Z OK",
+        "2026-11-09T12:12:53.4225939Z {\"model_inferences_executed\":0,\"observed_confirmation_rows\":72,\"planned_confirmation_rows\":72,\"scientific_acceptance\":\"HOLD\",\"source_unchanged\":true,\"status\":\"ENGINEERING_SMOKE_PASS\"}"
+      ],
+      "sqlite_gate": {
+        "model_inferences_executed": 0,
+        "observed_confirmation_rows": 72,
+        "planned_confirmation_rows": 72,
+        "scientific_acceptance": "HOLD",
+        "source_unchanged": true,
+        "status": "ENGINEERING_SMOKE_PASS"
+      },
+      "uploaded_artifact_sha256": "c212d58a5c57ccd199cb40298f140798773b29e1141d5b2dee76ca790b967ed6",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Check out exact source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Prepare bounded experiment dependencies and output paths",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Bind source and execute counterexamples",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run bounded real SQLite effects",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Preserve all receipts including failures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Post Check out exact source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    }
+  ],
+  "initial_observed_at_utc": "2026-11-09 12:10:31 UTC",
+  "workflow_summary_observed_at_utc": "2026-11-09 12:13:50 UTC"
+}

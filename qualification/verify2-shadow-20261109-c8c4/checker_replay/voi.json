@@ -1,0 +1,510 @@
+{
+  "all_gross_values_zero": true,
+  "cost_assumption": "zero solely to isolate gross information; not measured free checking",
+  "evaluations": [
+    {
+      "before_action": "reject",
+      "before_loss": 0.3571428571428571,
+      "checker_id": "qwen-neutral",
+      "cost": 0.0,
+      "expected_after_loss": 0.3571428571428571,
+      "gross_value": 0.0,
+      "net_value": 0.0,
+      "outcomes": [
+        {
+          "action": "reject",
+          "conditional_loss": 0.3571428571428571,
+          "outcome": "pass",
+          "posterior": [
+            0.3571428571428571,
+            0.6428571428571429
+          ],
+          "probability": 1.0
+        },
+        {
+          "action": null,
+          "conditional_loss": null,
+          "outcome": "fail",
+          "posterior": null,
+          "probability": 0.0
+        },
+        {
+          "action": null,
+          "conditional_loss": null,
+          "outcome": "unknown",
+          "posterior": null,
+          "probability": 0.0
+        }
+      ]
+    },
+    {
+      "before_action": "reject",
+      "before_loss": 0.3571428571428571,
+      "checker_id": "qwen-auditor",
+      "cost": 0.0,
+      "expected_after_loss": 0.3571428571428571,
+      "gross_value": 0.0,
+      "net_value": 0.0,
+      "outcomes": [
+        {
+          "action": "reject",
+          "conditional_loss": 0.3571428571428571,
+          "outcome": "pass",
+          "posterior": [
+            0.3571428571428571,
+            0.6428571428571429
+          ],
+          "probability": 1.0
+        },
+        {
+          "action": null,
+          "conditional_loss": null,
+          "outcome": "fail",
+          "posterior": null,
+          "probability": 0.0
+        },
+        {
+          "action": null,
+          "conditional_loss": null,
+          "outcome": "unknown",
+          "posterior": null,
+          "probability": 0.0
+        }
+      ]
+    },
+    {
+      "before_action": "reject",
+      "before_loss": 0.3571428571428571,
+      "checker_id": "qwen-readout0",
+      "cost": 0.0,
+      "expected_after_loss": 0.3571428571428571,
+      "gross_value": 0.0,
+      "net_value": 0.0,
+      "outcomes": [
+        {
+          "action": null,
+          "conditional_loss": null,
+          "outcome": "pass",
+          "posterior": null,
+          "probability": 0.0
+        },
+        {
+          "action": "reject",
+          "conditional_loss": 0.3571428571428571,
+          "outcome": "fail",
+          "posterior": [
+            0.3571428571428571,
+            0.6428571428571429
+          ],
+          "probability": 1.0
+        },
+        {
+          "action": null,
+          "conditional_loss": null,
+          "outcome": "unknown",
+          "posterior": null,
+          "probability": 0.0
+        }
+      ]
+    },
+    {
+      "before_action": "reject",
+      "before_loss": 0.3571428571428571,
+      "checker_id": "qwen-readout1",
+      "cost": 0.0,
+      "expected_after_loss": 0.3571428571428571,
+      "gross_value": 0.0,
+      "net_value": 0.0,
+      "outcomes": [
+        {
+          "action": null,
+          "conditional_loss": null,
+          "outcome": "pass",
+          "posterior": null,
+          "probability": 0.0
+        },
+        {
+          "action": "reject",
+          "conditional_loss": 0.3571428571428571,
+          "outcome": "fail",
+          "posterior": [
+            0.3571428571428571,
+            0.6428571428571429
+          ],
+          "probability": 1.0
+        },
+        {
+          "action": null,
+          "conditional_loss": null,
+          "outcome": "unknown",
+          "posterior": null,
+          "probability": 0.0
+        }
+      ]
+    },
+    {
+      "before_action": "reject",
+      "before_loss": 0.3571428571428571,
+      "checker_id": "smol-neutral",
+      "cost": 0.0,
+      "expected_after_loss": 0.3571428571428571,
+      "gross_value": 0.0,
+      "net_value": 0.0,
+      "outcomes": [
+        {
+          "action": "reject",
+          "conditional_loss": 0.3571428571428571,
+          "outcome": "pass",
+          "posterior": [
+            0.3571428571428571,
+            0.6428571428571429
+          ],
+          "probability": 1.0
+        },
+        {
+          "action": null,
+          "conditional_loss": null,
+          "outcome": "fail",
+          "posterior": null,
+          "probability": 0.0
+        },
+        {
+          "action": null,
+          "conditional_loss": null,
+          "outcome": "unknown",
+          "posterior": null,
+          "probability": 0.0
+        }
+      ]
+    },
+    {
+      "before_action": "reject",
+      "before_loss": 0.3571428571428571,
+      "checker_id": "qwen-repeat",
+      "cost": 0.0,
+      "expected_after_loss": 0.3571428571428571,
+      "gross_value": 0.0,
+      "net_value": 0.0,
+      "outcomes": [
+        {
+          "action": "reject",
+          "conditional_loss": 0.3571428571428571,
+          "outcome": "pass",
+          "posterior": [
+            0.3571428571428571,
+            0.6428571428571429
+          ],
+          "probability": 1.0
+        },
+        {
+          "action": null,
+          "conditional_loss": null,
+          "outcome": "fail",
+          "posterior": null,
+          "probability": 0.0
+        },
+        {
+          "action": null,
+          "conditional_loss": null,
+          "outcome": "unknown",
+          "posterior": null,
+          "probability": 0.0
+        }
+      ]
+    }
+  ],
+  "hypothetical_loss_table": {
+    "actions": [
+      "accept",
+      "reject"
+    ],
+    "losses": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        0
+      ]
+    ],
+    "states": [
+      "correct",
+      "error"
+    ]
+  },
+  "measured_net_utility": null,
+  "operating_policy_evaluated": false,
+  "positive_cost_identity": "net_value = gross_value - supplied_cost",
+  "prior_error": 0.6428571428571429,
+  "repeat_after_neutral": [
+    {
+      "evaluation": {
+        "before_action": "reject",
+        "before_loss": 0.3571428571428571,
+        "checker_id": "qwen-repeat",
+        "cost": 0.0,
+        "expected_after_loss": 0.3571428571428571,
+        "gross_value": 0.0,
+        "net_value": 0.0,
+        "outcomes": [
+          {
+            "action": "reject",
+            "conditional_loss": 0.3571428571428571,
+            "outcome": "pass",
+            "posterior": [
+              0.3571428571428571,
+              0.6428571428571429
+            ],
+            "probability": 1.0
+          },
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "fail",
+            "posterior": null,
+            "probability": 0.0
+          },
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "unknown",
+            "posterior": null,
+            "probability": 0.0
+          }
+        ]
+      },
+      "history": {
+        "qwen-neutral": "pass"
+      },
+      "reason": "empirical_joint_counts_only",
+      "status": "supported"
+    }
+  ],
+  "scope": {
+    "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+    "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+    "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+    "event": "goal_value_error_at_step3_without_optional_interruption",
+    "horizon_end": 3,
+    "horizon_start": 0
+  },
+  "selection": {
+    "checker_id": null,
+    "evaluations": [
+      {
+        "before_action": "reject",
+        "before_loss": 0.3571428571428571,
+        "checker_id": "qwen-neutral",
+        "cost": 0.0,
+        "expected_after_loss": 0.3571428571428571,
+        "gross_value": 0.0,
+        "net_value": 0.0,
+        "outcomes": [
+          {
+            "action": "reject",
+            "conditional_loss": 0.3571428571428571,
+            "outcome": "pass",
+            "posterior": [
+              0.3571428571428571,
+              0.6428571428571429
+            ],
+            "probability": 1.0
+          },
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "fail",
+            "posterior": null,
+            "probability": 0.0
+          },
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "unknown",
+            "posterior": null,
+            "probability": 0.0
+          }
+        ]
+      },
+      {
+        "before_action": "reject",
+        "before_loss": 0.3571428571428571,
+        "checker_id": "qwen-auditor",
+        "cost": 0.0,
+        "expected_after_loss": 0.3571428571428571,
+        "gross_value": 0.0,
+        "net_value": 0.0,
+        "outcomes": [
+          {
+            "action": "reject",
+            "conditional_loss": 0.3571428571428571,
+            "outcome": "pass",
+            "posterior": [
+              0.3571428571428571,
+              0.6428571428571429
+            ],
+            "probability": 1.0
+          },
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "fail",
+            "posterior": null,
+            "probability": 0.0
+          },
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "unknown",
+            "posterior": null,
+            "probability": 0.0
+          }
+        ]
+      },
+      {
+        "before_action": "reject",
+        "before_loss": 0.3571428571428571,
+        "checker_id": "qwen-readout0",
+        "cost": 0.0,
+        "expected_after_loss": 0.3571428571428571,
+        "gross_value": 0.0,
+        "net_value": 0.0,
+        "outcomes": [
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "pass",
+            "posterior": null,
+            "probability": 0.0
+          },
+          {
+            "action": "reject",
+            "conditional_loss": 0.3571428571428571,
+            "outcome": "fail",
+            "posterior": [
+              0.3571428571428571,
+              0.6428571428571429
+            ],
+            "probability": 1.0
+          },
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "unknown",
+            "posterior": null,
+            "probability": 0.0
+          }
+        ]
+      },
+      {
+        "before_action": "reject",
+        "before_loss": 0.3571428571428571,
+        "checker_id": "qwen-readout1",
+        "cost": 0.0,
+        "expected_after_loss": 0.3571428571428571,
+        "gross_value": 0.0,
+        "net_value": 0.0,
+        "outcomes": [
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "pass",
+            "posterior": null,
+            "probability": 0.0
+          },
+          {
+            "action": "reject",
+            "conditional_loss": 0.3571428571428571,
+            "outcome": "fail",
+            "posterior": [
+              0.3571428571428571,
+              0.6428571428571429
+            ],
+            "probability": 1.0
+          },
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "unknown",
+            "posterior": null,
+            "probability": 0.0
+          }
+        ]
+      },
+      {
+        "before_action": "reject",
+        "before_loss": 0.3571428571428571,
+        "checker_id": "smol-neutral",
+        "cost": 0.0,
+        "expected_after_loss": 0.3571428571428571,
+        "gross_value": 0.0,
+        "net_value": 0.0,
+        "outcomes": [
+          {
+            "action": "reject",
+            "conditional_loss": 0.3571428571428571,
+            "outcome": "pass",
+            "posterior": [
+              0.3571428571428571,
+              0.6428571428571429
+            ],
+            "probability": 1.0
+          },
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "fail",
+            "posterior": null,
+            "probability": 0.0
+          },
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "unknown",
+            "posterior": null,
+            "probability": 0.0
+          }
+        ]
+      },
+      {
+        "before_action": "reject",
+        "before_loss": 0.3571428571428571,
+        "checker_id": "qwen-repeat",
+        "cost": 0.0,
+        "expected_after_loss": 0.3571428571428571,
+        "gross_value": 0.0,
+        "net_value": 0.0,
+        "outcomes": [
+          {
+            "action": "reject",
+            "conditional_loss": 0.3571428571428571,
+            "outcome": "pass",
+            "posterior": [
+              0.3571428571428571,
+              0.6428571428571429
+            ],
+            "probability": 1.0
+          },
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "fail",
+            "posterior": null,
+            "probability": 0.0
+          },
+          {
+            "action": null,
+            "conditional_loss": null,
+            "outcome": "unknown",
+            "posterior": null,
+            "probability": 0.0
+          }
+        ]
+      }
+    ],
+    "reason": "no_affordable_positive_value",
+    "status": "defer"
+  },
+  "zero_gross_implication": "when gross value is zero, every positive supplied cost gives net_value = -cost"
+}
