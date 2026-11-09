@@ -23,7 +23,9 @@ jobs:
       - name: Enable the existing Windows checkout convention
         shell: pwsh
         working-directory: ${{ runner.temp }}
-        run: git config --global core.longpaths true
+        run: |
+          git config --global core.longpaths true
+          git config --global core.autocrlf false
       - name: Checkout the independent observer
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

@@ -93,9 +93,9 @@ def main():
             raise RuntimeError("checkout identity or clean-source check failed")
         probe = observer / ".github/scripts/windows_directory_flush_probe.py"
         probe_before = fingerprint(probe)
+        receipt["probe"] = {"path": str(probe), **probe_before}
         if probe_before["sha256"] != PROBE_SHA:
             raise RuntimeError("reviewed probe bytes do not match")
-        receipt["probe"] = {"path": str(probe), **probe_before}
         command = [sys.executable, str(probe), "--records", str(output / "probe")]
         write(output / "command.json", {"argv": command, "cwd": str(observer)})
         with (output / "stdout.log").open("xb") as stdout:
