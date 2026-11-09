@@ -161,7 +161,13 @@ impl LearningFixture {
         }
         let snapshot = coordinator.snapshot().clone();
         let training = snapshot.receipts.last().expect("training receipt");
-        let mut fixture = Fixture::new(Costs::Complete);
+        // The original 128-cluster fixture authenticates a comparison but its
+        // conservative DR intervals overlap. Keep the same alpha, weight bound
+        // and strict superiority contract; 8192 distinct synthetic clusters
+        // give a radius below 0.25 around the 0.75 and 0.25 arm estimates.
+        // These synthetic lineages exercise the adapter, not actual experiment
+        // independence or learning quality.
+        let mut fixture = Fixture::with_clusters(Costs::Complete, /*clusters*/ 8192);
         fixture.candidate = journal(fixture.directory.path(), "learning-candidate", Costs::Complete,
             [17; 32], candidate_digest.into_array());
         fixture.fixed = journal(fixture.directory.path(), "learning-fixed", Costs::Complete,

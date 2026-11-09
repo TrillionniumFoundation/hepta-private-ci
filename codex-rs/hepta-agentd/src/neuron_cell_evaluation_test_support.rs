@@ -275,6 +275,10 @@ pub(super) struct Fixture {
 }
 impl Fixture {
     pub(super) fn new(costs: Costs) -> Self {
+        Self::with_clusters(costs, /*clusters*/ 128)
+    }
+
+    pub(super) fn with_clusters(costs: Costs, clusters: usize) -> Self {
         let directory = checked(tempfile::tempdir());
         let candidate = journal(
             directory.path(), "candidate", costs, [17; 32],
@@ -297,7 +301,7 @@ impl Fixture {
         let initial_bytes = checked(fs::metadata(&path)).len();
         let runner = CellEvaluationRunnerV1::new(ProductEvaluationRunnerV1::new(owner));
         let (registration, candidate_temporal, baseline_temporal, inputs) =
-            observations::observations();
+            observations::observations(clusters);
         Self {
             candidate,
             fixed,
