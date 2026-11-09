@@ -42,7 +42,7 @@ async fn scoped_root_checkpoint_ports_keep_scope_across_all_decisions_and_cold_r
         }
         assert_eq!(store.commits.load(Ordering::SeqCst), history.len());
         drop(ports);
-        worker.join().unwrap()?;
+        worker.join().map_err(|_| anyhow::anyhow!("Root checkpoint worker panicked"))??;
         let retained = std::fs::read(&path)?;
         let reopened = Arc::new(FileCas::reopen(&path)?);
         let backend = LearningIterationCheckpointOwnerV1::from_research_store_scoped_v2(
@@ -58,7 +58,7 @@ async fn scoped_root_checkpoint_ports_keep_scope_across_all_decisions_and_cold_r
         assert_eq!(reopened.commits.load(Ordering::SeqCst), 0);
         assert_eq!(std::fs::read(&path)?, retained);
         drop(ports);
-        worker.join().unwrap()?;
+        worker.join().map_err(|_| anyhow::anyhow!("Root checkpoint worker panicked"))??;
     }
     Ok(())
 }
@@ -104,7 +104,7 @@ async fn root_checkpoint_refuses_legacy_scoped_and_changed_scope_substitution()
         channel.scope = client_scope;
         let worker = serve(server, backend);
         assert!(channel.restore(&initial.request).await.is_err());
-        assert!(worker.join().unwrap().is_err());
+        assert!(worker.join().map_err(|_| anyhow::anyhow!("Root checkpoint worker panicked"))?.is_err());
         assert_eq!(store.commits.load(Ordering::SeqCst), 0);
         assert_eq!(std::fs::read(&path)?, original);
     }
@@ -139,7 +139,7 @@ async fn scoped_root_checkpoint_lost_ack_requires_original_scope_on_fresh_connec
         assert_eq!(first.checkpoint(Digest32::ZERO, initial).await,
             Err(Error::CommitUncertain(AuthorityTrustError::Unavailable)));
     }
-    assert!(worker.join().unwrap().is_err());
+    assert!(worker.join().map_err(|_| anyhow::anyhow!("Root checkpoint worker panicked"))?.is_err());
     assert_eq!(store.commits.load(Ordering::SeqCst), 1);
     let original = std::fs::read(&path)?;
     let reopened = Arc::new(FileCas::reopen(&path)?);
@@ -155,6 +155,6 @@ async fn scoped_root_checkpoint_lost_ack_requires_original_scope_on_fresh_connec
     assert_eq!(reopened.commits.load(Ordering::SeqCst), 0);
     assert_eq!(std::fs::read(&path)?, original);
     drop(second);
-    worker.join().unwrap()?;
+    worker.join().map_err(|_| anyhow::anyhow!("Root checkpoint worker panicked"))??;
     Ok(())
 }
