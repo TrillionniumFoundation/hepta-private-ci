@@ -322,6 +322,13 @@ mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
 mod learning_iteration;
+#[cfg(target_os = "linux")]
+mod learning_iteration_evidence_client;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::LearningIterationEvidenceClientV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::LearningIterationEvidencePeerV1;
+
 mod learning_iteration_auth;
 #[cfg(unix)]
 mod learning_iteration_checkpoint;
