@@ -1,0 +1,548 @@
+{
+  "packet_id": "learning-checkpoint-next-bootstrap-review-e54-v1",
+  "scope": "Separate e54 readonly next-bootstrap boundary audit; existing tested checkpoint transport is not ordinary-daemon learning installation or new execution",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/learning-checkpoint-next-bootstrap-review-e54-v1.tar.xz",
+  "bytes": 56712,
+  "sha256": "d61f5f8509c1089d0d871d599a068b968e15c2b51d74be284a35e92add5d1e8a",
+  "file_member_count": 40,
+  "required_json_members": [
+    {
+      "path": "RESULT.json",
+      "bytes": 16102,
+      "sha256": "bde05a57c832170cb3fdd9e0b687a18997369340a692ea8301bbd16daaaa8719",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "after": {
+              "commit": "e54f7791068ad16ff6082c148cf73798836d36e4",
+              "dirty_porcelain": "",
+              "parents": [
+                "9d643d9b469fe0cf9b2465bf9fa77549c70ecf49"
+              ],
+              "tree": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66"
+            },
+            "archival_completeness": false,
+            "base_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "before": {
+              "commit": "e54f7791068ad16ff6082c148cf73798836d36e4",
+              "dirty_porcelain": "",
+              "parents": [
+                "9d643d9b469fe0cf9b2465bf9fa77549c70ecf49"
+              ],
+              "tree": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66"
+            },
+            "conclusion": "D02 closes tested checkpoint capability delivery and recovery. The inspected ordinary daemon still lacks a complete concrete learning owner composition; adding a checkpoint handle alone would not truthfully install it.",
+            "engineering_scope": {
+              "actual_elapsed_lease_expiry_separate_test": false,
+              "child_fixture_is_not_additional_acceptance_case": true,
+              "component_tests_in_existing_receipt": 13,
+              "existing_e54_results_are_separately_archived": true,
+              "full_ports_production_provider": false,
+              "full_workspace_qualified": false,
+              "ordinary_daemon_learning_installed": false,
+              "production_owner_registered_by_this_task": false,
+              "real_model_learning_measured": false,
+              "real_successor_task_consumption_measured": false,
+              "root_parent_cases_in_existing_receipt": 1,
+              "transport_allocation_or_per_request_box_cost_advantage_measured": false
+            },
+            "findings": [
+              {
+                "can_reuse": "A trusted launcher can pass the existing concrete registered LearningIterationCheckpointOwnerV1, fixed request/owners scope and live consumer identity into the explicit profile, then use the authenticated admitted client for restore/CAS.",
+                "finding": "The completed D02 capability delivery is a narrow opt-in Root/consumer checkpoint transport, not a complete learning owner bootstrap.",
+                "id": "B01",
+                "not_supplied": "Production registration, independent stage producers, receipt-signing authority, model training, evaluation, publication and successor task execution are not supplied by this transport.",
+                "source": [
+                  {
+                    "line": 68,
+                    "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+                    "symbol": "HostAuthorityService::learning_checkpoint_profile"
+                  },
+                  {
+                    "line": 236,
+                    "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+                    "symbol": "receive_learning_checkpoint_handoff_v1"
+                  }
+                ]
+              },
+              {
+                "can_reuse": "The existing channel constructor and single-use config opt-in already check agent/generation and pinned trust; the existing governed plasticity admission must also be ready.",
+                "finding": "The ordinary daemon entry does not currently construct/install the complete learning ports/bootstrap in the inspected direct call sites.",
+                "id": "B02",
+                "missing": "An actual full LearningIterationOwnerPortsV1 instance plus the current pinned LearningEvidenceVerifierV1. Named direct search found the only trait implementation in learning_iteration_runtime_tests.rs; this is a source-search result, not a statement that no external host service exists.",
+                "source": [
+                  {
+                    "line": 201,
+                    "path": "codex-rs/hepta-agentd/src/main.rs",
+                    "symbol": "plasticity and generation descriptor installation"
+                  },
+                  {
+                    "line": 726,
+                    "path": "codex-rs/hepta-agentd/src/config.rs",
+                    "symbol": "AgentdConfig::with_learning_iteration_bootstrap"
+                  },
+                  {
+                    "line": 103,
+                    "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+                    "symbol": "learning_iteration_channel_v1"
+                  }
+                ]
+              },
+              {
+                "can_reuse": "LedgerWriter can revalidate/read real dataset records and freeze a snapshot when supplied with valid signed evidence; the iteration runtime verifies current roles, actors, objective and trust before advancing.",
+                "finding": "Checkpoint restore cannot substitute for authenticated stage results or sign caller-supplied receipts.",
+                "id": "B03",
+                "missing": "Actual Experience/Dataset/Training/Evaluation owners with stable job reconciliation, fresh owner readback, independently authorized Generator/Evaluator/Selector/Observer evidence producers and authenticated proposal artifact resolution. Existing example/test signers are not ordinary production capability providers.",
+                "source": [
+                  {
+                    "line": 36,
+                    "path": "codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+                    "symbol": "LearningIterationOwnerPortsV1 mandatory duties"
+                  },
+                  {
+                    "line": 69,
+                    "path": "codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+                    "symbol": "receipt_attestation"
+                  },
+                  {
+                    "line": 101,
+                    "path": "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+                    "symbol": "verify_receipt"
+                  },
+                  {
+                    "line": 660,
+                    "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+                    "symbol": "LedgerWriter::freeze_dataset"
+                  }
+                ]
+              },
+              {
+                "can_reuse": "Retain the existing issuer, current writer proof and live Root peer/lifetime checks.",
+                "finding": "FinalUse grant issuance already exists in the original production inputs, and the original five-lane barrier remains unchanged.",
+                "id": "B04",
+                "missing": "A FinalUse grant is not a learning evidence signature or a learning checkpoint registration. The cognitive checkpoint transport has a different typed purpose and must not be cast/reused as this new capability.",
+                "source": [
+                  {
+                    "line": 72,
+                    "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+                    "symbol": "five original lane connections"
+                  },
+                  {
+                    "line": 102,
+                    "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+                    "symbol": "AgentdUnixFinalUseGrantProvider::from_root_stream"
+                  }
+                ]
+              },
+              {
+                "can_reuse": "A real PublishedNeuronGenerationUpdateV1 plus its exclusively held successor journal and live CURRENT guard can enter the existing runtime path.",
+                "finding": "The real Ready/Published generation path exists, but the ordinary fixed-generation descriptor creates an Unpublished learning actor.",
+                "id": "B05",
+                "missing": "The ordinary checkpoint bootstrap does not provide that original publication, an effective generic CellBundle-to-runtime backend mapping, or a distinct committed successor task intent/use. Unpublished readback is explicitly refused.",
+                "source": [
+                  {
+                    "line": 79,
+                    "path": "codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs",
+                    "symbol": "ReadyAgentdGenerationUpdateV1::new"
+                  },
+                  {
+                    "line": 109,
+                    "path": "codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs",
+                    "symbol": "ReadyAgentdGenerationUpdateV1::into_runtime"
+                  },
+                  {
+                    "line": 287,
+                    "path": "codex-rs/hepta-agentd/src/neuron_generation_process_bootstrap.rs",
+                    "symbol": "neuron_generation_channel_v2 call"
+                  },
+                  {
+                    "line": 57,
+                    "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_runtime.rs",
+                    "symbol": "GenerationLearningPublicationV1::export/read"
+                  }
+                ]
+              },
+              {
+                "can_reuse": "Candidate/fixed-expert journals, frozen temporal/comparison plans, the existing final-holdout CAS runner and qualification sink.",
+                "finding": "Real evaluation machinery exists but still requires an actual provider and signed independent qualification inputs.",
+                "id": "B06",
+                "missing": "An actual FinalHoldoutProviderV1, independently signed evaluation evidence and measured timing. Receipts remain DENY_ALL and do not generate deployment authority.",
+                "source": [
+                  {
+                    "line": 194,
+                    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+                    "symbol": "CellEvaluationRunnerV1::evaluate"
+                  },
+                  {
+                    "line": 158,
+                    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+                    "symbol": "CellEvaluationQualificationRequestV1"
+                  },
+                  {
+                    "line": 245,
+                    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+                    "symbol": "CellEvaluationRunnerV1::qualify_and_persist"
+                  }
+                ]
+              }
+            ],
+            "formal_current": {
+              "bytes": 7587,
+              "claim": "Unmodified original joint gate; no scientific advancement is claimed by this review.",
+              "path": "qualification/cell-research-stages-20261108/CURRENT_RESULT.json",
+              "sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+            },
+            "full_history_cost": null,
+            "native_or_ui_started": false,
+            "native_packet": {
+              "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/learning-checkpoint-native-history-v1.tar.xz",
+              "bytes": 3618492,
+              "sha256": "7c51d224ad2638ab810ba97f1aba9dadf8e7a06a36e6f9821d1a65e019dd1d87"
+            },
+            "next_minimal_sequence": [
+              {
+                "order": 1,
+                "refusal": "No registration or permission is inferred from UID 0, a JSON path, peer credentials alone, an ordinary cognitive owner, or test fixtures.",
+                "requires": "An externally provisioned, already registered concrete learning checkpoint owner, fixed request/owners scope and original live writer/consumer capabilities.",
+                "step": "Use the completed explicit checkpoint profile from the actual trusted launcher."
+              },
+              {
+                "order": 2,
+                "refusal": "Do not implement a partial full-ports wrapper with dummy receipts, default unavailable stages, terminal-tabular-as-generic bundles, or direct signing of caller digests.",
+                "requires": "Stable operation identities, current ledger/Memory/artifact and trust state, real candidate/evaluator execution and independently authorized owner result attestations.",
+                "step": "Compose execute_stage, prepare_proposal and receipt_attestation from actual retained stage owner services."
+              },
+              {
+                "order": 3,
+                "refusal": "The fixed descriptor's Unpublished generation cannot be promoted by deserializing a checkpoint head or substituting a digest for a publication.",
+                "requires": "Original control publication, live CURRENT/FinalUse checks, valid CellBundle mapping and committed new-task readback.",
+                "step": "Supply an actual ReadyAgentdGenerationUpdateV1 and resolve effective backend installation and distinct successor use."
+              },
+              {
+                "order": 4,
+                "refusal": "Missing any required owner or publication remains an explicit admission failure; preserve the original five lanes and default non-learning path.",
+                "requires": "Complete ports, exact agent/generation/owners/verifier binding and already-admitted plasticity owner.",
+                "step": "Only then call learning_iteration_channel_v1 and AgentdConfig::with_learning_iteration_bootstrap in the ordinary explicit opt-in entry."
+              }
+            ],
+            "observed_at": "2026-11-09T05:08:39.745207+00:00",
+            "physical_cost": null,
+            "prior_source_packet": {
+              "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/learning-checkpoint-desktop-history-v1/learning-checkpoint-desktop-history.tar.xz",
+              "bytes": 415064,
+              "sha256": "b94387249400ba0f841a3862ceb93d6bbbdf6251e2090dfb230a12f4665f14ce",
+              "source_manifest_member": "records/learning-checkpoint-final-source-v1/SOURCE_MANIFEST.json",
+              "source_manifest_sha256": "a228ea94984200b386dfdb41234848628093f83cb6b52a9cdf58ccd5c26d6488"
+            },
+            "remaining_research_evidence": "S1-S5 same-budget strong controls, retained performance/error acceptance, prediction/action gains, trained mechanism baselines, organization/migration costs, independent tasks and multi-generation improvements with complete historical cost are not admitted by this checkpoint slice.",
+            "schema_version": 1,
+            "scientific_acceptance": false,
+            "scope": "Named/direct owner constructors, ordinary daemon installation paths, authenticated stage/readback contracts and ready-publication runtime prerequisites; not a full repository or deployed-host inventory.",
+            "search_limitations": [
+              "Named/direct Rust symbol searches can miss other indirection or external host providers.",
+              "The stage-producers and initial new-checkpoint-callers searches include over-specific names; their negative results are not used as proof of absence. Attestation-producers and actual trait/call-site source are the cited positive evidence.",
+              "No claim is made about capabilities currently registered on a production host."
+            ],
+            "source_files": [
+              {
+                "bytes": 14542,
+                "git_blob": "edd481a3a04d59c210ef5a7f2e27a530078ec1c9",
+                "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+                "sha256": "b7655a5e8fafc37cf91027c7d425ff1142fe36d3680e923bfee212f16c3b4ccc"
+              },
+              {
+                "bytes": 37947,
+                "git_blob": "5111f1a08e15a875de0a90148509d8c7d88b5397",
+                "path": "codex-rs/hepta-agentd/src/config.rs",
+                "sha256": "b22d7df86a0e44c9cebce43e230fc6e71da0ba6f0d0ff650d50e44cc331db4f6"
+              },
+              {
+                "bytes": 11769,
+                "git_blob": "e068d625cb924fd4722ee4bf2531657a6557c0e7",
+                "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+                "sha256": "1c03c7f8ae51fe7d19211bb6fb81aeec6a7b6d114e7d3f7ff7b6ae754e67efa5"
+              },
+              {
+                "bytes": 6475,
+                "git_blob": "7878579fa651b4728aedd1264893872a9fe5fc1a",
+                "path": "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+                "sha256": "db2bcd9107ff9de82fde3423030131b94b4ac95ada5958ffc029a50454cfa021"
+              },
+              {
+                "bytes": 3817,
+                "git_blob": "6a14f15a3e84c68156002e77a04cb2e9be3ea92e",
+                "path": "codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+                "sha256": "608f783f4aa15a0171508e1050dbead7cd5131322fd2a2ed6254d6bf4bd9092b"
+              },
+              {
+                "bytes": 13038,
+                "git_blob": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+                "path": "codex-rs/hepta-agentd/src/main.rs",
+                "sha256": "9b6c157d88b2c1f32ab87adf34b73d52f2fce9db2581b222c0a54bf814994f97"
+              },
+              {
+                "bytes": 10494,
+                "git_blob": "da661555751ce5623b4cf1003e5005f95b51495f",
+                "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+                "sha256": "193b9b372ff1e218e8b671bd5b97276133910b364f9ebc0803ec28f4d4b0229d"
+              },
+              {
+                "bytes": 9822,
+                "git_blob": "de50528a4245324360b465cc93bc25519255f2ea",
+                "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_runtime.rs",
+                "sha256": "7e2da259231d6d1ee4c67925507e99838a0ef31ae2a710384ccfc158d2aa293e"
+              },
+              {
+                "bytes": 12581,
+                "git_blob": "8d111722bb238408a7c67622b21a9f6806539e1e",
+                "path": "codex-rs/hepta-agentd/src/neuron_generation_process_bootstrap.rs",
+                "sha256": "330694fe2f36d0ab6dfd4af315304c5ff288274997788faf1a88c4950fdaed6e"
+              },
+              {
+                "bytes": 5655,
+                "git_blob": "afa0d5f43caa5313993e35d990cb04d631a86e10",
+                "path": "codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs",
+                "sha256": "cd86f3c18ae6319c680e484c096472cafa91823ec17c0c0045f30cb208aa69b1"
+              },
+              {
+                "bytes": 12923,
+                "git_blob": "d41e9127a9d9f982ba9ff2469de7cdd9d2631a65",
+                "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+                "sha256": "c46260717d90ee9da91bd9a252ea233996843acf328bf3e938501d8b3ee2df56"
+              },
+              {
+                "bytes": 49312,
+                "git_blob": "fde76354a5b3cb62b9735ade00130b7ac9638af3",
+                "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+                "sha256": "7f6c80c563e9af97a7cbf50881550df65dbe65760bfcb09042a47af4d632b9d4"
+              }
+            ],
+            "source_modified": false,
+            "source_sha": "e54f7791068ad16ff6082c148cf73798836d36e4",
+            "source_tree": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66",
+            "source_unchanged": true,
+            "stage_advancement_claimed": false,
+            "status": "READ_ONLY_NEXT_BOOTSTRAP_BOUNDARY_REVIEW",
+            "tested_sha": null,
+            "tests_executed_by_this_review": false
+          }
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": ".hepta-lock-925b30d72fe305a6a0bdb3b1",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ADDITIONAL_SOURCE_MANIFEST.json",
+      "bytes": 1167,
+      "sha256": "45a3b8869b99bbc4300fecc1f3943f25baf9d603147e3e810a70aa03c0e4d88a"
+    },
+    {
+      "path": "API_CONTEXT.txt",
+      "bytes": 34703,
+      "sha256": "f9557f09b4020eaec57926035ae792960fea3196f2ffe528a7b08601f34154ed"
+    },
+    {
+      "path": "FORMAL_CURRENT_RESULT.json",
+      "bytes": 7587,
+      "sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+    },
+    {
+      "path": "RESULT.json",
+      "bytes": 16102,
+      "sha256": "bde05a57c832170cb3fdd9e0b687a18997369340a692ea8301bbd16daaaa8719"
+    },
+    {
+      "path": "REVIEW_DRAFT.json",
+      "bytes": 12232,
+      "sha256": "e2c73766023ce9cc03970ab7e0eb860238786dcaf6557d61c074669e72fa26c1"
+    },
+    {
+      "path": "SOURCE_REVIEW_CONTEXT.txt",
+      "bytes": 25330,
+      "sha256": "51eaa35a3c62b488956481d2e490e3a03975108ba6ebac4a898f274e9556adba"
+    },
+    {
+      "path": "actual-observation-producers.json",
+      "bytes": 557,
+      "sha256": "e815c265cf1d8ac6e62510ed191aab9893c63274bcba02df6771651aee39cad2"
+    },
+    {
+      "path": "actual-observation-producers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "actual-observation-producers.stdout",
+      "bytes": 11411,
+      "sha256": "742cafaeea8e22e5b9807324e8f1b762cc02a03e9c8ca46d0fc88ec6edac2e33"
+    },
+    {
+      "path": "attestation-producers.json",
+      "bytes": 461,
+      "sha256": "cd5754fb3b2b60e1b7c3e1bce3fc311adca4989ff37ff61bd98a7d7662ff63ba"
+    },
+    {
+      "path": "attestation-producers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "attestation-producers.stdout",
+      "bytes": 6856,
+      "sha256": "ddf776422887506fcd64f1d24e9e7a47ce25e87fcdc403887145ef83587178c5"
+    },
+    {
+      "path": "cited-source/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "bytes": 14542,
+      "sha256": "b7655a5e8fafc37cf91027c7d425ff1142fe36d3680e923bfee212f16c3b4ccc"
+    },
+    {
+      "path": "cited-source/codex-rs/hepta-agentd/src/config.rs",
+      "bytes": 37947,
+      "sha256": "b22d7df86a0e44c9cebce43e230fc6e71da0ba6f0d0ff650d50e44cc331db4f6"
+    },
+    {
+      "path": "cited-source/codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "bytes": 11769,
+      "sha256": "1c03c7f8ae51fe7d19211bb6fb81aeec6a7b6d114e7d3f7ff7b6ae754e67efa5"
+    },
+    {
+      "path": "cited-source/codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+      "bytes": 6475,
+      "sha256": "db2bcd9107ff9de82fde3423030131b94b4ac95ada5958ffc029a50454cfa021"
+    },
+    {
+      "path": "cited-source/codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+      "bytes": 3817,
+      "sha256": "608f783f4aa15a0171508e1050dbead7cd5131322fd2a2ed6254d6bf4bd9092b"
+    },
+    {
+      "path": "cited-source/codex-rs/hepta-agentd/src/main.rs",
+      "bytes": 13038,
+      "sha256": "9b6c157d88b2c1f32ab87adf34b73d52f2fce9db2581b222c0a54bf814994f97"
+    },
+    {
+      "path": "cited-source/codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "bytes": 10494,
+      "sha256": "193b9b372ff1e218e8b671bd5b97276133910b364f9ebc0803ec28f4d4b0229d"
+    },
+    {
+      "path": "cited-source/codex-rs/hepta-agentd/src/neuron_generation_learning_runtime.rs",
+      "bytes": 9822,
+      "sha256": "7e2da259231d6d1ee4c67925507e99838a0ef31ae2a710384ccfc158d2aa293e"
+    },
+    {
+      "path": "cited-source/codex-rs/hepta-agentd/src/neuron_generation_process_bootstrap.rs",
+      "bytes": 12581,
+      "sha256": "330694fe2f36d0ab6dfd4af315304c5ff288274997788faf1a88c4950fdaed6e"
+    },
+    {
+      "path": "cited-source/codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs",
+      "bytes": 5655,
+      "sha256": "cd86f3c18ae6319c680e484c096472cafa91823ec17c0c0045f30cb208aa69b1"
+    },
+    {
+      "path": "cited-source/codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "bytes": 12923,
+      "sha256": "c46260717d90ee9da91bd9a252ea233996843acf328bf3e938501d8b3ee2df56"
+    },
+    {
+      "path": "cited-source/codex-rs/hepta-learning-ledger/src/production.rs",
+      "bytes": 49312,
+      "sha256": "7f6c80c563e9af97a7cbf50881550df65dbe65760bfcb09042a47af4d632b9d4"
+    },
+    {
+      "path": "collector.py",
+      "bytes": 6345,
+      "sha256": "1cbf206f615248cb2b6146f3a4e9b17cfb07fde12e3493d7e1f227d7fbc99ae2"
+    },
+    {
+      "path": "new-checkpoint-callers.json",
+      "bytes": 493,
+      "sha256": "6f0351a92672aedf92e4a7422a4a516275372b82bba8793c592292bea8fa2d22"
+    },
+    {
+      "path": "new-checkpoint-callers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "new-checkpoint-callers.stdout",
+      "bytes": 1910,
+      "sha256": "c64ffc6012f293457bf794a6cb33d38f3b4422d539c7d23e3a643e407f758032"
+    },
+    {
+      "path": "ports-constructors.json",
+      "bytes": 472,
+      "sha256": "f8bc27eccc68873d51dcc3b2e53de4f2ab4a72cc7b4cfb102719ddbba51cc2e8"
+    },
+    {
+      "path": "ports-constructors.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ports-constructors.stdout",
+      "bytes": 1843,
+      "sha256": "40a3c46ecd10ed3e2ec2122f2571a6927d14f82c4ff0e28d85bd5950af5532d1"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "bytes": 10494,
+      "sha256": "193b9b372ff1e218e8b671bd5b97276133910b364f9ebc0803ec28f4d4b0229d"
+    },
+    {
+      "path": "source/codex-rs/hepta-learning-ledger/src/production.rs",
+      "bytes": 49312,
+      "sha256": "7f6c80c563e9af97a7cbf50881550df65dbe65760bfcb09042a47af4d632b9d4"
+    },
+    {
+      "path": "source/codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+      "bytes": 14560,
+      "sha256": "9e79ac130de5f1aaec640448ed700eb9d5b5ae3d8a708c0163f7f414b55a25b2"
+    },
+    {
+      "path": "source/codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
+      "bytes": 9534,
+      "sha256": "d2bb2d34091aabe350a71785d8d32cf40fa669cfdc3cf1e25a5152ae566fd03b"
+    },
+    {
+      "path": "stage-producers.json",
+      "bytes": 448,
+      "sha256": "85bcd27744a0e7fb57811ed3280b4feb6b261c9a53180701840222ffa89bdeec"
+    },
+    {
+      "path": "stage-producers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "stage-producers.stdout",
+      "bytes": 28057,
+      "sha256": "7bb4d25bf0cec01c5251c1e32a4a197182397955828632475b6e8adef674fd40"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 12837,
+      "sha256": "fdf313defef2a96423399b3730bf358904651469c1addca87475f8698ebd9f32"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/learning-checkpoint-next-bootstrap-review-e54-v1/archive.part001",
+      "offset": 0,
+      "bytes": 56712,
+      "sha256": "d61f5f8509c1089d0d871d599a068b968e15c2b51d74be284a35e92add5d1e8a"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

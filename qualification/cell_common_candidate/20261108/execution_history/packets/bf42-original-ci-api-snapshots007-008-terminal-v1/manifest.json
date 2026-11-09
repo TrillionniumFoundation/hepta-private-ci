@@ -1,0 +1,1245 @@
+{
+  "packet_id": "bf42-original-ci-api-snapshots007-008-terminal-v1",
+  "scope": "Original API-only snapshots007 and008; terminal18 runs 12success/3skipped/3failure; repeated run observations not test executions",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/bf42-original-ci-api-snapshots007-008-terminal-v1-seal/bf42-original-ci-api-snapshots007-008-terminal-v1.tar.xz",
+  "bytes": 36168,
+  "sha256": "ded93291d9b023704d8be4c75f5600028bfe0b9dc22c74994d67e9c76d7e49a5",
+  "file_member_count": 145,
+  "required_json_members": [
+    {
+      "path": "SCOPE.json",
+      "bytes": 1926,
+      "sha256": "744346493a124d3532b7973b802e3f4d40a547c0cb89562570b7611fbd8fe9fe",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "actual_tested_checkout_not_inferred_from_API_head": "Bazel/UI lanes may use base merges; refer to their separate original logs/source bindings",
+            "api_head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "api_success_is_not_testcase_or_scientific_pass": true,
+            "common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+            "complete_execution_history": false,
+            "current_common_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+            "excluded_runtime_coordination_files": [],
+            "failed_runs": [
+              {
+                "id": 42553073160,
+                "name": "blocking-ci"
+              },
+              {
+                "id": 42553073234,
+                "name": "Windows original CI regressions (declared scope only)"
+              },
+              {
+                "id": 42553066862,
+                "name": "Hepta Cell framework native validation"
+              }
+            ],
+            "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+            "formal_stage_result": "S0-S5 HOLD; unchanged formal CURRENT_RESULT",
+            "full_history_cost": null,
+            "kind": "two_original_readonly_common_workflow_API_snapshots",
+            "new_API_calls_by_sealer": 0,
+            "new_native_executions_by_reader_or_sealer": 0,
+            "new_tests_executed": false,
+            "original_runs_count": 18,
+            "packet_id": "bf42-original-ci-api-snapshots007-008-terminal-v1",
+            "physical_cost": null,
+            "prior_snapshot_preserved": true,
+            "raw_test_logs_and_artifacts": "not part of this API-only packet; separate packets bind actual execution",
+            "repeated_runs_not_added_as_unique_executions": true,
+            "scientific_acceptance": false,
+            "snapshot007_cutoff": "2026-11-09T05:19:21.394424+00:00",
+            "snapshot007_nonterminal_runs": [
+              42553066862
+            ],
+            "snapshot008_all_runs_terminal": true,
+            "snapshot008_conclusions": {
+              "failure": 3,
+              "skipped": 3,
+              "success": 12
+            },
+            "snapshot008_cutoff": "2026-11-09T05:38:20.207529+00:00",
+            "stage_advancement_claimed": false
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/SUMMARY.json",
+      "bytes": 6630,
+      "sha256": "d1320200d10da2ab8eda1d64037bbdd71304155fbfcb896bb84452e2f7b46477",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "observed_until": "2026-11-09T05:19:21.394424+00:00",
+            "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "runs": [
+              {
+                "id": 42553073435,
+                "name": "Hepta Windows private-state native (security qualification only)",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073516,
+                "name": "v8-canary",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073264,
+                "name": "Hepta HCSN training bridge",
+                "status": "completed",
+                "conclusion": "skipped",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073130,
+                "name": "App-server schema refresh",
+                "status": "completed",
+                "conclusion": "skipped",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073141,
+                "name": "Production HOS2 owner proposal",
+                "status": "completed",
+                "conclusion": "skipped",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073121,
+                "name": "Hepta Cell research stage evidence",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073195,
+                "name": "Hepta PRED-1 CPU checks",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073191,
+                "name": "Hepta MEM-1 evidence verifier",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073280,
+                "name": "Hepta EVOLVE-1 CPU contracts",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073159,
+                "name": "Hepta VERIFY-1 engineering validation",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073323,
+                "name": "Keyring synchronous backend lock proposal",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073131,
+                "name": "Bazel stable lock proposal",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073250,
+                "name": "Rust UI product foundation",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073160,
+                "name": "blocking-ci",
+                "status": "completed",
+                "conclusion": "failure",
+                "nonpassing_jobs": [
+                  {
+                    "id": 128953043649,
+                    "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T02:51:34Z",
+                    "completed_at": "2026-11-09T03:05:52Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043649"
+                  },
+                  {
+                    "id": 128953043675,
+                    "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T02:52:24Z",
+                    "completed_at": "2026-11-09T03:09:09Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043675"
+                  },
+                  {
+                    "id": 128953043702,
+                    "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T02:52:13Z",
+                    "completed_at": "2026-11-09T03:21:17Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043702"
+                  },
+                  {
+                    "id": 128953043792,
+                    "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T02:52:25Z",
+                    "completed_at": "2026-11-09T03:06:54Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043792"
+                  },
+                  {
+                    "id": 128957722404,
+                    "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T03:08:57Z",
+                    "completed_at": "2026-11-09T03:09:00Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128957722404"
+                  },
+                  {
+                    "id": 128961511532,
+                    "name": "CI required",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T03:25:12Z",
+                    "completed_at": "2026-11-09T03:25:24Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128961511532"
+                  }
+                ]
+              },
+              {
+                "id": 42553073125,
+                "name": "Hepta architecture convergence",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073234,
+                "name": "Windows original CI regressions (declared scope only)",
+                "status": "completed",
+                "conclusion": "failure",
+                "nonpassing_jobs": [
+                  {
+                    "id": 128952720859,
+                    "name": "original-regressions",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T02:50:38Z",
+                    "completed_at": "2026-11-09T03:51:04Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073234/job/128952720859"
+                  }
+                ]
+              },
+              {
+                "id": 42553066841,
+                "name": "Hepta Cell research stage evidence",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553066862,
+                "name": "Hepta Cell framework native validation",
+                "status": "in_progress",
+                "conclusion": null,
+                "nonpassing_jobs": [
+                  {
+                    "id": 128952701454,
+                    "name": "Cell framework (agentd-composition)",
+                    "status": "in_progress",
+                    "conclusion": null,
+                    "started_at": "2026-11-09T02:50:44Z",
+                    "completed_at": null,
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553066862/job/128952701454"
+                  }
+                ]
+              }
+            ],
+            "scientific_advancement_claimed": false
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/SUMMARY.json",
+      "bytes": 6654,
+      "sha256": "06ce5c9a96c590eee0eac3c3275542c7fe94b84312884a7dbdf1b60451662a9e",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "observed_until": "2026-11-09T05:38:20.207529+00:00",
+            "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "runs": [
+              {
+                "id": 42553073435,
+                "name": "Hepta Windows private-state native (security qualification only)",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073516,
+                "name": "v8-canary",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073264,
+                "name": "Hepta HCSN training bridge",
+                "status": "completed",
+                "conclusion": "skipped",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073130,
+                "name": "App-server schema refresh",
+                "status": "completed",
+                "conclusion": "skipped",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073141,
+                "name": "Production HOS2 owner proposal",
+                "status": "completed",
+                "conclusion": "skipped",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073121,
+                "name": "Hepta Cell research stage evidence",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073195,
+                "name": "Hepta PRED-1 CPU checks",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073191,
+                "name": "Hepta MEM-1 evidence verifier",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073280,
+                "name": "Hepta EVOLVE-1 CPU contracts",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073159,
+                "name": "Hepta VERIFY-1 engineering validation",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073323,
+                "name": "Keyring synchronous backend lock proposal",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073131,
+                "name": "Bazel stable lock proposal",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073250,
+                "name": "Rust UI product foundation",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073160,
+                "name": "blocking-ci",
+                "status": "completed",
+                "conclusion": "failure",
+                "nonpassing_jobs": [
+                  {
+                    "id": 128953043649,
+                    "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T02:51:34Z",
+                    "completed_at": "2026-11-09T03:05:52Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043649"
+                  },
+                  {
+                    "id": 128953043675,
+                    "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T02:52:24Z",
+                    "completed_at": "2026-11-09T03:09:09Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043675"
+                  },
+                  {
+                    "id": 128953043702,
+                    "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T02:52:13Z",
+                    "completed_at": "2026-11-09T03:21:17Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043702"
+                  },
+                  {
+                    "id": 128953043792,
+                    "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T02:52:25Z",
+                    "completed_at": "2026-11-09T03:06:54Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043792"
+                  },
+                  {
+                    "id": 128957722404,
+                    "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T03:08:57Z",
+                    "completed_at": "2026-11-09T03:09:00Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128957722404"
+                  },
+                  {
+                    "id": 128961511532,
+                    "name": "CI required",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T03:25:12Z",
+                    "completed_at": "2026-11-09T03:25:24Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128961511532"
+                  }
+                ]
+              },
+              {
+                "id": 42553073125,
+                "name": "Hepta architecture convergence",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553073234,
+                "name": "Windows original CI regressions (declared scope only)",
+                "status": "completed",
+                "conclusion": "failure",
+                "nonpassing_jobs": [
+                  {
+                    "id": 128952720859,
+                    "name": "original-regressions",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T02:50:38Z",
+                    "completed_at": "2026-11-09T03:51:04Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073234/job/128952720859"
+                  }
+                ]
+              },
+              {
+                "id": 42553066841,
+                "name": "Hepta Cell research stage evidence",
+                "status": "completed",
+                "conclusion": "success",
+                "nonpassing_jobs": []
+              },
+              {
+                "id": 42553066862,
+                "name": "Hepta Cell framework native validation",
+                "status": "completed",
+                "conclusion": "failure",
+                "nonpassing_jobs": [
+                  {
+                    "id": 128952701454,
+                    "name": "Cell framework (agentd-composition)",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "started_at": "2026-11-09T02:50:44Z",
+                    "completed_at": "2026-11-09T05:25:39Z",
+                    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553066862/job/128952701454"
+                  }
+                ]
+              }
+            ],
+            "scientific_advancement_claimed": false
+          }
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "COMMON_BEFORE.json",
+      "bytes": 222,
+      "sha256": "5e188df8f9ab72c90a1629b5b578447bb6f5d4509e8a108fae9976a2db576fe7"
+    },
+    {
+      "path": "INPUTS_BEFORE.json",
+      "bytes": 43475,
+      "sha256": "6d5b4069069ef92c70ea734506e79b058b54b5f1292971666db5386b1fa48308"
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 1926,
+      "sha256": "744346493a124d3532b7973b802e3f4d40a547c0cb89562570b7611fbd8fe9fe"
+    },
+    {
+      "path": "originals/capture-bf42-ci-snapshot-v1.py",
+      "bytes": 4801,
+      "sha256": "e3b4ef8dea646b7c2386b556c9e6cebfd29a87d5a1dcd5f35d7893e0d63015a4"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553066841-jobs.json",
+      "bytes": 2319,
+      "sha256": "727bd2c04d9103696932b1c6b71edb67c6e5160e019311e96808b593fac3245f"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553066841-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "7987bd246a78f3fc37241007ffd6945de6dcaa2bed37cbdcb7429ff651c99a33"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553066841-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553066862-jobs.json",
+      "bytes": 14106,
+      "sha256": "ec28902613b484494cfb4bd5795e661b02183f4056e7ef8894ec062f514f5bc5"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553066862-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "d1eb1ecabf1462e66617dbb37d4a6f38c261222b1215a76c3fdf28e5a50e56b9"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553066862-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073121-jobs.json",
+      "bytes": 2319,
+      "sha256": "c4024fdd717c37fa737233bc75bfd1d6f266c05481f4ca5e971aebf353071569"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073121-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "9382c909ef3ce27c9dde45190d74b4b074d1d72d4bb06107c26331c02c8c2076"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073121-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073125-jobs.json",
+      "bytes": 14608,
+      "sha256": "8102d82edc8c314fcec988abfc977afd0e1564ed7dc2344049c1151b9235a888"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073125-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "8f3a7975025b4ab4144e06ec349a4be2c470996ea2666ab0dc64df2daf503c70"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073125-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073130-jobs.json",
+      "bytes": 1037,
+      "sha256": "57e8ed51bec44fc27490ca373dbfe79635a867bf5f2312a2b5b585643decee6b"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073130-jobs.receipt.json",
+      "bytes": 590,
+      "sha256": "8febdfa428bed64b328071be0ac3c721b81e72e77da110b5fca08202577b4cfe"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073130-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073131-jobs.json",
+      "bytes": 2645,
+      "sha256": "4858ae1cf6c4e4f808b7f7003cc34767c14abef151ccf332e27d1aa8409ee8fd"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073131-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "646c55f4088637f0dae886e02ffab5d2c701652ccc39377c3a9d3b3e178bd2a3"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073131-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073141-jobs.json",
+      "bytes": 1009,
+      "sha256": "3f7766aa6adf37ddb7d3a622498585d9e07aec567f1d7258dbcaddef4d1eae12"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073141-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "7dfaff5c2c94457cbe5b3a788db2331f0d737aa2fb1b24723b727286e196af7e"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073141-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073159-jobs.json",
+      "bytes": 8730,
+      "sha256": "71baec31d2c61e19162c2da59b44ca7ce190f885e7886f94748ae6ea252c0030"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073159-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "fbb8ef5a4d3039d17a60e092d522b2f713b1923835f1b5c5b9ecedf2093c9b58"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073159-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073160-jobs.json",
+      "bytes": 100362,
+      "sha256": "3b9851f10af61d37cc805b13bba1e66a30bb92772852e3754c78222276a2c795"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073160-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "a3311606c0a0b13eb2ad55004f8fda3050bf2e09de0ff040aa984e46e65f8679"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073160-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073191-jobs.json",
+      "bytes": 2491,
+      "sha256": "71923a4fa0b73bd227401f56a146ef2a1dc50520b68d104e708496394ea87145"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073191-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "15b1b7452f30fbb4cb297c98207c11395dedfb47545aaacd67e5171b721331a0"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073191-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073195-jobs.json",
+      "bytes": 7565,
+      "sha256": "866afd8f3341bac3b6135931c58f07877df268bf26f00abf629a9ebdad02d0e0"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073195-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "decd8c399df8c91a25a4061efffaf59883574baaca0e90b8ab41ef2a8d89b0b0"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073195-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073234-jobs.json",
+      "bytes": 2832,
+      "sha256": "0a7916324a91b0663e6efaf16b508039a3a008ccf67be38789225c480a66b652"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073234-jobs.receipt.json",
+      "bytes": 590,
+      "sha256": "4232aed3209be185a67da9e279464a40e0613ac04c7cd7388a7b4d0972e1de7c"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073234-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073250-jobs.json",
+      "bytes": 29782,
+      "sha256": "828cdf4512e73ad5e58c09318c86af13b6dc199d80a52449c1c04d0f15071eba"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073250-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "52e946197b56d43faebbe20c13b510c91e5aad88e29e5fd188378c11a62958c6"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073250-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073264-jobs.json",
+      "bytes": 1989,
+      "sha256": "aad3b8a32b9ec709de50bd2895c2c2183087b8e570f5f84b45a892b66b8c9a27"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073264-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "f6ee453945fb5497538c7042a51f9e3e52b29c54cf4dac24b69528c5c6bc9e06"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073264-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073280-jobs.json",
+      "bytes": 3540,
+      "sha256": "b024b16a1ea149b75869ef04b3376dfa23909672856301e922224304cd0928fe"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073280-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "0455eaa45cfd9094f3dece7586abb6e9e54d4d87af26d79fbfee64742720d816"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073280-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073323-jobs.json",
+      "bytes": 2626,
+      "sha256": "3999da39cb17030e3210d3f9d54cc3039b499e92c85b4e0614721e301711b888"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073323-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "b548f7071f0cd96d2a46bf2405564916af32ea7d9a6e3b401d43d3afdf49740f"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073323-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073435-jobs.json",
+      "bytes": 3985,
+      "sha256": "141ec54229fdce31e78cb8b20ea19b949a2d1cce78b2f4d200632770566025b2"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073435-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "ed01af6ee5a019473d5dab0b61f50576afbb686eb8c7bb31e8c21d62d4ccfdd4"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073435-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073516-jobs.json",
+      "bytes": 55289,
+      "sha256": "a798d6419fc12c9aa18f2dda7b1ab2b42f5f0831fba8bc85631c2db4cd04c1b3"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073516-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "2ce085a2074c6a9a8f700ff3f0b130c87936e8d3bd378d00b3f15c839e26cca3"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/42553073516-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/FILES.json",
+      "bytes": 10119,
+      "sha256": "bf12e960133efdeb655a30e11ff67710c59fcf0d7cb44cf977bb4700be45f708"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/RESULT.json",
+      "bytes": 40977,
+      "sha256": "7c6071d8dc5f9d4069b562003f493845b7a7c01f2a6da6f9e394ebc5b2b7614f"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/SUMMARY.json",
+      "bytes": 6630,
+      "sha256": "d1320200d10da2ab8eda1d64037bbdd71304155fbfcb896bb84452e2f7b46477"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/common-after.json",
+      "bytes": 479,
+      "sha256": "f9d6565f47df413db87e9f0654e354b980101ae517833df2fac75eb14727e1a1"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/common-after.receipt.json",
+      "bytes": 583,
+      "sha256": "2a56c1c8eb0811e318ee83f612a8cd37045d88d854996e1d534eeb6a32c7020d"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/common-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/common-before.json",
+      "bytes": 479,
+      "sha256": "f9d6565f47df413db87e9f0654e354b980101ae517833df2fac75eb14727e1a1"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/common-before.receipt.json",
+      "bytes": 583,
+      "sha256": "687894e28ad7d8b877ae47e14c1e6012218c6cbf7cf7b6727ab4f43f035ac5a8"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/common-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/driver.py",
+      "bytes": 4801,
+      "sha256": "e3b4ef8dea646b7c2386b556c9e6cebfd29a87d5a1dcd5f35d7893e0d63015a4"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/runs.json",
+      "bytes": 269937,
+      "sha256": "8a8b70020b5f4cb657e7fc498b64d1a7eae6ed9d4122036e6a344e65e74277aa"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/runs.receipt.json",
+      "bytes": 613,
+      "sha256": "446e77a7c7571270f0ef62c08252a2c39a19aa7560ce3d8e09b7fcb383e36e3a"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/runs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/source-commit.json",
+      "bytes": 1263,
+      "sha256": "b5bfb92ffeebeb9c593342023a61ce96a648fef131d3323df890d0aeb4c250bf"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/source-commit.receipt.json",
+      "bytes": 587,
+      "sha256": "64920653a273966451e1cbad5505a071f568485758a6bf05ca61db984ea08925"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-007/source-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553066841-jobs.json",
+      "bytes": 2319,
+      "sha256": "727bd2c04d9103696932b1c6b71edb67c6e5160e019311e96808b593fac3245f"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553066841-jobs.receipt.json",
+      "bytes": 590,
+      "sha256": "6be00a49bdc8e0e5b355439d3b3d6782d2bbe9d64203515ddc8633e749620478"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553066841-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553066862-jobs.json",
+      "bytes": 14431,
+      "sha256": "8daac8c5252085facb1bf704f5f4eed4f3bc3895f0fdfb7d2d8ddfbe43753654"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553066862-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "46a9602029db5033ce782017b1d0ecd9dbcd3a7c2a8d594a5244b3ceb7839adb"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553066862-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073121-jobs.json",
+      "bytes": 2319,
+      "sha256": "c4024fdd717c37fa737233bc75bfd1d6f266c05481f4ca5e971aebf353071569"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073121-jobs.receipt.json",
+      "bytes": 590,
+      "sha256": "5f4cb22fe1f21f51384d412baa8efe134ca702ec6aa36e6217eda0dcb06972f3"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073121-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073125-jobs.json",
+      "bytes": 14608,
+      "sha256": "8102d82edc8c314fcec988abfc977afd0e1564ed7dc2344049c1151b9235a888"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073125-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "31fc01d34b95c9fc95e3b8b6b5df9e93f132cd4ebe53b26264dd0d373d854171"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073125-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073130-jobs.json",
+      "bytes": 1037,
+      "sha256": "57e8ed51bec44fc27490ca373dbfe79635a867bf5f2312a2b5b585643decee6b"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073130-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "2b6df25dc295bb63517ff9f36c654f5684aa31d6843f046dc3c8388481cbe407"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073130-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073131-jobs.json",
+      "bytes": 2645,
+      "sha256": "4858ae1cf6c4e4f808b7f7003cc34767c14abef151ccf332e27d1aa8409ee8fd"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073131-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "b135dee02278f6000820f643d4c76d377c560e05f01f16811ffe4f58f3ae366b"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073131-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073141-jobs.json",
+      "bytes": 1009,
+      "sha256": "3f7766aa6adf37ddb7d3a622498585d9e07aec567f1d7258dbcaddef4d1eae12"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073141-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "71e5d17a0a80cb6d3fefca0aa892fd4c57c39c34bc8d8166f2a4ad016a71ce02"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073141-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073159-jobs.json",
+      "bytes": 8730,
+      "sha256": "71baec31d2c61e19162c2da59b44ca7ce190f885e7886f94748ae6ea252c0030"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073159-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "6ccdd6d1185c79e8a299a66a50315c5a9241dc11c912774f74ccf9c5a213fdae"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073159-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073160-jobs.json",
+      "bytes": 100362,
+      "sha256": "3b9851f10af61d37cc805b13bba1e66a30bb92772852e3754c78222276a2c795"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073160-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "d49021f96e2d6b43e4105359ba6a70504ea284fac41f0bbb8173983345849813"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073160-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073191-jobs.json",
+      "bytes": 2491,
+      "sha256": "71923a4fa0b73bd227401f56a146ef2a1dc50520b68d104e708496394ea87145"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073191-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "3a0485e96a74d12f6c570f4a9968ab69f93738173d6ae928b923e088568b42c3"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073191-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073195-jobs.json",
+      "bytes": 7565,
+      "sha256": "866afd8f3341bac3b6135931c58f07877df268bf26f00abf629a9ebdad02d0e0"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073195-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "e8c850e75f372dfb76efc142ff02f750a1dee0b31097385cdbed030cdfbaac25"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073195-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073234-jobs.json",
+      "bytes": 2832,
+      "sha256": "0a7916324a91b0663e6efaf16b508039a3a008ccf67be38789225c480a66b652"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073234-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "4bf7031c80f61addd093c8116e95de2c5756273ee00e9fd216efd51fd2119ebf"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073234-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073250-jobs.json",
+      "bytes": 29782,
+      "sha256": "828cdf4512e73ad5e58c09318c86af13b6dc199d80a52449c1c04d0f15071eba"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073250-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "669a4125b2752387c3aa02f3f853808b5351c14d1c9637fa178197e9e5a94a02"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073250-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073264-jobs.json",
+      "bytes": 1989,
+      "sha256": "aad3b8a32b9ec709de50bd2895c2c2183087b8e570f5f84b45a892b66b8c9a27"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073264-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "901ba25da7fa9e2fa8fab93e9deb93dcac468a98055ab7ad2cd5eab2375bb211"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073264-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073280-jobs.json",
+      "bytes": 3540,
+      "sha256": "b024b16a1ea149b75869ef04b3376dfa23909672856301e922224304cd0928fe"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073280-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "35b23bef9270cc780b0e0db8d96d08e264886327bbcdc37b1d9d0859c9a67e4c"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073280-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073323-jobs.json",
+      "bytes": 2626,
+      "sha256": "3999da39cb17030e3210d3f9d54cc3039b499e92c85b4e0614721e301711b888"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073323-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "a56e1ad3785fa67abe8835b6489d376b09c37eabff7c0684eb3152f42e7c3ddd"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073323-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073435-jobs.json",
+      "bytes": 3985,
+      "sha256": "141ec54229fdce31e78cb8b20ea19b949a2d1cce78b2f4d200632770566025b2"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073435-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "9ee35ed438ea344cb0a92a451ad9be6a3662a3bbfc8038ce346fe5760ac1c602"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073435-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073516-jobs.json",
+      "bytes": 55289,
+      "sha256": "a798d6419fc12c9aa18f2dda7b1ab2b42f5f0831fba8bc85631c2db4cd04c1b3"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073516-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "d848da74158ca5095c8bc36d530fb04c52dcbc8b4b5c9ab7bc09be90b68cd94a"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/42553073516-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/FILES.json",
+      "bytes": 10119,
+      "sha256": "7b7a38a481dd4b0f7e5532629fd2cc662fe46bb4148dd54b298065215e7a25e0"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/RESULT.json",
+      "bytes": 41001,
+      "sha256": "88e113e5f27899cb750d12fdee639501b58e6bfaea42444b4823d92a9557b9e1"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/SUMMARY.json",
+      "bytes": 6654,
+      "sha256": "06ce5c9a96c590eee0eac3c3275542c7fe94b84312884a7dbdf1b60451662a9e"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/common-after.json",
+      "bytes": 479,
+      "sha256": "f9d6565f47df413db87e9f0654e354b980101ae517833df2fac75eb14727e1a1"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/common-after.receipt.json",
+      "bytes": 583,
+      "sha256": "ae05cb04a72fd7095ae7114d884d0340d46b969c37a629fac218cc6ef8cf96af"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/common-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/common-before.json",
+      "bytes": 479,
+      "sha256": "f9d6565f47df413db87e9f0654e354b980101ae517833df2fac75eb14727e1a1"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/common-before.receipt.json",
+      "bytes": 583,
+      "sha256": "fb7d205017a414a3c819311abdee78a6be3be1d8a00262e5ca19e24f188d5dfb"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/common-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/driver.py",
+      "bytes": 4801,
+      "sha256": "e3b4ef8dea646b7c2386b556c9e6cebfd29a87d5a1dcd5f35d7893e0d63015a4"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/runs.json",
+      "bytes": 269940,
+      "sha256": "bb55a94e77934c13cbe8a605c96da0d3926dcf4abdd1c2be17f79866c4f8af3c"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/runs.receipt.json",
+      "bytes": 612,
+      "sha256": "22a6f37d98d50836e8bca11cb632f5a6bacb6843568e34b70c6de2bb3126f1f2"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/runs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/source-commit.json",
+      "bytes": 1263,
+      "sha256": "b5bfb92ffeebeb9c593342023a61ce96a648fef131d3323df890d0aeb4c250bf"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/source-commit.receipt.json",
+      "bytes": 587,
+      "sha256": "e9d470eca3f76d30593fe15a232740e7ff28547ad87dc6e71f2467effe3f6c5e"
+    },
+    {
+      "path": "originals/ci-bf42-current-snapshot-008/source-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "sealer.py",
+      "bytes": 16039,
+      "sha256": "1d82bb5bd14aa6d6a83fa6dadd69d81082cb03e9999a8407b33e21cd9429cc34"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/bf42-original-ci-api-snapshots007-008-terminal-v1/archive.part001",
+      "offset": 0,
+      "bytes": 36168,
+      "sha256": "ded93291d9b023704d8be4c75f5600028bfe0b9dc22c74994d67e9c76d7e49a5"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

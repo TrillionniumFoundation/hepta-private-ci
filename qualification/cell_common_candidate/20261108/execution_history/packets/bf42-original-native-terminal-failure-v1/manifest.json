@@ -1,0 +1,2803 @@
+{
+  "packet_id": "bf42-original-native-terminal-failure-v1",
+  "scope": "Original bf42 native CI terminal failure with raw/JUnit case closure, original retries and overlap retained",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/bf42-original-native-terminal-failure-v1-seal/bf42-original-native-terminal-failure-v1.tar.xz",
+  "bytes": 6453120,
+  "sha256": "93bd9903de1191055d6a1811d4b2ba7fed401e1fd4261c653df5fdcdbd1fd19a",
+  "file_member_count": 234,
+  "required_json_members": [
+    {
+      "path": "SCOPE.json",
+      "bytes": 18109,
+      "sha256": "7968c97f07fc6acb40225c5ac6f99baa30ae82062d74816b8dc42a07d7fa5d18",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "actual_lane": "source-head",
+            "actual_tested_parent": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+            "actual_tested_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+            "additional_python_controls": "Original per-command receipts preserved; overlapping repeated job controls are not added to native test count",
+            "all_packet_member_counts_and_repeated_artifacts_are_not_unique_task_counts": true,
+            "api_workflow_conclusion": "failure",
+            "collector_history": {
+              "actual_collector": "single absolute-path durable job succeeded, no workflow/test re-execution",
+              "first_tool_request": "runtime rejected nonabsolute python3 before job creation"
+            },
+            "common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+            "complete_execution_history": false,
+            "duplicates_excluded": {
+              "hostcas_prior_xml_equals_scoped": true,
+              "scoped_artifact_files_also_in_final": 47,
+              "workspace_prior_xml_equals_hostcas": true
+            },
+            "excluded_runtime_coordination_files": [],
+            "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+            "formal_stage_result": "S0-S5 HOLD; unchanged formal CURRENT_RESULT",
+            "full_default_workspace_completed": true,
+            "full_default_workspace_pass": false,
+            "full_history_cost": null,
+            "helper_metadata": {
+              "helper_executable_bytes_in_upload": false,
+              "original_runtime_hash_verifications": [
+                {
+                  "artifact_id": 13646213517,
+                  "count": 1,
+                  "file": "helpers-after-scoped.json",
+                  "sha256": "b007d36e29245f335268a32cb8f1d41c5ff7d1aaba36677386c7e49591ebff4d"
+                },
+                {
+                  "artifact_id": 13651842382,
+                  "count": 10,
+                  "file": "helpers-after-hostcas.json",
+                  "sha256": "d6e12b5953b23c8e3bb6a11f8ccff4327e4805e04c6d08989d1f8225b8cf20a8"
+                },
+                {
+                  "artifact_id": 13651842382,
+                  "count": 10,
+                  "file": "helpers-after-scoped.json",
+                  "sha256": "d6e12b5953b23c8e3bb6a11f8ccff4327e4805e04c6d08989d1f8225b8cf20a8"
+                },
+                {
+                  "artifact_id": 13651842382,
+                  "count": 10,
+                  "file": "helpers-after-workspace.json",
+                  "sha256": "d6e12b5953b23c8e3bb6a11f8ccff4327e4805e04c6d08989d1f8225b8cf20a8"
+                }
+              ],
+              "this_reader_reverified_original_helper_binaries": false
+            },
+            "kind": "original_common_native_full_workspace_failure_readback",
+            "named_outside_selection_roster": "not retained in original artifacts; no new list executed",
+            "native_binary_bytes_uploaded_by_original_workflow": false,
+            "new_native_executions_by_reader_or_sealer": 0,
+            "no_selected_junit_skip_and_no_raw_timeout_or_leak_observed": true,
+            "original_artifacts": [
+              {
+                "bytes": 777254,
+                "file_members": 26,
+                "id": 13646213517,
+                "name": "cell-framework-mechanisms-bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d-1",
+                "sha256": "054e8ef8306247c50a617da709a3ad823b9cd2c2602123788b3c6a2235d9cb5b"
+              },
+              {
+                "bytes": 54146,
+                "file_members": 12,
+                "id": 13646262452,
+                "name": "cell-runtime-bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d-1",
+                "sha256": "2ad9ea508bc90f0ab65939df9444eb3c76b4334e0c25f2979483bdb96590d995"
+              },
+              {
+                "bytes": 1741643,
+                "file_members": 47,
+                "id": 13649625549,
+                "name": "cell-framework-scoped-agentd-composition-bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d-1",
+                "sha256": "2b922c6be045d9aff5befa578cc3c9d6cca1382b500d37257b15e90560d606f7"
+              },
+              {
+                "bytes": 2708501,
+                "file_members": 55,
+                "id": 13651842382,
+                "name": "cell-framework-agentd-composition-bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d-1",
+                "sha256": "dc80f6378736913b641c3eee272abfde9407eafc46c24c90d1cf84616bc58c47"
+              }
+            ],
+            "original_default_workspace_exit_code": 100,
+            "original_jobs": [
+              {
+                "conclusion": "success",
+                "id": 128952701339,
+                "name": "Cell framework (mechanisms)",
+                "raw_bytes": 439182,
+                "raw_sha256": "d45da5599bdbe3040b416a51915c03a4c0a3ed8dc4095a73df0b6b233ef7c760"
+              },
+              {
+                "conclusion": "failure",
+                "id": 128952701454,
+                "name": "Cell framework (agentd-composition)",
+                "raw_bytes": 4797748,
+                "raw_sha256": "6e64e0e37463ff01965cd50f330fe589c50e0663b412e0668554c38a97b5850f"
+              },
+              {
+                "conclusion": "success",
+                "id": 128952701517,
+                "name": "Cell configuration and actor recovery",
+                "raw_bytes": 45885,
+                "raw_sha256": "cb1583a9467eac4b06d9490010699ea127e0dc469e2657df264225e78b697da8"
+              }
+            ],
+            "original_outside_selection_skips_are_not_passes": true,
+            "overlap": [
+              {
+                "left": "mechanisms",
+                "not_automatically_equivalent_feature_execution": true,
+                "right": "agentd_scoped",
+                "same_binary_case_pair_overlap": 0
+              },
+              {
+                "left": "mechanisms",
+                "not_automatically_equivalent_feature_execution": true,
+                "right": "hostcas",
+                "same_binary_case_pair_overlap": 0
+              },
+              {
+                "left": "mechanisms",
+                "not_automatically_equivalent_feature_execution": true,
+                "right": "default_workspace",
+                "same_binary_case_pair_overlap": 1215
+              },
+              {
+                "left": "agentd_scoped",
+                "not_automatically_equivalent_feature_execution": true,
+                "right": "hostcas",
+                "same_binary_case_pair_overlap": 0
+              },
+              {
+                "left": "agentd_scoped",
+                "not_automatically_equivalent_feature_execution": true,
+                "right": "default_workspace",
+                "same_binary_case_pair_overlap": 7910
+              },
+              {
+                "left": "hostcas",
+                "not_automatically_equivalent_feature_execution": true,
+                "right": "default_workspace",
+                "same_binary_case_pair_overlap": 0
+              }
+            ],
+            "packet_id": "bf42-original-native-terminal-failure-v1",
+            "phases": [
+              {
+                "command": [
+                  "just",
+                  "test",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-neuron",
+                  "-p",
+                  "codex-hepta-learning-artifacts",
+                  "-p",
+                  "codex-hepta-learning-ledger",
+                  "-p",
+                  "codex-hepta-ndu",
+                  "-p",
+                  "codex-hepta-plasticity",
+                  "-p",
+                  "codex-hepta-automation",
+                  "-p",
+                  "codex-hepta-runtime",
+                  "-p",
+                  "codex-hepta-control-plane",
+                  "-p",
+                  "codex-hepta-context-compiler",
+                  "-p",
+                  "codex-utils-pty",
+                  "-p",
+                  "codex-hepta-intelligence",
+                  "-p",
+                  "codex-hepta-intelligence-eval",
+                  "-p",
+                  "codex-hepta-infer-core"
+                ],
+                "command_exit_code": 0,
+                "counts": {
+                  "declared_selected": 1215,
+                  "known_early_return_markers_in_available_raw": [],
+                  "named_unexecuted_roster_available": false,
+                  "native_test_attempts": 1215,
+                  "outside_selection_skipped_as_reported": 7,
+                  "retry_extra_attempts": 0,
+                  "retry_then_passed": 0,
+                  "runner_clean_single_attempt_passed": 1215,
+                  "runner_final_failed": 0,
+                  "runner_final_passed": 1215,
+                  "selected_skipped_in_junit": 0,
+                  "silent_success_early_return_absence": "unknown; original successful stdout capture preserved",
+                  "slow_progress_notifications_not_executions": [],
+                  "timeout_cases": [],
+                  "unique_executed": 1215,
+                  "whole_raw_leak_markers": []
+                },
+                "execution": {
+                  "bytes": 1959,
+                  "ctime_ns": 1794203691606515029,
+                  "device": 2050,
+                  "inode": 5826912,
+                  "mode": 384,
+                  "mtime_ns": 1794203691606515029,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/scoped-tests.json",
+                  "sha256": "243476bfc4d1771739f6e346270e404b385ea73b7cd84796bc76dccd009f3e46"
+                },
+                "junit": {
+                  "bytes": 266979,
+                  "ctime_ns": 1794203691606156480,
+                  "device": 2050,
+                  "inode": 5826911,
+                  "mode": 384,
+                  "mtime_ns": 1794203691606156480,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/junit-scoped.xml",
+                  "sha256": "f27dec66a1fb37b1eb4c4233e532264942efdd53fabb0d5837faf0be85aa74d5"
+                },
+                "name": "mechanisms"
+              },
+              {
+                "command": [
+                  "just",
+                  "test",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "-p",
+                  "codex-core",
+                  "-p",
+                  "codex-app-server",
+                  "-p",
+                  "codex-app-server-client",
+                  "-p",
+                  "codex-hepta-contracts",
+                  "-p",
+                  "codex-mcp",
+                  "-p",
+                  "codex-model-provider-info",
+                  "-p",
+                  "codex-exec-server",
+                  "-p",
+                  "codex-hepta-agent-protocol",
+                  "-p",
+                  "codex-hepta-memory",
+                  "-p",
+                  "codex-hepta-infer-worker-host",
+                  "-p",
+                  "codex-shell-escalation",
+                  "-p",
+                  "codex-linux-sandbox",
+                  "-p",
+                  "codex-hepta-memory-extension",
+                  "-p",
+                  "codex-hepta-supervisor"
+                ],
+                "command_exit_code": 0,
+                "counts": {
+                  "declared_selected": 7910,
+                  "known_early_return_markers_in_available_raw": [],
+                  "named_unexecuted_roster_available": false,
+                  "native_test_attempts": 7911,
+                  "outside_selection_skipped_as_reported": 107,
+                  "retry_extra_attempts": 1,
+                  "retry_then_passed": 1,
+                  "runner_clean_single_attempt_passed": 7909,
+                  "runner_final_failed": 0,
+                  "runner_final_passed": 7910,
+                  "selected_skipped_in_junit": 0,
+                  "silent_success_early_return_absence": "unknown; original successful stdout capture preserved",
+                  "slow_progress_notifications_not_executions": [
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-app-server-client",
+                      "duration": "> 30.000s",
+                      "line": 1717,
+                      "name": "tests::next_event_surfaces_lagged_markers"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-hepta-agentd",
+                      "duration": "> 30.000s",
+                      "line": 6713,
+                      "name": "runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-hepta-supervisor::paired_process_product",
+                      "duration": "> 30.000s",
+                      "line": 8228,
+                      "name": "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash"
+                    }
+                  ],
+                  "timeout_cases": [],
+                  "unique_executed": 7910,
+                  "whole_raw_leak_markers": []
+                },
+                "execution": {
+                  "bytes": 2004,
+                  "ctime_ns": 1794203692223880061,
+                  "device": 2050,
+                  "inode": 5827064,
+                  "mode": 384,
+                  "mtime_ns": 1794203692223880061,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/scoped-tests.json",
+                  "sha256": "68ad9660187ef78bcf776d36fbaadb16fd2c16bbeb4193808a5d4178db0a834e"
+                },
+                "junit": {
+                  "bytes": 1720627,
+                  "ctime_ns": 1794203692197184770,
+                  "device": 2050,
+                  "inode": 5827060,
+                  "mode": 384,
+                  "mtime_ns": 1794203692197184770,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-scoped.xml",
+                  "sha256": "f0dd5732e7953f19815a423879f3ac58d0f22991f3c575b442d1da64396b8542"
+                },
+                "name": "agentd_scoped"
+              },
+              {
+                "command": [
+                  "just",
+                  "test",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--lib",
+                  "--run-ignored",
+                  "only",
+                  "--retries",
+                  "0",
+                  "--no-tests",
+                  "fail",
+                  "--test-threads",
+                  "1",
+                  "-E",
+                  "test(=plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::process_tests::durable_native_job_with_original_host_cas)"
+                ],
+                "command_exit_code": 0,
+                "counts": {
+                  "declared_selected": 1,
+                  "known_early_return_markers_in_available_raw": [],
+                  "named_unexecuted_roster_available": false,
+                  "native_test_attempts": 1,
+                  "outside_selection_skipped_as_reported": 791,
+                  "retry_extra_attempts": 0,
+                  "retry_then_passed": 0,
+                  "runner_clean_single_attempt_passed": 1,
+                  "runner_final_failed": 0,
+                  "runner_final_passed": 1,
+                  "selected_skipped_in_junit": 0,
+                  "silent_success_early_return_absence": "unknown; original successful stdout capture preserved",
+                  "slow_progress_notifications_not_executions": [],
+                  "timeout_cases": [],
+                  "unique_executed": 1,
+                  "whole_raw_leak_markers": []
+                },
+                "execution": {
+                  "bytes": 1757,
+                  "ctime_ns": 1794203692186744506,
+                  "device": 2050,
+                  "inode": 5827050,
+                  "mode": 384,
+                  "mtime_ns": 1794203692186744506,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/hostcas-tests.json",
+                  "sha256": "a52dd4751a197fa73c5447cc3484949660bc810f05820e403cd82d8efad5508b"
+                },
+                "junit": {
+                  "bytes": 589,
+                  "ctime_ns": 1794203692187866845,
+                  "device": 2050,
+                  "inode": 5827055,
+                  "mode": 384,
+                  "mtime_ns": 1794203692187866845,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-hostcas.xml",
+                  "sha256": "d54ad74d9e5b82436d403e1441f8f7663a58075eaf57e9ec1c780428ce7eb1a2"
+                },
+                "name": "hostcas"
+              },
+              {
+                "command": [
+                  "just",
+                  "test",
+                  "--locked"
+                ],
+                "command_exit_code": 100,
+                "counts": {
+                  "declared_selected": 20563,
+                  "known_early_return_markers_in_available_raw": [],
+                  "named_unexecuted_roster_available": false,
+                  "native_test_attempts": 20564,
+                  "outside_selection_skipped_as_reported": 139,
+                  "retry_extra_attempts": 1,
+                  "retry_then_passed": 0,
+                  "runner_clean_single_attempt_passed": 20562,
+                  "runner_final_failed": 1,
+                  "runner_final_passed": 20562,
+                  "selected_skipped_in_junit": 0,
+                  "silent_success_early_return_absence": "unknown; original successful stdout capture preserved",
+                  "slow_progress_notifications_not_executions": [
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-app-server-client",
+                      "duration": "> 30.000s",
+                      "line": 2914,
+                      "name": "tests::next_event_surfaces_lagged_markers"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-exec::all",
+                      "duration": "> 30.000s",
+                      "line": 8833,
+                      "name": "suite::resume::exec_resume_last_respects_cwd_filter_and_all_flag"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-hepta-agentd",
+                      "duration": "> 30.000s",
+                      "line": 10516,
+                      "name": "runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-hepta-evidence",
+                      "duration": "> 30.000s",
+                      "line": 11724,
+                      "name": "qualification_tests::claim_query_rejects_more_than_512_references"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-hepta-supervisor::paired_process_product",
+                      "duration": "> 30.000s",
+                      "line": 14124,
+                      "name": "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-queue-extension::queue_service",
+                      "duration": "> 30.000s",
+                      "line": 15783,
+                      "name": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes"
+                    }
+                  ],
+                  "timeout_cases": [],
+                  "unique_executed": 20563,
+                  "whole_raw_leak_markers": []
+                },
+                "execution": {
+                  "bytes": 1499,
+                  "ctime_ns": 1794203692232458522,
+                  "device": 2050,
+                  "inode": 5827075,
+                  "mode": 384,
+                  "mtime_ns": 1794203692232458522,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/workspace-tests.json",
+                  "sha256": "bb50b4bf978869aa54ec472f07c2a40d04ccdc0bb999993a63a6df9ea81367e8"
+                },
+                "junit": {
+                  "bytes": 4363582,
+                  "ctime_ns": 1794203692221883462,
+                  "device": 2050,
+                  "inode": 5827063,
+                  "mode": 384,
+                  "mtime_ns": 1794203692221883462,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-workspace.xml",
+                  "sha256": "c2db935bbae31b533a2a50c6b54e7f3c2e93dcbb148184ca0777a1ff7ec4fbd1"
+                },
+                "name": "default_workspace"
+              }
+            ],
+            "physical_cost": null,
+            "readback_history": {
+              "v1": "rejected nonterminal TRY 1 SLOW progress as unknown status; original preserved",
+              "v2": "binds SLOW progress to actual final case/attempt, never counts progress as execution; exact raw/JUnit sets verified"
+            },
+            "run_attempt": 1,
+            "run_id": 42553066862,
+            "scientific_acceptance": false,
+            "scoped_api_success_contains_original_retry_flaky": true,
+            "source_basis": "Original checkout git log and every execution before/after receipt, all exact bf42/tree and clean",
+            "stage_advancement_claimed": false,
+            "successful_silent_early_return_absence": "unknown; original stdout capture retained",
+            "unique_final_failure": {
+              "actual_aggregated_output_not_printed_by_original_assertion": true,
+              "binary_id": "codex-core::all",
+              "name": "suite::unified_exec::unified_exec_formats_large_output_summary",
+              "scoped_first_error": "unified_exec.rs:3186: HEAD missing; original retry passed",
+              "workspace_both_errors": "unified_exec.rs:3188: expected bytes-omitted regex not matched"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/RESULT.json",
+      "bytes": 32719,
+      "sha256": "a541d1bedd4dc5a05abef34ea6b90f918d0cb335c61d6c256a5933b683a0df8b",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "all_execution_receipts_byte_and_source_bound": {
+              "bytes": 25944,
+              "ctime_ns": 1794204343079662199,
+              "device": 2050,
+              "inode": 5950958,
+              "mode": 384,
+              "mtime_ns": 1794204343079662199,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/case-audit-v2/ALL_EXECUTION_RECEIPTS.json",
+              "sha256": "799ad315aa2946de9f5731b924b7de1a04dc877a47d5b0c153bcd73572fa2939"
+            },
+            "audit_exit_code": 0,
+            "duplicate_artifacts_and_prior_xml_not_double_counted": {
+              "hostcas_prior_xml_equals_scoped": true,
+              "scoped_artifact_files_also_in_final": 47,
+              "workspace_prior_xml_equals_hostcas": true
+            },
+            "finished_at": "2026-11-09T06:05:43.308890+00:00",
+            "full_history_cost": null,
+            "full_workspace_pass": false,
+            "helper_metadata_readback": {
+              "helper_executable_bytes_in_upload": false,
+              "original_runtime_hash_verifications": [
+                {
+                  "artifact_id": 13646213517,
+                  "count": 1,
+                  "file": "helpers-after-scoped.json",
+                  "sha256": "b007d36e29245f335268a32cb8f1d41c5ff7d1aaba36677386c7e49591ebff4d"
+                },
+                {
+                  "artifact_id": 13651842382,
+                  "count": 10,
+                  "file": "helpers-after-hostcas.json",
+                  "sha256": "d6e12b5953b23c8e3bb6a11f8ccff4327e4805e04c6d08989d1f8225b8cf20a8"
+                },
+                {
+                  "artifact_id": 13651842382,
+                  "count": 10,
+                  "file": "helpers-after-scoped.json",
+                  "sha256": "d6e12b5953b23c8e3bb6a11f8ccff4327e4805e04c6d08989d1f8225b8cf20a8"
+                },
+                {
+                  "artifact_id": 13651842382,
+                  "count": 10,
+                  "file": "helpers-after-workspace.json",
+                  "sha256": "d6e12b5953b23c8e3bb6a11f8ccff4327e4805e04c6d08989d1f8225b8cf20a8"
+                }
+              ],
+              "this_reader_reverified_original_helper_binaries": false
+            },
+            "new_native_tests_executed": 0,
+            "original_inputs_stable": true,
+            "original_workflow_conclusion": "failure",
+            "overlap": [
+              {
+                "left": "mechanisms",
+                "not_automatically_equivalent_feature_execution": true,
+                "right": "agentd_scoped",
+                "same_binary_case_pair_overlap": 0
+              },
+              {
+                "left": "mechanisms",
+                "not_automatically_equivalent_feature_execution": true,
+                "right": "hostcas",
+                "same_binary_case_pair_overlap": 0
+              },
+              {
+                "left": "mechanisms",
+                "not_automatically_equivalent_feature_execution": true,
+                "right": "default_workspace",
+                "same_binary_case_pair_overlap": 1215
+              },
+              {
+                "left": "agentd_scoped",
+                "not_automatically_equivalent_feature_execution": true,
+                "right": "hostcas",
+                "same_binary_case_pair_overlap": 0
+              },
+              {
+                "left": "agentd_scoped",
+                "not_automatically_equivalent_feature_execution": true,
+                "right": "default_workspace",
+                "same_binary_case_pair_overlap": 7910
+              },
+              {
+                "left": "hostcas",
+                "not_automatically_equivalent_feature_execution": true,
+                "right": "default_workspace",
+                "same_binary_case_pair_overlap": 0
+              }
+            ],
+            "parent": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+            "phases": [
+              {
+                "artifact_id": 13646213517,
+                "case_roster": {
+                  "bytes": 449838,
+                  "ctime_ns": 1794204341329714657,
+                  "device": 2050,
+                  "inode": 5950767,
+                  "mode": 384,
+                  "mtime_ns": 1794204341329714657,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/case-audit-v2/mechanisms-EXACT_CASES.json",
+                  "sha256": "d01831b03981759e8d615c2b6ad455c3600486928459fd1996c056df60f0b20e"
+                },
+                "closed_set_evidence": "original nextest starting/summary, per-case raw and fresh original JUnit agree",
+                "command_exit_code": 0,
+                "counts": {
+                  "declared_selected": 1215,
+                  "known_early_return_markers_in_available_raw": [],
+                  "named_unexecuted_roster_available": false,
+                  "native_test_attempts": 1215,
+                  "outside_selection_skipped_as_reported": 7,
+                  "retry_extra_attempts": 0,
+                  "retry_then_passed": 0,
+                  "runner_clean_single_attempt_passed": 1215,
+                  "runner_final_failed": 0,
+                  "runner_final_passed": 1215,
+                  "selected_skipped_in_junit": 0,
+                  "silent_success_early_return_absence": "unknown; original successful stdout capture preserved",
+                  "slow_progress_notifications_not_executions": [],
+                  "timeout_cases": [],
+                  "unique_executed": 1215,
+                  "whole_raw_leak_markers": []
+                },
+                "execution_and_test_wall_seconds_not_full_cost": {
+                  "command": 217.007040534,
+                  "nextest": 44.602
+                },
+                "failed_cases": [],
+                "full_history_cost": null,
+                "independent_discovery_file_present": false,
+                "native_command": [
+                  "just",
+                  "test",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-neuron",
+                  "-p",
+                  "codex-hepta-learning-artifacts",
+                  "-p",
+                  "codex-hepta-learning-ledger",
+                  "-p",
+                  "codex-hepta-ndu",
+                  "-p",
+                  "codex-hepta-plasticity",
+                  "-p",
+                  "codex-hepta-automation",
+                  "-p",
+                  "codex-hepta-runtime",
+                  "-p",
+                  "codex-hepta-control-plane",
+                  "-p",
+                  "codex-hepta-context-compiler",
+                  "-p",
+                  "codex-utils-pty",
+                  "-p",
+                  "codex-hepta-intelligence",
+                  "-p",
+                  "codex-hepta-intelligence-eval",
+                  "-p",
+                  "codex-hepta-infer-core"
+                ],
+                "original_execution": {
+                  "bytes": 1959,
+                  "ctime_ns": 1794203691606515029,
+                  "device": 2050,
+                  "inode": 5826912,
+                  "mode": 384,
+                  "mtime_ns": 1794203691606515029,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/scoped-tests.json",
+                  "sha256": "243476bfc4d1771739f6e346270e404b385ea73b7cd84796bc76dccd009f3e46"
+                },
+                "original_junit": {
+                  "bytes": 266979,
+                  "ctime_ns": 1794203691606156480,
+                  "device": 2050,
+                  "inode": 5826911,
+                  "mode": 384,
+                  "mtime_ns": 1794203691606156480,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/junit-scoped.xml",
+                  "sha256": "f27dec66a1fb37b1eb4c4233e532264942efdd53fabb0d5837faf0be85aa74d5"
+                },
+                "original_junit_summary": {
+                  "bytes": 1288,
+                  "ctime_ns": 1794203691604306528,
+                  "device": 2050,
+                  "inode": 5826910,
+                  "mode": 384,
+                  "mtime_ns": 1794203691604306528,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/junit-scoped.summary.json",
+                  "sha256": "8fa75243a6ed2ba1ffd479464f5bd13e419c86855924fcf5a13ddc5bb5905352"
+                },
+                "original_outer_timed_out": false,
+                "original_output_limit_exceeded": false,
+                "original_raw": {
+                  "bytes": 178486,
+                  "ctime_ns": 1794203691607937767,
+                  "device": 2050,
+                  "inode": 5826913,
+                  "mode": 384,
+                  "mtime_ns": 1794203691607937767,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/scoped-tests.json.2e44cd3f151142e19171662e76b7301f.log",
+                  "sha256": "6fdbb708394c6aa921db7e60ec5e2ced0d8603563925150fc7d06016998ea7ad"
+                },
+                "phase": "mechanisms",
+                "raw_summary": "     Summary [  44.602s] 1215 tests run: 1215 passed, 7 skipped",
+                "retried_cases": [],
+                "scientific_acceptance": false,
+                "source_before_after": {
+                  "commit": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                  "dirty": false,
+                  "parents": [
+                    "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca"
+                  ],
+                  "tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+                },
+                "source_unchanged": true,
+                "xml_failure_retry_node_counts": {}
+              },
+              {
+                "artifact_id": 13651842382,
+                "case_roster": {
+                  "bytes": 2928214,
+                  "ctime_ns": 1794204341670704435,
+                  "device": 2050,
+                  "inode": 5950784,
+                  "mode": 384,
+                  "mtime_ns": 1794204341670704435,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/case-audit-v2/agentd_scoped-EXACT_CASES.json",
+                  "sha256": "9a3bfe76498b6fd05047b1019170bb12b98e401ca650d1a54b5279f2ac98b9cc"
+                },
+                "closed_set_evidence": "original nextest starting/summary, per-case raw and fresh original JUnit agree",
+                "command_exit_code": 0,
+                "counts": {
+                  "declared_selected": 7910,
+                  "known_early_return_markers_in_available_raw": [],
+                  "named_unexecuted_roster_available": false,
+                  "native_test_attempts": 7911,
+                  "outside_selection_skipped_as_reported": 107,
+                  "retry_extra_attempts": 1,
+                  "retry_then_passed": 1,
+                  "runner_clean_single_attempt_passed": 7909,
+                  "runner_final_failed": 0,
+                  "runner_final_passed": 7910,
+                  "selected_skipped_in_junit": 0,
+                  "silent_success_early_return_absence": "unknown; original successful stdout capture preserved",
+                  "slow_progress_notifications_not_executions": [
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-app-server-client",
+                      "duration": "> 30.000s",
+                      "line": 1717,
+                      "name": "tests::next_event_surfaces_lagged_markers"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-hepta-agentd",
+                      "duration": "> 30.000s",
+                      "line": 6713,
+                      "name": "runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-hepta-supervisor::paired_process_product",
+                      "duration": "> 30.000s",
+                      "line": 8228,
+                      "name": "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash"
+                    }
+                  ],
+                  "timeout_cases": [],
+                  "unique_executed": 7910,
+                  "whole_raw_leak_markers": []
+                },
+                "execution_and_test_wall_seconds_not_full_cost": {
+                  "command": 2396.695055803,
+                  "nextest": 1694.144
+                },
+                "failed_cases": [],
+                "full_history_cost": null,
+                "independent_discovery_file_present": false,
+                "native_command": [
+                  "just",
+                  "test",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "-p",
+                  "codex-core",
+                  "-p",
+                  "codex-app-server",
+                  "-p",
+                  "codex-app-server-client",
+                  "-p",
+                  "codex-hepta-contracts",
+                  "-p",
+                  "codex-mcp",
+                  "-p",
+                  "codex-model-provider-info",
+                  "-p",
+                  "codex-exec-server",
+                  "-p",
+                  "codex-hepta-agent-protocol",
+                  "-p",
+                  "codex-hepta-memory",
+                  "-p",
+                  "codex-hepta-infer-worker-host",
+                  "-p",
+                  "codex-shell-escalation",
+                  "-p",
+                  "codex-linux-sandbox",
+                  "-p",
+                  "codex-hepta-memory-extension",
+                  "-p",
+                  "codex-hepta-supervisor"
+                ],
+                "original_execution": {
+                  "bytes": 2004,
+                  "ctime_ns": 1794203692223880061,
+                  "device": 2050,
+                  "inode": 5827064,
+                  "mode": 384,
+                  "mtime_ns": 1794203692223880061,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/scoped-tests.json",
+                  "sha256": "68ad9660187ef78bcf776d36fbaadb16fd2c16bbeb4193808a5d4178db0a834e"
+                },
+                "original_junit": {
+                  "bytes": 1720627,
+                  "ctime_ns": 1794203692197184770,
+                  "device": 2050,
+                  "inode": 5827060,
+                  "mode": 384,
+                  "mtime_ns": 1794203692197184770,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-scoped.xml",
+                  "sha256": "f0dd5732e7953f19815a423879f3ac58d0f22991f3c575b442d1da64396b8542"
+                },
+                "original_junit_summary": {
+                  "bytes": 1332,
+                  "ctime_ns": 1794203692188061182,
+                  "device": 2050,
+                  "inode": 5827056,
+                  "mode": 384,
+                  "mtime_ns": 1794203692188061182,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-scoped.summary.json",
+                  "sha256": "50a0ab2c7faf7ca0d0cebe4ab5abafbade6c4f0aad7be51b44fa60839637e665"
+                },
+                "original_outer_timed_out": false,
+                "original_output_limit_exceeded": false,
+                "original_raw": {
+                  "bytes": 1046399,
+                  "ctime_ns": 1794203692230085467,
+                  "device": 2050,
+                  "inode": 5827065,
+                  "mode": 384,
+                  "mtime_ns": 1794203692230085467,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/scoped-tests.json.4104178ca1c24f88b30253d4acdefd24.log",
+                  "sha256": "96d0f50a07aea494917ec6ced6219b0cf7ee39faf62c080a6431947f16c588d1"
+                },
+                "phase": "agentd_scoped",
+                "raw_summary": "     Summary [1694.144s] 7910 tests run: 7910 passed (3 slow, 1 flaky), 107 skipped",
+                "retried_cases": [
+                  {
+                    "attempts": [
+                      {
+                        "attempt": 1,
+                        "duration": "0.588s",
+                        "raw_line": 5398,
+                        "status": "FAIL"
+                      },
+                      {
+                        "attempt": 2,
+                        "duration": "0.743s",
+                        "raw_line": 5419,
+                        "status": "PASS"
+                      }
+                    ],
+                    "binary_id": "codex-core::all",
+                    "name": "suite::unified_exec::unified_exec_formats_large_output_summary"
+                  }
+                ],
+                "scientific_acceptance": false,
+                "source_before_after": {
+                  "commit": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                  "dirty": false,
+                  "parents": [
+                    "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca"
+                  ],
+                  "tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+                },
+                "source_unchanged": true,
+                "xml_failure_retry_node_counts": {
+                  "flakyFailure": 1
+                }
+              },
+              {
+                "artifact_id": 13651842382,
+                "case_roster": {
+                  "bytes": 421,
+                  "ctime_ns": 1794204341703121861,
+                  "device": 2050,
+                  "inode": 5950791,
+                  "mode": 384,
+                  "mtime_ns": 1794204341703121861,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/case-audit-v2/hostcas-EXACT_CASES.json",
+                  "sha256": "a9060c1ed05b0289c0e6e7e75766a842e2af3664223a31e6e9b5a1cded18d78c"
+                },
+                "closed_set_evidence": "original nextest starting/summary, per-case raw and fresh original JUnit agree",
+                "command_exit_code": 0,
+                "counts": {
+                  "declared_selected": 1,
+                  "known_early_return_markers_in_available_raw": [],
+                  "named_unexecuted_roster_available": false,
+                  "native_test_attempts": 1,
+                  "outside_selection_skipped_as_reported": 791,
+                  "retry_extra_attempts": 0,
+                  "retry_then_passed": 0,
+                  "runner_clean_single_attempt_passed": 1,
+                  "runner_final_failed": 0,
+                  "runner_final_passed": 1,
+                  "selected_skipped_in_junit": 0,
+                  "silent_success_early_return_absence": "unknown; original successful stdout capture preserved",
+                  "slow_progress_notifications_not_executions": [],
+                  "timeout_cases": [],
+                  "unique_executed": 1,
+                  "whole_raw_leak_markers": []
+                },
+                "execution_and_test_wall_seconds_not_full_cost": {
+                  "command": 108.74322300699987,
+                  "nextest": 0.602
+                },
+                "failed_cases": [],
+                "full_history_cost": null,
+                "independent_discovery_file_present": false,
+                "native_command": [
+                  "just",
+                  "test",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--lib",
+                  "--run-ignored",
+                  "only",
+                  "--retries",
+                  "0",
+                  "--no-tests",
+                  "fail",
+                  "--test-threads",
+                  "1",
+                  "-E",
+                  "test(=plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::process_tests::durable_native_job_with_original_host_cas)"
+                ],
+                "original_execution": {
+                  "bytes": 1757,
+                  "ctime_ns": 1794203692186744506,
+                  "device": 2050,
+                  "inode": 5827050,
+                  "mode": 384,
+                  "mtime_ns": 1794203692186744506,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/hostcas-tests.json",
+                  "sha256": "a52dd4751a197fa73c5447cc3484949660bc810f05820e403cd82d8efad5508b"
+                },
+                "original_junit": {
+                  "bytes": 589,
+                  "ctime_ns": 1794203692187866845,
+                  "device": 2050,
+                  "inode": 5827055,
+                  "mode": 384,
+                  "mtime_ns": 1794203692187866845,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-hostcas.xml",
+                  "sha256": "d54ad74d9e5b82436d403e1441f8f7663a58075eaf57e9ec1c780428ce7eb1a2"
+                },
+                "original_junit_summary": {
+                  "bytes": 1079,
+                  "ctime_ns": 1794203692187674940,
+                  "device": 2050,
+                  "inode": 5827054,
+                  "mode": 384,
+                  "mtime_ns": 1794203692187674940,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-hostcas.summary.json",
+                  "sha256": "5cbf731b97adc3c5d712e08d639c3adf5dc479aa99dec110040a069049db6f33"
+                },
+                "original_outer_timed_out": false,
+                "original_output_limit_exceeded": false,
+                "original_raw": {
+                  "bytes": 18168,
+                  "ctime_ns": 1794203692187035844,
+                  "device": 2050,
+                  "inode": 5827051,
+                  "mode": 384,
+                  "mtime_ns": 1794203692187035844,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/hostcas-tests.json.47c4a7a9889646a08d76c39485b11212.log",
+                  "sha256": "2bc21e43d9a3feaf1d806a076ebe5ac21f249754bc6baef349110dfcdc97edcb"
+                },
+                "phase": "hostcas",
+                "raw_summary": "     Summary [   0.602s] 1 test run: 1 passed, 791 skipped",
+                "retried_cases": [],
+                "scientific_acceptance": false,
+                "source_before_after": {
+                  "commit": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                  "dirty": false,
+                  "parents": [
+                    "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca"
+                  ],
+                  "tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+                },
+                "source_unchanged": true,
+                "xml_failure_retry_node_counts": {}
+              },
+              {
+                "artifact_id": 13651842382,
+                "case_roster": {
+                  "bytes": 7500621,
+                  "ctime_ns": 1794204342620675958,
+                  "device": 2050,
+                  "inode": 5950793,
+                  "mode": 384,
+                  "mtime_ns": 1794204342620675958,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/case-audit-v2/default_workspace-EXACT_CASES.json",
+                  "sha256": "5f8839f2131fc52f9627c46ae4337c6960272698ad8350a78283a36c5c83646d"
+                },
+                "closed_set_evidence": "original nextest starting/summary, per-case raw and fresh original JUnit agree",
+                "command_exit_code": 100,
+                "counts": {
+                  "declared_selected": 20563,
+                  "known_early_return_markers_in_available_raw": [],
+                  "named_unexecuted_roster_available": false,
+                  "native_test_attempts": 20564,
+                  "outside_selection_skipped_as_reported": 139,
+                  "retry_extra_attempts": 1,
+                  "retry_then_passed": 0,
+                  "runner_clean_single_attempt_passed": 20562,
+                  "runner_final_failed": 1,
+                  "runner_final_passed": 20562,
+                  "selected_skipped_in_junit": 0,
+                  "silent_success_early_return_absence": "unknown; original successful stdout capture preserved",
+                  "slow_progress_notifications_not_executions": [
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-app-server-client",
+                      "duration": "> 30.000s",
+                      "line": 2914,
+                      "name": "tests::next_event_surfaces_lagged_markers"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-exec::all",
+                      "duration": "> 30.000s",
+                      "line": 8833,
+                      "name": "suite::resume::exec_resume_last_respects_cwd_filter_and_all_flag"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-hepta-agentd",
+                      "duration": "> 30.000s",
+                      "line": 10516,
+                      "name": "runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-hepta-evidence",
+                      "duration": "> 30.000s",
+                      "line": 11724,
+                      "name": "qualification_tests::claim_query_rejects_more_than_512_references"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-hepta-supervisor::paired_process_product",
+                      "duration": "> 30.000s",
+                      "line": 14124,
+                      "name": "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash"
+                    },
+                    {
+                      "attempt": 1,
+                      "binary_id": "codex-queue-extension::queue_service",
+                      "duration": "> 30.000s",
+                      "line": 15783,
+                      "name": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes"
+                    }
+                  ],
+                  "timeout_cases": [],
+                  "unique_executed": 20563,
+                  "whole_raw_leak_markers": []
+                },
+                "execution_and_test_wall_seconds_not_full_cost": {
+                  "command": 4132.874847687999,
+                  "nextest": 2413.177
+                },
+                "failed_cases": [
+                  [
+                    "codex-core::all",
+                    "suite::unified_exec::unified_exec_formats_large_output_summary"
+                  ]
+                ],
+                "full_history_cost": null,
+                "independent_discovery_file_present": false,
+                "native_command": [
+                  "just",
+                  "test",
+                  "--locked"
+                ],
+                "original_execution": {
+                  "bytes": 1499,
+                  "ctime_ns": 1794203692232458522,
+                  "device": 2050,
+                  "inode": 5827075,
+                  "mode": 384,
+                  "mtime_ns": 1794203692232458522,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/workspace-tests.json",
+                  "sha256": "bb50b4bf978869aa54ec472f07c2a40d04ccdc0bb999993a63a6df9ea81367e8"
+                },
+                "original_junit": {
+                  "bytes": 4363582,
+                  "ctime_ns": 1794203692221883462,
+                  "device": 2050,
+                  "inode": 5827063,
+                  "mode": 384,
+                  "mtime_ns": 1794203692221883462,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-workspace.xml",
+                  "sha256": "c2db935bbae31b533a2a50c6b54e7f3c2e93dcbb148184ca0777a1ff7ec4fbd1"
+                },
+                "original_junit_summary": {
+                  "bytes": 772,
+                  "ctime_ns": 1794203692198097826,
+                  "device": 2050,
+                  "inode": 5827062,
+                  "mode": 384,
+                  "mtime_ns": 1794203692198097826,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-workspace.summary.json",
+                  "sha256": "2ece4e3871c5be5dc496d473c2b75f892962877da960c3ad3bd9c5644d20e98f"
+                },
+                "original_outer_timed_out": false,
+                "original_output_limit_exceeded": false,
+                "original_raw": {
+                  "bytes": 2561082,
+                  "ctime_ns": 1794203692246985920,
+                  "device": 2050,
+                  "inode": 5827076,
+                  "mode": 384,
+                  "mtime_ns": 1794203692246985920,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/workspace-tests.json.e3f11636a6664cab826c4d7a5a30e2dd.log",
+                  "sha256": "d3354b94806899efd1d327de9d2b4d8f1578a4bbf9cd756ee04ce06be54a443c"
+                },
+                "phase": "default_workspace",
+                "raw_summary": "     Summary [2413.177s] 20563 tests run: 20562 passed (6 slow), 1 failed, 139 skipped",
+                "retried_cases": [
+                  {
+                    "attempts": [
+                      {
+                        "attempt": 1,
+                        "duration": "0.808s",
+                        "raw_line": 8143,
+                        "status": "FAIL"
+                      },
+                      {
+                        "attempt": 2,
+                        "duration": "0.811s",
+                        "raw_line": 8164,
+                        "status": "FAIL"
+                      }
+                    ],
+                    "binary_id": "codex-core::all",
+                    "name": "suite::unified_exec::unified_exec_formats_large_output_summary"
+                  }
+                ],
+                "scientific_acceptance": false,
+                "source_before_after": {
+                  "commit": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                  "dirty": false,
+                  "parents": [
+                    "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca"
+                  ],
+                  "tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+                },
+                "source_unchanged": true,
+                "xml_failure_retry_node_counts": {
+                  "failure": 1,
+                  "rerunFailure": 1
+                }
+              }
+            ],
+            "physical_cost": null,
+            "python_and_engineering_controls_not_added_to_native_total": [
+              {
+                "artifact_id": 13646213517,
+                "command": [
+                  "just",
+                  "clippy",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-neuron",
+                  "-p",
+                  "codex-hepta-learning-artifacts",
+                  "-p",
+                  "codex-hepta-learning-ledger",
+                  "-p",
+                  "codex-hepta-ndu",
+                  "-p",
+                  "codex-hepta-plasticity",
+                  "-p",
+                  "codex-hepta-automation",
+                  "-p",
+                  "codex-hepta-runtime",
+                  "-p",
+                  "codex-hepta-control-plane",
+                  "-p",
+                  "codex-hepta-context-compiler",
+                  "-p",
+                  "codex-utils-pty",
+                  "-p",
+                  "codex-hepta-intelligence",
+                  "-p",
+                  "codex-hepta-intelligence-eval",
+                  "-p",
+                  "codex-hepta-infer-core",
+                  "--",
+                  "-D",
+                  "warnings"
+                ],
+                "file": "clippy.json",
+                "reported_failed": 0,
+                "reported_passed": 0
+              },
+              {
+                "artifact_id": 13646213517,
+                "command": [
+                  "python3",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "scripts",
+                  "-p",
+                  "test_hepta_ci_junit.py"
+                ],
+                "file": "evidence-gate-tests.json",
+                "reported_failed": 0,
+                "reported_passed": 9
+              },
+              {
+                "artifact_id": 13646213517,
+                "command": [
+                  "python3",
+                  "scripts/hepta_cell_test_helpers.py",
+                  "--package",
+                  "codex-hepta-infer-worker-host",
+                  "--output-dir",
+                  "/home/runner/work/_temp/cell-framework-records/helpers",
+                  "--github-env",
+                  "/home/runner/work/_temp/_runner_file_commands/set_env_e11a0a59-1e28-4f88-a068-614cf3683c61"
+                ],
+                "file": "helper-build.json",
+                "reported_failed": 0,
+                "reported_passed": 0
+              },
+              {
+                "artifact_id": 13646213517,
+                "command": [
+                  "python3",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "scripts",
+                  "-p",
+                  "test_hepta_cell_test_helpers.py"
+                ],
+                "file": "helper-gate-tests.json",
+                "reported_failed": 0,
+                "reported_passed": 8
+              },
+              {
+                "artifact_id": 13646213517,
+                "command": [
+                  "python3",
+                  "-B",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "scripts",
+                  "-p",
+                  "test_hepta_cell_joint_config.py",
+                  "-v"
+                ],
+                "file": "joint-config-tests.json",
+                "reported_failed": 0,
+                "reported_passed": 23
+              },
+              {
+                "artifact_id": 13646213517,
+                "command": [
+                  "python3",
+                  "-B",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "qualification/neuron-v13-generation",
+                  "-p",
+                  "test_proposal_worker.py",
+                  "-v"
+                ],
+                "file": "v13-protocol-tests.json",
+                "reported_failed": 0,
+                "reported_passed": 9
+              },
+              {
+                "artifact_id": 13646262452,
+                "command": [
+                  "python",
+                  "-B",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "scripts",
+                  "-p",
+                  "test_hepta_cell_joint_config.py",
+                  "-v"
+                ],
+                "file": "joint-config-tests.json",
+                "reported_failed": 0,
+                "reported_passed": 23
+              },
+              {
+                "artifact_id": 13646262452,
+                "command": [
+                  "python",
+                  "-B",
+                  "-m",
+                  "unittest",
+                  "-v",
+                  "ndu_real_runtime.test_state_codec"
+                ],
+                "file": "state-codec-tests.json",
+                "reported_failed": 0,
+                "reported_passed": 6
+              },
+              {
+                "artifact_id": 13651842382,
+                "command": [
+                  "just",
+                  "clippy",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "-p",
+                  "codex-core",
+                  "-p",
+                  "codex-app-server",
+                  "-p",
+                  "codex-app-server-client",
+                  "-p",
+                  "codex-hepta-contracts",
+                  "-p",
+                  "codex-mcp",
+                  "-p",
+                  "codex-model-provider-info",
+                  "-p",
+                  "codex-exec-server",
+                  "-p",
+                  "codex-hepta-agent-protocol",
+                  "-p",
+                  "codex-hepta-memory",
+                  "-p",
+                  "codex-hepta-infer-worker-host",
+                  "-p",
+                  "codex-shell-escalation",
+                  "-p",
+                  "codex-linux-sandbox",
+                  "-p",
+                  "codex-hepta-memory-extension",
+                  "-p",
+                  "codex-hepta-supervisor",
+                  "--",
+                  "-D",
+                  "warnings"
+                ],
+                "file": "clippy.json",
+                "reported_failed": 0,
+                "reported_passed": 0
+              },
+              {
+                "artifact_id": 13651842382,
+                "command": [
+                  "python3",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "scripts",
+                  "-p",
+                  "test_hepta_ci_junit.py"
+                ],
+                "file": "evidence-gate-tests.json",
+                "reported_failed": 0,
+                "reported_passed": 9
+              },
+              {
+                "artifact_id": 13651842382,
+                "command": [
+                  "python3",
+                  "scripts/hepta_cell_test_helpers.py",
+                  "--output-dir",
+                  "/home/runner/work/_temp/cell-framework-records/helpers",
+                  "--github-env",
+                  "/home/runner/work/_temp/_runner_file_commands/set_env_83a40ab3-01c0-4a15-b4fb-ec79edd735d1"
+                ],
+                "file": "helper-build.json",
+                "reported_failed": 0,
+                "reported_passed": 0
+              },
+              {
+                "artifact_id": 13651842382,
+                "command": [
+                  "python3",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "scripts",
+                  "-p",
+                  "test_hepta_cell_test_helpers.py"
+                ],
+                "file": "helper-gate-tests.json",
+                "reported_failed": 0,
+                "reported_passed": 8
+              },
+              {
+                "artifact_id": 13651842382,
+                "command": [
+                  "python3",
+                  "-B",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "scripts",
+                  "-p",
+                  "test_hepta_cell_joint_config.py",
+                  "-v"
+                ],
+                "file": "joint-config-tests.json",
+                "reported_failed": 0,
+                "reported_passed": 23
+              },
+              {
+                "artifact_id": 13651842382,
+                "command": [
+                  "just",
+                  "clippy",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--example",
+                  "neuron_v13_acceptance",
+                  "--",
+                  "-D",
+                  "warnings"
+                ],
+                "file": "v13-example-clippy.json",
+                "reported_failed": 0,
+                "reported_passed": 0
+              },
+              {
+                "artifact_id": 13651842382,
+                "command": [
+                  "python3",
+                  "-B",
+                  "-m",
+                  "unittest",
+                  "discover",
+                  "-s",
+                  "qualification/neuron-v13-generation",
+                  "-p",
+                  "test_proposal_worker.py",
+                  "-v"
+                ],
+                "file": "v13-protocol-tests.json",
+                "reported_failed": 0,
+                "reported_passed": 9
+              }
+            ],
+            "run_attempt": 1,
+            "run_id": 42553066862,
+            "scientific_acceptance": false,
+            "source_identity_basis": "Original git checkout log and all execution before/after receipts; exact source-head bf42, not a synthetic merge",
+            "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+            "started_at": "2026-11-09T06:05:41.039226+00:00",
+            "status": "ORIGINAL_FULL_WORKSPACE_FAILURE_AND_SCOPED_RETRY_VERIFIED",
+            "unique_final_failure": {
+              "actual_aggregated_output_not_printed_by_original_assertion": true,
+              "binary_id": "codex-core::all",
+              "name": "suite::unified_exec::unified_exec_formats_large_output_summary",
+              "scoped_first_error": "unified_exec.rs:3186: HEAD missing; original retry passed",
+              "workspace_both_errors": "unified_exec.rs:3188: expected bytes-omitted regex not matched"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "COMMON_BEFORE.json",
+      "bytes": 222,
+      "sha256": "5e188df8f9ab72c90a1629b5b578447bb6f5d4509e8a108fae9976a2db576fe7"
+    },
+    {
+      "path": "INPUTS_BEFORE.json",
+      "bytes": 77877,
+      "sha256": "f89429fedc3e7bc6af6de0a2321272e39cc804df0ba2c424689b280afb7ca714"
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 18109,
+      "sha256": "7968c97f07fc6acb40225c5ac6f99baa30ae82062d74816b8dc42a07d7fa5d18"
+    },
+    {
+      "path": "originals/audit-bf42-native-terminal-originals-v1.py",
+      "bytes": 16699,
+      "sha256": "885de3fe82f1c02ba5f2a50ba24ce35f2e063a7f78eeee9e4d39330c9520fd00"
+    },
+    {
+      "path": "originals/audit-bf42-native-terminal-originals-v2.py",
+      "bytes": 17261,
+      "sha256": "eebeb2a4233e2dce93057ff8537acdb2774746cf6dd198d76bae71f6617a5c41"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/EXTRACTED_RECEIPTS.json",
+      "bytes": 48282,
+      "sha256": "d3f14ac15ca6cb2d692df6f1ba0e45379e17ef734254fecfd27423b6f5e453b8"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/NONPASS_CONTEXTS.json",
+      "bytes": 37717,
+      "sha256": "8a867b88805144c2615852b10b9e5b30f7e7e27bbb1f75b3d1b5c00c751f1dfd"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/RAW_TRIAGE.json",
+      "bytes": 24325,
+      "sha256": "cb40aaa59e339654e8af5a2b28c9b66a9044b24717b397937399cc9e1fe608a3"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v1/INPUTS_AFTER.json",
+      "bytes": 78370,
+      "sha256": "fee786dedc0f6b1d1268224b7296599d73fa55b77c0ce7838d2d0262f70a1261"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v1/INPUTS_BEFORE.json",
+      "bytes": 78370,
+      "sha256": "fee786dedc0f6b1d1268224b7296599d73fa55b77c0ce7838d2d0262f70a1261"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v1/RESULT.json",
+      "bytes": 6166,
+      "sha256": "2e67636c37b7cc001268f704000cee970d68f0b6e3c19751e175b6b60a02bb70"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v1/mechanisms-EXACT_CASES.json",
+      "bytes": 449838,
+      "sha256": "d01831b03981759e8d615c2b6ad455c3600486928459fd1996c056df60f0b20e"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v1/mechanisms-RESULT.json",
+      "bytes": 4238,
+      "sha256": "6a50a03aed6443bff42d3dd2d7a388149843cee090476284faedb9d68a997c06"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v1/reader.py",
+      "bytes": 16699,
+      "sha256": "885de3fe82f1c02ba5f2a50ba24ce35f2e063a7f78eeee9e4d39330c9520fd00"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/ALL_EXECUTION_RECEIPTS.json",
+      "bytes": 25944,
+      "sha256": "799ad315aa2946de9f5731b924b7de1a04dc877a47d5b0c153bcd73572fa2939"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/INPUTS_AFTER.json",
+      "bytes": 78370,
+      "sha256": "fee786dedc0f6b1d1268224b7296599d73fa55b77c0ce7838d2d0262f70a1261"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/INPUTS_BEFORE.json",
+      "bytes": 78370,
+      "sha256": "fee786dedc0f6b1d1268224b7296599d73fa55b77c0ce7838d2d0262f70a1261"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/RESULT.json",
+      "bytes": 32719,
+      "sha256": "a541d1bedd4dc5a05abef34ea6b90f918d0cb335c61d6c256a5933b683a0df8b"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/agentd_scoped-EXACT_CASES.json",
+      "bytes": 2928214,
+      "sha256": "9a3bfe76498b6fd05047b1019170bb12b98e401ca650d1a54b5279f2ac98b9cc"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/agentd_scoped-RESULT.json",
+      "bytes": 5540,
+      "sha256": "2f6514df42080b8bafb3bb1d69968c5a1700e54b0574c3f62320117f4347bdba"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/default_workspace-EXACT_CASES.json",
+      "bytes": 7500621,
+      "sha256": "5f8839f2131fc52f9627c46ae4337c6960272698ad8350a78283a36c5c83646d"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/default_workspace-RESULT.json",
+      "bytes": 5817,
+      "sha256": "7504aec7e3fa38a9e802cf5aa2b036b9f986e42ad4b1d98d0a40188193a4c334"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/hostcas-EXACT_CASES.json",
+      "bytes": 421,
+      "sha256": "a9060c1ed05b0289c0e6e7e75766a842e2af3664223a31e6e9b5a1cded18d78c"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/hostcas-RESULT.json",
+      "bytes": 4065,
+      "sha256": "8915fc7c040aa265433bd12b54c6e21b06f69f1cbcde848b98cb8cfb30c2e7e1"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/mechanisms-EXACT_CASES.json",
+      "bytes": 449838,
+      "sha256": "d01831b03981759e8d615c2b6ad455c3600486928459fd1996c056df60f0b20e"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/mechanisms-RESULT.json",
+      "bytes": 4292,
+      "sha256": "f192ef5ef4b88384a2f064c0e7775f449b6b06e3499a58c66c79bc086b4ff8e2"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/case-audit-v2/reader.py",
+      "bytes": 17261,
+      "sha256": "eebeb2a4233e2dce93057ff8537acdb2774746cf6dd198d76bae71f6617a5c41"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/cargo-metadata.json",
+      "bytes": 8334195,
+      "sha256": "64139595dc65ed5a5c5f57187d124122194a5f42759533b23c5997610c70d4bd"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/clippy.json",
+      "bytes": 1992,
+      "sha256": "efdd8ef9bf96861b88566aed9975a9662de592cd87da19d696d9fc453708312b"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/clippy.json.ea2832dd822f4742837b971d8d6a2aef.log",
+      "bytes": 23619,
+      "sha256": "cbd461db314edc9e97f638a1cde1f09b05e6ace087c5719a55ec97746bb376fc"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/evidence-gate-tests.json",
+      "bytes": 1517,
+      "sha256": "1980860fa57405ad07addf37d271b627aa39f8425a122f7c7f80894f3d59a7e2"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/evidence-gate-tests.json.1620f527401f43be903423572da78c2a.log",
+      "bytes": 107,
+      "sha256": "443d358ef280e1539c0ce82edb7c12dbed8c85b937ee137cf3cd0e9558ffc21a"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/helper-build.json",
+      "bytes": 1699,
+      "sha256": "d4f841c32138390804ba44777557e4de9b82cdfcd9af5c4bcc1c94c5f3803ab9"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/helper-build.json.f83bc60b90264067abb648bbc575226c.log",
+      "bytes": 172,
+      "sha256": "8247fa7e8a315b9e99e083c9f8481557dd0fcd54866d8f4e62ea9aeddba18d45"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/helper-gate-tests.json",
+      "bytes": 1524,
+      "sha256": "4dbab61379fb476f7d299be55be2224ebb96dfd727db1e057725741c9a0beb56"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/helper-gate-tests.json.d5fee2365a0a4cada6f93e2c5c39ad25.log",
+      "bytes": 106,
+      "sha256": "9d79b45e15485e05b1bd0ce5726d748418ec395f60f8af8c73d4190a64c451b2"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/helpers-after-scoped.json",
+      "bytes": 1089,
+      "sha256": "b007d36e29245f335268a32cb8f1d41c5ff7d1aaba36677386c7e49591ebff4d"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1088145,
+      "sha256": "4f7be2f8eadb6def4a4cf23fefc1f630d219278b35577d59896f205aeb8b3cb7"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 44473,
+      "sha256": "0b27484a8faf33aa9d35edb2f7e529596dcee706844fab0d631fe02fefa7f6f2"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/helpers/env.json",
+      "bytes": 245,
+      "sha256": "97fb49ee865782bdd502a55f545378c2e3c88ae3d298c337a8cc8601bdccecd8"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/helpers/manifest.json",
+      "bytes": 1835,
+      "sha256": "5201daee6ede5d3d80c73269e48101eba200dd3a8802948da1bc8b979c3eefca"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/joint-config-tests.json",
+      "bytes": 1547,
+      "sha256": "0a4359d610f8fb2da88044a02ff89f32ed9124b918fec60fa607d6ac7397cbfd"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/joint-config-tests.json.b91869ba1cdb494dad14da29f40806df.log",
+      "bytes": 4113,
+      "sha256": "52e394b97bf967c295a4c9455bce2e14b082c70c3de1114a8aca0242c27d9856"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/junit-scoped.summary.json",
+      "bytes": 1288,
+      "sha256": "8fa75243a6ed2ba1ffd479464f5bd13e419c86855924fcf5a13ddc5bb5905352"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/junit-scoped.xml",
+      "bytes": 266979,
+      "sha256": "f27dec66a1fb37b1eb4c4233e532264942efdd53fabb0d5837faf0be85aa74d5"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/scoped-tests.json",
+      "bytes": 1959,
+      "sha256": "243476bfc4d1771739f6e346270e404b385ea73b7cd84796bc76dccd009f3e46"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/scoped-tests.json.2e44cd3f151142e19171662e76b7301f.log",
+      "bytes": 178486,
+      "sha256": "6fdbb708394c6aa921db7e60ec5e2ced0d8603563925150fc7d06016998ea7ad"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/source-after.txt",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/source-identity.txt",
+      "bytes": 307,
+      "sha256": "41f9b3f497ecc092fa7ecef9bc25a4a78b1e72c9b45a4c8612f41bb1eeca9717"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/source-status-after.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/source-tree.txt",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/v13-protocol-tests.json",
+      "bytes": 1567,
+      "sha256": "f36574290129dee87f863c5605095c57b53069a6174ea4fe77e9d2140210a781"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646213517/v13-protocol-tests.json.c813c7616971468c8d5f792dc13de03e.log",
+      "bytes": 1612,
+      "sha256": "f5983978c2576d606c118eb4aa262de1e95331139e225599dad31f06e2b57300"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646262452/dependency-check.txt",
+      "bytes": 30,
+      "sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646262452/installed-versions.txt",
+      "bytes": 210,
+      "sha256": "bae5fc6543d5ee32dbf6e2e49028ca0ca6d549aab312acf1dfbf9045cb39035e"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646262452/joint-config-tests.json",
+      "bytes": 1554,
+      "sha256": "2b3f7e4cadd862852b91a8496666158746c57375ee902a600a308913c808ec75"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646262452/joint-config-tests.json.55fec8868ccc417fbf8de6ad013b13a1.log",
+      "bytes": 4113,
+      "sha256": "5a9768fbf309449c58416b9a525fb95a1562e381fe6c330cd73f3b8385f54b39"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646262452/numeric-install.json",
+      "bytes": 65835,
+      "sha256": "224daa7e0688df7033123552e386fb237d819871751f1811dea177e056c7faff"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646262452/python-version.txt",
+      "bytes": 15,
+      "sha256": "9d0ae83e540febd225949f3df4aba97c7a9f79fcf745d6c835780f52a57b50cf"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646262452/source-after.txt",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646262452/source-identity.txt",
+      "bytes": 82,
+      "sha256": "cf888bb6ae72b680b7b48122088e22f8eb81d4d829b091470e39b328eec5d021"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646262452/source-status-after.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646262452/state-codec-tests.json",
+      "bytes": 1502,
+      "sha256": "9b357ef1616afada332e57e4e67a21ce6b5cebc957ae300720d8260fef3d85a7"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646262452/state-codec-tests.json.938b6e1abdd041e6ac792325174134b5.log",
+      "bytes": 1182,
+      "sha256": "f8c7795efe6b161ff2ffe56d49d401f4c3074a996b80c1dae4a664e3162a1cb6"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13646262452/torch-install.json",
+      "bytes": 95698,
+      "sha256": "24b564bd6660a95cb853b7f1629a6c590838d5caf6e10d960d7453a3e1ac92f1"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/cargo-metadata.json",
+      "bytes": 8334195,
+      "sha256": "64139595dc65ed5a5c5f57187d124122194a5f42759533b23c5997610c70d4bd"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/clippy.json",
+      "bytes": 2030,
+      "sha256": "5c95987b884d5ef074e3b04f960112421d456a0e517369650f2b30ceefda8bd9"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/clippy.json.13d5f6267b89459088e0ff06cdaf4d40.log",
+      "bytes": 50352,
+      "sha256": "ec7c0c4da8199c5aa3016b85f7498b0554d8da03b9761bb21c4ba5e5780afb2d"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/evidence-gate-tests.json",
+      "bytes": 1517,
+      "sha256": "d39a56b923ff1b01a6945424427280089d67f30d0dc1c40ce67537ab0ce27067"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/evidence-gate-tests.json.e68480795c164d41abfc92a0c94763e4.log",
+      "bytes": 107,
+      "sha256": "76be45d277c13a9585c25785ea4877f5962e0d83d4298beed5f2886252c71c70"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helper-build.json",
+      "bytes": 1645,
+      "sha256": "3ec7c180dadef0cf2c06fd12ecd47aa2e1b2bd6e0b88713a837f21f3add84817"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helper-build.json.9e4e0a9be280460a92badd9b87aeb8bb.log",
+      "bytes": 453,
+      "sha256": "d6909718e2a3ff53f920c1dedf5e26e50428763c968b9e460e5d464eec234467"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helper-gate-tests.json",
+      "bytes": 1524,
+      "sha256": "f5af455eb57d36171161ebce4c70faf6437949bf5dd5746f6e954daf330083d9"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helper-gate-tests.json.27e68175e3004ba6b58dd2cac0ee7bd8.log",
+      "bytes": 106,
+      "sha256": "fe0aeb6f41136660964d855544b35a9ea1b4a4f08967995f90cf9572a287ecfc"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers-after-hostcas.json",
+      "bytes": 5057,
+      "sha256": "d6e12b5953b23c8e3bb6a11f8ccff4327e4805e04c6d08989d1f8225b8cf20a8"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers-after-scoped.json",
+      "bytes": 5057,
+      "sha256": "d6e12b5953b23c8e3bb6a11f8ccff4327e4805e04c6d08989d1f8225b8cf20a8"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-app-server.jsonl",
+      "bytes": 1064423,
+      "sha256": "be2629d2aaf0ced79add27b7d7b9650b4f251348387cadefea6693bef5429ecc"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-app-server.stderr.log",
+      "bytes": 12695,
+      "sha256": "8b0fdc4b6fe4f2c5bc76c05ef8a074f16a2c982b0ca0707cb95101e525870b5c"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-cli.jsonl",
+      "bytes": 1158786,
+      "sha256": "19068c62501b7d86814b37869a632a0eff0d2c6da5f60019d98e00a197ef6c7b"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-cli.stderr.log",
+      "bytes": 44174,
+      "sha256": "0c2991e6986a40f67c48aba4fe5799049b04c284c9b4621828810855dbbb9955"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-code-mode-host.jsonl",
+      "bytes": 572066,
+      "sha256": "31c808c821c98c57970974fba3ec351d18f9428f4b1cf3e8f1c3996646e7d54a"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-code-mode-host.stderr.log",
+      "bytes": 10507,
+      "sha256": "ea17426d8885825bd1dc99de80bf9f50c4ceb61f97143741ff89f3e6166c73ae"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-exec.jsonl",
+      "bytes": 1075118,
+      "sha256": "0bbe0217d3df1003aa3eee80cb104d07823ee891ded917add26a2c9485c87e4a"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-exec.stderr.log",
+      "bytes": 22449,
+      "sha256": "73e4ef413b2a5966353391936bea425d6531cdb440c0bce32766179bf29691bf"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1087210,
+      "sha256": "17e84d76c3cd41b3b1540e270e63d2a40ba0909594c777c74c13ccb59ccaea3f"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 4899,
+      "sha256": "a510dbfea612686a43139d376f385a219b9dbb3a5df068b7e20026d1aa574e75"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-linux-sandbox.jsonl",
+      "bytes": 570272,
+      "sha256": "fa7c6f7af885055a14cc3dc4511f67209664e4b088c51326dd5c1bb905fcbba9"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-linux-sandbox.stderr.log",
+      "bytes": 5911,
+      "sha256": "70fa8d5f985a6a2d6999c029df003dfd58473ca94dd44587d0b91a80224a7740"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-rmcp-client.jsonl",
+      "bytes": 750424,
+      "sha256": "ab617ac87a4a456155b4a717bcdff386ae78c85f3597e72a6ece3837fb6aa6db"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-rmcp-client.stderr.log",
+      "bytes": 12617,
+      "sha256": "e5d685f7082b8f18c58340b9b43fc229bf8642794abb97ab3fafe58b0755b36a"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-shell-escalation.jsonl",
+      "bytes": 512369,
+      "sha256": "56771ad0d65acca0ab7a03452c48a5508778e31ccd793bead595d30ca6fc132f"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/codex-shell-escalation.stderr.log",
+      "bytes": 2510,
+      "sha256": "8170501f0ff614a4ef83ca635a56552fb9e442cae106d5c4dac2b6a6c4b7b303"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/env.json",
+      "bytes": 1972,
+      "sha256": "8fae3e74e1ae33cf99e6dd599cc73bd25a0004047176035f8fd968c293721073"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/helpers/manifest.json",
+      "bytes": 12643,
+      "sha256": "1024ecd6fe9d1c56d76f953cf934b9e80475303e1d8f2fe646bdcc4be1aef334"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/hostcas-execution-context.txt",
+      "bytes": 80,
+      "sha256": "6c60c5b96c1ec510f868986007452b774b726939def31b1532115634a6948cec"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/hostcas-prior-junit-excluded.xml",
+      "bytes": 1720627,
+      "sha256": "f0dd5732e7953f19815a423879f3ac58d0f22991f3c575b442d1da64396b8542"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/hostcas-tests.json",
+      "bytes": 1757,
+      "sha256": "a52dd4751a197fa73c5447cc3484949660bc810f05820e403cd82d8efad5508b"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/hostcas-tests.json.47c4a7a9889646a08d76c39485b11212.log",
+      "bytes": 18168,
+      "sha256": "2bc21e43d9a3feaf1d806a076ebe5ac21f249754bc6baef349110dfcdc97edcb"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/joint-config-tests.json",
+      "bytes": 1547,
+      "sha256": "1ee510ec13d3b5c9474326e6b5f23bec386814732fa46454fe2cb1641f6f5d3b"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/joint-config-tests.json.67406b37eb29470b8a5f72e507545962.log",
+      "bytes": 4113,
+      "sha256": "4c7bb81a0a808e5b7917c4b24579f4dd0d51734882751b52cb14d0c9b1b7a61d"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/junit-hostcas.summary.json",
+      "bytes": 1079,
+      "sha256": "5cbf731b97adc3c5d712e08d639c3adf5dc479aa99dec110040a069049db6f33"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/junit-hostcas.xml",
+      "bytes": 589,
+      "sha256": "d54ad74d9e5b82436d403e1441f8f7663a58075eaf57e9ec1c780428ce7eb1a2"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/junit-scoped.summary.json",
+      "bytes": 1332,
+      "sha256": "50a0ab2c7faf7ca0d0cebe4ab5abafbade6c4f0aad7be51b44fa60839637e665"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/junit-scoped.xml",
+      "bytes": 1720627,
+      "sha256": "f0dd5732e7953f19815a423879f3ac58d0f22991f3c575b442d1da64396b8542"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/scoped-tests.json",
+      "bytes": 2004,
+      "sha256": "68ad9660187ef78bcf776d36fbaadb16fd2c16bbeb4193808a5d4178db0a834e"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/scoped-tests.json.4104178ca1c24f88b30253d4acdefd24.log",
+      "bytes": 1046399,
+      "sha256": "96d0f50a07aea494917ec6ced6219b0cf7ee39faf62c080a6431947f16c588d1"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/source-identity.txt",
+      "bytes": 307,
+      "sha256": "41f9b3f497ecc092fa7ecef9bc25a4a78b1e72c9b45a4c8612f41bb1eeca9717"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/source-tree.txt",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/v13-example-clippy.json",
+      "bytes": 1551,
+      "sha256": "dc93a827b81594043cba707005c17a38e8d1edc1b06d9f9cb4a3b559e7b5e627"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/v13-example-clippy.json.ef0d5fbe5107487fa2109c25181d7df3.log",
+      "bytes": 13762,
+      "sha256": "b54561e4cdc63e289bbbcf1fac7db8a6b2c8c8b6b84294a5fc96eb73f86d4dd6"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/v13-protocol-tests.json",
+      "bytes": 1567,
+      "sha256": "5a1b0c8f4d95af2704cd5bf775eba405e119cbfda0f608e602d390e43d266272"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13649625549/v13-protocol-tests.json.ca6924fb892448868e4fff7cb0b9c55f.log",
+      "bytes": 1612,
+      "sha256": "7b4e916de2700b9cc0394d7a5e3e6b78c5c02d390128d78e75101312b0df0aef"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/cargo-metadata.json",
+      "bytes": 8334195,
+      "sha256": "64139595dc65ed5a5c5f57187d124122194a5f42759533b23c5997610c70d4bd"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/clippy.json",
+      "bytes": 2030,
+      "sha256": "5c95987b884d5ef074e3b04f960112421d456a0e517369650f2b30ceefda8bd9"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/clippy.json.13d5f6267b89459088e0ff06cdaf4d40.log",
+      "bytes": 50352,
+      "sha256": "ec7c0c4da8199c5aa3016b85f7498b0554d8da03b9761bb21c4ba5e5780afb2d"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/evidence-gate-tests.json",
+      "bytes": 1517,
+      "sha256": "d39a56b923ff1b01a6945424427280089d67f30d0dc1c40ce67537ab0ce27067"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/evidence-gate-tests.json.e68480795c164d41abfc92a0c94763e4.log",
+      "bytes": 107,
+      "sha256": "76be45d277c13a9585c25785ea4877f5962e0d83d4298beed5f2886252c71c70"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helper-build.json",
+      "bytes": 1645,
+      "sha256": "3ec7c180dadef0cf2c06fd12ecd47aa2e1b2bd6e0b88713a837f21f3add84817"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helper-build.json.9e4e0a9be280460a92badd9b87aeb8bb.log",
+      "bytes": 453,
+      "sha256": "d6909718e2a3ff53f920c1dedf5e26e50428763c968b9e460e5d464eec234467"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helper-gate-tests.json",
+      "bytes": 1524,
+      "sha256": "f5af455eb57d36171161ebce4c70faf6437949bf5dd5746f6e954daf330083d9"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helper-gate-tests.json.27e68175e3004ba6b58dd2cac0ee7bd8.log",
+      "bytes": 106,
+      "sha256": "fe0aeb6f41136660964d855544b35a9ea1b4a4f08967995f90cf9572a287ecfc"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers-after-hostcas.json",
+      "bytes": 5057,
+      "sha256": "d6e12b5953b23c8e3bb6a11f8ccff4327e4805e04c6d08989d1f8225b8cf20a8"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers-after-scoped.json",
+      "bytes": 5057,
+      "sha256": "d6e12b5953b23c8e3bb6a11f8ccff4327e4805e04c6d08989d1f8225b8cf20a8"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers-after-workspace.json",
+      "bytes": 5057,
+      "sha256": "d6e12b5953b23c8e3bb6a11f8ccff4327e4805e04c6d08989d1f8225b8cf20a8"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-app-server.jsonl",
+      "bytes": 1064423,
+      "sha256": "be2629d2aaf0ced79add27b7d7b9650b4f251348387cadefea6693bef5429ecc"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-app-server.stderr.log",
+      "bytes": 12695,
+      "sha256": "8b0fdc4b6fe4f2c5bc76c05ef8a074f16a2c982b0ca0707cb95101e525870b5c"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-cli.jsonl",
+      "bytes": 1158786,
+      "sha256": "19068c62501b7d86814b37869a632a0eff0d2c6da5f60019d98e00a197ef6c7b"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-cli.stderr.log",
+      "bytes": 44174,
+      "sha256": "0c2991e6986a40f67c48aba4fe5799049b04c284c9b4621828810855dbbb9955"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-code-mode-host.jsonl",
+      "bytes": 572066,
+      "sha256": "31c808c821c98c57970974fba3ec351d18f9428f4b1cf3e8f1c3996646e7d54a"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-code-mode-host.stderr.log",
+      "bytes": 10507,
+      "sha256": "ea17426d8885825bd1dc99de80bf9f50c4ceb61f97143741ff89f3e6166c73ae"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-exec.jsonl",
+      "bytes": 1075118,
+      "sha256": "0bbe0217d3df1003aa3eee80cb104d07823ee891ded917add26a2c9485c87e4a"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-exec.stderr.log",
+      "bytes": 22449,
+      "sha256": "73e4ef413b2a5966353391936bea425d6531cdb440c0bce32766179bf29691bf"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1087210,
+      "sha256": "17e84d76c3cd41b3b1540e270e63d2a40ba0909594c777c74c13ccb59ccaea3f"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 4899,
+      "sha256": "a510dbfea612686a43139d376f385a219b9dbb3a5df068b7e20026d1aa574e75"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-linux-sandbox.jsonl",
+      "bytes": 570272,
+      "sha256": "fa7c6f7af885055a14cc3dc4511f67209664e4b088c51326dd5c1bb905fcbba9"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-linux-sandbox.stderr.log",
+      "bytes": 5911,
+      "sha256": "70fa8d5f985a6a2d6999c029df003dfd58473ca94dd44587d0b91a80224a7740"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-rmcp-client.jsonl",
+      "bytes": 750424,
+      "sha256": "ab617ac87a4a456155b4a717bcdff386ae78c85f3597e72a6ece3837fb6aa6db"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-rmcp-client.stderr.log",
+      "bytes": 12617,
+      "sha256": "e5d685f7082b8f18c58340b9b43fc229bf8642794abb97ab3fafe58b0755b36a"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-shell-escalation.jsonl",
+      "bytes": 512369,
+      "sha256": "56771ad0d65acca0ab7a03452c48a5508778e31ccd793bead595d30ca6fc132f"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/codex-shell-escalation.stderr.log",
+      "bytes": 2510,
+      "sha256": "8170501f0ff614a4ef83ca635a56552fb9e442cae106d5c4dac2b6a6c4b7b303"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/env.json",
+      "bytes": 1972,
+      "sha256": "8fae3e74e1ae33cf99e6dd599cc73bd25a0004047176035f8fd968c293721073"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/helpers/manifest.json",
+      "bytes": 12643,
+      "sha256": "1024ecd6fe9d1c56d76f953cf934b9e80475303e1d8f2fe646bdcc4be1aef334"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/hostcas-execution-context.txt",
+      "bytes": 80,
+      "sha256": "6c60c5b96c1ec510f868986007452b774b726939def31b1532115634a6948cec"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/hostcas-prior-junit-excluded.xml",
+      "bytes": 1720627,
+      "sha256": "f0dd5732e7953f19815a423879f3ac58d0f22991f3c575b442d1da64396b8542"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/hostcas-tests.json",
+      "bytes": 1757,
+      "sha256": "a52dd4751a197fa73c5447cc3484949660bc810f05820e403cd82d8efad5508b"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/hostcas-tests.json.47c4a7a9889646a08d76c39485b11212.log",
+      "bytes": 18168,
+      "sha256": "2bc21e43d9a3feaf1d806a076ebe5ac21f249754bc6baef349110dfcdc97edcb"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/joint-config-tests.json",
+      "bytes": 1547,
+      "sha256": "1ee510ec13d3b5c9474326e6b5f23bec386814732fa46454fe2cb1641f6f5d3b"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/joint-config-tests.json.67406b37eb29470b8a5f72e507545962.log",
+      "bytes": 4113,
+      "sha256": "4c7bb81a0a808e5b7917c4b24579f4dd0d51734882751b52cb14d0c9b1b7a61d"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-hostcas.summary.json",
+      "bytes": 1079,
+      "sha256": "5cbf731b97adc3c5d712e08d639c3adf5dc479aa99dec110040a069049db6f33"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-hostcas.xml",
+      "bytes": 589,
+      "sha256": "d54ad74d9e5b82436d403e1441f8f7663a58075eaf57e9ec1c780428ce7eb1a2"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-scoped.summary.json",
+      "bytes": 1332,
+      "sha256": "50a0ab2c7faf7ca0d0cebe4ab5abafbade6c4f0aad7be51b44fa60839637e665"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-scoped.xml",
+      "bytes": 1720627,
+      "sha256": "f0dd5732e7953f19815a423879f3ac58d0f22991f3c575b442d1da64396b8542"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-workspace.summary.json",
+      "bytes": 772,
+      "sha256": "2ece4e3871c5be5dc496d473c2b75f892962877da960c3ad3bd9c5644d20e98f"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/junit-workspace.xml",
+      "bytes": 4363582,
+      "sha256": "c2db935bbae31b533a2a50c6b54e7f3c2e93dcbb148184ca0777a1ff7ec4fbd1"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/scoped-tests.json",
+      "bytes": 2004,
+      "sha256": "68ad9660187ef78bcf776d36fbaadb16fd2c16bbeb4193808a5d4178db0a834e"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/scoped-tests.json.4104178ca1c24f88b30253d4acdefd24.log",
+      "bytes": 1046399,
+      "sha256": "96d0f50a07aea494917ec6ced6219b0cf7ee39faf62c080a6431947f16c588d1"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/source-after.txt",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/source-identity.txt",
+      "bytes": 307,
+      "sha256": "41f9b3f497ecc092fa7ecef9bc25a4a78b1e72c9b45a4c8612f41bb1eeca9717"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/source-status-after.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/source-tree.txt",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/v13-example-clippy.json",
+      "bytes": 1551,
+      "sha256": "dc93a827b81594043cba707005c17a38e8d1edc1b06d9f9cb4a3b559e7b5e627"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/v13-example-clippy.json.ef0d5fbe5107487fa2109c25181d7df3.log",
+      "bytes": 13762,
+      "sha256": "b54561e4cdc63e289bbbcf1fac7db8a6b2c8c8b6b84294a5fc96eb73f86d4dd6"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/v13-protocol-tests.json",
+      "bytes": 1567,
+      "sha256": "5a1b0c8f4d95af2704cd5bf775eba405e119cbfda0f608e602d390e43d266272"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/v13-protocol-tests.json.ca6924fb892448868e4fff7cb0b9c55f.log",
+      "bytes": 1612,
+      "sha256": "7b4e916de2700b9cc0394d7a5e3e6b78c5c02d390128d78e75101312b0df0aef"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/workspace-prior-junit-excluded.xml",
+      "bytes": 589,
+      "sha256": "d54ad74d9e5b82436d403e1441f8f7663a58075eaf57e9ec1c780428ce7eb1a2"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/workspace-tests.json",
+      "bytes": 1499,
+      "sha256": "bb50b4bf978869aa54ec472f07c2a40d04ccdc0bb999993a63a6df9ea81367e8"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/extracted/13651842382/workspace-tests.json.e3f11636a6664cab826c4d7a5a30e2dd.log",
+      "bytes": 2561082,
+      "sha256": "d3354b94806899efd1d327de9d2b4d8f1578a4bbf9cd756ee04ce06be54a443c"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/reader-v1-to-v2.patch",
+      "bytes": 2422,
+      "sha256": "ec038fef712f86c81154235ae5f4076aa4fb5a213d1c07ee994309c7c5a6a95a"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/source/.github/workflows/hepta-cell-framework-native.yml",
+      "bytes": 17557,
+      "sha256": "28b8c46c2d7999dd0fb069fb608bc8c31f24d5d1ff05253c6abfa646a6d72706"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/source/SOURCE_BINDING.json",
+      "bytes": 998,
+      "sha256": "bf43f1e81b328920820ad2e52150a04ede367f14f95a1449de79b747df7f74c6"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/source/codex-rs/.config/nextest.toml",
+      "bytes": 5987,
+      "sha256": "63f832eabf890a5f3cd7c0e4ee1856b1ca99d4db8952de71b81282265668dc8c"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/source/codex-rs/core/tests/suite/unified_exec.rs",
+      "bytes": 122872,
+      "sha256": "f0a7b68275efe2f54f06a8e96edd39ffa58aaf84460cf79e20df7d2a2c9f258c"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-analysis-v1/source/justfile",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/JOB-128952701339-READY.json",
+      "bytes": 1228,
+      "sha256": "8e39148e57cc2e11172fbc85f774fc88299ba8af92c61a901262e1cdc54f53de"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/JOB-128952701454-READY.json",
+      "bytes": 1237,
+      "sha256": "a9ec789b06e002eb904f5ac3873531f2e5a94eba55769111b0694c9e8fb36db2"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/JOB-128952701517-READY.json",
+      "bytes": 1237,
+      "sha256": "3131900f46dfca4752f392d9028b8da8db38d90ad7f0e6a641e8cb15e29bb288"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/METADATA_READY.json",
+      "bytes": 1562,
+      "sha256": "3366748c86452de10d43f240ae7291505972545366874272e1b391da7753a14d"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/RESULT.json",
+      "bytes": 39200,
+      "sha256": "774da5ea955750e5a856130e71fcce2e0c0f8df32b7999f82a1bfa5d1ce2e713"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13646213517/MEMBERS.json",
+      "bytes": 4072,
+      "sha256": "13a6172d2620de6cace2412954037642b957824f23805cd34dfbf533f6b8c9ec"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13646213517/REPORTS.json",
+      "bytes": 6093,
+      "sha256": "70f4bc1039efea2bfad21969e1cbf2caf090520578de7cd6976749b78a47831c"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13646213517/artifact.command.json",
+      "bytes": 508,
+      "sha256": "ecb7e8b3c141e65a119c73b7363d63e6c23efd81ce2cb4a7cc05578a5f433e71"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13646213517/artifact.raw",
+      "bytes": 777254,
+      "sha256": "054e8ef8306247c50a617da709a3ad823b9cd2c2602123788b3c6a2235d9cb5b"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13646213517/artifact.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13646213517/original-artifact-api.json",
+      "bytes": 887,
+      "sha256": "0049023de35c150dbee7330da7dccd370400986995974c80d2bfaee6d3227e22"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13646262452/MEMBERS.json",
+      "bytes": 1813,
+      "sha256": "c60348280c02daca471da3fe7bcb702562366da47df886d5f4f653d51f560017"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13646262452/REPORTS.json",
+      "bytes": 1470,
+      "sha256": "a62d20fce501c4db63626b158676b7dd50cdee37ec0b375e127118409dbe85e1"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13646262452/artifact.command.json",
+      "bytes": 508,
+      "sha256": "4cdb86f880eaf5bb864d7b22291821a05811b680c0e669a96ddd6d9d91922151"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13646262452/artifact.raw",
+      "bytes": 54146,
+      "sha256": "2ad9ea508bc90f0ab65939df9444eb3c76b4334e0c25f2979483bdb96590d995"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13646262452/artifact.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13646262452/original-artifact-api.json",
+      "bytes": 873,
+      "sha256": "791e78b457ca4912caeebf7aaa017daa83b694c0bd3779c17f555aac9d547429"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13649625549/MEMBERS.json",
+      "bytes": 7433,
+      "sha256": "51a5e3483414d23b196dca7ef38c13cc65cdd9d6a38f8de48c7fdb062f89d9df"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13649625549/REPORTS.json",
+      "bytes": 8116,
+      "sha256": "fa6dc93c33f6eb075a5ae05f2ae6f2b674855fbcb706a83a78b7e5312e58248f"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13649625549/artifact.command.json",
+      "bytes": 509,
+      "sha256": "f89600a55168c58e57bca895436aac62ad7ead480ea8b3065918bfe059df5940"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13649625549/artifact.raw",
+      "bytes": 1741643,
+      "sha256": "2b922c6be045d9aff5befa578cc3c9d6cca1382b500d37257b15e90560d606f7"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13649625549/artifact.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13649625549/original-artifact-api.json",
+      "bytes": 903,
+      "sha256": "d11981074b00735d02080c8a8b9f98081e1e1a15a74a43cab8287393ddfa45f7"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13651842382/MEMBERS.json",
+      "bytes": 8657,
+      "sha256": "416b356b1f935b5d5ec4113ad88071fcf323f80916a77e151ff2dbcc68b9bc4a"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13651842382/REPORTS.json",
+      "bytes": 9422,
+      "sha256": "1aab8ce1287ab93e797fa25687b5261d375cccd026ede7996c03362062da1a43"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13651842382/artifact.command.json",
+      "bytes": 510,
+      "sha256": "10556d6f431ae68b57d3e859cf0ba593ceca4c92a151d02e8e20b69e80da01d4"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13651842382/artifact.raw",
+      "bytes": 2708501,
+      "sha256": "dc80f6378736913b641c3eee272abfde9407eafc46c24c90d1cf84616bc58c47"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13651842382/artifact.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifact-13651842382/original-artifact-api.json",
+      "bytes": 896,
+      "sha256": "868848e1fa20428c17f6dd6295b0c4d01f1d2a870bbdc1960357a9759d95e5e9"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifacts.command.json",
+      "bytes": 521,
+      "sha256": "687ffcee8b69d0938707705f7d70079720ca6000c6440f297de60c15d4500a56"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifacts.raw",
+      "bytes": 3262,
+      "sha256": "aee89e8b64bb013739dcc69d5811e04c740ea5266302739bbacc2dc781f838c9"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/artifacts.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/collector.py",
+      "bytes": 7285,
+      "sha256": "d0b846f14b64af85f3e8baf4d920419fe146dad2db2e469d7fb10427d516a6d7"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/common-after.json",
+      "bytes": 177,
+      "sha256": "71fe4682336f0d9a00d3c105da6ba1ac7f06e9156ed4357a6fd9e6077560ccaf"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/common-before.json",
+      "bytes": 177,
+      "sha256": "71fe4682336f0d9a00d3c105da6ba1ac7f06e9156ed4357a6fd9e6077560ccaf"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/job-128952701339/log.command.json",
+      "bytes": 506,
+      "sha256": "9fc924e5f7767ea546cacfdacf23a19cf590c7045db6ad36ea1994ce30eb8a9c"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/job-128952701339/log.raw",
+      "bytes": 439182,
+      "sha256": "d45da5599bdbe3040b416a51915c03a4c0a3ed8dc4095a73df0b6b233ef7c760"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/job-128952701339/log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/job-128952701339/original-job-api.json",
+      "bytes": 7232,
+      "sha256": "8f7b3c3a7c0da65f1cddbeb97c1da1c1f90809a49aa1b0a00053bd97080532cb"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/job-128952701454/log.command.json",
+      "bytes": 506,
+      "sha256": "f00e62ea289070e0b1e69ee89a48f53c067c0278072c3d22d5b8b236b1bae016"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/job-128952701454/log.raw",
+      "bytes": 4797748,
+      "sha256": "6e64e0e37463ff01965cd50f330fe589c50e0663b412e0668554c38a97b5850f"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/job-128952701454/log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/job-128952701454/original-job-api.json",
+      "bytes": 7240,
+      "sha256": "ea7ea2b5c0fd2f32fa2df5ccc602d0b568be753b03d629a30bd93e38172ec1e7"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/job-128952701517/log.command.json",
+      "bytes": 505,
+      "sha256": "98d3bbd23f7551171516acdd2599181eed98c525e4fdc9e333ba983cf20c48f3"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/job-128952701517/log.raw",
+      "bytes": 45885,
+      "sha256": "cb1583a9467eac4b06d9490010699ea127e0dc469e2657df264225e78b697da8"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/job-128952701517/log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/job-128952701517/original-job-api.json",
+      "bytes": 3783,
+      "sha256": "23202f15b1e6ca761b9890e51597b0a7b73db493b517a44a28c08fea7c43843e"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/mcp-launch-original.json",
+      "bytes": 1303,
+      "sha256": "9a380c413281d6cf2778a86d2b500837db19b33656df6949f1d601f59825d449"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/mcp-terminal-original.json",
+      "bytes": 953,
+      "sha256": "400219f1364b7cb883adba32f42a237ee03306e5f25e5a9e14c3ff4c6ba091a0"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/reused-collector-original.py",
+      "bytes": 9062,
+      "sha256": "1043ee24973a6f386914d5dbc690a65ec26ea2e583980f4824c8263c032f681e"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/run-final.command.json",
+      "bytes": 499,
+      "sha256": "2277a56aa0eaa381ffeada7db68c68f0d049add35c18a585855e29f9b92688e9"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/run-final.raw",
+      "bytes": 14906,
+      "sha256": "f75072f64ea17b3531eac60771b123bd1bf95636ca499986d23371ee67b940ee"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/run-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/run.command.json",
+      "bytes": 498,
+      "sha256": "49dd33bf3e9e633cd5515bc4c420bfde404f3a795dcd62a3998662590947abd8"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/run.raw",
+      "bytes": 14906,
+      "sha256": "f75072f64ea17b3531eac60771b123bd1bf95636ca499986d23371ee67b940ee"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/snapshot-008/42553066862-jobs.json",
+      "bytes": 14431,
+      "sha256": "8daac8c5252085facb1bf704f5f4eed4f3bc3895f0fdfb7d2d8ddfbe43753654"
+    },
+    {
+      "path": "originals/ci-bf42-native-terminal-originals-v1/snapshot-008/SUMMARY.json",
+      "bytes": 6654,
+      "sha256": "06ce5c9a96c590eee0eac3c3275542c7fe94b84312884a7dbdf1b60451662a9e"
+    },
+    {
+      "path": "originals/collect-bf42-native-terminal-originals-v1.py",
+      "bytes": 7285,
+      "sha256": "d0b846f14b64af85f3e8baf4d920419fe146dad2db2e469d7fb10427d516a6d7"
+    },
+    {
+      "path": "originals/native-bf42-terminal-first-launch-validation-rejection.json",
+      "bytes": 569,
+      "sha256": "28f8deff31fc326add50084974b3a0963823a1bc71c221b3d8d8563f6b66215d"
+    },
+    {
+      "path": "sealer.py",
+      "bytes": 13313,
+      "sha256": "f84cb87d5336876093193bb8b8cc2629925980d1f330e2e8ddc0067e70cd692f"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "0be85785ca794340c7331099de4462ffc73b1f2fece1f174f45818fd7273ed8d"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "ae4558b6800bf33119adbfc3c8959569f038a4123c57a421a7b59625799d9a0f"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "7a674ca636efba23ff85c028de472035d27bc1f760c4bd04dd3ea58264bf5040"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "9c3b891b19548646afc8514b61d99508099fca18f4be941a89d28d2b1203ee02"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 490000,
+      "sha256": "f3e25bf96e85522e51b3597536abf8f8d5cd3ef90d23c756f12f89f4c0f5aeba"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part006",
+      "offset": 2450000,
+      "bytes": 490000,
+      "sha256": "d0a13a0c8591042fa8e36ff197dfc08f3af529aad14810b3bd4cb1d3dff8daa3"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part007",
+      "offset": 2940000,
+      "bytes": 490000,
+      "sha256": "7427841cc8bd8025e06aab791fc9f74184f3dd35e29d62cba6027f2405f91c64"
+    },
+    {
+      "sequence": 8,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part008",
+      "offset": 3430000,
+      "bytes": 490000,
+      "sha256": "d584bca353e6d7c288ec5e024874f76de21c05e5279cbc938d3c776fb254488c"
+    },
+    {
+      "sequence": 9,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part009",
+      "offset": 3920000,
+      "bytes": 490000,
+      "sha256": "3ab2c29fa0ea47fe8de0d17090f018515b762778b44c4c9c7859a175ef5e1e18"
+    },
+    {
+      "sequence": 10,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part010",
+      "offset": 4410000,
+      "bytes": 490000,
+      "sha256": "bdf8af74fa7ad713d954edd40ad7ff3d1bcfb496d33f6086ea499847a4a75b14"
+    },
+    {
+      "sequence": 11,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part011",
+      "offset": 4900000,
+      "bytes": 490000,
+      "sha256": "77c565baf35d8911d13e256a260efaf23ad4ea006fd499e911dc7be4c0ddd347"
+    },
+    {
+      "sequence": 12,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part012",
+      "offset": 5390000,
+      "bytes": 490000,
+      "sha256": "9a9847f7107ed948dd5312c20f71ce1f48ba0adba960848b5bb37a237158b1d9"
+    },
+    {
+      "sequence": 13,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part013",
+      "offset": 5880000,
+      "bytes": 490000,
+      "sha256": "9f0ca2eb6848f0d455daef73654d4ebc5788c7bf32e06300ab18d19313e723c4"
+    },
+    {
+      "sequence": 14,
+      "path": "packets/bf42-original-native-terminal-failure-v1/archive.part014",
+      "offset": 6370000,
+      "bytes": 83120,
+      "sha256": "3bcc7df4bf1bd5a45a9334590c6864a9f8fcadeeb37667dbe48d2db737d47dda"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

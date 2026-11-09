@@ -5,6 +5,147 @@ original archives, failed attempts, source preparation and publication records.
 **S0, S1, S2, S3, S4 and S5 remain HOLD.** Complete execution history, full
 physical cost and full historical cost remain unknown.
 
+## Increment 006a: terminal common CI and separate-source histories
+
+This increment adds nine terminal evidence packets to published predecessor
+[`97543a30b941122ee42c99ab95c2dbf639ac6576`](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/97543a30b941122ee42c99ab95c2dbf639ac6576/qualification/cell_common_candidate/20261108/execution_history).
+All 72 predecessor packet index entries and their original bytes remain
+unchanged. The current total is **81 packets and 9,136 archive-member entries
+with overlap**, compared with 72 packets and 7,050 entries at the preceding
+checkpoint. The nine new archives contain 2,086 member entries and total
+78,247,976 compressed bytes. Members, duplicate artifacts, repeated status
+observations and retained copies are not independent tests.
+
+The common candidate is still
+`bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d`, tree
+`f7b65a747a1d2f585be38a4665ab2b4f1b07efb6`. **Its full repository CI is not
+green.** This increment preserves the original failures and does not apply
+a source fix, rerun a test or advance the common branch. Newer combined-source
+executions are outside this increment.
+
+### Final original bf42 workflow observation
+
+The included snapshot 008 was observed through **2026-11-09
+05:38:20.207529 UTC**. All 18 original bf42 workflow runs were then terminal:
+12 reported success, three were skipped and three reported failure.
+The failures were the native framework run 42553066862, blocking CI
+42553073160 and original Windows regressions 42553073234. These are API
+workflow conclusions, not a count of tests or proof that a skipped scope ran.
+Snapshot 007 and every preceding cutoff retain their original, earlier values.
+
+The source-head native executions below are bound to bf42/f7b and their
+original receipts. This does not replace the blocking CI checkout identity:
+its actual Bazel merge commit
+`8828133f2566b7e537cac0bad58c84eb5b0168bb` has the same f7b tree but is a
+distinct commit. Original UI source-head and two CI-local base-merge identities,
+and the original Windows 158 clean passes / eight failures / one body-pass with
+LEAK, remain exactly as recorded in increment 005.
+
+### Original native framework result: failure, with retries retained
+
+The original four artifact ZIPs, job logs, available JUnit, helper receipts and
+source snapshots are retained. The actual native composition job ended in
+failure at 05:25:39 UTC. API success for an earlier step is not substituted for
+its original case records.
+
+| Original native scope                | Distinct executed cases | Original result                                             | Original attempt and selection boundary                                                                       |
+| ------------------------------------ | ----------------------: | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Mechanism packages                   |                   1,215 | 1,215 single-attempt passes                                 | Seven reported cases outside execution scope; no selected retry observed.                                     |
+| Scoped composition                   |                   7,910 | 7,909 single-attempt passes and one retry-pass marked flaky | 7,911 attempts; 107 reported cases outside execution scope. This is not 7,910 clean single-attempt passes.    |
+| Explicit ignored Root HostCAS parent |                       1 | One selected parent passed                                  | 791 other cases were outside the exact filter. Child fixture output is not a second acceptance case.          |
+| Complete default workspace           |                  20,563 | **20,562 single-attempt passes and one final failure**      | 20,564 attempts; 139 reported cases outside execution scope. The failing case also failed its original retry. |
+
+These scopes overlap. Their rows must not be summed into distinct test
+coverage, and the separate earlier Linux 38-case execution and Python
+130-fixture execution remain their own scopes.
+
+The unique workspace failure is
+`codex-core::all / suite::unified_exec::unified_exec_formats_large_output_summary`.
+The scoped first attempt reported a missing HEAD marker and its original retry
+passed. Both workspace attempts failed the original output-summary regex.
+The generated fixture is HEAD, 100,000 repetitions of `token token \n`, and
+TAIL, totalling 1,300,010 bytes. The failing aggregated output was not printed
+in the retained assertion context, so the source-level cause is not established
+by that context. The original regex, retry policy and time budgets were not
+weakened for this evidence.
+
+The readback reconciles original JUnit and terminal raw case/attempt records.
+Progress-only SLOW messages and final-output repeats are not extra attempts.
+The first readback's incorrect treatment of a SLOW event failed closed and is
+retained; the corrected readback did not execute tests. No selected timeout or
+nextest LEAK marker was observed in these original native reports. There was
+no independent nextest listing artifact for this original run, and absence of
+visible skip markers does not prove the absence of every silent early return.
+Native test executable bytes were not uploaded in these original CI artifacts.
+
+### Separate sources and observer failures
+
+| Retained execution                                                                                                            | Actual result                                                                                                    | Attribution limit                                                                                                                                                                                                         |
+| ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Linux app-server source `3f084182eb80bd8fac0a5717a2f5911978759a06`, tree `3baf936ae98d761bcba25a4e38c2501407417737`           | 1,348 distinct selected cases passed; two original ignored cases were not executed.                              | Exact listing, raw summaries, JUnit, source snapshots and independent readback are retained. This is owning-package Linux evidence, not bf42 execution or full workspace acceptance.                                      |
+| Original-Broadcast counterfactual `bfcbdb20d378bdeab24078177128daec171c6063`, tree `6f4eb6cbf5dcb97353359d184877aa3bb0f0e995` | Two actual failed cases.                                                                                         | The expected negative-control result is not product PASS; its cases are not added to the positive source's count.                                                                                                         |
+| Earlier Windows Cargo observers on a57 and 5eee                                                                               | A missing-Clippy preparation failure and an actual fixture compilation failure, respectively; zero native cases. | Their original sources, attempts and the subsequent 3f084 observer publication are retained without relabelling.                                                                                                          |
+| Windows Cargo run 42566595607, observer `f0550f79e6c8e729e60943e8e37dded924729998`, tested source 3f084                       | Both attempts failed during V8 dependency retrieval with HTTP 504; all five selected cases remained unrun.       | One explicitly authorized failed-jobs recovery was issued. The second failure did not cause an automatic third attempt.                                                                                                   |
+| Windows Bazel run 42566694888, observer `b61e1a89ce6faea79d0518b990b78470e97e2244`, tested source 3f084                       | Attempt 1 failed fetching bazel_features v1.50.0; attempt 2 failed fetching rules_cc 0.2.20, both with HTTP 504. | Both discovery commands produced zero testResult/testSummary events and zero native cases. The original public app-server target, 16-shard plan, budgets and assertions were not executed or qualified by these attempts. |
+| e54 next-bootstrap source review                                                                                              | Read-only boundary analysis; no new native execution.                                                            | Existing separately tested checkpoint transport does not establish ordinary-daemon installation, a complete production learning-ports provider, real learning or later-task consumption.                                  |
+
+The app-server history includes the 5eee compile failure and the first 3f084
+selection reader's rejection of original ignored cases. The corrected reader
+keeps those two cases ignored and unexecuted. Twenty-seven original helper/test
+binaries remain on the native host with exact metadata; their executable bytes
+are not in the publication archives.
+
+The Bazel history also retains the first collector's wrong root-manifest
+assumption and its failed post-read, followed by verification of the actual ZIP
+prefix and all original members. Artifact collection failures and same-key
+acknowledgement reconciliation are not native test failures or new test
+executions. Repeated collection copies and first-attempt histories that appear
+in multiple archives are retained overlap.
+
+### Publication and checkpoint boundaries
+
+The preceding evidence commit 97543 was published and verified at
+06:06:05.872737 UTC. Its original outer publisher reached a 600-second observer
+timeout while Git was uploading; the original Git push exit remained unknown.
+The first explicit recovery then failed with HTTP 408. A second explicit,
+request-local HTTP/1.1 and 256 MiB post-buffer upload succeeded with exact Git
+and API commit/tree/parent readback. These are three retained upload attempts
+of one identical commit. Success of the last transport does not establish the
+cause of the earlier timeout or HTTP 408. No test budget or production policy
+changed. Original commands, stdout/stderr, reconciliation and failure receipts
+remain in their own packet.
+
+The 006a append binds the fixed input document, 21 exact JSON member values,
+all nine original archive hashes, and the unchanged 72-packet predecessor.
+Its bounded pattern scan examined 2,487 member entries including nested
+archives, with no findings; this is not comprehensive secret detection.
+The retained packet verifier checks byte reconstruction and member consistency,
+not scientific claims. Appending and verifying this checkpoint does not itself
+mean it has been committed or remotely published; a successful publication
+requires its own external, exact remote-readback receipt.
+
+### Nine appended terminal packets
+
+| Packet                                                | Original archive SHA256                                            | File members |
+| ----------------------------------------------------- | ------------------------------------------------------------------ | -----------: |
+| Original bf42 native terminal failure                 | `93bd9903de1191055d6a1811d4b2ba7fed401e1fd4261c653df5fdcdbd1fd19a` |          234 |
+| Bazel preparation, first failure and recovery request | `66cf86773b716105694c61d307ab34f4c766e32bb6d5bfb606401419bf9d50a3` |          332 |
+| Bazel second dependency failure                       | `05be50a6a4beb82b236e63d284b83bc9c97fab145243d8bc247b0980eef1dfc5` |           79 |
+| Three uploads of evidence commit 97543                | `66e9e35f03bf605ab75b0c99e32e3d13269c718153ff1cb3eda59c7d503069d3` |          243 |
+| a57/5eee Cargo failures and 3f084 publication         | `b9c36855ed79e25f2e3b572efed0720390a274eae38445d71daddc7c49165d40` |          454 |
+| Two 3f084 Cargo dependency failures                   | `47d9e17ea3011467b45959b90568b0330e790afef6d41e4ea6ccce8388c25567` |          141 |
+| 3f084 Linux owning and bfcbdb2 counterfactual         | `dd1a594cc460905bfc47cb0d3050e6dbb9335526954905f39558738d7dc99f3d` |          418 |
+| e54 next-bootstrap read-only review                   | `d61f5f8509c1089d0d871d599a068b968e15c2b51d74be284a35e92add5d1e8a` |           40 |
+| Original API snapshots 007 and 008                    | `ded93291d9b023704d8be4c75f5600028bfe0b9dc22c74994d67e9c76d7e49a5` |          145 |
+
+All full physical and historical costs remain null. Retained elapsed times are
+observed wall intervals and are not added into a complete cost total. Failed
+builds, dependency downloads, retries, collection and publication attempts are
+part of history even when no test case ran. **S0, S1, S2, S3, S4 and S5 remain
+HOLD.** The formal CURRENT bytes remain unchanged. The following earlier
+increment narratives retain their original counts, cutoffs and source
+identities; their former pending statuses are historical observations.
+
 ## Increment 005: original UI, Windows failure, and checkpoint delivery
 
 This checkpoint adds six packets to the 66-packet predecessor

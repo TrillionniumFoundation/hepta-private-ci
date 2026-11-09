@@ -1,0 +1,2625 @@
+{
+  "packet_id": "evidence-increment005-three-upload-attempts-and-readbacks-v1",
+  "scope": "Three original uploads of identical evidence commit, failed/unknown attempts, readonly reconciliation and final remote readback; no tests",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment005-three-upload-attempts-and-readbacks-v1-seal/evidence-increment005-three-upload-attempts-and-readbacks-v1.tar.xz",
+  "bytes": 66424,
+  "sha256": "66e9e35f03bf605ab75b0c99e32e3d13269c718153ff1cb3eda59c7d503069d3",
+  "file_member_count": 243,
+  "required_json_members": [
+    {
+      "path": "SCOPE.json",
+      "bytes": 40644,
+      "sha256": "9eb6d76e95f61ae61840a5950abb5f464cefa89279de3e89f0c914d439b3f403",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "attempts": [
+              {
+                "commands": [
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:15:10.547918+00:00",
+                    "label": "evidence-head-before",
+                    "started_at": "2026-11-09T05:15:10.544637+00:00",
+                    "wall_seconds_not_full_cost": 0.003105343086645007
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "branch",
+                      "--show-current"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:15:10.551626+00:00",
+                    "label": "evidence-branch-before",
+                    "started_at": "2026-11-09T05:15:10.548198+00:00",
+                    "wall_seconds_not_full_cost": 0.003231093054637313
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:15:10.554641+00:00",
+                    "label": "common-before-head",
+                    "started_at": "2026-11-09T05:15:10.551903+00:00",
+                    "wall_seconds_not_full_cost": 0.002541139954701066
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^{tree}"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:15:10.558357+00:00",
+                    "label": "common-before-tree",
+                    "started_at": "2026-11-09T05:15:10.554921+00:00",
+                    "wall_seconds_not_full_cost": 0.0032237409614026546
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "branch",
+                      "--show-current"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:15:10.562859+00:00",
+                    "label": "common-before-branch",
+                    "started_at": "2026-11-09T05:15:10.558640+00:00",
+                    "wall_seconds_not_full_cost": 0.003972457023337483
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:15:10.619383+00:00",
+                    "label": "common-before-status",
+                    "started_at": "2026-11-09T05:15:10.563289+00:00",
+                    "wall_seconds_not_full_cost": 0.05585728585720062
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "remote",
+                      "get-url",
+                      "publish"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:15:10.623748+00:00",
+                    "label": "evidence-publish-endpoint",
+                    "started_at": "2026-11-09T05:15:10.619913+00:00",
+                    "wall_seconds_not_full_cost": 0.0035531739704310894
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "ls-remote",
+                      "publish",
+                      "refs/heads/codex/cell-s0-evidence-20261108-898e"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:16:37.370621+00:00",
+                    "label": "evidence-remote-before",
+                    "started_at": "2026-11-09T05:15:10.624097+00:00",
+                    "wall_seconds_not_full_cost": 86.74610847001895
+                  },
+                  {
+                    "argv": [
+                      "gh",
+                      "api",
+                      "repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=5a3137e8ed198a07eb63bd97b5bb639f4471011f&per_page=100"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:16:39.588530+00:00",
+                    "label": "preceding-evidence-ci",
+                    "started_at": "2026-11-09T05:16:37.371322+00:00",
+                    "wall_seconds_not_full_cost": 2.2049859231337905
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "show",
+                      "5a3137e8ed198a07eb63bd97b5bb639f4471011f:qualification/cell_common_candidate/20261108/execution_history/manifest.json"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:16:39.608446+00:00",
+                    "label": "previous-index",
+                    "started_at": "2026-11-09T05:16:39.589723+00:00",
+                    "wall_seconds_not_full_cost": 0.0064977610018104315
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "diff",
+                      "--no-renames",
+                      "--name-only",
+                      "-z",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:16:39.628959+00:00",
+                    "label": "changed-before",
+                    "started_at": "2026-11-09T05:16:39.611243+00:00",
+                    "wall_seconds_not_full_cost": 0.016958616906777024
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "ls-files",
+                      "--others",
+                      "--exclude-standard",
+                      "-z"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:16:39.679046+00:00",
+                    "label": "untracked-before",
+                    "started_at": "2026-11-09T05:16:39.629532+00:00",
+                    "wall_seconds_not_full_cost": 0.049104416044428945
+                  },
+                  {
+                    "argv": [
+                      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e/node_modules/.bin/prettier",
+                      "--write",
+                      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e/qualification/cell_common_candidate/20261108/execution_history/README.md"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:16:41.555517+00:00",
+                    "label": "canonical-readme-format",
+                    "started_at": "2026-11-09T05:16:41.140527+00:00",
+                    "wall_seconds_not_full_cost": 0.4145135029684752
+                  },
+                  {
+                    "argv": [
+                      "python3",
+                      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e/qualification/cell_common_candidate/20261108/execution_history/verify_packets.py"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:08.956136+00:00",
+                    "label": "verify-all-original-packets",
+                    "started_at": "2026-11-09T05:16:41.556117+00:00",
+                    "wall_seconds_not_full_cost": 27.399700924986973
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:10.218490+00:00",
+                    "label": "common-after-verification-head",
+                    "started_at": "2026-11-09T05:17:10.213968+00:00",
+                    "wall_seconds_not_full_cost": 0.003994219936430454
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^{tree}"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:10.230441+00:00",
+                    "label": "common-after-verification-tree",
+                    "started_at": "2026-11-09T05:17:10.226798+00:00",
+                    "wall_seconds_not_full_cost": 0.003240868914872408
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "branch",
+                      "--show-current"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:10.234404+00:00",
+                    "label": "common-after-verification-branch",
+                    "started_at": "2026-11-09T05:17:10.230914+00:00",
+                    "wall_seconds_not_full_cost": 0.0030841289553791285
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:10.287495+00:00",
+                    "label": "common-after-verification-status",
+                    "started_at": "2026-11-09T05:17:10.234857+00:00",
+                    "wall_seconds_not_full_cost": 0.05222620093263686
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "diff",
+                      "--check"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:10.321374+00:00",
+                    "label": "diff-check",
+                    "started_at": "2026-11-09T05:17:10.289985+00:00",
+                    "wall_seconds_not_full_cost": 0.030995007138699293
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "add",
+                      "--",
+                      "qualification/cell_common_candidate/20261108/execution_history"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:17.837571+00:00",
+                    "label": "stage-evidence-only",
+                    "started_at": "2026-11-09T05:17:10.339618+00:00",
+                    "wall_seconds_not_full_cost": 7.4974765290971845
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "diff",
+                      "--cached",
+                      "--name-only",
+                      "-z"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:17.888040+00:00",
+                    "label": "staged-paths",
+                    "started_at": "2026-11-09T05:17:17.869227+00:00",
+                    "wall_seconds_not_full_cost": 0.01814337889663875
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "diff",
+                      "--cached",
+                      "--check"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:17.913476+00:00",
+                    "label": "staged-check",
+                    "started_at": "2026-11-09T05:17:17.889316+00:00",
+                    "wall_seconds_not_full_cost": 0.02359693287871778
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "diff",
+                      "--cached",
+                      "--stat"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:17.950631+00:00",
+                    "label": "staged-stat",
+                    "started_at": "2026-11-09T05:17:17.914165+00:00",
+                    "wall_seconds_not_full_cost": 0.035921200877055526
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "commit",
+                      "-m",
+                      "docs: retain original UI Windows and checkpoint delivery evidence"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:18.135203+00:00",
+                    "label": "commit-evidence",
+                    "started_at": "2026-11-09T05:17:17.951364+00:00",
+                    "wall_seconds_not_full_cost": 0.18326505506411195
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:18.140852+00:00",
+                    "label": "evidence-head-after",
+                    "started_at": "2026-11-09T05:17:18.136822+00:00",
+                    "wall_seconds_not_full_cost": 0.0029088021256029606
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^{tree}"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:18.146776+00:00",
+                    "label": "evidence-tree-after",
+                    "started_at": "2026-11-09T05:17:18.141892+00:00",
+                    "wall_seconds_not_full_cost": 0.00374402292072773
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:18.153225+00:00",
+                    "label": "evidence-parent-after",
+                    "started_at": "2026-11-09T05:17:18.147917+00:00",
+                    "wall_seconds_not_full_cost": 0.004127660999074578
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:18.213048+00:00",
+                    "label": "evidence-status-after",
+                    "started_at": "2026-11-09T05:17:18.154241+00:00",
+                    "wall_seconds_not_full_cost": 0.0576214489992708
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:18.238673+00:00",
+                    "label": "common-before-push-head",
+                    "started_at": "2026-11-09T05:17:18.214599+00:00",
+                    "wall_seconds_not_full_cost": 0.003678083885461092
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^{tree}"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:18.245678+00:00",
+                    "label": "common-before-push-tree",
+                    "started_at": "2026-11-09T05:17:18.240099+00:00",
+                    "wall_seconds_not_full_cost": 0.00403261580504477
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "branch",
+                      "--show-current"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:18.251600+00:00",
+                    "label": "common-before-push-branch",
+                    "started_at": "2026-11-09T05:17:18.247070+00:00",
+                    "wall_seconds_not_full_cost": 0.003218048019334674
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:17:18.309995+00:00",
+                    "label": "common-before-push-status",
+                    "started_at": "2026-11-09T05:17:18.253173+00:00",
+                    "wall_seconds_not_full_cost": 0.055407396983355284
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "ls-remote",
+                      "publish",
+                      "refs/heads/codex/cell-s0-evidence-20261108-898e"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:18:25.212285+00:00",
+                    "label": "evidence-remote-final-check",
+                    "started_at": "2026-11-09T05:17:18.311950+00:00",
+                    "wall_seconds_not_full_cost": 66.89897864102386
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "push",
+                      "publish",
+                      "HEAD:refs/heads/codex/cell-s0-evidence-20261108-898e"
+                    ],
+                    "exit_code": null,
+                    "finished_at": null,
+                    "label": "push-evidence",
+                    "started_at": "2026-11-09T05:18:25.214034+00:00",
+                    "wall_seconds_not_full_cost": null
+                  }
+                ],
+                "git_push_exit_code": null,
+                "natural_git_exit_not_inferred": true,
+                "ordinal": 1,
+                "outer_exit_code": 124,
+                "outer_job_id": "1a1bebb4fdd-5e21-248",
+                "outer_status": "timed_out",
+                "preceding_commands_passed": 33,
+                "prefix": "evidence-increment005-publication-v1"
+              },
+              {
+                "commands": [
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:40.882958+00:00",
+                    "label": "evidence-head-before",
+                    "started_at": "2026-11-09T05:34:40.879162+00:00",
+                    "wall_seconds_not_full_cost": 0.0036283619701862335
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^{tree}"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:40.892606+00:00",
+                    "label": "evidence-tree-before",
+                    "started_at": "2026-11-09T05:34:40.883222+00:00",
+                    "wall_seconds_not_full_cost": 0.0038657370023429394
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:40.897850+00:00",
+                    "label": "evidence-parent-before",
+                    "started_at": "2026-11-09T05:34:40.893011+00:00",
+                    "wall_seconds_not_full_cost": 0.004622455919161439
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "branch",
+                      "--show-current"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:40.902469+00:00",
+                    "label": "evidence-branch-before",
+                    "started_at": "2026-11-09T05:34:40.898133+00:00",
+                    "wall_seconds_not_full_cost": 0.0041073099710047245
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:40.962265+00:00",
+                    "label": "evidence-status-before",
+                    "started_at": "2026-11-09T05:34:40.902800+00:00",
+                    "wall_seconds_not_full_cost": 0.05922610103152692
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:40.966517+00:00",
+                    "label": "common-before-head",
+                    "started_at": "2026-11-09T05:34:40.962773+00:00",
+                    "wall_seconds_not_full_cost": 0.003479789011180401
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^{tree}"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:40.970923+00:00",
+                    "label": "common-before-tree",
+                    "started_at": "2026-11-09T05:34:40.966874+00:00",
+                    "wall_seconds_not_full_cost": 0.003596551949158311
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "branch",
+                      "--show-current"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:40.973834+00:00",
+                    "label": "common-before-branch",
+                    "started_at": "2026-11-09T05:34:40.971262+00:00",
+                    "wall_seconds_not_full_cost": 0.0022774888202548027
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:41.028771+00:00",
+                    "label": "common-before-status",
+                    "started_at": "2026-11-09T05:34:40.974207+00:00",
+                    "wall_seconds_not_full_cost": 0.05425742804072797
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "remote",
+                      "get-url",
+                      "publish"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:41.032736+00:00",
+                    "label": "evidence-publish-endpoint",
+                    "started_at": "2026-11-09T05:34:41.029295+00:00",
+                    "wall_seconds_not_full_cost": 0.0031243369448930025
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "show",
+                      "5a3137e8ed198a07eb63bd97b5bb639f4471011f:qualification/cell_common_candidate/20261108/execution_history/manifest.json"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:41.037873+00:00",
+                    "label": "previous-index",
+                    "started_at": "2026-11-09T05:34:41.033129+00:00",
+                    "wall_seconds_not_full_cost": 0.0043945941142737865
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "show",
+                      "97543a30b941122ee42c99ab95c2dbf639ac6576:qualification/cell_common_candidate/20261108/execution_history/manifest.json"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:41.044163+00:00",
+                    "label": "committed-current-index",
+                    "started_at": "2026-11-09T05:34:41.039327+00:00",
+                    "wall_seconds_not_full_cost": 0.004434536909684539
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "diff",
+                      "--no-renames",
+                      "--name-only",
+                      "-z",
+                      "5a3137e8ed198a07eb63bd97b5bb639f4471011f",
+                      "97543a30b941122ee42c99ab95c2dbf639ac6576"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:34:41.052292+00:00",
+                    "label": "committed-change-paths",
+                    "started_at": "2026-11-09T05:34:41.045522+00:00",
+                    "wall_seconds_not_full_cost": 0.006244812160730362
+                  },
+                  {
+                    "argv": [
+                      "python3",
+                      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e/qualification/cell_common_candidate/20261108/execution_history/verify_packets.py"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:35:09.310448+00:00",
+                    "label": "verify-committed-original-packets",
+                    "started_at": "2026-11-09T05:34:41.064941+00:00",
+                    "wall_seconds_not_full_cost": 28.24510989105329
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:35:09.369425+00:00",
+                    "label": "evidence-status-after-verification",
+                    "started_at": "2026-11-09T05:35:09.311671+00:00",
+                    "wall_seconds_not_full_cost": 0.05697034578770399
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:35:09.417164+00:00",
+                    "label": "common-before-remote-head",
+                    "started_at": "2026-11-09T05:35:09.412514+00:00",
+                    "wall_seconds_not_full_cost": 0.003683449001982808
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^{tree}"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:35:09.423093+00:00",
+                    "label": "common-before-remote-tree",
+                    "started_at": "2026-11-09T05:35:09.418061+00:00",
+                    "wall_seconds_not_full_cost": 0.004248853074386716
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "branch",
+                      "--show-current"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:35:09.428010+00:00",
+                    "label": "common-before-remote-branch",
+                    "started_at": "2026-11-09T05:35:09.424004+00:00",
+                    "wall_seconds_not_full_cost": 0.0032071720343083143
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:35:09.484515+00:00",
+                    "label": "common-before-remote-status",
+                    "started_at": "2026-11-09T05:35:09.428951+00:00",
+                    "wall_seconds_not_full_cost": 0.05470827710814774
+                  },
+                  {
+                    "argv": [
+                      "gh",
+                      "api",
+                      "repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=5a3137e8ed198a07eb63bd97b5bb639f4471011f&per_page=100"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:35:12.589010+00:00",
+                    "label": "preceding-evidence-ci",
+                    "started_at": "2026-11-09T05:35:09.485877+00:00",
+                    "wall_seconds_not_full_cost": 3.1021356619894505
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "ls-remote",
+                      "publish",
+                      "refs/heads/codex/cell-s0-evidence-20261108-898e"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:35:18.624768+00:00",
+                    "label": "evidence-remote-before",
+                    "started_at": "2026-11-09T05:35:12.590476+00:00",
+                    "wall_seconds_not_full_cost": 6.033313927939162
+                  },
+                  {
+                    "argv": [
+                      "gh",
+                      "api",
+                      "repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/cell-s0-evidence-20261108-898e"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T05:35:20.539096+00:00",
+                    "label": "evidence-ref-api-before",
+                    "started_at": "2026-11-09T05:35:18.626289+00:00",
+                    "wall_seconds_not_full_cost": 1.900472603039816
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "push",
+                      "publish",
+                      "HEAD:refs/heads/codex/cell-s0-evidence-20261108-898e"
+                    ],
+                    "exit_code": 1,
+                    "finished_at": "2026-11-09T05:42:25.879665+00:00",
+                    "label": "resume-normal-push",
+                    "started_at": "2026-11-09T05:35:20.541569+00:00",
+                    "wall_seconds_not_full_cost": 425.32588792592287
+                  }
+                ],
+                "git_push_exit_code": 1,
+                "http_status": 408,
+                "ordinal": 2,
+                "prefix": "evidence-increment005-publication-recovery-v1",
+                "status": "failure"
+              },
+              {
+                "commands": [
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.369393+00:00",
+                    "label": "evidence-head-before",
+                    "started_at": "2026-11-09T06:01:21.365495+00:00",
+                    "wall_seconds_not_full_cost": 0.0037438489962369204
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^{tree}"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.374563+00:00",
+                    "label": "evidence-tree-before",
+                    "started_at": "2026-11-09T06:01:21.369680+00:00",
+                    "wall_seconds_not_full_cost": 0.004543048096820712
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.379498+00:00",
+                    "label": "evidence-parent-before",
+                    "started_at": "2026-11-09T06:01:21.374836+00:00",
+                    "wall_seconds_not_full_cost": 0.004397921031340957
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "branch",
+                      "--show-current"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.383337+00:00",
+                    "label": "evidence-branch-before",
+                    "started_at": "2026-11-09T06:01:21.379790+00:00",
+                    "wall_seconds_not_full_cost": 0.002789759077131748
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.442237+00:00",
+                    "label": "evidence-status-before",
+                    "started_at": "2026-11-09T06:01:21.383644+00:00",
+                    "wall_seconds_not_full_cost": 0.058116432977840304
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.446447+00:00",
+                    "label": "common-before-head",
+                    "started_at": "2026-11-09T06:01:21.442903+00:00",
+                    "wall_seconds_not_full_cost": 0.003098563989624381
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^{tree}"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.450926+00:00",
+                    "label": "common-before-tree",
+                    "started_at": "2026-11-09T06:01:21.446805+00:00",
+                    "wall_seconds_not_full_cost": 0.0034581641666591167
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "branch",
+                      "--show-current"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.454206+00:00",
+                    "label": "common-before-branch",
+                    "started_at": "2026-11-09T06:01:21.451286+00:00",
+                    "wall_seconds_not_full_cost": 0.0024744339752942324
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.508171+00:00",
+                    "label": "common-before-status",
+                    "started_at": "2026-11-09T06:01:21.454581+00:00",
+                    "wall_seconds_not_full_cost": 0.05281465197913349
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "remote",
+                      "get-url",
+                      "publish"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.512158+00:00",
+                    "label": "evidence-publish-endpoint",
+                    "started_at": "2026-11-09T06:01:21.508776+00:00",
+                    "wall_seconds_not_full_cost": 0.003015985945239663
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "show",
+                      "5a3137e8ed198a07eb63bd97b5bb639f4471011f:qualification/cell_common_candidate/20261108/execution_history/manifest.json"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.517229+00:00",
+                    "label": "previous-index",
+                    "started_at": "2026-11-09T06:01:21.512556+00:00",
+                    "wall_seconds_not_full_cost": 0.00428810203447938
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "show",
+                      "97543a30b941122ee42c99ab95c2dbf639ac6576:qualification/cell_common_candidate/20261108/execution_history/manifest.json"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.523848+00:00",
+                    "label": "committed-current-index",
+                    "started_at": "2026-11-09T06:01:21.518800+00:00",
+                    "wall_seconds_not_full_cost": 0.0045750560238957405
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "diff",
+                      "--no-renames",
+                      "--name-only",
+                      "-z",
+                      "5a3137e8ed198a07eb63bd97b5bb639f4471011f",
+                      "97543a30b941122ee42c99ab95c2dbf639ac6576"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:21.531213+00:00",
+                    "label": "committed-change-paths",
+                    "started_at": "2026-11-09T06:01:21.525360+00:00",
+                    "wall_seconds_not_full_cost": 0.005408565979450941
+                  },
+                  {
+                    "argv": [
+                      "python3",
+                      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e/qualification/cell_common_candidate/20261108/execution_history/verify_packets.py"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:48.991194+00:00",
+                    "label": "verify-committed-original-packets",
+                    "started_at": "2026-11-09T06:01:21.534365+00:00",
+                    "wall_seconds_not_full_cost": 27.456402904121205
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:49.047274+00:00",
+                    "label": "evidence-status-after-verification",
+                    "started_at": "2026-11-09T06:01:48.992518+00:00",
+                    "wall_seconds_not_full_cost": 0.05396457202732563
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:49.072670+00:00",
+                    "label": "common-before-remote-head",
+                    "started_at": "2026-11-09T06:01:49.069243+00:00",
+                    "wall_seconds_not_full_cost": 0.002931529888883233
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^{tree}"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:49.076815+00:00",
+                    "label": "common-before-remote-tree",
+                    "started_at": "2026-11-09T06:01:49.073305+00:00",
+                    "wall_seconds_not_full_cost": 0.0030450508929789066
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "branch",
+                      "--show-current"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:49.081095+00:00",
+                    "label": "common-before-remote-branch",
+                    "started_at": "2026-11-09T06:01:49.077338+00:00",
+                    "wall_seconds_not_full_cost": 0.00328101497143507
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:49.135239+00:00",
+                    "label": "common-before-remote-status",
+                    "started_at": "2026-11-09T06:01:49.081606+00:00",
+                    "wall_seconds_not_full_cost": 0.05307140504010022
+                  },
+                  {
+                    "argv": [
+                      "gh",
+                      "api",
+                      "repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=5a3137e8ed198a07eb63bd97b5bb639f4471011f&per_page=100"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:50.577320+00:00",
+                    "label": "preceding-evidence-ci",
+                    "started_at": "2026-11-09T06:01:49.136404+00:00",
+                    "wall_seconds_not_full_cost": 1.4403732649516314
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "ls-remote",
+                      "publish",
+                      "refs/heads/codex/cell-s0-evidence-20261108-898e"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:57.156197+00:00",
+                    "label": "evidence-remote-before",
+                    "started_at": "2026-11-09T06:01:50.578829+00:00",
+                    "wall_seconds_not_full_cost": 6.576397329103202
+                  },
+                  {
+                    "argv": [
+                      "gh",
+                      "api",
+                      "repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/cell-s0-evidence-20261108-898e"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:01:58.811614+00:00",
+                    "label": "evidence-ref-api-before",
+                    "started_at": "2026-11-09T06:01:57.157553+00:00",
+                    "wall_seconds_not_full_cost": 1.6530158980749547
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "-c",
+                      "http.version=HTTP/1.1",
+                      "-c",
+                      "http.postBuffer=268435456",
+                      "push",
+                      "--progress",
+                      "publish",
+                      "HEAD:refs/heads/codex/cell-s0-evidence-20261108-898e"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:05:27.146569+00:00",
+                    "label": "resume-buffered-http11-push",
+                    "started_at": "2026-11-09T06:01:58.863374+00:00",
+                    "wall_seconds_not_full_cost": 208.28225419693626
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "ls-remote",
+                      "publish",
+                      "refs/heads/codex/cell-s0-evidence-20261108-898e"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:05:33.180991+00:00",
+                    "label": "evidence-remote-after",
+                    "started_at": "2026-11-09T06:05:27.147941+00:00",
+                    "wall_seconds_not_full_cost": 6.032164872856811
+                  },
+                  {
+                    "argv": [
+                      "gh",
+                      "api",
+                      "repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/cell-s0-evidence-20261108-898e"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:05:40.925449+00:00",
+                    "label": "evidence-ref-api-after",
+                    "started_at": "2026-11-09T06:05:33.182423+00:00",
+                    "wall_seconds_not_full_cost": 7.564863882958889
+                  },
+                  {
+                    "argv": [
+                      "gh",
+                      "api",
+                      "repos/TrillionniumFoundation/hepta-private-ci/git/commits/97543a30b941122ee42c99ab95c2dbf639ac6576"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:05:48.306646+00:00",
+                    "label": "evidence-commit-api-after",
+                    "started_at": "2026-11-09T06:05:40.927192+00:00",
+                    "wall_seconds_not_full_cost": 7.35062436806038
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "ls-remote",
+                      "publish",
+                      "refs/heads/codex/cell-s0-common-20261108-898e"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:06:05.285099+00:00",
+                    "label": "common-remote-after",
+                    "started_at": "2026-11-09T06:05:48.308302+00:00",
+                    "wall_seconds_not_full_cost": 16.947059277212247
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:06:05.324672+00:00",
+                    "label": "evidence-head-after",
+                    "started_at": "2026-11-09T06:06:05.286623+00:00",
+                    "wall_seconds_not_full_cost": 0.0040414228569716215
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:06:05.388500+00:00",
+                    "label": "evidence-status-after",
+                    "started_at": "2026-11-09T06:06:05.326107+00:00",
+                    "wall_seconds_not_full_cost": 0.06011962704360485
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:06:05.396710+00:00",
+                    "label": "common-final-head",
+                    "started_at": "2026-11-09T06:06:05.390077+00:00",
+                    "wall_seconds_not_full_cost": 0.003455884987488389
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "rev-parse",
+                      "HEAD^{tree}"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:06:05.403615+00:00",
+                    "label": "common-final-tree",
+                    "started_at": "2026-11-09T06:06:05.398115+00:00",
+                    "wall_seconds_not_full_cost": 0.0042084509041160345
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "branch",
+                      "--show-current"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:06:05.811428+00:00",
+                    "label": "common-final-branch",
+                    "started_at": "2026-11-09T06:06:05.405021+00:00",
+                    "wall_seconds_not_full_cost": 0.004011370940133929
+                  },
+                  {
+                    "argv": [
+                      "git",
+                      "status",
+                      "--porcelain=v1",
+                      "--untracked-files=all"
+                    ],
+                    "exit_code": 0,
+                    "finished_at": "2026-11-09T06:06:05.870902+00:00",
+                    "label": "common-final-status",
+                    "started_at": "2026-11-09T06:06:05.813259+00:00",
+                    "wall_seconds_not_full_cost": 0.0561844939365983
+                  }
+                ],
+                "git_push_exit_code": 0,
+                "ordinal": 3,
+                "prefix": "evidence-increment005-publication-recovery-v2",
+                "request_local_http_version": "HTTP/1.1",
+                "request_local_post_buffer_bytes": 268435456,
+                "status": "published_and_remote_readback_verified"
+              }
+            ],
+            "automatic_retry_loop": false,
+            "commit_rewritten": false,
+            "common_source_not_promoted": true,
+            "common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+            "complete_execution_history": false,
+            "excluded_runtime_coordination_files": [],
+            "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+            "formal_stage_result": "S0-S5 HOLD; unchanged formal CURRENT_RESULT",
+            "full_history_cost": null,
+            "kind": "three_original_evidence_publication_attempts_and_readonly_reconciliation",
+            "network_failure_cause_established": false,
+            "new_native_executions_by_reader_or_sealer": 0,
+            "old_packet_archive_payloads_not_duplicated_in_this_publication_packet": true,
+            "original_66_packet_entries_and_bytes_unchanged": true,
+            "original_git_commands_stdout_stderr_all_retained": true,
+            "packet_id": "evidence-increment005-three-upload-attempts-and-readbacks-v1",
+            "physical_cost": null,
+            "publication_receipts_external_to_commit_they_verify": true,
+            "published_at": "2026-11-09T06:06:05.872737+00:00",
+            "published_evidence_commit": "97543a30b941122ee42c99ab95c2dbf639ac6576",
+            "published_evidence_parent": "5a3137e8ed198a07eb63bd97b5bb639f4471011f",
+            "published_evidence_tree": "dde03df86ff345a325bad85c14e2c5e36da88728",
+            "published_member_entries_with_overlap": 7050,
+            "published_packet_count": 72,
+            "reconciliation_history": [
+              {
+                "observed_at": "2026-11-09T05:29:27.663087+00:00",
+                "record": "evidence-increment005-readonly-reconciliation-qualification-v1/RESULT.json",
+                "result": "remote still predecessor; original push exit unknown"
+              },
+              {
+                "observed_at": "2026-11-09T05:30:06.333043+00:00",
+                "record": "evidence-increment005-readonly-reconciliation-qualification-v1/expanded-processes-observation-v2.json",
+                "result": "expanded target process check empty; absence is not proof of natural exit"
+              },
+              {
+                "observed_at": "2026-11-09T05:57:40.701990+00:00",
+                "record": "evidence-increment005-transport-readonly-preflight-v2.json",
+                "result": "bounded process/memory/object preflight, followed by original fresh Git/API reads in recovery v2"
+              }
+            ],
+            "scientific_acceptance": false,
+            "stage_advancement_claimed": false,
+            "successful_transport_choice_is_not_causal_proof": true,
+            "tls_auth_proxy_endpoint_unchanged": true,
+            "unretained_parent_pty_transcript": "not asserted complete; child outputs, original MCP timeout status and original command receipts are retained"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/RESULT.json",
+      "bytes": 5156,
+      "sha256": "90a50bd927eaf71736f6d59c4eac77fa70cf31667585659773e91e65be8a2ecb",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "status": "published_and_remote_readback_verified",
+            "finished_at": "2026-11-09T06:06:05.872737+00:00",
+            "branch": "codex/cell-s0-evidence-20261108-898e",
+            "commit": "97543a30b941122ee42c99ab95c2dbf639ac6576",
+            "tree": "dde03df86ff345a325bad85c14e2c5e36da88728",
+            "parent": "5a3137e8ed198a07eb63bd97b5bb639f4471011f",
+            "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+            "original_metadata_observations": [
+              {
+                "path": "observations/evidence-addendum-increment-005a/RESULT.json",
+                "bytes": 5635,
+                "sha256": "aafcd6aec808a46462dda1f1b3ff6f6423bed21d4d9e0f4c2b988d5980cfe6bb"
+              },
+              {
+                "path": "observations/evidence-addendum-increment-005b/RESULT.json",
+                "bytes": 3796,
+                "sha256": "17c7be2da832207a6307e05ca2e0dad9676ccf4957a4609343cb8b7f9502143f"
+              },
+              {
+                "path": "observations/evidence-increment004-publication-v1/RESULT.json",
+                "bytes": 3543,
+                "sha256": "607e2ded5d1eaa5f4df6477e4087a5f9162849189899d7776ed30e4be56e2bf4"
+              },
+              {
+                "path": "observations/pr5397-status007-update-v1/RESULT.json",
+                "bytes": 1063,
+                "sha256": "36aa8a236e262976e8808d125fe90277217fbc1bf0f23205515ccddb318db7aa"
+              },
+              {
+                "path": "observations/ci-bf42-current-snapshot-006/SUMMARY.json",
+                "bytes": 7032,
+                "sha256": "d4826f12f62bf013da903e12065de8092f572558f641f590b5ecbf5b7d438fdf"
+              },
+              {
+                "path": "observations/ci-bf42-ui-evidence-packets-v1/RESULT.json",
+                "bytes": 6526,
+                "sha256": "e236b8e5dc6ff9a83982e55f4b51478bf26c930223fae4360669bae0e189da10"
+              },
+              {
+                "path": "observations/ci-bf42-windows-original-evidence-v1/RESULT.json",
+                "bytes": 2174,
+                "sha256": "fbba8f7d4b53399035d039a608b8e29ce72d264fd45d4c670540f9bded20f038"
+              },
+              {
+                "path": "observations/learning-checkpoint-desktop-history-v1/SUMMARY.json",
+                "bytes": 2326,
+                "sha256": "24418d88d0bcb553b056a5cb45bc50f4c1094a997794b4c35ddf231aaa56ed8e"
+              },
+              {
+                "path": "observations/learning-checkpoint-quiet-publication-v1/publication.json",
+                "bytes": 14447,
+                "sha256": "278e73a458e6f941c4eb1eb97e9b19f3d34599ecfa6e5a55e92fb941fd35feb5"
+              },
+              {
+                "path": "observations/learning-checkpoint-desktop-history-v1/SCOPE.json",
+                "bytes": 3567,
+                "sha256": "32a269bb3c22b181acdc45e1b2d12910cc08ebe75e07a192ac84108a84d9fdfc"
+              },
+              {
+                "path": "observations/append-evidence-increment-005-v1.py",
+                "bytes": 13820,
+                "sha256": "08e78ae5af235d13bab508ca55531a85e9ea0b0193233c8108e3633d0fd614c9"
+              },
+              {
+                "path": "observations/publish-evidence-increment-005-v1.py",
+                "bytes": 11935,
+                "sha256": "1642b2b365dbe0058c9800556cdb159e76b1608c26e3f2eaf1502171c661a2e7"
+              }
+            ],
+            "prior_packet_bytes_unchanged": true,
+            "original_66_packet_index_entries_unchanged": true,
+            "source_worktree_clean_and_unmodified": true,
+            "packet_count": 72,
+            "file_member_count_with_overlap": 7050,
+            "published_file_count": 948,
+            "max_blob_bytes": 490000,
+            "manifest_sha256": "33da1f4d0d31c0251fb5a303e72aa31a561b961e01e0c6495b6b234b6857cf9e",
+            "readme_sha256": "c7f386b376073ba38ac1b73e8607ff8a6c97c4a644027103f3f5a8c2d70595c8",
+            "complete_execution_history": false,
+            "full_history_cost": null,
+            "stages": {
+              "S0": "HOLD",
+              "S1": "HOLD",
+              "S2": "HOLD",
+              "S3": "HOLD",
+              "S4": "HOLD",
+              "S5": "HOLD"
+            },
+            "publication_receipt_is_external_to_its_own_commit": true,
+            "original_publication_attempt": {
+              "job_id": "1a1bebb4fdd-5e21-248",
+              "outer_status": "timed_out",
+              "outer_exit_code": 124,
+              "git_push_exit_code": null,
+              "original_command_bytes_unchanged": true,
+              "reconciliation_sha256": "0a9decbd1c760756becb067295043a6aa4259f01c39539a3f21833db3403f9ae"
+            },
+            "normal_recovery_push_performed": true,
+            "automatic_retry": false,
+            "transport_recovery": {
+              "observed_at": "2026-11-09T06:01:58.863047+00:00",
+              "related_processes": [],
+              "memory": {
+                "MemTotal_bytes": 134923063296,
+                "MemAvailable_bytes": 92710461440
+              },
+              "signals_sent": false,
+              "request_local_http_version": "HTTP/1.1",
+              "request_local_post_buffer_bytes": 268435456,
+              "max_uncompressed_new_objects_bytes": 177690531,
+              "network_cause_not_established": true,
+              "tls_auth_proxy_and_endpoint_unchanged": true
+            },
+            "prior_recovery_failure": {
+              "commands_sha256": "2b7fc141115c6df26fdba6aa292daa36598768b12b5a185ce335bfcb2cdc397a",
+              "push_exit_code": 1,
+              "http_status": 408,
+              "push_stderr_sha256": "aa7602d000b7133f3c471a163ad6f3a4dec974cdcf9d1b286b45b4e507f25bce",
+              "duration_seconds_not_native_or_full_cost": 425.32588792592287
+            },
+            "transport_preflight_sha256": "e05d4ae7bb9e7a538fd3324c949dee0832a2c59fb00f4a7813049993ede26526",
+            "commit_rewritten": false,
+            "native_tests_executed_by_recovery": false,
+            "commands_receipt_sha256": "81aa87ac1626472903cb6e9af3d3a09f02889eeaa2bd1d820ae6cd6f0af56537",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/97543a30b941122ee42c99ab95c2dbf639ac6576/qualification/cell_common_candidate/20261108/execution_history"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/evidence005-recovery-v2-independent-review-qualification.json",
+      "bytes": 992,
+      "sha256": "68297cc9e653e73a286c56ffeb40e60cd69539097195d52705dd65a922c79cad",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "kind": "independent_readonly_static_review",
+            "script": "recover-evidence-increment005-publication-v2-reviewed.py",
+            "bytes": 20400,
+            "sha256": "fbae8f9e832f98278986bc21fd161ac4c88c6a362ddefb48623f7a7fff2ae205",
+            "predecessor_sha256": "1317ec664d4acb6f48a0f70bdb38891706bfb2fdf28cd0c6a5fbc9c12bc3695b",
+            "common_prefix_characters": 7868,
+            "common_suffix_characters": 11469,
+            "net_delta_bytes": 377,
+            "changed_logic": "Only targeted process scan: exact Git executable set plus worktree/descendant or exact evidence ref arguments; Python basename startswith with original script markers. No full argv retained.",
+            "newline_literals_single_escape": true,
+            "nul_split_literals_correct": true,
+            "original_72_packets_66_protected_source_current_and_remote_guards_preserved": true,
+            "one_request_local_upload_only": true,
+            "new_static_blocker": false,
+            "script_executed_by_reviewer": false,
+            "tests_executed_by_reviewer": 0,
+            "reviewed_at": "2026-11-09T06:02:02.518742+00:00"
+          }
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "COMMON_BEFORE.json",
+      "bytes": 222,
+      "sha256": "5e188df8f9ab72c90a1629b5b578447bb6f5d4509e8a108fae9976a2db576fe7"
+    },
+    {
+      "path": "INPUTS_BEFORE.json",
+      "bytes": 78528,
+      "sha256": "5b682047a40bd6bf1d39a46c0aebc69392870f9a2d58c04202cb8f37e9655aa2"
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 40644,
+      "sha256": "9eb6d76e95f61ae61840a5950abb5f464cefa89279de3e89f0c914d439b3f403"
+    },
+    {
+      "path": "originals/evidence-increment005-final-README.md",
+      "bytes": 44395,
+      "sha256": "bc25a8d39af75b0dd89a26b88c5c18bc68fcfcdf383ac6b60986497a11fd0004"
+    },
+    {
+      "path": "originals/evidence-increment005-metadata.json",
+      "bytes": 2713,
+      "sha256": "a5ebdaba29859b9ee7e925d6c2e5a6fc14a4ef259ef96f6fdb5a176ade06c2eb"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/commands.json",
+      "bytes": 15906,
+      "sha256": "2b7fc141115c6df26fdba6aa292daa36598768b12b5a185ce335bfcb2cdc397a"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/committed-change-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/committed-change-paths.stdout",
+      "bytes": 49173,
+      "sha256": "ec613ed4b20b28e98a1cc1bb886dc61231d140176fcab1d47e2c4b2ec5e98b84"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/committed-current-index.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/committed-current-index.stdout",
+      "bytes": 86003,
+      "sha256": "33da1f4d0d31c0251fb5a303e72aa31a561b961e01e0c6495b6b234b6857cf9e"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-branch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-branch.stdout",
+      "bytes": 35,
+      "sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-remote-branch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-remote-branch.stdout",
+      "bytes": 35,
+      "sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-remote-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-remote-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-remote-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-remote-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-remote-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-remote-tree.stdout",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/common-before-tree.stdout",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/driver.py",
+      "bytes": 14035,
+      "sha256": "df4966357d4e1e3055cb5d5c7e6c271f81bbba17a5590ab57aa0ea3050ed938c"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-branch-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-branch-before.stdout",
+      "bytes": 37,
+      "sha256": "f05fde2bf756079061d4032a9dcdfe8d149a1cbe71e0e27cc907da1173c71216"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-head-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-head-before.stdout",
+      "bytes": 41,
+      "sha256": "b0858eb510327350dffd5ccfc5a841f96519d23527352b8a8de9331518a2a2d7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-parent-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-parent-before.stdout",
+      "bytes": 41,
+      "sha256": "453a36ba6ebeb22a9ed541e28b7d971c46f4315582cb0587f0f8068409505869"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-publish-endpoint.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-publish-endpoint.stdout",
+      "bytes": 63,
+      "sha256": "5658277e105c40f27aee579ae3112d570c7dc42bf3fb99fa6e8fdf1b098653e1"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-ref-api-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-ref-api-before.stdout",
+      "bytes": 485,
+      "sha256": "e2ef9ef218a66437322cfc94d9fde0c8de8d09f8cfb399fa558b614e0e0f43fb"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-remote-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-remote-before.stdout",
+      "bytes": 89,
+      "sha256": "a37a82b5bc4ec9681dddfda6b7c5559cba131cb93bbb9bb5cb21af51a1f605a4"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-status-after-verification.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-status-after-verification.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-status-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-status-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-tree-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/evidence-tree-before.stdout",
+      "bytes": 41,
+      "sha256": "5c50300ba2e318314d0ca9fb81794c7462dfea130523ae00be8bc262792ddd8c"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/original-interrupted-commands.json",
+      "bytes": 22852,
+      "sha256": "79fccebbab7807095ee784aa409c7b4767fd304e609cfe6dda5a61d1d45bce6d"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/original-process-observation.json",
+      "bytes": 547,
+      "sha256": "e699142401d9117a2a23bad29990028979a7a07db7e9cd10f381c2318c532ead"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/original-readonly-reconciliation.json",
+      "bytes": 1779,
+      "sha256": "0a9decbd1c760756becb067295043a6aa4259f01c39539a3f21833db3403f9ae"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/preceding-evidence-ci.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/preceding-evidence-ci.stdout",
+      "bytes": 36,
+      "sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/previous-index.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/previous-index.stdout",
+      "bytes": 66150,
+      "sha256": "511513fbba0e5b260687e75e1835e15d12e008789e569631e5d53dcbdf18f212"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/resume-normal-push.stderr",
+      "bytes": 189,
+      "sha256": "aa7602d000b7133f3c471a163ad6f3a4dec974cdcf9d1b286b45b4e507f25bce"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/resume-normal-push.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/verify-committed-original-packets.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v1/verify-committed-original-packets.stdout",
+      "bytes": 5348,
+      "sha256": "469c2b115051a1cf54068a434f186eed79e1d088f56874231a6e0724ca86e6b4"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/RESULT.json",
+      "bytes": 5156,
+      "sha256": "90a50bd927eaf71736f6d59c4eac77fa70cf31667585659773e91e65be8a2ecb"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/commands.json",
+      "bytes": 22845,
+      "sha256": "81aa87ac1626472903cb6e9af3d3a09f02889eeaa2bd1d820ae6cd6f0af56537"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/committed-change-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/committed-change-paths.stdout",
+      "bytes": 49173,
+      "sha256": "ec613ed4b20b28e98a1cc1bb886dc61231d140176fcab1d47e2c4b2ec5e98b84"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/committed-current-index.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/committed-current-index.stdout",
+      "bytes": 86003,
+      "sha256": "33da1f4d0d31c0251fb5a303e72aa31a561b961e01e0c6495b6b234b6857cf9e"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-branch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-branch.stdout",
+      "bytes": 35,
+      "sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-remote-branch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-remote-branch.stdout",
+      "bytes": 35,
+      "sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-remote-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-remote-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-remote-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-remote-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-remote-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-remote-tree.stdout",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-before-tree.stdout",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-final-branch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-final-branch.stdout",
+      "bytes": 35,
+      "sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-final-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-final-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-final-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-final-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-final-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-final-tree.stdout",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-remote-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/common-remote-after.stdout",
+      "bytes": 87,
+      "sha256": "348c758a1d487b5bda1e5e869e42e40ca6be29ff1d6f3518862d77a4975bb8fd"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/driver.py",
+      "bytes": 20400,
+      "sha256": "fbae8f9e832f98278986bc21fd161ac4c88c6a362ddefb48623f7a7fff2ae205"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-branch-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-branch-before.stdout",
+      "bytes": 37,
+      "sha256": "f05fde2bf756079061d4032a9dcdfe8d149a1cbe71e0e27cc907da1173c71216"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-commit-api-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-commit-api-after.stdout",
+      "bytes": 1253,
+      "sha256": "0676715c937a56d6057b1e41786e4c06e0f19f44879e3a3dfe4927fe3737c0f8"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-head-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-head-after.stdout",
+      "bytes": 41,
+      "sha256": "b0858eb510327350dffd5ccfc5a841f96519d23527352b8a8de9331518a2a2d7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-head-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-head-before.stdout",
+      "bytes": 41,
+      "sha256": "b0858eb510327350dffd5ccfc5a841f96519d23527352b8a8de9331518a2a2d7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-parent-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-parent-before.stdout",
+      "bytes": 41,
+      "sha256": "453a36ba6ebeb22a9ed541e28b7d971c46f4315582cb0587f0f8068409505869"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-publish-endpoint.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-publish-endpoint.stdout",
+      "bytes": 63,
+      "sha256": "5658277e105c40f27aee579ae3112d570c7dc42bf3fb99fa6e8fdf1b098653e1"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-ref-api-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-ref-api-after.stdout",
+      "bytes": 485,
+      "sha256": "c800225f58b6a765cd16c5d85817578f0d1801db255618d393bfe4cc5cc20adc"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-ref-api-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-ref-api-before.stdout",
+      "bytes": 485,
+      "sha256": "e2ef9ef218a66437322cfc94d9fde0c8de8d09f8cfb399fa558b614e0e0f43fb"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-remote-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-remote-after.stdout",
+      "bytes": 89,
+      "sha256": "e733580cc9705408e8fa6b26432637353a34949b4ff6948c429e83b47420485a"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-remote-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-remote-before.stdout",
+      "bytes": 89,
+      "sha256": "a37a82b5bc4ec9681dddfda6b7c5559cba131cb93bbb9bb5cb21af51a1f605a4"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-status-after-verification.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-status-after-verification.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-status-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-status-after.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-status-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-status-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-tree-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/evidence-tree-before.stdout",
+      "bytes": 41,
+      "sha256": "5c50300ba2e318314d0ca9fb81794c7462dfea130523ae00be8bc262792ddd8c"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/fresh-transport-admission.json",
+      "bytes": 434,
+      "sha256": "db252aa671021ee69ef66a7e205dda9bd421c1d557a9e4fd4631c25963a46561"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/original-first-recovery-commands.json",
+      "bytes": 15906,
+      "sha256": "2b7fc141115c6df26fdba6aa292daa36598768b12b5a185ce335bfcb2cdc397a"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/original-first-recovery-push.stderr",
+      "bytes": 189,
+      "sha256": "aa7602d000b7133f3c471a163ad6f3a4dec974cdcf9d1b286b45b4e507f25bce"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/original-first-recovery-push.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/original-interrupted-commands.json",
+      "bytes": 22852,
+      "sha256": "79fccebbab7807095ee784aa409c7b4767fd304e609cfe6dda5a61d1d45bce6d"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/original-process-observation.json",
+      "bytes": 547,
+      "sha256": "e699142401d9117a2a23bad29990028979a7a07db7e9cd10f381c2318c532ead"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/original-readonly-reconciliation.json",
+      "bytes": 1779,
+      "sha256": "0a9decbd1c760756becb067295043a6aa4259f01c39539a3f21833db3403f9ae"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/original-transport-readonly-preflight.json",
+      "bytes": 556,
+      "sha256": "e05d4ae7bb9e7a538fd3324c949dee0832a2c59fb00f4a7813049993ede26526"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/preceding-evidence-ci.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/preceding-evidence-ci.stdout",
+      "bytes": 36,
+      "sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/previous-index.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/previous-index.stdout",
+      "bytes": 66150,
+      "sha256": "511513fbba0e5b260687e75e1835e15d12e008789e569631e5d53dcbdf18f212"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/resume-buffered-http11-push.stderr",
+      "bytes": 13830,
+      "sha256": "ece2c030398faf507927f69ffa074ae6dd0082667774385bc75888533ee3a91a"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/resume-buffered-http11-push.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/verify-committed-original-packets.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-recovery-v2/verify-committed-original-packets.stdout",
+      "bytes": 5348,
+      "sha256": "469c2b115051a1cf54068a434f186eed79e1d088f56874231a6e0724ca86e6b4"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/canonical-readme-format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/canonical-readme-format.stdout",
+      "bytes": 79,
+      "sha256": "e8fe944540c96f3055f809f7e7e2f73438640aadd97fd0d189be98188f6652e3"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/changed-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/changed-before.stdout",
+      "bytes": 77,
+      "sha256": "e75752cf2d47ffd7c450b018100e975f35b32523efc2f175b45fd9532aa80ac2"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/commands.json",
+      "bytes": 22852,
+      "sha256": "79fccebbab7807095ee784aa409c7b4767fd304e609cfe6dda5a61d1d45bce6d"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/commit-evidence.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/commit-evidence.stdout",
+      "bytes": 56955,
+      "sha256": "197a9efe57ebaf85318a63cafaeedc009f412a59cb2d8c990a491cdf74ab4405"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-after-verification-branch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-after-verification-branch.stdout",
+      "bytes": 35,
+      "sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-after-verification-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-after-verification-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-after-verification-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-after-verification-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-after-verification-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-after-verification-tree.stdout",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-branch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-branch.stdout",
+      "bytes": 35,
+      "sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-push-branch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-push-branch.stdout",
+      "bytes": 35,
+      "sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-push-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-push-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-push-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-push-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-push-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-push-tree.stdout",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/common-before-tree.stdout",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/diff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/diff-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/driver.py",
+      "bytes": 11935,
+      "sha256": "1642b2b365dbe0058c9800556cdb159e76b1608c26e3f2eaf1502171c661a2e7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-branch-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-branch-before.stdout",
+      "bytes": 37,
+      "sha256": "f05fde2bf756079061d4032a9dcdfe8d149a1cbe71e0e27cc907da1173c71216"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-head-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-head-after.stdout",
+      "bytes": 41,
+      "sha256": "b0858eb510327350dffd5ccfc5a841f96519d23527352b8a8de9331518a2a2d7"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-head-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-head-before.stdout",
+      "bytes": 41,
+      "sha256": "453a36ba6ebeb22a9ed541e28b7d971c46f4315582cb0587f0f8068409505869"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-parent-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-parent-after.stdout",
+      "bytes": 41,
+      "sha256": "453a36ba6ebeb22a9ed541e28b7d971c46f4315582cb0587f0f8068409505869"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-publish-endpoint.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-publish-endpoint.stdout",
+      "bytes": 63,
+      "sha256": "5658277e105c40f27aee579ae3112d570c7dc42bf3fb99fa6e8fdf1b098653e1"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-remote-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-remote-before.stdout",
+      "bytes": 89,
+      "sha256": "a37a82b5bc4ec9681dddfda6b7c5559cba131cb93bbb9bb5cb21af51a1f605a4"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-remote-final-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-remote-final-check.stdout",
+      "bytes": 89,
+      "sha256": "a37a82b5bc4ec9681dddfda6b7c5559cba131cb93bbb9bb5cb21af51a1f605a4"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-status-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-status-after.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-tree-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/evidence-tree-after.stdout",
+      "bytes": 41,
+      "sha256": "5c50300ba2e318314d0ca9fb81794c7462dfea130523ae00be8bc262792ddd8c"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/preceding-evidence-ci.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/preceding-evidence-ci.stdout",
+      "bytes": 36,
+      "sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/previous-index.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/previous-index.stdout",
+      "bytes": 66150,
+      "sha256": "511513fbba0e5b260687e75e1835e15d12e008789e569631e5d53dcbdf18f212"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/push-evidence.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/push-evidence.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/stage-evidence-only.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/stage-evidence-only.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/staged-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/staged-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/staged-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/staged-paths.stdout",
+      "bytes": 49173,
+      "sha256": "ec613ed4b20b28e98a1cc1bb886dc61231d140176fcab1d47e2c4b2ec5e98b84"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/staged-stat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/staged-stat.stdout",
+      "bytes": 29800,
+      "sha256": "a62d1dab27a2537070ca50c8ec99e7a6320a5fa1c57b88923305758dbdffc52f"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/untracked-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/untracked-before.stdout",
+      "bytes": 47476,
+      "sha256": "803db2d56f381dcf833038be080b49003f248cf3f56bc44eeba40d0cc3965cff"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/verify-all-original-packets.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-publication-v1/verify-all-original-packets.stdout",
+      "bytes": 5348,
+      "sha256": "469c2b115051a1cf54068a434f186eed79e1d088f56874231a6e0724ca86e6b4"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconcile-qualification-v1.py",
+      "bytes": 6976,
+      "sha256": "f2f150b9df0a4d44ab04b5d5ab4ba2245bbd258025af02635172a33fa46a8365"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/API_OBSERVATION.json",
+      "bytes": 718,
+      "sha256": "4c98db36dacd5c366defebc7dc4972ee2db83ce526f1682e8881c617341b332c"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/RESULT.json",
+      "bytes": 1779,
+      "sha256": "0a9decbd1c760756becb067295043a6aa4259f01c39539a3f21833db3403f9ae"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-local-clean.json",
+      "bytes": 506,
+      "sha256": "55547a882562e84b695a7f07e812185b1e19538a46b965e86ca9f47404afa2aa"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-local-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-local-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-local-head.json",
+      "bytes": 471,
+      "sha256": "0688a81eeefeece9d709d713e8f10f774de8b529dd4ada715a28be20fe195d9f"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-local-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-local-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-local-tree.json",
+      "bytes": 478,
+      "sha256": "406ef5997ec91dfb03c6432164593532d65c2998a0791e62014880579a915431"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-local-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-local-tree.stdout",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-ref-api.json",
+      "bytes": 567,
+      "sha256": "746a86b24991e14ea779b1067975958bfd0bf473d56c048639ce820bd7d8d713"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-ref-api.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-ref-api.stdout",
+      "bytes": 479,
+      "sha256": "f9d6565f47df413db87e9f0654e354b980101ae517833df2fac75eb14727e1a1"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-ref-git.json",
+      "bytes": 539,
+      "sha256": "fc72dd89f7ffa821476a42644d46983462f480a6117c7698c1800776935ed1a1"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-ref-git.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/common-ref-git.stdout",
+      "bytes": 87,
+      "sha256": "348c758a1d487b5bda1e5e869e42e40ca6be29ff1d6f3518862d77a4975bb8fd"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/evidence-ref-api.json",
+      "bytes": 569,
+      "sha256": "1f1229b5ff122dc4fbac9640c9921970cf2256c500fa667034cb5defc659f6b0"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/evidence-ref-api.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/evidence-ref-api.stdout",
+      "bytes": 485,
+      "sha256": "e2ef9ef218a66437322cfc94d9fde0c8de8d09f8cfb399fa558b614e0e0f43fb"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/evidence-ref-git.json",
+      "bytes": 541,
+      "sha256": "70ee34fd9821ee87db4a5e1824e9b32b8c47279891278b9780487497dba1759a"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/evidence-ref-git.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/evidence-ref-git.stdout",
+      "bytes": 89,
+      "sha256": "a37a82b5bc4ec9681dddfda6b7c5559cba131cb93bbb9bb5cb21af51a1f605a4"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/expanded-processes-observation-v2.json",
+      "bytes": 547,
+      "sha256": "e699142401d9117a2a23bad29990028979a7a07db7e9cd10f381c2318c532ead"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/mcp-original-publisher-status.json",
+      "bytes": 725,
+      "sha256": "0f6d5d14c846493424dbe48416ca7b182f5a5f924b55c16d67d24c1650990cc4"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/original-commands.json",
+      "bytes": 22852,
+      "sha256": "79fccebbab7807095ee784aa409c7b4767fd304e609cfe6dda5a61d1d45bce6d"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/original-evidence-head-after.stdout",
+      "bytes": 41,
+      "sha256": "b0858eb510327350dffd5ccfc5a841f96519d23527352b8a8de9331518a2a2d7"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/original-evidence-tree-after.stdout",
+      "bytes": 41,
+      "sha256": "5c50300ba2e318314d0ca9fb81794c7462dfea130523ae00be8bc262792ddd8c"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/original-processes-after.json",
+      "bytes": 321,
+      "sha256": "f7cd4bf9d4fdf6a1afda0e362a5a9856450935d5418cba286ea6bf8f4ef5ebda"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/original-processes-before.json",
+      "bytes": 321,
+      "sha256": "6f602721ad69f4512677369d53a9ccca2eda62bfff1950d820746e24b8f0e27f"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/original-push-evidence.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-readonly-reconciliation-qualification-v1/original-push-evidence.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/evidence-increment005-transport-readonly-preflight-v2.json",
+      "bytes": 556,
+      "sha256": "e05d4ae7bb9e7a538fd3324c949dee0832a2c59fb00f4a7813049993ede26526"
+    },
+    {
+      "path": "originals/evidence005-recovery-v2-independent-review-qualification.json",
+      "bytes": 992,
+      "sha256": "68297cc9e653e73a286c56ffeb40e60cd69539097195d52705dd65a922c79cad"
+    },
+    {
+      "path": "originals/publish-evidence-increment-005-v1.py",
+      "bytes": 11935,
+      "sha256": "1642b2b365dbe0058c9800556cdb159e76b1608c26e3f2eaf1502171c661a2e7"
+    },
+    {
+      "path": "originals/recover-evidence-increment005-publication-v1.py",
+      "bytes": 14035,
+      "sha256": "df4966357d4e1e3055cb5d5c7e6c271f81bbba17a5590ab57aa0ea3050ed938c"
+    },
+    {
+      "path": "originals/recover-evidence-increment005-publication-v2-reviewed.py",
+      "bytes": 20400,
+      "sha256": "fbae8f9e832f98278986bc21fd161ac4c88c6a362ddefb48623f7a7fff2ae205"
+    },
+    {
+      "path": "originals/recover-evidence-increment005-publication-v2.py",
+      "bytes": 20023,
+      "sha256": "1317ec664d4acb6f48a0f70bdb38891706bfb2fdf28cd0c6a5fbc9c12bc3695b"
+    },
+    {
+      "path": "sealer.py",
+      "bytes": 16039,
+      "sha256": "1d82bb5bd14aa6d6a83fa6dadd69d81082cb03e9999a8407b33e21cd9429cc34"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/evidence-increment005-three-upload-attempts-and-readbacks-v1/archive.part001",
+      "offset": 0,
+      "bytes": 66424,
+      "sha256": "66e9e35f03bf605ab75b0c99e32e3d13269c718153ff1cb3eda59c7d503069d3"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

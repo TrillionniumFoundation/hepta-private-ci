@@ -1,0 +1,3403 @@
+{
+  "packet_id": "windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1",
+  "scope": "Separate a57 missing-Clippy and 5eee actual fixture compilation failures, native zero; 3f084 successor publication at its original pending cutoff",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-cargo-observer-failure-history-v1/windows-cargo-observer-failure-history.tar.xz",
+  "bytes": 60379436,
+  "sha256": "b9c36855ed79e25f2e3b572efed0720390a274eae38445d71daddc7c49165d40",
+  "file_member_count": 454,
+  "required_json_members": [
+    {
+      "path": "SUMMARY.json",
+      "bytes": 12376,
+      "sha256": "8c3a84194ab34ef93c776ef078bc039d70e461a495a19ea20f0992c4266c278c",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "packet_id": "windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1",
+            "scope": "original failed preparation runs and completed successor publication; no retesting",
+            "original_runs": [
+              {
+                "run_id": 42559291936,
+                "source_sha": "a57b229c7faddd22091312f506db34733ca496ae",
+                "native_cases_executed": 0,
+                "native_cases_not_run": 2,
+                "reason": "missing Clippy component"
+              },
+              {
+                "run_id": 42563752493,
+                "source_sha": "5eee964cd06e9005c607c70ea3787ecdd5f0bded",
+                "native_cases_executed": 0,
+                "native_cases_not_run": 5,
+                "reason": "E0308 in the new fixture"
+              }
+            ],
+            "artifacts": [
+              {
+                "id": 13649361362,
+                "path": "windows-image-edit-observation-v1/connector-recovery-a57-v1/artifact-13649361362.zip",
+                "bytes": 18528764,
+                "sha256": "56de5d4fbd957799f9807ab77938dfc5b08b0a69ab66dd775b8ce380609e5171",
+                "zip_count": 57,
+                "manifest_count": 56,
+                "anchor": "hepta-windows-image-edit-appserver-image-edit",
+                "source": "a57b229c7faddd22091312f506db34733ca496ae",
+                "tree": "ffa81bcfd50e27eab692da3fb548a4d3df438a92",
+                "observer": "b308f0e839b78b3f41f8ca125092de0ffd1832de",
+                "run": 42559291936,
+                "cases_not_run": 1,
+                "failure": "clippy_component_missing_before_test_execution",
+                "artifact_verified": true,
+                "missing_original_payloads": 0,
+                "mismatched_original_payloads": 0,
+                "native_cases_executed": 0,
+                "source_clean_unchanged": true,
+                "strict_exit": 1,
+                "strict_seconds_not_full_cost": 1.459416389465332,
+                "helper_compile_seconds_not_full_cost": 802.625,
+                "receipt_sha256": "e325bf303e3ef4010eda5ee41fe44bde6ea8de01b9253e5d2b1efc89d336548e",
+                "strict_stderr_sha256": "7f30f22975a628dd76738d80d105fe6e1b01fd7502b4b20449b2eece1cab6278",
+                "strict_error_tail": "cargo clippy --fix --tests --allow-dirty {args}\nerror: 'cargo-clippy.exe' is not installed for the toolchain '1.96.0-x86_64-pc-windows-msvc'.\nhelp: run `rustup component add clippy` to install it\nerror: recipe `fix` failed on line 58 with exit code 1\n"
+              },
+              {
+                "id": 13649525715,
+                "path": "windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/original.zip",
+                "bytes": 18527559,
+                "sha256": "cba922ec4b281f6fa31286f03c13bd8c39e4ed2eb18f02f8323e27d8934a3c2c",
+                "zip_count": 56,
+                "manifest_count": 55,
+                "anchor": "hepta-windows-image-edit-windows-runner-typed-error",
+                "source": "a57b229c7faddd22091312f506db34733ca496ae",
+                "tree": "ffa81bcfd50e27eab692da3fb548a4d3df438a92",
+                "observer": "b308f0e839b78b3f41f8ca125092de0ffd1832de",
+                "run": 42559291936,
+                "cases_not_run": 1,
+                "failure": "clippy_component_missing_before_test_execution",
+                "artifact_verified": true,
+                "missing_original_payloads": 0,
+                "mismatched_original_payloads": 0,
+                "native_cases_executed": 0,
+                "source_clean_unchanged": true,
+                "strict_exit": 1,
+                "strict_seconds_not_full_cost": 1.5880405902862549,
+                "helper_compile_seconds_not_full_cost": 835.859,
+                "receipt_sha256": "f2d925c442963afda5780ecc7c9c8a4318dad8b6d2ea2548c44514f3d60ef057",
+                "strict_stderr_sha256": "7f30f22975a628dd76738d80d105fe6e1b01fd7502b4b20449b2eece1cab6278",
+                "strict_error_tail": "cargo clippy --fix --tests --allow-dirty {args}\nerror: 'cargo-clippy.exe' is not installed for the toolchain '1.96.0-x86_64-pc-windows-msvc'.\nhelp: run `rustup component add clippy` to install it\nerror: recipe `fix` failed on line 58 with exit code 1\n"
+              },
+              {
+                "id": 13651203581,
+                "path": "windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/original.zip",
+                "bytes": 18616812,
+                "sha256": "026889bb6888211bb5ed7c58fd64fa560b9211fb173f39b781e6f39af2e0bcf0",
+                "zip_count": 67,
+                "manifest_count": 66,
+                "anchor": "hepta-windows-appserver-quiet",
+                "source": "5eee964cd06e9005c607c70ea3787ecdd5f0bded",
+                "tree": "8ca1ad7178861225b02c28330a59a806a1cd3319",
+                "observer": "f077890528f45dd917248db532f0c9bd0520addf",
+                "run": 42563752493,
+                "cases_not_run": 5,
+                "failure": "E0308_AbsolutePathBuf_test_fixture_compile_error_before_test_execution",
+                "artifact_verified": true,
+                "missing_original_payloads": 0,
+                "mismatched_original_payloads": 0,
+                "native_cases_executed": 0,
+                "source_clean_unchanged": true,
+                "strict_exit": 1,
+                "strict_seconds_not_full_cost": 735.4748275279999,
+                "helper_compile_seconds_not_full_cost": 656.782,
+                "receipt_sha256": "0e603866eddaace10c4f3751edcc56584f76b46cdab07acb4faa4361b32acbc3",
+                "strict_stderr_sha256": "aa0f19747d224754f675e61c00f39a8be4a51c1ed983dbea1868c5cfc9032ded",
+                "strict_error_tail": "ue)\n    Checking codex-utils-json-to-toml v0.0.0 (D:\\a\\hepta-private-ci\\hepta-private-ci\\source\\codex-rs\\utils\\json-to-toml)\n   Compiling serial_test_derive v3.5.0\n    Checking diff v0.1.13\n    Checking yansi v1.0.1\n    Checking pretty_assertions v1.4.1\n    Checking serial_test v3.5.0\n    Checking app_test_support v0.0.0 (D:\\a\\hepta-private-ci\\hepta-private-ci\\source\\codex-rs\\app-server\\tests\\common)\n    Checking test-case v3.4.0\n    Checking codex-app-server v0.0.0 (D:\\a\\hepta-private-ci\\hepta-private-ci\\source\\codex-rs\\app-server)\nerror[E0308]: mismatched types\n   --> app-server\\src\\transport_tests.rs:113:21\n    |\n113 |         codex_home: std::path::PathBuf::from(\"test-home\"),\n    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `AbsolutePathBuf`, found `PathBuf`\n\nFor more information about this error, try `rustc --explain E0308`.\nerror: could not compile `codex-app-server` (lib test) due to 1 previous error\nerror: recipe `fix` failed on line 58 with exit code 1\n"
+              }
+            ],
+            "successor_publication": {
+              "status": "published_and_git_api_readback_verified",
+              "observer_base_sha": "f077890528f45dd917248db532f0c9bd0520addf",
+              "source_sha": "3f084182eb80bd8fac0a5717a2f5911978759a06",
+              "source_tree": "3baf936ae98d761bcba25a4e38c2501407417737",
+              "branch": "codex/windows-appserver-quiet-observer-20261109-898e",
+              "local_branch": "codex/windows-appserver-absolute-observer-20261109-898e",
+              "native_executed_by_publisher": false,
+              "native_results": "pending",
+              "research_advancement": false,
+              "full_cost": null,
+              "scope_preserved": "five exact cases, 21 observer controls, original 65 minute job and native watchdog/retry settings",
+              "old_observer_run": 42563752493,
+              "old_observer_result_not_relabelled": true,
+              "actual_same_source_strict": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/appserver-3f08418-strict-preparation-original-v1.json",
+                "bytes": 7662,
+                "sha256": "541f8db9c80cb957911b1152216b9782799d5b495d9605eb1cb5ae1cc70ec9d0",
+                "finished_at": "2026-11-09T05:13:23.912465+00:00"
+              },
+              "reviewed_patch": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-appserver-absolute-source-pins-v1.patch",
+                "sha256": "c8611bb2ae1f6f986bca3aa50c32d0e1e1cbd932235830c4565a5071700010d0",
+                "bytes": 588
+              },
+              "observer_sha": "f0550f79e6c8e729e60943e8e37dded924729998",
+              "observer_tree": "a1133030d8fd78b7719ea175b36a9b4a20c50a6b",
+              "observed_runs": [
+                {
+                  "id": 42566595607,
+                  "name": "Windows app-server quiet-source regressions",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "head_sha": "f0550f79e6c8e729e60943e8e37dded924729998",
+                  "head_branch": "codex/windows-appserver-quiet-observer-20261109-898e",
+                  "event": "push",
+                  "run_attempt": 1,
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42566595607"
+                }
+              ],
+              "finished_at": "2026-11-09T05:20:04.344711+00:00"
+            },
+            "successor_native_result": "pending_at_publication_cutoff; not qualified here",
+            "old_runtime_267_not_remeasured_by_these_failed_preparations": true,
+            "typed_error_classification_case_not_executed": true,
+            "previous_download_and_range_reader_failures_preserved": true,
+            "local_runtime_unavailable_during_transfer_recorded_in_originals": true,
+            "full_cost": null,
+            "observed_phase_seconds_are_partial_and_not_full_historical_cost": true,
+            "source_modified_by_archiver": false,
+            "scientific_acceptance": false,
+            "formal_CURRENT_unmodified": true,
+            "excluded_unpacked_duplicates": [
+              {
+                "path": "windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/native-helpers/codex-command-runner.exe",
+                "bytes": 24130048,
+                "sha256": "a5efb874e90012e18e90b38ff256a7eb7ab306b18fa4911210b3e315a590dbcd",
+                "mode": 384,
+                "reason": "exact_byte_duplicate_retained_in_verified_original_ZIP_payload",
+                "verified_original_payloads": [
+                  {
+                    "artifact_id": 13649361362,
+                    "archive_path": "windows-image-edit-observation-v1/connector-recovery-a57-v1/artifact-13649361362.zip",
+                    "zip_member": "native-helpers/codex-command-runner.exe"
+                  }
+                ]
+              },
+              {
+                "path": "windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/native-helpers/codex-windows-sandbox-setup.exe",
+                "bytes": 35411968,
+                "sha256": "54b15b3c5e05612bfe4b31f891cfb8be84fc77c3ee0967c360df92b2e96324e2",
+                "mode": 384,
+                "reason": "exact_byte_duplicate_retained_in_verified_original_ZIP_payload",
+                "verified_original_payloads": [
+                  {
+                    "artifact_id": 13649361362,
+                    "archive_path": "windows-image-edit-observation-v1/connector-recovery-a57-v1/artifact-13649361362.zip",
+                    "zip_member": "native-helpers/codex-windows-sandbox-setup.exe"
+                  }
+                ]
+              },
+              {
+                "path": "windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/native-helpers/codex-command-runner.exe",
+                "bytes": 24130048,
+                "sha256": "bf5a1cae5e8b9d585bd14c62ffd05e0e38497a306fb620912eae84980e1d76a1",
+                "mode": 384,
+                "reason": "exact_byte_duplicate_retained_in_verified_original_ZIP_payload",
+                "verified_original_payloads": [
+                  {
+                    "artifact_id": 13651203581,
+                    "archive_path": "windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/original.zip",
+                    "zip_member": "native-helpers/codex-command-runner.exe"
+                  }
+                ]
+              },
+              {
+                "path": "windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/native-helpers/codex-windows-sandbox-setup.exe",
+                "bytes": 35411968,
+                "sha256": "c8f8633c78f8d652ec5f25ea6f3213828bdf22ad0062fb179eb038a311bd86af",
+                "mode": 384,
+                "reason": "exact_byte_duplicate_retained_in_verified_original_ZIP_payload",
+                "verified_original_payloads": [
+                  {
+                    "artifact_id": 13651203581,
+                    "archive_path": "windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/original.zip",
+                    "zip_member": "native-helpers/codex-windows-sandbox-setup.exe"
+                  }
+                ]
+              },
+              {
+                "path": "windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/native-helpers/codex-command-runner.exe",
+                "bytes": 24130048,
+                "sha256": "384b8211ad493b5d88ba6b468ce5613b1636ab33d5d88e39641283939b75d907",
+                "mode": 384,
+                "reason": "exact_byte_duplicate_retained_in_verified_original_ZIP_payload",
+                "verified_original_payloads": [
+                  {
+                    "artifact_id": 13649525715,
+                    "archive_path": "windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/original.zip",
+                    "zip_member": "native-helpers/codex-command-runner.exe"
+                  }
+                ]
+              },
+              {
+                "path": "windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/native-helpers/codex-windows-sandbox-setup.exe",
+                "bytes": 35411968,
+                "sha256": "a672e73af0cddd7c239b16f73f10340d5e2546b646f227d10ff8e51689434089",
+                "mode": 384,
+                "reason": "exact_byte_duplicate_retained_in_verified_original_ZIP_payload",
+                "verified_original_payloads": [
+                  {
+                    "artifact_id": 13649525715,
+                    "archive_path": "windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/original.zip",
+                    "zip_member": "native-helpers/codex-windows-sandbox-setup.exe"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "SUMMARY.json",
+      "bytes": 12376,
+      "sha256": "8c3a84194ab34ef93c776ef078bc039d70e461a495a19ea20f0992c4266c278c"
+    },
+    {
+      "path": "archiver.py",
+      "bytes": 13212,
+      "sha256": "d4832ef1f254ddec37085e735b5a5edd73259d68cb1bcd014a460de25a2b99e9"
+    },
+    {
+      "path": "originals/appserver-absolute-fixture-source-v1/AI_TRANSFER_VERIFIED.json",
+      "bytes": 3040,
+      "sha256": "e73bc71b5a1a4a23096402d87d487e6635991def9e55a882d6247f72768abdf6"
+    },
+    {
+      "path": "originals/appserver-absolute-fixture-source-v1/BUNDLES_READY.json",
+      "bytes": 2224,
+      "sha256": "e1cc0dff3a094d20ec0b07f6c7185e0bcbb43cc791f7f01705b915ebe2152ea5"
+    },
+    {
+      "path": "originals/appserver-absolute-fixture-source-v1/RESULT.json",
+      "bytes": 2290,
+      "sha256": "5f78c3fcc40cb19d92b16f4737156dda57af6409349eddae56fc76d766d70b82"
+    },
+    {
+      "path": "originals/appserver-absolute-fixture-source-v1/appserver-absolute-negative-source.bundle",
+      "bytes": 6652,
+      "sha256": "3f505633c2684b45f2bb5ee6e6c1494c44c77e4d8c80fc5fcf7d44ef77e3d857"
+    },
+    {
+      "path": "originals/appserver-absolute-fixture-source-v1/appserver-absolute-positive-source.bundle",
+      "bytes": 6200,
+      "sha256": "52e7f402327e43a4c4cbd94dfb330bd43d7079ca26c9b8583ba9047ad9f51bdc"
+    },
+    {
+      "path": "originals/appserver-absolute-initialize-fixture-v1.patch",
+      "bytes": 575,
+      "sha256": "63aa5df0f4282ea634ca68da5336132d7ed5b1f7d86aafc58d94e78f994624e2"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-job-128985630298-connector-decoded-v1.log",
+      "bytes": 96120,
+      "sha256": "3e1bcdb097903e8b909f55354cd254784573f9b7989438ad4cce20ff714e71eb"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-artifacts-connector-v1.json",
+      "bytes": 969,
+      "sha256": "7bd50598f48cb436fe8da931958f172749c55d661625f868fa539e963ac6e0e4"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-run-connector-v1.json",
+      "bytes": 14322,
+      "sha256": "73dd52c0c73dea622c4caf5b4bfde76b6c60660465cdfa1428d0a6b0477a7dbd"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/RESULT.json",
+      "bytes": 7015,
+      "sha256": "2a8fc3802851ce504782d92fd5d792ad13eb60251c0af6f2d3b2a159838eb8ca"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/ZIP_MEMBER_NAMES.json",
+      "bytes": 3189,
+      "sha256": "27794b6b7c8c1211d309897b6d73e546ee9e61385fd4e041a1deebef1bafa17f"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/artifact-api.json",
+      "bytes": 868,
+      "sha256": "69c71a9225c80c7d8eef3a4122454189d9e95000fc065bdafd59e9b6447140ad"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-000-18616790-18616811.bin",
+      "bytes": 22,
+      "sha256": "b50b438db550088bc97bb8b8fb9d34f68c4fc7de9cf96ebcb6d24764ab24cacc"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-001-18616770-18616789.bin",
+      "bytes": 20,
+      "sha256": "6505b455f6c61d10df43f1a52cf414daee61a2ec941ec8cf012fdf1b8c6535b8"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-002-18610924-18616789.bin",
+      "bytes": 5866,
+      "sha256": "1dc59e372f471d1b8a706ddc1093fae1568c325ae06bf0bdaa8951b09b2168b9"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-003-249738-249767.bin",
+      "bytes": 30,
+      "sha256": "30c0e9b1961693e656a83a9c3ae70a5d604ce1d7e1361c9222510bccfdebe88f"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-004-249768-249780.bin",
+      "bytes": 13,
+      "sha256": "ac1a57d94319c8355631e0e9d6ce87bf14583324d59317f152176091781cc223"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-005-249781-253959.bin",
+      "bytes": 4179,
+      "sha256": "083d4aecd21b157534dfcd6f92e65ebd2a0044010451e6b19be3fd369aa0f0b0"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-006-18552405-18552434.bin",
+      "bytes": 30,
+      "sha256": "6bfd9f6e1a9e4ab40cef70ac14dd8e4cc3db3b96f4f72b1ace287e1eb34ee8d1"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-007-18552435-18552446.bin",
+      "bytes": 12,
+      "sha256": "02b0a6f4744f1f4a1386a9cd63c41e2687278765c5d7b85e4ca7afc6d7679968"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-008-18552447-18554816.bin",
+      "bytes": 2370,
+      "sha256": "10ac3258fc375f14b851928570c79f691b7b285b59e2f255ad91e93d74a8734e"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-009-18609150-18609179.bin",
+      "bytes": 30,
+      "sha256": "7060306d2cde7b67452f2294f1cc3e5a5661f9e3d6f6fc11808fbdc466617644"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-010-18609180-18609202.bin",
+      "bytes": 23,
+      "sha256": "198e4f1424093857d6f594b72df4a5448b75b14a58e932ab4b537f48659d82b6"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-011-18609203-18609517.bin",
+      "bytes": 315,
+      "sha256": "bf6b449364e625a17a5de8b9f495e3445d4154da7031e2bbd8a42fb9a986fa45"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-012-1285-1314.bin",
+      "bytes": 30,
+      "sha256": "8118c7de71b03e1866bf2f9e8f670b3feed9e0948537845a3c8b5e662c45786c"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-013-1315-1339.bin",
+      "bytes": 25,
+      "sha256": "897c7b84f756f54b3a7f41de91e2dcac69fbe446184cf9779131dbe345a84d88"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-014-1340-13482.bin",
+      "bytes": 12143,
+      "sha256": "c844017e8883a4208c46ba6295a3cc4daf5e4deedbfb35074f31291e7702e8e0"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-015-13499-13528.bin",
+      "bytes": 30,
+      "sha256": "58aacb1b4003c09d30d6ee45f614eee21492fc0c6f5e121dca9477bf7fec19ae"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-016-13529-13553.bin",
+      "bytes": 25,
+      "sha256": "19d7c3913eecfd8e9d0bb4771072e3423b3f2be21821176f5cebc5f9b239d1f5"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-017-13554-13555.bin",
+      "bytes": 2,
+      "sha256": "9b4fb24edd6d1d8830e272398263cdbf026b97392cc35387b991dc0248a628f9"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-018-18607115-18607144.bin",
+      "bytes": 30,
+      "sha256": "ffa26ec24096e8a24ecd3a2a2edd2d09fb50cf850174f1d7900d8dac55c1efd5"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/range-019-18607145-18607162.bin",
+      "bytes": 18,
+      "sha256": "dd5c9e782000f388cf934221fdb1021d7edbc69875e6d0df0b3fbf30af84decb"
+    },
+    {
+      "path": "originals/windows-appserver-5eee-terminal-selected-originals-v1/reader.py",
+      "bytes": 5969,
+      "sha256": "0d0eb2baaa79a2faa2a0ea8d1f89ccca85cdbef79a610237273fd45249cfc415"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/RESULT.json",
+      "bytes": 1930,
+      "sha256": "880c89534d9a469b7445a2d790626191a380f902bcde4998cc6a65b2cefa1661"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/actual-staged-diff.json",
+      "bytes": 541,
+      "sha256": "6040bbb9c5a1c071d30eacadc0abbc1861506647a43cdeaea137e1b047011c0f"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/actual-staged-diff.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/actual-staged-diff.stdout",
+      "bytes": 758,
+      "sha256": "b6f08cd115635a9eadf3ab703df6e1b6bd62fc6abf4c274352363f11c0922007"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/api-readback.json",
+      "bytes": 596,
+      "sha256": "c3e9a52ad577dc6c3a61ad955dc5854929b2dc83dde0c7ed14f0c098b6e48c57"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/api-readback.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/api-readback.stdout",
+      "bytes": 1256,
+      "sha256": "69f70ed9f7a95e6bfdcff61269bddcbb970228ac06e95cdaf8900e94f94f1ff1"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/approved-three-pin.patch",
+      "bytes": 588,
+      "sha256": "c8611bb2ae1f6f986bca3aa50c32d0e1e1cbd932235830c4565a5071700010d0"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/canonical-just-fmt.json",
+      "bytes": 499,
+      "sha256": "9575fcb6728bf5b72612f9ef0de8b17f892c3117ad964dd8d3b3f528fd06b045"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/canonical-just-fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/canonical-just-fmt.stdout",
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/commit.json",
+      "bytes": 597,
+      "sha256": "2adc1ed6ef31ea4d5bb6939b8ce185591ef05617624986c996095e05ed8dba53"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/commit.stdout",
+      "bytes": 188,
+      "sha256": "7cedd0296611f8283dc56f25436aa8b9a3d528f0e7730a0f3c8895fc808d1cf9"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-after-clean.json",
+      "bytes": 539,
+      "sha256": "f946741bcb8888e34a72432010756a03dc35146fbaf5cf6856f0660081649bd9"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-after-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-after-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-after-head.json",
+      "bytes": 504,
+      "sha256": "f81c6d7d732ce66e08f5d17343dc88f3746dc259d93e5fc3c9734c7c2d5e94bc"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-after-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-after-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-after-tree.json",
+      "bytes": 511,
+      "sha256": "7d26a35504be47d030fa5b50651b0a3bc77e72f44f25065bf4bedf88391c2f9c"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-after-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-after-tree.stdout",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-before-clean.json",
+      "bytes": 539,
+      "sha256": "6218795386f1f36bb2b98c15484acafa0a51d12579b3bd3e57945cc5d78be062"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-before-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-before-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-before-head.json",
+      "bytes": 504,
+      "sha256": "236852db7a794b6dd2a86f18d36d20f864587bcb9618a4d8cf88ebd44b574835"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-before-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-before-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-before-tree.json",
+      "bytes": 511,
+      "sha256": "ddf658f5187aa3305d82906402b4df437d3ecb0e0110503a78f936fe2aaff3d6"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-before-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/common-before-tree.stdout",
+      "bytes": 41,
+      "sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/diff-check.json",
+      "bytes": 538,
+      "sha256": "bb291e8cab8433169ed44a7d5d2910145e7487bba31c2f8f49521c452c8ff170"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/diff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/diff-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/git-readback.json",
+      "bytes": 600,
+      "sha256": "17700c24011c79b8dcbcbd98aea0e493b544a92f28030cc06c2e27b2e78287c7"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/git-readback.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/git-readback.stdout",
+      "bytes": 105,
+      "sha256": "5bc9702d902dac5fdb290b16c550562ca5f107f76858cbaac5bac7311b7ff69f"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/new-base.json",
+      "bytes": 525,
+      "sha256": "b28db1e3d3e950e004571f07d0db40893719a9f30c5aca5a67b73b9d033be1ad"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/new-base.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/new-base.stdout",
+      "bytes": 41,
+      "sha256": "6d02c7af96f5e65e8604eb40a778a55c77907a44880b3729f8224e51a0a77ae4"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/new-clean.json",
+      "bytes": 560,
+      "sha256": "488ac204a007f5cc0a1deb698de4bc3d966704a9438f71dc66f2acd6f6e1fb36"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/new-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/new-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/new-local-branch-absent.json",
+      "bytes": 595,
+      "sha256": "556f339721e2eef7bded88f1bf711ecff6a080f46d08e6b93173d353212a3676"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/new-local-branch-absent.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/new-local-branch-absent.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/new-worktree.json",
+      "bytes": 713,
+      "sha256": "86458892e3514c879edbf208a1faafd7215dcd8679059302f24c5be6839de371"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/new-worktree.stderr",
+      "bytes": 1729,
+      "sha256": "75e1ac024674116af93b7d27752901bcd6eeebc085c2e68420b5c1b402589c87"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/new-worktree.stdout",
+      "bytes": 90,
+      "sha256": "263095af209d59c74235c3aef6b24905471a94e151cb42c2f6f6184040be7cf4"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/normal-push.json",
+      "bytes": 600,
+      "sha256": "0207805d597f33908af9eb45719c544fbe2bf1a6ca91214dea35ae307982bfe2"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/normal-push.stderr",
+      "bytes": 452,
+      "sha256": "b98abde8049a30fbc47c47977d065e1a77c749b706fc5512a09a73bd4ee1cc82"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/normal-push.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-base-tree.json",
+      "bytes": 547,
+      "sha256": "78b4b4a4ed42c686c01ef07ec6f60fdebcd61c87a4f9d21804fc54e918927682"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-base-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-base-tree.stdout",
+      "bytes": 41,
+      "sha256": "49d553284c43fc2c0e338eea333414ed8fac2b762d84442b70c387357a3e9a1e"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-clean-after.json",
+      "bytes": 560,
+      "sha256": "e6c8308a184ec0a2e6819618126646cf8e7cbf79d0d6dcd1c0b5be45b5cd7824"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-clean-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-clean-after.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-clean.json",
+      "bytes": 560,
+      "sha256": "d5858e4a0868118bd663bd9afbb6b88931b681a7274aac82f68f573c3f0e35c5"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-head.json",
+      "bytes": 525,
+      "sha256": "f230f33148feb6b037232c31151267ea98592dfb451924e4a627351669182156"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-head.stdout",
+      "bytes": 41,
+      "sha256": "06abe466df828469119a6f99af484f43317c537cf51e5db4c410e27ffb0ac6e4"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-parent.json",
+      "bytes": 526,
+      "sha256": "96de370576cdeabc96e0d301551c87ba87f112281f5bedf7cf50d46e92d2447e"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-parent.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-parent.stdout",
+      "bytes": 41,
+      "sha256": "6d02c7af96f5e65e8604eb40a778a55c77907a44880b3729f8224e51a0a77ae4"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-tree.json",
+      "bytes": 532,
+      "sha256": "d1254848a0ba5545b78ec874614cfeb7b2093a0d2ca84d7710c41836be48141c"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/observer-tree.stdout",
+      "bytes": 41,
+      "sha256": "2ecdc7cc05196e0c991b074a752f3d207446d901d9e19c7e86bfd69d96775dbe"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-after-clean.json",
+      "bytes": 557,
+      "sha256": "f0605619bbaedcdeede19b419eabd2e4393abf1537bd53dc0aad2b947215c76f"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-after-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-after-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-after-head.json",
+      "bytes": 522,
+      "sha256": "e12552451a8ef63f0b1306f44262572db50d1210a641fc310e573703732be578"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-after-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-after-head.stdout",
+      "bytes": 41,
+      "sha256": "6d02c7af96f5e65e8604eb40a778a55c77907a44880b3729f8224e51a0a77ae4"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-after-tree.json",
+      "bytes": 529,
+      "sha256": "812c0a30dcb2309eeb3ffdd2c77768076954b243e4483bc7c0fc6dc291ed97ed"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-after-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-after-tree.stdout",
+      "bytes": 41,
+      "sha256": "49d553284c43fc2c0e338eea333414ed8fac2b762d84442b70c387357a3e9a1e"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-before-clean.json",
+      "bytes": 557,
+      "sha256": "b3278ca41946ab5249ee317fccd90b6f057d77f819cb3c7bb579a30a9b217df2"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-before-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-before-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-before-head.json",
+      "bytes": 522,
+      "sha256": "d7badab6370372038048b572f1cceb4bcfccf4a9c4b1b84b032bce5857a33cfb"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-before-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-before-head.stdout",
+      "bytes": 41,
+      "sha256": "6d02c7af96f5e65e8604eb40a778a55c77907a44880b3729f8224e51a0a77ae4"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-before-tree.json",
+      "bytes": 529,
+      "sha256": "a087b4db72eb66f5bbbe365d480053e713d9b50792682bc8731180ff6cc85a87"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-before-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-observer-before-tree.stdout",
+      "bytes": 41,
+      "sha256": "49d553284c43fc2c0e338eea333414ed8fac2b762d84442b70c387357a3e9a1e"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-remote-head.json",
+      "bytes": 579,
+      "sha256": "f63201020dcf253eefecda798a553991b33318c4ae545b00c6d7113da7fe46e6"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-remote-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/old-remote-head.stdout",
+      "bytes": 105,
+      "sha256": "6d09ed33d7c1b893c134311019c930c9e5c0b0e31f20a7663c46ff94c7f77a4e"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/original-receipt-controls.json",
+      "bytes": 610,
+      "sha256": "553491968b04037577ed68de40b298983a0eea13d0c33253a5a7f0b9c0cb2248"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/original-receipt-controls.stderr",
+      "bytes": 115,
+      "sha256": "68434668ac903c7c2aa54b78c0042a68e7c821c5cfb61f7d264da84edaa9aedb"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/original-receipt-controls.stdout",
+      "bytes": 203,
+      "sha256": "f5d37ad32ac39fc078369fe6a0fd147a6a3b2e1512deb91b6ad995ff53f6c258"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/patch-apply.json",
+      "bytes": 618,
+      "sha256": "e4f39dc4ad3cf0ab95c86fd39437c351e2ff667c439f1873964e6c653f16dd88"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/patch-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/patch-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/patch-check.json",
+      "bytes": 633,
+      "sha256": "f30166590450121d43ea9dfb128f7a00c0c0c4370782760caaeae21e7a78fbd5"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/patch-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/patch-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/preceding-strict-preparation-original.json",
+      "bytes": 7662,
+      "sha256": "541f8db9c80cb957911b1152216b9782799d5b495d9605eb1cb5ae1cc70ec9d0"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/prettier-check.json",
+      "bytes": 714,
+      "sha256": "9fe8da7d43f59d06a07924de72b08fad495d744715501a55e5205662a465dc22"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/prettier-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/prettier-check.stdout",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/publish-remote.json",
+      "bytes": 519,
+      "sha256": "72a7acd6c8323864128d1fc2b9b2eb46148800a3f96561186830f5a94b992b0b"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/publish-remote.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/publish-remote.stdout",
+      "bytes": 63,
+      "sha256": "5658277e105c40f27aee579ae3112d570c7dc42bf3fb99fa6e8fdf1b098653e1"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/publisher.py",
+      "bytes": 10803,
+      "sha256": "4854af3292380266b3fe087fd9aa8baef6db495518cdd84af5e19b9d11dfe632"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/quiet-scope-controls.json",
+      "bytes": 607,
+      "sha256": "b438856dc7b077d606821ff903dd9f3aa8c2a0a645a69c7cea5da821f36ef0d9"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/quiet-scope-controls.stderr",
+      "bytes": 100,
+      "sha256": "cbe4b84d897ac017db0552ccb3a31855ff0fb172bc344c967c4c4c92eb19e624"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/quiet-scope-controls.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/quiet-source-api.json",
+      "bytes": 575,
+      "sha256": "bf1fdfd2e9377c0661b35691211ec8d1843c97b8002d67931e78fbe314e97148"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/quiet-source-api.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/quiet-source-api.stdout",
+      "bytes": 1250,
+      "sha256": "c6006bb50ee9dcbab9a5462820fb42b10ed9cb38286d0932e68a5ea740a084b9"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/quiet-source-git.json",
+      "bytes": 572,
+      "sha256": "e69487986842ca2189c15cc654cbf552d2d713483474e730fb1a1810ae1f052b"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/quiet-source-git.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/quiet-source-git.stdout",
+      "bytes": 99,
+      "sha256": "c0683872f60816f6954a730cca10b343f1b39833024c1251e581660e38be7a0f"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/runs-readback.json",
+      "bytes": 618,
+      "sha256": "c5dc1d25a044f72b6c3246d2dfd3a07d2764b4755008cd604c4bb42b41dfa728"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/runs-readback.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/runs-readback.stdout",
+      "bytes": 14373,
+      "sha256": "b7bb010de4e5cb64fb4281125816d4a8dde5622b8df7c7a185da399071ff97c5"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/stage.json",
+      "bytes": 575,
+      "sha256": "1d1ab7a6d51c65df7c09691510f02d7341dffff9ddab4aadb44144fc40814c74"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/stage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/stage.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/staged-before.json",
+      "bytes": 542,
+      "sha256": "cc7c5ac12325894ec38df64ecf87f4e74d23c25f5eda1b14b90ab75aaf72a8c8"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/staged-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/staged-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/staged-files.json",
+      "bytes": 543,
+      "sha256": "42534b79cb69ed642ee0601db8359a83880fc130afb9a595c9299b5a750b0418"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/staged-files.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/staged-files.stdout",
+      "bytes": 52,
+      "sha256": "fd95ae990d83ada620cf08482946133b2268844a61715d56d28794b71a7b3b0d"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/strict-admission-controls.json",
+      "bytes": 613,
+      "sha256": "c4736dc7f1e8ffc6f72ff7435347ac4dad12e98b9edbad5c9ed85feda2ab24f3"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/strict-admission-controls.stderr",
+      "bytes": 101,
+      "sha256": "2c37d50a88147ca2ebd5197d74ee37d462dab650d793512e849814c28d5a38f0"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/strict-admission-controls.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/tracked-changes.json",
+      "bytes": 527,
+      "sha256": "7ba3b7a4153d6fa4bb00475bc67bacee26ccbf13c17662cadbe7b96e282a8510"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/tracked-changes.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/tracked-changes.stdout",
+      "bytes": 52,
+      "sha256": "fd95ae990d83ada620cf08482946133b2268844a61715d56d28794b71a7b3b0d"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/untracked-changes.json",
+      "bytes": 553,
+      "sha256": "bf9dfef7367b8323b3233e36913a76b66e84cadcbd2046b27c006e6dbd006ce5"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/untracked-changes.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-observer-publication-v1/untracked-changes.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-absolute-source-pins-v1.patch",
+      "bytes": 588,
+      "sha256": "c8611bb2ae1f6f986bca3aa50c32d0e1e1cbd932235830c4565a5071700010d0"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/RESULT.json",
+      "bytes": 60806,
+      "sha256": "dc715a2f2871604584661b56a408408ae19f27f25c33fbc0559f393d10c3fe89"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/artifact-api-original.json",
+      "bytes": 868,
+      "sha256": "69c71a9225c80c7d8eef3a4122454189d9e95000fc065bdafd59e9b6447140ad"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/MANIFEST.json",
+      "bytes": 24496,
+      "sha256": "9ee09a2149f97d7581571fe5469cf87afecf5be414174ffbccfe26b196e8aa75"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/RECEIPT.json",
+      "bytes": 6373,
+      "sha256": "0e603866eddaace10c4f3751edcc56584f76b46cdab07acb4faa4361b32acbc3"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/ZIP_MEMBERS.json",
+      "bytes": 12758,
+      "sha256": "7f6ee814d64aceb29805cd45010e20fb3f45c7aab9f45731c1a5eb9dd2bcf627"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/after-preparation-source.json",
+      "bytes": 559,
+      "sha256": "2f9117533c41d78022cd0066589b42ab7d1743052fb1585357d9a7ec17775065"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/canonical-just-fix-after-source.json",
+      "bytes": 559,
+      "sha256": "2f9117533c41d78022cd0066589b42ab7d1743052fb1585357d9a7ec17775065"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/canonical-just-fix-started.json",
+      "bytes": 328,
+      "sha256": "1dda5a605e3287eed9822f688f3dbab72280e49766252a72ee3c2536b0517307"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/canonical-just-fix.json",
+      "bytes": 473,
+      "sha256": "9ea0ceee24c7dbc9ce0c1c817c5e6cc4768c5bc3461d04a2a2dfa624d3b7f605"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/canonical-just-fix.stderr",
+      "bytes": 56511,
+      "sha256": "aa0f19747d224754f675e61c00f39a8be4a51c1ed983dbea1868c5cfc9032ded"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/canonical-just-fix.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/compiler-started.json",
+      "bytes": 215,
+      "sha256": "71ce2cc869f93aa07877dabd655c66ad7437761e263c2ef105fe03cc655e101c"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/compiler.json",
+      "bytes": 362,
+      "sha256": "a3c54ad9c4b6a8b114767bdcdba77e7ee9b7358721052bd3f7edbda7399bfd79"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/compiler.stdout",
+      "bytes": 194,
+      "sha256": "2efe229f7908c2c19f459ca734101a5b35cb482476b8bee1357f94a18c766078"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/observer/.github/fixtures/windows-appserver-quiet-scope.json",
+      "bytes": 1911,
+      "sha256": "3a702c4421a3e44b76c2afe79ece49e30fe021e8bf60f0488bb738d8825e7054"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/observer/.github/fixtures/windows-fixture-followup-scope.json",
+      "bytes": 3105,
+      "sha256": "87161e6cfd390180de6e8457e9b8ccf55f5b75532505ffdd24b6cc230052049e"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/observer/.github/fixtures/windows-image-edit-diagnostic-scope.json",
+      "bytes": 1668,
+      "sha256": "99b9c97091f1127f72b61a05f31a69bd79323e115aec96e0832c2b2a31b1a226"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/observer/.github/scripts/test_windows_appserver_quiet.py",
+      "bytes": 2581,
+      "sha256": "c27e706425aaef95ee430dc22beb5f5c4108059f7146ca6ca7e3c2cf415f7dcd"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/observer/.github/scripts/test_windows_fixture_followup.py",
+      "bytes": 16287,
+      "sha256": "b195758178a926fcb63b1c11d85437a9834cc7cf6c115fce9c91980d0f938b29"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/observer/.github/scripts/test_windows_image_edit_diagnostic.py",
+      "bytes": 2900,
+      "sha256": "ecbb9910076ae1f7563cc6f8241c93181a859d56b917a26fda1622b944cc7836"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/observer/.github/scripts/windows_current_ci.py",
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/observer/.github/scripts/windows_fixture_followup.py",
+      "bytes": 28777,
+      "sha256": "a4378f958056042e4b8498386da4c76a1ab929fe234c43af7b03436c97501470"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/observer/.github/scripts/windows_native_probe.py",
+      "bytes": 25146,
+      "sha256": "47bca1523c35200722a7bbd19afd100aac9cf90e8019df4556d35431c00ef8e3"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/observer/.github/workflows/hepta-windows-appserver-quiet.yml",
+      "bytes": 3680,
+      "sha256": "6ded33dec6435abbfdbeb11555ff2729304ec92b2dbe965add5542c39a79d312"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/observer/.github/workflows/hepta-windows-image-edit-diagnostic.yml",
+      "bytes": 3727,
+      "sha256": "109124e60ebc1bb9a6867c43ab6cc693d5174314f79d32df08df41500da7a25c"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/.github/scripts/windows_current_ci.py",
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/.github/workflows/hepta-windows-current-ci.yml",
+      "bytes": 2965,
+      "sha256": "b133ae757b14a04021cae5b393f1f0d3ff54063d1dd3e3901367cdfc96f0475c"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/.config/nextest.toml",
+      "bytes": 5987,
+      "sha256": "63f832eabf890a5f3cd7c0e4ee1856b1ca99d4db8952de71b81282265668dc8c"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/Cargo.lock",
+      "bytes": 421501,
+      "sha256": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/Cargo.toml",
+      "bytes": 23496,
+      "sha256": "3a844832911c881ffd0283a68ecb44b68fc85d5b4c3ec92b41fa64adf8f76996"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/app-server/BUILD.bazel",
+      "bytes": 1709,
+      "sha256": "887e4da0e534c1175e730b733400491c74d1ed300a91b718928039ea147786c3"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/app-server/Cargo.toml",
+      "bytes": 4997,
+      "sha256": "3ab26711af9a5e81fa51468507a9c893ea4b147530c180a0670a866a79623d9f"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/app-server/src/lib.rs",
+      "bytes": 80263,
+      "sha256": "9658c27ab26d9c71891f79199dc4e5880e29838e19d7f09338f50c244fcdbc00"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/app-server/src/transport.rs",
+      "bytes": 10041,
+      "sha256": "4773eedb165d283411f485bd05c13b7ceac118b28d4fdb1e45093c19153f1516"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/app-server/src/transport_tests.rs",
+      "bytes": 24453,
+      "sha256": "f23e420c4b51d5753eaa8e110bd01a8f23bd9aea0b4beed5a1ea5802c83118f8"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/app-server/tests/common/test_app_server.rs",
+      "bytes": 83066,
+      "sha256": "a7b4e82e5cde389b01d7423cbab11295914bebd09e534f6fc47024bc165b07de"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/app-server/tests/suite/v2/app_list.rs",
+      "bytes": 54241,
+      "sha256": "f8be0ddc2cf46b5766a9d20f626cf7e090cd6b4b3ae6632bc0948b3fd4f62715"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/app-server/tests/suite/v2/imagegen_extension.rs",
+      "bytes": 34378,
+      "sha256": "0cfd7b6a9f818263448602a7244ceed85447494bcf6c02d232a82ca98173b868"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/app-server/tests/suite/v2/turn_start.rs",
+      "bytes": 181365,
+      "sha256": "3c2c94bbe2e94af87f0356559a8167e070a77c895585be405f8071d090b874fe"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+      "bytes": 20693,
+      "sha256": "bcd6975d47c7968a4c2d366493b2f0363b9d5b63aa371862b9934a5168915072"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/justfile",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/scripts/codex_package/targets.py",
+      "bytes": 4738,
+      "sha256": "a3113fef785df2cfeb9a3a41edc487f74c00463b7716cec27e1bca64be2bc7a8"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/scripts/codex_package/v8.py",
+      "bytes": 5665,
+      "sha256": "d7739840d17ea4f1afff15e552add403f2a479cde6422c27c92c2ef3823c27fc"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/scripts/hepta_ci_junit.py",
+      "bytes": 6613,
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/scripts/hepta_ci_v8.py",
+      "bytes": 3153,
+      "sha256": "92bae0083c04bc510d198d4b3c93ba4ced5bf842889dea0914d6a836422ff23c"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/execution-sources/tested/scripts/run-nextest.py",
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/just-started.json",
+      "bytes": 196,
+      "sha256": "6e798e7662f5d84f51e1cc1afc4d8aaa1663d1b7dbb25801063ad16cda0c0bc7"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/just.json",
+      "bytes": 343,
+      "sha256": "0fd34b849f00953da052b8e4378587f0f6e9a81c5eabeeeb03c5af3c3f7916da"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/just.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/just.stdout",
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/nextest-started.json",
+      "bytes": 213,
+      "sha256": "8967e9024996b9b45670c74f06d75d071559d08b6193d64609c56904e25f4d03"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/nextest.json",
+      "bytes": 358,
+      "sha256": "c2f9944fce39cf7883c3bd4336550b38a9ff8ba16f25c2aae94bc759d832ada0"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/nextest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/nextest.stdout",
+      "bytes": 169,
+      "sha256": "35e917c5b806d4566039cc304fe0dd79838b7c334d75707ff354e30df57e764d"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/sandbox-helper-build.log",
+      "bytes": 638119,
+      "sha256": "83df987338c4ea7ff61eaf67b5ed674a625e8f8cd385f4c27e815d51749eb7fe"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/sandbox-helper-preparation.json",
+      "bytes": 1165,
+      "sha256": "9e0f717db0b07760603a574157ed397efdcabf0cbf7aeabeb79ed21253554406"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/source-after.json",
+      "bytes": 559,
+      "sha256": "2f9117533c41d78022cd0066589b42ab7d1743052fb1585357d9a7ec17775065"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/source-before.json",
+      "bytes": 559,
+      "sha256": "2f9117533c41d78022cd0066589b42ab7d1743052fb1585357d9a7ec17775065"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/started.json",
+      "bytes": 4013,
+      "sha256": "59d674b402803e2c7ea22e33e5518a573191b99058180dc119c3bded2895cad5"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/strict-preparation.json",
+      "bytes": 636,
+      "sha256": "492693432c6056fcec8f3728d1db81d417771efe6d25a4daa2f1929112fe8aa4"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/v8-artifacts.json",
+      "bytes": 897,
+      "sha256": "ed7f33740173b4b1714c8a60bfab89b11cabd1f1f2aad8841c04de6342a4ef47"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/v8-environment.txt",
+      "bytes": 350,
+      "sha256": "fe18ce2e2c5ede903162933e9612e8442cb2fdaead30aae0b28deb925f9044ca"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/v8-started.json",
+      "bytes": 319,
+      "sha256": "ab23271dbd38a8bb22f7352a9731a1788845f53b85069a35819166984c82a8d7"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/v8.json",
+      "bytes": 463,
+      "sha256": "ec15ebb526ed619a11c5155cd8a7b04a384a9c85f867f5378961edbad90ab36e"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/v8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/members/v8.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/5eee-appserver-owner/original.zip",
+      "bytes": 18616812,
+      "sha256": "026889bb6888211bb5ed7c58fd64fa560b9211fb173f39b781e6f39af2e0bcf0"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/RESULT.json",
+      "bytes": 63862,
+      "sha256": "a3cbad0c6d711aa04d4b4cddf4977443b8183eaf9c26d5eed1dea8ec015c08a3"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/RESULT.json",
+      "bytes": 2227,
+      "sha256": "f4329efda44ca04045ba19857f0a6a6ca9a3beeeb73fc8a01f8c99ec77f22127"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/artifact-api-original.json",
+      "bytes": 934,
+      "sha256": "1eb026fd1a6eaf01a46277aec3388c3208a8ce138aff898d7381b63b21ff39d2"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/MANIFEST.json",
+      "bytes": 21355,
+      "sha256": "4c20347737099f820fa392348a2199f115a408ad2ea621afcf6bc04e59c45c9b"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/RECEIPT.json",
+      "bytes": 6160,
+      "sha256": "f2d925c442963afda5780ecc7c9c8a4318dad8b6d2ea2548c44514f3d60ef057"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/ZIP_MEMBERS.json",
+      "bytes": 10355,
+      "sha256": "3773cae92f10a29a89f23cc50d2766136410996d409b62237207857ad617ab38"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/after-preparation-source.json",
+      "bytes": 559,
+      "sha256": "90dfa11697540312428c0e23d16aea8299d0c613cbf9aed0a1e0d9eb2acbd7bf"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/canonical-just-fix-after-source.json",
+      "bytes": 559,
+      "sha256": "90dfa11697540312428c0e23d16aea8299d0c613cbf9aed0a1e0d9eb2acbd7bf"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/canonical-just-fix-started.json",
+      "bytes": 333,
+      "sha256": "70d01900da64138ae164d394b9d48f07d5c55412baa0bebe0853cb659cfecd57"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/canonical-just-fix.json",
+      "bytes": 479,
+      "sha256": "97b6bb3d2d401ceaf3e9ad0d92dbbc866eb53bfc39ff14e8517d6b1a5e52406e"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/canonical-just-fix.stderr",
+      "bytes": 251,
+      "sha256": "7f30f22975a628dd76738d80d105fe6e1b01fd7502b4b20449b2eece1cab6278"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/canonical-just-fix.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/compiler-started.json",
+      "bytes": 215,
+      "sha256": "88c1729513df980a01ce3aa4b2d80a77ae8f99ff0bb7490861116bba4312d0f1"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/compiler.json",
+      "bytes": 362,
+      "sha256": "ef0017363ec5ee2a4604b59d272149576d277932f2f262353b8d74e99edf61b7"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/compiler.stdout",
+      "bytes": 194,
+      "sha256": "2efe229f7908c2c19f459ca734101a5b35cb482476b8bee1357f94a18c766078"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/observer/.github/fixtures/windows-fixture-followup-scope.json",
+      "bytes": 3105,
+      "sha256": "87161e6cfd390180de6e8457e9b8ccf55f5b75532505ffdd24b6cc230052049e"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/observer/.github/fixtures/windows-image-edit-diagnostic-scope.json",
+      "bytes": 1668,
+      "sha256": "99b9c97091f1127f72b61a05f31a69bd79323e115aec96e0832c2b2a31b1a226"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/observer/.github/scripts/test_windows_fixture_followup.py",
+      "bytes": 16287,
+      "sha256": "b195758178a926fcb63b1c11d85437a9834cc7cf6c115fce9c91980d0f938b29"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/observer/.github/scripts/test_windows_image_edit_diagnostic.py",
+      "bytes": 2900,
+      "sha256": "ecbb9910076ae1f7563cc6f8241c93181a859d56b917a26fda1622b944cc7836"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/observer/.github/scripts/windows_current_ci.py",
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/observer/.github/scripts/windows_fixture_followup.py",
+      "bytes": 27794,
+      "sha256": "ec2b37916ab085b5dc002d588996858f23f1eec6e1ff4a28484f7783b5a04a4e"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/observer/.github/scripts/windows_native_probe.py",
+      "bytes": 25146,
+      "sha256": "47bca1523c35200722a7bbd19afd100aac9cf90e8019df4556d35431c00ef8e3"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/observer/.github/workflows/hepta-windows-image-edit-diagnostic.yml",
+      "bytes": 3727,
+      "sha256": "109124e60ebc1bb9a6867c43ab6cc693d5174314f79d32df08df41500da7a25c"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/.github/scripts/windows_current_ci.py",
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/.github/workflows/hepta-windows-current-ci.yml",
+      "bytes": 2965,
+      "sha256": "b133ae757b14a04021cae5b393f1f0d3ff54063d1dd3e3901367cdfc96f0475c"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/codex-rs/.config/nextest.toml",
+      "bytes": 5987,
+      "sha256": "63f832eabf890a5f3cd7c0e4ee1856b1ca99d4db8952de71b81282265668dc8c"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/codex-rs/Cargo.lock",
+      "bytes": 421501,
+      "sha256": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/codex-rs/Cargo.toml",
+      "bytes": 23496,
+      "sha256": "3a844832911c881ffd0283a68ecb44b68fc85d5b4c3ec92b41fa64adf8f76996"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/codex-rs/app-server/tests/suite/v2/imagegen_extension.rs",
+      "bytes": 34378,
+      "sha256": "0cfd7b6a9f818263448602a7244ceed85447494bcf6c02d232a82ca98173b868"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+      "bytes": 20693,
+      "sha256": "bcd6975d47c7968a4c2d366493b2f0363b9d5b63aa371862b9934a5168915072"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/justfile",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/scripts/codex_package/targets.py",
+      "bytes": 4738,
+      "sha256": "a3113fef785df2cfeb9a3a41edc487f74c00463b7716cec27e1bca64be2bc7a8"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/scripts/codex_package/v8.py",
+      "bytes": 5665,
+      "sha256": "d7739840d17ea4f1afff15e552add403f2a479cde6422c27c92c2ef3823c27fc"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/scripts/hepta_ci_junit.py",
+      "bytes": 6613,
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/scripts/hepta_ci_v8.py",
+      "bytes": 3153,
+      "sha256": "92bae0083c04bc510d198d4b3c93ba4ced5bf842889dea0914d6a836422ff23c"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/execution-sources/tested/scripts/run-nextest.py",
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/just-started.json",
+      "bytes": 196,
+      "sha256": "ae4121994c5554e2f47413a625dae9187c4bc46d583c5009d655887a3d09e2dc"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/just.json",
+      "bytes": 344,
+      "sha256": "adc3655d7f78e7d6f3092223066d66e5a0c2838c59d9cc276d12cdf2670534cf"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/just.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/just.stdout",
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/nextest-started.json",
+      "bytes": 213,
+      "sha256": "b36763102979c4fce1f3a3a6620683e6d660cbaebddb7b3804a84a66a5cbeb25"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/nextest.json",
+      "bytes": 359,
+      "sha256": "411281b3d4e6f8a361ef9fb3ea3e0c046c3d2b11fc2b8c15801962df76fde4f2"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/nextest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/nextest.stdout",
+      "bytes": 169,
+      "sha256": "35e917c5b806d4566039cc304fe0dd79838b7c334d75707ff354e30df57e764d"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/sandbox-helper-build.log",
+      "bytes": 669359,
+      "sha256": "2ae04f21ad43230c158dcb584b72d3fe07ba1cc5432e8a0cb1a7630a3a55b24b"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/sandbox-helper-preparation.json",
+      "bytes": 1253,
+      "sha256": "ede50372adc98867365b836c72228982992fc29cc2041d7572f9678458a1791f"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/source-after.json",
+      "bytes": 559,
+      "sha256": "90dfa11697540312428c0e23d16aea8299d0c613cbf9aed0a1e0d9eb2acbd7bf"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/source-before.json",
+      "bytes": 559,
+      "sha256": "90dfa11697540312428c0e23d16aea8299d0c613cbf9aed0a1e0d9eb2acbd7bf"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/started.json",
+      "bytes": 3713,
+      "sha256": "15c2267287d14c0a9ef0637e0b2c581ee26ac108f5b3a6b52d25af2df3de27c3"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/strict-preparation.json",
+      "bytes": 647,
+      "sha256": "f3eb79c670f9ce55e6a4f189ab35bf9cfeafae3d032b72ae84ed262f823aa92b"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/v8-artifacts.json",
+      "bytes": 897,
+      "sha256": "70e298051314a8894d310e196b397119553302b4ac606761fde1ba08d63b1e1f"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/v8-environment.txt",
+      "bytes": 350,
+      "sha256": "fe18ce2e2c5ede903162933e9612e8442cb2fdaead30aae0b28deb925f9044ca"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/v8-started.json",
+      "bytes": 319,
+      "sha256": "a5a4557f015c0e5a2c75067b16488d9304ed29e068c4904d8e2dddcaf03039d3"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/v8.json",
+      "bytes": 463,
+      "sha256": "374d4ade346766ee97f743bad6ea1cb487ec26c6b993a996b4aa8b60cafc10c3"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/v8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/members/v8.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/a57-windows-runner-typed-error/original.zip",
+      "bytes": 18527559,
+      "sha256": "cba922ec4b281f6fa31286f03c13bd8c39e4ed2eb18f02f8323e27d8934a3c2c"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/collector.py",
+      "bytes": 7208,
+      "sha256": "cae55dd79ac7e2ff012e7505a63bfeab1b2a1726dcf88fec7056895284e210fb"
+    },
+    {
+      "path": "originals/windows-cargo-observer-original-recovery-v2/original_zip_reader.py",
+      "bytes": 8696,
+      "sha256": "22d557f8e37c27ad44d8c7e452837942a639a96a477bebe0c021eb72978e6020"
+    },
+    {
+      "path": "originals/windows-image-edit-a57-originals-verified-summary-v1.json",
+      "bytes": 3570,
+      "sha256": "d04684439062b4b0153589ad1d2b6614d629f290132f558e0635c65bdf72173b"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/RESULT.json",
+      "bytes": 2578,
+      "sha256": "c45c7ffa085b6ba4f2c4ce1c7d83598b67d0735f83f01ecdf24067c5de58c709"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/INDEPENDENT_ANALYSIS.json",
+      "bytes": 825,
+      "sha256": "b2871ca4c1f188d2d7156433d303d80744f842025ccd74d697540b954caaf778"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/MANIFEST.json",
+      "bytes": 21429,
+      "sha256": "5103660a65fa1b87de04dc7a76f185e4b478f0771efcc70411aba5103722e64a"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/RECEIPT.json",
+      "bytes": 6130,
+      "sha256": "e325bf303e3ef4010eda5ee41fe44bde6ea8de01b9253e5d2b1efc89d336548e"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/ZIP_MEMBERS.json",
+      "bytes": 10567,
+      "sha256": "84347a37cb0a30bc0b90098f32dab5ea986e5cfc8d55447087311b48f8960055"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/after-preparation-source.json",
+      "bytes": 559,
+      "sha256": "90dfa11697540312428c0e23d16aea8299d0c613cbf9aed0a1e0d9eb2acbd7bf"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/canonical-just-fix-after-source.json",
+      "bytes": 559,
+      "sha256": "90dfa11697540312428c0e23d16aea8299d0c613cbf9aed0a1e0d9eb2acbd7bf"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/canonical-just-fix-started.json",
+      "bytes": 328,
+      "sha256": "e755cbe64b5ccd505f8ef2782d3e0f31aa6940fb5beb60dc996d57f110ba2a9f"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/canonical-just-fix.json",
+      "bytes": 473,
+      "sha256": "d081f792e9cc0cd54fe3ee54d999a2124a928ced0519715fb5aa4a67753f3830"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/canonical-just-fix.stderr",
+      "bytes": 251,
+      "sha256": "7f30f22975a628dd76738d80d105fe6e1b01fd7502b4b20449b2eece1cab6278"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/canonical-just-fix.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/compiler-started.json",
+      "bytes": 215,
+      "sha256": "b2e1efd61f932acb2c21c6ab5378b79bb55702488f4ae2f64f465148dd7e3bde"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/compiler.json",
+      "bytes": 362,
+      "sha256": "7b62f7edfa19a336e2eeeea490559b0da956a35bcde7ae63ef691c8f8382fed1"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/compiler.stdout",
+      "bytes": 194,
+      "sha256": "2efe229f7908c2c19f459ca734101a5b35cb482476b8bee1357f94a18c766078"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/observer/.github/fixtures/windows-fixture-followup-scope.json",
+      "bytes": 3105,
+      "sha256": "87161e6cfd390180de6e8457e9b8ccf55f5b75532505ffdd24b6cc230052049e"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/observer/.github/fixtures/windows-image-edit-diagnostic-scope.json",
+      "bytes": 1668,
+      "sha256": "99b9c97091f1127f72b61a05f31a69bd79323e115aec96e0832c2b2a31b1a226"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/observer/.github/scripts/test_windows_fixture_followup.py",
+      "bytes": 16287,
+      "sha256": "b195758178a926fcb63b1c11d85437a9834cc7cf6c115fce9c91980d0f938b29"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/observer/.github/scripts/test_windows_image_edit_diagnostic.py",
+      "bytes": 2900,
+      "sha256": "ecbb9910076ae1f7563cc6f8241c93181a859d56b917a26fda1622b944cc7836"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/observer/.github/scripts/windows_current_ci.py",
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/observer/.github/scripts/windows_fixture_followup.py",
+      "bytes": 27794,
+      "sha256": "ec2b37916ab085b5dc002d588996858f23f1eec6e1ff4a28484f7783b5a04a4e"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/observer/.github/scripts/windows_native_probe.py",
+      "bytes": 25146,
+      "sha256": "47bca1523c35200722a7bbd19afd100aac9cf90e8019df4556d35431c00ef8e3"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/observer/.github/workflows/hepta-windows-image-edit-diagnostic.yml",
+      "bytes": 3727,
+      "sha256": "109124e60ebc1bb9a6867c43ab6cc693d5174314f79d32df08df41500da7a25c"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/.github/scripts/windows_current_ci.py",
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/.github/workflows/hepta-windows-current-ci.yml",
+      "bytes": 2965,
+      "sha256": "b133ae757b14a04021cae5b393f1f0d3ff54063d1dd3e3901367cdfc96f0475c"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/codex-rs/.config/nextest.toml",
+      "bytes": 5987,
+      "sha256": "63f832eabf890a5f3cd7c0e4ee1856b1ca99d4db8952de71b81282265668dc8c"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/codex-rs/Cargo.lock",
+      "bytes": 421501,
+      "sha256": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/codex-rs/Cargo.toml",
+      "bytes": 23496,
+      "sha256": "3a844832911c881ffd0283a68ecb44b68fc85d5b4c3ec92b41fa64adf8f76996"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/codex-rs/app-server/Cargo.toml",
+      "bytes": 4997,
+      "sha256": "3ab26711af9a5e81fa51468507a9c893ea4b147530c180a0670a866a79623d9f"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/codex-rs/app-server/tests/suite/v2/imagegen_extension.rs",
+      "bytes": 34378,
+      "sha256": "0cfd7b6a9f818263448602a7244ceed85447494bcf6c02d232a82ca98173b868"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+      "bytes": 20693,
+      "sha256": "bcd6975d47c7968a4c2d366493b2f0363b9d5b63aa371862b9934a5168915072"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/justfile",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/scripts/codex_package/targets.py",
+      "bytes": 4738,
+      "sha256": "a3113fef785df2cfeb9a3a41edc487f74c00463b7716cec27e1bca64be2bc7a8"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/scripts/codex_package/v8.py",
+      "bytes": 5665,
+      "sha256": "d7739840d17ea4f1afff15e552add403f2a479cde6422c27c92c2ef3823c27fc"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/scripts/hepta_ci_junit.py",
+      "bytes": 6613,
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/scripts/hepta_ci_v8.py",
+      "bytes": 3153,
+      "sha256": "92bae0083c04bc510d198d4b3c93ba4ced5bf842889dea0914d6a836422ff23c"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/execution-sources/tested/scripts/run-nextest.py",
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/just-started.json",
+      "bytes": 196,
+      "sha256": "67225972d86e9d19c462f168747064d31f638653b0733906e5c576949140af0c"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/just.json",
+      "bytes": 344,
+      "sha256": "c500d2b7a05f74f619fbc16a109a930c31f225650e6ada0a0d42688a091fff33"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/just.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/just.stdout",
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/nextest-started.json",
+      "bytes": 213,
+      "sha256": "cc6b081294ef4e66c2b54b5c4858fd5c8843a8527fd3588aef4e4a979113ff25"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/nextest.json",
+      "bytes": 358,
+      "sha256": "643dca211b1506ee8949ccdea2e6a4cfcaa18e082e3961a1708c2984e68b88a4"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/nextest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/nextest.stdout",
+      "bytes": 169,
+      "sha256": "35e917c5b806d4566039cc304fe0dd79838b7c334d75707ff354e30df57e764d"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/sandbox-helper-build.log",
+      "bytes": 660839,
+      "sha256": "b0d8fa201bf83c75be80e9512c6cdbd31a647365876d98d9f7afbe9f57a3e1f2"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/sandbox-helper-preparation.json",
+      "bytes": 1229,
+      "sha256": "b21a45892c785ca30d04230854a788f457f30e8acc39738c96c961f40b961d6b"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/source-after.json",
+      "bytes": 559,
+      "sha256": "90dfa11697540312428c0e23d16aea8299d0c613cbf9aed0a1e0d9eb2acbd7bf"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/source-before.json",
+      "bytes": 559,
+      "sha256": "90dfa11697540312428c0e23d16aea8299d0c613cbf9aed0a1e0d9eb2acbd7bf"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/started.json",
+      "bytes": 3695,
+      "sha256": "f526444af98f6e244216748d822205e7ad64bbf925939c6648067c4c2f51b4bf"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/strict-preparation.json",
+      "bytes": 636,
+      "sha256": "bbed73e571bf831278e583e5a680860ce26da4b482ca90c1b54e4d7312b79dc4"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/v8-artifacts.json",
+      "bytes": 897,
+      "sha256": "0891815a3e972d86df34ee1404bafeab87c5d79b10d50aa006d5e7f7bc7efdb1"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/v8-environment.txt",
+      "bytes": 350,
+      "sha256": "fe18ce2e2c5ede903162933e9612e8442cb2fdaead30aae0b28deb925f9044ca"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/v8-started.json",
+      "bytes": 319,
+      "sha256": "b1524643e2ac452ac2da63567fa60b40070e97dde2c19760f1091d6e5ae869f9"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/v8.json",
+      "bytes": 465,
+      "sha256": "cb1feea5b5bf0d9d0247edcb7da8b07f5428cf11c5a1b211354799f6ad5afffa"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/v8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/appserver-image-edit/v8.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/artifact-13649361362.zip",
+      "bytes": 18528764,
+      "sha256": "56de5d4fbd957799f9807ab77938dfc5b08b0a69ab66dd775b8ce380609e5171"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/download-13649361362.json",
+      "bytes": 338,
+      "sha256": "8e8a6637ffacbaadec8509166752c6160136d88ae571713fd3faac83f11577c8"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/original_artifacts_api.raw",
+      "bytes": 1729,
+      "sha256": "34953c3121af8690977712de44bbe7a5af9c75ffd4215613994b8bf3e6f61b07"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/original_collector.py",
+      "bytes": 8696,
+      "sha256": "22d557f8e37c27ad44d8c7e452837942a639a96a477bebe0c021eb72978e6020"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/connector-recovery-a57-v1/recovery.py",
+      "bytes": 7330,
+      "sha256": "437ebbf809c950d878ecda4537f02a455ec51b638b1223936e3139a489b9c34f"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/handshake-contract-001/SOURCE_EXTRACTS.json",
+      "bytes": 87784,
+      "sha256": "53288eb0f19d97b655e86493592d4bf7b473dccd7cac6202eaf31a39f0cf8fb2"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/handshake-contract-001/source/codex-rs/app-server/README.md",
+      "bytes": 192046,
+      "sha256": "9740e1bcafd7ec6bdba93873a7dd3662c6c3f306880454fe4e8b4ed3136cdb8d"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/handshake-contract-001/source/codex-rs/app-server/src/lib.rs",
+      "bytes": 80240,
+      "sha256": "8e7e48e5fb881c911f959477ed1f5ed4191b42557e2110199b3eaa5301af67b6"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/handshake-contract-001/source/codex-rs/app-server/src/message_processor.rs",
+      "bytes": 75040,
+      "sha256": "43684cfd7b4ca689888fdab98950e81d1c98e382d8eb0c9ac025537d2987bbce"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/handshake-contract-001/source/codex-rs/app-server/src/outgoing_message.rs",
+      "bytes": 52016,
+      "sha256": "915afa4dfd15d8070d14dc2bf55c627a9be39e9af1457118cf6bb914dabe34a1"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/handshake-contract-001/source/codex-rs/app-server/src/request_processors/initialize_processor.rs",
+      "bytes": 7954,
+      "sha256": "7fffbb14cf78e190c92a300b45b7bec276295e42e2633eb8eca9c263c535217f"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/handshake-contract-001/source/codex-rs/app-server/tests/suite/v2/connection_handling_websocket.rs",
+      "bytes": 34256,
+      "sha256": "c015889621b9bbeb96df240b81c0480997442d4b1f4ad2da55eb6e1567515efd"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/handshake-contract-001/source/codex-rs/app-server/tests/suite/v2/remote_control.rs",
+      "bytes": 46887,
+      "sha256": "a63ebe256c9e3a78ff481c1ee070ad5d2ad44dc2133e069c5d83f8557e25af70"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/handshake-contract-001/source/workspace_root_test_launcher.bat.tpl",
+      "bytes": 7627,
+      "sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/handshake-routing-001/EXTRACTS.json",
+      "bytes": 36101,
+      "sha256": "b14b1b3afb3b6b3b09024b6acaaa264ac45caf53c304ca511a89c6f7ac4df262"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/outgoing-test-constructors-001.txt",
+      "bytes": 90406,
+      "sha256": "02353868f4d48888c3ad229cd647718ab2d79f0bf8d057bd723154d41897431a"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/RESULT.json",
+      "bytes": 844,
+      "sha256": "c82fd97d26981d70360c146c08a93deeb59f798045bb4dc229dfa1d7992ac653"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/cargo-bin.json",
+      "bytes": 539,
+      "sha256": "d3a7b3e6df0512fa4f9ea311ccdb0bbda3c92739b7f9de9c7d76808cdc0feed3"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/cargo-bin.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/cargo-bin.stdout",
+      "bytes": 7819,
+      "sha256": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/handshake-grep.json",
+      "bytes": 790,
+      "sha256": "564ca76864bd70cef87b741be9477fffab8ad6a9973409ce654ad833f6764132"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/handshake-grep.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/handshake-grep.stdout",
+      "bytes": 23341,
+      "sha256": "56a3374d9b71da6c786e7c4a53ba3b0ebfb56070ab9832d75d963e7cc629a4af"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/jobs-attempt-1.json",
+      "bytes": 560,
+      "sha256": "11d671432c1d923815239aec290955ff5a31b297e2135b6ad167f95056847222"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/jobs-attempt-1.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/jobs-attempt-1.stdout",
+      "bytes": 6212,
+      "sha256": "92aa98399d41fbf58639b9c21932f8b6ead92d8e9d9d28d3f0f55dd5065db23d"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/run-after.json",
+      "bytes": 532,
+      "sha256": "a3700541f330506638abde89d2092fe54735c2b723f82fb259879327001f725c"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/run-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/run-after.stdout",
+      "bytes": 14306,
+      "sha256": "2ca990a243f03fb9b6c2425026736e559550bc10428f51c9b9c4334c42daa103"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/run-before.json",
+      "bytes": 532,
+      "sha256": "f4c1c25345aa43fc3c33755cf68ce3169dcb73ce19d64d6f8d8d81a623f1f9e7"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/run-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/run-before.stdout",
+      "bytes": 14306,
+      "sha256": "2ca990a243f03fb9b6c2425026736e559550bc10428f51c9b9c4334c42daa103"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/windows-launcher.json",
+      "bytes": 538,
+      "sha256": "8367b68fa752d3ea036df5f560c3a9267bdea074d81f7132907de599846ba42d"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/windows-launcher.stderr",
+      "bytes": 109,
+      "sha256": "86d86a7f60d6b433e53e15765a3a3f4b1c8d9e896e9b5f9c4bbcc0fca8d747f0"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/windows-launcher.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/wrapper-files.json",
+      "bytes": 558,
+      "sha256": "4123812a72bc54859f8f48d3953e87ba97765654842e09bb57ae0fd97e4e33aa"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/wrapper-files.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-001/wrapper-files.stdout",
+      "bytes": 7208,
+      "sha256": "46dc029c830ee5dc4215e4bc43b355cd732c4731f283325324969b17c93818bd"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-002/RESULT.json",
+      "bytes": 883,
+      "sha256": "07afeb4ea32ca4c879dbe39bb383d06b91113d1402ccf599876eb0496efc72cd"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-002/jobs-attempt-1.json",
+      "bytes": 560,
+      "sha256": "a57d71156af882c46c98b9e76a25d244fdfbd36d35ff929665a36cf89cb636eb"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-002/jobs-attempt-1.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-002/jobs-attempt-1.stdout",
+      "bytes": 6862,
+      "sha256": "67ea438c1ebcb3f18d38866a406c3167992fb542f2d92c44a94acd7f639e64bd"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-002/run-after.json",
+      "bytes": 532,
+      "sha256": "18bb0f76912cf91507608c8c0b05f53b2b32bbb7d91fe5182fea246a7c22a73f"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-002/run-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-002/run-after.stdout",
+      "bytes": 14309,
+      "sha256": "15f5deb92311589c63f4400fd239b5d190b1d48a76a1f3bb9a55fa7e63635a0f"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-002/run-before.json",
+      "bytes": 532,
+      "sha256": "ece4398c8833cc699d7a8226ce02f6feb3c14c8f8e35e1e58d301c1e3086b324"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-002/run-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/snapshot-002/run-before.stdout",
+      "bytes": 14309,
+      "sha256": "15f5deb92311589c63f4400fd239b5d190b1d48a76a1f3bb9a55fa7e63635a0f"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/COLLECTION.json",
+      "bytes": 1591,
+      "sha256": "403d5badb1cb3d70c880c636b2f840207ef619ca79e9ad355cd17e887b698b8d"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/artifact-13649525715.command.json",
+      "bytes": 303,
+      "sha256": "6fe0e055ab75c647e6308b4321ad6cce7fcb77c5a41f4353bd3db3aa0275c6b0"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/artifact-13649525715.raw",
+      "bytes": 703384,
+      "sha256": "a3633192d7f8b7b489f24ede42dbc194c854d63dd5185bbd5af77f52b052fcd6"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/artifact-13649525715.stderr",
+      "bytes": 76,
+      "sha256": "afd43872ca3a00dddd21d84672c215c7c36c02089bd89190230c8bf58276f18e"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/artifacts.command.json",
+      "bytes": 315,
+      "sha256": "bf93601c819b8a220718cac0a226db781595b78a905912853c7b45b3ae0aa46a"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/artifacts.raw",
+      "bytes": 1729,
+      "sha256": "34953c3121af8690977712de44bbe7a5af9c75ffd4215613994b8bf3e6f61b07"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/artifacts.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/collector.py",
+      "bytes": 8657,
+      "sha256": "8dc007a17bda7acbacfe212537b20dcae3c889410618b29d1871895cdd8c1a2f"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/job-128971951348-log.command.json",
+      "bytes": 300,
+      "sha256": "3eb923c85489340b66bf9e9b7fecc41dad96faae42c179a0e88beeead2670f90"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/job-128971951348-log.raw",
+      "bytes": 96727,
+      "sha256": "92f0ed15711c26d4c56662728a7cd913a50f6882a9a81853adcef6a9373f9673"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/job-128971951348-log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/job-128971951620-log.command.json",
+      "bytes": 299,
+      "sha256": "7f090d72ef769683a6fad929fd1d5b9cac2a6b4ffcbe841f01d65a22a32d4fb6"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/job-128971951620-log.raw",
+      "bytes": 96329,
+      "sha256": "1f23fe0f6cf8fb73a7cf0a9cf02359f7e3d1ece60dac4c7600fa7d836ea9a1e6"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/job-128971951620-log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/jobs-attempt-1.command.json",
+      "bytes": 322,
+      "sha256": "aebc6df4e8a931191063d8f97d225629eeb7a669f0be5eaecfc0a01ee9fd2c33"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/jobs-attempt-1.raw",
+      "bytes": 6862,
+      "sha256": "67ea438c1ebcb3f18d38866a406c3167992fb542f2d92c44a94acd7f639e64bd"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/jobs-attempt-1.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/run-before.command.json",
+      "bytes": 294,
+      "sha256": "ca9f67f1d5214a093074fc23bab6330899a773fa58fc0ba30a408e4a1c3d96e6"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/run-before.raw",
+      "bytes": 14309,
+      "sha256": "15f5deb92311589c63f4400fd239b5d190b1d48a76a1f3bb9a55fa7e63635a0f"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v1/run-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/COLLECTION.json",
+      "bytes": 1591,
+      "sha256": "4eb42222c888a5325d459058e4d7cb90105c1f69615dc2004cdbc767f684c8a8"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/artifact-13649361362.command.json",
+      "bytes": 304,
+      "sha256": "79ec22805837047367e116dc85c90dd89ab9e41b338e63173aa7b686bdc14171"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/artifact-13649361362.raw",
+      "bytes": 5275648,
+      "sha256": "6268f0d2fac182543c1da2c88370f4186a1b4c1895e2d637aa4bd4dd8bc669ba"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/artifact-13649361362.stderr",
+      "bytes": 72,
+      "sha256": "1c2938587c0f67a5bf89b6696322b2d9d0a36d61eea7868cc5bf0e562d3d913b"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/artifacts.command.json",
+      "bytes": 316,
+      "sha256": "7e9b7b321e46c8082fe3315d85b6eced96dd04518368e064454ed51fa5ee2e14"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/artifacts.raw",
+      "bytes": 1729,
+      "sha256": "34953c3121af8690977712de44bbe7a5af9c75ffd4215613994b8bf3e6f61b07"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/artifacts.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/collector.py",
+      "bytes": 8696,
+      "sha256": "22d557f8e37c27ad44d8c7e452837942a639a96a477bebe0c021eb72978e6020"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/job-128971951348-log.command.json",
+      "bytes": 299,
+      "sha256": "cc88552d723d8c2a36ce478b305c25328d1340fe941d98443b5d9fba8481634e"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/job-128971951348-log.raw",
+      "bytes": 96727,
+      "sha256": "92f0ed15711c26d4c56662728a7cd913a50f6882a9a81853adcef6a9373f9673"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/job-128971951348-log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/job-128971951620-log.command.json",
+      "bytes": 299,
+      "sha256": "ee4f22dfac13d0d3f9d03e3e96e7c73b6c3ae0802588f910a109998be1a4d360"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/job-128971951620-log.raw",
+      "bytes": 96329,
+      "sha256": "1f23fe0f6cf8fb73a7cf0a9cf02359f7e3d1ece60dac4c7600fa7d836ea9a1e6"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/job-128971951620-log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/jobs-attempt-1.command.json",
+      "bytes": 320,
+      "sha256": "e926df86a08953add1cb66bc4ae820e5155a68b636e1305e74dc298641adb9ab"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/jobs-attempt-1.raw",
+      "bytes": 6862,
+      "sha256": "67ea438c1ebcb3f18d38866a406c3167992fb542f2d92c44a94acd7f639e64bd"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/jobs-attempt-1.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/run-before.command.json",
+      "bytes": 293,
+      "sha256": "1d52c73ae9ffb357a4abfa65922efdd4b89b952373eb9175d059a9dab9f923c2"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/run-before.raw",
+      "bytes": 14309,
+      "sha256": "15f5deb92311589c63f4400fd239b5d190b1d48a76a1f3bb9a55fa7e63635a0f"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/terminal-a57-v2/run-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-image-edit-observation-v1/transport-contract-001.json",
+      "bytes": 28935,
+      "sha256": "95a369f5a1a6060fd9384032bea8f0874a69cb4006eca4f72ea6945519e43fa5"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 195568,
+      "sha256": "a9a6ef69598795fbf9878433c7944fdc77c0b4b68ad31c93ea303bfff2e4a56c"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "32a57d6880579c25932cd894ac26726bb6085191307618a68793374c27c493c8"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "d727a4323b794d6355ea3086da80acde4c8062401e836b1c1accd30327510190"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "07f2dafd2215569bda5675c14c32aa6b30d868ea30ee9b5ce4075e707e5409e5"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "85ea74d31b51df5fd0e710f9a5d3f5bb0fed79e4e5121add9be5247a007d71a2"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 490000,
+      "sha256": "ef3976e80345832443605d0e99f11fd02cdc3dba7057846316f7d614f38e769b"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part006",
+      "offset": 2450000,
+      "bytes": 490000,
+      "sha256": "2ba72e8491b0f96a0f51c85402f88d6473f51706ce988a616ba189dc3ea7ec4f"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part007",
+      "offset": 2940000,
+      "bytes": 490000,
+      "sha256": "33844e8fbed8009700d730d67bc3e5a59057f5730fe00bb2a181cef32299dcdb"
+    },
+    {
+      "sequence": 8,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part008",
+      "offset": 3430000,
+      "bytes": 490000,
+      "sha256": "795a61dabaf3019dbf032dfc0241b58e55d46363db8248c0800c07242e7a9e49"
+    },
+    {
+      "sequence": 9,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part009",
+      "offset": 3920000,
+      "bytes": 490000,
+      "sha256": "78541c281a346891ddff45efbcb47a1f71731261d038b3bea0c2ab27c5e23c0e"
+    },
+    {
+      "sequence": 10,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part010",
+      "offset": 4410000,
+      "bytes": 490000,
+      "sha256": "28db1859f488cc0eab3121a7e6e61913393a96e24a66d95867d2c68dcd641c65"
+    },
+    {
+      "sequence": 11,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part011",
+      "offset": 4900000,
+      "bytes": 490000,
+      "sha256": "cf7f8786f31be61a09ffb074f777191997c7508090a193db1d5929b7f103a906"
+    },
+    {
+      "sequence": 12,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part012",
+      "offset": 5390000,
+      "bytes": 490000,
+      "sha256": "9687bfa07cd34d34c07eb647bf4f07d0e9f2cdfb65f6364b0ec8c5b3366bb3b2"
+    },
+    {
+      "sequence": 13,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part013",
+      "offset": 5880000,
+      "bytes": 490000,
+      "sha256": "8f5e6dd13296bdf9eef97fef1b636da825a9ebc0f41932230ff560ffd9feef53"
+    },
+    {
+      "sequence": 14,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part014",
+      "offset": 6370000,
+      "bytes": 490000,
+      "sha256": "3bd1337f56038e7b795e620e989ff3ed9dfc99634ea6ce0da16f7324a98f9a49"
+    },
+    {
+      "sequence": 15,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part015",
+      "offset": 6860000,
+      "bytes": 490000,
+      "sha256": "fa1b9fd5d1cf5535d6130a99d1073459cbaa91569dfc23427063b22a5c078f33"
+    },
+    {
+      "sequence": 16,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part016",
+      "offset": 7350000,
+      "bytes": 490000,
+      "sha256": "1f2484197e92b55e8695676b3f5f9faad3c4f2a8cfd08f234dc641206a886d44"
+    },
+    {
+      "sequence": 17,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part017",
+      "offset": 7840000,
+      "bytes": 490000,
+      "sha256": "ff7f316c7ab09857d5f0b3b0c42c2bc96904f7e11568d7a63aeada225feb4157"
+    },
+    {
+      "sequence": 18,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part018",
+      "offset": 8330000,
+      "bytes": 490000,
+      "sha256": "c6000fa675749090de8516655874bfcb742292b3f77fa2dff6ab0109981d9fa1"
+    },
+    {
+      "sequence": 19,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part019",
+      "offset": 8820000,
+      "bytes": 490000,
+      "sha256": "c491fd23d411347110bdfd5e2f05256ffc7f55a1cf84e30d1a4d27ab0e36adc2"
+    },
+    {
+      "sequence": 20,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part020",
+      "offset": 9310000,
+      "bytes": 490000,
+      "sha256": "33c3406665e0e9f5d54c507a7859a3043da7ce7695e46b3dee84eaddbae306bf"
+    },
+    {
+      "sequence": 21,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part021",
+      "offset": 9800000,
+      "bytes": 490000,
+      "sha256": "3c11936c28b8340742a39769725eb242a57491c7c15d912c7fa6875d1048220a"
+    },
+    {
+      "sequence": 22,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part022",
+      "offset": 10290000,
+      "bytes": 490000,
+      "sha256": "52686374e3a2d1747615b2f635264032f00ec0dcd0557b02406da93aadaaa30f"
+    },
+    {
+      "sequence": 23,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part023",
+      "offset": 10780000,
+      "bytes": 490000,
+      "sha256": "018d7ef9d9a43331c878b7b82a7930b020c3146984708fb7fc1e1df843f7edfe"
+    },
+    {
+      "sequence": 24,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part024",
+      "offset": 11270000,
+      "bytes": 490000,
+      "sha256": "2109c51a99f078519e411dc64acb3aaaa60176dfe3350a8e145fa5c5801bc86b"
+    },
+    {
+      "sequence": 25,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part025",
+      "offset": 11760000,
+      "bytes": 490000,
+      "sha256": "58dafb5d295c55daf15c2c3cb4dcf766683f49e67730b264749650195cb7153c"
+    },
+    {
+      "sequence": 26,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part026",
+      "offset": 12250000,
+      "bytes": 490000,
+      "sha256": "3974665f0914b4affea7ebd8cbde11c20c69907fc31cfa0856780ba7ee3a5bd4"
+    },
+    {
+      "sequence": 27,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part027",
+      "offset": 12740000,
+      "bytes": 490000,
+      "sha256": "d6bcd9c9d0f616a7f446811e4cc9b3a2cc4f7d45a9a581309d5c3e96a63a7c5a"
+    },
+    {
+      "sequence": 28,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part028",
+      "offset": 13230000,
+      "bytes": 490000,
+      "sha256": "eca658da18e3804543b34670b927c22288481d812829c1ea2deb6f300a24618d"
+    },
+    {
+      "sequence": 29,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part029",
+      "offset": 13720000,
+      "bytes": 490000,
+      "sha256": "d291262a37964b5fe3376aa4edb7ef90d4a95d3371278a0bc0821fa51408a209"
+    },
+    {
+      "sequence": 30,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part030",
+      "offset": 14210000,
+      "bytes": 490000,
+      "sha256": "9d69d94bbe640deb35ece81333f48e6f8fc9201584b4c5e9e90eeb05d8ec2d26"
+    },
+    {
+      "sequence": 31,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part031",
+      "offset": 14700000,
+      "bytes": 490000,
+      "sha256": "1b77445ee7be5769351a634cc656121853976b4eb636bef5fa198c57b7a99bed"
+    },
+    {
+      "sequence": 32,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part032",
+      "offset": 15190000,
+      "bytes": 490000,
+      "sha256": "d998fa40e41cbd572f6a513bede6727a56fe7cb3d93131b98aab781dfedae3a3"
+    },
+    {
+      "sequence": 33,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part033",
+      "offset": 15680000,
+      "bytes": 490000,
+      "sha256": "a3af1fdc72d01f92cfe41fe77553de818ea20236862589f46275ba473756f141"
+    },
+    {
+      "sequence": 34,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part034",
+      "offset": 16170000,
+      "bytes": 490000,
+      "sha256": "a59c9a140ed01ec64b3628e616bb1529004817e41afa917b29f6f74fdc1c6267"
+    },
+    {
+      "sequence": 35,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part035",
+      "offset": 16660000,
+      "bytes": 490000,
+      "sha256": "bf44117d44074746df382dd6501b1a7644db8398618fca6a8327494450b89ecb"
+    },
+    {
+      "sequence": 36,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part036",
+      "offset": 17150000,
+      "bytes": 490000,
+      "sha256": "78262b9d4c438e5572b662b11d14c4efc5323b29f1ed4ea03b4d8632154eb84e"
+    },
+    {
+      "sequence": 37,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part037",
+      "offset": 17640000,
+      "bytes": 490000,
+      "sha256": "01d9dea4b26bd6923b5ba8357ddde883c9fe8c86b0fb1914cd45cddcca1b9921"
+    },
+    {
+      "sequence": 38,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part038",
+      "offset": 18130000,
+      "bytes": 490000,
+      "sha256": "16510359aa2d808feb67d6d084e261a9c03b4d5650ad0bb1f4ddce42c267f53c"
+    },
+    {
+      "sequence": 39,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part039",
+      "offset": 18620000,
+      "bytes": 490000,
+      "sha256": "2eeaced16ee5be204a2bfdb13f8d4e613d3468be6883e58c0375dc8309d000a5"
+    },
+    {
+      "sequence": 40,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part040",
+      "offset": 19110000,
+      "bytes": 490000,
+      "sha256": "435842ef8cd4bfaa1b4d342722fd5228b00a9cea54099afe87594790ccbd6af4"
+    },
+    {
+      "sequence": 41,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part041",
+      "offset": 19600000,
+      "bytes": 490000,
+      "sha256": "8143e67fa6016f275b943915c6ff856f95231775af29b4b1a651dbfcca04a2ec"
+    },
+    {
+      "sequence": 42,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part042",
+      "offset": 20090000,
+      "bytes": 490000,
+      "sha256": "df237b3ff413a729ac52b5636034f83d3b5974c364c950f22ec809fe9c2da73a"
+    },
+    {
+      "sequence": 43,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part043",
+      "offset": 20580000,
+      "bytes": 490000,
+      "sha256": "640ee8c92c284a2c7c01fc788b98d2f056d2acb5065402aa81576b645a7dcc35"
+    },
+    {
+      "sequence": 44,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part044",
+      "offset": 21070000,
+      "bytes": 490000,
+      "sha256": "ad8d35eca1913b5398a7ea8f3e30424a1c2fcf9ca616004e9dfb5df89c6bd1df"
+    },
+    {
+      "sequence": 45,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part045",
+      "offset": 21560000,
+      "bytes": 490000,
+      "sha256": "19f9140b32e0fedc5586a6248000f4cd5936d6fe87dd9498608b642e75b52fed"
+    },
+    {
+      "sequence": 46,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part046",
+      "offset": 22050000,
+      "bytes": 490000,
+      "sha256": "7fe08b53071d3912833ca31733f8fc44405010eb84f5b854fdd6834f4f0ed277"
+    },
+    {
+      "sequence": 47,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part047",
+      "offset": 22540000,
+      "bytes": 490000,
+      "sha256": "96a33f55587b4f48051c9f3adc697e960404eb17b90b163f27c4577e5daff95f"
+    },
+    {
+      "sequence": 48,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part048",
+      "offset": 23030000,
+      "bytes": 490000,
+      "sha256": "efcf541566ad88b76a341f5416d9feff4e9fa41eb704fe35d59c3661aa064e18"
+    },
+    {
+      "sequence": 49,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part049",
+      "offset": 23520000,
+      "bytes": 490000,
+      "sha256": "8dc910e9364d59d54f88f4792df0de9d9b2d78f1462749802ffabd34d83d62f7"
+    },
+    {
+      "sequence": 50,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part050",
+      "offset": 24010000,
+      "bytes": 490000,
+      "sha256": "32a7992fb7a17fcca5957a62151b5589bf8a70f81047f691091d10b601949d7d"
+    },
+    {
+      "sequence": 51,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part051",
+      "offset": 24500000,
+      "bytes": 490000,
+      "sha256": "5a5105f981d74aff92e7d95aa0d5f80f8206d109e5c35f42d7c34e39d6b5f8aa"
+    },
+    {
+      "sequence": 52,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part052",
+      "offset": 24990000,
+      "bytes": 490000,
+      "sha256": "80c524293b7954fa55fd198ebb51e1b539b092b021f864d809d889f117f0ab4d"
+    },
+    {
+      "sequence": 53,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part053",
+      "offset": 25480000,
+      "bytes": 490000,
+      "sha256": "47875f13a5a192b06f238b64bbbc8fb489a1d3f5e4bb6e26272f11bc4d0491f6"
+    },
+    {
+      "sequence": 54,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part054",
+      "offset": 25970000,
+      "bytes": 490000,
+      "sha256": "07a33b5e2fa3866680cde716859ae17a9cd5a322b4ace24f94937f1f11be88b3"
+    },
+    {
+      "sequence": 55,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part055",
+      "offset": 26460000,
+      "bytes": 490000,
+      "sha256": "7827a56591f6d6524be7290cd23c4d2731398383385ad5b258e4accc84832fe2"
+    },
+    {
+      "sequence": 56,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part056",
+      "offset": 26950000,
+      "bytes": 490000,
+      "sha256": "b84df5456871455ec589036a6d10cb7726c7a62aa50d241a38639b222817fbec"
+    },
+    {
+      "sequence": 57,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part057",
+      "offset": 27440000,
+      "bytes": 490000,
+      "sha256": "a4806498d835c799cc35d3b8eacefe9a9dc5a907e70503a6fbfbbebca1d0048f"
+    },
+    {
+      "sequence": 58,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part058",
+      "offset": 27930000,
+      "bytes": 490000,
+      "sha256": "e797b4440a0b18dfa2f5fd175e30d1ebc554bd4f091a4f060b01f15fb6116974"
+    },
+    {
+      "sequence": 59,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part059",
+      "offset": 28420000,
+      "bytes": 490000,
+      "sha256": "fcb3b6450626d09618f6d689fc4729d20239b522e2b16b77e9215b4067b56345"
+    },
+    {
+      "sequence": 60,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part060",
+      "offset": 28910000,
+      "bytes": 490000,
+      "sha256": "6427a479764bac7f083282040313f2c28839c8103d486921e141887a3f299b64"
+    },
+    {
+      "sequence": 61,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part061",
+      "offset": 29400000,
+      "bytes": 490000,
+      "sha256": "b4f82356f519406cb3c21857d5d25007eada278d1e95ca503514f503eeeeff10"
+    },
+    {
+      "sequence": 62,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part062",
+      "offset": 29890000,
+      "bytes": 490000,
+      "sha256": "0b3a4e05d98023f5db608c36d680f13d7592490fc7d3b872928c0faf006f7eb6"
+    },
+    {
+      "sequence": 63,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part063",
+      "offset": 30380000,
+      "bytes": 490000,
+      "sha256": "af4da23829c5c858dca8108c043ef2653e478e5aae56eebe92b20701dc1bf4dc"
+    },
+    {
+      "sequence": 64,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part064",
+      "offset": 30870000,
+      "bytes": 490000,
+      "sha256": "38207505ac8614255738491a6a66ebbc2b8c837d2720fc4eab93cef3041e04b5"
+    },
+    {
+      "sequence": 65,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part065",
+      "offset": 31360000,
+      "bytes": 490000,
+      "sha256": "54d72d4ae1440be0215beb02fdc16106eeecac93b6b79a2a08d6395e55c4fd25"
+    },
+    {
+      "sequence": 66,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part066",
+      "offset": 31850000,
+      "bytes": 490000,
+      "sha256": "05db97b4b30e33b49c1fa30c16d708f2bdcb5169c6b78b4e342da7ea3dc615d7"
+    },
+    {
+      "sequence": 67,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part067",
+      "offset": 32340000,
+      "bytes": 490000,
+      "sha256": "2366ba118109ae057d3648f5afa66cf1941752b0bbd23a513bc4998726ec494f"
+    },
+    {
+      "sequence": 68,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part068",
+      "offset": 32830000,
+      "bytes": 490000,
+      "sha256": "5d7ead94f9ba639ea542c04eb7428a70fbd10559a588a2d7fa49a8d403316227"
+    },
+    {
+      "sequence": 69,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part069",
+      "offset": 33320000,
+      "bytes": 490000,
+      "sha256": "855fb9bac9797c8f7c406d460d6c1bbea2139f64d45209181e8a4bcb69f31d19"
+    },
+    {
+      "sequence": 70,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part070",
+      "offset": 33810000,
+      "bytes": 490000,
+      "sha256": "2f2eb7f3937da4843f15f9fb3ea1b161f37541035805bd999ba31709e7ce2bfd"
+    },
+    {
+      "sequence": 71,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part071",
+      "offset": 34300000,
+      "bytes": 490000,
+      "sha256": "ffebf92bc6efb7a4bf080c27415e7b37f728462b49067237a1c901668ff26e40"
+    },
+    {
+      "sequence": 72,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part072",
+      "offset": 34790000,
+      "bytes": 490000,
+      "sha256": "53477bb3d9fefc975ca1fad535aa051bbf2c2bb728f39864d761f5d4cb554a9a"
+    },
+    {
+      "sequence": 73,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part073",
+      "offset": 35280000,
+      "bytes": 490000,
+      "sha256": "55538d08cb55952ffc807a3701af57b95ac59d084dcdee0b5b0f2e8c608ba9fa"
+    },
+    {
+      "sequence": 74,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part074",
+      "offset": 35770000,
+      "bytes": 490000,
+      "sha256": "a248cbc65a8e62888eb643d3505cd255c81fc085e47fedf30a1224624775804c"
+    },
+    {
+      "sequence": 75,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part075",
+      "offset": 36260000,
+      "bytes": 490000,
+      "sha256": "7291a5c57ef37c17f90c7ba9418eb4c525cbf3b095a266556b93ba7ff2a708c7"
+    },
+    {
+      "sequence": 76,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part076",
+      "offset": 36750000,
+      "bytes": 490000,
+      "sha256": "ff98de84bb788bb13cd0db17d60371d278211ea9437002d244fe99d854165b27"
+    },
+    {
+      "sequence": 77,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part077",
+      "offset": 37240000,
+      "bytes": 490000,
+      "sha256": "4ca96dc723e4537ad873d24bd01b47be2ea9d3141784f3d665d38b9f6f91a8e6"
+    },
+    {
+      "sequence": 78,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part078",
+      "offset": 37730000,
+      "bytes": 490000,
+      "sha256": "06d98576b421f31697bafaf175540cca7db2ae5ab697027b0aa4344b34327f7d"
+    },
+    {
+      "sequence": 79,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part079",
+      "offset": 38220000,
+      "bytes": 490000,
+      "sha256": "c9009d52e3979d62a38167c458fdccb0c571e4475331047e619d35470f6eec21"
+    },
+    {
+      "sequence": 80,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part080",
+      "offset": 38710000,
+      "bytes": 490000,
+      "sha256": "094dd0a54d61b65fbcd51cd5df177ec06678759d9756d8bc1ee59b273094db66"
+    },
+    {
+      "sequence": 81,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part081",
+      "offset": 39200000,
+      "bytes": 490000,
+      "sha256": "213a370dc88aa8e5a4b436ae846179c373e375ad0d9d37ba1f5b3043253eeab5"
+    },
+    {
+      "sequence": 82,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part082",
+      "offset": 39690000,
+      "bytes": 490000,
+      "sha256": "68cce64c5d3945a90fa2e8f46e9af4d656afb9ded3be6385aec4a1e135dc554e"
+    },
+    {
+      "sequence": 83,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part083",
+      "offset": 40180000,
+      "bytes": 490000,
+      "sha256": "789c8353a4d153649864e1372fbe6e7a1978c3fe9a786532bde9155e3c0b77ea"
+    },
+    {
+      "sequence": 84,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part084",
+      "offset": 40670000,
+      "bytes": 490000,
+      "sha256": "8235bd0a3bd1c49f0645e62ff448290fd991d0ecb3f84ce13ceed1a1db317fca"
+    },
+    {
+      "sequence": 85,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part085",
+      "offset": 41160000,
+      "bytes": 490000,
+      "sha256": "acf60ef1af9e95ac4d89ca53871d858fe7c08095cb4a0b4b519db9a793eccd59"
+    },
+    {
+      "sequence": 86,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part086",
+      "offset": 41650000,
+      "bytes": 490000,
+      "sha256": "ff3ee76a84daa2eefc6ec473883d1da2d417377d2a7f1cb26c75bf0d378ce503"
+    },
+    {
+      "sequence": 87,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part087",
+      "offset": 42140000,
+      "bytes": 490000,
+      "sha256": "ee37afb376a58648cb8bb3328bbffb0f2a5ac46290c179b97e79ef0940bbab6c"
+    },
+    {
+      "sequence": 88,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part088",
+      "offset": 42630000,
+      "bytes": 490000,
+      "sha256": "9780a5c61d1aad62bb4c5d8c4eacec5c5b4b1b337245d63472cd1fe082606b2e"
+    },
+    {
+      "sequence": 89,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part089",
+      "offset": 43120000,
+      "bytes": 490000,
+      "sha256": "1ea09ac8aaf85d61b82b3b2b01735dad64b59a868d12cd48066347b67c2c6753"
+    },
+    {
+      "sequence": 90,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part090",
+      "offset": 43610000,
+      "bytes": 490000,
+      "sha256": "826d450d0de7aecff1ccbaa47848c47dcbd299fcf79a064b2aeed735859f3ad6"
+    },
+    {
+      "sequence": 91,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part091",
+      "offset": 44100000,
+      "bytes": 490000,
+      "sha256": "4fe99afd3a4509fcebf6c2a72614e8ba9d44f583cc1a2d513847c395442d6551"
+    },
+    {
+      "sequence": 92,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part092",
+      "offset": 44590000,
+      "bytes": 490000,
+      "sha256": "0e747b7c1d3bd54ab04b8dae7bd6c0da4f374d6bfad86dbbb0c43f0a3a2e4a2d"
+    },
+    {
+      "sequence": 93,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part093",
+      "offset": 45080000,
+      "bytes": 490000,
+      "sha256": "7f63098addbeccf40f02104a5bf8d659a7edfdaa855f8e77ba5ffdb19f0d92f3"
+    },
+    {
+      "sequence": 94,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part094",
+      "offset": 45570000,
+      "bytes": 490000,
+      "sha256": "87c0d5df032be6bcbd963d5969d1d857837100f1c7e3739284611fd992e66b09"
+    },
+    {
+      "sequence": 95,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part095",
+      "offset": 46060000,
+      "bytes": 490000,
+      "sha256": "5f0b0aafb2dfbb27ef01c54e71aaea65ac41fbcf041819abb0798e3d15e5612f"
+    },
+    {
+      "sequence": 96,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part096",
+      "offset": 46550000,
+      "bytes": 490000,
+      "sha256": "ffee5d4849a7b1dbf9288d38d0146765f28d732fb36b36428ae6fe50aabb4c7e"
+    },
+    {
+      "sequence": 97,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part097",
+      "offset": 47040000,
+      "bytes": 490000,
+      "sha256": "7c57315303e7b7f9c11294b9ff6ccdc63bba4c1b9198b7250fb7925b18eacfb7"
+    },
+    {
+      "sequence": 98,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part098",
+      "offset": 47530000,
+      "bytes": 490000,
+      "sha256": "4452e408fe6c95d08a5c91fff231d95c95dc72dc747d03b409bdd43500af0a30"
+    },
+    {
+      "sequence": 99,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part099",
+      "offset": 48020000,
+      "bytes": 490000,
+      "sha256": "1523527ede9c170b3808e1a53a2b878c15b24ab341d25c440d2f1fa3d81e0e21"
+    },
+    {
+      "sequence": 100,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part100",
+      "offset": 48510000,
+      "bytes": 490000,
+      "sha256": "35a63c15ce180d8dba0d5ac78b4d29a90b787c29ced34cce05880c78ba73e62e"
+    },
+    {
+      "sequence": 101,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part101",
+      "offset": 49000000,
+      "bytes": 490000,
+      "sha256": "e9cbbc3655706014f2c7306aac1df4a939941557622424fff5151035b34b85b2"
+    },
+    {
+      "sequence": 102,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part102",
+      "offset": 49490000,
+      "bytes": 490000,
+      "sha256": "84055341a005f812c09dd2440805eda55b7680cbaba4d9cb0074cb10d6ca420f"
+    },
+    {
+      "sequence": 103,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part103",
+      "offset": 49980000,
+      "bytes": 490000,
+      "sha256": "b69346880416008075317e2d7da94b152e790e7659a3bdc50b033958b86718b2"
+    },
+    {
+      "sequence": 104,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part104",
+      "offset": 50470000,
+      "bytes": 490000,
+      "sha256": "7c081a16d970355687b5937f6baa0c2a4a613d96939098c6dae7b9b83528c5d2"
+    },
+    {
+      "sequence": 105,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part105",
+      "offset": 50960000,
+      "bytes": 490000,
+      "sha256": "e5f40ebbfa693a000a44738f846ab4d3336cf15cd833e3577079316c7bdbfc24"
+    },
+    {
+      "sequence": 106,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part106",
+      "offset": 51450000,
+      "bytes": 490000,
+      "sha256": "6acd2547d7f9c18a482c8ce194a07eed16454e4bb5a310f05e4d4fdaa21a26ea"
+    },
+    {
+      "sequence": 107,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part107",
+      "offset": 51940000,
+      "bytes": 490000,
+      "sha256": "9630e0922de3cc83b41562144648a5f54d4ceda14bcbf82ebfa81162e0400ccf"
+    },
+    {
+      "sequence": 108,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part108",
+      "offset": 52430000,
+      "bytes": 490000,
+      "sha256": "cef1341c77e21c60a110b34d45a6619ff0c2115290db303284f2ed7a6aca0ca6"
+    },
+    {
+      "sequence": 109,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part109",
+      "offset": 52920000,
+      "bytes": 490000,
+      "sha256": "c5a44d1b98cd3499f5ea0fa4f7b166f01f3e1d247e34be4a5f7aaaf748458c18"
+    },
+    {
+      "sequence": 110,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part110",
+      "offset": 53410000,
+      "bytes": 490000,
+      "sha256": "ccd9fa690d606a23f46c08dfe7e7e862e632b5d80b8cb06b4c3b20a0e25e0f6f"
+    },
+    {
+      "sequence": 111,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part111",
+      "offset": 53900000,
+      "bytes": 490000,
+      "sha256": "29db9b448e6866391063f0b4c748f65ebb974816c31f8dc00f58fd8c411ece9c"
+    },
+    {
+      "sequence": 112,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part112",
+      "offset": 54390000,
+      "bytes": 490000,
+      "sha256": "ca362a37e0ccc1d40402342e1b3b283a95cd601b6e6a4afc457754eb49b80967"
+    },
+    {
+      "sequence": 113,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part113",
+      "offset": 54880000,
+      "bytes": 490000,
+      "sha256": "8a70ee11ae37b66d490a453913e3dd86bbd77c2f6d8eb36e250b1c40a29713cd"
+    },
+    {
+      "sequence": 114,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part114",
+      "offset": 55370000,
+      "bytes": 490000,
+      "sha256": "66c68c99dd845af9299df7493e75cae6b846025a63bfa5abde2870472e7cc13e"
+    },
+    {
+      "sequence": 115,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part115",
+      "offset": 55860000,
+      "bytes": 490000,
+      "sha256": "feef77741eacdba15d2e711df96bb73486828113592b51ab692c3e04f138b6f4"
+    },
+    {
+      "sequence": 116,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part116",
+      "offset": 56350000,
+      "bytes": 490000,
+      "sha256": "50cd4145f3ec24996e6072ffc886e509a0a12420a4195e9a53d73548c1dcb4ab"
+    },
+    {
+      "sequence": 117,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part117",
+      "offset": 56840000,
+      "bytes": 490000,
+      "sha256": "cb9505a69b8ad5ca643614ac7902ad0722aae5c19dc691f1b7c9755219666a64"
+    },
+    {
+      "sequence": 118,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part118",
+      "offset": 57330000,
+      "bytes": 490000,
+      "sha256": "32f07dcf66b7e1d2889012f50d7b14c70335abacda7c9178ca9418ba07692db6"
+    },
+    {
+      "sequence": 119,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part119",
+      "offset": 57820000,
+      "bytes": 490000,
+      "sha256": "102b90e07ff8daf10cd06fcedc7526773f104c4dd624c50e4cccc4b8ef4d2db1"
+    },
+    {
+      "sequence": 120,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part120",
+      "offset": 58310000,
+      "bytes": 490000,
+      "sha256": "9d8a2dfbd62fa9aa492f256f32f1be14df51cf27cbb657101646b4f637ecbaac"
+    },
+    {
+      "sequence": 121,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part121",
+      "offset": 58800000,
+      "bytes": 490000,
+      "sha256": "1abafd748423f5a4fd65a42467a0d9b21460b8fa4c81b527d2e2d2aad5b7db20"
+    },
+    {
+      "sequence": 122,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part122",
+      "offset": 59290000,
+      "bytes": 490000,
+      "sha256": "ce74699e8afe49eeaadea532627f8473b34dc004698162a385c301a81e2c4c5c"
+    },
+    {
+      "sequence": 123,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part123",
+      "offset": 59780000,
+      "bytes": 490000,
+      "sha256": "2396f42ac42f505a5030758920c96fa4a9488401bef82de91e094cb94b45f652"
+    },
+    {
+      "sequence": 124,
+      "path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/archive.part124",
+      "offset": 60270000,
+      "bytes": 109436,
+      "sha256": "f10c5dc29d67f029530584c5eaf369520d1232ed2bed9343d98b3fa6ed0a2a75"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

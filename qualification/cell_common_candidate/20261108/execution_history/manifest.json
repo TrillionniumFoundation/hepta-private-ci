@@ -650,6 +650,87 @@
       "file_member_count": 219,
       "manifest_path": "packets/e54-learning-checkpoint-source-publication-history-v1/manifest.json",
       "manifest_sha256": "f004522e194d736935310f44f56e90ef5fceea37faec192f118637f1476f6b62"
+    },
+    {
+      "packet_id": "bf42-original-native-terminal-failure-v1",
+      "scope": "Original bf42 native CI terminal failure with raw/JUnit case closure, original retries and overlap retained",
+      "archive_bytes": 6453120,
+      "archive_sha256": "93bd9903de1191055d6a1811d4b2ba7fed401e1fd4261c653df5fdcdbd1fd19a",
+      "file_member_count": 234,
+      "manifest_path": "packets/bf42-original-native-terminal-failure-v1/manifest.json",
+      "manifest_sha256": "792a753660b0ae9b82e74431cfe4a72741e9ea02bda6cf8d462e41862e7cdbee"
+    },
+    {
+      "packet_id": "windows-appserver-bazel-preparation-attempt1-recovery-request-v1",
+      "scope": "Separate 3f084 Bazel observer preparation/publication and first dependency failure plus one authorized recovery request; native zero",
+      "archive_bytes": 3290756,
+      "archive_sha256": "66cf86773b716105694c61d307ab34f4c766e32bb6d5bfb606401419bf9d50a3",
+      "file_member_count": 332,
+      "manifest_path": "packets/windows-appserver-bazel-preparation-attempt1-recovery-request-v1/manifest.json",
+      "manifest_sha256": "9bff8f16b59ad527719b2985f801d1a94f1d21142d57a9d5d77bd08f36c3b623"
+    },
+    {
+      "packet_id": "windows-appserver-bazel-attempt2-dependency-failure-v1",
+      "scope": "Same separate 3f084/b61 observer second dependency GET504 failure, all original bytes and idempotent collector reconciliation; native zero",
+      "archive_bytes": 3136204,
+      "archive_sha256": "05be50a6a4beb82b236e63d284b83bc9c97fab145243d8bc247b0980eef1dfc5",
+      "file_member_count": 79,
+      "manifest_path": "packets/windows-appserver-bazel-attempt2-dependency-failure-v1/manifest.json",
+      "manifest_sha256": "e8158d0f77e81d9a60eee4f0039f8c18e04455368826b137943cbf18282c30b5"
+    },
+    {
+      "packet_id": "evidence-increment005-three-upload-attempts-and-readbacks-v1",
+      "scope": "Three original uploads of identical evidence commit, failed/unknown attempts, readonly reconciliation and final remote readback; no tests",
+      "archive_bytes": 66424,
+      "archive_sha256": "66e9e35f03bf605ab75b0c99e32e3d13269c718153ff1cb3eda59c7d503069d3",
+      "file_member_count": 243,
+      "manifest_path": "packets/evidence-increment005-three-upload-attempts-and-readbacks-v1/manifest.json",
+      "manifest_sha256": "dd37d9aeededcec00be3b2fc304614a4345ee42cb7f79f76efec5d2263ad510c"
+    },
+    {
+      "packet_id": "windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1",
+      "scope": "Separate a57 missing-Clippy and 5eee actual fixture compilation failures, native zero; 3f084 successor publication at its original pending cutoff",
+      "archive_bytes": 60379436,
+      "archive_sha256": "b9c36855ed79e25f2e3b572efed0720390a274eae38445d71daddc7c49165d40",
+      "file_member_count": 454,
+      "manifest_path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/manifest.json",
+      "manifest_sha256": "d22f38312d442c4de616534daf8f35f0da996de3d9ba4a29cda63bc31146e1ee"
+    },
+    {
+      "packet_id": "windows-appserver-3f084-two-V8-download-failures-v1",
+      "scope": "Two original same-source Cargo observer V8 HTTP504 failures; unique five selected cases all not run, one explicit recovery only",
+      "archive_bytes": 470808,
+      "archive_sha256": "47d9e17ea3011467b45959b90568b0330e790afef6d41e4ea6ccce8388c25567",
+      "file_member_count": 141,
+      "manifest_path": "packets/windows-appserver-3f084-two-V8-download-failures-v1/manifest.json",
+      "manifest_sha256": "2be4b81293c47c1643be95098759abc08528e353d9f52096f99f42e2e08746d5"
+    },
+    {
+      "packet_id": "appserver-3f084-native-owning-and-bfcbdb2-counterfactual-history-v1",
+      "scope": "Separate 3f084 Linux owning 1348 PASS/2 ignored and original-broadcast counterfactual two actual FAIL, plus all bounded preparation/readback histories; 27 binaries host-only",
+      "archive_bytes": 4358348,
+      "archive_sha256": "dd1a594cc460905bfc47cb0d3050e6dbb9335526954905f39558738d7dc99f3d",
+      "file_member_count": 418,
+      "manifest_path": "packets/appserver-3f084-native-owning-and-bfcbdb2-counterfactual-history-v1/manifest.json",
+      "manifest_sha256": "2d1f10e383c0e347cd955be88fa85955ceb8c7c85e57f9803339dd1bb0511732"
+    },
+    {
+      "packet_id": "learning-checkpoint-next-bootstrap-review-e54-v1",
+      "scope": "Separate e54 readonly next-bootstrap boundary audit; existing tested checkpoint transport is not ordinary-daemon learning installation or new execution",
+      "archive_bytes": 56712,
+      "archive_sha256": "d61f5f8509c1089d0d871d599a068b968e15c2b51d74be284a35e92add5d1e8a",
+      "file_member_count": 40,
+      "manifest_path": "packets/learning-checkpoint-next-bootstrap-review-e54-v1/manifest.json",
+      "manifest_sha256": "715b05b60d117e4539607f5c4ce933abd474a6e204e50491576a4b298e685e88"
+    },
+    {
+      "packet_id": "bf42-original-ci-api-snapshots007-008-terminal-v1",
+      "scope": "Original API-only snapshots007 and008; terminal18 runs 12success/3skipped/3failure; repeated run observations not test executions",
+      "archive_bytes": 36168,
+      "archive_sha256": "ded93291d9b023704d8be4c75f5600028bfe0b9dc22c74994d67e9c76d7e49a5",
+      "file_member_count": 145,
+      "manifest_path": "packets/bf42-original-ci-api-snapshots007-008-terminal-v1/manifest.json",
+      "manifest_sha256": "708f84ef33424e5191e4ef07b0d8fe10931b2fa60eb0abd1421e31b7b416802a"
     }
   ],
   "max_chunk_bytes": 490000,
@@ -671,7 +752,7 @@
   "publication_commit_location": "external_git_readback_receipt",
   "source_branch_mutated_by_publication": false,
   "counts_and_wall_times_must_not_be_added_across_packets": true,
-  "preceding_evidence_commit": "5a3137e8ed198a07eb63bd97b5bb639f4471011f",
+  "preceding_evidence_commit": "97543a30b941122ee42c99ab95c2dbf639ac6576",
   "latest_reviewed_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
   "latest_reviewed_common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
   "increment003_original_metadata_observations": [
@@ -1065,17 +1146,6 @@
       "complete_original_case_results_qualified": false,
       "base_and_source_lanes_must_keep_separate_identities": true
     },
-    "remaining_common_ci_at_cutoff": {
-      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
-      "scope": [
-        "native composition",
-        "original Windows regressions",
-        "Windows arm64 V8",
-        "Windows x64 V8"
-      ],
-      "state": "in_progress_at_cutoff",
-      "later_results_inferred": false
-    },
     "original_windows_regression": {
       "packet_id": "bf42-original-windows-regression-failure-v1",
       "run_id": 42553073234,
@@ -1136,20 +1206,274 @@
       "new_tests_executed_by_readback": false,
       "full_history_cost": null
     },
+    "prior_checkpoint_ci_observations_before_increment006": {
+      "evidence_commit": "97543a30b941122ee42c99ab95c2dbf639ac6576",
+      "index_sha256": "33da1f4d0d31c0251fb5a303e72aa31a561b961e01e0c6495b6b234b6857cf9e",
+      "original_fields": {
+        "latest_common_ci_api_observation": {
+          "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+          "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+          "observation_cutoff": "2026-11-09T04:41:07.054469+00:00",
+          "summary_original_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-current-snapshot-006/SUMMARY.json",
+          "summary_original_bytes": 7032,
+          "summary_original_sha256": "d4826f12f62bf013da903e12065de8092f572558f641f590b5ecbf5b7d438fdf",
+          "workflow_run_count": 18,
+          "all_run_api_head_sha_equal_common": true,
+          "all_common_workflows_terminal": false,
+          "in_progress_job_ids": [
+            128952701454,
+            128953446740
+          ],
+          "run_observations": [
+            {
+              "id": 42553073435,
+              "name": "Hepta Windows private-state native (security qualification only)",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073516,
+              "name": "v8-canary",
+              "status": "in_progress",
+              "conclusion": null,
+              "nonpassing_jobs": [
+                {
+                  "id": 128953446740,
+                  "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "started_at": "2026-11-09T02:53:05Z",
+                  "completed_at": null,
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073516/job/128953446740"
+                }
+              ]
+            },
+            {
+              "id": 42553073264,
+              "name": "Hepta HCSN training bridge",
+              "status": "completed",
+              "conclusion": "skipped",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073130,
+              "name": "App-server schema refresh",
+              "status": "completed",
+              "conclusion": "skipped",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073141,
+              "name": "Production HOS2 owner proposal",
+              "status": "completed",
+              "conclusion": "skipped",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073121,
+              "name": "Hepta Cell research stage evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073195,
+              "name": "Hepta PRED-1 CPU checks",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073191,
+              "name": "Hepta MEM-1 evidence verifier",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073280,
+              "name": "Hepta EVOLVE-1 CPU contracts",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073159,
+              "name": "Hepta VERIFY-1 engineering validation",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073323,
+              "name": "Keyring synchronous backend lock proposal",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073131,
+              "name": "Bazel stable lock proposal",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073250,
+              "name": "Rust UI product foundation",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073160,
+              "name": "blocking-ci",
+              "status": "completed",
+              "conclusion": "failure",
+              "nonpassing_jobs": [
+                {
+                  "id": 128953043649,
+                  "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:51:34Z",
+                  "completed_at": "2026-11-09T03:05:52Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043649"
+                },
+                {
+                  "id": 128953043675,
+                  "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:52:24Z",
+                  "completed_at": "2026-11-09T03:09:09Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043675"
+                },
+                {
+                  "id": 128953043702,
+                  "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:52:13Z",
+                  "completed_at": "2026-11-09T03:21:17Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043702"
+                },
+                {
+                  "id": 128953043792,
+                  "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:52:25Z",
+                  "completed_at": "2026-11-09T03:06:54Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043792"
+                },
+                {
+                  "id": 128957722404,
+                  "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T03:08:57Z",
+                  "completed_at": "2026-11-09T03:09:00Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128957722404"
+                },
+                {
+                  "id": 128961511532,
+                  "name": "CI required",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T03:25:12Z",
+                  "completed_at": "2026-11-09T03:25:24Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128961511532"
+                }
+              ]
+            },
+            {
+              "id": 42553073125,
+              "name": "Hepta architecture convergence",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073234,
+              "name": "Windows original CI regressions (declared scope only)",
+              "status": "completed",
+              "conclusion": "failure",
+              "nonpassing_jobs": [
+                {
+                  "id": 128952720859,
+                  "name": "original-regressions",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:50:38Z",
+                  "completed_at": "2026-11-09T03:51:04Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073234/job/128952720859"
+                }
+              ]
+            },
+            {
+              "id": 42553066841,
+              "name": "Hepta Cell research stage evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553066862,
+              "name": "Hepta Cell framework native validation",
+              "status": "in_progress",
+              "conclusion": null,
+              "nonpassing_jobs": [
+                {
+                  "id": 128952701454,
+                  "name": "Cell framework (agentd-composition)",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "started_at": "2026-11-09T02:50:44Z",
+                  "completed_at": null,
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553066862/job/128952701454"
+                }
+              ]
+            }
+          ],
+          "observation_scope": "Original GitHub API workflow/job state only, not native case counts or new test execution. Prior cutoffs and their case evidence remain unchanged.",
+          "api_status_is_not_case_result": true,
+          "scientific_advancement_claimed": false,
+          "physical_cost": null,
+          "full_history_cost": null
+        },
+        "remaining_common_ci_at_cutoff": {
+          "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+          "scope": [
+            "native composition",
+            "original Windows regressions",
+            "Windows arm64 V8",
+            "Windows x64 V8"
+          ],
+          "state": "in_progress_at_cutoff",
+          "later_results_inferred": false
+        }
+      },
+      "retained_without_relabelling": true
+    },
     "latest_common_ci_api_observation": {
       "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
       "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
-      "observation_cutoff": "2026-11-09T04:41:07.054469+00:00",
-      "summary_original_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-current-snapshot-006/SUMMARY.json",
-      "summary_original_bytes": 7032,
-      "summary_original_sha256": "d4826f12f62bf013da903e12065de8092f572558f641f590b5ecbf5b7d438fdf",
+      "observation_cutoff": "2026-11-09T05:38:20.207529+00:00",
+      "packet_id": "bf42-original-ci-api-snapshots007-008-terminal-v1",
+      "summary_original_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-current-snapshot-008/SUMMARY.json",
+      "summary_original_bytes": 6654,
+      "summary_original_sha256": "06ce5c9a96c590eee0eac3c3275542c7fe94b84312884a7dbdf1b60451662a9e",
       "workflow_run_count": 18,
       "all_run_api_head_sha_equal_common": true,
-      "all_common_workflows_terminal": false,
-      "in_progress_job_ids": [
-        128952701454,
-        128953446740
-      ],
+      "all_common_workflows_terminal": true,
+      "in_progress_job_ids": [],
+      "conclusion_counts_not_test_counts": {
+        "success": 12,
+        "skipped": 3,
+        "failure": 3
+      },
       "run_observations": [
         {
           "id": 42553073435,
@@ -1161,19 +1485,9 @@
         {
           "id": 42553073516,
           "name": "v8-canary",
-          "status": "in_progress",
-          "conclusion": null,
-          "nonpassing_jobs": [
-            {
-              "id": 128953446740,
-              "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
-              "status": "in_progress",
-              "conclusion": null,
-              "started_at": "2026-11-09T02:53:05Z",
-              "completed_at": null,
-              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073516/job/128953446740"
-            }
-          ]
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
         },
         {
           "id": 42553073264,
@@ -1348,25 +1662,229 @@
         {
           "id": 42553066862,
           "name": "Hepta Cell framework native validation",
-          "status": "in_progress",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "failure",
           "nonpassing_jobs": [
             {
               "id": 128952701454,
               "name": "Cell framework (agentd-composition)",
-              "status": "in_progress",
-              "conclusion": null,
+              "status": "completed",
+              "conclusion": "failure",
               "started_at": "2026-11-09T02:50:44Z",
-              "completed_at": null,
+              "completed_at": "2026-11-09T05:25:39Z",
               "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553066862/job/128952701454"
             }
           ]
         }
       ],
-      "observation_scope": "Original GitHub API workflow/job state only, not native case counts or new test execution. Prior cutoffs and their case evidence remain unchanged.",
+      "observation_scope": "Original GitHub API workflow/job state only; actual test results and base-merge checkout identities remain separately bound.",
       "api_status_is_not_case_result": true,
       "scientific_advancement_claimed": false,
       "physical_cost": null,
+      "full_history_cost": null
+    },
+    "remaining_common_ci_at_cutoff": {
+      "observation_cutoff": "2026-11-09T05:38:20.207529+00:00",
+      "scope": [],
+      "state": "all_original_workflows_terminal_at_cutoff",
+      "later_results_inferred": false,
+      "packet_id": "bf42-original-ci-api-snapshots007-008-terminal-v1"
+    },
+    "original_native_workflow": {
+      "packet_id": "bf42-original-native-terminal-failure-v1",
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "actual_tested_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "actual_lane": "source-head",
+      "run_id": 42553066862,
+      "run_attempt": 1,
+      "terminal_status": "completed",
+      "conclusion": "failure",
+      "composition_job_id": 128952701454,
+      "composition_completed_at": "2026-11-09T05:25:39Z",
+      "full_workspace": {
+        "executed_unique": 20563,
+        "runner_clean_single_attempt_passed": 20562,
+        "final_failed": 1,
+        "native_attempts": 20564,
+        "original_outside_selection_skipped": 139,
+        "selected_junit_skipped": 0,
+        "command_exit_code": 100,
+        "outer_timeout": false,
+        "passed": false
+      },
+      "earlier_scoped": {
+        "executed_unique": 7910,
+        "runner_final_passed": 7910,
+        "runner_clean_single_attempt_passed": 7909,
+        "flaky_after_original_retry": 1,
+        "native_attempts": 7911,
+        "original_outside_selection_skipped": 107,
+        "selected_junit_skipped": 0,
+        "fully_clean_single_attempt_pass": false
+      },
+      "mechanisms": {
+        "executed_unique": 1215,
+        "runner_clean_single_attempt_passed": 1215,
+        "original_outside_selection_skipped": 7,
+        "selected_junit_skipped": 0
+      },
+      "separate_ignored_hostcas_parent": {
+        "executed_unique": 1,
+        "runner_clean_single_attempt_passed": 1,
+        "original_outside_selection_skipped": 791,
+        "selected_junit_skipped": 0
+      },
+      "unique_final_failure": {
+        "actual_aggregated_output_not_printed_by_original_assertion": true,
+        "binary_id": "codex-core::all",
+        "name": "suite::unified_exec::unified_exec_formats_large_output_summary",
+        "scoped_first_error": "unified_exec.rs:3186: HEAD missing; original retry passed",
+        "workspace_both_errors": "unified_exec.rs:3188: expected bytes-omitted regex not matched"
+      },
+      "phase_overlap": [
+        {
+          "left": "mechanisms",
+          "not_automatically_equivalent_feature_execution": true,
+          "right": "agentd_scoped",
+          "same_binary_case_pair_overlap": 0
+        },
+        {
+          "left": "mechanisms",
+          "not_automatically_equivalent_feature_execution": true,
+          "right": "hostcas",
+          "same_binary_case_pair_overlap": 0
+        },
+        {
+          "left": "mechanisms",
+          "not_automatically_equivalent_feature_execution": true,
+          "right": "default_workspace",
+          "same_binary_case_pair_overlap": 1215
+        },
+        {
+          "left": "agentd_scoped",
+          "not_automatically_equivalent_feature_execution": true,
+          "right": "hostcas",
+          "same_binary_case_pair_overlap": 0
+        },
+        {
+          "left": "agentd_scoped",
+          "not_automatically_equivalent_feature_execution": true,
+          "right": "default_workspace",
+          "same_binary_case_pair_overlap": 7910
+        },
+        {
+          "left": "hostcas",
+          "not_automatically_equivalent_feature_execution": true,
+          "right": "default_workspace",
+          "same_binary_case_pair_overlap": 0
+        }
+      ],
+      "scope_counts_not_added_as_unique_cases": true,
+      "raw_timeout_and_leak_markers_observed": false,
+      "raw_first_summary_and_junit_exact_case_closure": true,
+      "independent_original_nextest_listing_available": false,
+      "outside_selection_named_roster_available": false,
+      "original_successful_silent_early_return_absence": "unknown; original output capture policy retained",
+      "helper_metadata_retained": true,
+      "native_binary_bytes_archived_by_original_workflow": false,
+      "prior_xml_and_duplicate_artifacts_excluded_from_counts": true,
+      "full_history_cost": null,
+      "scientific_acceptance": false
+    },
+    "separate_source_observations": {
+      "scope": "Successor-source and observer histories; none is a bf42 execution or common-source qualification",
+      "appserver_linux": {
+        "packet_id": "appserver-3f084-native-owning-and-bfcbdb2-counterfactual-history-v1",
+        "source_sha": "3f084182eb80bd8fac0a5717a2f5911978759a06",
+        "source_tree": "3baf936ae98d761bcba25a4e38c2501407417737",
+        "owning_unique_passed": 1348,
+        "original_ignored_not_executed": 2,
+        "selected_retries": 0,
+        "counterfactual_source_sha": "bfcbdb20d378bdeab24078177128daec171c6063",
+        "counterfactual_source_tree": "6f4eb6cbf5dcb97353359d184877aa3bb0f0e995",
+        "counterfactual_actual_failed": 2,
+        "counterfactual_actual_passed": 0,
+        "counterfactual_expected_failure_is_not_product_PASS": true,
+        "source_results_not_added": true,
+        "full_workspace": false,
+        "host_only_binaries": 27,
+        "binary_bytes_archived": false,
+        "full_history_cost": null
+      },
+      "windows_cargo": {
+        "packet_id": "windows-appserver-3f084-two-V8-download-failures-v1",
+        "source_sha": "3f084182eb80bd8fac0a5717a2f5911978759a06",
+        "source_tree": "3baf936ae98d761bcba25a4e38c2501407417737",
+        "observer_sha": "f0550f79e6c8e729e60943e8e37dded924729998",
+        "observer_tree": "a1133030d8fd78b7719ea175b36a9b4a20c50a6b",
+        "run_id": 42566595607,
+        "attempts": [
+          {
+            "attempt": 1,
+            "failure_phase": "checksum_download_HTTP_504",
+            "native_test_cases_executed": 0,
+            "selected_cases_not_run": 5
+          },
+          {
+            "attempt": 2,
+            "failure_phase": "artifact_body_download_HTTP_504",
+            "native_test_cases_executed": 0,
+            "selected_cases_not_run": 5
+          }
+        ],
+        "original_case_set_size": 5,
+        "executed_across_both_attempts": 0,
+        "single_explicit_recovery_request": true,
+        "third_recovery_requested": false,
+        "junit_available": false,
+        "full_history_cost": null
+      },
+      "windows_bazel": {
+        "packets": [
+          "windows-appserver-bazel-preparation-attempt1-recovery-request-v1",
+          "windows-appserver-bazel-attempt2-dependency-failure-v1"
+        ],
+        "source_sha": "3f084182eb80bd8fac0a5717a2f5911978759a06",
+        "source_tree": "3baf936ae98d761bcba25a4e38c2501407417737",
+        "observer_sha": "b61e1a89ce6faea79d0518b990b78470e97e2244",
+        "observer_tree": "c42eae4f367d27b25c7a74846b7c1c66a4af24b2",
+        "run_id": 42566694888,
+        "attempts": [
+          {
+            "attempt": 1,
+            "failure_phase": "bazel_features_v1.50.0_dependency_HTTP504",
+            "native_test_cases_executed": 0
+          },
+          {
+            "attempt": 2,
+            "failure_phase": "rules_cc_0.2.20_dependency_HTTP504",
+            "native_test_cases_executed": 0
+          }
+        ],
+        "original_public_target": "//codex-rs/app-server:app-server-all-test",
+        "original_shards": 16,
+        "single_explicit_recovery_request": true,
+        "third_recovery_requested": false,
+        "no_native_qualification": true,
+        "full_history_cost": null
+      },
+      "checkpoint_next_bootstrap_review": {
+        "packet_id": "learning-checkpoint-next-bootstrap-review-e54-v1",
+        "source_sha": "e54f7791068ad16ff6082c148cf73798836d36e4",
+        "source_tree": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66",
+        "review_kind": "readonly_named_source_boundary_review",
+        "tested_sha": null,
+        "tests_executed_by_this_review": false,
+        "existing_checkpoint_transport_result_is_separate": true,
+        "ordinary_daemon_learning_installed": false,
+        "full_ports_production_provider": false,
+        "actual_model_learning_or_successor_consumption": false,
+        "full_history_cost": null
+      },
+      "combined_source_results": "deliberately omitted from increment006a; require a separate terminal packet and review",
+      "scientific_advancement_claimed": false,
       "full_history_cost": null
     }
   },
@@ -1488,6 +2006,83 @@
       "path": "observations/publish-evidence-increment-005-v1.py",
       "bytes": 11935,
       "sha256": "1642b2b365dbe0058c9800556cdb159e76b1608c26e3f2eaf1502171c661a2e7"
+    }
+  ],
+  "increment006_original_metadata_observations": [
+    {
+      "path": "observations/evidence-addendum-increment-006a/RESULT.json",
+      "bytes": 6944,
+      "sha256": "b22755ed31cb6a7843d0bb591262c25dea33dd5b914b3485c8d4bfeed9661573"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-006a/PATTERN_REVIEW.json",
+      "bytes": 357,
+      "sha256": "696e3aa8a255961d017e876db8c5da9e78db0fb2b655368e0291e895f7e5a70e"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-006a/VERIFY.log",
+      "bytes": 6186,
+      "sha256": "176aa75a9743028dc3d158b52d1a4fdb3fdd0a26bba8eed530eb25cac8a677a2"
+    },
+    {
+      "path": "observations/increment006-preparation-v1/REVERSE_AUDIT.json",
+      "bytes": 1277,
+      "sha256": "2db600361a2e63e2ce4a1a1f6d2ce06fb32c159df27ca367e3ebaf2bda3b3c93"
+    },
+    {
+      "path": "observations/increment006-preparation-v1/INPUT_PREPARATION.json",
+      "bytes": 2082,
+      "sha256": "da3c1c13ce137d8a29e9eeecc03e846545387500c1d0f064d405f358bc8619fa"
+    },
+    {
+      "path": "observations/increment006-preparation-v1/SNAPSHOT_API_HEAD_READBACK.json",
+      "bytes": 488,
+      "sha256": "a98c7e38a79c1f107c82e7d2e565acc7fa7dba2b063c3b031cd33f0f44583c53"
+    },
+    {
+      "path": "observations/increment006-preparation-v1/REQUIRED_JSON_PINS.json",
+      "bytes": 5372,
+      "sha256": "c49e61025397101999093857c7787290d97c2fc939d4c151beb0e5b8bd298230"
+    },
+    {
+      "path": "observations/increment006a-inputs.json",
+      "bytes": 308642,
+      "sha256": "9b843f8b5f55aff31be778170b6fe48755886ccc947f00b2a1d46b0bbab7fae4"
+    },
+    {
+      "path": "observations/append-evidence-increment-006-v1.py",
+      "bytes": 13820,
+      "sha256": "bfa2d336896c2b062c46c98aa09d7d65d8633503fdc3e244730721326d5b91d3"
+    },
+    {
+      "path": "observations/publish-evidence-increment-006-v1-reviewed.py",
+      "bytes": 25368,
+      "sha256": "75e1371df941e7c3d456a3d0b1b492b3d3a7be6e8db5bbeb98d26bf9eeb12792"
+    },
+    {
+      "path": "observations/increment006-publication-draft-v1/verify_packets-original.py",
+      "bytes": 2515,
+      "sha256": "50e086000bf0a2a414a00e0afb6010bec0394c9b5553e159b80fa9526f3846d7"
+    },
+    {
+      "path": "observations/increment006-publication-draft-v1/REVIEWED_PREPARATION.json",
+      "bytes": 1120,
+      "sha256": "27a0c2fe2dd2344f040eec0b5d340ce91035fd1614ebc69253265a26dcfc357f"
+    },
+    {
+      "path": "observations/evidence-increment005-publication-recovery-v2/RESULT.json",
+      "bytes": 5156,
+      "sha256": "90a50bd927eaf71736f6d59c4eac77fa70cf31667585659773e91e65be8a2ecb"
+    },
+    {
+      "path": "observations/ci-bf42-current-snapshot-007/SUMMARY.json",
+      "bytes": 6630,
+      "sha256": "d1320200d10da2ab8eda1d64037bbdd71304155fbfcb896bb84452e2f7b46477"
+    },
+    {
+      "path": "observations/ci-bf42-current-snapshot-008/SUMMARY.json",
+      "bytes": 6654,
+      "sha256": "06ce5c9a96c590eee0eac3c3275542c7fe94b84312884a7dbdf1b60451662a9e"
     }
   ]
 }

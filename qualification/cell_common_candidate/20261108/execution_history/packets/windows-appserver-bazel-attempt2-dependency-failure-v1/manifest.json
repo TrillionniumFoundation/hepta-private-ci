@@ -1,0 +1,648 @@
+{
+  "packet_id": "windows-appserver-bazel-attempt2-dependency-failure-v1",
+  "scope": "Same separate 3f084/b61 observer second dependency GET504 failure, all original bytes and idempotent collector reconciliation; native zero",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-appserver-bazel-attempt2-dependency-failure-v1-seal/windows-appserver-bazel-attempt2-dependency-failure-v1.tar.xz",
+  "bytes": 3136204,
+  "sha256": "05be50a6a4beb82b236e63d284b83bc9c97fab145243d8bc247b0980eef1dfc5",
+  "file_member_count": 79,
+  "required_json_members": [
+    {
+      "path": "SCOPE.json",
+      "bytes": 2420,
+      "sha256": "7b1a53b12ed21c87042518550e506989497c4d05717fcac8e7a169dddb278a93",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "actual_tested_sha": "3f084182eb80bd8fac0a5717a2f5911978759a06",
+            "actual_tested_tree": "3baf936ae98d761bcba25a4e38c2501407417737",
+            "artifact_bytes": 1776091,
+            "artifact_members": 48,
+            "artifact_sha256": "a90f2f97525381d1855a967ecc55c8d35ff4f3e9a430d16846ce32deb9edc977",
+            "bep_events": 13,
+            "collector_transport_history": "outer response said aborted before dispatch; exact same idempotency key readback proved original job succeeded, reused=true/retried_launch=false; no second download",
+            "common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+            "complete_execution_history": false,
+            "discovery_exit_code": 2,
+            "discovery_wall_seconds_not_full_cost": 48.92996597290039,
+            "excluded_runtime_coordination_files": [],
+            "first_cause": "rules_cc 0.2.20 GitHub tar.gz GET HTTP 504 before target discovery or execution",
+            "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+            "formal_stage_result": "S0-S5 HOLD; unchanged formal CURRENT_RESULT",
+            "full_history_cost": null,
+            "full_workspace_pass": false,
+            "job_id": 128999839249,
+            "kind": "original_bazel_dependency_fetch_failure_after_one_authorized_workflow_recovery",
+            "native_executable_bytes_created": false,
+            "new_native_executions_by_reader_or_sealer": 0,
+            "no_original_target_test_result_claimed": true,
+            "observer_sha": "b61e1a89ce6faea79d0518b990b78470e97e2244",
+            "observer_tree": "c42eae4f367d27b25c7a74846b7c1c66a4af24b2",
+            "original_conclusion": "failure",
+            "original_job_ceiling_minutes": 120,
+            "original_native_executed": 0,
+            "original_shards": 16,
+            "original_target": "//codex-rs/app-server:app-server-all-test",
+            "original_wrapper_checksums_flaky_policy_and_watchdogs_unchanged": true,
+            "packet_id": "windows-appserver-bazel-attempt2-dependency-failure-v1",
+            "physical_cost": null,
+            "run_attempt": 2,
+            "run_id": 42566694888,
+            "scientific_acceptance": false,
+            "separate_attempt1_history": "preserved in windows-appserver-bazel-preparation-attempt1-recovery-request-v1; its different failure was bazel_features v1.50.0 HTTP504",
+            "source_and_observer_before_after_clean": true,
+            "stage_advancement_claimed": false,
+            "testResult_events": 0,
+            "testSummary_events": 0,
+            "workflow_retry_history": "one explicitly authorized rerun-failed-jobs POST was preserved in preceding packet; no third request"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/COLLECTION_RESULT.json",
+      "bytes": 4797,
+      "sha256": "5f3a116dce3edde5b7f2f10abf11af3cf525f18e9e05e298e0f229e3bc38b56a",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "status": "ORIGINALS_COLLECTED_AND_MEMBERS_VERIFIED",
+            "native_tests_executed_by_collector": 0,
+            "workflow_mutation_performed": false,
+            "scientific_acceptance": false,
+            "physical_cost": null,
+            "full_history_cost": null,
+            "run_id": 42566694888,
+            "job_id": 128999839249,
+            "run_attempt": 2,
+            "observer_sha": "b61e1a89ce6faea79d0518b990b78470e97e2244",
+            "tested_sha": "3f084182eb80bd8fac0a5717a2f5911978759a06",
+            "tested_tree": "3baf936ae98d761bcba25a4e38c2501407417737",
+            "source_unchanged": true,
+            "artifact_bytes": 1776091,
+            "artifact_sha256": "a90f2f97525381d1855a967ecc55c8d35ff4f3e9a430d16846ce32deb9edc977",
+            "artifact_members": 48,
+            "download_receipts": [
+              {
+                "argv": [
+                  "gh",
+                  "api",
+                  "repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/128999839249/logs"
+                ],
+                "started_at": "2026-11-09T05:58:32.021226+00:00",
+                "finished_at": "2026-11-09T05:58:43.745584+00:00",
+                "exit_code": 0,
+                "wall_seconds_not_full_cost": 11.724363352870569,
+                "stdout_bytes": 175232,
+                "stdout_sha256": "914fcf32b5b4d5b5976a1fe5fc33026fcb606f6916b042396cba205c198ac7b0",
+                "stderr_bytes": 0,
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "argv": [
+                  "gh",
+                  "api",
+                  "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13651894430/zip"
+                ],
+                "started_at": "2026-11-09T05:58:32.021661+00:00",
+                "finished_at": "2026-11-09T05:58:50.023957+00:00",
+                "exit_code": 0,
+                "wall_seconds_not_full_cost": 18.00230781803839,
+                "stdout_bytes": 1776091,
+                "stdout_sha256": "a90f2f97525381d1855a967ecc55c8d35ff4f3e9a430d16846ce32deb9edc977",
+                "stderr_bytes": 0,
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ],
+            "original_receipt": {
+              "discoveryCommand": {
+                "command": [
+                  "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+                  "./.github/scripts/run-bazel-ci.sh",
+                  "--print-failed-action-summary",
+                  "--print-failed-test-logs",
+                  "--windows-msvc-host-platform",
+                  "--remote-download-toplevel",
+                  "--",
+                  "test",
+                  "--platforms=//:windows_x86_64_msvc",
+                  "--skip_incompatible_explicit_targets",
+                  "--test_tag_filters=-argument-comment-lint",
+                  "--test_verbose_timeout_warnings",
+                  "--build_metadata=COMMIT_SHA=3f084182eb80bd8fac0a5717a2f5911978759a06",
+                  "--build_event_json_file=D:/a/_temp/appserver-bazel-evidence/discovery/bep.jsonl",
+                  "--nocache_test_results",
+                  "--test_arg=--list",
+                  "--test_arg=--format=terse",
+                  "--",
+                  "//codex-rs/app-server:app-server-all-test"
+                ],
+                "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+                "exitCode": 2,
+                "finishedUnix": 1794202829.3488705,
+                "startedAt": "2026-11-09T05:39:40.418904+00:00",
+                "startedUnix": 1794202780.4189045,
+                "status": "completed",
+                "wallSecondsNotFullCost": 48.92996597290039
+              },
+              "discoveryExecution": "command_launched_case_execution_unverified",
+              "durabilityQualified": false,
+              "error": "BEP has no complete original test result and summary",
+              "executablesUnchanged": false,
+              "fullCost": null,
+              "fullWorkspace": false,
+              "ignoredAndOriginalFilterExcludedCasesNeverCountAsExecuted": true,
+              "legacyIsolationQualified": false,
+              "nativeExecution": "not_run",
+              "observerSha": "b61e1a89ce6faea79d0518b990b78470e97e2244",
+              "originalBashUnchanged": true,
+              "originalBashVersionCommand": {
+                "command": [
+                  "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+                  "--version"
+                ],
+                "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+                "exitCode": 0,
+                "finishedUnix": 1794202779.3479273,
+                "startedAt": "2026-11-09T05:39:39.327957+00:00",
+                "startedUnix": 1794202779.3282647,
+                "status": "completed",
+                "wallSecondsNotFullCost": 0.01966261863708496
+              },
+              "originalRunnerDifferences": {
+                "buildbuddyApiKeyPresentInCoordinator": false,
+                "buildbuddyApiKeyProvidedByWorkflow": false,
+                "scope": "one_original_public_target_not_the_whole_Windows_shard",
+                "withoutKey": "original_wrapper_uses_its_supported_keyless_path"
+              },
+              "originalShardCount": 16,
+              "passed": false,
+              "researchAdvancement": false,
+              "sourceSha": "3f084182eb80bd8fac0a5717a2f5911978759a06",
+              "sourceUnchanged": true,
+              "status": "failed_or_incomplete",
+              "successfulCaseSilentEarlyReturnAbsence": "unknown_original_libtest_capture_preserved",
+              "target": "//codex-rs/app-server:app-server-all-test",
+              "testedSha": "3f084182eb80bd8fac0a5717a2f5911978759a06"
+            },
+            "original_failure_preserved": true,
+            "finished_at": "2026-11-09T05:58:50.173946+00:00"
+          }
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "COMMON_BEFORE.json",
+      "bytes": 222,
+      "sha256": "5e188df8f9ab72c90a1629b5b578447bb6f5d4509e8a108fae9976a2db576fe7"
+    },
+    {
+      "path": "INPUTS_BEFORE.json",
+      "bytes": 26644,
+      "sha256": "55ffc3cbfc4cca560576d87338a176cf7c9adf2048037a88ada642d5d61f8d7e"
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 2420,
+      "sha256": "7b1a53b12ed21c87042518550e506989497c4d05717fcac8e7a169dddb278a93"
+    },
+    {
+      "path": "originals/collect-windows-appserver-bazel-attempt2-originals-v1.py",
+      "bytes": 6164,
+      "sha256": "1aa2336a2d0d60ac92ff9bfcb35a10ec22f6f13ce50891a6f7001aa1d11740fc"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/COLLECTION_RESULT.json",
+      "bytes": 4797,
+      "sha256": "5f3a116dce3edde5b7f2f10abf11af3cf525f18e9e05e298e0f229e3bc38b56a"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/ORIGINAL_MANIFEST_MAPPING.json",
+      "bytes": 6653,
+      "sha256": "36549860c22700f65a40927a0d2c879bf7f81f52aa4efa520dbad604f5ad4600"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/ZIP_MEMBER_INDEX.json",
+      "bytes": 10012,
+      "sha256": "ec78f3c7e41ac2b3417b4936d263192bcc34bbf3d53a5a8e3e3d3d520115f531"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/api/SUMMARY.json",
+      "bytes": 5209,
+      "sha256": "12e5ebb5eddce9182a413a70ea3f4bcdce401953bd8bcd779e541183d86df912"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/api/artifacts.json",
+      "bytes": 1691,
+      "sha256": "df5ca09ba6d5f8e5ef1fd5f278ea761ba3de70184ea48222ebf4858f44f4d95c"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/api/jobs.json",
+      "bytes": 3713,
+      "sha256": "d7aae6fcb36e3c939c22f8d679cfec0815fd6dd4e4c4fccc26eb87281e9f826d"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/api/run.json",
+      "bytes": 14422,
+      "sha256": "3758d6c1f7277b55a78a36ebf828c847179b1aff1052bf0ecf49e9832e3a17da"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact.zip",
+      "bytes": 1776091,
+      "sha256": "a90f2f97525381d1855a967ecc55c8d35ff4f3e9a430d16846ce32deb9edc977"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact.zip.receipt.json",
+      "bytes": 523,
+      "sha256": "5ac89598dfb5f79d70d171737acea6e178616d080a97f16e13402e826a176946"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact.zip.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/BINARIES_AFTER.json",
+      "bytes": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/HOST.json",
+      "bytes": 549,
+      "sha256": "d6402c10558f89ea762fec231560337edf52baa2c56bfda54e584d68fdde38dd"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/MANIFEST.json",
+      "bytes": 16770,
+      "sha256": "5c492b362776756f53307a87fceca1b3b6d22dc32f0c5a642d4a2edb04a625ef"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/OBSERVER_FILES.json",
+      "bytes": 4851,
+      "sha256": "2e15002532ad4e327c9e0a943fea1042d3f2b96ce6ad29542d1c92ca817789ef"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/ORIGINAL_BASH_AFTER.json",
+      "bytes": 308,
+      "sha256": "c2af2deaef7ab69af76fb306b4d9a2314a5cc6d44d8d53c92862843b8381b68c"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/ORIGINAL_BASH_BEFORE.json",
+      "bytes": 308,
+      "sha256": "c2af2deaef7ab69af76fb306b4d9a2314a5cc6d44d8d53c92862843b8381b68c"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/ORIGINAL_RUNNER_FILES.json",
+      "bytes": 12020,
+      "sha256": "48c5300d75f3d667451830f63a996f518c367dc0b1a8bedec51e5b49a4e4c792"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/ORIGINAL_SCOPE.json",
+      "bytes": 1154,
+      "sha256": "3097a0505cbc39f2fe878df8f04e944b981e98caab8e0f75ba2cc882c0aff0b7"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/RECEIPT.json",
+      "bytes": 2764,
+      "sha256": "a2c7a5a1085de67fe82d8594833b79309b41d8ef652deef417261564c266d137"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/SOURCE_AFTER.json",
+      "bytes": 559,
+      "sha256": "cd7e707b696745b860b8783affdefb00b3b0e1971a0822d03d1f0d29ff42bf68"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/SOURCE_BEFORE.json",
+      "bytes": 559,
+      "sha256": "cd7e707b696745b860b8783affdefb00b3b0e1971a0822d03d1f0d29ff42bf68"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/STARTED.json",
+      "bytes": 382,
+      "sha256": "bc6355793872f31e594537d2cd2808ea998bf7e92af8ca31d69f7d91a25e984a"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/after-prepare-source.json",
+      "bytes": 559,
+      "sha256": "cd7e707b696745b860b8783affdefb00b3b0e1971a0822d03d1f0d29ff42bf68"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/after-shell-identification-source.json",
+      "bytes": 559,
+      "sha256": "cd7e707b696745b860b8783affdefb00b3b0e1971a0822d03d1f0d29ff42bf68"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/discovery-before-source.json",
+      "bytes": 559,
+      "sha256": "cd7e707b696745b860b8783affdefb00b3b0e1971a0822d03d1f0d29ff42bf68"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/discovery/BEP_TEST_EVENTS.json",
+      "bytes": 65,
+      "sha256": "4791aba09382dd5f5d8cb2581b736f8ddec46eb534ecf073a289fe831e78bb89"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/discovery/bep.jsonl",
+      "bytes": 26843,
+      "sha256": "01debd5e11a45feca2b986b65897d16b580be13d94a8d6e8d198352bb836aa55"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/discovery/command-started.json",
+      "bytes": 912,
+      "sha256": "1a58a2d48486834c3b0ad9786819b940ce32d14685a7a274e89d1a3ebce383d2"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/discovery/command.json",
+      "bytes": 1057,
+      "sha256": "3275499abeb532ea46f7ad830b3ea270ffbafce141a89c2262e6ca4d62c3b829"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/discovery/command.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/discovery/command.stdout",
+      "bytes": 4170,
+      "sha256": "ee1ff32172ae862d5b3ff3e3535ed67df8677dc9a68d37e0186124d97e5ca541"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/exception.txt",
+      "bytes": 685,
+      "sha256": "2e6e73a0126153424155c3bb8494903ecd7154adcbf490011c19ff11dc3642a6"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/launch-shell/bash.exe",
+      "bytes": 2449886,
+      "sha256": "5490d0da5e7cf9d92068cc48fcc590f2bcf8564add8ff91c3b5fe541eb2d72e3"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/observer-source/hepta-windows-appserver-bazel.yml",
+      "bytes": 4194,
+      "sha256": "9dc2968586174bbe82b90b6e5be0864db766eeea65f6cc748975ed8ee3676b2c"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/observer-source/test_windows_appserver_bazel.py",
+      "bytes": 25782,
+      "sha256": "0265fe88309cc174a28346c7fdf5e54f522a7223ab77d32b434fd31881dd70d0"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/observer-source/windows_appserver_bazel.py",
+      "bytes": 43388,
+      "sha256": "d46104e5de9d701c300d47e2f71360ff3759c8f54132dc3b8853e2397a5b123c"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/observer-source/windows_current_ci.py",
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/observer-source/windows_fixture_followup.py",
+      "bytes": 20643,
+      "sha256": "7e3c602b4b1225b5aff6fdfb9616072c2b0c5c9e0e23e7c596c4895a5c205125"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/observer-source/windows_native_probe.py",
+      "bytes": 25146,
+      "sha256": "47bca1523c35200722a7bbd19afd100aac9cf90e8019df4556d35431c00ef8e3"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-bash-version-started.json",
+      "bytes": 226,
+      "sha256": "500b291be1ad3b55a2cafea0fa800aa456c7b19bf96240815127e36d26081029"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-bash-version.json",
+      "bytes": 373,
+      "sha256": "881c4092eb3f75925973230b29b29cd61b1dff716c74c5b620f2f5a8b73a806d"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-bash-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-bash-version.stdout",
+      "bytes": 305,
+      "sha256": "64e0c91e1c0ed648eed7e6f287b24f6b3b77338344f3535cf794bebf5907ec01"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/.bazelrc",
+      "bytes": 14071,
+      "sha256": "1fb435555b4cb0b73f010ddc2fe83aca930d3881389cf86cb8215504a6284397"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/.bazelversion",
+      "bytes": 6,
+      "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/.github/actions/prepare-bazel-ci/action.yml",
+      "bytes": 3255,
+      "sha256": "a5286f6896c99a71ee247afbad1dc0aa00d967352f33bb24d8cb97e4df5d978b"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/.github/actions/setup-bazel-ci/action.yml",
+      "bytes": 5365,
+      "sha256": "cae76442a9a6d40f2c56c1fbed991fe667f3ca3eef07e5e9806370ecf91afb7d"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/.github/scripts/run-bazel-ci.sh",
+      "bytes": 14095,
+      "sha256": "babcfa6dce1c4684f4e96e7ddae6eee8f4fdbcc088fa0360bfa00ccfaf65d104"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/.github/scripts/run_bazel_with_buildbuddy.py",
+      "bytes": 15346,
+      "sha256": "384e69963a09d8bebe108f58b293e0fd5431eb11e16efb544544714c541a177e"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/.github/workflows/bazel.yml",
+      "bytes": 21752,
+      "sha256": "24a9de501a7786c19bd3b540f212af884c8799f53c05f1c379ab6efe2a792016"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/MODULE.bazel.lock",
+      "bytes": 1791053,
+      "sha256": "3177178c20f6a8c56bca6c3d0a521b49d87b8d9a527328d181eca7c01e5cc888"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/codex-rs/app-server/BUILD.bazel",
+      "bytes": 1709,
+      "sha256": "887e4da0e534c1175e730b733400491c74d1ed300a91b718928039ea147786c3"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/codex-rs/app-server/tests/common/test_app_server.rs",
+      "bytes": 83066,
+      "sha256": "a7b4e82e5cde389b01d7423cbab11295914bebd09e534f6fc47024bc165b07de"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/codex-rs/utils/cargo-bin/src/lib.rs",
+      "bytes": 7819,
+      "sha256": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "bytes": 2556,
+      "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/defs.bzl",
+      "bytes": 35823,
+      "sha256": "5913d39c808e44b09790a98a33abcc6cc5f7e7faa19cea6255dc288bdfee6a7a"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/scripts/hepta_ci_junit.py",
+      "bytes": 6613,
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/artifact/appserver-bazel-evidence/original-source/workspace_root_test_launcher.bat.tpl",
+      "bytes": 7627,
+      "sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/collector.py",
+      "bytes": 6164,
+      "sha256": "1aa2336a2d0d60ac92ff9bfcb35a10ec22f6f13ce50891a6f7001aa1d11740fc"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/job-128999839249.raw.log",
+      "bytes": 175232,
+      "sha256": "914fcf32b5b4d5b5976a1fe5fc33026fcb606f6916b042396cba205c198ac7b0"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/job-128999839249.raw.log.receipt.json",
+      "bytes": 520,
+      "sha256": "d458fd3af6872ba69ef8bbd60cd314e3647edd0a987dbf8c91c25f6fb82b6a5e"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/job-128999839249.raw.log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/mcp-initial-outer-error.json",
+      "bytes": 225,
+      "sha256": "ec66876e3bfa9841e43d819d887dcd4f876d6da8c7639393fa8a593b6736ca5b"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-attempt2-originals-v1/mcp-same-key-reconcile-original.json",
+      "bytes": 2100,
+      "sha256": "36a5faa60976d96d772beb08da4c9c2a11e6b9f96cf7212a7717568d872c8fb8"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-ci-42566694888-v1/snapshot-attempt2-002/SUMMARY.json",
+      "bytes": 5209,
+      "sha256": "12e5ebb5eddce9182a413a70ea3f4bcdce401953bd8bcd779e541183d86df912"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-ci-42566694888-v1/snapshot-attempt2-002/artifacts.json",
+      "bytes": 1691,
+      "sha256": "df5ca09ba6d5f8e5ef1fd5f278ea761ba3de70184ea48222ebf4858f44f4d95c"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-ci-42566694888-v1/snapshot-attempt2-002/artifacts.receipt.json",
+      "bytes": 403,
+      "sha256": "9dc55503082884012922d3f6d89fdbfd4e8df0a2fe187db09f6cf913133e6391"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-ci-42566694888-v1/snapshot-attempt2-002/artifacts.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-ci-42566694888-v1/snapshot-attempt2-002/jobs.json",
+      "bytes": 3713,
+      "sha256": "d7aae6fcb36e3c939c22f8d679cfec0815fd6dd4e4c4fccc26eb87281e9f826d"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-ci-42566694888-v1/snapshot-attempt2-002/jobs.receipt.json",
+      "bytes": 408,
+      "sha256": "626b2b25793d1b8814930bee4631d228dc8fa4f2f5bde49e684ccfc45b09a973"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-ci-42566694888-v1/snapshot-attempt2-002/jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-ci-42566694888-v1/snapshot-attempt2-002/run.json",
+      "bytes": 14422,
+      "sha256": "3758d6c1f7277b55a78a36ebf828c847179b1aff1052bf0ecf49e9832e3a17da"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-ci-42566694888-v1/snapshot-attempt2-002/run.receipt.json",
+      "bytes": 380,
+      "sha256": "165efbbd338906bc9afe34bcbbe71e97fd3ed52c421b5eecd3e2adbb75939746"
+    },
+    {
+      "path": "originals/windows-appserver-bazel-ci-42566694888-v1/snapshot-attempt2-002/run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "sealer.py",
+      "bytes": 13313,
+      "sha256": "f84cb87d5336876093193bb8b8cc2629925980d1f330e2e8ddc0067e70cd692f"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/windows-appserver-bazel-attempt2-dependency-failure-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "980b49eab6391aeed964db347f783d07518523b8ab029a83be02258599d1340d"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/windows-appserver-bazel-attempt2-dependency-failure-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "343e8413dd46510edd87c7f8ab3dfeebf42c6f3247bef15c513f51f60e48eee8"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/windows-appserver-bazel-attempt2-dependency-failure-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "498215148fc1f1dd2ecec3d3718f01923b4fbd81fc27ba1bc48662e01d2d6416"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/windows-appserver-bazel-attempt2-dependency-failure-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "e3849dbb12e56111a93f8d02d682cdcbf36affbb63d91c5177463723e61c5ca3"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/windows-appserver-bazel-attempt2-dependency-failure-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 490000,
+      "sha256": "0bf47325f5dae0c75d27abcd7b0298ff5053355ef4bf526641947e270840f695"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/windows-appserver-bazel-attempt2-dependency-failure-v1/archive.part006",
+      "offset": 2450000,
+      "bytes": 490000,
+      "sha256": "6ad40c546ec5a76d408acce6dbec32c6388dfb4f303b5c20a7abd98382377319"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/windows-appserver-bazel-attempt2-dependency-failure-v1/archive.part007",
+      "offset": 2940000,
+      "bytes": 196204,
+      "sha256": "4699c31dca9d89c9649ad35164704758826539c6198c325d30388e89071247e7"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}
