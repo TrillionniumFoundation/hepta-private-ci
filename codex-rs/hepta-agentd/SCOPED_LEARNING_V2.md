@@ -107,6 +107,23 @@ ordinary delivery also checks its exact request before enrollment. These
 interfaces do not construct production stage owners or authorize resubmitting a
 claimed operation whose checkpoint is missing or incomplete.
 
+Ordinary original-Root startup can now retain this profile end to end.
+`HostAuthorityLearningProfileV1::new_scoped_v2` creates an explicit schema-2
+Root0600 configuration containing the Cell/Organ scope, update-rule digest and
+recomputed frozen binding. Registration creates the schema-2 protected record;
+open-only recovery refuses a different scope or a legacy record. The separate
+sealed bootstrap uses `runtime.learning.bootstrap.v2`, retains the same original
+writer proof, Root pidfd, process identity and fixed learning socket, and selects
+the scoped client and runtime when consumed. Missing scope, scope on schema 1,
+operation/version mismatch and modified scope/rule/binding are rejected. No
+existing record is migrated or replaced to make a profile match.
+
+Receiving a checkpoint capability still does not assemble the actual stage
+owners. Ordinary startup fails closed until those owners, pinned evidence trust,
+Circuit providers, selected material and publication authority are supplied.
+The actual-Root CAS/descriptor regression uses synthetic operation metadata and
+does not establish a production task, independent evaluation or scientific gain.
+
 ## Native regression entry
 
 The existing Agentd process qualification workflow runs:

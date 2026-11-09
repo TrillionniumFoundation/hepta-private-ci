@@ -35,9 +35,13 @@ mod profile;
 #[cfg(target_os = "linux")]
 pub use profile::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V1;
 #[cfg(target_os = "linux")]
+pub use profile::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V2;
+#[cfg(target_os = "linux")]
 pub use profile::HostAuthorityLearningBootstrapV1;
 #[cfg(target_os = "linux")]
 pub use profile::HostAuthorityLearningProfileV1;
+#[cfg(target_os = "linux")]
+pub use profile::HostAuthorityLearningScopeV2;
 
 #[cfg(target_os = "linux")]
 #[path = "learning_iteration_checkpoint_transport.rs"]

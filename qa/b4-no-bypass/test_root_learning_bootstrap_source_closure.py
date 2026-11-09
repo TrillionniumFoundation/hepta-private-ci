@@ -39,7 +39,9 @@ CALLERS = {
     "root_learning_original_scope_capture": (SESSION,),
     "root_learning_same_service_serve": (SESSION,),
     "root_learning_registered_checkpoint_constructor": (REGISTRATION,),
+    "root_learning_registered_scoped_checkpoint_constructor": (REGISTRATION,),
     "root_learning_original_client_constructor": (INPUTS,),
+    "root_learning_original_scoped_client_constructor": (INPUTS,),
     "root_learning_original_purpose_send": (CLI,),
     "root_learning_original_purpose_receive": (LAUNCHER,),
     "root_learning_original_handoff_consume": (LAUNCHER,),
@@ -138,6 +140,7 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
             "config.writer.as_ref() != Some(&writer.registration)",
             "writer.registration.with_live(&writer.leases, |_| {",
             "profile.require_binding(&self.identity, &proof)?",
+            "profile.frozen_scope(&initial)?",
             "let before = self.issuer.revocations()?",
             "self.issuer.revocations()? != before",
         ):
@@ -158,6 +161,8 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
             ("fn open_registered_learning_checkpoint(", "StoreMode::Reopen"),
             ("fn learning_store(", "StoreMode::Reopen => HostAuthorityFrontierStore::open("),
             ("fn learning_store(", "LearningIterationCheckpointOwnerV1::from_registered("),
+            ("fn learning_store(", "LearningIterationCheckpointOwnerV1::from_registered_scoped_v2("),
+            ("fn learning_store(", "LearningIterationCheckpointRecordV1::vacant_scoped_v2("),
             ("fn seal_learning_checkpoint(", "!= before"),
         ):
             with self.subTest(marker=marker):
@@ -194,7 +199,7 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
 
     def test_client_requires_cross_lane_scope_and_original_current(self):
         for marker in (
-            "bundle.schema_version != 1", "bundle.operation !=",
+            "bundle.decode_frozen_scope(&initial)?",
             "bundle.root != original.root", "bundle.consumer != original.consumer",
             "bundle.root.pid != root_pid", "bundle.root.uid != 0",
             "bundle.registered_identity.identity()? != *expected",
@@ -231,3 +236,32 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
         self.rejects(AGENT + "authority_host_session_material.rs", "fn serve_retained(", "self.learning.is_some()")
         self.rejects(SESSION, "fn serve_optional(", "service\n                .serve_learning_checkpoint(")
         self.rejects(SESSION, "fn serve_optional(", "stream.shutdown(Shutdown::Both)")
+
+    def test_scoped_profile_cannot_downgrade_during_registration_handoff_or_runtime(self):
+        for path, function, markers in (
+            (PROFILE, "fn require_binding(", ("self.frozen_scope(&initial)?",)),
+            (PROFILE, "fn new_scoped_v2(", (
+                "HostAuthorityLearningScopeV2::new(&initial, scope, update_rule)?",
+                "profile.schema_version = 2", "profile.require_binding(identity, &profile.writer_proof_digest)?",
+            )),
+            (PROFILE, "fn decode_scope(", (
+                "(1, None) => Ok(None)", "(2, Some(scope)) => scope.freeze(initial).map(Some)",
+            )),
+            (PROFILE, "fn freeze(", (
+                "self.update_rule != rule.to_string()", "self.binding != frozen.binding().to_string()",
+            )),
+            (PROFILE, "fn decode_frozen_scope(", (
+                "2 => HOST_AUTHORITY_LEARNING_BOOTSTRAP_V2", "self.operation != expected",
+                "decode_scope(self.schema_version, self.update_scope.as_ref(), initial)",
+            )),
+            (INPUTS, "fn connect(", (
+                "bundle.decode_frozen_scope(&initial)?",
+                "Some(scope) => AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2(",
+            )),
+            (INPUTS, "fn into_learning_runtime(", (
+                "match self.scope", "Some(scope) => crate::learning_iteration_channel_scoped_v2(",
+            )),
+        ):
+            for marker in markers:
+                with self.subTest(path=path, function=function, marker=marker):
+                    self.rejects(path, function, marker)
