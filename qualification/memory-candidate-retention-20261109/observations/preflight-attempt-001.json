@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.mem.candidate-preflight-failure.v1",
+  "attempt_kind": "original_preflight",
+  "source_commit": "cce6a7d3222a7eaffe2ec3890e624820a2ec8023",
+  "host": "ai395",
+  "job_id": "1a1c0432b6c-5e21-992",
+  "idempotency_key": "mem-candidate-retention-20261109-a6b21bc7-run-001",
+  "request_digest": "3eb05604a63c19f985828f49603264e7f35c2782eeea12146cb40643deee5a58",
+  "runtime_status": {
+    "at_unix_ms": 1794227003974,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1c0432b6c-5e21-992",
+    "launch_nonce": "d37b5cbb4fd136b14397a6fb9598abc4",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 416,
+        "stored": 416
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "original_files": [
+    {
+      "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-001/RUN_RECEIPT.json",
+      "sha256": "bda871d1df0fb78398b445265c68f047790396629f208d32ba08e117d201255c",
+      "bytes": 1478,
+      "text": "{\n  \"cpu_seconds\": 0.009702000000000002,\n  \"energy_joules\": null,\n  \"error\": {\n    \"message\": \"Exposure ledger belongs to a different registry or contains unknown source groups\",\n    \"traceback\": \"Traceback (most recent call last):\\n  File \\\"/home/qq/mem-candidate-retention-20261109-a6b21bc7/source/scripts/ndu_real_runtime/run_candidate_retention.py\\\", line 641, in run\\n    plan, jobs = freeze(request, output)\\n                 ^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"/home/qq/mem-candidate-retention-20261109-a6b21bc7/source/scripts/ndu_real_runtime/run_candidate_retention.py\\\", line 354, in freeze\\n    excluded, training_groups = exclusions(request, catalog, materials)\\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"/home/qq/mem-candidate-retention-20261109-a6b21bc7/source/scripts/ndu_real_runtime/run_candidate_retention.py\\\", line 226, in exclusions\\n    require(\\n  File \\\"/home/qq/mem-candidate-retention-20261109-a6b21bc7/source/scripts/ndu_real_runtime/run_candidate_retention.py\\\", line 47, in require\\n    raise ValueError(message)\\nValueError: Exposure ledger belongs to a different registry or contains unknown source groups\\n\",\n    \"type\": \"ValueError\"\n  },\n  \"provider_charges\": null,\n  \"schema\": \"ndu.real.candidate-retention-run.v1\",\n  \"scientific_acceptance\": \"HOLD\",\n  \"source_commit\": \"cce6a7d3222a7eaffe2ec3890e624820a2ec8023\",\n  \"status\": \"Failed\",\n  \"training_executed\": false,\n  \"wall_seconds\": 0.01160031696781516\n}\n"
+    },
+    {
+      "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/runner-console.log",
+      "sha256": "ebc05ef28a93972a132c58f158316b1c244bdbec2f0f2d83f8d232a50c6405e0",
+      "bytes": 80,
+      "text": "{\"status\": \"Failed\", \"planned_episodes\": null, \"scientific_acceptance\": \"HOLD\"}\n"
+    },
+    {
+      "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/BOOTSTRAP_RECEIPT.json",
+      "sha256": "558a8e0c143449572a1994f726b2d66c4856f40810090ec09ddafd6fad6ccabd",
+      "bytes": 1239,
+      "text": "{\n  \"archive\": {\n    \"bytes\": 192832,\n    \"path\": \"/home/qq/mem-candidate-20261109-a6b21bc7-source.tar.gz\",\n    \"sha256\": \"05522d1f79ffb5e4c2857b4d01e89fe4d237a9350d205f17c6079831246699ef\"\n  },\n  \"command\": [\n    \"/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python\",\n    \"-m\",\n    \"ndu_real_runtime.run_candidate_retention\",\n    \"--request\",\n    \"/home/qq/mem-candidate-retention-20261109-a6b21bc7/request.json\",\n    \"--output\",\n    \"/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-001\"\n  ],\n  \"environment_overrides\": {\n    \"MKL_NUM_THREADS\": \"1\",\n    \"OMP_NUM_THREADS\": \"1\",\n    \"OPENBLAS_NUM_THREADS\": \"1\",\n    \"PYTHONPATH\": \"/home/qq/mem-candidate-retention-20261109-a6b21bc7/source/scripts:/home/qq/mem-candidate-retention-20261109-a6b21bc7/source:/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps\"\n  },\n  \"request_sha256\": \"052e8b30473bb1517376f6e8c0a27e67ed27644e9e0ba9fa69ae84462a0d062c\",\n  \"retry_of\": null,\n  \"returncode\": 1,\n  \"schema\": \"ndu.real.candidate-bootstrap.v1\",\n  \"scientific_acceptance\": \"HOLD\",\n  \"source_commit\": \"cce6a7d3222a7eaffe2ec3890e624820a2ec8023\",\n  \"source_file_count\": 59,\n  \"source_projection_verified\": true,\n  \"status\": \"Failed\",\n  \"wall_seconds\": 0.1229547499679029\n}\n"
+    }
+  ],
+  "interpretation": "Failure occurred in exclusion metadata validation before plan construction or actor dispatch. The original archive, source, request and output directory are preserved; a later preflight correction must retain the same selection salt, model and task design.",
+  "scientific_acceptance": "HOLD"
+}
+

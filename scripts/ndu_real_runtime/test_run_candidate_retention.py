@@ -276,7 +276,7 @@ class CandidateRetentionRunnerTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "registered bytes"):
                 runner.load_model(request, {"training"})
 
-    def test_exclusion_manifest_and_exposure_registry_fail_closed(self):
+    def test_exclusions_preserve_sealed_quarantine_outside_released_catalog(self):
         with tempfile.TemporaryDirectory() as directory:
             request = request_fixture(Path(directory))
             materials = Path(request["config"]["material_root"])
@@ -294,14 +294,45 @@ class CandidateRetentionRunnerTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "different registry"):
                 runner.exclusions(bad, catalog, materials)
             ledger = strict_json((materials / "exposure.json").read_bytes())
-            ledger["quarantined_source_groups"] = ["unknown-source"]
-            write_json(materials / "wrong-exposure.json", ledger)
+            sealed = "merchant-d93e19ca396d00036f1a51d5"
+            released = "merchant-a3992bf7e3041d26a067feab"
+            ledger["quarantined_source_groups"] = [sealed, released]
+            catalog["cases"] += [
+                row(released, "development", family) for family in runner.FAMILIES
+            ]
+            write_json(materials / "quarantined-exposure.json", ledger)
+            write_json(materials / "released-catalog.json", catalog)
             bad = copy.deepcopy(request)
             bad["exposure_ledgers"] = [
-                binding(materials / "wrong-exposure.json", materials)
+                binding(materials / "quarantined-exposure.json", materials)
             ]
-            with self.assertRaisesRegex(ValueError, "unknown source"):
-                runner.exclusions(bad, catalog, materials)
+            bad["catalog"] = binding(materials / "released-catalog.json", materials)
+            excluded, training = runner.exclusions(bad, catalog, materials)
+            self.assertEqual(
+                (excluded, training),
+                ({"training", "tuning", sealed, released}, {"training"}),
+            )
+            selected = runner.select_cases(
+                catalog, excluded, bad["groups_per_role"], bad["selection_salt"]
+            )
+            self.assertEqual(
+                {case["source_id"] for case in selected},
+                {"development", "retention"},
+            )
+            with patch.object(runner, "EpisodeHost") as host:
+                plan, _ = runner.freeze(bad, Path(directory) / "frozen")
+                host.assert_not_called()
+            self.assertEqual(
+                plan["quarantined_source_groups_not_in_released_catalog"], [sealed]
+            )
+            self.assertEqual(set(plan["excluded_source_groups"]), excluded)
+            for i, invalid in enumerate(([""], [released, released])):
+                ledger["quarantined_source_groups"] = invalid
+                path = materials / f"invalid-exposure-{i}.json"
+                write_json(path, ledger)
+                bad["exposure_ledgers"] = [binding(path, materials)]
+                with self.assertRaisesRegex(ValueError, "Quarantine source IDs"):
+                    runner.exclusions(bad, catalog, materials)
 
     def test_freeze_pins_both_arms_before_any_actor_and_source_mutation_fails(self):
         with tempfile.TemporaryDirectory() as directory:

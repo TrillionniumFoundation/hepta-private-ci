@@ -215,7 +215,6 @@ def exclusions(request, catalog, materials):
         re.fullmatch(r"[0-9a-f]{64}", request["registry_sha256"]),
         "Frozen material registry identity required",
     )
-    source_ids = {case["source_id"] for case in catalog["cases"]}
     for pin in request["exposure_ledgers"]:
         ledger = strict_json(read_pin(pin, materials))
         require(
@@ -224,11 +223,22 @@ def exclusions(request, catalog, materials):
             "Unsupported exposure ledger",
         )
         require(
-            ledger.get("registry_sha256") == request["registry_sha256"]
-            and set(ledger["quarantined_source_groups"]) <= source_ids,
-            "Exposure ledger belongs to a different registry or contains unknown source groups",
+            ledger.get("registry_sha256") == request["registry_sha256"],
+            "Exposure ledger belongs to a different registry",
         )
-        excluded.update(ledger["quarantined_source_groups"])
+        quarantined = ledger["quarantined_source_groups"]
+        require(
+            all(
+                isinstance(sid, str)
+                and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,255}", sid)
+                for sid in quarantined
+            )
+            and len(quarantined) == len(set(quarantined)),
+            "Quarantine source IDs must be bounded, nonempty identities without duplicates",
+        )
+        # A released catalog omits sealed roles from the same full registry.
+        # Preserve their quarantine identities without reading their references.
+        excluded.update(quarantined)
     return excluded, set(manifest["groups"]["training"])
 
 
@@ -460,6 +470,9 @@ def freeze(request, output):
         "exposure_ledgers": request["exposure_ledgers"],
         "registry_sha256": request["registry_sha256"],
         "excluded_source_groups": sorted(excluded),
+        "quarantined_source_groups_not_in_released_catalog": sorted(
+            excluded - {case["source_id"] for case in catalog["cases"]}
+        ),
         "groups_per_role": request["groups_per_role"],
         "selection_salt": request["selection_salt"],
         "control_plan": control_binding,
