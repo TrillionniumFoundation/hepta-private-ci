@@ -698,8 +698,8 @@ pub use lane_b_runtime::RuntimeComposition;
 pub use learning_iteration::LearningIterationHandleV1;
 pub use learning_iteration::LearningIterationRuntimeBootstrapV1;
 pub use learning_iteration::LearningIterationRuntimeErrorV1;
-pub use learning_iteration::learning_iteration_channel_v1;
 pub use learning_iteration::learning_iteration_channel_scoped_v2;
+pub use learning_iteration::learning_iteration_channel_v1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_checkpoint::AgentdLearningCheckpointClientV1;
 #[cfg(target_os = "linux")]
@@ -1018,3 +1018,7 @@ pub use terminal_learning_types::TerminalLearningErrorV1;
 pub use terminal_learning_types::TerminalLearningReceiptV1;
 pub use terminal_learning_types::TerminalLearningRequestV1;
 pub use terminal_learning_types::TerminalLearningSourceLineageV1;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "authority_host_learning_service_root_tests.rs"]
+mod authority_host_learning_service_root_tests;
