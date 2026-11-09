@@ -1,0 +1,206 @@
+{
+  "scope": "source_mutating_lint_preparation",
+  "source_sha": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+  "source_tree": "f95a33684df6aac0a32326e20b63d4017d7b1968",
+  "base_sha": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+  "commands": [
+    [
+      "operator-strict-fix",
+      [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-operator-acceptance",
+        "--",
+        "-D",
+        "warnings"
+      ]
+    ],
+    [
+      "operator-readonly-strict-clippy",
+      [
+        "cargo",
+        "clippy",
+        "--tests",
+        "--locked",
+        "-p",
+        "codex-hepta-operator-acceptance",
+        "--",
+        "-D",
+        "warnings"
+      ]
+    ]
+  ],
+  "formatting": "root already ran canonical just fmt before freezing this exact source; no repeat",
+  "helper_package": "codex-hepta-infer-worker-host",
+  "owning_package_lints": [
+    "codex-hepta-operator-acceptance"
+  ],
+  "canonical_fix_followed_by_nonmutating_strict_clippy": true,
+  "prior_appserver_lint_source_sha": "a8d0b3dab62045a6aa6e61966c3fbeeccf1b48d6",
+  "prior_agentd_matrix_lint_source_sha": "82ff5119200cab9d65461eb62a3829567fbc2e8f",
+  "prior_cli_lint_source_sha": "bf516c1956848043b7805513aa069cada39517ce",
+  "prior_lint_results_not_relabelled_to_this_source": true,
+  "tests_run": false,
+  "scientific_qualification_performed": false,
+  "full_workspace_lint_performed": false,
+  "full_cost": null,
+  "minimum_free_bytes_before_build": 4294967296,
+  "cargo_profile": "dev",
+  "build_jobs": 6,
+  "status": "prepared_clean",
+  "started_at": "2026-11-09T01:21:10.668408+00:00",
+  "steps": [
+    {
+      "name": "v8",
+      "argv": [
+        "python3",
+        "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/followup4-source-d1b32a6/scripts/hepta_ci_v8.py"
+      ],
+      "free_bytes_before": 636914868224,
+      "observed_at": "2026-11-09T01:21:11.216299+00:00",
+      "status": "finished",
+      "returncode": 0,
+      "free_bytes_after": 636914855936
+    },
+    {
+      "name": "helper-build",
+      "argv": [
+        "python3",
+        "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/followup4-source-d1b32a6/scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/followup4-d1b32a6-strictfix-v1/helpers"
+      ],
+      "free_bytes_before": 636914855936,
+      "observed_at": "2026-11-09T01:21:15.048109+00:00",
+      "status": "finished",
+      "returncode": 0,
+      "free_bytes_after": 636912168960
+    },
+    {
+      "name": "helper-verify",
+      "argv": [
+        "python3",
+        "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/followup4-source-d1b32a6/scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/followup4-d1b32a6-strictfix-v1/helpers",
+        "--verify-only"
+      ],
+      "free_bytes_before": 636912168960,
+      "observed_at": "2026-11-09T01:22:55.329056+00:00",
+      "status": "finished",
+      "returncode": 0,
+      "free_bytes_after": 636912160768
+    },
+    {
+      "name": "operator-strict-fix",
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-operator-acceptance",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "free_bytes_before": 636912160768,
+      "observed_at": "2026-11-09T01:22:55.491037+00:00",
+      "status": "finished",
+      "returncode": 0,
+      "free_bytes_after": 636912152576
+    },
+    {
+      "name": "operator-readonly-strict-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--tests",
+        "--locked",
+        "-p",
+        "codex-hepta-operator-acceptance",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "free_bytes_before": 636912152576,
+      "observed_at": "2026-11-09T01:22:56.996192+00:00",
+      "status": "finished",
+      "returncode": 0,
+      "free_bytes_after": 636912144384
+    }
+  ],
+  "preparation_returncode": 0,
+  "driver_sha256": "1133f28d66b0496a11e938dbd8c38d3df90344fae8155ff4a1690d25a660a41a",
+  "tool_files": {
+    "just": {
+      "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/just-1.58.0/just",
+      "sha256": "3ad66571feae522db2cad31b9613bf21035b8a06d2738d6fc8fe6089856f2042"
+    },
+    "cargo-nextest": {
+      "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/nextest-0.9.103/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    }
+  },
+  "selected_environment": {
+    "PATH": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/just-1.58.0:/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/nextest-0.9.103:/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/uv-0.13.5:/home/qq/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/target-ci-test",
+    "CARGO_BUILD_JOBS": "6",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "LIBCLANG_PATH": "/usr/lib/x86_64-linux-gnu",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/clang-21-resources/usr/lib/llvm-21/lib/clang/21"
+  },
+  "source_before": {
+    "commit": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+    "tree": "f95a33684df6aac0a32326e20b63d4017d7b1968",
+    "status": "",
+    "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/followup4-d1b32a6-strictfix-v1/source-before.files.json",
+    "files_sha256": "c70a0c960785076bc7d468f5c75f265594d56020bc1efe735a02a15f4fcedf89",
+    "files_count": 15004,
+    "regular_file_bytes": 200327732,
+    "untracked_count": 0,
+    "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/followup4-d1b32a6-strictfix-v1/source-before.diff.patch",
+    "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "identity_stable_during_capture": true,
+    "capture_elapsed_seconds": 0.5292447910178453,
+    "observed_at": "2026-11-09T01:21:11.212947+00:00",
+    "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+  },
+  "identity_after_operator-strict-fix": {
+    "commit": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+    "tree": "f95a33684df6aac0a32326e20b63d4017d7b1968",
+    "status": ""
+  },
+  "identity_after_operator-readonly-strict-clippy": {
+    "commit": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+    "tree": "f95a33684df6aac0a32326e20b63d4017d7b1968",
+    "status": ""
+  },
+  "source_after": {
+    "commit": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+    "tree": "f95a33684df6aac0a32326e20b63d4017d7b1968",
+    "status": "",
+    "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/followup4-d1b32a6-strictfix-v1/source-after.files.json",
+    "files_sha256": "c70a0c960785076bc7d468f5c75f265594d56020bc1efe735a02a15f4fcedf89",
+    "files_count": 15004,
+    "regular_file_bytes": 200327732,
+    "untracked_count": 0,
+    "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/followup4-d1b32a6-strictfix-v1/source-after.diff.patch",
+    "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "identity_stable_during_capture": true,
+    "capture_elapsed_seconds": 0.29910053801722825,
+    "observed_at": "2026-11-09T01:22:58.670107+00:00",
+    "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+  },
+  "source_unchanged": true,
+  "returncode": 0,
+  "finished_at": "2026-11-09T01:22:58.673669+00:00"
+}

@@ -308,6 +308,177 @@
       "file_member_count": 21,
       "manifest_path": "packets/ba4e-current-ci-nonterminal-snapshot/manifest.json",
       "manifest_sha256": "00dd294c0072cafb5665cc6ea6de208c2dbfc999c7ffe2ba5601810b8a7aed01"
+    },
+    {
+      "packet_id": "ba4e-ci-failures-shards2-and3-cutoff2342",
+      "scope": "Immutable 23:42 UTC Nov8 ba4e CI snapshot, original Windows shards2/3 failures, actual checkout merge object/tree and failure bindings. Nonterminal observation, not full CI pass or scientific acceptance.",
+      "archive_bytes": 135648,
+      "archive_sha256": "0d52d1359a853693e64da293c5248debe2ce66fd7b3f5e96b880cb96a427ba9f",
+      "file_member_count": 35,
+      "manifest_path": "packets/ba4e-ci-failures-shards2-and3-cutoff2342/manifest.json",
+      "manifest_sha256": "33dc1c04e58889cb0279f0869b280ca9cbe1492858717d36c893d2fc2a2fa005"
+    },
+    {
+      "packet_id": "windows-directory-flush-api-observations-two-attempts",
+      "scope": "Original failed script-byte guard and second six-case native Win32 API observation on owned temporary objects, exact observer source and artifacts. First attempt executed zero API probes; no production Rust, namespace or power-loss durability qualified.",
+      "archive_bytes": 28948,
+      "archive_sha256": "3a03ba5f12fe61db598c76e0c315557985905af0b49b3517dd95eb1fc7a07a7c",
+      "file_member_count": 43,
+      "manifest_path": "packets/windows-directory-flush-api-observations-two-attempts/manifest.json",
+      "manifest_sha256": "0590e1ce92076f5c514cd0ba9fc9ca1d596ef58aa8e14314fc72f37ec400361a"
+    },
+    {
+      "packet_id": "bf516-source-preparation-four-owning-strict-checks",
+      "scope": "Exact bf516 source helper/V8 preparation and agentd H7-feature, Matrix, CLI and app-server strict fixes completed clean; original logs and source inventories retained. Native12 did not run; no test or scientific acceptance claim.",
+      "archive_bytes": 1505576,
+      "archive_sha256": "ff5448683e5753fa45af95c8c18ddadc7a6fd740ead542bbb763cabda38e8134",
+      "file_member_count": 68,
+      "manifest_path": "packets/bf516-source-preparation-four-owning-strict-checks/manifest.json",
+      "manifest_sha256": "451cc62465922410a317776d4bc3d93ee3a7153047871819e228a89d59c58061"
+    },
+    {
+      "packet_id": "bf516-and-82ff-source-preparation-publication-and-ci-observation",
+      "scope": "bf516 and 82ff exact source preparation, formatting, publication, original setup failures, prior evidence publication observer timeout and eventual readback, PR update, and nonterminal ba4e CI snapshot through 00:23:20 UTC Nov9. No new native or scientific acceptance is inferred.",
+      "archive_bytes": 154724,
+      "archive_sha256": "2b8497577864eb4d204cbeca45e8f6d409e88319a7b36cd21c53463bae11562e",
+      "file_member_count": 339,
+      "manifest_path": "packets/bf516-and-82ff-source-preparation-publication-and-ci-observation/manifest.json",
+      "manifest_sha256": "f565a244bd95aa88a6d6d917fe56498129653ba589733f952f2172a21a3ab928"
+    },
+    {
+      "packet_id": "82ff-python130-and-original-full-caller-gate",
+      "scope": "Exact 82ff Python130 original fixtures, self-test, unchanged CURRENT comparison and complete caller scan 388.7012557149865 seconds under original 600-second limit; clean identical source before/after. No Rust tests or scientific stage acceptance in this packet.",
+      "archive_bytes": 20768,
+      "archive_sha256": "d4f77526018bdb26fe8955a7f3fb273916a788891018cbc2bac745b277a32762",
+      "file_member_count": 45,
+      "manifest_path": "packets/82ff-python130-and-original-full-caller-gate/manifest.json",
+      "manifest_sha256": "e1b41ffe04ebe660c422cdde10d3ab02388cb53ba3764dce254c994878c7f2b0"
+    },
+    {
+      "packet_id": "82ff-strict-preparation-and-native13-original-failures",
+      "scope": "Exact82ff same-source helper/V8 and changed-owner strict preparation passed clean; selected native13 actually executed nine passes and four cold-resume failures under original10-second budgets, zero selected skips/retries. Complete original discovery, freshJUnit, logs and source inventories retained. Archive verification is not native or scientific acceptance.",
+      "archive_bytes": 2663768,
+      "archive_sha256": "44ffa8a9fb645e321fb7f4008b2f42f98f8b0696fcc81b2bb3b22ad26ed35cf5",
+      "file_member_count": 157,
+      "manifest_path": "packets/82ff-strict-preparation-and-native13-original-failures/manifest.json",
+      "manifest_sha256": "190f8b2c38665e9b28c43707017a6714535e76f6639690681da41808001b41c6"
+    },
+    {
+      "packet_id": "ba4-ci-failures-003-004-and-ui-original-artifacts",
+      "scope": "Original ba4 CI failure job APIs and raw logs, exact merge checkout identity, four UI artifact ZIPs and member hashes, and bounded source-backed diagnosis through snapshots003/004. Includes failed first sealing observer. UI hang cause remains unknown; original failures and flaky attempts are not erased. No new test execution or scientific acceptance.",
+      "archive_bytes": 2791500,
+      "archive_sha256": "069168b68fc80d0743574b0c2d501c6afeef7eafed2e1605228c24628bf8a56a",
+      "file_member_count": 408,
+      "manifest_path": "packets/ba4-ci-failures-003-004-and-ui-original-artifacts/manifest.json",
+      "manifest_sha256": "2f93446cbba5938886e9e6d1d9944a22ed89c0d6b3bb44a7b0e568fb409cd10e"
+    },
+    {
+      "packet_id": "a8d0-operator-compile-failure-and-native-not-run",
+      "scope": "Exact a8d0b3d preparation: V8/helper/app-server strict passed; operator strict failed E0433 after differential test lost indirect Command import. Source unchanged. All native groups not_run, zero cases executed. Original logs, source inventories and failure retained; packet integrity is not test success.",
+      "archive_bytes": 1500740,
+      "archive_sha256": "ba1b2a9f8cbb80ff957742921a1a970c8d33f5a23e37492478e1e796d384feb4",
+      "file_member_count": 64,
+      "manifest_path": "packets/a8d0-operator-compile-failure-and-native-not-run/manifest.json",
+      "manifest_sha256": "7e85e2b480576b690b7048963cb7bb1fb7760b083a805ce0cc3dfd94afc0fda0"
+    },
+    {
+      "packet_id": "a39b-operator-source-drift-failure-and-native-not-run",
+      "scope": "Exact a39bf3e isolated preparation failed source identity: canonical just fix child exit0 still left two path-statements warnings and modified durable.rs; outer gate rejected source drift. Original and changed full file, full-index patch, inventories and raw logs retained. V8/helper passed; native not_run zero. No automatic diff adopted into common source.",
+      "archive_bytes": 1499968,
+      "archive_sha256": "086f7e6819f68fd41e2b19ba8a7aadba5ad1b1a3dbdb15ec4f1d910f27635533",
+      "file_member_count": 64,
+      "manifest_path": "packets/a39b-operator-source-drift-failure-and-native-not-run/manifest.json",
+      "manifest_sha256": "a073574aef44d07f4eb0910c8f0448ea3a74330cc48db9a714931c1d52da93f0"
+    },
+    {
+      "packet_id": "ba4-original-windows-native-65-minute-timeout",
+      "scope": "Original Windows native run42534602318/job128896014047 stopped by original 65-minute Actions job cap, proven by annotation; no manual cancellation. Original operator33 passed; sandbox groups7+2 failed; launched core group lacks completion receipt. Includes raw log, APIs, original artifact and verified20 ZIP members. Source-before ba4/d2 clean; source-after absent. Whole gate not passed and full cost unknown.",
+      "archive_bytes": 127020,
+      "archive_sha256": "bd27ffa81e5c2f6274aea9be640d1e8bf6fb3c688be5472deb1e7d17433c8f5c",
+      "file_member_count": 18,
+      "manifest_path": "packets/ba4-original-windows-native-65-minute-timeout/manifest.json",
+      "manifest_sha256": "9db17e1cbc768d4c2243ba43384eabbec35292ad3f3eea16a19a33cac12de85f"
+    },
+    {
+      "packet_id": "a8d0b3d-python130-and-original-full-caller-gate",
+      "scope": "Exact a8d0b3dab62045a6aa6e61966c3fbeeccf1b48d6 Python130 original fixtures, self-test, unchanged CURRENT comparison and complete caller scan 369.8617806970142 seconds under original 600-second limit; clean identical source before/after. No Rust tests or scientific stage acceptance in this packet.",
+      "archive_bytes": 20792,
+      "archive_sha256": "60ba567fb0c83c24f298b1716b6f182688d137c7671beebbbb5c7ac6acd34954",
+      "file_member_count": 45,
+      "manifest_path": "packets/a8d0b3d-python130-and-original-full-caller-gate/manifest.json",
+      "manifest_sha256": "d07c4ea00ca710e749d63670aca51d2c596847b465404987bd30f440ebd5079c"
+    },
+    {
+      "packet_id": "a39bf3e-python130-and-original-full-caller-gate",
+      "scope": "Exact a39bf3eeac945c83aebcadbb81dfcb93d623e0f4 Python130 original fixtures, self-test, unchanged CURRENT comparison and complete caller scan 373.9014078550972 seconds under original 600-second limit; clean identical source before/after. No Rust tests or scientific stage acceptance in this packet.",
+      "archive_bytes": 20780,
+      "archive_sha256": "6a029423cf820e6e9e54ce36ac29d439ba0a8b0e0264648ad2d452678d6bb6bb",
+      "file_member_count": 45,
+      "manifest_path": "packets/a39bf3e-python130-and-original-full-caller-gate/manifest.json",
+      "manifest_sha256": "76b259a4e2526f8d73673fb9eea135460507e8568a8c0ff7d6dae354fa50414e"
+    },
+    {
+      "packet_id": "d1b32a6-python130-and-original-full-caller-gate",
+      "scope": "Exact d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca Python130 original fixtures, self-test, unchanged CURRENT comparison and complete caller scan 374.1610191750806 seconds under original 600-second limit; clean identical source before/after. No Rust tests or scientific stage acceptance in this packet.",
+      "archive_bytes": 20796,
+      "archive_sha256": "096b7f6e2abc9c8cc8ec20645c9b490e7b23b3b0ff02abb6e877f9693a4118ed",
+      "file_member_count": 45,
+      "manifest_path": "packets/d1b32a6-python130-and-original-full-caller-gate/manifest.json",
+      "manifest_sha256": "b604ffb2c950a1384250f1a60108314ffda37354c5683dcdbe176436c4c3be34"
+    },
+    {
+      "packet_id": "a8d0-a39b-d1b3-source-preparation-publication-and-ci-observation",
+      "scope": "Exact a8d0, a39b and d1b3 successor source preparation, canonical formatting, quiet publication and remote readback; reviewed patches, immutable prior Python execution packet sealing, PR status004 and nonterminal common ba4 CI snapshots004/005 through 01:19:38 UTC Nov9. These preparations do not turn failed native gates into passes or qualify scientific stages.",
+      "archive_bytes": 152296,
+      "archive_sha256": "766df638db0221f8ffc31326eefccdc7477b797eb868fac03e0f2cf21e15c635",
+      "file_member_count": 385,
+      "manifest_path": "packets/a8d0-a39b-d1b3-source-preparation-publication-and-ci-observation/manifest.json",
+      "manifest_sha256": "1a51407a5a567505f3e28222fb74245cfb251b7e96969fff398941f8d9548650"
+    },
+    {
+      "packet_id": "d1b32a6-strict-preparation-native13-and-complete-operator-library",
+      "scope": "Exact d1b32a6 Linux source: V8, helper build/verify, canonical operator just fix and readonly strict clippy all passed without edits; original thirteen selected regressions and all twenty-five actually discovered operator library cases passed. Six fresh JUnit unique case sets exactly match original discovery; selected skips/retries zero. All15004 tracked entries identical before/after. Includes all original raw logs, discovery, tool/binary identities and receipts. Not a full workspace, Windows, Bazel, scientific or full-cost pass.",
+      "archive_bytes": 2667596,
+      "archive_sha256": "c993bd959ebb3815223d71374cfba130198cc6953d58600cab2471b87479622f",
+      "file_member_count": 171,
+      "manifest_path": "packets/d1b32a6-strict-preparation-native13-and-complete-operator-library/manifest.json",
+      "manifest_sha256": "f921cc006d4c8ba4b11d38c309741b119e4b4b2a5f2d8d01a556e5297d32ac38"
+    },
+    {
+      "packet_id": "d1-original-bazel-observer-wsl-launch-failure",
+      "scope": "Original observer e401c77 run42545618817 tested checkout d1 clean before/after. Discovery launch exited1 after0.0317s with original UTF16LE WSL-no-distribution output, noBEP and nativeExecution not_run: zero original33 cases executed. Full raw/API and original22-member artifact preserved with derived UTF8 text explicitly marked; first resolved bash path/hash/version unknown. This is observer launch failure, not target33 failure; later fixes do not erase it.",
+      "archive_bytes": 58744,
+      "archive_sha256": "33f2aa9ece8bf6fdcdd08d60e06533669d5ca9e9b7ec64eaecbca96215ef6b12",
+      "file_member_count": 16,
+      "manifest_path": "packets/d1-original-bazel-observer-wsl-launch-failure/manifest.json",
+      "manifest_sha256": "8bc6fd67a4d1e907c572aa0bc6477b0c5cf64c7a8a4c7ea7135818c43e49fe5b"
+    },
+    {
+      "packet_id": "ba4-original-native-complete-default-workspace-and-terminal-ci",
+      "scope": "Original ba4 native CI run 42534597157 completed naturally. Retains all three original job logs, four exact original artifact ZIPs and every member index, run/job/API metadata, receipt/log/fresh-JUnit audit and complete terminal CI snapshot006. The complete default workspace has 20,563 unique passes and 139 original raw skips; scoped 7,910 and mechanisms 1,215 are subsets and are not added. The separate original ignored HostCAS case passed once, with duplicate uploaded copies identified. No retries, leaks or XML failures were observed in the verified selected executions. This packet does not qualify all feature combinations, successor sources, full repository CI, UI, scientific stage advancement, ordinary daemon closure or full historical/physical cost. The first local auditor-generation assertion failure and the first sealing type-comparison failure are retained; no new tests were executed for this audit.",
+      "archive_bytes": 4271052,
+      "archive_sha256": "80e43610d9388fce77642f390c6d610a3f1154d6788a88dc53c20bf4c29b2291",
+      "file_member_count": 89,
+      "manifest_path": "packets/ba4-original-native-complete-default-workspace-and-terminal-ci/manifest.json",
+      "manifest_sha256": "4af5d94839e63898da4ce3a2416af510626c2f62666c17fd871371410c2291ff"
+    },
+    {
+      "packet_id": "windows-fixture-eleven-82-partial-v1",
+      "scope": "Original Windows eleven-case observer 630a5cf5 tested clean source 82ff/tree c457 before and after. Run 42540772106 reached its original 65-minute Actions limit naturally: four actual cases, fleet and H7 passed, CLI and signed-credit failed, selected skips/retries/leaks zero. Seven planned cases were not executed: Matrix discovery/build began and incurred actual cost, while six app-server cases were not launched. All original job/API/annotation/log and artifact bytes retained, including 88 verified ZIP members. This partial failed run is not a complete eleven-case result, and unexecuted or unmeasured costs are not represented as zero.",
+      "archive_bytes": 18031544,
+      "archive_sha256": "4cfceadf6375309008e74d813829400dd4b023b30821208230503d9998e481b2",
+      "file_member_count": 18,
+      "manifest_path": "packets/windows-fixture-eleven-82-partial-v1/manifest.json",
+      "manifest_sha256": "44f7a6dcc5856328c7068815e48ee303beb329076711a8244a325c519fabcddf"
+    },
+    {
+      "packet_id": "windows-original-operator-bazel-d1-pass-v1",
+      "scope": "Original public Windows Bazel operator target executed with observer cea37b82 and exact tested source d1/tree f95 in run 42546897394. Actual original libtest discovery and execution match 33 unique passing cases with zero ignored/filtered/retry/cache. BEP records one run, shard and attempt; original XML records one aggregate wrapper testcase rather than synthetic per-case JUnit. Source and observer stayed clean; all 53 original artifact ZIP members are verified. The first observer WSL-launch failure remains separately retained. This original-wrapper single-target, keyless-BuildBuddy environment is not whole-shard or whole-Windows qualification.",
+      "archive_bytes": 3099296,
+      "archive_sha256": "60a079044fd4de72865fd41677834240548412973a07bf6441a022b085af67ab",
+      "file_member_count": 18,
+      "manifest_path": "packets/windows-original-operator-bazel-d1-pass-v1/manifest.json",
+      "manifest_sha256": "a11faa2f3bdce42195cb6fbaa4280bf0e7fc50db120298a768e6df3b304300e6"
     }
   ],
   "max_chunk_bytes": 490000,
@@ -329,7 +500,117 @@
   "publication_commit_location": "external_git_readback_receipt",
   "source_branch_mutated_by_publication": false,
   "counts_and_wall_times_must_not_be_added_across_packets": true,
-  "preceding_evidence_commit": "61b43ccabaaf47b93ed0d2c2cb48f7c6cc26ecde",
+  "preceding_evidence_commit": "939f3088497f03f6dbb05e2e5fed5184ab23921a",
   "latest_reviewed_common_source_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1",
-  "latest_reviewed_common_source_tree": "d2f261084bad25c230b95835e9a589fe7b866be1"
+  "latest_reviewed_common_source_tree": "d2f261084bad25c230b95835e9a589fe7b866be1",
+  "isolated_followup_source_sha": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+  "isolated_followup_source_tree": "f95a33684df6aac0a32326e20b63d4017d7b1968",
+  "increment003_original_metadata_observations": [
+    {
+      "path": "observations/followup4-d1b32a6-strict-preparation.json",
+      "bytes": 7722,
+      "sha256": "1e10f137637a98b41787bcb1fec14e9b66484a1ef97d294ec694e0d25ef0615f"
+    },
+    {
+      "path": "observations/independent-review-followup4-stage.json",
+      "bytes": 7187,
+      "sha256": "232477fefcba193832b59d1c0c633cd1e6036c9e79102e550a185fd013e3437f"
+    },
+    {
+      "path": "observations/windows-followup4-observer-publication-v1/RESULT.json",
+      "bytes": 1185,
+      "sha256": "003d743ff36e34f4ce3d3d7ef2e1aaea1083b084ab22e88c1f68bd57ba9fef8b"
+    },
+    {
+      "path": "observations/windows-legacy-summary-CORRECTION-v1.json",
+      "bytes": 6851,
+      "sha256": "ac48183f696af7d4505bda1db5d2a7f0a523e1ccb1592c54596f56c2366a40e4"
+    },
+    {
+      "path": "observations/windows-legacy-readonly-AUDIT-d1-v1.json",
+      "bytes": 41792,
+      "sha256": "aa7678a0857b5d11326a3c52aa322de596a896fd9cb8345395080c55fb110fa1"
+    },
+    {
+      "path": "observations/windows-legacy-source-BINDING-d1-v1.json",
+      "bytes": 4346,
+      "sha256": "c8296605138151f214db6ab785047622697f908e8e9225d9745498c9b0a345dd"
+    },
+    {
+      "path": "observations/native-ci-ba4-artifacts-v1/VERIFIED_OBSERVATIONS.json",
+      "bytes": 57195,
+      "sha256": "fcdfa1ec9d59934b3d5b6d731fc02c25d1a9d89e83abff58a0b6cd61037649a9"
+    },
+    {
+      "path": "observations/ci-ba4e-current-snapshot-006/SUMMARY.json",
+      "bytes": 7384,
+      "sha256": "90361b0ed19a884df9684a8bc11a84ac8af23f234b9731a6096ad6d0c3951c30"
+    },
+    {
+      "path": "observations/operator-bazel-ci-42546897394-v1/INDEPENDENT_ANALYSIS.json",
+      "bytes": 10396,
+      "sha256": "b4813509a1b79013d239eda4271448c78261d8eb7bd57e535c3e7177d5ecd409"
+    },
+    {
+      "path": "observations/windows-fixture-eleven-82-partial-packet-v1/CASE_ANALYSIS.json",
+      "bytes": 23557,
+      "sha256": "925ad2c5b0c5731e3bc54e5f978c850f477539c9e522394db644f6ee19101bba"
+    }
+  ],
+  "latest_successor_selected_linux_native_passed": true,
+  "latest_successor_selected_linux_case_count": 38,
+  "latest_successor_full_workspace_passed": false,
+  "latest_successor_full_workspace_execution": "not_run",
+  "latest_successor_windows_result_claimed": true,
+  "latest_successor_windows_result_scope": "original_operator_Bazel_target_only",
+  "latest_successor_windows_original_operator_case_count": 33,
+  "latest_successor_full_windows_passed": false,
+  "first_successor_bazel_observer_native_execution": "not_run",
+  "common_full_repository_ci_green": false,
+  "common_original_native_ci": {
+    "source_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1",
+    "run_id": 42534597157,
+    "default_workspace_passed_unique": 20563,
+    "default_workspace_raw_skipped": 139,
+    "scoped_passed_subset": 7910,
+    "mechanisms_passed_subset": 1215,
+    "separate_original_hostcas_passed": 1,
+    "scope_counts_added": false,
+    "all_feature_combinations_qualified": false,
+    "full_history_cost": null
+  },
+  "windows_82_eleven_case_original_partial": {
+    "source_sha": "82ff5119200cab9d65461eb62a3829567fbc2e8f",
+    "run_id": 42540772106,
+    "conclusion": "cancelled_at_original_65_minute_limit",
+    "executed": 4,
+    "passed": 2,
+    "failed": 2,
+    "not_executed": 7,
+    "selected_skipped": 0,
+    "leaky_observed": 0,
+    "complete_scope_passed": false,
+    "matrix_discovery_started": true,
+    "unexecuted_cost_assumed_zero": false
+  },
+  "original_windows_count_correction": {
+    "run_id": 42534602318,
+    "original_archive_sha256": "bd27ffa81e5c2f6274aea9be640d1e8bf6fb3c688be5472deb1e7d17433c8f5c",
+    "prior_prose_label": "7+2 FAIL",
+    "first_group": {
+      "executed": 7,
+      "failed": 6,
+      "passed_but_leaky": 1,
+      "clean_passed": 0
+    },
+    "delete_group": {
+      "executed": 2,
+      "failed": 2,
+      "clean_passed": 0
+    },
+    "original_observer_already_rejected_leak": true,
+    "original_packet_bytes_preserved": true,
+    "correction_path": "observations/windows-legacy-summary-CORRECTION-v1.json"
+  },
+  "lock_identity_scope": "unchanged_Git_source_blobs_platform_working_tree_hashes_preserved_separately"
 }

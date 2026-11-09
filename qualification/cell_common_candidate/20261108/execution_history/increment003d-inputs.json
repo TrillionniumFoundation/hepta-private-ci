@@ -1,0 +1,32 @@
+{
+  "packets": [
+    {
+      "packet_id": "ba4-ci-failures-003-004-and-ui-original-artifacts",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-ba4e-failure-evidence-003-004-v2/ci-ba4e-failure-evidence-003-004.tar.xz",
+      "bytes": 2791500,
+      "sha256": "069168b68fc80d0743574b0c2d501c6afeef7eafed2e1605228c24628bf8a56a",
+      "scope": "Original ba4 CI failure job APIs and raw logs, exact merge checkout identity, four UI artifact ZIPs and member hashes, and bounded source-backed diagnosis through snapshots003/004. Includes failed first sealing observer. UI hang cause remains unknown; original failures and flaky attempts are not erased. No new test execution or scientific acceptance."
+    },
+    {
+      "packet_id": "a8d0-operator-compile-failure-and-native-not-run",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/followup2-a8d0b3d-preparation-complete.tar.xz",
+      "bytes": 1500740,
+      "sha256": "ba1b2a9f8cbb80ff957742921a1a970c8d33f5a23e37492478e1e796d384feb4",
+      "scope": "Exact a8d0b3d preparation: V8/helper/app-server strict passed; operator strict failed E0433 after differential test lost indirect Command import. Source unchanged. All native groups not_run, zero cases executed. Original logs, source inventories and failure retained; packet integrity is not test success."
+    },
+    {
+      "packet_id": "a39b-operator-source-drift-failure-and-native-not-run",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/followup3-a39bf3e-preparation-complete.tar.xz",
+      "bytes": 1499968,
+      "sha256": "086f7e6819f68fd41e2b19ba8a7aadba5ad1b1a3dbdb15ec4f1d910f27635533",
+      "scope": "Exact a39bf3e isolated preparation failed source identity: canonical just fix child exit0 still left two path-statements warnings and modified durable.rs; outer gate rejected source drift. Original and changed full file, full-index patch, inventories and raw logs retained. V8/helper passed; native not_run zero. No automatic diff adopted into common source."
+    },
+    {
+      "packet_id": "ba4-original-windows-native-65-minute-timeout",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-ba4e-cancelled-windows-native-packet-v1/windows-original-native-timeout.tar.xz",
+      "bytes": 127020,
+      "sha256": "bd27ffa81e5c2f6274aea9be640d1e8bf6fb3c688be5472deb1e7d17433c8f5c",
+      "scope": "Original Windows native run42534602318/job128896014047 stopped by original 65-minute Actions job cap, proven by annotation; no manual cancellation. Original operator33 passed; sandbox groups7+2 failed; launched core group lacks completion receipt. Includes raw log, APIs, original artifact and verified20 ZIP members. Source-before ba4/d2 clean; source-after absent. Whole gate not passed and full cost unknown."
+    }
+  ]
+}

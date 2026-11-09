@@ -1,0 +1,673 @@
+{
+  "source_sha": "82ff5119200cab9d65461eb62a3829567fbc2e8f",
+  "source_tree": "c4573035504ef5305d59d3e22c5d134593825455",
+  "observer_sha": "630a5cf57a4f61b21c0edf372319d55d71c4fab5",
+  "source_before_after_equal": true,
+  "github_job_conclusion": "cancelled",
+  "cause": "original 65-minute job limit confirmed by GitHub annotation",
+  "complete_scope_pass": false,
+  "case_totals": {
+    "executed": 4,
+    "passed": 2,
+    "failed": 2,
+    "selected_skipped": 0,
+    "leaky_observed": 0,
+    "not_executed_of_planned_eleven": 7
+  },
+  "groups": [
+    {
+      "id": "cli-cloud",
+      "scope_status": "failed_or_incomplete",
+      "native_execution": {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-cli",
+          "--test",
+          "sandbox_cloud_config",
+          "--cargo-profile",
+          "dev-small",
+          "--profile",
+          "local",
+          "--tool-config-file",
+          "hepta-fixture-followup:D:\\a\\_temp\\hepta-windows-fixture-followup\\cli-cloud\\nextest.toml",
+          "-E",
+          "test(=sandbox_fetches_and_enforces_cloud_managed_permission_profile)",
+          "--test-threads",
+          "1",
+          "--retries",
+          "0",
+          "--no-tests",
+          "fail",
+          "--success-output",
+          "final"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\source\\codex-rs",
+        "exitCode": 1,
+        "finishedUnix": 1794186786.4511855,
+        "startedAt": "2026-11-09T01:13:00.409893+00:00",
+        "startedUnix": 1794186780.409893,
+        "status": "completed",
+        "wallSecondsNotFullCost": 6.041292428970337
+      },
+      "discovery_started": true,
+      "discovery_completed": true,
+      "selected_count": 1,
+      "filter_excluded_count": 0,
+      "cases": [
+        {
+          "binary_id": "codex-cli::sandbox_cloud_config",
+          "name": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+          "xml_outcome": "failed",
+          "time_seconds": "0.164",
+          "diagnostics": [
+            {
+              "type": "failure",
+              "message": "thread 'sandbox_fetches_and_enforces_cloud_managed_permission_profile' (3440) panicked at C:\\Users\\runneradmin\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\wiremock-0.6.5\\src\\mock_server\\exposed_server.rs:367:17",
+              "text": "thread 'sandbox_fetches_and_enforces_cloud_managed_permission_profile' (3440) panicked at C:\\Users\\runneradmin\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\wiremock-0.6.5\\src\\mock_server\\exposed_server.rs:367:17:\nVerifications failed:\n- Mock #0.\nExpected range of matching incoming requests: == 1\nNumber of matched incoming requests: 0\n\nThe server did not receive any request.\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ]
+        }
+      ],
+      "junit_sha256": "0b327bbb5532891a446a0583b9cfe7f0ae23fceed494efcd2b152157140316d2",
+      "leak_markers": [],
+      "explicit_skip_markers": []
+    },
+    {
+      "id": "agentd-fleet-default",
+      "scope_status": "failed_or_incomplete",
+      "native_execution": {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "--profile",
+          "local",
+          "--tool-config-file",
+          "hepta-fixture-followup:D:\\a\\_temp\\hepta-windows-fixture-followup\\agentd-fleet-default\\nextest.toml",
+          "-E",
+          "test(=neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost) | test(=circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append)",
+          "--test-threads",
+          "1",
+          "--retries",
+          "0",
+          "--no-tests",
+          "fail",
+          "--success-output",
+          "final"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\source\\codex-rs",
+        "exitCode": 1,
+        "finishedUnix": 1794187846.0270097,
+        "startedAt": "2026-11-09T01:30:39.357702+00:00",
+        "startedUnix": 1794187839.3597145,
+        "status": "completed",
+        "wallSecondsNotFullCost": 6.667295217514038
+      },
+      "discovery_started": true,
+      "discovery_completed": true,
+      "selected_count": 2,
+      "filter_excluded_count": 259,
+      "cases": [
+        {
+          "binary_id": "codex-hepta-agentd",
+          "name": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+          "xml_outcome": "failed",
+          "time_seconds": "0.173",
+          "diagnostics": [
+            {
+              "type": "failure",
+              "message": "thread 'circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append' (1544) panicked at hepta-agentd\\src\\circuit_cell_test_support.rs:17:23",
+              "text": "thread 'circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append' (1544) panicked at hepta-agentd\\src\\circuit_cell_test_support.rs:17:23:\nfixture failed: Invalid\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ]
+        },
+        {
+          "binary_id": "codex-hepta-agentd",
+          "name": "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+          "xml_outcome": "passed",
+          "time_seconds": "0.886",
+          "diagnostics": []
+        }
+      ],
+      "junit_sha256": "3404ca94db861bf63861cc53c12d5115b19a34ad5ce9e8725edbd15e97af160c",
+      "leak_markers": [],
+      "explicit_skip_markers": []
+    },
+    {
+      "id": "agentd-h7-qualification",
+      "scope_status": "passed_selected_scope",
+      "native_execution": {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "--features",
+          "qualification-cognitive-write",
+          "--cargo-profile",
+          "dev-small",
+          "--profile",
+          "local",
+          "--tool-config-file",
+          "hepta-fixture-followup:D:\\a\\_temp\\hepta-windows-fixture-followup\\agentd-h7-qualification\\nextest.toml",
+          "-E",
+          "test(=runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence)",
+          "--test-threads",
+          "1",
+          "--retries",
+          "0",
+          "--no-tests",
+          "fail",
+          "--success-output",
+          "final"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\source\\codex-rs",
+        "exitCode": 0,
+        "finishedUnix": 1794187949.7270486,
+        "startedAt": "2026-11-09T01:32:22.276493+00:00",
+        "startedUnix": 1794187942.2764933,
+        "status": "completed",
+        "wallSecondsNotFullCost": 7.450555324554443
+      },
+      "discovery_started": true,
+      "discovery_completed": true,
+      "selected_count": 1,
+      "filter_excluded_count": 263,
+      "cases": [
+        {
+          "binary_id": "codex-hepta-agentd",
+          "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+          "xml_outcome": "passed",
+          "time_seconds": "2.647",
+          "diagnostics": []
+        }
+      ],
+      "junit_sha256": "1a430086f0eb071049c7f89c28470a3091435af28d64fb246bc7cd3ddf8b198c",
+      "leak_markers": [],
+      "explicit_skip_markers": []
+    },
+    {
+      "id": "matrix-startup-diagnostic",
+      "scope_status": null,
+      "native_execution": "not_run",
+      "discovery_started": true,
+      "discovery_completed": false,
+      "selected_count": null,
+      "filter_excluded_count": null,
+      "cases": [],
+      "leak_markers": [],
+      "explicit_skip_markers": []
+    },
+    {
+      "id": "appserver-fixtures",
+      "scope_status": null,
+      "native_execution": "not_run",
+      "discovery_started": false,
+      "discovery_completed": false,
+      "selected_count": null,
+      "filter_excluded_count": null,
+      "cases": [],
+      "leak_markers": [],
+      "explicit_skip_markers": []
+    }
+  ],
+  "matrix_work": "discovery compilation launched and interrupted; no case execution",
+  "appserver_work": "not started",
+  "research_advancement": false,
+  "full_workspace_pass": false,
+  "full_cost": null,
+  "original_receipt_preserved": true,
+  "compiler_stdout": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-pc-windows-msvc\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "artifact_zip_members": [
+    {
+      "path": "after-preparation-source.json",
+      "bytes": 559,
+      "sha256": "f1a9d617acbab57186c8121764aaf647b4693dc0d8563bdfb78b0bf6d45afc8d"
+    },
+    {
+      "path": "agentd-fleet-default/discovery-started.json",
+      "bytes": 815,
+      "sha256": "fef587d7a26a3caee2366fcf63eb010c0a00811d76cdfd76b71fff6c9741e518"
+    },
+    {
+      "path": "agentd-fleet-default/discovery.json",
+      "bytes": 959,
+      "sha256": "c507a7d211e4abd12633fe90f282caba20efeab558b2689a5558b4837ebd7f9f"
+    },
+    {
+      "path": "agentd-fleet-default/discovery.stderr",
+      "bytes": 29288,
+      "sha256": "7df3ddf19fce9a299d84bfea2e613b2e7843fa4f83e2c2d4d426ceae9a109419"
+    },
+    {
+      "path": "agentd-fleet-default/discovery.stdout",
+      "bytes": 46835,
+      "sha256": "2bc5934658f419eead955a0c95bf6d763f0b2475ad64f28d01f40ba8066c4094"
+    },
+    {
+      "path": "agentd-fleet-default/nextest-store/local/junit.xml",
+      "bytes": 2203,
+      "sha256": "3404ca94db861bf63861cc53c12d5115b19a34ad5ce9e8725edbd15e97af160c"
+    },
+    {
+      "path": "agentd-fleet-default/nextest.toml",
+      "bytes": 143,
+      "sha256": "d8ee0e8933c9d92c0ad1a7928da70383ac558a3d174c2ecf138b730cda4da87a"
+    },
+    {
+      "path": "agentd-fleet-default/RESULT.json",
+      "bytes": 87853,
+      "sha256": "9a4a779db5d4ded3995e0fcb6576b809d49083d6040ab565f30c4ce190dadb78"
+    },
+    {
+      "path": "agentd-fleet-default/selection.json",
+      "bytes": 78158,
+      "sha256": "5b7803fff05661a265db3a251aae9230c5bf79c5579768b890f88678d908eb75"
+    },
+    {
+      "path": "agentd-fleet-default/tests-started.json",
+      "bytes": 892,
+      "sha256": "c77afd1936fb05e9fcf20a2d735c8d71c568549885754dbdb8c45ea3a07aec1d"
+    },
+    {
+      "path": "agentd-fleet-default/tests.json",
+      "bytes": 1037,
+      "sha256": "833d843b216dc4e39ab1dda85cc6618a82cb5af8f7250c4cb3a1440b29cc69b4"
+    },
+    {
+      "path": "agentd-fleet-default/tests.stderr",
+      "bytes": 10178,
+      "sha256": "4a9be03463e16aa35b2546a3c7e52e8727e64a4e904eae7e4233f73f3976c12d"
+    },
+    {
+      "path": "agentd-fleet-default/tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "agentd-fleet-default-after-source.json",
+      "bytes": 559,
+      "sha256": "f1a9d617acbab57186c8121764aaf647b4693dc0d8563bdfb78b0bf6d45afc8d"
+    },
+    {
+      "path": "agentd-fleet-default-before-source.json",
+      "bytes": 559,
+      "sha256": "f1a9d617acbab57186c8121764aaf647b4693dc0d8563bdfb78b0bf6d45afc8d"
+    },
+    {
+      "path": "agentd-h7-qualification/discovery-started.json",
+      "bytes": 716,
+      "sha256": "b52240a60d3a40948254a113f9fde1f775eef05a196e9051f4ac2c09fab43164"
+    },
+    {
+      "path": "agentd-h7-qualification/discovery.json",
+      "bytes": 859,
+      "sha256": "7e69a59fed4f3c78b3e0982ffd9415a6a333f2fe1049095d8540c92c6c0b3ee6"
+    },
+    {
+      "path": "agentd-h7-qualification/discovery.stderr",
+      "bytes": 8216,
+      "sha256": "264701ac891db6c759a0c2d816cbc9fac8740b2da180f11dbc5abf2d1e667241"
+    },
+    {
+      "path": "agentd-h7-qualification/discovery.stdout",
+      "bytes": 47356,
+      "sha256": "d04a5bebeb4762a9d59cbca8f30a900a2caff0ec9f3f0f362c5bfddc3220d369"
+    },
+    {
+      "path": "agentd-h7-qualification/nextest-store/local/junit.xml",
+      "bytes": 548,
+      "sha256": "1a430086f0eb071049c7f89c28470a3091435af28d64fb246bc7cd3ddf8b198c"
+    },
+    {
+      "path": "agentd-h7-qualification/nextest.toml",
+      "bytes": 146,
+      "sha256": "65063bfc45ad924fbf4a4e85096991caca2d6626e31956a10c3929eab6995c3b"
+    },
+    {
+      "path": "agentd-h7-qualification/RESULT.json",
+      "bytes": 88465,
+      "sha256": "ec1e07fe03f67edc4073f7a94876ce3eb4a5d0198f2a07d553d2a7a0d4613d33"
+    },
+    {
+      "path": "agentd-h7-qualification/selection.json",
+      "bytes": 79182,
+      "sha256": "d7306aebb563986d91e315fdeae3cb28b6f0a205ca01350152c5d4e6ed9ab6d9"
+    },
+    {
+      "path": "agentd-h7-qualification/tests-started.json",
+      "bytes": 793,
+      "sha256": "3e5c87117b3ba9a80fc6bf1cbffe57ada1fddad0f2df20245c3c991f8c69c195"
+    },
+    {
+      "path": "agentd-h7-qualification/tests.json",
+      "bytes": 938,
+      "sha256": "9cfc25409f2dde1a33083d0b34a0d2fef02680a836285f1b41ea37047602e96b"
+    },
+    {
+      "path": "agentd-h7-qualification/tests.stderr",
+      "bytes": 8898,
+      "sha256": "7443899f112959b982ea844cd09c8fa33b235bc1b293dbe789bed17f7bf4aeed"
+    },
+    {
+      "path": "agentd-h7-qualification/tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "agentd-h7-qualification-after-source.json",
+      "bytes": 559,
+      "sha256": "f1a9d617acbab57186c8121764aaf647b4693dc0d8563bdfb78b0bf6d45afc8d"
+    },
+    {
+      "path": "agentd-h7-qualification-before-source.json",
+      "bytes": 559,
+      "sha256": "f1a9d617acbab57186c8121764aaf647b4693dc0d8563bdfb78b0bf6d45afc8d"
+    },
+    {
+      "path": "cli-cloud/discovery-started.json",
+      "bytes": 636,
+      "sha256": "604c26ebc31f4f996f1afcf201f756306cb2ee3dd2d2003a437e167b6628891a"
+    },
+    {
+      "path": "cli-cloud/discovery.json",
+      "bytes": 782,
+      "sha256": "a33967ceebccd260a2a37d06ecf5946dec360f11e6326f2aaf46b4e2f34d2b38"
+    },
+    {
+      "path": "cli-cloud/discovery.stderr",
+      "bytes": 61943,
+      "sha256": "16ca6dee1e8706357bf20a18d30f686024be00380982a0e045c29d2b9e2406f0"
+    },
+    {
+      "path": "cli-cloud/discovery.stdout",
+      "bytes": 2199,
+      "sha256": "dd59edd68576d2fd91cf33b82f87b520e413158fb782989b226abdfb33b1cf04"
+    },
+    {
+      "path": "cli-cloud/nextest-store/local/junit.xml",
+      "bytes": 2159,
+      "sha256": "0b327bbb5532891a446a0583b9cfe7f0ae23fceed494efcd2b152157140316d2"
+    },
+    {
+      "path": "cli-cloud/nextest.toml",
+      "bytes": 132,
+      "sha256": "28c068adf1641982e97c3f96931b2998aee134d847e331cf2025e5fa381992b9"
+    },
+    {
+      "path": "cli-cloud/RESULT.json",
+      "bytes": 3910,
+      "sha256": "d809444002206b6330f974611d3d416123415e6e135f130071996178cd5b8692"
+    },
+    {
+      "path": "cli-cloud/selection.json",
+      "bytes": 688,
+      "sha256": "213f7a5566b95010cc57ce3436b7b3f42603af1e4957bd968039d8bc6c6b6fcc"
+    },
+    {
+      "path": "cli-cloud/tests-started.json",
+      "bytes": 713,
+      "sha256": "e330821d9ab50816dc3f573d4401cab06f4b16fcd775c349f53486d6d4953e65"
+    },
+    {
+      "path": "cli-cloud/tests.json",
+      "bytes": 857,
+      "sha256": "7d3c059635db4f6d05b5e13240eb9971ef0b9ab0ef21e5921ff86896b66d9e5c"
+    },
+    {
+      "path": "cli-cloud/tests.stderr",
+      "bytes": 3526,
+      "sha256": "412f7f4b6c57b0978a59c423d098b0c262696694090fb56f4bc0edd87f3bfc53"
+    },
+    {
+      "path": "cli-cloud/tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cli-cloud-after-source.json",
+      "bytes": 559,
+      "sha256": "f1a9d617acbab57186c8121764aaf647b4693dc0d8563bdfb78b0bf6d45afc8d"
+    },
+    {
+      "path": "cli-cloud-before-source.json",
+      "bytes": 559,
+      "sha256": "f1a9d617acbab57186c8121764aaf647b4693dc0d8563bdfb78b0bf6d45afc8d"
+    },
+    {
+      "path": "compiler-started.json",
+      "bytes": 215,
+      "sha256": "e78d21d963da38b9539dc7b9ddeb976b28fcf3e88d0be82866f3302ab5456eaf"
+    },
+    {
+      "path": "compiler.json",
+      "bytes": 361,
+      "sha256": "c7f871f08afba9bbfc1dacbeeb499a728a57fdcc75af5f26a0e40744713c1170"
+    },
+    {
+      "path": "compiler.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "compiler.stdout",
+      "bytes": 194,
+      "sha256": "2efe229f7908c2c19f459ca734101a5b35cb482476b8bee1357f94a18c766078"
+    },
+    {
+      "path": "execution-sources/tested/codex-rs/app-server/Cargo.toml",
+      "bytes": 4997,
+      "sha256": "3ab26711af9a5e81fa51468507a9c893ea4b147530c180a0670a866a79623d9f"
+    },
+    {
+      "path": "execution-sources/tested/codex-rs/Cargo.lock",
+      "bytes": 421501,
+      "sha256": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4"
+    },
+    {
+      "path": "execution-sources/tested/codex-rs/Cargo.toml",
+      "bytes": 23496,
+      "sha256": "3a844832911c881ffd0283a68ecb44b68fc85d5b4c3ec92b41fa64adf8f76996"
+    },
+    {
+      "path": "execution-sources/tested/codex-rs/cli/Cargo.toml",
+      "bytes": 4239,
+      "sha256": "967fd38c5e9fd05c50f19fbcbde5271e5a786f07436ab05310679fba736a947d"
+    },
+    {
+      "path": "execution-sources/tested/codex-rs/hepta-agentd/Cargo.toml",
+      "bytes": 4965,
+      "sha256": "691587ea76a582c1a9e8a062feb591b0aa93e5c3385e2847dd883423500075de"
+    },
+    {
+      "path": "execution-sources/tested/codex-rs/hepta-matrix-sdk/Cargo.toml",
+      "bytes": 935,
+      "sha256": "281ad225f084f63fc35f2f6238d7931d4fdb05b31c99cc6ee8544f5815ce2fa3"
+    },
+    {
+      "path": "execution-sources/tested/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+    },
+    {
+      "path": "execution-sources/tested/justfile",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "path": "execution-sources/tested/scripts/codex_package/targets.py",
+      "bytes": 4738,
+      "sha256": "a3113fef785df2cfeb9a3a41edc487f74c00463b7716cec27e1bca64be2bc7a8"
+    },
+    {
+      "path": "execution-sources/tested/scripts/codex_package/v8.py",
+      "bytes": 5665,
+      "sha256": "d7739840d17ea4f1afff15e552add403f2a479cde6422c27c92c2ef3823c27fc"
+    },
+    {
+      "path": "execution-sources/tested/scripts/hepta_ci_junit.py",
+      "bytes": 6613,
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    {
+      "path": "execution-sources/tested/scripts/hepta_ci_v8.py",
+      "bytes": 3153,
+      "sha256": "92bae0083c04bc510d198d4b3c93ba4ced5bf842889dea0914d6a836422ff23c"
+    },
+    {
+      "path": "execution-sources/tested/scripts/run-nextest.py",
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    {
+      "path": "just-started.json",
+      "bytes": 196,
+      "sha256": "488fe31e0f737b6795c828245a28452f3a641b6fa4f169d8872a5e07b4f873bb"
+    },
+    {
+      "path": "just.json",
+      "bytes": 344,
+      "sha256": "5fa55368aff8401107c75acfc6d307f5cfa1797ec646ae378b7259f3b96dbc4e"
+    },
+    {
+      "path": "just.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "just.stdout",
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 34275,
+      "sha256": "744a365e0a0bc9075b54c14ddc0b0f8bf4b3eaa3a64c0efef916dd67796dcd49"
+    },
+    {
+      "path": "matrix-startup-diagnostic/discovery-started.json",
+      "bytes": 673,
+      "sha256": "49c2c3e2027a321f53f9c97f7b2f4c900aa3bd2e650d74a1d4f564ae2eff39d5"
+    },
+    {
+      "path": "matrix-startup-diagnostic/discovery.stderr",
+      "bytes": 7112,
+      "sha256": "bce80a4ec7d0042f50baef597ce9405f0f4b1edbec62ce43b3f29ff9165597cb"
+    },
+    {
+      "path": "matrix-startup-diagnostic/discovery.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "matrix-startup-diagnostic/nextest.toml",
+      "bytes": 148,
+      "sha256": "63d3a2cc2f1e7e950b46b3e637478b42aaa23c21a0779bd8357fe9462484f5b0"
+    },
+    {
+      "path": "matrix-startup-diagnostic-before-source.json",
+      "bytes": 559,
+      "sha256": "f1a9d617acbab57186c8121764aaf647b4693dc0d8563bdfb78b0bf6d45afc8d"
+    },
+    {
+      "path": "native-helpers/codex-command-runner.exe",
+      "bytes": 24130560,
+      "sha256": "07dc5d82cd3b2f7c2a1806657ec65a29caa586d20aa97c00337295ba2aef4d9c"
+    },
+    {
+      "path": "native-helpers/codex-windows-sandbox-setup.exe",
+      "bytes": 35411968,
+      "sha256": "69125c1a0064bd5d4de52ad15d72aaed48eeecfc64f9a49f6c46819dbfbaee3a"
+    },
+    {
+      "path": "nextest-started.json",
+      "bytes": 213,
+      "sha256": "bea5138febecde7fb844863e8f953a3e43002469aac6d86dfb265cc4fd8ed192"
+    },
+    {
+      "path": "nextest.json",
+      "bytes": 359,
+      "sha256": "1631bdf3ac4a5bd61fbd0749cdf46e3cf92ea0e5ac9b85009e85c35c4adaa87e"
+    },
+    {
+      "path": "nextest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "nextest.stdout",
+      "bytes": 169,
+      "sha256": "35e917c5b806d4566039cc304fe0dd79838b7c334d75707ff354e30df57e764d"
+    },
+    {
+      "path": "RECEIPT.json",
+      "bytes": 211775,
+      "sha256": "cb66ab3cb52b78808dbbbdf52c4790819b4b86bd8abb8c3f3fb9b029288c7804"
+    },
+    {
+      "path": "sandbox-helper-build.log",
+      "bytes": 639539,
+      "sha256": "40a47c19558f8319bbfba55841fd21b30b99cdd5e1b25a0a55cab1ea31875d5a"
+    },
+    {
+      "path": "sandbox-helper-preparation.json",
+      "bytes": 1169,
+      "sha256": "fb39f386b7a81258fbb125e88e17c2bab4646909d087110edfe26d6bf1b7ef7d"
+    },
+    {
+      "path": "source-after.json",
+      "bytes": 559,
+      "sha256": "f1a9d617acbab57186c8121764aaf647b4693dc0d8563bdfb78b0bf6d45afc8d"
+    },
+    {
+      "path": "source-before.json",
+      "bytes": 559,
+      "sha256": "f1a9d617acbab57186c8121764aaf647b4693dc0d8563bdfb78b0bf6d45afc8d"
+    },
+    {
+      "path": "started.json",
+      "bytes": 5386,
+      "sha256": "c3657cdc58d16f1b3854cb8fa50a0a0e8812314c2983b91760683c114b8faac6"
+    },
+    {
+      "path": "v8-artifacts.json",
+      "bytes": 897,
+      "sha256": "d767ac9574c8cdb5252debf333fc9611dd6e85818ecb307d5c7bd6408fd61a40"
+    },
+    {
+      "path": "v8-environment.txt",
+      "bytes": 350,
+      "sha256": "fe18ce2e2c5ede903162933e9612e8442cb2fdaead30aae0b28deb925f9044ca"
+    },
+    {
+      "path": "v8-started.json",
+      "bytes": 319,
+      "sha256": "ef26ceb16285842d5970bc883ba73098768a236c3f049b31a961cbd0aad5a4cd"
+    },
+    {
+      "path": "v8.json",
+      "bytes": 465,
+      "sha256": "11c7384b99540b925f32ecd26e677311f2dc3af0ac80297cd3e033d45581bbc7"
+    },
+    {
+      "path": "v8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "v8.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "schema": "hepta.independent-static-review.v1",
+  "reviewer": "stage_acceptance_audit",
+  "recorded_at_utc": "2026-11-09T01:29:49.347459+00:00",
+  "scope": "bounded independent static review of listed source inputs; no execution qualification",
+  "result": "no_remaining_static_blocker_in_listed_inputs",
+  "tests_executed_by_reviewer": false,
+  "rust_executed_by_reviewer": false,
+  "browser_executed_by_reviewer": false,
+  "ci_dispatched_by_reviewer": false,
+  "physical_cost": null,
+  "full_history_cost": null,
+  "full_history_cost_complete": false,
+  "research_stage_assessment": "not_evaluated_by_this_review",
+  "scientific_advancement": false,
+  "inputs": [
+    {
+      "id": "parent-pin-platform-binding",
+      "local_path": "/workspace/scratch/898e2183709e/ci-fixes/operator-parent-pin-a39bf3e/operator-parent-pin-platform-binding.patch",
+      "bytes": 919,
+      "sha256": "c53b32418e484459c03e6d75238c14e3470d903e472af966ed587b2e73a62bec"
+    },
+    {
+      "id": "owning-strict-driver-v6",
+      "local_path": "/workspace/scratch/898e2183709e/ci-fixes/ci-followup-native-plan/run_followup_scoped_fix_preparation_v6.py",
+      "bytes": 15093,
+      "sha256": "1133f28d66b0496a11e938dbd8c38d3df90344fae8155ff4a1690d25a660a41a"
+    },
+    {
+      "id": "native-driver-v5",
+      "local_path": "/workspace/scratch/898e2183709e/ci-fixes/ci-followup-native-plan/run_followup_native_gates_v5.py",
+      "bytes": 24378,
+      "sha256": "37d1930c633fc6ebcf62188ab9a34fbf223bbcbbd630a9339619a10b3b762b35"
+    },
+    {
+      "id": "bazel-observer-v2-full",
+      "local_path": "/workspace/scratch/898e2183709e/windows-fixture-followup/windows-operator-bazel-observer-review-v2.patch",
+      "bytes": 36456,
+      "sha256": "75818e1c7372c9c1340393efac2992479638bb10986df0a73711e1a7899b1ed0"
+    },
+    {
+      "id": "bazel-observer-v1-to-v2",
+      "local_path": "/workspace/scratch/898e2183709e/windows-fixture-followup/windows-operator-bazel-observer-v1-to-v2.patch",
+      "bytes": 3349,
+      "sha256": "25ff853cdd3a6d9d64050c32c25d36501202631ddde26919d6d1eef26603a7ad"
+    },
+    {
+      "id": "native-eleven-d1-source-only",
+      "local_path": "/workspace/scratch/898e2183709e/windows-fixture-followup/native-eleven-followup4-source-only.patch",
+      "bytes": 590,
+      "sha256": "7ba8592b4aa607af90e68022ea5a8f864bd21cfb072a56475e43b6b2aa226e15"
+    },
+    {
+      "id": "bazel-d1-source-only",
+      "local_path": "/workspace/scratch/898e2183709e/windows-fixture-followup/bazel-operator-followup4-source-only.patch",
+      "bytes": 546,
+      "sha256": "177d20cd48a31d191fa989d8cfb0038570b57f17542e1ed5e02ac0ebe99c3559"
+    },
+    {
+      "id": "bazel-final-d1-full",
+      "local_path": "/workspace/scratch/898e2183709e/windows-fixture-followup/windows-operator-bazel-observer-final-d1.patch",
+      "bytes": 36456,
+      "sha256": "c2d0aaf9d4f214307b68501f6ccb9c194c57c59cea0aa696f388a40b8aebd26d"
+    }
+  ],
+  "reviewed_source": {
+    "parent_pin_base_sha": "a39bf3eeac945c83aebcadbb81dfcb93d623e0f4",
+    "parent_pin_base_tree": "346858cb5dadc4df1246029a4491b54f3fbded76",
+    "workflow_target_source_sha": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+    "workflow_target_tested_sha": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+    "workflow_target_source_tree": "f95a33684df6aac0a32326e20b63d4017d7b1968"
+  },
+  "findings": [
+    {
+      "input": "parent-pin-platform-binding",
+      "boundary": "Windows ParentPin binding lifetime and verify calls remain unchanged. Non-Windows destructures the existing unit return value. Each platform calls open_reader once with unchanged error propagation; metadata/reparse/same-file checks remain. No allow attribute or discarded unit expression."
+    },
+    {
+      "input": "owning-strict-driver-v6",
+      "boundary": "Original just fix remains first. Added same-package cargo clippy --tests --locked without --fix and with -D warnings. Any command failure or source drift stops preparation; nonmutating lint cannot rescue an already changed source. No new native tests or expanded timeout."
+    },
+    {
+      "input": "native-driver-v5",
+      "boundary": "Relative to v4, only the SHA256 of the admitted strict preparation driver changed to the exact v6 bytes. Existing complete operator discovery and original thirteen-case scopes remain unchanged."
+    },
+    {
+      "input": "bazel-observer-v2-full",
+      "boundary": "Uses original public wrapper target and original Bazel wrapper, not its inner test binary as a substitute target. Original .bat forwards list args; execution retains original no-extra-args behavior. Actual exact33 discovery is list-only and separately accounted; execution requires unique exact libtest case set and matching original summaries."
+    },
+    {
+      "input": "bazel-observer-v2-full",
+      "boundary": "BEP target identity, original attempt identities, cache flags, action timestamps and preserved raw logs/XML are checked. Positive result requires one fresh uncached attempt1 and summary totalRunCount1; retries and FLAKY cannot become zero-retry success. XML is retained at actual wrapper granularity, not relabeled as33 Rust cases."
+    },
+    {
+      "input": "bazel-observer-v1-to-v2",
+      "boundary": "Corrected the review finding that a final source drift could leave a positive status string while passed=false. Finalize occurs after the last source check, and failure cannot be revived. Transitive source helper bytes are retained. Receipt explicitly distinguishes one target from the original whole shard and the workflow keyless BuildBuddy path without exposing a token."
+    },
+    {
+      "input": "native-eleven-d1-source-only",
+      "boundary": "Full before/after byte comparison shows only SOURCE_SHA, TESTED_SHA and SOURCE_TREE workflow constants changed. Driver/checker/scope bytes identical to the reviewed eleven-case version; all original internal test budgets, exact discovery/fresh JUnit equality, skip/retry rejection and aggregate failure behavior remain."
+    },
+    {
+      "input": "bazel-d1-source-only",
+      "boundary": "Full before/after byte comparison shows only the same three workflow identity constants changed. Driver/checker bytes match reviewed Bazel v2. No production source, legacy isolation refusal, shared branch, wrapper arguments or timeout policy is changed by the observer."
+    }
+  ],
+  "evidence_details": {
+    "exact_original_wrapper_sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae",
+    "exact_original_operator_build_sha256": "eadfcefdf0fa6f8f18a3b3dd5227c2d86423c92ce9337f50646cb65d19066f8f",
+    "exact_durable_file_a39_sha256": "024860ab31b73a3df011e240b6d3de674efee8ee5413674ffef0b53df7dc6e0c",
+    "bazelversion": "9.3.0"
+  },
+  "limits": [
+    "Static review is not a Windows/Linux execution, full workspace result, proof of durability or production installation.",
+    "Different original/observer/tested source identities must remain distinct in actual receipts.",
+    "Original a8 missing-import and a39 source-drift/lint failures remain historical failures; this review does not rewrite them.",
+    "No claim of measured performance or complete learning/history cost is made."
+  ]
+}

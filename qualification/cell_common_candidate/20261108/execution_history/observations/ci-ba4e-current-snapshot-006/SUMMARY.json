@@ -1,0 +1,224 @@
+{
+  "observed_until": "2026-11-09T01:41:23.610117+00:00",
+  "runs": [
+    {
+      "id": 42534602375,
+      "name": "blocking-ci",
+      "status": "completed",
+      "conclusion": "failure",
+      "nonpassing_jobs": [
+        {
+          "id": 128896114718,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-08T23:19:48Z",
+          "completed_at": "2026-11-09T00:29:45Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602375/job/128896114718"
+        },
+        {
+          "id": 128896114750,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-08T23:19:46Z",
+          "completed_at": "2026-11-08T23:41:06Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602375/job/128896114750"
+        },
+        {
+          "id": 128896114751,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-08T23:19:47Z",
+          "completed_at": "2026-11-08T23:45:25Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602375/job/128896114751"
+        },
+        {
+          "id": 128896114752,
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-08T23:19:47Z",
+          "completed_at": "2026-11-08T23:55:03Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602375/job/128896114752"
+        },
+        {
+          "id": 128896114757,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-08T23:19:47Z",
+          "completed_at": "2026-11-08T23:37:37Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602375/job/128896114757"
+        },
+        {
+          "id": 128902432637,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-08T23:45:27Z",
+          "completed_at": "2026-11-08T23:45:30Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602375/job/128902432637"
+        },
+        {
+          "id": 128914063695,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-09T00:29:48Z",
+          "completed_at": "2026-11-09T00:30:01Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602375/job/128914063695"
+        }
+      ]
+    },
+    {
+      "id": 42534602412,
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "status": "completed",
+      "conclusion": "success",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602479,
+      "name": "Hepta EVOLVE-1 CPU contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602381,
+      "name": "Hepta Cell research stage evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602458,
+      "name": "Hepta MEM-1 evidence verifier",
+      "status": "completed",
+      "conclusion": "success",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602352,
+      "name": "Hepta HCSN training bridge",
+      "status": "completed",
+      "conclusion": "skipped",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602390,
+      "name": "App-server schema refresh",
+      "status": "completed",
+      "conclusion": "skipped",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602309,
+      "name": "Production HOS2 owner proposal",
+      "status": "completed",
+      "conclusion": "skipped",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602449,
+      "name": "Hepta PRED-1 CPU checks",
+      "status": "completed",
+      "conclusion": "success",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602366,
+      "name": "Hepta VERIFY-1 engineering validation",
+      "status": "completed",
+      "conclusion": "success",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602361,
+      "name": "Keyring synchronous backend lock proposal",
+      "status": "completed",
+      "conclusion": "success",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602368,
+      "name": "Bazel stable lock proposal",
+      "status": "completed",
+      "conclusion": "success",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602485,
+      "name": "Rust UI product foundation",
+      "status": "completed",
+      "conclusion": "failure",
+      "nonpassing_jobs": [
+        {
+          "id": 128896015132,
+          "name": "Rust UI foundation / base-merge",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-08T23:19:22Z",
+          "completed_at": "2026-11-08T23:48:35Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602485/job/128896015132"
+        },
+        {
+          "id": 128896015386,
+          "name": "Rust UI foundation / source-head",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-08T23:19:23Z",
+          "completed_at": "2026-11-08T23:49:46Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602485/job/128896015386"
+        }
+      ]
+    },
+    {
+      "id": 42534602336,
+      "name": "v8-canary",
+      "status": "completed",
+      "conclusion": "success",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602310,
+      "name": "Hepta architecture convergence",
+      "status": "completed",
+      "conclusion": "success",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534602318,
+      "name": "Windows original CI regressions (declared scope only)",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "nonpassing_jobs": [
+        {
+          "id": 128896014047,
+          "name": "original-regressions",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-08T23:19:22Z",
+          "completed_at": "2026-11-09T00:24:33Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602318/job/128896014047"
+        }
+      ]
+    },
+    {
+      "id": 42534597175,
+      "name": "Hepta Cell research stage evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "nonpassing_jobs": []
+    },
+    {
+      "id": 42534597157,
+      "name": "Hepta Cell framework native validation",
+      "status": "completed",
+      "conclusion": "success",
+      "nonpassing_jobs": []
+    }
+  ]
+}

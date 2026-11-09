@@ -1,0 +1,235 @@
+{
+  "packet_id": "windows-directory-flush-api-observations-two-attempts",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-directory-flush-history-packet-v1/windows-directory-flush-history.tar.xz",
+  "bytes": 28948,
+  "sha256": "3a03ba5f12fe61db598c76e0c315557985905af0b49b3517dd95eb1fc7a07a7c",
+  "scope": "Original failed script-byte guard and second six-case native Win32 API observation on owned temporary objects, exact observer source and artifacts. First attempt executed zero API probes; no production Rust, namespace or power-loss durability qualified.",
+  "file_members": [
+    {
+      "path": "windows-flush-probe-publication-v1/checkout-byte-analysis.json",
+      "bytes": 1203,
+      "sha256": "38d5416de44c665532ad288a1e761cee61a365b21ab9df760792e6547bebe826"
+    },
+    {
+      "path": "windows-flush-probe-publication-v1/commands.json",
+      "bytes": 3864,
+      "sha256": "a673295b9f5c3aa167231d5fa466162814aace3f05e655033f32c12dbdf47992"
+    },
+    {
+      "path": "windows-flush-probe-publication-v1/jobs-terminal-observe.json",
+      "bytes": 2734,
+      "sha256": "bbf488b2d14cd6116266818c624a25392015d8e6c334902e91b7a6cb7242f70f"
+    },
+    {
+      "path": "windows-flush-probe-publication-v1/jobs-terminal-observe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-flush-probe-publication-v1/publication.json",
+      "bytes": 368,
+      "sha256": "da82817f231fa04c1466829c2be85f8096dd5a72aae9cbbf5810f72cbf38b196"
+    },
+    {
+      "path": "windows-flush-probe-publication-v1/run-terminal-observe.json",
+      "bytes": 14320,
+      "sha256": "3a376df820503ceeea77a627f3c5b2b8c83cebbb36e8a5a7f1c024da4fe95781"
+    },
+    {
+      "path": "windows-flush-probe-publication-v1/run-terminal-observe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-flush-probe-publication-v1/runs-first.json",
+      "bytes": 14353,
+      "sha256": "8f3adbccd0093056ddd0eac201698603f5b1fe97881ad08c2d2b5ebada06ef4d"
+    },
+    {
+      "path": "windows-flush-probe-publication-v1/runs-first.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-flush-probe-publication-v2/commands.json",
+      "bytes": 2430,
+      "sha256": "41f8f84da66549defff775473954d155690fbf6912c1f92a8160410f9a2186bb"
+    },
+    {
+      "path": "windows-flush-probe-publication-v2/dotslash-action-api.json",
+      "bytes": 3308,
+      "sha256": "868626076d53055771bc956cb63bce654ed983aa1feefe2de8ce962c7e2b4fd8"
+    },
+    {
+      "path": "windows-flush-probe-publication-v2/publication.json",
+      "bytes": 304,
+      "sha256": "3e501e4deffae6e81ba86acd0ac3b18b910cf8f36050a3d89b67c7ff857faa8a"
+    },
+    {
+      "path": "windows-flush-probe-publication-v2/reviewed-delta.patch",
+      "bytes": 1709,
+      "sha256": "02dc6185c15093b84f80048dca7727e13deead751a39c532ff40d7091678e82b"
+    },
+    {
+      "path": "windows-flush-probe-publication-v2/runs.json",
+      "bytes": 14334,
+      "sha256": "a232e4df1b1037400cbf1e38ebcd0978c5c2e8c7259f77026c6068ce6f456391"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538322518-v1/13640352260.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538322518-v1/13640352260.zip",
+      "bytes": 2675,
+      "sha256": "30101b068d5fe9459804bfd3550b963f88e5595acba8374362b0423e744e83fc"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538322518-v1/artifacts.json",
+      "bytes": 854,
+      "sha256": "d145ffea091d4003c08e0bb7bdac1213a9e452cc58742987b60d8cef7bbff675"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538322518-v1/artifacts.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538322518-v1/job.json",
+      "bytes": 2707,
+      "sha256": "6f1a4a1592dc34a2eeee73b3b9d95922fff2fa9717fe132b8c6336dccac5dc9f"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538322518-v1/job.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538322518-v1/raw.log",
+      "bytes": 48816,
+      "sha256": "b2925e658ecdf5189c01469addb52e1619d807a742f92095a9c73df17a38ca0c"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538322518-v1/raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/128909215130.raw.log",
+      "bytes": 48441,
+      "sha256": "d572ebcf2e1629279c6ba7535dabd014bcbe2c86553d8b193fba17afa3437536"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/128909215130.raw.log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/13640741817.zip",
+      "bytes": 5908,
+      "sha256": "372134c5980d173a654c1086fbe296dcb55c5278aaf84933c079a4f230086c07"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/13640741817.zip.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/RECEIPT.json",
+      "bytes": 4699,
+      "sha256": "84904a17114aefc9d829a0b1c057dd488136050173fb60c36a1193dfa03494ef"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/RESULT.json",
+      "bytes": 3200,
+      "sha256": "c5be51e8f24e574e34e68321f358dd55bfd33ffd118f7758df9b586fd74db712"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/VERIFICATION.json",
+      "bytes": 1802,
+      "sha256": "cf768897e0021ea6031fbad4aa120cfd79aed6bb36ec42b5a7a9dc476c082ebc"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/artifacts.json",
+      "bytes": 854,
+      "sha256": "d1881931a3de53c49ef9c83334ededc544c0041d53d474c7deb30f8908555c9c"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/artifacts.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/jobs.json",
+      "bytes": 2734,
+      "sha256": "10e3aa215cc4ec68a24a6c714789b8c3db4a3d7686b7f3b50ece79ff7b7a88a6"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/jobs.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/run.json",
+      "bytes": 14298,
+      "sha256": "2b7871047d7dfefd430ec0ae29863751cce7cdb1e7d447d70cfa4c50fa907d03"
+    },
+    {
+      "path": "windows-flush-probe-ci-42538894014-v1/run.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observer-sources/332dcf87da3da15743c67859ed86d31358667a67/.github/scripts/windows_directory_flush_observer.py",
+      "bytes": 6285,
+      "sha256": "7858be3b9591fe43b22cd65a18ca3d0b5d6f4743b3fd45ed7ad5d9b058dabdec"
+    },
+    {
+      "path": "observer-sources/332dcf87da3da15743c67859ed86d31358667a67/.github/scripts/windows_directory_flush_probe.py",
+      "bytes": 5251,
+      "sha256": "c4030cf9a8e7638ef16d5781ee47d54313a4917bfafbc0cc85f5d098c55b23e9"
+    },
+    {
+      "path": "observer-sources/332dcf87da3da15743c67859ed86d31358667a67/.github/workflows/hepta-windows-directory-flush.yml",
+      "bytes": 1955,
+      "sha256": "d95a246143653ddbc9d12e49c78d75cf55d8c03ccd2c5f2f362f8c0cf7d3a0ac"
+    },
+    {
+      "path": "observer-sources/39db18c5e5f8d793938789beefe43b24631d1d62/.github/scripts/windows_directory_flush_observer.py",
+      "bytes": 6285,
+      "sha256": "c6ebb03a30dafdb28d7fe1b77c70e505b4c88356ed8b8cd24ae69f7ebd7224d0"
+    },
+    {
+      "path": "observer-sources/39db18c5e5f8d793938789beefe43b24631d1d62/.github/scripts/windows_directory_flush_probe.py",
+      "bytes": 5251,
+      "sha256": "c4030cf9a8e7638ef16d5781ee47d54313a4917bfafbc0cc85f5d098c55b23e9"
+    },
+    {
+      "path": "observer-sources/39db18c5e5f8d793938789beefe43b24631d1d62/.github/workflows/hepta-windows-directory-flush.yml",
+      "bytes": 2017,
+      "sha256": "e5269b6fc6bb40715afa9ef6d307f5f07cece3c0a6097bec8091c22df3412784"
+    },
+    {
+      "path": "SUMMARY.json",
+      "bytes": 1015,
+      "sha256": "f22fd5e02af8f65759a60fd4cb2a973fcaafcca22193986d41921d1cea547119"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 8234,
+      "sha256": "2415bb79cb9a7a0d6e90d30cd3f269decc17d4803737df1486edd6d66432529e"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/windows-directory-flush-api-observations-two-attempts/archive.part001",
+      "offset": 0,
+      "bytes": 28948,
+      "sha256": "3a03ba5f12fe61db598c76e0c315557985905af0b49b3517dd95eb1fc7a07a7c"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true
+}

@@ -1,0 +1,152 @@
+{
+  "packet_id": "windows-original-operator-bazel-d1-pass-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/operator-bazel-d1-pass-packet-v1/windows-original-operator-bazel-d1-pass.tar.xz",
+  "bytes": 3099296,
+  "sha256": "60a079044fd4de72865fd41677834240548412973a07bf6441a022b085af67ab",
+  "scope": "Original public Windows Bazel operator target executed with observer cea37b82 and exact tested source d1/tree f95 in run 42546897394. Actual original libtest discovery and execution match 33 unique passing cases with zero ignored/filtered/retry/cache. BEP records one run, shard and attempt; original XML records one aggregate wrapper testcase rather than synthetic per-case JUnit. Source and observer stayed clean; all 53 original artifact ZIP members are verified. The first observer WSL-launch failure remains separately retained. This original-wrapper single-target, keyless-BuildBuddy environment is not whole-shard or whole-Windows qualification.",
+  "file_members": [
+    {
+      "path": "13643733596.zip",
+      "bytes": 3092848,
+      "sha256": "4ae7d57b3c32a576a8d8d954c3adf426035f2ce759029d589da62ebb27366343"
+    },
+    {
+      "path": "ARTIFACT_DOWNLOAD.json",
+      "bytes": 388,
+      "sha256": "cd2ac41241303c6918f58e5f6c678991f2cccc723b2722cb7ee779ef907b4257"
+    },
+    {
+      "path": "DOWNLOAD.json",
+      "bytes": 2585,
+      "sha256": "e7062f2dcea7a06ad1dde2f75b0e717fa8c489c1c1b54cf849bdfdfc5f6b00ef"
+    },
+    {
+      "path": "INDEPENDENT_ANALYSIS.json",
+      "bytes": 10396,
+      "sha256": "b4813509a1b79013d239eda4271448c78261d8eb7bd57e535c3e7177d5ecd409"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 14921,
+      "sha256": "1bdb7632351e9c0af268ccaeed989c471f763a68564022d607d4f342c9b1a240"
+    },
+    {
+      "path": "POSTREADER_ATTEMPT1_ERROR.json",
+      "bytes": 214,
+      "sha256": "06e5d78843d6153e956302b8806de2e9d46f7dd3b08940b48bda834e5a024ba0"
+    },
+    {
+      "path": "RECEIPT.original.json",
+      "bytes": 11296,
+      "sha256": "d1931d7611a917798cddeaf212b0cc32b496f9a32e256c8f3851604666af3f46"
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 1407,
+      "sha256": "ecde5e06829e6bcaa3a544f96d2356e7c875d4d4f02347138c1ace53ee7ebcd4"
+    },
+    {
+      "path": "ZIP_MEMBERS.json",
+      "bytes": 9514,
+      "sha256": "5e35e548499fed44cee95d2d4b75c8465113b9498d44570ed3e3e5006e78af71"
+    },
+    {
+      "path": "artifact-download.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts.json",
+      "bytes": 859,
+      "sha256": "32416785a845a66855059df0bf61254981792bb9ddaaf01980771f6e2ea6fa38"
+    },
+    {
+      "path": "artifacts.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "job.json",
+      "bytes": 3667,
+      "sha256": "42885c6543331c44684d6e7d51662237cbfb21fc1dfb33382446145302885a39"
+    },
+    {
+      "path": "job.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw.log",
+      "bytes": 173479,
+      "sha256": "933af4bfbf9d21917a35c06549e3a7770b4f9a8b96a05babff29d7ffa091e610"
+    },
+    {
+      "path": "raw.log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "run.json",
+      "bytes": 14319,
+      "sha256": "5512705cd7122863817c6897ffe4ad0b0545331c64956dbcdd19632c3991f633"
+    },
+    {
+      "path": "run.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/windows-original-operator-bazel-d1-pass-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "bc9df9b562ac40c3c4c5334867cc531f0119a702a374e7c0061f9ce435eb007a"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/windows-original-operator-bazel-d1-pass-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "9b0dc61044e7b7b9274094ad6c23a42ec5c295f47147b7837266a4b253fbca90"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/windows-original-operator-bazel-d1-pass-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "dfdda780cd945411c9a0eaa1954d72e7e9a7f1b10b448837065fb1ae1b5c5ec8"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/windows-original-operator-bazel-d1-pass-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "3b54ee222b8ecb08d8606f0ebdbc06a9969766016d499cd8748ca63128f2e819"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/windows-original-operator-bazel-d1-pass-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 490000,
+      "sha256": "fe0e47631b679c72168cf74561d03bda2603d5f3f3bcc96c1bb208d0287a82c0"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/windows-original-operator-bazel-d1-pass-v1/archive.part006",
+      "offset": 2450000,
+      "bytes": 490000,
+      "sha256": "fb76ea06626016f8586bc61b605cc24bd448b77383ef5134cadf0b196f9ce4ed"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/windows-original-operator-bazel-d1-pass-v1/archive.part007",
+      "offset": 2940000,
+      "bytes": 159296,
+      "sha256": "9c48c9ec4ae3aefa73d776cd984f0e24fc77d51ec45ae698ba1666bf09353503"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true
+}

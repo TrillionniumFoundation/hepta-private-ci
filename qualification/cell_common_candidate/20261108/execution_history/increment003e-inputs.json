@@ -1,0 +1,40 @@
+{
+  "packets": [
+    {
+      "packet_id": "a8d0b3d-python130-and-original-full-caller-gate",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/followup2-a8d0b3d-python-sealed-v1/original-python-execution.tar.xz",
+      "bytes": 20792,
+      "sha256": "60ba567fb0c83c24f298b1716b6f182688d137c7671beebbbb5c7ac6acd34954",
+      "scope": "Exact a8d0b3dab62045a6aa6e61966c3fbeeccf1b48d6 Python130 original fixtures, self-test, unchanged CURRENT comparison and complete caller scan 369.8617806970142 seconds under original 600-second limit; clean identical source before/after. No Rust tests or scientific stage acceptance in this packet.",
+      "file_member_count": 45,
+      "manifest_sha256": "1495ad291562aba6ee1b3c71e025a3df6e5270a26e97ff3a7975c542d194c117"
+    },
+    {
+      "packet_id": "a39bf3e-python130-and-original-full-caller-gate",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/followup3-a39bf3e-python-sealed-v1/original-python-execution.tar.xz",
+      "bytes": 20780,
+      "sha256": "6a029423cf820e6e9e54ce36ac29d439ba0a8b0e0264648ad2d452678d6bb6bb",
+      "scope": "Exact a39bf3eeac945c83aebcadbb81dfcb93d623e0f4 Python130 original fixtures, self-test, unchanged CURRENT comparison and complete caller scan 373.9014078550972 seconds under original 600-second limit; clean identical source before/after. No Rust tests or scientific stage acceptance in this packet.",
+      "file_member_count": 45,
+      "manifest_sha256": "05c7318179407deae80543cc2884dd6cae24f5157bed84022be355e6040c9c29"
+    },
+    {
+      "packet_id": "d1b32a6-python130-and-original-full-caller-gate",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/followup4-d1b32a6-python-sealed-v1/original-python-execution.tar.xz",
+      "bytes": 20796,
+      "sha256": "096b7f6e2abc9c8cc8ec20645c9b490e7b23b3b0ff02abb6e877f9693a4118ed",
+      "scope": "Exact d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca Python130 original fixtures, self-test, unchanged CURRENT comparison and complete caller scan 374.1610191750806 seconds under original 600-second limit; clean identical source before/after. No Rust tests or scientific stage acceptance in this packet.",
+      "file_member_count": 45,
+      "manifest_sha256": "b34d5949492ea18536e3904100152ca736ffb0bfb749d140ad67f0a709703d31"
+    },
+    {
+      "packet_id": "a8d0-a39b-d1b3-source-preparation-publication-and-ci-observation",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/followup-source-history-sealed-v2/followup-source-history.tar.xz",
+      "bytes": 152296,
+      "sha256": "766df638db0221f8ffc31326eefccdc7477b797eb868fac03e0f2cf21e15c635",
+      "scope": "Exact a8d0, a39b and d1b3 successor source preparation, canonical formatting, quiet publication and remote readback; reviewed patches, immutable prior Python execution packet sealing, PR status004 and nonterminal common ba4 CI snapshots004/005 through 01:19:38 UTC Nov9. These preparations do not turn failed native gates into passes or qualify scientific stages.",
+      "file_member_count": 385,
+      "manifest_sha256": "769295ede8b98a24ec7c9a432785ebf9171f38e99bf39987bb03e010edf04ad9"
+    }
+  ]
+}

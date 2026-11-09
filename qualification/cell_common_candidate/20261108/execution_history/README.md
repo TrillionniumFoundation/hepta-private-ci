@@ -5,7 +5,184 @@ selected original archives, including failures and preparation errors. It does
 not certify complete history, complete cost, production authority, ordinary
 daemon closure, or any S0–S5 advancement.
 
-## Source identities and observed results
+## Increment 003: successor repairs and retained failures
+
+The common PR source remains `ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1`.
+Its original native framework workflow completed naturally and passed its
+complete default workspace scope. The isolated successor whose selected
+executions are retained in this checkpoint is
+`d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca`, tree
+`f95a33684df6aac0a32326e20b63d4017d7b1968`. Normal publication and Git/API
+readbacks verified this successor on its separate branch. This checkpoint does
+not relabel earlier results as successor executions.
+
+| Exact source                               | Retained observation                                                                                                                                                                                                                                                                        | Scope boundary                                                                                                                                                                                                                                                                                                                                  |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bf516c1956848043b7805513aa069cada39517ce` | Same-source helper preparation and four changed-owner strict checks passed without source edits.                                                                                                                                                                                            | Planned native 12 did not run because the next directory-access correction produced a different source.                                                                                                                                                                                                                                         |
+| `82ff5119200cab9d65461eb62a3829567fbc2e8f` | Original Linux native 13 executed nine passes and four cold-resume failures. Actual discovery and fresh JUnit matched; selected skips and retries were zero. Python 130 and full caller scan passed in 388.7012557149865 seconds under the original 600-second limit.                       | All four cold cases failed at their first spawn observation under the original 10-second bound. The raw event was `SubAgentActivity`; the fixture expected `CollabAgentToolCall`. Child completion was already present, so a missing-child-subscription explanation is not supported.                                                           |
+| `a8d0b3dab62045a6aa6e61966c3fbeeccf1b48d6` | V8/helper and app-server strict preparation passed. Operator strict preparation failed with E0433 because the differential module lost an indirect Command import. Python 130 and complete caller scan passed in 369.8617806970142 seconds.                                                 | Native execution was not_run, with zero cases. Source remained unchanged; the compiler failure is retained.                                                                                                                                                                                                                                     |
+| `a39bf3eeac945c83aebcadbb81dfcb93d623e0f4` | V8/helper passed, but the operator preparation gate rejected source drift. Canonical just fix returned child exit 0 while changing two unit bindings into bare path statements and leaving two warnings. Python 130 and complete caller scan passed in 373.9014078550972 seconds.           | Native execution was not_run, with zero cases. The original clean file, changed file, full-index patch and both source inventories are retained. The automatic diff was not adopted into the common source.                                                                                                                                     |
+| `d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca` | Canonical formatting, V8, same-source helper build/verification, operator just fix and the subsequent nonmutating strict Clippy all passed. All 15,004 tracked entries had identical before/after inventories. Python 130 and the complete caller scan passed in 374.1610191750806 seconds. | Original Linux native 13 and all 25 actually discovered operator library cases passed: 38 selected passes, zero failures, selected skips or retries. All six fresh JUnit case sets matched actual discovery. Earlier package lint passes retain their own source identities; this is not a full workspace, Windows or scientific qualification. |
+
+The d1 native chain finished at 2026-11-09 01:31:43 UTC. Its original raw
+filtered/unselected counts were 788 for default agentd, 794 for H7 agentd, 0 for
+CLI, 25 for Matrix, 1015 for app-server and 0 for operator. Those counts are not
+selected skips, passes or additive distinct coverage. The cold four cases completed
+in 0.728–0.903 seconds under the unchanged 10-second case bounds; these fixture
+results are not measurements of learning benefit.
+
+The d1 parent-pin correction only makes the existing platform return types
+explicit. Windows retains its original ParentPin binding, lifetime and verify
+calls. Other platforms destructure the unit value, with one original
+open_reader call per function. It does not add an allow, disable a check,
+reopen a path, or change read/hash bounds.
+
+The earlier cold-observer correction uses the actual typed `SubAgentActivity`
+event and keeps exact parent task/turn/call, Started kind, worker path and
+child completion bindings. The original 10-second Linux and 25-second Windows
+budgets, subsequent durable assertions and zero-retry behavior remain intact.
+
+The operator fixture correction supplies the existing OS-resolved ProgramData
+value to fixture-created SSH commands. The production verification executable,
+isolation, command arguments, trust, grant and pin checks remain unchanged.
+The Unix differential oracle still explicitly uses /usr/bin/ssh-keygen,
+env_clear and its original locale and argument controls.
+
+### Independent Windows observers
+
+Observer code and tested source are distinct identities. Original eleven-case Windows
+run [42540772106](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42540772106)
+uses observer `630a5cf57a4f61b21c0edf372319d55d71c4fab5` and tests exact 82ff.
+It ended naturally at its original 65-minute Actions limit at 01:38:09 UTC.
+Four cases actually executed: fleet and H7 passed, while CLI and signed-credit
+failed. There were no selected skips, retries or observed leaks. Seven planned
+cases did not execute. Matrix discovery/build had already started and incurred
+real cost; the six app-server cases were not launched. Clean source and observer
+identities were retained before and after. All 88 original artifact ZIP members
+were verified. This is a partial failed run, not an eleven-case pass.
+
+The successor Windows 11 run
+[42545587597](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42545587597)
+uses observer `bd7962c944e47fcadb0f205d808300f780491800` and declares exact d1.
+It was nonterminal in the retained 01:29:44 UTC observation. Final actual checkout and case
+receipts must be checked before claiming a result.
+
+The original-wrapper Bazel observer
+[42545618817](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42545618817)
+uses observer `e401c77ba202e132c25c497fe19ce51fd5bcbcae`, with exact d1 source
+pins. It reported a failure in its discovery/execution step. Original artifacts prove the discovery subprocess stopped after 0.0317 seconds
+with exit 1 and UTF-16LE output reporting that WSL has no installed distribution.
+There was no BEP or native execution: the original 33 were not_run. The actual
+source checkout was clean d1 before/after. The first observer did not record
+the resolved bash executable path/version, so those values remain unknown.
+A successor launcher correction uses the original workflow Git Bash, records
+the actual executable and its fingerprint, and retains the same source,
+target, flags and budgets.
+
+That corrected observer is `cea37b82c63bb2a6120789d44b2e9fea1d3a10d3`.
+Run [42546897394](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42546897394)
+completed successfully at 01:48:31 UTC. Actual original libtest discovery and
+execution matched all 33 unique cases, with zero ignored, filtered, retries or
+cache hits. BEP recorded one run, shard and attempt. Source d1 and observer
+identities remained clean before and after; all 53 original artifact ZIP
+members were verified. The original XML contains one aggregate wrapper
+testcase, so the 33-case result comes from actual libtest records and is not
+represented as 33 fabricated JUnit cases. The first launch failure remains
+preserved independently.
+
+The Bazel plan retains the original
+`//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests`
+wrapper, Windows MSVC platform, original 120-minute ceiling, full unfiltered
+target, real libtest discovery/logs and BEP attempt/cache checks. It does not
+replace the wrapper with the manual inner binary or fabricate per-case JUnit
+from aggregate wrapper XML. Its single-target execution and lack of the
+original BuildBuddy secret are explicit environment differences. No global
+ProgramData override is introduced by the observer.
+
+### Original common-source CI completion and failures
+
+The latest retained non-atomic snapshot ended at 2026-11-09 01:41:23 UTC;
+all 18 observed workflows had reached terminal states. Original native
+framework run
+[42534597157](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534597157)
+completed all three jobs successfully. Four original artifact ZIPs, all member
+hashes, command receipts, raw logs, source bindings and fresh JUnit identities
+were independently audited.
+
+| Exact ba4 execution scope  | Actual outcome                                                                   | Coverage boundary                                                                                                                                               |
+| -------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Complete default workspace | 20,563 unique passes; 139 skipped in the original raw summary; 330 JUnit suites. | Zero failures, XML skips, retry elements or observed leak/nonpassing markers. The 139 raw skips remain explicit; this does not cover every feature combination. |
+| Scoped agentd composition  | 7,910 passes; 107 original raw skips.                                            | All 7,910 identities are already in the workspace set and are not added again.                                                                                  |
+| Mechanisms                 | 1,215 passes; seven original raw skips.                                          | All 1,215 identities are already in the workspace set and are not added again.                                                                                  |
+| Original ignored HostCAS   | One pass; 791 filtered cases.                                                    | This actual execution is outside the default workspace set. Identical copies in two uploaded artifacts are not separate executions.                             |
+
+The workspace raw test summary reports 2,073.718 seconds. That is the measured
+test interval, not total build, machine, physical or historical cost. Original
+source/tested identities were ba4 with clean before/after receipts and locked
+commands. No new tests were executed to produce this audit. These ba4 results
+do not qualify d1 or any later source.
+
+Full repository CI and both UI lanes failed. Successful proposal
+metadata and the separate security workflow do not replace those failures.
+
+Actual Windows and macOS Bazel checkout
+`f9d3da90698b470ffc9f8acecd73ca0a54dbfe4d` was verified from original checkout
+logs and immutable commit data; its tree matches ba4e, while its merge identity
+remains distinct. Windows shards 2/3/4 and both macOS jobs failed. Final failed
+targets, timeouts, flaky targets and repeated attempt logs remain separate;
+the number of raw FAILED lines is not a count of unique final target failures.
+
+Original Windows regression run
+[42534602318](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602318)
+ended at its original 65-minute Actions limit, proven by its annotation. No
+manual Rust cancellation occurred. Operator 33 passed. The first sandbox scope ran seven cases: six failed and
+one passed with a reported process leak; the separate delete-routes scope
+ran two cases and both failed. The passing-but-leaky case was
+`elevated_non_tty_cmd_forwards_env_output_and_exit`. A later core scope was
+launched without a complete receipt. An earlier retained packet label called
+these scopes "7+2 FAIL"; that classification was incorrect and is superseded
+by the original per-case results and this explicit correction. Original packet
+bytes, including the earlier label, are preserved. The source-before capture was clean ba4e/d2; source-after was absent.
+The whole workflow is not passed and its complete cost remains unknown.
+
+Both UI lanes executed the original seven-case group with six passes and one
+same Chromium 1280 timeout under the original 90-second budget, with zero retries.
+The passes comprise five real-gateway status scenarios and one SDK transport
+control using its original synthetic WASM export sink. The failing case is a
+real-gateway status scenario. The
+initial missing-owner/status audit completed; the later fault-injection phase
+did not. The original artifacts contain no trace locating the exact await.
+In original base-merge artifact 13639452474, the `owner-not-attached.png` and
+`test-failed-1.png` originals are byte-identical
+(66,726 bytes; SHA256 `9d6df7f5a066594e2f85ddf6975f1523dac8e2bd7cacf0c10ef6ac06c3e0a7e8`).
+The earlier `before-read.png` is a different image (69,725 bytes; SHA256
+`6d20536aceeb636264fa619ff0a8b20028afe0db81b763df655229b34584eb12`).
+The recorded Refresh click point and bounds remain consistent across the
+earlier and missing-owner states. These observations do not establish a
+layout or click-target bug. A CDP wait is a source-backed possibility, not an
+established root cause. The explicit UI merge
+`5ffd865f49461cbbbf932d239434a5629224ec1a` and source-head ba4e share a tree but
+remain separate tested identities.
+
+### Windows directory API diagnostic boundary
+
+The retained Python-only Win32 probe observed successful directory FlushFileBuffers
+after read/write open with the original backup/reparse flags; the read-only
+directory handle returned access denied. The original first probe failed its
+script fingerprint before calling the API and remains preserved. The successor
+probe retains checkout settings and the actual script fingerprint. These are
+API return observations on owned temporary objects. They do not demonstrate
+namespace durability or behavior under power loss.
+
+Every successor retains the same Git source blobs for the Cargo, Bazel and
+pnpm locks and the formal CURRENT hash below. Individual platform working-tree
+byte hashes retain their own measured values: the original Windows Cargo.lock
+hash `192c40e4c327fc23dce2fe2ff10e5a1048079458ccfdeedf5bb41ecf8b7d77ad`
+is not relabeled as the Git blob hash. No cause for that byte difference is
+asserted here. **All S0–S5 remain HOLD.** The existing ordinary
+daemon capability and independent producer gaps remain unchanged.
+
+## Earlier retained source observations
 
 | Source                                                                                         | Original observed result                                                                                                                                                                                                                                  | Boundary                                                                                                                                                                                                                 |
 | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -28,9 +205,9 @@ Its later, separately committed test observer correction is
 `05252023acf4e40cd23d26c3c571cdb029b4c2f0`. Preparation and execution
 identities must not be interchanged.
 
-The published final common tree is
+The published common tree at this checkpoint is
 `d2f261084bad25c230b95835e9a589fe7b866be1` at the ba4e commit above.
-Its Cargo/Bazel/pnpm lock bytes and formal CURRENT bytes stayed unchanged by
+Its Cargo/Bazel/pnpm Git source blobs and formal CURRENT bytes stayed unchanged by
 the latest repair series. Original 09f native CI used 86ac as its receipt base;
 this is preserved independently of the integration's common 1eb starting point.
 
@@ -144,7 +321,8 @@ source commit tested by an original receipt. Publication commits are recorded
 in external Git readback receipts, avoiding self-referential manifest hashes.
 
 The ordinary daemon still needs a concrete learning-owner implementation and
-bootstrap, original registered checkpoint capability delivery, independently
+bootstrap, delivery of the existing registered checkpoint capability to the
+learning bootstrap, independently
 authorized stage-result producers, supported effective CellBundle loading,
 and actual successor-task consumption. Strong baselines, independent tasks,
 multi-generation adoption and complete costs are separate acceptance work.

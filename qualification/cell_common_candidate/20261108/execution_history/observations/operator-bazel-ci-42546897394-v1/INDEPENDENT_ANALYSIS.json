@@ -1,0 +1,271 @@
+{
+  "original_run_id": 42546897394,
+  "original_job_id": 128933726041,
+  "artifact_members": 53,
+  "source_before": {
+    "observer": {
+      "allChanges": "",
+      "cargoLockSha256": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4",
+      "head": "cea37b82c63bb2a6120789d44b2e9fea1d3a10d3",
+      "trackedChanges": "",
+      "tree": "70a030d435568ad25b973746c2aab143260d44c8"
+    },
+    "tested": {
+      "allChanges": "",
+      "cargoLockSha256": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4",
+      "head": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+      "trackedChanges": "",
+      "tree": "f95a33684df6aac0a32326e20b63d4017d7b1968"
+    }
+  },
+  "source_after": {
+    "observer": {
+      "allChanges": "",
+      "cargoLockSha256": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4",
+      "head": "cea37b82c63bb2a6120789d44b2e9fea1d3a10d3",
+      "trackedChanges": "",
+      "tree": "70a030d435568ad25b973746c2aab143260d44c8"
+    },
+    "tested": {
+      "allChanges": "",
+      "cargoLockSha256": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4",
+      "head": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+      "trackedChanges": "",
+      "tree": "f95a33684df6aac0a32326e20b63d4017d7b1968"
+    }
+  },
+  "required_scope": {
+    "expectedTestCount": 33,
+    "filter": "package(codex-hepta-operator-acceptance)",
+    "id": "operator-native",
+    "package": "codex-hepta-operator-acceptance",
+    "requiredTests": [
+      "ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child",
+      "durable::windows::private_tests::foreign_acl_is_rejected_without_repair_or_partial_write",
+      "durable::windows::private_tests::private_sidecar_roundtrip_preserves_atomic_replace_and_refuses_duplicate",
+      "durable::windows::private_tests::retained_parent_refuses_replacement_and_missing_parent_is_not_created",
+      "durable::windows::private_tests::sidecar_lock_is_exclusive_until_its_original_guard_drops",
+      "durable::windows::tests::hardlinked_artifacts_are_rejected_before_reading_or_hashing",
+      "durable::windows::tests::hardlinks_added_after_open_are_rejected",
+      "durable::windows::tests::path_replacement_after_open_is_rejected",
+      "g5_trust::tests::exact_head_and_predecessor_binding_is_required",
+      "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance",
+      "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority",
+      "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted",
+      "g5_trust::tests::policy_and_revocation_files_must_be_canonical",
+      "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge",
+      "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance",
+      "manifest_inventory::tests::manifest_parser_requires_sorted_safe_unique_paths",
+      "manifest_inventory::tests::verified_manifest_rejects_extra_files_and_hardlinks",
+      "openssh_windows::tests::frozen_private_inputs_deny_writes_deletes_and_directory_replacement",
+      "openssh_windows::tests::hardlink_added_to_frozen_input_is_refused",
+      "openssh_windows::tests::retained_unknown_verifier_reconciles_only_its_original_child",
+      "preflight::tests::every_missing_or_wrong_formal_environment_pin_is_rejected",
+      "tests::durable_time_watermark_rejects_clock_rollback",
+      "tests::exact_challenge_boundary_accepts_only_operator_acceptance",
+      "tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails",
+      "tests::final_consumption_at_expiry_creates_no_claim_or_receipt",
+      "tests::read_only_lock_never_creates_missing_state",
+      "tests::receipt_repeated_authority_must_match_exact_boundary",
+      "tests::unknown_or_noncanonical_stored_json_is_rejected",
+      "tests::validity_window_is_half_open_and_policy_bounded",
+      "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy",
+      "trust::tests::trust_policy_digest_is_external_and_fail_closed",
+      "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers",
+      "trust::tests::weak_ed25519_public_key_is_rejected_before_openssh"
+    ]
+  },
+  "actual_discovery_count": 33,
+  "actual_execution_cases": [
+    {
+      "name": "ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child",
+      "status": "ok"
+    },
+    {
+      "name": "durable::windows::private_tests::retained_parent_refuses_replacement_and_missing_parent_is_not_created",
+      "status": "ok"
+    },
+    {
+      "name": "durable::windows::tests::hardlinked_artifacts_are_rejected_before_reading_or_hashing",
+      "status": "ok"
+    },
+    {
+      "name": "durable::windows::private_tests::sidecar_lock_is_exclusive_until_its_original_guard_drops",
+      "status": "ok"
+    },
+    {
+      "name": "durable::windows::tests::hardlinks_added_after_open_are_rejected",
+      "status": "ok"
+    },
+    {
+      "name": "durable::windows::tests::path_replacement_after_open_is_rejected",
+      "status": "ok"
+    },
+    {
+      "name": "durable::windows::private_tests::private_sidecar_roundtrip_preserves_atomic_replace_and_refuses_duplicate",
+      "status": "ok"
+    },
+    {
+      "name": "durable::windows::private_tests::foreign_acl_is_rejected_without_repair_or_partial_write",
+      "status": "ok"
+    },
+    {
+      "name": "g5_trust::tests::exact_head_and_predecessor_binding_is_required",
+      "status": "ok"
+    },
+    {
+      "name": "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance",
+      "status": "ok"
+    },
+    {
+      "name": "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority",
+      "status": "ok"
+    },
+    {
+      "name": "g5_trust::tests::policy_and_revocation_files_must_be_canonical",
+      "status": "ok"
+    },
+    {
+      "name": "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance",
+      "status": "ok"
+    },
+    {
+      "name": "manifest_inventory::tests::manifest_parser_requires_sorted_safe_unique_paths",
+      "status": "ok"
+    },
+    {
+      "name": "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge",
+      "status": "ok"
+    },
+    {
+      "name": "openssh_windows::tests::hardlink_added_to_frozen_input_is_refused",
+      "status": "ok"
+    },
+    {
+      "name": "openssh_windows::tests::frozen_private_inputs_deny_writes_deletes_and_directory_replacement",
+      "status": "ok"
+    },
+    {
+      "name": "preflight::tests::every_missing_or_wrong_formal_environment_pin_is_rejected",
+      "status": "ok"
+    },
+    {
+      "name": "manifest_inventory::tests::verified_manifest_rejects_extra_files_and_hardlinks",
+      "status": "ok"
+    },
+    {
+      "name": "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted",
+      "status": "ok"
+    },
+    {
+      "name": "tests::exact_challenge_boundary_accepts_only_operator_acceptance",
+      "status": "ok"
+    },
+    {
+      "name": "openssh_windows::tests::retained_unknown_verifier_reconciles_only_its_original_child",
+      "status": "ok"
+    },
+    {
+      "name": "tests::final_consumption_at_expiry_creates_no_claim_or_receipt",
+      "status": "ok"
+    },
+    {
+      "name": "tests::durable_time_watermark_rejects_clock_rollback",
+      "status": "ok"
+    },
+    {
+      "name": "tests::receipt_repeated_authority_must_match_exact_boundary",
+      "status": "ok"
+    },
+    {
+      "name": "tests::validity_window_is_half_open_and_policy_bounded",
+      "status": "ok"
+    },
+    {
+      "name": "tests::read_only_lock_never_creates_missing_state",
+      "status": "ok"
+    },
+    {
+      "name": "tests::unknown_or_noncanonical_stored_json_is_rejected",
+      "status": "ok"
+    },
+    {
+      "name": "tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails",
+      "status": "ok"
+    },
+    {
+      "name": "trust::tests::weak_ed25519_public_key_is_rejected_before_openssh",
+      "status": "ok"
+    },
+    {
+      "name": "trust::tests::trust_policy_digest_is_external_and_fail_closed",
+      "status": "ok"
+    },
+    {
+      "name": "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy",
+      "status": "ok"
+    },
+    {
+      "name": "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers",
+      "status": "ok"
+    }
+  ],
+  "executed": 33,
+  "passed": 33,
+  "failed": 0,
+  "ignored": 0,
+  "filtered": 0,
+  "execution_attempts": 1,
+  "xml_testcase_count": 1,
+  "phases": {
+    "discovery": {
+      "identity": {
+        "label": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+        "run": 1,
+        "shard": 1,
+        "attempt": 1,
+        "configuration": {
+          "id": "71dc1eb5efc7b1aaad266c20f9fe8b5496bc7110ae3c1cd20f938d784d84636c"
+        }
+      },
+      "status": "PASSED",
+      "cachedLocally": false,
+      "cachedRemotely": false,
+      "totalRunCount": 1,
+      "startedWithinObservedCommand": true,
+      "commandWallSecondsNotFullCost": 247.6235795021057
+    },
+    "execution": {
+      "identity": {
+        "label": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+        "run": 1,
+        "shard": 1,
+        "attempt": 1,
+        "configuration": {
+          "id": "16e4f5f24cf78c7aed9f5973a8994ef45ace2a24c9f898fd83c9df4b313bb281"
+        }
+      },
+      "status": "PASSED",
+      "cachedLocally": false,
+      "cachedRemotely": false,
+      "totalRunCount": 1,
+      "startedWithinObservedCommand": true,
+      "commandWallSecondsNotFullCost": 63.92954683303833
+    }
+  },
+  "original_bash": {
+    "path": "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+    "sha256": "5490d0da5e7cf9d92068cc48fcc590f2bcf8564add8ff91c3b5fe541eb2d72e3",
+    "st_ctime_ns": 1793720585729685200,
+    "st_dev": 9823700658284110452,
+    "st_ino": 281474977734141,
+    "st_mtime_ns": 1792914774000000000,
+    "st_size": 2449886
+  },
+  "original_bash_version": "GNU bash, version 5.3.15(2)-release (x86_64-pc-cygwin)\nCopyright (C) 2025 Free Software Foundation, Inc.\nLicense GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n\nThis is free software; you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n",
+  "executables_unchanged": true,
+  "source_unchanged": true,
+  "fullCost": null,
+  "research_advancement": false,
+  "full_repository_pass": false
+}

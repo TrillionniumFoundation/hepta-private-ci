@@ -1,0 +1,155 @@
+{
+  "schema": "hepta.source_bound.raw_summary_correction.v1",
+  "science_claim": false,
+  "reason": "Correct a prose/count label from 7 FAIL + 2 FAIL to 6 FAIL + 1 LEAK (nextest counted as passed but leaky), plus 2 FAIL. Preserve original artifacts and observer classifications unchanged.",
+  "source": {
+    "head": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1",
+    "tree": "d2f261084bad25c230b95835e9a589fe7b866be1",
+    "trackedChanges": "",
+    "cargoLockSha256": "192c40e4c327fc23dce2fe2ff10e5a1048079458ccfdeedf5bb41ecf8b7d77ad"
+  },
+  "overall_run": {
+    "id": 42534602318,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602318",
+    "conclusion": "cancelled",
+    "completed_selected_groups_remain_real_observations": true
+  },
+  "original_archive": {
+    "local_path": "/workspace/scratch/898e2183709e/windows-fixture-followup/cancelled-native-packet-v1/windows-original-native-timeout.tar.xz",
+    "bytes": 127020,
+    "sha256": "bd27ffa81e5c2f6274aea9be640d1e8bf6fb3c688be5472deb1e7d17433c8f5c"
+  },
+  "original_artifact": {
+    "id": 13640669191,
+    "desktop_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-ba4e-cancelled-windows-native-42534602318-v1/artifact-13640669191.zip",
+    "bytes": 97909,
+    "sha256": "5a709276e532b9fbb8b345e5a636f1643423c7364acee6be4ede73e770bd20cf"
+  },
+  "groups": [
+    {
+      "id": "sandbox-original-failures",
+      "original_zip_member": "sandbox-original-failures.log",
+      "local_readback": "/workspace/scratch/898e2183709e/ci-fixes/windows-legacy-semantics-d1/sandbox-original-failures.log",
+      "bytes": 17861,
+      "sha256": "6bfa9533002ee08469de3256fe428ef11c5dfdd3bfa105b15418faae6a119648",
+      "summary_line": 216,
+      "summary_exact": "     Summary [   2.605s] 7 tests run: 1 passed (1 leaky), 6 failed, 179 skipped",
+      "executed": 7,
+      "failed": 6,
+      "passed_but_leaky": 1,
+      "filtered": 179,
+      "clean_passed": 0,
+      "cases": [
+        {
+          "name": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+          "binary": "codex-windows-sandbox",
+          "nextest_status": "FAIL",
+          "duration_seconds": 0.019,
+          "raw_line": 76,
+          "qualification_pass": false
+        },
+        {
+          "name": "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+          "binary": "codex-windows-sandbox",
+          "nextest_status": "FAIL",
+          "duration_seconds": 0.017,
+          "raw_line": 92,
+          "qualification_pass": false
+        },
+        {
+          "name": "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+          "binary": "codex-windows-sandbox",
+          "nextest_status": "FAIL",
+          "duration_seconds": 0.017,
+          "raw_line": 124,
+          "qualification_pass": false
+        },
+        {
+          "name": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+          "binary": "codex-windows-sandbox",
+          "nextest_status": "LEAK",
+          "duration_seconds": 2.465,
+          "raw_line": 156,
+          "qualification_pass": false
+        },
+        {
+          "name": "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+          "binary": "codex-windows-sandbox",
+          "nextest_status": "FAIL",
+          "duration_seconds": 0.035,
+          "raw_line": 157,
+          "qualification_pass": false
+        },
+        {
+          "name": "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+          "binary": "codex-windows-sandbox",
+          "nextest_status": "FAIL",
+          "duration_seconds": 0.018,
+          "raw_line": 177,
+          "qualification_pass": false
+        },
+        {
+          "name": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+          "binary": "codex-windows-sandbox",
+          "nextest_status": "FAIL",
+          "duration_seconds": 0.02,
+          "raw_line": 196,
+          "qualification_pass": false
+        }
+      ]
+    },
+    {
+      "id": "sandbox-native-delete-routes",
+      "original_zip_member": "sandbox-native-delete-routes.log",
+      "local_readback": "/workspace/scratch/898e2183709e/ci-fixes/windows-legacy-semantics-d1/sandbox-native-delete-routes.log",
+      "bytes": 22456,
+      "sha256": "7456dd68743021af0c26aff9fb374c9b333497c7269f662da148399ab94dfe7d",
+      "summary_line": 139,
+      "summary_exact": "     Summary [   0.130s] 2 tests run: 0 passed, 2 failed, 184 skipped",
+      "executed": 2,
+      "failed": 2,
+      "passed_but_leaky": 0,
+      "filtered": 184,
+      "clean_passed": 0,
+      "cases": [
+        {
+          "name": "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+          "binary": "codex-windows-sandbox",
+          "nextest_status": "FAIL",
+          "duration_seconds": 0.048,
+          "raw_line": 75,
+          "qualification_pass": false
+        },
+        {
+          "name": "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+          "binary": "codex-windows-sandbox",
+          "nextest_status": "FAIL",
+          "duration_seconds": 0.076,
+          "raw_line": 105,
+          "qualification_pass": false
+        }
+      ]
+    }
+  ],
+  "original_observer_nonPassingTests": {
+    "sandbox-original-failures": [
+      "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+      "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+      "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+      "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+      "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+    ],
+    "sandbox-native-delete-routes": [
+      "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+      "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells"
+    ]
+  },
+  "interpretation": [
+    "The observer already treated the LEAK as non-passing; this correction concerns the exact nextest outcome count, not changing the gate result.",
+    "The Elevated case must not be advertised as a clean qualification PASS.",
+    "The eight FAIL cases reached the intentional legacy admission refusal; this record does not establish a newly exercised deletion boundary.",
+    "No original evidence, source, test, policy or CI result was modified or rerun."
+  ]
+}
