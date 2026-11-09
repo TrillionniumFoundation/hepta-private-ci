@@ -405,3 +405,7 @@ fn acquire(file: File, binding: Digest32) -> Result<HeldFile, FileError> {
 fn io_error(error: io::Error) -> FileError {
     FileError::Io(error.kind())
 }
+
+#[cfg(test)]
+#[path = "product_execution_file_tests.rs"]
+mod tests;
