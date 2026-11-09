@@ -929,7 +929,7 @@ symbol = "PreparedHostAuthoritySession::prepare_fresh_from_registered"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
 definition_markers = ["pub async fn prepare_fresh_from_registered(", "open_registered_writer(&config, &registration, &owner_pidfd)?", "FreshHostCognitiveState::prepare(&registration.registered_identity)", "service.initialize_fresh_heads(&config, &registration, &owner_pidfd, fresh)?"]
 product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
-caller_markers = ["PreparedHostAuthoritySession::prepare_fresh_from_registered", "Some(profile), None", "prepared.launch_native(&config, &registration, &profile)?"]
+caller_markers = ["PreparedHostAuthoritySession::prepare_fresh_from_registered", "Some(profile), None", "prepared.launch_native_with_ready(&config, &registration, &profile, ready)?"]
 
 [[boundary]]
 id = "root_retained_native_ui_launch"
@@ -937,8 +937,8 @@ symbol = "PreparedHostAuthoritySession::launch_native"
 call_pattern = '(?:\.\s*|PreparedHostAuthoritySession\s*::\s*)launch_native\s*\('
 definition_path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
 definition_markers = ["pub fn launch_native(", "self.launch_native_with_ready(config_file, registration_file, profile_file, || Ok(()))"]
-product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
-caller_markers = ["prepared.launch_native(&config, &registration, &profile)?", "PreparedHostAuthoritySession::prepare_fresh_from_registered"]
+product_callers = []
+caller_markers = []
 
 [[boundary]]
 id = "root_prepared_native_ui_execution"
@@ -950,7 +950,7 @@ caller_markers = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
-required = ["pub struct PreparedHostAuthoritySession", "owner_pidfd: OwnedFd", "service: HostAuthorityService", "open_registered_writer(&config, &registration, &owner_pidfd)?", "serde_json::to_vec(&self.config)", "serde_json::to_vec(&self.registration)", "native launch changed the retained original Root inputs", "service.with_live_human_text(text.clone(), ui_pidfd.try_clone()?)?", "pub fn launch_native_with_ready(", "pub(crate) fn serve_with_text_and_ready(", "ready: impl FnOnce() -> io::Result<()>", "listeners::serve_lanes_with_ready(", "admin.run(&service, &config, &registration, &owner_pidfd, serve)", "admin.activate()?"]
+required = ["pub struct PreparedHostAuthoritySession", "owner_pidfd: OwnedFd", "service: HostAuthorityService", "open_registered_writer(&config, &registration, &owner_pidfd)?", "serde_json::to_vec(&self.config)", "serde_json::to_vec(&self.registration)", "native launch changed the retained original Root inputs", "service.with_live_human_text(text.clone(), ui_pidfd.try_clone()?)?", "pub fn launch_native_with_ready(", "pub fn serve_with_text_and_ready(", "ready: impl FnOnce() -> io::Result<()>", "listeners::serve_lanes_with_ready(", "admin.run(&service, &config, &registration, &owner_pidfd, serve)", "admin.activate()?"]
 forbidden = ["AllowVerifier", "permit_all"]
 required_function_order = [{function = "fn launch_native(", sequence = ["self.launch_native_with_ready(", "|| Ok(())"]}, {function = "fn launch_native_with_ready(", sequence = ["crate::authority_host_native_launch::inputs(", ".check_logind_binding(&profile.original_human_binding())?", "serde_json::to_vec(&self.config)", "serde_json::to_vec(&self.registration)", "crate::authority_host_native_launch::launch_prepared_native_with_ready("]}, {function = "fn serve_with_text_and_ready(", sequence = ["fn serve_with_text_and_ready(", "self.serve_selected(Some((text_file, ui_pidfd)), ready)"]}, {function = "fn serve_selected(", sequence = ["text.validate(&service)?", "service.with_live_human_text(text.clone(), ui_pidfd.try_clone()?)?", "let bound = listeners::bind_runtime_lanes(&config, ready)?", "service.serve_text_ui(", "listeners::serve_bound_lanes("]}]
 
@@ -1441,8 +1441,8 @@ symbol = "PreparedHostAuthoritySession::launch_native_with_ready"
 call_pattern = "\\blaunch_native_with_ready\\b"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
 definition_markers = ["pub fn launch_native_with_ready(", "ready: impl FnOnce() -> io::Result<()>", "&self.owner_pidfd", "serde_json::to_vec(&self.config)", "serde_json::to_vec(&self.registration)", ".check_logind_binding(&profile.original_human_binding())?", "crate::authority_host_native_launch::launch_prepared_native_with_ready("]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = ["PreparedHostAuthoritySession::prepare_fresh_from_registered", "prepared.launch_native_with_ready(&config, &registration, &profile, ready)?"]
 
 [[boundary]]
 id = "root_prepared_native_ready_execution"
@@ -1458,8 +1458,8 @@ id = "root_prepared_native_ready_text_session"
 symbol = "PreparedHostAuthoritySession::serve_with_text_and_ready"
 call_pattern = "\\bserve_with_text_and_ready\\b"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
-definition_markers = ["pub(crate) fn serve_with_text_and_ready(", "self.serve_selected(Some((text_file, ui_pidfd)), ready)"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_native_launch.rs"]
+definition_markers = ["pub fn serve_with_text_and_ready(", "self.serve_selected(Some((text_file, ui_pidfd)), ready)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_native_launch.rs", "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -2425,3 +2425,4 @@ required_order = [
     "validate_receipt_digest(&provider.receipt_digest)?;",
   ],
 ]
+
