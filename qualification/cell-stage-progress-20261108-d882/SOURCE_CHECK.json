@@ -1,0 +1,47 @@
+{
+  "after": {
+    "commit": "62a8c50ec81a0027621d75156a9b56b23edd977c",
+    "dirty": false,
+    "parents": [
+      "30fbc990d2834655443840bfc98c606d21116410"
+    ],
+    "tree": "7f2acc200e960278dbf135e90bd24416f8d35c7e"
+  },
+  "base_sha": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+  "before": {
+    "commit": "62a8c50ec81a0027621d75156a9b56b23edd977c",
+    "dirty": false,
+    "parents": [
+      "30fbc990d2834655443840bfc98c606d21116410"
+    ],
+    "tree": "7f2acc200e960278dbf135e90bd24416f8d35c7e"
+  },
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "scripts/verify_hepta_callers.py",
+    "verify"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 305.9546322719998,
+  "exit_code": 0,
+  "finished_at": "2026-11-09T04:13:13.203319+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 75046,
+  "log_file": "final-caller-proof.json.b1e8a29f17b74fafb0eac97fb79e94d2.log",
+  "log_sha256": "26a26bb134ce5231b90a4e6197d55822ed7647cd5030cbc84f953d74bfaefeef",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "62a8c50ec81a0027621d75156a9b56b23edd977c",
+  "started_at": "2026-11-09T04:08:07.248056+00:00",
+  "status": "passed",
+  "tested_sha": "62a8c50ec81a0027621d75156a9b56b23edd977c",
+  "timed_out": false,
+  "working_directory": "/workspace/scratch/d882890e1711/hepta-stage"
+}

@@ -1,0 +1,56 @@
+{
+  "behavior": [
+    "Overview candidates survive a subsequent ROI observation in original-image coordinates",
+    "Current observation refreshes a duplicate while historical observed_step remains original",
+    "Operation, case, original-source hash, width or height changes clear the entire pool",
+    "Deterministic current-first then descending historical observed_step admission, with stable ties",
+    "128-record hard cap and explicit canonical UTF-8 JSON byte cap",
+    "Unknown metadata/labels, invalid source identities, nonfinite or boolean features, malformed/out-of-image boxes and stale steps reject",
+    "Input mutations cannot change retained records; returned records and nested values are immutable copies",
+    "A rejected observation in a new scope cannot retain candidates from the previous scope"
+  ],
+  "checkout_commit": "6462854e289a405b2981fa67b77b1cb51a155326",
+  "committed": false,
+  "confirmation_access": false,
+  "dataset_replays": 0,
+  "formatted": false,
+  "frozen_actor_evaluator_modified": false,
+  "limits": [
+    "Caller-supplied source identity, not independent image authentication",
+    "Fixed current-first then newest historical distinct candidate policy",
+    "Exact canonical JSON resident-byte budget is not actual process RAM or complete physical cost",
+    "No integration into frozen actor or task-quality/retention benefit claim"
+  ],
+  "optimizer_steps": 0,
+  "runtime": {
+    "dependencies": "Python standard library only",
+    "python": "3.12.14"
+  },
+  "schema": "s1-candidate-memory-development-validation-v1",
+  "scientific_admission": "HOLD",
+  "scientific_fits": 0,
+  "source": {
+    "candidate_memory.py": {
+      "bytes": 8985,
+      "lines": 208,
+      "python_ast_sha256": "1d180429dd103ea6fa474605a911452f77de8e057c6ffa6bad5752461d9a9358",
+      "sha256": "1ba32ccaafbed59c4ead845baa21874a5232e3267b6084f2c49f8b16b1bfa31c"
+    },
+    "test_candidate_memory.py": {
+      "bytes": 7653,
+      "lines": 138,
+      "python_ast_sha256": "9e3b44129b264055aa6fa496d1de52aa19e9fbc4f02011c05f53d2d2d1e5ec2a",
+      "sha256": "dbeec237accf43e7639caadd406f661613dd6319a9e2410b8d129841f2e6ec9e"
+    }
+  },
+  "source_snapshot_timing": "source copied before first execution and exact bytes verified afterward",
+  "test": {
+    "command": "python3 -B -m unittest scripts.ndu_real_runtime.test_candidate_memory -v",
+    "failed": 0,
+    "log": "tests-first.log",
+    "log_sha256": "daac91e8ab25ccd59bb6766e2e8f275c86a1aa4dbf284615dbecf07a538a7e16",
+    "passed": 5,
+    "runs": 1,
+    "seconds": 0.019
+  }
+}
