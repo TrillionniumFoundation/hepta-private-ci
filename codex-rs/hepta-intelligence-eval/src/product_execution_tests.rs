@@ -3,6 +3,9 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
+#[path = "product_execution_process_tests.rs"]
+mod process_tests;
+
 use crate::ProductEvaluationExecutionAttestationRequestV1;
 use crate::ProductEvaluationExecutionAttestorV1;
 use crate::ProductEvaluationExecutionClaimV1 as Claim;
