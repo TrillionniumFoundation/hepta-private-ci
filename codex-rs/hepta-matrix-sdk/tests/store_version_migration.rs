@@ -47,9 +47,14 @@ const CUSTOM_VALUE: &[u8] = b"persisted before the SDK dependency update";
 
 fn fixture_config(root: &Path) -> TestResult<(HeptaAgentLayout, MatrixSidecarConfig)> {
     let fleet = root.join("fleet");
-    fs::create_dir_all(&fleet)?;
+    fs::create_dir_all(&fleet)
+        .map_err(|error| format!("fixture configuration create fleet: {error}"))?;
     let agent = AgentId::parse(AGENT)?;
-    let layout = HeptaFleetRoot::parse(fleet.canonicalize()?)?
+    let layout = HeptaFleetRoot::parse(
+        fleet
+            .canonicalize()
+            .map_err(|error| format!("fixture configuration canonical fleet: {error}"))?,
+    )?
         .layout()
         .agent(&agent);
     let config = MatrixSidecarConfig {
@@ -128,7 +133,8 @@ async fn stored_values(
     let device = client
         .encryption()
         .get_own_device()
-        .await?
+        .await
+        .map_err(|error| format!("readback encrypted device identity: {error}"))?
         .ok_or("missing persisted encryption identity")?;
     let device_keys: BTreeMap<_, _> = device
         .keys()
@@ -138,16 +144,19 @@ async fn stored_values(
     assert!(!device_keys.is_empty(), "missing persisted encryption keys");
     let checkpoint = store
         .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
-        .await?
+        .await
+        .map_err(|error| format!("readback durable sync checkpoint: {error}"))?
         .ok_or("missing durable sync cursor")?;
     let outbox = store
         .outbox_for_txn(&outbox_draft()?.txn_id)
-        .await?
+        .await
+        .map_err(|error| format!("readback pending outbox: {error}"))?
         .ok_or("missing pending outbox")?;
     Ok(json!({
         "session": client.matrix_auth().session(),
         "device_keys": device_keys,
-        "custom_value": client.state_store().get_custom_value(CUSTOM_KEY).await?,
+        "custom_value": client.state_store().get_custom_value(CUSTOM_KEY).await
+            .map_err(|error| format!("readback custom state value: {error}"))?,
         "checkpoint": {
             "owner": checkpoint.owner_agent_id,
             "binding_revision": checkpoint.binding_revision,
@@ -182,11 +191,13 @@ async fn prepare_fixture(root: &Path) -> TestResult {
         !expected_path.exists(),
         "refuse to overwrite a baseline fixture"
     );
-    let (layout, config) = fixture_config(root)?;
+    let (layout, config) = fixture_config(root)
+        .map_err(|error| format!("prepare fixture configuration: {error}"))?;
     // Produce the old SDK's real encrypted format independently of the
     // host's cold-start deadline. The old source and production timeout are
     // unchanged; this fixture qualifies migration, not cold-start latency.
-    let paths = MatrixSdkPaths::prepare(&layout, &config)?;
+    let paths = MatrixSdkPaths::prepare(&layout, &config)
+        .map_err(|error| format!("prepare fixture SDK paths: {error}"))?;
     let client = tokio::time::timeout(
         Duration::from_secs(120),
         matrix_sdk::Client::builder()
@@ -195,18 +206,25 @@ async fn prepare_fixture(root: &Path) -> TestResult {
             .handle_refresh_tokens()
             .build(),
     )
-    .await??;
+    .await
+    .map_err(|error| format!("prepare fixture encrypted SDK build deadline: {error}"))?
+    .map_err(|error| format!("prepare fixture encrypted SDK build: {error}"))?;
     let session = fixture_session()?;
     tokio::time::timeout(
         Duration::from_secs(120),
         client.restore_session(session.clone()),
     )
-    .await??;
+    .await
+    .map_err(|error| format!("prepare fixture session restore deadline: {error}"))?
+    .map_err(|error| format!("prepare fixture session restore: {error}"))?;
     assert_eq!(
         serde_json::to_value(client.matrix_auth().session())?,
         serde_json::to_value(&session)?,
     );
-    client.event_cache().subscribe()?;
+    client
+        .event_cache()
+        .subscribe()
+        .map_err(|error| format!("prepare fixture event cache subscription: {error}"))?;
     // A fresh owner-only authentication file accompanies the real SDK stores.
     // The candidate must reopen it through production login_or_restore;
     // the deliberately invalid password cannot create a replacement login.
@@ -217,14 +235,23 @@ async fn prepare_fixture(root: &Path) -> TestResult {
         use std::os::unix::fs::OpenOptionsExt;
         options.mode(0o600);
     }
-    let mut session_file = options.open(paths.session())?;
-    session_file.write_all(&serde_json::to_vec(&session)?)?;
-    session_file.sync_all()?;
+    let mut session_file = options
+        .open(paths.session())
+        .map_err(|error| format!("prepare fixture create session file: {error}"))?;
+    session_file
+        .write_all(&serde_json::to_vec(&session)?)
+        .map_err(|error| format!("prepare fixture write session file: {error}"))?;
+    session_file
+        .sync_all()
+        .map_err(|error| format!("prepare fixture sync session file: {error}"))?;
     client
         .state_store()
         .set_custom_value(CUSTOM_KEY, CUSTOM_VALUE.to_vec())
-        .await?;
-    let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+        .await
+        .map_err(|error| format!("prepare fixture write custom state value: {error}"))?;
+    let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default())
+        .await
+        .map_err(|error| format!("prepare fixture open durable store: {error}"))?;
     store
         .bind_room(&RoomBindingDraft {
             room_id: MatrixRoomId::parse(ROOM)?,
@@ -233,7 +260,8 @@ async fn prepare_fixture(root: &Path) -> TestResult {
             generation: 1,
             changed_at_ms: 1,
         })
-        .await?;
+        .await
+        .map_err(|error| format!("prepare fixture bind durable room: {error}"))?;
     let commit = store
         .commit_sync_batch(
             /*binding_revision*/ 1,
@@ -243,25 +271,41 @@ async fn prepare_fixture(root: &Path) -> TestResult {
             &[inbox_event()?],
             /*updated_at_ms*/ 11,
         )
-        .await?;
+        .await
+        .map_err(|error| format!("prepare fixture commit original sync batch: {error}"))?;
     assert_eq!((commit.accepted, commit.duplicates), (1, 0));
-    store.enqueue_outbox(&outbox_draft()?).await?;
-    let expected = stored_values(&client, &store).await?;
+    store
+        .enqueue_outbox(&outbox_draft()?)
+        .await
+        .map_err(|error| format!("prepare fixture enqueue original outbox: {error}"))?;
+    let expected = stored_values(&client, &store)
+        .await
+        .map_err(|error| format!("prepare fixture expected readback: {error}"))?;
     drop(client);
     drop(store);
-    let ciphertexts = crypto_migration::prepare(paths.state(), PASSPHRASE, ROOM).await?;
+    let ciphertexts = crypto_migration::prepare(paths.state(), PASSPHRASE, ROOM)
+        .await
+        .map_err(|error| format!("prepare fixture old ciphertexts: {error}"))?;
     fs::write(
         root.join("old-ciphertexts.json"),
         serde_json::to_vec_pretty(&ciphertexts)?,
-    )?;
-    fs::write(expected_path, serde_json::to_vec_pretty(&expected)?)?;
+    )
+    .map_err(|error| format!("prepare fixture write old ciphertext record: {error}"))?;
+    fs::write(expected_path, serde_json::to_vec_pretty(&expected)?)
+        .map_err(|error| format!("prepare fixture write expected record: {error}"))?;
     Ok(())
 }
 
 async fn reopen_fixture(root: &Path) -> TestResult {
-    let expected: Value = serde_json::from_slice(&fs::read(root.join("expected.json"))?)?;
-    let (layout, config) = fixture_config(root)?;
-    let paths = MatrixSdkPaths::prepare(&layout, &config)?;
+    let expected: Value = serde_json::from_slice(
+        &fs::read(root.join("expected.json"))
+            .map_err(|error| format!("reopen fixture read expected record: {error}"))?,
+    )
+    .map_err(|error| format!("reopen fixture decode expected record: {error}"))?;
+    let (layout, config) = fixture_config(root)
+        .map_err(|error| format!("reopen fixture configuration: {error}"))?;
+    let paths = MatrixSdkPaths::prepare(&layout, &config)
+        .map_err(|error| format!("reopen fixture SDK paths: {error}"))?;
     let (client, session) = MatrixSdkClient::login_or_restore(
         &layout,
         config,
@@ -269,10 +313,18 @@ async fn reopen_fixture(root: &Path) -> TestResult {
         Some(PASSPHRASE),
         /*device_display_name*/ None,
     )
-    .await?;
+    .await
+    .map_err(|error| format!("reopen fixture production login_or_restore: {error}"))?;
     assert_eq!(serde_json::to_value(session)?, expected["session"]);
-    let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
-    assert_eq!(stored_values(client.client(), &store).await?, expected);
+    let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default())
+        .await
+        .map_err(|error| format!("reopen fixture open durable store: {error}"))?;
+    assert_eq!(
+        stored_values(client.client(), &store)
+            .await
+            .map_err(|error| format!("reopen fixture retained readback: {error}"))?,
+        expected,
+    );
     assert!(client.client().event_cache().has_subscribed());
     // The SDK may rebuild its event cache. The authoritative Hepta cursor and
     // inbox must still accept a continuation and deduplicate the old event.
@@ -285,13 +337,20 @@ async fn reopen_fixture(root: &Path) -> TestResult {
             &[inbox_event()?],
             /*updated_at_ms*/ 20,
         )
-        .await?;
+        .await
+        .map_err(|error| format!("reopen fixture commit continuation and replay: {error}"))?;
     assert_eq!((continuation.accepted, continuation.duplicates), (0, 1));
     assert_eq!(continuation.checkpoint.next_batch, "after-sdk-upgrade");
     drop(client);
     drop(store);
-    let ciphertexts = serde_json::from_slice(&fs::read(root.join("old-ciphertexts.json"))?)?;
-    crypto_migration::reopen(paths.state(), PASSPHRASE, ROOM, ciphertexts).await?;
+    let ciphertexts = serde_json::from_slice(
+        &fs::read(root.join("old-ciphertexts.json"))
+            .map_err(|error| format!("reopen fixture read old ciphertext record: {error}"))?,
+    )
+    .map_err(|error| format!("reopen fixture decode old ciphertext record: {error}"))?;
+    crypto_migration::reopen(paths.state(), PASSPHRASE, ROOM, ciphertexts)
+        .await
+        .map_err(|error| format!("reopen fixture decrypt old ciphertexts and reject replay: {error}"))?;
     Ok(())
 }
 
