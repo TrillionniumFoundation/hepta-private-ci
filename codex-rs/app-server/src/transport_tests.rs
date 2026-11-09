@@ -1,5 +1,8 @@
 use super::*;
+use crate::outgoing_message::ConnectionRequestId;
 use codex_app_server_protocol::ConfigWarningNotification;
+use codex_app_server_protocol::InitializeResponse;
+use codex_app_server_protocol::RemoteControlConnectionStatus;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::ServerNotificationEnvelope;
@@ -28,6 +31,154 @@ fn app_server_notification(notification: ServerNotification) -> OutgoingMessage 
         notification,
         emitted_at_ms: Some(1_234),
     })
+}
+
+enum ExistingReadyConnection {
+    Absent,
+    Present,
+}
+
+#[tokio::test]
+async fn remote_control_update_with_no_ready_recipient_stays_behind_initialize() {
+    assert_remote_control_update_does_not_overtake_initialize(ExistingReadyConnection::Absent)
+        .await;
+}
+
+#[tokio::test]
+async fn remote_control_update_freezes_ready_recipients_before_initialize() {
+    assert_remote_control_update_does_not_overtake_initialize(ExistingReadyConnection::Present)
+        .await;
+}
+
+async fn assert_remote_control_update_does_not_overtake_initialize(
+    existing: ExistingReadyConnection,
+) {
+    let new_id = ConnectionId(31);
+    let existing_id = ConnectionId(32);
+    let new_ready = Arc::new(AtomicBool::new(false));
+    let mut connections = HashMap::new();
+    let mut outbound_connections = HashMap::new();
+    let mut receivers = HashMap::new();
+    let mut ids = vec![new_id];
+    if matches!(existing, ExistingReadyConnection::Present) {
+        ids.push(existing_id);
+    }
+    for connection_id in ids {
+        let ready = if connection_id == new_id {
+            Arc::clone(&new_ready)
+        } else {
+            Arc::new(AtomicBool::new(true))
+        };
+        let experimental_api = Arc::new(AtomicBool::new(true));
+        let opted_out = Arc::new(RwLock::new(HashSet::new()));
+        let (writer, receiver) = mpsc::channel(CHANNEL_CAPACITY);
+        connections.insert(
+            connection_id,
+            ConnectionState::new(
+                ConnectionOrigin::Stdio,
+                Arc::clone(&ready),
+                Arc::clone(&experimental_api),
+                Arc::clone(&opted_out),
+            ),
+        );
+        outbound_connections.insert(
+            connection_id,
+            OutboundConnectionState::new(
+                writer,
+                ready,
+                experimental_api,
+                opted_out,
+                /*disconnect_sender*/ None,
+            ),
+        );
+        receivers.insert(connection_id, receiver);
+    }
+    let (outgoing_tx, mut outgoing_rx) = mpsc::channel(CHANNEL_CAPACITY);
+    let outgoing = OutgoingMessageSender::new(
+        outgoing_tx,
+        codex_analytics::AnalyticsEventsClient::disabled(),
+    );
+    let status = RemoteControlStatusChangedNotification {
+        status: RemoteControlConnectionStatus::Disabled,
+        server_name: "local-test-server".to_string(),
+        installation_id: "local-test-installation".to_string(),
+        environment_id: None,
+    };
+
+    // Exercise the real producer while the new connection is unready. Keep
+    // the real outbound router paused until after initialization is queued.
+    send_remote_control_status_to_ready_connections(&connections, &outgoing, status.clone()).await;
+    let response = InitializeResponse {
+        user_agent: "test-agent".to_string(),
+        codex_home: std::path::PathBuf::from("test-home"),
+        platform_family: "test".to_string(),
+        platform_os: "test".to_string(),
+        process_indeterminate: false,
+    };
+    let expected_response =
+        serde_json::to_value(&response).expect("initialize response serializes");
+    outgoing
+        .send_response(
+            ConnectionRequestId {
+                connection_id: new_id,
+                request_id: RequestId::Integer(0),
+            },
+            response,
+        )
+        .await;
+    outgoing
+        .send_server_notification_to_connections(
+            &[new_id],
+            ServerNotification::RemoteControlStatusChanged(status.clone()),
+        )
+        .await;
+    new_ready.store(true, Ordering::Release);
+
+    // The old producer's broadcast would now see the new ready flag and be
+    // routed before the response. No scheduling delay or sleep is involved.
+    while let Ok(envelope) = outgoing_rx.try_recv() {
+        route_outgoing_envelope(&mut outbound_connections, envelope).await;
+    }
+    let new_receiver = receivers.get_mut(&new_id).expect("new connection receiver");
+    let first = new_receiver.try_recv().expect("initialize response queued");
+    let OutgoingMessage::Response(observed_response) = first.message else {
+        panic!("status update overtook initialize response");
+    };
+    assert_eq!(observed_response.id, RequestId::Integer(0));
+    assert_eq!(
+        serde_json::to_value(observed_response.result).expect("response payload serializes"),
+        expected_response,
+    );
+    let snapshot = new_receiver
+        .try_recv()
+        .expect("current status snapshot queued");
+    let OutgoingMessage::AppServerNotification(snapshot) = snapshot.message else {
+        panic!("expected status snapshot after initialize response");
+    };
+    let expected_status =
+        serde_json::to_value(ServerNotification::RemoteControlStatusChanged(status))
+            .expect("status notification serializes");
+    assert_eq!(
+        serde_json::to_value(snapshot.notification).expect("snapshot serializes"),
+        expected_status,
+    );
+    assert!(
+        new_receiver.try_recv().is_err(),
+        "unexpected extra notification"
+    );
+    if let Some(existing_receiver) = receivers.get_mut(&existing_id) {
+        let update = existing_receiver
+            .try_recv()
+            .expect("ready connection receives update");
+        let OutgoingMessage::AppServerNotification(update) = update.message else {
+            panic!("expected status update for existing ready connection");
+        };
+        assert_eq!(
+            serde_json::to_value(update.notification).expect("update serializes"),
+            expected_status,
+        );
+        assert!(existing_receiver.try_recv().is_err());
+    }
 }
 
 #[tokio::test]

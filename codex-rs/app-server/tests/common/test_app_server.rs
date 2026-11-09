@@ -2096,6 +2096,19 @@ impl TestAppServerBuilder {
                     .or_else(|_| std::fs::copy(source, destination).map(|_| ()))
                     .with_context(|| format!("stage executable {}", source.display()))?;
             }
+            // The Windows sandbox discovers its helpers beside the app-server
+            // executable. Preserve that installed layout for Bazel runfiles too.
+            #[cfg(windows)]
+            for helper_name in ["codex-command-runner", "codex-windows-sandbox-setup"] {
+                let helper = codex_utils_cargo_bin::cargo_bin(helper_name)
+                    .with_context(|| format!("find Windows sandbox helper {helper_name}"))?;
+                let staged_helper = install_dir.path().join(format!("{helper_name}.exe"));
+                std::fs::hard_link(&helper, &staged_helper)
+                    .or_else(|_| std::fs::copy(&helper, &staged_helper).map(|_| ()))
+                    .with_context(|| {
+                        format!("stage Windows sandbox helper {}", helper.display())
+                    })?;
+            }
             program = staged_program;
             owned_install_dir = Some(install_dir);
         }

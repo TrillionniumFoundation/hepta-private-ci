@@ -1,6 +1,9 @@
 use crate::message_processor::ConnectionSessionState;
 use crate::outgoing_message::OutgoingEnvelope;
+use crate::outgoing_message::OutgoingMessageSender;
 use codex_app_server_protocol::ExperimentalApi;
+use codex_app_server_protocol::RemoteControlStatusChangedNotification;
+use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::ServerRequest;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -197,6 +200,31 @@ fn filter_outgoing_message_for_connection(
         }
         _ => message,
     }
+}
+
+pub(crate) async fn send_remote_control_status_to_ready_connections(
+    connections: &HashMap<ConnectionId, ConnectionState>,
+    outgoing: &OutgoingMessageSender,
+    status: RemoteControlStatusChangedNotification,
+) {
+    // Freeze recipients before queueing. A pending broadcast could otherwise
+    // observe a later ready flag and overtake that connection's initialize reply.
+    let connection_ids: Vec<_> = connections
+        .iter()
+        .filter(|(_, connection)| connection.outbound_initialized.load(Ordering::Acquire))
+        .map(|(&connection_id, _)| connection_id)
+        .collect();
+    // An empty slice means broadcast to this API. Unready connections instead
+    // receive the current snapshot after their own initialize response.
+    if connection_ids.is_empty() {
+        return;
+    }
+    outgoing
+        .send_server_notification_to_connections(
+            &connection_ids,
+            ServerNotification::RemoteControlStatusChanged(status),
+        )
+        .await;
 }
 
 pub(crate) async fn route_outgoing_envelope(

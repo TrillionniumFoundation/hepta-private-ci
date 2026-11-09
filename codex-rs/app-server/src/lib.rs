@@ -1439,10 +1439,12 @@ async fn run_main_with_transport_options_inner(
                             continue;
                         }
                         remote_control_status = status.clone();
-                        let notification = ServerNotification::RemoteControlStatusChanged(status);
-                        initialize_notification_sender
-                            .send_server_notification(notification)
-                            .await;
+                        transport::send_remote_control_status_to_ready_connections(
+                            &connections,
+                            &initialize_notification_sender,
+                            status,
+                        )
+                        .await;
                     }
                     created = thread_created_rx.recv(), if listen_for_threads => {
                         match created {
