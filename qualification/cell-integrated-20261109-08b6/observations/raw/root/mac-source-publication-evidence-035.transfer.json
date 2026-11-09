@@ -1,0 +1,133 @@
+{
+  "source_archive": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 20,
+      "link_count": 1,
+      "metadata_platform": "darwin",
+      "mode": 384,
+      "uid": 501,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/Users/qianqi/work/cell-integration-20261108-08b6-publication/source-publication-evidence-seal-035/mac-source-publication-evidence.tar.gz",
+    "sha256": "1c0595ff5bf43d4d7d26c8237e7e49ebd2e5386df726b52a3553c7ea940038d8",
+    "size": 186504,
+    "version": "16777233:597813984:186504:1794201221355416966:1794201221355416966"
+  },
+  "chunks": [
+    {
+      "chunk_sha256": "7de7e94746132bdd679377df7a5352fdcf2d0a40818f981035cf23f505635380",
+      "eof": false,
+      "next_offset": 65536,
+      "offset": 0,
+      "path": "/Users/qianqi/work/cell-integration-20261108-08b6-publication/source-publication-evidence-seal-035/mac-source-publication-evidence.tar.gz",
+      "size": 186504,
+      "version": "16777233:597813984:186504:1794201221355416966:1794201221355416966"
+    },
+    {
+      "chunk_sha256": "c606b2096780e81f97504a61f85c60a83f63b9a60c0e9286f5efa37153c17636",
+      "eof": false,
+      "next_offset": 131072,
+      "offset": 65536,
+      "path": "/Users/qianqi/work/cell-integration-20261108-08b6-publication/source-publication-evidence-seal-035/mac-source-publication-evidence.tar.gz",
+      "size": 186504,
+      "version": "16777233:597813984:186504:1794201221355416966:1794201221355416966"
+    },
+    {
+      "chunk_sha256": "d8ffc683212ce7c0265ad8a21f8907b250e974d3b9c9dc1a7fa1b5b1fcb92b81",
+      "eof": true,
+      "next_offset": 186504,
+      "offset": 131072,
+      "path": "/Users/qianqi/work/cell-integration-20261108-08b6-publication/source-publication-evidence-seal-035/mac-source-publication-evidence.tar.gz",
+      "size": 186504,
+      "version": "16777233:597813984:186504:1794201221355416966:1794201221355416966"
+    }
+  ],
+  "destination": "/home/qian-qi/work/cell-continuation-20261109-08b6/mac-source-publication-evidence-035.tar.gz",
+  "destination_write": {
+    "mode": 384,
+    "sha256": "1c0595ff5bf43d4d7d26c8237e7e49ebd2e5386df726b52a3553c7ea940038d8",
+    "size": 186504,
+    "version": "66306:32937658:186504:1794201314761364152:1794201314780654886",
+    "written": 186504
+  },
+  "source_seal_terminal": {
+    "at_unix_ms": 1794201221404,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1beb9f7db-5e21-242",
+    "launch_nonce": "58f585c348a97e16a9d91cd887524e99",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 732,
+        "stored": 732
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "source_publication_terminal": {
+    "at_unix_ms": 1794201041985,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1beb5e374-5e21-22d",
+    "launch_nonce": "46abc948cdac463bc3c7b5f729d15447",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 11690,
+        "stored": 11690
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "full_sha_match": true,
+  "read_versions_bound": true,
+  "destination_create_only": true
+}

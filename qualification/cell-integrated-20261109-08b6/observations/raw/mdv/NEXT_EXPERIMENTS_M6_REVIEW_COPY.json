@@ -1,0 +1,792 @@
+{
+  "schema": "hepta.M6.next-independent-experiments.review-copy.v1",
+  "status": "DRAFT_FOR_REVIEW",
+  "confirmation_admitted": false,
+  "original_bytes_recovered": false,
+  "publication_of_this_review_copy_does_not_admit_confirmation": true,
+  "source": {
+    "commit": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb"
+  },
+  "originals_unavailable": [
+    {
+      "name": "NEXT_EXPERIMENTS_M6.json",
+      "bytes": 16286,
+      "sha256": "391a6c3e639123ee78e45c3f42365229028081c1c044bca7f379c7e941791654",
+      "state": "CURRENTLY_UNAVAILABLE_ORIGINAL_BYTES_NOT_RECOVERED"
+    },
+    {
+      "name": "NEXT_EXPERIMENTS_M6.zh-CN.md",
+      "bytes": 16038,
+      "sha256": "016087f6444cff881be82ebc1dba22b2c7884075ae2707a5f8be48ce1b2d34d9",
+      "state": "CURRENTLY_UNAVAILABLE_ORIGINAL_BYTES_NOT_RECOVERED"
+    }
+  ],
+  "reconstruction": "New complete review copy from the Git-backed 31079-byte design source, the original HCSN specification, M6 development evidence and previously read scope; not byte-identical recovery of old files. No claim all unknown historical storage locations searched.",
+  "sources": [
+    {
+      "kind": "Git-backed retained design",
+      "commit": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+      "path": "qualification/cell-integrated-20261108-08b6/NEXT_INDEPENDENT_DESIGNS.md",
+      "bytes": 31079,
+      "sha256": "39df57778404a52216d84fadcacb156e315ae5240a46af7cfac8f29d44646d01",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/885dae0f3285267e9e9c49d8b43b0d009779f9e8/qualification/cell-integrated-20261108-08b6/NEXT_INDEPENDENT_DESIGNS.md"
+    },
+    {
+      "kind": "M6 actual MDV development",
+      "bytes": 118128,
+      "sha256": "ad4a1eedbb1c5368368159a14f589d04145990f00bfd9c7b56bf4cf2046a8a9a",
+      "development_tasks": 2,
+      "source_families": 1,
+      "private_state_updates": 1,
+      "ranking_order_changed": false,
+      "baseline_terminal_arms_executed": false,
+      "independent_confirmation_tasks": 0,
+      "scientific_status": "HOLD"
+    }
+  ],
+  "common": {
+    "fixed_graph": {
+      "roles": [
+        "Memory",
+        "Decision",
+        "Verifier"
+      ],
+      "recording": "read-only cost/event observer",
+      "evaluator": "independent hidden outcome label custody",
+      "cell_count_topology_fixed": true,
+      "base_model_tool_semantics_and_terminal_checker_fixed": true,
+      "org_evolution_or_learning_rule_inheritance_included": false
+    },
+    "real_task_source": {
+      "source_type": "authorized real repository issue/task/commit/diff/CI/tool-result snapshots and successor work",
+      "available_new_confirmation_roster": null,
+      "prospective_selection": [
+        "freeze source repositories and UTC cutoff before outcome access",
+        "freeze consecutive eligibility/order and all exclusions",
+        "group all descendants of a root issue/incident/patch; no cross-split duplication",
+        "archive actual visible inputs and source availability timestamps",
+        "independent custodian retains unseen snapshots and evaluator labels",
+        "record every rejection, missing task and later exposure"
+      ],
+      "eligibility": "real task objective, archivable inputs, isolated authorized execution, actual terminal checker and measurable budget; no candidate-outcome-based admission",
+      "synthetic_generator_is_independent_real_task": false,
+      "already_exposed": [
+        "historical R/S Clippy/UI family",
+        "prior CI repair and audit materials",
+        "any source read for this development"
+      ],
+      "exposed_sources_must_be_dev": true
+    },
+    "partitioning": {
+      "roles": [
+        "train",
+        "development",
+        "calibration where required",
+        "independent confirmation"
+      ],
+      "root_group_disjoint": true,
+      "derivative_rewrites_windows_replays_keep_root_group": true,
+      "seed_is_not_new_real_task": true,
+      "confirmation_inputs_hidden_during_selection": true,
+      "roster_manifest_sha256": null,
+      "custodian": null,
+      "confirmation_data_available": false
+    },
+    "controls": {
+      "same_visible_corpus_candidates_and_timestamp": true,
+      "same_task_executor_tools_terminal_checker": true,
+      "same_actual_resource_caps_without_spend_padding": true,
+      "equal_development_selection_opportunity": true,
+      "baseline_selected_only_on_development": true,
+      "terminal_baseline_arms_not_yet_executed_for_M6": true
+    },
+    "analysis": {
+      "primary_comparison": null,
+      "min_practical_effect": null,
+      "retention_or_false_accept_margin": null,
+      "confidence_or_alpha_freeze": null,
+      "sample_size_or_precision_plan": null,
+      "independent_unit": "root source/task group, with independent training repeats reported separately",
+      "pseudoreplication_forbidden": [
+        "windows",
+        "probes",
+        "tool steps",
+        "replays",
+        "recovered same seed"
+      ],
+      "missing_censoring_rule": null,
+      "confirmation_looks": null,
+      "multiple_primary_comparisons_correction": null,
+      "all_required_before_confirmation": true
+    },
+    "budget": {
+      "status": "UNALLOCATED_DRAFT",
+      "per_attempt": {
+        "wall_seconds": null,
+        "cpu_seconds": null,
+        "max_ram_bytes": null,
+        "max_gpu_memory_bytes": null,
+        "model_input_tokens": null,
+        "model_forwards": null,
+        "tool_calls": null,
+        "verification_calls": null
+      },
+      "per_arm": {
+        "training_wall_seconds": null,
+        "tuning_configurations": null,
+        "teacher_or_label_budget": null,
+        "total_attempts": null
+      },
+      "whole_study": {
+        "wall_seconds": null,
+        "resource_cost_limit": null,
+        "independent_source_groups": null,
+        "independent_training_seeds": null,
+        "amortization_successor_task_horizon": null
+      },
+      "missing_values_mean": "not allocated, neither zero nor unlimited",
+      "mandatory_ledger": [
+        "source/data preparation",
+        "encoder/index/table builds",
+        "hyperparameter search",
+        "teacher/oracle-label collection",
+        "all attempted training and partial epochs",
+        "online inference/search",
+        "tool execution",
+        "mandatory and optional verification",
+        "calibration",
+        "checkpoint and restore",
+        "failed/timed-out/cancelled/unknown attempts",
+        "audit/seal/transfer"
+      ],
+      "measured_quantities": [
+        "wall seconds",
+        "self and reaped-child CPU seconds",
+        "actual steps and presentations",
+        "tokens/forwards/tool invocations",
+        "state bytes",
+        "peak RAM/VRAM where measured",
+        "energy and financial costs if measured"
+      ],
+      "nested_times_additive": false,
+      "unknown_cost_value": null
+    },
+    "stopping": {
+      "prestart_reject": [
+        "missing true roster/custody/authority input",
+        "source/config/data pin mismatch",
+        "hidden-label leakage",
+        "unqualified model or numerical domain",
+        "unallocated numeric attempt/study budgets",
+        "missing terminal checker or analysis/stopping freeze"
+      ],
+      "runtime": "retain failed, timed-out, cancelled, partial and uncertain attempts; never remove unfavorable tasks",
+      "recovery": "only predeclared bounded recovery; if effect/completion uncertain, readback-only before any replay",
+      "recovery_keeps_independent_sample_id": true,
+      "unknown_or_missing_cost_not_zero": true,
+      "formal_NoUpdate_cannot_be_fabricated": true
+    },
+    "admission": "confirmation_admitted remains false until all real inputs, implementations, numeric budgets, statistical thresholds and independent custody are bound; this is a draft readiness rule, not an extra blanket user-approval flow",
+    "production_boundary": "research qualification is distinct from authorized ordinary ObjectiveStart owners, independent evaluation, adopt/NoUpdate and different successor NextUse"
+  },
+  "experiments": [
+    {
+      "id": "MEM-1",
+      "status": "DRAFT_FOR_REVIEW",
+      "confirmation_admitted": false,
+      "prior_conclusion": "retain exact retrieval advantage and structured-consolidation retention weakness versus uniform; no semantic-memory gain established",
+      "environment": "natural cross-task repository project state: reasons, aliases, source/config/test identity, corrections/revocations and subsequent action prerequisites",
+      "panels": [
+        "exact fact/source retrieval",
+        "cross-document relationship and alias disambiguation",
+        "currentness after revisions/revocations and downstream action preconditions"
+      ],
+      "learning_variable": "private fast state and replay/consolidation selection; shared base model, qualified encoder, selected candidate set, prompts, executor and graph fixed",
+      "arms": [
+        {
+          "id": "exact_rag",
+          "definition": "RAG with exact-key/source-ID route"
+        },
+        {
+          "id": "strong_semantic_rag",
+          "definition": "same encoder/model with development-tuned query rewrite and timestamp/source filters; all costs charged"
+        },
+        {
+          "id": "ordinary_state_graph",
+          "definition": "deterministic state/relationship table with explicit currentness and revision rules"
+        },
+        {
+          "id": "fast_state_no_replay",
+          "definition": "same fast memory/state without consolidation"
+        },
+        {
+          "id": "uniform_replay",
+          "definition": "same state with uniform consolidation; same update count/replay tokens"
+        },
+        {
+          "id": "structured_replay",
+          "definition": "candidate structured consolidation"
+        }
+      ],
+      "dev_only_coverage_diagnosis": {
+        "arms": [
+          "uniform",
+          "original structured",
+          "coverage-matched structured"
+        ],
+        "matched": [
+          "total replay count",
+          "update opportunities",
+          "time window",
+          "available source pool",
+          "unique source coverage",
+          "repeat cap",
+          "source age distribution"
+        ],
+        "record_each_replay_source_and_weight": true,
+        "old_confirmation_used_to_choose_rule": false
+      },
+      "primary": "same-budget successor real-task completion and source-supported correctness against strongest development-selected baseline",
+      "secondary": [
+        "coverage",
+        "answered error",
+        "revocation/currentness error",
+        "exact-key regression",
+        "citation validity",
+        "state retention",
+        "quality-cost frontier"
+      ],
+      "acceptance": {
+        "candidate_gain_lower_bound_exceeds": null,
+        "min_practical_gain": null,
+        "max_exact_key_degradation": null,
+        "max_revocation_error": null,
+        "all_numeric_values_unfrozen": true
+      },
+      "cost_additions": [
+        "embedding/indexing",
+        "query rewriting",
+        "state size",
+        "replay selection and repeated source reads",
+        "rebuild and revocation recovery"
+      ],
+      "existing_entries": [
+        "FastMemoryV1 predict/update/checkpoint/restore/reset",
+        "native MEM-1 driver",
+        "owner-bound lane_c_snapshot/observe_memory_retrieval/execute_owner_observation/revalidate_memory_candidates/revalidate_lane_c_snapshot",
+        "M6 cell_repo_mdv development contracts/meter"
+      ],
+      "integration_rule": "rerank only the same already-selected eligible set; do not substitute a fresh recall to change evidence visibility; Replay and Recall authority remain distinct",
+      "first_implementations": [
+        "real provenance/group/exposure manifest builder",
+        "shared semantic encoder with immutable version/output checks",
+        "coverage-matched replay adapter",
+        "same-budget baseline execution and successor-task terminal ledger"
+      ],
+      "missing": [
+        "unseen real source-group roster and custody",
+        "natural currentness/semantic labels and evaluator",
+        "lawful qualified shared encoder pins",
+        "specific structured-state schema",
+        "replay coverage dev diagnosis",
+        "numeric caps, effect/retention margins and sample-size/analysis freeze",
+        "live provider/fencing only if claiming production use"
+      ],
+      "stop": "if candidate does not beat uniform/strong RAG within frozen margins and full cost, keep HOLD; no favorable confirmation-subset redefinition"
+    },
+    {
+      "id": "PRED-1",
+      "status": "DRAFT_FOR_REVIEW",
+      "confirmation_admitted": false,
+      "original_HOLD_retained": true,
+      "previous_independent_HOLD_retained": true,
+      "previous_completed_counts": {
+        "confirmation_seeds": 16,
+        "total_fits": 114,
+        "selector_fits": 18,
+        "fresh_fits": 96
+      },
+      "metric": "simulated net utility difference; not success-rate percentage points or real production benefit",
+      "read_scope": {
+        "allowed": [
+          "48 original training JSON records",
+          "original registered config",
+          "original run.py source read statically"
+        ],
+        "forbidden": [
+          "old confirmation outcomes/predictions for design",
+          "fresh confirmation outcomes/predictions for design",
+          "confirmation rerun",
+          "post-hoc seed exclusion or threshold/recipe selection from confirmations"
+        ]
+      },
+      "work": "training/development-only seed202 diagnosis, no new confirmation",
+      "comparisons": [
+        "seed202 vs all other original seeds within identical family/recipe/budget",
+        "all-seed family/recipe-conditioned summaries without deleting seed202",
+        "original config-to-runner wiring audit"
+      ],
+      "diagnostics": [
+        "training loss and dev observed NLL curves",
+        "best-development versus final checkpoint",
+        "actual optimizer steps and training presentations",
+        "selected-checkpoint consumption versus total consumed steps",
+        "early-stop trigger",
+        "nonfinite values, partial failures and recovery",
+        "wall/process CPU cost"
+      ],
+      "actual_cli": {
+        "script": "scripts/hepta_pred1/diagnose_training.py",
+        "argv": [
+          "--campaign",
+          "TRAINING_ONLY_CAMPAIGN",
+          "--config",
+          "ORIGINAL_REGISTERED_CONFIG",
+          "--source",
+          "ORIGINAL_RUN_PY",
+          "--output",
+          "NEW_DIAGNOSTIC_OUTPUT"
+        ],
+        "source_argument": "regular archived runner source file read only; never executed",
+        "outputs": [
+          "DIAGNOSTIC.json",
+          "RESULTS.zh-CN.md"
+        ]
+      },
+      "completion_criterion": "explicit allowed input manifest complete, identities/schema valid, consumed-work accounting reproducible, diagnosis all seeds reported; this cannot overturn HOLD",
+      "interpretation": "convergence differences are diagnostic hypotheses, not proven causes; two large positive seeds are never exclusion grounds",
+      "budget": {
+        "metadata_only_new_model_training_fits": 0,
+        "actual_read_audit_report_wall_cpu": "measure when run; not run by this review copy",
+        "historical_fits_costs": "reference original ledger, neither rerun nor zero",
+        "new_train_dev_ablation_attempt_cap": null,
+        "new_train_dev_ablation_all_attempt_budget": null
+      },
+      "stop": [
+        "confirmation file access would be required",
+        "missing/mismatched train/dev record",
+        "unresolved completion or budget",
+        "attempt to use confirm effects for selection"
+      ],
+      "missing": [
+        "for any new development ablation: explicit source/input/attempt/numeric resource freeze",
+        "for any future independent confirmation: genuinely new unused materials and separate custody, primary/statistical/stopping/budget freeze"
+      ],
+      "third_confirmation_admitted": false
+    },
+    {
+      "id": "VERIFY-1",
+      "status": "DRAFT_FOR_REVIEW",
+      "confirmation_admitted": false,
+      "prior_conclusion": "pilot model ran but fixed check/constant prior had same acceptance and initial within-arm scores did not distinguish cases; no calibration or policy gain established",
+      "environment": "real isolated code/config/produced-artifact tasks with actual diff, visible logs, goal and terminal tests/schema/hash/readback; SQLite fault harness stays checker/recovery control",
+      "learning_variable": "trained readout over pinned common model features plus development/calibration-only mapping; initial study does not change base model, checker and scheduler simultaneously",
+      "layers": [
+        {
+          "id": "A_checker",
+          "question": "does the deterministic checker correctly accept/reject/read back actual artifacts",
+          "inputs": "known valid/invalid and real fault-mechanism controls plus natural task labels",
+          "metrics": [
+            "false accept",
+            "false reject",
+            "unknown",
+            "duplicate effects"
+          ],
+          "boundary": "fault mutation coverage is not natural-task generalization"
+        },
+        {
+          "id": "B_calibration",
+          "event": "frozen snapshot's current candidate would be rejected by specified terminal checker with no additional optional repair",
+          "label_branch": "independent uninterrupted label trajectory from the same snapshot; labels not replaced with active-policy repaired outcome",
+          "metrics": [
+            "Brier",
+            "log loss",
+            "risk-coverage",
+            "calibration slope/intercept",
+            "bin counts and ECE"
+          ],
+          "boundary": "no survivor-only labels; all-identical scores/all abstain disclosed; ECE not sole pass"
+        },
+        {
+          "id": "C_policy",
+          "question": "do paid check/repair/stop choices improve same-budget terminal outcomes",
+          "actions": [
+            "cheap check",
+            "expensive check",
+            "repair",
+            "defer/stop"
+          ],
+          "metrics": [
+            "terminal quality",
+            "false acceptance",
+            "coverage",
+            "budget violations",
+            "full actual cost"
+          ],
+          "checker_fixed_from_A": true
+        }
+      ],
+      "arms": [
+        "fixed_check",
+        "constant_prior",
+        "simple public-log/task-type rule",
+        "small logistic risk model",
+        "pinned model feature plus trained readout and frozen calibration mapping"
+      ],
+      "observability": "only current visible diff/logs/constraints/progress/remaining budget; no future checker label or hidden outcome",
+      "split": "train readout; development select recipe; calibration separate frozen map; confirmation one fixed analysis",
+      "compute_accounting": [
+        "actual requested vs performed forwards",
+        "token evaluations",
+        "cache hits",
+        "teacher-forced candidate evaluation cost",
+        "head fitting and calibration",
+        "mandatory/optional checker",
+        "independent label branch",
+        "all failed/repaired paths"
+      ],
+      "primary_comparison": "C versus strongest development-selected simple policy at same actual cap, with separately satisfied A/B requirements",
+      "acceptance": {
+        "max_false_accept_rate": null,
+        "min_coverage": null,
+        "min_terminal_improvement": null,
+        "calibration_thresholds": null,
+        "numeric_freeze_required": true
+      },
+      "existing_entries": [
+        "SQLite fault harness",
+        "MLXBackend",
+        "fit_heads/head_score",
+        "Pilot/Journal",
+        "host report/readback and independent audit"
+      ],
+      "first_implementations": [
+        "natural snapshot-to-uninterrupted-label-panel adapter",
+        "visible-feature leakage/information audit",
+        "actual forward/token/checker budget adapter"
+      ],
+      "missing": [
+        "natural independent roster/labels",
+        "frozen outcome checker",
+        "calibration custody",
+        "actual backend/device/assets pins",
+        "budget and acceptable error/coverage requirements"
+      ],
+      "stop": "if constant prior/fixed check matches candidate reliability and cost, no model gain; if labels/checker/budget invalid, HOLD"
+    },
+    {
+      "id": "NDU",
+      "status": "DRAFT_FOR_REVIEW",
+      "confirmation_admitted": false,
+      "prior_conclusion": "fixed-threshold hybrid strong; learned router reduced compute but not terminal utility; old joint/mean cases do not establish real multiaction gain",
+      "environment": "natural multistep repository repair/build/acceptance tasks, isolated replayable workspaces and real terminal artifacts",
+      "learning_variable": "learned routing or compute allocation only; actor/candidate generator/verifier/base model/graph fixed",
+      "actions": {
+        "continue_execute": "bounded actual solver/tool/patch step",
+        "observe_recall": "currently visible log/source/eligible memory",
+        "verify": "paid actual test/readback",
+        "repair": "candidate/environment repair with retry/rebuild/rollback costs",
+        "stop": "terminal proven success or explicit incomplete/NoCandidate, never free success",
+        "compute": "paid extra prediction/planning leaving actual execution budget"
+      },
+      "arms": [
+        "original fixed-threshold hybrid",
+        "development-tuned simple threshold/cost controller",
+        "frozen fast actor",
+        "fixed-call-budget bounded planner",
+        "learned router"
+      ],
+      "secondary_diagnostics": [
+        "VOI",
+        "joint MPC",
+        "mean MPC"
+      ],
+      "oracle_claim": "only genuinely enumerable small subproblems; best observed attempt is not a global oracle",
+      "dev_environment_audit": [
+        "direct execution can be best",
+        "verification first can be best",
+        "repair then execution can be best",
+        "early stop can be best",
+        "no single repair-execute script trivially dominates all",
+        "planning can consume execution budget"
+      ],
+      "teacher_target": "freeze exact teacher continuation and future charging; one slow call then fixed fast is not repeated learned-routing meta-Q",
+      "primary": "paired same-budget terminal quality/utility difference versus strongest simple development-selected controller",
+      "analysis_boundary": "local stop/compute/continuation regret not summed as total policy gap; no fabricated regret without identifiable oracle",
+      "cost_additions": [
+        "teacher search and labels",
+        "unsuccessful rollouts",
+        "all extra predictor/planner calls",
+        "failures and fallback stops",
+        "state restore and rollback"
+      ],
+      "existing_entries": [
+        "ndu_ctrl1 actor/router/target profile",
+        "budget_sensitivity.py/sensitivity_run.py full-attempt accounting",
+        "hepta.ctrl1.resource-cost.v1 boundary",
+        "ndu_real_runtime objective semantics",
+        "M6 bounded actual-tool supervisor and development recipes"
+      ],
+      "first_implementations": [
+        "real action/workspace adapter",
+        "fixed-hybrid/simple-cost development run with outcome ledger",
+        "teacher/deployment continuation binding"
+      ],
+      "missing": [
+        "independent naturally diverse task roster/custody",
+        "real terminal checker and replayable workspace pins",
+        "observed multiaction tradeoff evidence",
+        "actual prices/latency units",
+        "numeric training/online budget and successor amortization horizon"
+      ],
+      "stop": "retain HOLD if stronger terminal quality-cost frontier or amortized gain not established; never substitute curiosity/entropy/information gain for terminal reward"
+    },
+    {
+      "id": "HCSN",
+      "status": "DRAFT_FOR_REVIEW",
+      "confirmation_admitted": false,
+      "prior_conclusion": "18 interface fits are not formal comparison; formal study fits remain zero",
+      "task": "UCI Localization Data for Person Activity, causal irregular event classification",
+      "historical_specification": {
+        "commit": "5f7f55e015dde7fab0c174081fef090ff45501de",
+        "path": "proposals/localization-v2/formal_protocol.json",
+        "git_blob": "39a326a4d5c4dd486a4822f2bd67cc7fcc5170a8",
+        "bytes": 5488,
+        "sha256": "8d7d321a9f538b5d3ae323ae2827e56688b47795f936eca4badaf8acd21bf5f4",
+        "reference_bytes_revalidated": true,
+        "source_content_file": "HCSN_FORMAL_PROTOCOL_ORIGINAL.json",
+        "protocol": {
+          "schema": "hcsn-localization-formal-training-protocol-v1",
+          "status": "specified_not_admitted_not_started",
+          "authorization": "existing user full-research instruction; scientific and resource gates remain distinct",
+          "dataset_sha256": "1fbc965b8d7faf499ea854428b2138132d94e6a26404bc8e4b0c62144f513e8a",
+          "partitions": {
+            "train_subjects": [
+              "A",
+              "B",
+              "C"
+            ],
+            "development_subjects": [
+              "D"
+            ],
+            "sealed_test_subjects": [
+              "E"
+            ]
+          },
+          "selection": {
+            "formal_default": "all source events; split subjects before forming any windows",
+            "optional_development_subset": "first, middle and last 128-event windows of each ABC/D sequence, offsets 0/floor((N-128)/2)/N-128; freeze source-row manifest before fitting or scoring labels",
+            "subset_claim": "development pilot only; never replace the all-event confirmation result",
+            "timestamp_order": "integer tick then original source line; no gap clipping, resampling or window search",
+            "clock": "data.py exact declared display model; elapsed seconds = integer tick difference / 10000000"
+          },
+          "frontend": {
+            "fit": "ABC observed coordinates only",
+            "frozen": true,
+            "shared": true,
+            "features": "12 normalized positions, 12 masks, log1p(dt_seconds)"
+          },
+          "families": [
+            "gru",
+            "official_cfc",
+            "official_recurrent_plif",
+            "official_s4d_lin",
+            "causal_transformer",
+            "hcsn"
+          ],
+          "model_identity": "S4D is the declared SSM route; no result is labeled Mamba",
+          "capacity": {
+            "reference": "effective trainable real scalar degrees of freedom of the admitted HCSN configuration",
+            "tolerance_fraction": 0.05,
+            "selection": "choose architecture widths before label scoring by exact parameter counts; no dead/frozen/unused parameter padding",
+            "plain_gate_control": "match bank slot count, content width, effective parameters and shared inputs; report state bytes separately"
+          },
+          "tuning": {
+            "seed_ids": [
+              101,
+              211,
+              307
+            ],
+            "max_configurations_per_arm": 12,
+            "candidate_learning_rates": [
+              0.0003,
+              0.001,
+              0.003
+            ],
+            "candidate_weight_decays": [
+              0,
+              0.0001
+            ],
+            "candidate_gradient_norm_caps": [
+              1,
+              5
+            ],
+            "optimizer": "AdamW; honor official S4 parameter-specific learning-rate/zero-decay groups and record them",
+            "selection_metric": "mean development macro-F1 across three independent tuning seeds; deterministic tie break by fewer parameters then lower compute",
+            "test_access": "none during tuning, debugging, calibration design or early stopping"
+          },
+          "training": {
+            "window_events": 256,
+            "window_stride": 256,
+            "batch_size": 1,
+            "state_policy": "fresh episode per nonoverlapping training window; optimizer updates only between episodes; preserve original first gap at each artificial boundary",
+            "maximum_epochs": 100,
+            "minimum_epochs_before_early_stop": 30,
+            "early_stop_patience_epochs": 10,
+            "development_macro_f1_min_delta": 0.002,
+            "loss": "cross entropy with common ABC-only inverse-square-root class-frequency weights, normalized to mean one",
+            "shuffle": "deterministic train-window permutation shared across models for each seed; never shuffle within an episode",
+            "adequacy": "finite gradients, training-only multiclassepisode memorization check, development plateau; record PLIF firing/tau and all learning curves; budget exhaustion is not convergence"
+          },
+          "confirmation": {
+            "training_seeds": [
+              11,
+              23,
+              37,
+              53,
+              71
+            ],
+            "fresh_initialization": true,
+            "refit_train_subjects": [
+              "A",
+              "B",
+              "C"
+            ],
+            "fit_temperature_on": "D only after model selection",
+            "ece_equal_width_bins": 15,
+            "evaluation_context": "fixed nonoverlapping 256-event episodes for every model; no undeclared recurrent history advantage",
+            "metrics": [
+              "macro_f1",
+              "accuracy",
+              "balanced_accuracy",
+              "normalized_multiclass_brier",
+              "ece",
+              "negative_log_likelihood"
+            ],
+            "statistics": "paired training-seed differences; sequence-clustered data uncertainty; episodes never count as independent fits; one held-out subject limits population inference"
+          },
+          "required_ablations": [
+            "frozen_vs_trainable_physics",
+            "call_only",
+            "risk_only",
+            "dual_only",
+            "same_capacity_plain_dual_gate",
+            "reset_vs_killed_control",
+            "distribution_vs_mean",
+            "shared_vs_independent_generators",
+            "all_physical_readouts_removed",
+            "maintenance_rollover_on_off"
+          ],
+          "required_resources": [
+            "persistent_state_bytes",
+            "peak_ram_bytes",
+            "peak_vram_bytes",
+            "throughput",
+            "p99_latency",
+            "training_wall_seconds",
+            "complete_metered_energy_or_explicit_null"
+          ],
+          "cost_ledger": [
+            "data_and_frontend",
+            "table_builds",
+            "tuning",
+            "failed_attempts",
+            "all_seed_training",
+            "calibration",
+            "evaluation",
+            "transfer"
+          ],
+          "resource_admission": {
+            "formal_budget_status": "not allocated; the executed 30-minute interface envelope is not reused as a formal-study allowance",
+            "requirement": "freeze an independent numeric all-attempts per-arm and whole-study wall/RAM envelope after timing calibration; reject unknown costs rather than treating them as zero"
+          },
+          "remaining_implementation_gates": [
+            "capacity-configurable official adapters and formal episode trainer",
+            "full-context numerical profile for frozen physics",
+            "qualified trainable-physics domain",
+            "pruned readout and ordinary-gate control implementations",
+            "independent-generator and maintenance/rollover dynamics",
+            "complete training/convergence and resource receipts"
+          ],
+          "formal_fits_started": 0,
+          "claim_boundary": "This specifies a reproducible training protocol; run_interface.py intentionally does not execute it. Missing gates remain explicit, with no claim of formal-study completion."
+        }
+      },
+      "proposed_primary_scope": "freeze physics; compare against sufficiently trained same-capacity strong temporal models and ordinary dual gate; separately register any reduced study rather than claim original full protocol complete",
+      "arms": [
+        "GRU",
+        "official CfC",
+        "official recurrent PLIF",
+        "official S4D-Lin",
+        "causal Transformer",
+        "HCSN frozen physics",
+        "same-capacity ordinary dual gate"
+      ],
+      "simple_diagnostic_control": "last-observation/non-temporal classifier only to test temporal need, not replacement strong baseline",
+      "exposure": "E inputs previously used for schema/clock/global-gap metadata audit before refractory choice; later ABC-only audit cannot erase this; no claim entirely unseen E input distribution",
+      "unseen_generalization_requirement": "new subject/acquisition material and independent custody needed for wholly independent population claim; not currently acquired",
+      "capacity": "effective trainable real scalar degrees within original ±5%; no dead/frozen/masked padding; slots/content width/state bytes and actual compute separately bound",
+      "numerical_qualification": "actual full 256-event conditioned rollout with mass/finite/gradient/boundary/tail/step/gap checks; prior 0.2 s receipt not a universal posterior/full-domain certificate",
+      "primary": "full E macro-F1 with paired training-seed differences and sequence-clustered uncertainty; one subject limits population inference",
+      "calibration": "temperature on D only after model selection; no E-driven retuning",
+      "planned_work_arithmetic": {
+        "six_core_tuning_fits": 216,
+        "six_core_fresh_fits": 30,
+        "seven_arms_if_plain_gate_same_opportunity_tuning": 252,
+        "seven_arms_if_plain_gate_same_opportunity_fresh": 35,
+        "additional_ablation_fits": null,
+        "these_are_not_allocated_or_executed_budgets": true
+      },
+      "costs": [
+        "data/frontend",
+        "table builds",
+        "full numerical qualification",
+        "all tuning and failed fits",
+        "all seed training",
+        "calibration",
+        "evaluation",
+        "state/checkpoint/restore",
+        "audit/transfer",
+        "persistent state",
+        "peak RAM/VRAM where measured",
+        "throughput/p99",
+        "measured energy or explicit null"
+      ],
+      "missing": [
+        "capacity-configurable official adapters",
+        "formal episode trainer",
+        "full-context numerical profile",
+        "qualified trainable-physics domain if used",
+        "pruned physical readout and ordinary gate implementations",
+        "independent-generator/maintenance dynamics if claimed",
+        "adequate convergence and PLIF firing/gradient evidence",
+        "per-arm/whole-study numeric all-attempt resource budget",
+        "data license/exposure/custody and interpretation freeze"
+      ],
+      "run_interface_is_formal_trainer": false,
+      "formal_fits_started": 0,
+      "stop": "no wider adoption if frozen HCSN fails strongest fair trained baseline; incomplete convergence/numerical/compute accounting cannot count as candidate win"
+    }
+  ],
+  "implementation_order": [
+    "source group/exposure/visible-vs-hidden manifest and all-attempt ledger",
+    "MEM qualified shared encoder and coverage-matched replay",
+    "PRED original training-only metadata diagnosis",
+    "VERIFY nonintervened label branch and real compute/checker ledger",
+    "NDU real action adapter and strong simple controllers",
+    "HCSN formal trainer/capacity/numerical and gate controls",
+    "separate protocol freeze only after real inputs and required numeric fields exist"
+  ],
+  "org_evolution_deferred_until_stable_first_order_gain": true,
+  "execution_during_reconstruction": {
+    "project_tests": false,
+    "training": false,
+    "data_label_read": false,
+    "pred_confirmation_material_read": false,
+    "confirmation_generated": false,
+    "github_write": false
+  },
+  "provenance_file": "NEXT_EXPERIMENTS_M6_REVIEW_COPY_RECOVERY.json",
+  "primary_markdown": "NEXT_EXPERIMENTS_M6_REVIEW_COPY.zh-CN.md"
+}

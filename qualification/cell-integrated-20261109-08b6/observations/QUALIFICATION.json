@@ -1,0 +1,889 @@
+{
+  "schema": "hepta.cell-integrated.M6.common-qualification-draft.v1",
+  "status": "SOURCE_PUBLISHED_DRAFT_SCIENCE_HOLD",
+  "source": {
+    "commit": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb",
+    "parent": "953d548d25b1e050109b1b93e1ea474b2ac7c801"
+  },
+  "publication": {
+    "status": "PUBLISHED_DRAFT",
+    "published_source_head": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "published_source_tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb",
+    "source_branch": "engineering/cell-integrated-20261109-08b6",
+    "base_branch": "engineering/cell-integrated-20261109-08b6-base-H",
+    "base_head": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+    "pull_request": 5433,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5433",
+    "draft": true,
+    "pull_request_head": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "receipt": "raw/root/SOURCE_PUBLICATION.json",
+    "raw_archive": "raw/root/mac-source-publication-evidence-035.tar.gz",
+    "receipt_sha256": "c77cafd26ba57c46acd547c945ecb5dbb72ca1728df53cd02fda303bb853fb15",
+    "body_sha256": "0148c5597ece9eed84527336bdf090d51c74f4d07b96a66c5efa381ebc4a80fe",
+    "push_exit_code": 0,
+    "create_exit_code": 0,
+    "readback_verified": true,
+    "new_github_write_verified": true,
+    "completed_at_utc": "2026-11-09T05:10:41.912514+00:00",
+    "publication_job": "1a1beb5e374-5e21-22d",
+    "historical_failure_records_preserved": true
+  },
+  "hosted_ci": {
+    "status": "QUEUED_NOT_EXECUTED_AT_OBSERVATION",
+    "source_head": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "source_tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb",
+    "initial_snapshot": "raw/ui/M6_HOSTED_CI_INITIAL_METADATA.tar.gz",
+    "initial_workflow_count": 15,
+    "initial_observed_at_utc": "2026-11-09T05:15:16.187275+00:00",
+    "final_selected_snapshot": "raw/ui/M6_HOSTED_CI_PRE_FREEZE_TARGETED.tar.gz",
+    "final_receipt": "raw/ui/FINAL_CI_READBACK_RECEIPT.json",
+    "observed_at_utc": "2026-11-09T05:24:18.389009+00:00",
+    "runs": [
+      {
+        "jobs": [
+          {
+            "completed_at": null,
+            "conclusion": null,
+            "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769665/job/128991822582",
+            "id": 128991822582,
+            "name": "Original native presentation / base-merge",
+            "run_attempt": 1,
+            "run_id": 42565769665,
+            "started_at": "2026-11-09T05:10:38Z",
+            "status": "queued",
+            "steps": []
+          },
+          {
+            "completed_at": null,
+            "conclusion": null,
+            "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769665/job/128991822843",
+            "id": 128991822843,
+            "name": "Generate UI dependency lock for review",
+            "run_attempt": 1,
+            "run_id": 42565769665,
+            "started_at": "2026-11-09T05:10:38Z",
+            "status": "queued",
+            "steps": []
+          },
+          {
+            "completed_at": null,
+            "conclusion": null,
+            "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769665/job/128991822889",
+            "id": 128991822889,
+            "name": "Rust UI foundation / source-head",
+            "run_attempt": 1,
+            "run_id": 42565769665,
+            "started_at": "2026-11-09T05:10:38Z",
+            "status": "queued",
+            "steps": []
+          },
+          {
+            "completed_at": null,
+            "conclusion": null,
+            "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769665/job/128991822929",
+            "id": 128991822929,
+            "name": "Original native presentation / source-head",
+            "run_attempt": 1,
+            "run_id": 42565769665,
+            "started_at": "2026-11-09T05:10:38Z",
+            "status": "queued",
+            "steps": []
+          },
+          {
+            "completed_at": null,
+            "conclusion": null,
+            "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769665/job/128991822950",
+            "id": 128991822950,
+            "name": "Rust UI foundation / base-merge",
+            "run_attempt": 1,
+            "run_id": 42565769665,
+            "started_at": "2026-11-09T05:10:38Z",
+            "status": "queued",
+            "steps": []
+          }
+        ],
+        "run": {
+          "conclusion": null,
+          "created_at": "2026-11-09T05:10:38Z",
+          "event": "pull_request",
+          "head_branch": "engineering/cell-integrated-20261109-08b6",
+          "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769665",
+          "id": 42565769665,
+          "name": "Rust UI product foundation",
+          "path": ".github/workflows/ui-product-foundation.yml",
+          "run_attempt": 1,
+          "status": "queued",
+          "updated_at": "2026-11-09T05:10:38Z"
+        }
+      },
+      {
+        "jobs": [
+          {
+            "completed_at": null,
+            "conclusion": null,
+            "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565757710/job/128991787533",
+            "id": 128991787533,
+            "name": "Cell framework (agentd-composition)",
+            "run_attempt": 1,
+            "run_id": 42565757710,
+            "started_at": "2026-11-09T05:10:31Z",
+            "status": "queued",
+            "steps": []
+          },
+          {
+            "completed_at": null,
+            "conclusion": null,
+            "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565757710/job/128991787764",
+            "id": 128991787764,
+            "name": "Cell configuration and actor recovery",
+            "run_attempt": 1,
+            "run_id": 42565757710,
+            "started_at": "2026-11-09T05:10:31Z",
+            "status": "queued",
+            "steps": []
+          },
+          {
+            "completed_at": null,
+            "conclusion": null,
+            "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565757710/job/128991787818",
+            "id": 128991787818,
+            "name": "Cell framework (mechanisms)",
+            "run_attempt": 1,
+            "run_id": 42565757710,
+            "started_at": "2026-11-09T05:10:31Z",
+            "status": "queued",
+            "steps": []
+          }
+        ],
+        "run": {
+          "conclusion": null,
+          "created_at": "2026-11-09T05:10:30Z",
+          "event": "push",
+          "head_branch": "engineering/cell-integrated-20261109-08b6",
+          "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565757710",
+          "id": 42565757710,
+          "name": "Hepta Cell framework native validation",
+          "path": ".github/workflows/hepta-cell-framework-native.yml",
+          "run_attempt": 1,
+          "status": "queued",
+          "updated_at": "2026-11-09T05:10:30Z"
+        }
+      }
+    ],
+    "read_window_is_atomic": false,
+    "actual_checkout_verified": false,
+    "actual_browser_execution_verified": false,
+    "workflow_head_is_actual_checkout": false,
+    "all_green": null,
+    "whole_CI_pass_claim": false,
+    "no_runner_execution_cost_inferred": true
+  },
+  "evidence_child": {
+    "status": "SELF_DESCRIBING_GIT_SNAPSHOT",
+    "commit_reference": "the commit containing this file",
+    "tree_reference": "the tree of the commit containing this file",
+    "expected_parent": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "actual_parent": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "allowed_change_intent": [
+      "qualification/cell-integrated-20261109-08b6/observations/",
+      "exact binary blob allowlist append"
+    ],
+    "actual_diff_verified": true,
+    "runtime_change_free_verified": true,
+    "concrete_commit_tree_bound_in": "external finalization RESULT and evidence publication receipt; no self-referential hash"
+  },
+  "identity_boundaries": {
+    "root_native": "exact M6 checkout; selected scopes only",
+    "ui": "exact M6 independent checkout; package/SDK physical-byte checks described in UI profile",
+    "python": "93 M6-bound source/resource files, not a full repository checkout/archive",
+    "mdv": "M6 driver and supervisor/meter, 9 direct source files; actual exposed repository tasks use historical R/S",
+    "runtime_equal_across_lines": false,
+    "prior_candidate_passes_counted_for_M6": false,
+    "source_archive_integrity_implies_execution": false,
+    "root_freeze_rpc_terminal": "UNKNOWN",
+    "actual_M6_git_identity_independently_read_back": true
+  },
+  "source_archive": {
+    "commit": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb",
+    "bytes": 210595840,
+    "sha256": "dfc9484fc2dab61b37801e8197774a67365fb185fedc620a9b970e2f0e9d284e",
+    "items": 13681,
+    "regular_files": 13680,
+    "symlinks": 1,
+    "scope": "all tracked bytes, Git modes and symlink targets",
+    "native_path": "/home/qian-qi/work/cell-continuation-20261109-08b6/firefox-validation-m6/source.tar",
+    "inventory_sha256": "9698e6b85299100b290d661a0c5ac79e19b11ffdff9f018d2f702483d03221c3",
+    "integrity_receipt_sha256": "1719ad6f2ca599c23e1c229931a0e835ff12d35daae6c45f8f2d29fc124969ff",
+    "pointer": "SOURCE_ARCHIVE_POINTER.json",
+    "tar_embedded_in_ui_evidence": false
+  },
+  "engineering": {
+    "qualification": "PASS_WITHIN_RECORDED_SELECTED_SCOPES",
+    "native": {
+      "selected_test_executions_passed": 567,
+      "automatic_test_retries": 0,
+      "groups": [
+        {
+          "name": "infer-core-package",
+          "passed": 41,
+          "reported_skipped": 1
+        },
+        {
+          "name": "infer-core-history-measurement",
+          "passed": 1,
+          "reported_skipped": 41,
+          "underlying_harness_filtered": 41,
+          "explicit_ignored_history_run": true
+        },
+        {
+          "name": "neuron-perception-source",
+          "passed": 4,
+          "reported_skipped": 197
+        },
+        {
+          "name": "automation-package",
+          "passed": 163,
+          "reported_skipped": 2
+        },
+        {
+          "name": "agentd-lifecycle-scope",
+          "passed": 68,
+          "reported_skipped": 713
+        },
+        {
+          "name": "matrix-shared-graph",
+          "passed": 289,
+          "reported_skipped": 2
+        },
+        {
+          "name": "old018-to-new019-consumer",
+          "passed": 1,
+          "reported_skipped": 2
+        }
+      ],
+      "skipped_semantics": "Per-run runner reports; selections overlap. Do not add skipped counts as a unique denominator or treat filters as executed.",
+      "all_listed_steps_exit_zero": true,
+      "format_check_exit": 0,
+      "scoped_fix_exit": 0,
+      "scoped_strict_clippy_exit": 0,
+      "rust": "1.96.0",
+      "whole_workspace_test_claim": false,
+      "real_old_encrypted_store_fixture_copy_used": true
+    },
+    "dependencies": {
+      "locked_all_features_metadata_exit": 0,
+      "all_features_test_claim": false,
+      "bazel_lock_error_mode_exit": 0,
+      "cargo_deny_exit": 0,
+      "cargo_deny_version": "0.19.0",
+      "bazel_version": "9.3.0",
+      "rustsec_database": {
+        "head": "7a40350e1b8ba5b656d909f88222a8059a83d88d",
+        "tree": "e206c84b629992c9f861e5336baed4136eda4216",
+        "origin": "https://github.com/RustSec/advisory-db",
+        "before_after_unchanged": true,
+        "clean": true
+      },
+      "new_advisory_exceptions_added": false,
+      "existing_deny_ignore_configuration_unchanged": true,
+      "historical_R_S_0451_failure_preserved": true,
+      "historical_0451_failure_attributed_to_current_M6": false
+    },
+    "ui": {
+      "javascript": {
+        "passed": 16,
+        "skipped": 0
+      },
+      "native_ui": {
+        "passed": 33,
+        "skipped": 0,
+        "retries": 0,
+        "rust": "1.96.0"
+      },
+      "native_strict_clippy": {
+        "exit_code": 0,
+        "rust": "1.95.0"
+      },
+      "firefox_default": {
+        "passed": 2,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0,
+        "captures_passed": 20,
+        "captures_required": 20,
+        "checks_passed": 46,
+        "checks_required": 46
+      },
+      "firefox_fixtures": {
+        "passed": 3,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0,
+        "captures_passed": 26,
+        "captures_required": 26,
+        "checks_passed": 146,
+        "checks_required": 146
+      },
+      "full_three_engine_verifier_passed": false,
+      "local_unrun_engines": [
+        "Chromium",
+        "WebKit"
+      ],
+      "original_full_verifier_false_preserved": true,
+      "all_seven_phases_source_M6_clean_before_after": true
+    },
+    "python": {
+      "passed": 91,
+      "skipped": 0,
+      "processes": 7,
+      "all_exit_zero": true,
+      "groups": {
+        "joint-config": 23,
+        "state-codec": 6,
+        "subprocess-supervisor": 8,
+        "training-result": 14,
+        "source-archive": 13,
+        "pred-training-diagnosis": 14,
+        "repo-mdv": 13
+      },
+      "source_files": 93,
+      "source_bytes": 1168871,
+      "source_mapping_sha256": "25f1894c1e981a172b2d2ba4292f99d3993d6c74ecbce2074c0a887ddf53a57a",
+      "source_before_after_equal": true,
+      "fixture_controls_are_not_independent_tasks": true,
+      "pred_confirmation_runs": 0
+    },
+    "counts_are_not_a_single_scientific_or_whole_CI_denominator": true
+  },
+  "runtime": {
+    "root_native_rust": "1.96.0",
+    "ui_native_rust": "1.96.0",
+    "ui_strict_clippy_rust": "1.95.0",
+    "python": {
+      "python": "3.12.14",
+      "torch": "2.9.1+cpu",
+      "numpy": "1.26.4",
+      "pillow": "12.0.0",
+      "venv_entries": 17139,
+      "regular_bytes": 997330764,
+      "before_after_equal": true,
+      "real_tensor_import_and_compute": true,
+      "complete_system_image_claim": false
+    },
+    "mdv": {
+      "python": "3.14.4",
+      "historical_task_rust": "1.95.0",
+      "cpu_quota_percent": 200,
+      "memory_max_bytes": 8589934592,
+      "worker_timeout_seconds": 4500
+    },
+    "caches": "warm, prior caches reused; no cross-head speed/learning comparison",
+    "ui_assets": {
+      "font_untracked_during_run": 2,
+      "font_sha_checked_cleanup": true,
+      "makepad_tracked_physical_inventory_before_after_equal": true,
+      "makepad_git_status": "only existing ?? .cargo-ok",
+      "known_non_rust_line_ending_materializations": 29,
+      "wasm_overlay_used": true,
+      "native_uses_wasm_overlay": false,
+      "node_package_lock_bound": true,
+      "whole_node_modules_physical_inventory_claim": false
+    }
+  },
+  "production": {
+    "established": false,
+    "status": "production_not_adopted",
+    "implemented_scope": "ordinary ObjectiveStart Circuit completion durable outbox, bounded recovery and coordinator delivery adapter",
+    "missing": [
+      "daemon main concrete Circuit/learning owner bootstrap/provider",
+      "registered trust roots, signatures and authorization material",
+      "real experience/trainer/independent evaluator/proposal/selector/NextUse owner backends",
+      "resident consumer assembly and a different successor ordinary task"
+    ],
+    "outbox_grants_training_or_adoption_authority": false,
+    "no_backend": "Unavailable before claim; intent remains pending",
+    "claim_submit_gap": "after committed claim but before submit, recovery is readback-only; absent backend record remains CommitUncertain, no automatic release/resubmit/ACK",
+    "ack_gate": "exact request and owners, original coordinator snapshot recovery to next_stage=None including independent successor/NextUse; same requirement for NoUpdate",
+    "formal_adoption_receipt": null,
+    "formal_NoUpdate_receipt_created_by_MDV": false
+  },
+  "mdv": {
+    "scientific_status": "HOLD",
+    "learning_gain_established": false,
+    "production_status": "production_not_adopted",
+    "formal_adoption_receipt": null,
+    "driver": {
+      "commit": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+      "tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb",
+      "parent": "953d548d25b1e050109b1b93e1ea474b2ac7c801"
+    },
+    "task1_source_R": "cfe941b4762a773679a552068d1560ae17a3f226",
+    "task1_repair": "known exact S one-line repair on R; recorded dirty file pins",
+    "task2_source_S": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+    "historical_S_UI_passed": 33,
+    "historical_S_UI_counted_for_M6": false,
+    "development_tasks": 2,
+    "development_attempts": 2,
+    "exposed_failure_families": 1,
+    "private_state_updates": 1,
+    "successor_training_updates": 0,
+    "independent_confirmation_tasks": 0,
+    "expected_red": "historical R strict Clippy exit101 before known repair; raw output and costs retained",
+    "actual_second_process_consumed_state_and_original_receipt": true,
+    "state_file_sha256": "d70efb9a52b6a9f1fb2a664ba7ce1036bd085324ec516547befb3a8d7f3e35c9",
+    "state_digest": "aa4704cf7342f30bd3e83d9ed923ae4932229ce265cc445a98f375057a6d9a4f",
+    "private_state_production_update": "not_requested",
+    "learned_association": 0.07142857142857144,
+    "ranking_order_changed": false,
+    "selected_document_changed": false,
+    "bm25_ranking_observed": true,
+    "baseline_terminal_arms_executed": false,
+    "independent_benefit": null,
+    "semantic_memory_advantage_established": false,
+    "direct_research_cli_is_ordinary_production_entry": false,
+    "unique_worker_job": "1a1be9b3fc9-5e21-1a9",
+    "start_calls": 1,
+    "authoritative_state": "succeeded",
+    "exit_code": 0,
+    "retry_or_replay": false
+  },
+  "pred1": {
+    "original_conclusion": "HOLD",
+    "previous_fresh_confirmation_conclusion": "HOLD",
+    "previous_fresh_confirmation_seeds": 16,
+    "previous_fits": 114,
+    "metric": "simulated net utility difference, not success-rate percentage points",
+    "both_confirmation_sets_used_and_closed_to_tuning": true,
+    "new_confirmation_runs_in_this_round": 0,
+    "seed202_allowed_scope": "training/development only",
+    "outlier_seed_exclusion_for_selection": false
+  },
+  "next_experiments": {
+    "status": "DRAFT_FOR_REVIEW",
+    "confirmation_admitted": false,
+    "registration": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.json",
+    "description": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.zh-CN.md",
+    "requirements": [
+      {
+        "id": "MEM-1",
+        "focus": "real semantic relationships, currentness/revocation and successor tasks; retain exact/BM25",
+        "missing": [
+          "independent real task roster/custody",
+          "natural labels and exposure audit",
+          "lawful shared qualified encoder pins",
+          "same-budget baseline and statistical/effect freezes"
+        ]
+      },
+      {
+        "id": "PRED-1",
+        "focus": "retain both HOLD conclusions; seed202 train/dev diagnosis only",
+        "missing": [
+          "any future new protocol must be separately admitted"
+        ],
+        "confirmation_reuse_for_tuning_forbidden": true
+      },
+      {
+        "id": "VERIFY-1",
+        "focus": "checker correctness, calibration, policy selection benefit separately",
+        "missing": [
+          "natural independently labelled snapshots",
+          "authorized evaluator/action backends",
+          "real budget and false-pass coverage"
+        ]
+      },
+      {
+        "id": "NDU",
+        "focus": "natural repair/continue/verify/stop tradeoffs and total costs",
+        "missing": [
+          "diverse naturally occurring repository tasks",
+          "actual action adapters",
+          "independent custody",
+          "budget-quality frontier freeze"
+        ]
+      },
+      {
+        "id": "HCSN",
+        "focus": "causal real time-series task before wider adoption",
+        "missing": [
+          "formal trainer and capacity constructors",
+          "source/license/exposure/custody",
+          "compute, capacity and stopping freezes"
+        ],
+        "historical_protocol": {
+          "commit": "5f7f55e015dde7fab0c174081fef090ff45501de",
+          "path": "proposals/localization-v2/formal_protocol.json",
+          "bytes": 5488,
+          "sha256": "8d7d321a9f538b5d3ae323ae2827e56688b47795f936eca4badaf8acd21bf5f4",
+          "git_blob": "39a326a4d5c4dd486a4822f2bd67cc7fcc5170a8",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5f7f55e015dde7fab0c174081fef090ff45501de/proposals/localization-v2/formal_protocol.json",
+          "status": "specified_not_admitted_not_started",
+          "formal_fits_started": 0,
+          "reference_bytes_revalidated": true
+        }
+      }
+    ],
+    "organizational_evolution_gain_established": false,
+    "prerequisite": "stable first-order benefit not yet established",
+    "recovery": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY_RECOVERY.json",
+    "original_bytes_recovered": false,
+    "new_complete_review_copy": true,
+    "unavailable_origins": [
+      {
+        "name": "NEXT_EXPERIMENTS_M6.json",
+        "bytes": 16286,
+        "sha256": "391a6c3e639123ee78e45c3f42365229028081c1c044bca7f379c7e941791654",
+        "state": "CURRENTLY_UNAVAILABLE_ORIGINAL_BYTES_NOT_RECOVERED",
+        "original_path": "/workspace/scratch/08b6dd5f2d10/continuation-experiments/NEXT_EXPERIMENTS_M6.json",
+        "status": "CURRENTLY_UNAVAILABLE_NOT_PACKAGED"
+      },
+      {
+        "name": "NEXT_EXPERIMENTS_M6.zh-CN.md",
+        "bytes": 16038,
+        "sha256": "016087f6444cff881be82ebc1dba22b2c7884075ae2707a5f8be48ce1b2d34d9",
+        "state": "CURRENTLY_UNAVAILABLE_ORIGINAL_BYTES_NOT_RECOVERED",
+        "original_path": "/workspace/scratch/08b6dd5f2d10/continuation-experiments/NEXT_EXPERIMENTS_M6.zh-CN.md",
+        "status": "CURRENTLY_UNAVAILABLE_NOT_PACKAGED"
+      }
+    ]
+  },
+  "costs": {
+    "global_total_wall_seconds": null,
+    "complete_end_to_end_cost_established": false,
+    "parallel_lines_not_summed_as_elapsed_time": true,
+    "nested_windows_not_additive": true,
+    "unknown_cost_is_not_zero": true,
+    "root": {
+      "export_wall_seconds": 0.26915172301232815,
+      "native_outer_wall_seconds": 374.61066637397744,
+      "dependencies_outer_wall_seconds": 6.221059298957698,
+      "archive_wall_seconds": 4.0807014119345695,
+      "outer_cpu_seconds": null
+    },
+    "ui": {
+      "worker_outer_wall_seconds": 251.9813925899798,
+      "contains_all_phase_and_command_windows": true,
+      "separate_seal_wall_seconds": 2.612796355970204
+    },
+    "python": {
+      "suite_outer_wall_seconds": 21.420148970995797,
+      "suite_reaped_child_cpu_seconds": 16.543231,
+      "local_preparation_wall_seconds": 2.3535722300002817,
+      "import_wall_seconds_nested_within_preparation": 2.3244935139955487,
+      "separate_native_binding_wall_seconds": 0.16496933402959257,
+      "separate_fingerprint_before_wall_seconds": 7.951748649997171,
+      "separate_fingerprint_after_wall_seconds": 2.7811502119875513,
+      "separate_runtime_freeze_wall_seconds": 0.016103820002172142,
+      "failed_packaging_attempt_wall_seconds": 0.062897029,
+      "successful_packaging_full_verification_wall_seconds": 0.7485807980119716,
+      "test_rerun_after_packaging_failure": false
+    },
+    "mdv": {
+      "inclusive_worker_wall_seconds": 10.000318377045915,
+      "worker_self_cpu_seconds": 0.156327,
+      "reaped_child_cpu_seconds": 11.020041,
+      "separate_complete_pack_wall_seconds": 0.012270943028852344,
+      "separate_complete_pack_self_cpu_seconds": 0.010544999999999992,
+      "known_nonoverlapping_worker_plus_pack_wall_seconds": 10.012589320074767,
+      "initial_imports_before_worker_timer_included": false,
+      "setup_campaign_archive_and_task_windows_nested": true
+    },
+    "known_publication_read_failure_wall_seconds": 300.00681499999996,
+    "unresolved": [
+      "root freeze RPC terminal",
+      "original rog runtime install011",
+      "historical UI build34041"
+    ],
+    "missing_at_root_archive_inventory": [
+      "integration-admission-004",
+      "integration-freeze-005",
+      "training-runtime-setup-011"
+    ],
+    "unmeasured": [
+      "earlier preparation, failures and recovery beyond each reported scope",
+      "RPC wait and transfer",
+      "reasoning/model charges",
+      "prior cache creation",
+      "peak memory",
+      "energy",
+      "provider financial cost"
+    ],
+    "publication_006_outer_wall_seconds": 82.365280542,
+    "hosted_CI_metadata_only": {
+      "initial_GET_count": 20,
+      "initial_wall_seconds": 34.731568958000004,
+      "final_selected_GET_count": 6,
+      "final_selected_wall_seconds": 10.466975042,
+      "not_hosted_execution_cost": true,
+      "global_total_complete": false
+    }
+  },
+  "artifact_pins": [
+    {
+      "path": "raw/mdv/M3-raw-evidence.tar.gz",
+      "bytes": 42431,
+      "sha256": "fe4d6b9ca2ad24efc40d2d939dafa047d617755029a3276333c10d3bf5c4bbd5",
+      "historical_not_counted_for_M6": true,
+      "scope": "historical exposed development M3; not M6 denominator"
+    },
+    {
+      "path": "raw/mdv/M4-raw-evidence.tar.gz",
+      "bytes": 42524,
+      "sha256": "5f21e23b99ca5fcd19d7a52fd9994f8f82205403575a76149ef038ada78bd57e",
+      "historical_not_counted_for_M6": true,
+      "scope": "historical exposed development M4; not M6 denominator"
+    },
+    {
+      "path": "raw/mdv/M5-raw-evidence.tar.gz",
+      "bytes": 56596,
+      "sha256": "dced7bca8ceb5ffc7a5cef26a9a42121bcfd41371c2235b899418c8792ebfbb4",
+      "historical_not_counted_for_M6": true,
+      "scope": "historical exposed development M5; not M6 denominator"
+    },
+    {
+      "path": "raw/mdv/M6-COMPLETE_MANIFEST.json",
+      "bytes": 4854,
+      "sha256": "7879556a013353e3b3a5a0c487034e5b0e66169f1f9b8b994a9171ed3255b047",
+      "scope": "original M6 MDV complete archive manifest; development only"
+    },
+    {
+      "path": "raw/mdv/M6-complete-evidence.tar.gz",
+      "bytes": 118128,
+      "sha256": "ad4a1eedbb1c5368368159a14f589d04145990f00bfd9c7b56bf4cf2046a8a9a",
+      "members": 28,
+      "embedded_original_archive_members": 109,
+      "scope": "current M6 exposed development only; HOLD; no independent or production adoption"
+    },
+    {
+      "path": "raw/mdv/a51-raw-evidence.tar.gz",
+      "bytes": 77942,
+      "sha256": "8631b2176e7acf1641a588aa9bf9e9f7b77e5b8286cf8401c66bc66d350bdb97",
+      "historical_not_counted_for_M6": true,
+      "scope": "historical exposed development a51; not M6 denominator"
+    },
+    {
+      "path": "raw/python/M6_PYTHON_REGRESSION_EVIDENCE.tar.gz",
+      "bytes": 2128771,
+      "sha256": "d31f348259ad1ad4669c84c6d800873a91d295897cb8c6165d12fa1e9cc0cf34",
+      "members": 204,
+      "scope": "current independent Cloud M6 Python91, exact93-file source subset"
+    },
+    {
+      "path": "raw/python/M6_TRANSFER_RECEIPT.json",
+      "bytes": 22820,
+      "sha256": "440ea7ff7350a9da210c4feb6b7595e322a3a9fbc5e7de4e308ce22a004b6e57",
+      "scope": "current M6 Cloud-to-native transport, not a test"
+    },
+    {
+      "path": "raw/python/PYTHON_HISTORY_M4_M5.tar.gz",
+      "bytes": 4364628,
+      "sha256": "cbb6e7b1af9aa22ebd8f878a8772bb9219482ba5a56220eca50b481395756565",
+      "scope": "complete original M4/M5 Python archives; historical only"
+    },
+    {
+      "path": "raw/python/PYTHON_HISTORY_TRANSFER_RECEIPT.json",
+      "bytes": 16624,
+      "sha256": "7bd8bdb7b86185427f466ce25090239cf27354c89add612a07c8f2a25e097c19",
+      "scope": "historical Python archives transport, not a test"
+    },
+    {
+      "path": "raw/root/COMBINED_DRAFT_WRITE_RECEIPT.json",
+      "bytes": 3858,
+      "sha256": "86e8cf094478df3723ea87d5c579379b321f621a45ba58ac229ba1009c90216f",
+      "scope": "original shared-document creation request and authoritative terminal"
+    },
+    {
+      "path": "raw/root/lifecycle-outbox-native-evidence-007.tar.gz",
+      "bytes": 197848,
+      "sha256": "91a71a8b536bf6404f7d5128a8fe0e90345f0f54da7a8000858657231fb0ce11",
+      "scope": "historical H+outbox L2 native engineering; not production owner proof"
+    },
+    {
+      "path": "raw/root/offline-frontier-sidecars.tar.gz",
+      "bytes": 1790551,
+      "sha256": "d252a7722a44c74712228d66f0a1875b78e9cded5db5bf811a965107fd0c68cc",
+      "scope": "offline publication prerequisite proof and35 raw commit/graph records;76.6MB pack retained by pointer, not embedded"
+    },
+    {
+      "path": "raw/root/root-cloud-records-033.tar.gz",
+      "bytes": 394790,
+      "sha256": "b1a1bf7b2592d8a67702e116b21c7c504fc25b8476fbdc9b37fa35e2bb5c5cca",
+      "scope": "root control and original Cloud records"
+    },
+    {
+      "path": "raw/root/root-native-evidence.tar.gz",
+      "bytes": 7475093,
+      "sha256": "f1e80aa3de7d936e2d7265e6ae159667ce186d9c82ba88328630c3abd4908eca",
+      "members": 1154,
+      "scope": "current M6 root native qualification plus explicit historical attempts"
+    },
+    {
+      "path": "raw/ui/M6_UI_COMPLETE_EVIDENCE.tar.gz",
+      "bytes": 19571465,
+      "sha256": "3964450b56d49cfcb071346d0137fbdf9b02f2d0f41f4f509bbc4ca6220b5d3e",
+      "members": 777,
+      "scope": "current M6 UI native/Firefox qualification"
+    },
+    {
+      "path": "raw/ui/SOURCE_ARCHIVE_SUMMARY.json",
+      "bytes": 917,
+      "sha256": "e7a342f7c91399c509a49000d5418c2605f311b54bfcfa1f377218faddc7a502",
+      "scope": "original full M6 source archive integrity summary; source.tar not copied"
+    },
+    {
+      "path": "raw/ui/firefox-environment-evidence.tar.gz",
+      "bytes": 36085,
+      "sha256": "850705f31938c1b380e09b88f6fb6bbd2e0b30874058ed9e587c26f6cbbcfc05",
+      "scope": "approved minimum browser preparation failures/recovery, locks and exact runtime pins; no full host inventory or complete browser binaries"
+    },
+    {
+      "path": "raw/ui/ui-browser-history-evidence.tar.gz",
+      "bytes": 36887906,
+      "sha256": "e647505eb41b752096a13b3af9bec85f913c449f39f4a2e2132c11b9f732bbc6",
+      "scope": "historical browser successes and failures; not M6 test count"
+    },
+    {
+      "path": "raw/ui/targeted-ci-safe-native-evidence.tar.gz",
+      "bytes": 1933590,
+      "sha256": "6a1be4e7106a1ee44bc7a05c4ce36fbbf91ffb0a1556a553f1643b9a176ec77f",
+      "scope": "Historical S/H diagnostics, not M6 CI; 58 retained original payload files, two deny transfers partial, H format/UI complete; four full-user viewer files excluded"
+    },
+    {
+      "path": "raw/ui/HISTORICAL_TARGETED_CI_SCOPE.md",
+      "bytes": 1397,
+      "sha256": "69cdc8f41ab4efe31f1f341ca3e4e9adda58adc69bf03e0390107231e4e1d8e1",
+      "scope": "Approved original historical CI scope and incomplete-transfer disclosure"
+    },
+    {
+      "path": "raw/root/old-sdk018-fixture-v3-original.tar.gz",
+      "bytes": 50640,
+      "sha256": "80155510e73d9ab63c1e9b54c95a3340422f8d7e712e733d0b01763e9ee65ef5",
+      "scope": "Original fictional test fixture for SDK0.18 migration reproduction; not real user data or a result"
+    },
+    {
+      "path": "raw/root/mac-source-publication-evidence-035.tar.gz",
+      "bytes": 186504,
+      "sha256": "1c0595ff5bf43d4d7d26c8237e7e49ebd2e5386df726b52a3553c7ea940038d8",
+      "scope": "Complete bounded source publication failures/recovery/success006; excludes objects.git and76MBpack; not project tests"
+    },
+    {
+      "path": "raw/root/SOURCE_PUBLICATION.json",
+      "bytes": 15102,
+      "sha256": "c77cafd26ba57c46acd547c945ecb5dbb72ca1728df53cd02fda303bb853fb15",
+      "scope": "Original exact M6 source push/create/PR5433 readback; PUBLISHED_DRAFT"
+    },
+    {
+      "path": "raw/root/mac-source-publication-evidence-035.transfer.json",
+      "bytes": 4110,
+      "sha256": "dc42a3ed25151437480f649bf8cefb7afb4a21a6f513ddecfac24f6b2b421710",
+      "scope": "Version-bound Mac-to-native transport metadata and authoritative publication/seal terminals; not a test"
+    },
+    {
+      "path": "raw/ui/M6_HOSTED_CI_INITIAL_METADATA.tar.gz",
+      "bytes": 31111,
+      "sha256": "aec14dac5c255feee77a45da0d81a66328efc67b80f1a83bfada59eb58f302bb",
+      "scope": "PR5433 initial non-atomic metadata snapshot,15 workflows; selected UI/Cell jobs queued; no actual checkout verified"
+    },
+    {
+      "path": "raw/ui/M6_HOSTED_CI_INITIAL_RECEIPT.json",
+      "bytes": 6541,
+      "sha256": "caf5f795df0953ba488f58a8114e40c168af8b5ea553406987811ff7c914ea06",
+      "scope": "Initial20GET/34.731569s receipt; no all-CI pass claim"
+    },
+    {
+      "path": "raw/ui/M6_HOSTED_CI_PRE_FREEZE_TARGETED.tar.gz",
+      "bytes": 17353,
+      "sha256": "cbcbca3c0bb00de1c002ad738ea7f5442c6b62391b0a2c5fcd357584c034e167",
+      "scope": "Final05:24:18.389009UTC targeted readback UI5/Cell3 all queued; preserves failed packaging compile attempt; no runner execution inferred"
+    },
+    {
+      "path": "raw/ui/FINAL_CI_READBACK_RECEIPT.json",
+      "bytes": 6671,
+      "sha256": "49696ea33422e3c68b91851eca395b579cdc964a7fd6b4223405d8abc16ab725",
+      "scope": "Final6GET/10.466975s selected-job metadata only; workflow head is not actual checkout"
+    },
+    {
+      "path": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.json",
+      "bytes": 36023,
+      "sha256": "45b1725a02ecbf91aa361b6bfeb4ec81c3b176f5b301a8dbb91db268e2e77e23",
+      "scope": "New complete review copy from pinned source designs; DRAFT_FOR_REVIEW; no confirmation admitted; not original-byte recovery"
+    },
+    {
+      "path": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.zh-CN.md",
+      "bytes": 40369,
+      "sha256": "b759ef07aecfc710ad2f67d0332c099f5d6292a608692f2d818fb8e2b7d0c8a4",
+      "scope": "New complete five-experiment review narrative; not original-byte recovery, no new experiment"
+    },
+    {
+      "path": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY_RECOVERY.json",
+      "bytes": 5450,
+      "sha256": "30d55986abdd8eab619d72c0073a12081d4c4b3d911b1cdc266ac87088173478",
+      "scope": "Bounded missing-original investigation, historical unavailable pins, exact new input provenance"
+    },
+    {
+      "path": "raw/mdv/HCSN_FORMAL_PROTOCOL_ORIGINAL.json",
+      "bytes": 5488,
+      "sha256": "8d7d321a9f538b5d3ae323ae2827e56688b47795f936eca4badaf8acd21bf5f4",
+      "scope": "Original HCSN specification only; no dataset read or formal fit"
+    },
+    {
+      "path": "raw/mdv/NEXT_INDEPENDENT_DESIGNS_SOURCE_M6.md",
+      "bytes": 31079,
+      "sha256": "39df57778404a52216d84fadcacb156e315ae5240a46af7cfac8f29d44646d01",
+      "scope": "Complete M6 Git-backed prior design source used for new review copy; no new execution"
+    },
+    {
+      "path": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.tar.gz",
+      "bytes": 48535,
+      "sha256": "6dd19949179ddcbdb813cb8c96da5575f4b6e20c80540efc344f2455208236b0",
+      "scope": "Complete six-member new review-copy source/protocol/recovery bundle; not original unavailable bytes"
+    },
+    {
+      "path": "raw/mdv/NEXT_REVIEW_COPY_DELIVERY.json",
+      "bytes": 2743,
+      "sha256": "5256d17d14cd9d507682b1dd581041f469b9f1d6a7390a35621509282c9cb5ec",
+      "scope": "Original new-review-copy write/delivery receipt; job1a1bec596b6-5e21-26e succeeded0; no tests"
+    }
+  ],
+  "provenance": {
+    "root_summary_sha256": "3ffb251ab86f273cec152a4033a672904685ac72eb2fe3fa74e158d0c6920b4d",
+    "ui_final_validation_sha256": "41471c0d9fd3f8b9104137431ad847a309bc55c64c251a3e0bb1fa15374b1922",
+    "ui_source_archive_receipt_sha256": "e7a342f7c91399c509a49000d5418c2605f311b54bfcfa1f377218faddc7a502",
+    "python_suite_result_sha256": "a957b557f15218791bd062a3a7c6fe34ed652fc952c610a1601fb9b5793fe6c9",
+    "mdv_final_conclusion_sha256": "f3906304cbea8d65a415935397e3ef42ee095e4266f389eb87c554a74eba6466",
+    "mdv_original_summary_sha256": "6098e46882dd4f504d553702183c4081ad3aab8a24bc77cec129208414dbe07a",
+    "next_experiments_json_sha256": "45b1725a02ecbf91aa361b6bfeb4ec81c3b176f5b301a8dbb91db268e2e77e23",
+    "next_experiments_markdown_sha256": "b759ef07aecfc710ad2f67d0332c099f5d6292a608692f2d818fb8e2b7d0c8a4",
+    "scope": "Original034 source preserved; final evidence copy binds actual source publication, non-atomic selected CI readback, and complete new review copy. No project tests or experiments rerun for this assembly.",
+    "historical_unavailable": [
+      {
+        "name": "NEXT_EXPERIMENTS_M6.json",
+        "bytes": 16286,
+        "sha256": "391a6c3e639123ee78e45c3f42365229028081c1c044bca7f379c7e941791654",
+        "state": "CURRENTLY_UNAVAILABLE_ORIGINAL_BYTES_NOT_RECOVERED",
+        "original_path": "/workspace/scratch/08b6dd5f2d10/continuation-experiments/NEXT_EXPERIMENTS_M6.json",
+        "status": "CURRENTLY_UNAVAILABLE_NOT_PACKAGED"
+      },
+      {
+        "name": "NEXT_EXPERIMENTS_M6.zh-CN.md",
+        "bytes": 16038,
+        "sha256": "016087f6444cff881be82ebc1dba22b2c7884075ae2707a5f8be48ce1b2d34d9",
+        "state": "CURRENTLY_UNAVAILABLE_ORIGINAL_BYTES_NOT_RECOVERED",
+        "original_path": "/workspace/scratch/08b6dd5f2d10/continuation-experiments/NEXT_EXPERIMENTS_M6.zh-CN.md",
+        "status": "CURRENTLY_UNAVAILABLE_NOT_PACKAGED"
+      }
+    ],
+    "original_draft_scope": "Existing sealed local reports read before Cloud scratch became unavailable; subsequent writing only. No project test, training, confirmation read, or remote publication performed for this draft."
+  }
+}

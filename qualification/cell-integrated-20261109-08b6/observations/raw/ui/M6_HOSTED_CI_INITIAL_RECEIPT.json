@@ -1,0 +1,187 @@
+{
+  "actual_browser_execution_verified": false,
+  "actual_checkout_verified": false,
+  "command_calls": 20,
+  "connector_job": "1a1bebae2c9-5e21-246",
+  "cost_scope": "20 sequential read-only command windows; no hosted runner execution cost inferred",
+  "full_user_profile_collected": false,
+  "github_mutations": 0,
+  "head": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+  "host_hardware_inventory_collected": false,
+  "job_status_counts": {
+    "completed:skipped": 3,
+    "completed:success": 5,
+    "in_progress:None": 6,
+    "queued:None": 25
+  },
+  "no_overall_ci_pass_claim": true,
+  "observed_at_utc": "2026-11-09T05:15:16.187275+00:00",
+  "pr": 5433,
+  "production_adopted": false,
+  "read_window_is_atomic": false,
+  "schema": "hepta.M6.hosted-CI.initial-metadata-receipt.v1",
+  "science": "HOLD",
+  "selected_UI_and_Cell": [
+    {
+      "conclusion": null,
+      "event": "pull_request",
+      "jobs": [
+        {
+          "completed_at": null,
+          "conclusion": null,
+          "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769665/job/128991822582",
+          "id": 128991822582,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "name": "Original native presentation / base-merge",
+          "run_attempt": 1,
+          "run_id": 42565769665,
+          "runner_name": "",
+          "started_at": "2026-11-09T05:10:38Z",
+          "status": "queued",
+          "steps": []
+        },
+        {
+          "completed_at": null,
+          "conclusion": null,
+          "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769665/job/128991822843",
+          "id": 128991822843,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "name": "Generate UI dependency lock for review",
+          "run_attempt": 1,
+          "run_id": 42565769665,
+          "runner_name": "",
+          "started_at": "2026-11-09T05:10:38Z",
+          "status": "queued",
+          "steps": []
+        },
+        {
+          "completed_at": null,
+          "conclusion": null,
+          "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769665/job/128991822889",
+          "id": 128991822889,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "name": "Rust UI foundation / source-head",
+          "run_attempt": 1,
+          "run_id": 42565769665,
+          "runner_name": "",
+          "started_at": "2026-11-09T05:10:38Z",
+          "status": "queued",
+          "steps": []
+        },
+        {
+          "completed_at": null,
+          "conclusion": null,
+          "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769665/job/128991822929",
+          "id": 128991822929,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "name": "Original native presentation / source-head",
+          "run_attempt": 1,
+          "run_id": 42565769665,
+          "runner_name": "",
+          "started_at": "2026-11-09T05:10:38Z",
+          "status": "queued",
+          "steps": []
+        },
+        {
+          "completed_at": null,
+          "conclusion": null,
+          "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769665/job/128991822950",
+          "id": 128991822950,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "name": "Rust UI foundation / base-merge",
+          "run_attempt": 1,
+          "run_id": 42565769665,
+          "runner_name": "",
+          "started_at": "2026-11-09T05:10:38Z",
+          "status": "queued",
+          "steps": []
+        }
+      ],
+      "run_id": 42565769665,
+      "status": "queued",
+      "workflow_name": "Rust UI product foundation",
+      "workflow_path": ".github/workflows/ui-product-foundation.yml"
+    },
+    {
+      "conclusion": null,
+      "event": "push",
+      "jobs": [
+        {
+          "completed_at": null,
+          "conclusion": null,
+          "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565757710/job/128991787533",
+          "id": 128991787533,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "name": "Cell framework (agentd-composition)",
+          "run_attempt": 1,
+          "run_id": 42565757710,
+          "runner_name": "",
+          "started_at": "2026-11-09T05:10:31Z",
+          "status": "queued",
+          "steps": []
+        },
+        {
+          "completed_at": null,
+          "conclusion": null,
+          "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565757710/job/128991787764",
+          "id": 128991787764,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "name": "Cell configuration and actor recovery",
+          "run_attempt": 1,
+          "run_id": 42565757710,
+          "runner_name": "",
+          "started_at": "2026-11-09T05:10:31Z",
+          "status": "queued",
+          "steps": []
+        },
+        {
+          "completed_at": null,
+          "conclusion": null,
+          "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565757710/job/128991787818",
+          "id": 128991787818,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "name": "Cell framework (mechanisms)",
+          "run_attempt": 1,
+          "run_id": 42565757710,
+          "runner_name": "",
+          "started_at": "2026-11-09T05:10:31Z",
+          "status": "queued",
+          "steps": []
+        }
+      ],
+      "run_id": 42565757710,
+      "status": "queued",
+      "workflow_name": "Hepta Cell framework native validation",
+      "workflow_path": ".github/workflows/hepta-cell-framework-native.yml"
+    }
+  ],
+  "source_changes": 0,
+  "source_snapshot_sha256": "70c5493d150bea439e83bd18b2a721da84ef839b6e95d796407ec39fc40f79b3",
+  "tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb",
+  "wall_seconds": 34.731568958000004,
+  "workflow_runs": 15
+}
