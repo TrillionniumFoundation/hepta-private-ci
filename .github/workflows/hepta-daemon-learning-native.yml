@@ -115,7 +115,8 @@ jobs:
 
           def restore_ownership():
               subprocess.run(["sudo", "-n", "chown", "-R", f"{os.getuid()}:{os.getgid()}",
-                              str(target), str(records)], check=True)
+                              *(str(path) for path in (target, records, repo / "codex-rs/target/nextest")
+                                if path.exists())], check=True)
 
           def test(name, arguments, root=False):
               report = repo / "codex-rs/target/nextest/local/junit.xml"
@@ -130,7 +131,8 @@ jobs:
                            "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_JOB",
                            "PYTHONDONTWRITEBYTECODE", "CARGO_INCREMENTAL", "CARGO_BUILD_JOBS",
                            "CARGO_PROFILE_TEST_DEBUG", "CARGO_PROFILE_DEV_DEBUG", "CARGO_TARGET_DIR",
-                           "RUSTY_V8_ARCHIVE", "RUSTY_V8_SRC_BINDING_PATH", "LIBCLANG_PATH")
+                           "RUSTY_V8_ARCHIVE", "RUSTY_V8_SRC_BINDING_PATH", "LIBCLANG_PATH",
+                           "RUSTUP_TOOLCHAIN", "BINDGEN_EXTRA_CLANG_ARGS")
                   environment = {key: os.environ[key] for key in names if key in os.environ}
                   environment.update(CARGO_HOME=os.environ.get("CARGO_HOME", str(Path.home() / ".cargo")),
                                      RUSTUP_HOME=os.environ.get("RUSTUP_HOME", str(Path.home() / ".rustup")),

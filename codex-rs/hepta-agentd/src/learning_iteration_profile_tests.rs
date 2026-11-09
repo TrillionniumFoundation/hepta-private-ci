@@ -63,7 +63,9 @@ async fn signed_training_profile_drift_stops_before_evaluation_in_both_scope_pro
         ];
         assert_eq!(ok(ports.executed.lock()).clone(), executed);
         assert_eq!(ok(ports.attested.lock()).clone(), executed);
-        let saved = ok(ports.checkpoint.lock()).clone().expect("dataset checkpoint");
+        let saved = ok(ports.checkpoint.lock())
+            .clone()
+            .expect("dataset checkpoint");
         assert_eq!(saved.request, request);
         assert_eq!(saved.receipts.len(), 2);
         let checkpoint_calls = ok(ports.checkpoint_calls.lock()).clone();

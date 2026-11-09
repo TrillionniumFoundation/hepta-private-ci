@@ -57,11 +57,16 @@ pub fn prepare_cell_learning_evaluation_v1(
     if coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation) {
         return Err(Binding("Evaluation requires the original Training cut"));
     }
-    let candidate = coordinator.candidate().ok_or(Binding("trained candidate"))?;
+    let candidate = coordinator
+        .candidate()
+        .ok_or(Binding("trained candidate"))?;
     let candidate_digest = candidate.digest().map_err(LearningIterationError::from)?;
     let baseline = &snapshot.request.selected_bundle;
     let baseline_digest = baseline.digest().map_err(LearningIterationError::from)?;
-    let training = snapshot.receipts.last().ok_or(Binding("Training receipt"))?;
+    let training = snapshot
+        .receipts
+        .last()
+        .ok_or(Binding("Training receipt"))?;
     let training_digest =
         Digest32::of_bytes(&learning_iteration_receipt_signing_bytes_v1(training)?);
     let comparison = qualification.comparison();
@@ -70,7 +75,10 @@ pub fn prepare_cell_learning_evaluation_v1(
         || product.temporal_execution_digest != receipt.temporal().execution_digest
         || comparison.learning_evaluation_profile
             != Some(snapshot.request.evaluation_profile.into_array())
-        || candidate.training_lineage.as_ref().map(|lineage| lineage.evaluation_profile)
+        || candidate
+            .training_lineage
+            .as_ref()
+            .map(|lineage| lineage.evaluation_profile)
             != Some(snapshot.request.evaluation_profile)
         || comparison.candidate.manifest.bundle_digest != candidate_digest.into_array()
         || comparison.fixed_expert.manifest.bundle_digest != baseline_digest.into_array()
@@ -90,12 +98,13 @@ pub fn prepare_cell_learning_evaluation_v1(
     let bundle = runner.qualification_bundle(receipt, request.context)?;
     let timing = match &request.timing {
         ProductTimingEvidenceV1::Qualification => ProductTimingEvidenceV1::Qualification,
-        ProductTimingEvidenceV1::SystemLongitudinal { timing, minimum_window_micros } => {
-            ProductTimingEvidenceV1::SystemLongitudinal {
-                timing,
-                minimum_window_micros: *minimum_window_micros,
-            }
-        }
+        ProductTimingEvidenceV1::SystemLongitudinal {
+            timing,
+            minimum_window_micros,
+        } => ProductTimingEvidenceV1::SystemLongitudinal {
+            timing,
+            minimum_window_micros: *minimum_window_micros,
+        },
     };
     // This re-verifies the original keys, controller separation, scope,
     // revocation, expiry and exact signed payload. IDs or seals alone cannot
@@ -135,4 +144,3 @@ pub fn prepare_cell_learning_evaluation_v1(
     coordinator.record(prepared.clone(), prepared.observed_unix_seconds)?;
     Ok(prepared)
 }
-

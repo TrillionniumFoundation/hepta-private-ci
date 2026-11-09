@@ -281,11 +281,17 @@ impl Fixture {
     pub(super) fn with_clusters(costs: Costs, clusters: usize) -> Self {
         let directory = checked(tempfile::tempdir());
         let candidate = journal(
-            directory.path(), "candidate", costs, [17; 32],
+            directory.path(),
+            "candidate",
+            costs,
+            [17; 32],
             digest("candidate-bundle").into_array(),
         );
         let fixed = journal(
-            directory.path(), "fixed", Costs::Complete, [17; 32],
+            directory.path(),
+            "fixed",
+            Costs::Complete,
+            [17; 32],
             digest("fixed-bundle").into_array(),
         );
         let path = directory.path().join("holdout");
