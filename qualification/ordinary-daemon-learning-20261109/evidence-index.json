@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "38c95265e8e549ff60fd88e1db5d3bf31b4264e7",
+  "code_commit": "5530f84e1305c4c86b8be19c4c8765c4340e51db",
+  "code_tree": "07ec48e7cebe257c1b80ea13f1298bc984b4b6d8",
+  "tested_inventory_sha256": "dafefa3c44b2061b7fec0404d1ffbcbc1fb7d39ea2eb9f40d90ae424cfab8037",
+  "maintained_inventory_sha256": "d132325a8136cd50eefe4237f61867d9e03923fba30f5cab0b265aca5b534f7c",
+  "native_validation_record_sha256": "7afab4432043ac8bfc8e17f89d172fa6fd98d6f2ce3440fe0bb90547c4b80113",
+  "native_archive": {
+    "path": "native-evidence.tar.gz",
+    "bytes": 2058575,
+    "sha256": "90e887ee0494d2126272924e0329a52bbbcbd2e9c20255cf89a4413d16b1bd2e",
+    "files": 39
+  },
+  "static_archive": {
+    "path": "static-evidence.tar.gz",
+    "bytes": 8270,
+    "sha256": "e0fb03070d72eeb380098ee5aec13d4747c2d7aa235e0de1e4424108b6eaced1",
+    "files": 4
+  },
+  "publication_manifest": "publication.json",
+  "native_archive_layout": "native/validation.json is the original unmodified record; native/artifact-manifest.json verifies the 36 payload records. The archive also includes that manifest and two local synchronization/transfer receipts.",
+  "evidence_supplement_changes_code": false,
+  "tests_rerun_after_maintenance": false
+}
