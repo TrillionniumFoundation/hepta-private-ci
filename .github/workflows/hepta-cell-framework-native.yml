@@ -13,6 +13,7 @@ on:
       - engineering/training-result-bridge-858e
       - engineering/cell-integrated-20261108-08b6
       - engineering/cell-integrated-20261109-08b6
+      - engineering/cell-common-20261109-e1c98
   workflow_dispatch:
 
 permissions:
@@ -101,10 +102,18 @@ jobs:
             -- python -B -m unittest -v hepta_pred1.test_diagnose_training
       - name: Check fixed-graph memory decision verification controls
         run: |
-          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 13 \
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 20 \
             --output "$RUNNER_TEMP/cell-runtime-records/mdv-control-tests.json" \
             -- python -B -m unittest -v cell_repo_mdv.test_memory \
-            cell_repo_mdv.test_runner
+            cell_repo_mdv.test_runner cell_repo_mdv.test_compare
+      - name: Check the integrated semantic and temporal Cell routes
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 300 --minimum-tests 49 \
+            --output "$RUNNER_TEMP/cell-runtime-records/stem-route-tests.json" \
+            -- python -B -m unittest -v test_hepta_cells_bundle \
+            test_hepta_cells_composition test_hepta_cells_lifecycle \
+            test_hepta_cells_semantic test_hepta_cells_temporal \
+            test_hepta_cells_temporal_component
       - name: Retain final source state
         if: always()
         shell: bash
