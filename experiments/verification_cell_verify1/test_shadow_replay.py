@@ -129,6 +129,15 @@ class ShadowReplayTests(unittest.TestCase):
         output = self.root / "replay"
         result = run(self.directory, output)
         self.assertEqual((result["status"], result["training_trajectories"]), ("RETAINED_REPLAY_COMPLETED", 6))
+        calibration = result["reports"]["calibration"]["panel"]
+        policy_fields = ("acceptance_coverage", "accepted_error_missing_label_bounds",
+                         "all_trajectory_false_accept_missing_label_bounds")
+        self.assertEqual({field: calibration[field] for field in policy_fields},
+                         {field: None for field in policy_fields})
+        self.assertEqual(calibration["policy_metric_reason"], "no_policy_acceptance_decision")
+        confirmation = result["reports"]["confirmation"]["fixed_check"]
+        self.assertEqual(confirmation["acceptance_coverage"], 2 / 6)
+        self.assertEqual(confirmation["accepted_error_missing_label_bounds"], [0.0, 0.0])
         self.assertEqual(before, {name: hashlib.sha256((self.directory / name).read_bytes()).hexdigest() for name in INPUTS})
         freeze = json.loads((output / "freeze.json").read_text())
         self.assertEqual(freeze["input_sha256"], before)

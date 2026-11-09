@@ -221,6 +221,11 @@ def run(directory, output):
                     predictions.extend({"split": split, "arm": arm, "record": asdict(row)} for row in scored)
                     reports[split][arm] = evaluate_shadow(scored, outcomes)
                     reports[split][arm]["has_policy_acceptance_decision"] = split == "confirmation"
+                    if split == "calibration":
+                        for metric in ("acceptance_coverage", "accepted_error_missing_label_bounds",
+                                       "all_trajectory_false_accept_missing_label_bounds"):
+                            reports[split][arm][metric] = None
+                        reports[split][arm]["policy_metric_reason"] = "no_policy_acceptance_decision"
         write("snapshots.json", snapshots)
         write("predictions.json", predictions)
         write("labels.json", labels)
