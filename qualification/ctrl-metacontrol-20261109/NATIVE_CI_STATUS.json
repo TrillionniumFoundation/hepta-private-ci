@@ -1,0 +1,251 @@
+{
+  "schema": "hepta.ctrl.native_ci_status.v1",
+  "status": "PASSED_NATIVE_FIXTURE",
+  "observed_at_utc": "2026-11-09 12:04:38 UTC",
+  "qualification_scope": "Fixture-only native OCR, actor, host, delivery and scorer integration.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": {
+    "number": 5488,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5488",
+    "source_head_sha": "b8535a67bead9545e16448f77559fcb1c6f6f8ed"
+  },
+  "workflow": {
+    "name": "CTRL native content identity fixture",
+    "id": 412032079,
+    "run_id": 42613427363,
+    "run_attempt": 1,
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42613427363",
+    "updated_at": "2026-11-09T12:01:44Z"
+  },
+  "job": {
+    "id": 129147317516,
+    "name": "Native OCR, delivery and scorer identity",
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42613427363/job/129147317516",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Check out the event commit without retained credentials",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Bind the source and tested tree outside the checkout",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Set up Python 3.11",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Install native OCR and mandatory isolation dependencies",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Install pinned CPU numerical dependencies",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Record the actual runtime and kernel qualification",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      {
+        "name": "Run the original native suite and require three non-skipped tests",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Require unchanged source and index",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9
+      },
+      {
+        "name": "Retain fixture-only runtime records and test logs",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10
+      },
+      {
+        "name": "Post Set up Python 3.11",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19
+      },
+      {
+        "name": "Post Check out the event commit without retained credentials",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 20
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 21
+      }
+    ]
+  },
+  "artifact": {
+    "id": 13672325077,
+    "name": "ctrl-content-identity-native-42613427363-1",
+    "size_bytes": 1580,
+    "expired": false,
+    "created_at": "2026-11-09T12:01:40Z",
+    "expires_at": "2026-11-23T12:01:39Z",
+    "api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13672325077",
+    "declared_digest": "sha256:ccf5609a3fe904b8d7fbf02fdae94f677a500c66eba2f411ddd175a4814a7e21",
+    "download_succeeded": true,
+    "observed_sha256": "ccf5609a3fe904b8d7fbf02fdae94f677a500c66eba2f411ddd175a4814a7e21",
+    "digest_verified": true,
+    "members": [
+      {
+        "name": "identity.json",
+        "sha256": "7c174a5f00ba7d9d627c7144d94f85b1f4db18f2c13d0e41a4aa6413daddb10c"
+      },
+      {
+        "name": "runtime.json",
+        "sha256": "2a161b976983f8257bfcfe026d5c20b209fab91bf32f5e3714e4197e5815d112"
+      },
+      {
+        "name": "tests.json",
+        "sha256": "fb4c2867d58ffc35ad337f546289e0f51dcade741fc8f6aa5c2b8da650498e68"
+      },
+      {
+        "name": "tests.log",
+        "sha256": "6745c81c27e655eb5f42e0fd8c0af916cfe4174a87472f2ebc95148d1627e21b"
+      }
+    ]
+  },
+  "access": {
+    "job_steps": "retrieved",
+    "full_job_logs": "retrieved; 53878 decoded characters",
+    "artifact": "downloaded and plaintext members inspected",
+    "access_limitations": []
+  },
+  "operations": {
+    "workflow_dispatch": false,
+    "rerun": false,
+    "cancel": false,
+    "repository_mutation": false,
+    "remote_compute_probe": false
+  },
+  "tested_identity": {
+    "schema": "ctrl.native-fixture.identity.v1",
+    "source_sha": "b8535a67bead9545e16448f77559fcb1c6f6f8ed",
+    "source_tree": "66859c341f8d2eab599584423f12de00e5e54cd4",
+    "tested_sha": "28e3cb68bb19afc7b9ae783e1723ea9a46f5e62c",
+    "tested_tree": "66859c341f8d2eab599584423f12de00e5e54cd4",
+    "parents": [
+      "332708b415427fb72b75253111de2ba15afc2d3f",
+      "b8535a67bead9545e16448f77559fcb1c6f6f8ed"
+    ],
+    "event": "pull_request",
+    "run_id": "42613427363",
+    "run_attempt": "1",
+    "scope": "fixture-only tested tree; no historical or policy qualification"
+  },
+  "runtime": {
+    "schema": "ctrl.native-fixture.runtime.v1",
+    "system": "Linux",
+    "kernel": "7.0.0-1017-azure",
+    "machine": "x86_64",
+    "uid": 1001,
+    "python": "3.11.18",
+    "numpy": "2.3.5",
+    "scipy": "1.16.3",
+    "pillow": "12.0.0",
+    "torch": "2.5.1+cpu",
+    "cuda_build": null,
+    "seccomp_library": "libseccomp.so.2",
+    "landlock_abi": 8,
+    "landlock_errno": 0,
+    "tesseract": "tesseract 5.3.4",
+    "qualification_scope": "native fixture integration only",
+    "policy_evaluation_performed": false
+  },
+  "tests": {
+    "schema": "ctrl.native-fixture.tests.v1",
+    "status": "PASSED_FIXTURE",
+    "executed_tests": 3,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "expected_failures": 0,
+    "historical_content_root_cause_established": false,
+    "policy_improvement_established": false,
+    "elapsed_seconds": 4.494,
+    "checks": [
+      {
+        "name": "test_actual_ocr_wire_delivery_and_independent_score_bind",
+        "status": "passed"
+      },
+      {
+        "name": "test_observed_wire_change_is_rejected",
+        "status": "passed"
+      },
+      {
+        "name": "test_wrong_model_pin_fails_before_any_action",
+        "status": "passed"
+      }
+    ]
+  },
+  "verified_assertions": {
+    "evidence_type": "Assertions in the original native test suite passed; raw episode files were not included in the retained artifact.",
+    "episode_actions": [
+      "WRITE_TEXT",
+      "STOP"
+    ],
+    "mandatory_isolation_enforced_before_actor_exec": true,
+    "launch_receipt_landlock_abi_at_least": 3,
+    "launch_receipt_non_root": true,
+    "launch_receipt_no_new_privileges": true,
+    "launch_receipt_network": "DENY",
+    "actual_ocr_executed": true,
+    "ocr_output_digest_checked": true,
+    "candidate_selection_bound_to_actor_wire": true,
+    "wire_bound_to_host_exchange": true,
+    "delivered_text_matches_selected_candidate": true,
+    "evaluation_bound_to_delivery_and_evaluator_hashes": true,
+    "content_identity_sidecar_complete": true,
+    "selected_used": true,
+    "effect_occurred": null,
+    "changed_wire_rejected": true,
+    "wrong_model_pin_rejected_before_any_action": true
+  },
+  "limitations": {
+    "fixture_only": true,
+    "model": "ReceiptPortfolioModel ordinary; random weights seeded 5450, not a trained policy efficacy evaluation",
+    "historical_5450_content_root_cause_established": false,
+    "actual_private_corpus_used": false,
+    "policy_evaluation_performed": false,
+    "policy_improvement_established": false,
+    "semantic_success_established": false,
+    "local_cloud_kernel_requalified": false,
+    "local_cloud_prior_result": "The earlier local attempt remains 0 executed tests / 1 setup error from unavailable mandatory Landlock (ABI -1, errno 38). This separate hosted-runner result does not revise that observation.",
+    "isolation_bypass_used": false,
+    "unsandboxed_fallback_used": false,
+    "test_skip_used": false
+  }
+}
