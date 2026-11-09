@@ -54,12 +54,18 @@ pub(super) enum Costs {
     UnknownEnvelope,
 }
 
-pub(super) fn journal(path: &Path, name: &str, costs: Costs, task_digest: [u8; 32]) -> Journal {
+pub(super) fn journal(
+    path: &Path,
+    name: &str,
+    costs: Costs,
+    task_digest: [u8; 32],
+    bundle_digest: [u8; 32],
+) -> Journal {
     let source = digest(name).into_array();
     let manifest = CellBackendManifestV2 {
         profile: "synthetic-cell-evaluation".into(),
         source_digest: source,
-        bundle_digest: digest(&format!("{name}-bundle")).into_array(),
+        bundle_digest,
         encoder: Some([3; 32]),
         head: Some([4; 32]),
         memory: None,
@@ -270,8 +276,20 @@ pub(super) struct Fixture {
 impl Fixture {
     pub(super) fn new(costs: Costs) -> Self {
         let directory = checked(tempfile::tempdir());
-        let candidate = journal(directory.path(), "candidate", costs, [17; 32]);
-        let fixed = journal(directory.path(), "fixed", Costs::Complete, [17; 32]);
+        let candidate = journal(
+            directory.path(),
+            "candidate",
+            costs,
+            [17; 32],
+            digest("candidate-bundle").into_array(),
+        );
+        let fixed = journal(
+            directory.path(),
+            "fixed",
+            Costs::Complete,
+            [17; 32],
+            digest("fixed-bundle").into_array(),
+        );
         let path = directory.path().join("holdout");
         let store = checked(LockedFileFinalHoldoutCasStoreV1::create(
             file(&path),

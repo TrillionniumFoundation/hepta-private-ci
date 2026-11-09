@@ -251,6 +251,7 @@ fn different_task_and_unknown_holdout_release_remain_fail_closed() {
         "other-task",
         Costs::Complete,
         [18; 32],
+        digest("other-task-bundle").into_array(),
     );
     let before = fixture.holdout_bytes();
     assert!(

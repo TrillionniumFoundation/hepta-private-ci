@@ -335,6 +335,7 @@ mod learning_iteration_checkpoint;
 mod learning_iteration_ports;
 mod learning_iteration_proposal;
 mod neuron_cell_evaluation;
+mod neuron_cell_learning_evaluation;
 pub use cell_composed_q24::CellQ24GenerationWorkerV1;
 pub use cell_composed_q24::CellQ24ModelFilesV1;
 pub use cell_composed_q24::LoadedCellQ24ModelV1;
@@ -742,6 +743,9 @@ pub use neuron_cell_evaluation::CellSelectiveUpdateV1;
 pub use neuron_cell_evaluation::CellTrainingBudgetV1;
 pub use neuron_cell_evaluation::CellTrainingObservationV1;
 pub use neuron_cell_evaluation::freeze_cell_evaluation_plan_v1;
+pub use neuron_cell_evaluation::freeze_cell_learning_evaluation_plan_v1;
+pub use neuron_cell_learning_evaluation::CellLearningEvaluationErrorV1;
+pub use neuron_cell_learning_evaluation::prepare_cell_learning_evaluation_v1;
 pub use neuron_generation::AgentdNeuronGenerationOwnerV2;
 #[cfg(unix)]
 pub use neuron_generation_current::NeuronGenerationCurrentOwnerV1;
