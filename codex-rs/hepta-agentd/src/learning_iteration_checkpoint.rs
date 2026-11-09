@@ -29,6 +29,16 @@ mod codec;
 mod ports;
 
 #[cfg(target_os = "linux")]
+#[path = "authority_host_learning_profile.rs"]
+mod profile;
+#[cfg(target_os = "linux")]
+pub use profile::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V1;
+#[cfg(target_os = "linux")]
+pub use profile::HostAuthorityLearningBootstrapV1;
+#[cfg(target_os = "linux")]
+pub use profile::HostAuthorityLearningProfileV1;
+
+#[cfg(target_os = "linux")]
 #[path = "learning_iteration_checkpoint_transport.rs"]
 mod transport;
 #[cfg(target_os = "linux")]
@@ -250,6 +260,10 @@ impl LearningIterationCheckpointOwnerV1 {
 #[cfg(test)]
 #[path = "learning_iteration_checkpoint_tests.rs"]
 mod tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "authority_host_learning_test_support.rs"]
+pub(crate) mod learning_test_support;
 
 #[cfg(test)]
 #[path = "learning_iteration_checkpoint_ports_tests.rs"]
