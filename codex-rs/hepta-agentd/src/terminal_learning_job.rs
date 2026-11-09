@@ -5,7 +5,6 @@
 //! A durable Computing fence precedes the fit; only its committed result can be
 //! recovered. An interrupted fit is unknown and is never run a second time.
 
-#[cfg(test)]
 use std::sync::Arc;
 
 use codex_hepta_contracts::AgentId;
@@ -15,6 +14,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
+use tokio::sync::OwnedSemaphorePermit;
+use tokio::sync::Semaphore;
 
 use crate::AgentdSharedReplayHostV1;
 use crate::TerminalLearningErrorV1 as Error;
@@ -88,6 +89,7 @@ pub struct TerminalLearningJobOwnerV1 {
     producer_id: StableId,
     binding: Digest32,
     store: Store,
+    persistence: Arc<Semaphore>,
 }
 
 impl TerminalLearningJobOwnerV1 {
@@ -124,6 +126,7 @@ impl TerminalLearningJobOwnerV1 {
             producer_id,
             binding,
             store,
+            persistence: Arc::new(Semaphore::new(/*permits*/ 1)),
         };
         owner.load()?;
         Ok(owner)
@@ -140,8 +143,16 @@ impl TerminalLearningJobOwnerV1 {
         Ok(())
     }
 
+    /// Retain this lane inside the actual blocking task, including after its
+    /// async waiter is cancelled. A retry must reconcile the original CURRENT.
+    pub(crate) fn reserve_io(self: &Arc<Self>) -> Result<OwnedSemaphorePermit, Error> {
+        Arc::clone(&self.persistence)
+            .try_acquire_owned()
+            .map_err(|_| Error::CommitUncertain)
+    }
+
     pub(crate) async fn restore(
-        &self,
+        self: &Arc<Self>,
         replay: &AgentdSharedReplayHostV1,
         request: &TerminalLearningRequestV1,
         now: u64,
@@ -149,7 +160,15 @@ impl TerminalLearningJobOwnerV1 {
         if request.job_digest(&self.agent_id, &self.producer_id)? != self.binding {
             return Err(Error::Conflict);
         }
-        match self.load()?.state {
+        let permit = self.reserve_io()?;
+        let owner = Arc::clone(self);
+        let record = tokio::task::spawn_blocking(move || {
+            let _permit = permit;
+            owner.load()
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)??;
+        match record.state {
             State::Vacant => Ok(None),
             State::Computing => Err(Error::CommitUncertain),
             State::Committed(saved) => saved

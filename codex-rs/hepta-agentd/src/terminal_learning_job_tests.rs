@@ -335,6 +335,9 @@ async fn durable_unfinished_fence_and_changed_binding_never_restart_native_work(
 #[path = "terminal_learning_job_process_tests.rs"]
 mod process_tests;
 
+#[path = "terminal_learning_job_io_tests.rs"]
+mod io_tests;
+
 #[tokio::test]
 async fn durable_claim_lost_ack_and_competing_reopen_owners_cannot_start_twice() {
     for lost_ack in [false, true] {

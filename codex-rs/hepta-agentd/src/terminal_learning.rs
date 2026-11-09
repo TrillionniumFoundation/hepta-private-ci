@@ -22,6 +22,7 @@ use codex_hepta_memory::SharedExperienceUseV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+use tokio::sync::OwnedSemaphorePermit;
 use tokio::sync::Semaphore;
 use tokio::sync::oneshot;
 
@@ -43,6 +44,12 @@ enum JobState {
 struct Job {
     digest: Digest32,
     state: JobState,
+}
+
+struct NativeJobReservation {
+    _compute: OwnedSemaphorePermit,
+    #[cfg(unix)]
+    _persistence: Option<OwnedSemaphorePermit>,
 }
 
 pub struct AgentdTerminalLearningOwnerV1 {
@@ -228,22 +235,26 @@ impl AgentdTerminalLearningOwnerV1 {
                 .ok_or(TerminalLearningErrorV1::CommitUncertain)?;
             match &job.state {
                 JobState::Admitted => {
-                    let permit = Arc::clone(&self.compute)
-                        .try_acquire_owned()
-                        .map_err(|_| TerminalLearningErrorV1::Busy)?;
-                    #[cfg(unix)]
-                    if let Some(durable) = &self.durable {
-                        durable.claim()?;
-                    }
+                    let reservation = NativeJobReservation {
+                        _compute: Arc::clone(&self.compute)
+                            .try_acquire_owned()
+                            .map_err(|_| TerminalLearningErrorV1::Busy)?,
+                        #[cfg(unix)]
+                        _persistence: self
+                            .durable
+                            .as_ref()
+                            .map(crate::TerminalLearningJobOwnerV1::reserve_io)
+                            .transpose()?,
+                    };
                     job.state = JobState::Computing;
-                    Ok(permit)
+                    Ok(reservation)
                 }
                 JobState::Computing => return Err(TerminalLearningErrorV1::CommitUncertain),
                 JobState::Computed(result) => Err((**result).clone()),
             }
         };
-        let permit = match claim {
-            Ok(permit) => permit,
+        let reservation = match claim {
+            Ok(reservation) => reservation,
             Err(result) => {
                 return self
                     .verify_readback(result, &request, projected_now(now, admitted_at))
@@ -260,8 +271,18 @@ impl AgentdTerminalLearningOwnerV1 {
             Result<SharedExperienceUseV1, TerminalLearningErrorV1>,
         >(/*bound*/ 1);
         let job = tokio::task::spawn_blocking(move || {
-            let _permit = permit;
+            // Root load/CAS never runs under the async executor or job-cache
+            // lock. Both lanes outlive a cancelled waiter through real I/O.
+            let _reservation = reservation;
+            #[cfg(unix)]
+            let mut claim_attempted = false;
             let result = (|| {
+                check_work_budget(&native_request, now, admitted_at)?;
+                #[cfg(unix)]
+                if let Some(durable) = &durable {
+                    claim_attempted = true;
+                    durable.claim()?;
+                }
                 check_work_budget(&native_request, now, admitted_at)?;
                 let _ = ready.send(());
                 let remaining =
@@ -293,12 +314,15 @@ impl AgentdTerminalLearningOwnerV1 {
                 return Err(TerminalLearningErrorV1::CommitUncertain);
             }
             #[cfg(unix)]
-            if durable.is_some() && result.is_err() {
+            if durable.is_some() && claim_attempted && result.is_err() {
                 // Neither an interrupted fit nor uncertain CAS is retried. A
                 // lost acknowledgement is reconciled from durable CURRENT.
                 entry.state = JobState::Computing;
                 return result;
             }
+            // A queued task can exhaust its budget before any durable claim
+            // or fit. Retain that exact terminal error rather than an endless
+            // Computing state; this does not reopen admission or renew budget.
             entry.state = if matches!(result, Err(TerminalLearningErrorV1::Busy)) {
                 // try_lock proved no ledger read or fit occurred.
                 JobState::Admitted
