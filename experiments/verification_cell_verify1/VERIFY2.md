@@ -89,6 +89,22 @@ budget, gate status, model/data/context/history hashes and outcome decisions.
 
 ## Evaluation and advancement
 
+Replay a retained VERIFY-1 model run without new neural inference or original
+effects. Supply the complete original plan, operations/attempts, trajectory
+rows/attempts, panel labels, assessments and decisions. The output is create-only:
+
+```sh
+python -B -m experiments.verification_cell_verify1.shadow_replay \
+  --input /path/to/retained-run --output /path/to/new-replay
+```
+
+The loader validates the original roster, inference/decision bindings, mandatory
+acceptance checks, actual effect order and label timing. It freezes input/source
+hashes, fits only original training panels, and scores ACK-prefix observations
+at steps 0 and 2. Early-stopped trajectories keep missing uninterrupted-target
+labels. Calibration reference panels have no policy acceptance decision. This
+replay is a historical diagnostic and does not establish prospective collection.
+
 Run the package regression suite from the repository root:
 
 ```sh
