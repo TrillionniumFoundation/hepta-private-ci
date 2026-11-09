@@ -780,8 +780,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
     } else {
         Err(AgentdError::Protocol(format!(
             "agentd shutdown left {unresolved} indeterminate run(s), {generation_blockers} generation service blocker(s), {circuit_blockers} Circuit blocker(s), {} queued/active learning command(s) and {} unacknowledged learning claim(s); owner recovery is required",
-            learning.queued_or_active,
-            learning.unacknowledged_claims,
+            learning.queued_or_active, learning.unacknowledged_claims,
         )))
     }
 }

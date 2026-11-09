@@ -111,12 +111,18 @@ fn manifest_is_order_independent_and_reused_identical_cells_contribute_once() {
     let (definition, mut bindings) = private_heads();
     let original = checked(circuit_cell_bundle_manifest_digest_v1(&bindings));
     bindings.reverse();
-    assert_eq!(checked(circuit_cell_bundle_manifest_digest_v1(&bindings)), original);
+    assert_eq!(
+        checked(circuit_cell_bundle_manifest_digest_v1(&bindings)),
+        original
+    );
     assert!(CircuitCellRegistryV1::new_with_bundle_manifest(definition, bindings.clone()).is_ok());
     let mut repeated = bindings[0].clone();
     repeated.node_id = "another-visit".into();
     bindings.push(repeated);
-    assert_eq!(checked(circuit_cell_bundle_manifest_digest_v1(&bindings)), original);
+    assert_eq!(
+        checked(circuit_cell_bundle_manifest_digest_v1(&bindings)),
+        original
+    );
 }
 
 #[test]
@@ -274,7 +280,9 @@ fn graph_dispatches_preserve_each_private_head_and_reject_wrong_cell_or_paramete
         &bindings[1]
     );
     let mut wrong = dispatches[0].clone();
-    wrong.parameter_bundle_digest = checked(Sha256Digest::parse(bindings[0].cell.bundle_digest.to_string()));
+    wrong.parameter_bundle_digest = checked(Sha256Digest::parse(
+        bindings[0].cell.bundle_digest.to_string(),
+    ));
     assert_eq!(
         registry.bind_input(&wrong, &request),
         Err(CircuitCellErrorV1::InvalidBinding)

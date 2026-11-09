@@ -156,7 +156,12 @@ async fn learning_drain_distinguishes_unclaimed_intents_from_unsettled_claims_af
         .unwrap();
     assert_eq!(store.circuit_learning_drain_blockers().await.unwrap(), 0);
     let request = digest("original-request-and-owners");
-    assert!(store.claim_circuit_learning(&intent, &request).await.unwrap());
+    assert!(
+        store
+            .claim_circuit_learning(&intent, &request)
+            .await
+            .unwrap()
+    );
     assert_eq!(store.circuit_drain_blockers().await.unwrap(), 0);
     assert_eq!(store.circuit_learning_drain_blockers().await.unwrap(), 1);
     let path = store.path().parent().unwrap().to_path_buf();
@@ -186,10 +191,18 @@ async fn learning_drain_visits_late_claims_and_rejects_corrupt_delivery_metadata
     let mut last = None;
     for index in 0..65 {
         let trace = terminal(&store, &format!("drain-{index:03}")).await;
-        last = Some(store.enqueue_circuit_learning(&trace, digest("objective")).await.unwrap());
+        last = Some(
+            store
+                .enqueue_circuit_learning(&trace, digest("objective"))
+                .await
+                .unwrap(),
+        );
     }
     let intent = last.unwrap();
-    store.claim_circuit_learning(&intent, &digest("request")).await.unwrap();
+    store
+        .claim_circuit_learning(&intent, &digest("request"))
+        .await
+        .unwrap();
     assert_eq!(store.circuit_learning_drain_blockers().await.unwrap(), 1);
     sqlx::query("UPDATE circuit_learning_outbox_v1 SET request_digest = ? WHERE run_id = ?")
         .bind("z".repeat(64))
@@ -197,7 +210,10 @@ async fn learning_drain_visits_late_claims_and_rejects_corrupt_delivery_metadata
         .execute(store.taskflow_pool())
         .await
         .unwrap();
-    assert!(matches!(store.circuit_learning_drain_blockers().await, Err(Error::Conflict)));
+    assert!(matches!(
+        store.circuit_learning_drain_blockers().await,
+        Err(Error::Conflict)
+    ));
     store.close().await;
 }
 

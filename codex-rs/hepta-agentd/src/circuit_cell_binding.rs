@@ -56,7 +56,8 @@ impl CircuitCellRegistryV1 {
     ) -> Result<Self, CircuitCellErrorV1> {
         if !(1..=MAX_CIRCUIT_CELL_BINDINGS).contains(&bindings.len())
             || bindings.iter().any(|binding| {
-                definition.parameter_bundle_digest.as_str() != binding.cell.bundle_digest.to_string()
+                definition.parameter_bundle_digest.as_str()
+                    != binding.cell.bundle_digest.to_string()
             })
         {
             return Err(CircuitCellErrorV1::InvalidBinding);
@@ -73,7 +74,8 @@ impl CircuitCellRegistryV1 {
         definition: BoundedCircuitDefinitionV2,
         bindings: Vec<CircuitCellBindingV1>,
     ) -> Result<Self, CircuitCellErrorV1> {
-        if definition.parameter_bundle_digest != circuit_cell_bundle_manifest_digest_v1(&bindings)? {
+        if definition.parameter_bundle_digest != circuit_cell_bundle_manifest_digest_v1(&bindings)?
+        {
             return Err(CircuitCellErrorV1::InvalidBinding);
         }
         Self::validate(definition, bindings)

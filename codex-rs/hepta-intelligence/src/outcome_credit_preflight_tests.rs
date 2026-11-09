@@ -9,6 +9,8 @@ use pretty_assertions::assert_eq;
 use super::tests as support;
 use super::*;
 
+type CreditMutation = fn(&mut CreditAllocationBatchV1);
+
 #[test]
 fn invalid_credit_does_not_commit_an_otherwise_valid_terminal_outcome() {
     let fixture = support::Fixture::new();
@@ -27,7 +29,7 @@ fn invalid_credit_does_not_commit_an_otherwise_valid_terminal_outcome() {
     );
     let before = writer.snapshot().expect("snapshot");
     let witness = writer.witness_frontier().expect("witness");
-    let cases: [(fn(&mut CreditAllocationBatchV1), CausalV2Error); 4] = [
+    let cases: [(CreditMutation, CausalV2Error); 4] = [
         (
             |batch| batch.conservation_residual = FixedQ32::from_raw(1),
             CausalV2Error::CreditConservation,

@@ -55,8 +55,8 @@ fn fixture_config(root: &Path) -> TestResult<(HeptaAgentLayout, MatrixSidecarCon
             .canonicalize()
             .map_err(|error| format!("fixture configuration canonical fleet: {error}"))?,
     )?
-        .layout()
-        .agent(&agent);
+    .layout()
+    .agent(&agent);
     let config = MatrixSidecarConfig {
         binding: MatrixBindingV1 {
             schema_version: MATRIX_BINDING_SCHEMA_VERSION,
@@ -191,8 +191,8 @@ async fn prepare_fixture(root: &Path) -> TestResult {
         !expected_path.exists(),
         "refuse to overwrite a baseline fixture"
     );
-    let (layout, config) = fixture_config(root)
-        .map_err(|error| format!("prepare fixture configuration: {error}"))?;
+    let (layout, config) =
+        fixture_config(root).map_err(|error| format!("prepare fixture configuration: {error}"))?;
     // Produce the old SDK's real encrypted format independently of the
     // host's cold-start deadline. The old source and production timeout are
     // unchanged; this fixture qualifies migration, not cold-start latency.
@@ -302,8 +302,8 @@ async fn reopen_fixture(root: &Path) -> TestResult {
             .map_err(|error| format!("reopen fixture read expected record: {error}"))?,
     )
     .map_err(|error| format!("reopen fixture decode expected record: {error}"))?;
-    let (layout, config) = fixture_config(root)
-        .map_err(|error| format!("reopen fixture configuration: {error}"))?;
+    let (layout, config) =
+        fixture_config(root).map_err(|error| format!("reopen fixture configuration: {error}"))?;
     let paths = MatrixSdkPaths::prepare(&layout, &config)
         .map_err(|error| format!("reopen fixture SDK paths: {error}"))?;
     let (client, session) = MatrixSdkClient::login_or_restore(
@@ -350,7 +350,9 @@ async fn reopen_fixture(root: &Path) -> TestResult {
     .map_err(|error| format!("reopen fixture decode old ciphertext record: {error}"))?;
     crypto_migration::reopen(paths.state(), PASSPHRASE, ROOM, ciphertexts)
         .await
-        .map_err(|error| format!("reopen fixture decrypt old ciphertexts and reject replay: {error}"))?;
+        .map_err(|error| {
+            format!("reopen fixture decrypt old ciphertexts and reject replay: {error}")
+        })?;
     Ok(())
 }
 

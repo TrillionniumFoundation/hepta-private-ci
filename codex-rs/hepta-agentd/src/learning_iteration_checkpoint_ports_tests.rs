@@ -102,26 +102,39 @@ async fn scoped_checkpoint_ports_keep_the_registered_scope_across_reopen() -> an
     let cuts = snapshots(Decision::EvaluatedNoUpdate)?;
     let initial = &cuts[0];
     let scope = FrozenLearningScopeV2::freeze(
-        &initial.request, &initial.owners,
+        &initial.request,
+        &initial.owners,
         codex_hepta_learning_artifacts::LearningUpdateScopeV2::Cell,
         Digest32::of_bytes(b"rule"),
     )?;
     let directory = tempfile::tempdir()?;
     let path = directory.path().join("scoped-frontier");
     let vacant = LearningIterationCheckpointRecordV1::vacant_scoped_v2(
-        initial.request.clone(), initial.owners.clone(), &scope,
+        initial.request.clone(),
+        initial.owners.clone(),
+        &scope,
     )?;
     FileCas::create(&path, &vacant)?;
     let stages = Arc::new(StageOwners::new(cuts.clone()));
     for _ in 0..2 {
         let store = Arc::new(FileCas::reopen(&path)?);
         let original = LearningIterationCheckpointOwnerV1::from_research_store_scoped_v2(
-            store, OWNER.into(), initial.request.clone(), initial.owners.clone(), scope.clone(),
+            store,
+            OWNER.into(),
+            initial.request.clone(),
+            initial.owners.clone(),
+            scope.clone(),
         )?;
         let ports = original.with_stage_owners(stages.clone());
         assert_eq!(ports.frozen_scope_binding(), Some(scope.binding()));
-        assert_eq!(ports.checkpoint(Digest32::ZERO, initial).await?, initial.head_digest);
-        assert_eq!(ports.restore(&initial.request).await?, Some(initial.clone()));
+        assert_eq!(
+            ports.checkpoint(Digest32::ZERO, initial).await?,
+            initial.head_digest
+        );
+        assert_eq!(
+            ports.restore(&initial.request).await?,
+            Some(initial.clone())
+        );
     }
     Ok(())
 }
@@ -333,6 +346,7 @@ async fn cancelled_checkpoint_waiter_keeps_the_original_persistence_lane() -> an
             gate: std::sync::Mutex::new(Some((entered, blocked))),
         })),
         initial: initial.clone(),
+        scope: None,
     };
     let ports = checkpoint.with_stage_owners(Arc::new(StageOwners::new(snapshots)));
     let pending = tokio::spawn({

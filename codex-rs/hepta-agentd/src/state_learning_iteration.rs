@@ -68,14 +68,16 @@ impl AgentdState {
             .map_err(poisoned_state)?
             .clone()
             .ok_or_else(|| AgentdError::Protocol("learning drain owner is unavailable".into()))?;
-        let unacknowledged_claims = store
-            .circuit_learning_drain_blockers()
-            .await
-            .map_err(|error| {
-                AgentdError::Protocol(format!("learning drain history unavailable: {error:?}"))
-            })?;
-        let queued_or_active = u32::try_from(before.max(self.learning_iteration_pending_count()))
-            .map_err(|_| AgentdError::Protocol("learning pending count exceeds u32".into()))?;
+        let unacknowledged_claims =
+            store
+                .circuit_learning_drain_blockers()
+                .await
+                .map_err(|error| {
+                    AgentdError::Protocol(format!("learning drain history unavailable: {error:?}"))
+                })?;
+        let queued_or_active =
+            u32::try_from(before.max(self.learning_iteration_pending_count()))
+                .map_err(|_| AgentdError::Protocol("learning pending count exceeds u32".into()))?;
         Ok(LearningIterationDrainStatusV1 {
             queued_or_active,
             unacknowledged_claims,

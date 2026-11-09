@@ -73,8 +73,8 @@ async fn fixture(
     let layout = checked(HeptaFleetRoot::parse(
         checked(directory.path().canonicalize()).join("fleet"),
     ))
-        .layout()
-        .agent(&agent);
+    .layout()
+    .agent(&agent);
     let store = checked(AutomationStore::open(&layout).await);
     let fence = checked(TaskFlowFence::new(
         agent,

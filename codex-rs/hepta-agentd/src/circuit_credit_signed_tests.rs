@@ -60,8 +60,8 @@ async fn execute(owner: AgentId, run: &StableId, objective: Digest32) -> Execute
     let layout = checked(HeptaFleetRoot::parse(
         checked(directory.path().canonicalize()).join("fleet"),
     ))
-        .layout()
-        .agent(&owner);
+    .layout()
+    .agent(&owner);
     let store = checked(AutomationStore::open(&layout).await);
     let (definition, bindings) = configuration();
     let mut input = input(run.as_str());
