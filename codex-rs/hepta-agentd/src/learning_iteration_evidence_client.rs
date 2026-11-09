@@ -70,8 +70,8 @@ impl LearningIterationEvidenceClientV1 {
         let expected =
             LearningIterationCoordinatorV1::new(initial.request.clone(), initial.owners.clone())?;
         // SAFETY: these calls only observe this process's credentials.
-        let same_uid = peer.uid == unsafe { libc::getuid() }
-            || peer.uid == unsafe { libc::geteuid() };
+        let same_uid =
+            peer.uid == unsafe { libc::getuid() } || peer.uid == unsafe { libc::geteuid() };
         if same_uid
             || peer.pid == std::process::id()
             || expected.snapshot() != &initial
@@ -179,15 +179,12 @@ impl LearningIterationEvidenceClientV1 {
             .verifier
             .verify(role, &signature, &payload, now)
             .map_err(Error::Evidence)?;
-        if verified.principal().principal_id != self.actor_id
-            || receipt.observed_unix_seconds > now
+        if verified.principal().principal_id != self.actor_id || receipt.observed_unix_seconds > now
         {
             return Err(Error::Evidence(SignedEvidenceError::ContextMismatch));
         }
-        crate::root_observation_stream::check_lifetime(
-            channel.transport.root_lifetime().get_ref(),
-        )
-        .map_err(|_| unavailable())?;
+        crate::root_observation_stream::check_lifetime(channel.transport.root_lifetime().get_ref())
+            .map_err(|_| unavailable())?;
         *self.channel.try_lock().map_err(|_| unavailable())? = Some(channel);
         Ok(signature)
     }
@@ -210,3 +207,7 @@ fn evidence_role(stage: LearningIterationStageV1) -> Result<LearningEvidenceRole
 fn unavailable() -> Error {
     Error::OwnerUnavailable("original learning evidence owner")
 }
+
+#[cfg(test)]
+#[path = "learning_iteration_evidence_tests.rs"]
+mod tests;
