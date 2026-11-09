@@ -55,6 +55,11 @@ pub struct CellEvaluationRecordV1 {
     pub cost_scope: CellEvaluationCostScopeV1,
     #[serde(serialize_with = "contract::serialize_digest")]
     pub original_estimand: Digest32,
+    /// Original host-frozen learning protocol reference. This pin is covered
+    /// by the signed record; it is not a reconstruction or validation
+    /// proof of the referenced protocol. Non-learning plans omit the field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub learning_evaluation_profile: Option<[u8; 32]>,
     pub comparison: CellComparisonContractV1,
     pub candidate: CellEvaluationArmRecordV1,
     pub fixed_expert: CellEvaluationArmRecordV1,
@@ -83,10 +88,48 @@ impl CellEvaluationPlanV1 {
 }
 
 pub fn freeze_cell_evaluation_plan_v1<C: AnchorWitnessStore, F: AnchorWitnessStore>(
+    registration: CellEvaluationRegistrationV1,
+    journals: CellEvaluationJournalsV1<'_, C, F>,
+    candidate_temporal: &TemporalEvaluationPlan,
+    baseline_temporal: &TemporalEvaluationPlan,
+) -> Result<CellEvaluationPlanV1, CellEvaluationErrorV1> {
+    freeze_plan(
+        registration,
+        journals,
+        candidate_temporal,
+        baseline_temporal,
+        /*learning_evaluation_profile*/ None,
+    )
+}
+
+/// Bind a learning request's original protocol pin before evaluation or signed
+/// qualification. The realized comparison still contains post-training
+/// observations; its digest cannot itself be the pre-training protocol pin.
+pub fn freeze_cell_learning_evaluation_plan_v1<C: AnchorWitnessStore, F: AnchorWitnessStore>(
+    registration: CellEvaluationRegistrationV1,
+    journals: CellEvaluationJournalsV1<'_, C, F>,
+    candidate_temporal: &TemporalEvaluationPlan,
+    baseline_temporal: &TemporalEvaluationPlan,
+    evaluation_profile: Digest32,
+) -> Result<CellEvaluationPlanV1, CellEvaluationErrorV1> {
+    if evaluation_profile.is_zero() {
+        return Err(CellEvaluationErrorV1::Binding("learning evaluation profile"));
+    }
+    freeze_plan(
+        registration,
+        journals,
+        candidate_temporal,
+        baseline_temporal,
+        Some(evaluation_profile.into_array()),
+    )
+}
+
+fn freeze_plan<C: AnchorWitnessStore, F: AnchorWitnessStore>(
     mut registration: CellEvaluationRegistrationV1,
     journals: CellEvaluationJournalsV1<'_, C, F>,
     candidate_temporal: &TemporalEvaluationPlan,
     baseline_temporal: &TemporalEvaluationPlan,
+    learning_evaluation_profile: Option<[u8; 32]>,
 ) -> Result<CellEvaluationPlanV1, CellEvaluationErrorV1> {
     registration.comparison.validate()?;
     if registration.product.candidate_id != registration.comparison.candidate.participant_id
@@ -118,6 +161,7 @@ pub fn freeze_cell_evaluation_plan_v1<C: AnchorWitnessStore, F: AnchorWitnessSto
     let record = CellEvaluationRecordV1 {
         cost_scope: CellEvaluationCostScopeV1::TaskLedgersBeforeFinalHoldout,
         original_estimand: registration.product.estimand_digest,
+        learning_evaluation_profile,
         comparison: registration.comparison,
         candidate,
         fixed_expert,
@@ -283,4 +327,4 @@ impl Error for CellEvaluationErrorV1 {}
 
 #[cfg(test)]
 #[path = "neuron_cell_evaluation_tests.rs"]
-mod tests;
+pub(crate) mod tests;
