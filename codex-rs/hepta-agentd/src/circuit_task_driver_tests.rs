@@ -70,7 +70,9 @@ async fn fixture(
 ) {
     let directory = tempfile::tempdir().expect("private original owners");
     let agent = checked(AgentId::parse(scope("run-1").agent_id.as_str()));
-    let layout = checked(HeptaFleetRoot::parse(directory.path().join("fleet")))
+    let layout = checked(HeptaFleetRoot::parse(
+        checked(directory.path().canonicalize()).join("fleet"),
+    ))
         .layout()
         .agent(&agent);
     let store = checked(AutomationStore::open(&layout).await);

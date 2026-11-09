@@ -228,7 +228,11 @@ async fn recovery_owner_settles_multiple_receipts_without_a_new_lease() {
     original_fence.owner_epoch = 2;
     let directory = tempfile::tempdir().expect("private owner");
     let store = AutomationStore::open_root(
-        directory.path().join("automation"),
+        directory
+            .path()
+            .canonicalize()
+            .expect("canonical temporary owner")
+            .join("automation"),
         original_fence.owner_agent_id.clone(),
     )
     .await
