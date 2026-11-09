@@ -1,0 +1,106 @@
+{
+  "phase": "increment-007a",
+  "status": "appended_verified_not_committed",
+  "prior_head": "02f75555a857b161275ea5c6f7c960dde6cf8b13",
+  "packet_count": 83,
+  "added_packets": [
+    {
+      "packet_id": "combined-3fc4725-native-history-v1",
+      "scope": "Separate combined 3fc Linux source: strict preparation, 1348 app-server and 781 agentd default cases, overlapping 13-component scope, one actual Root parent, original dependency failure and recovery retained",
+      "archive_bytes": 5439844,
+      "archive_sha256": "ffafc08752e9f6d9c45258389858002b7afaf7239363e7bc6372c54dca162c4e",
+      "file_member_count": 309,
+      "manifest_path": "packets/combined-3fc4725-native-history-v1/manifest.json",
+      "manifest_sha256": "cc57e60f6be51548546142f954e7f010478ca5a8ae37974a55fba93ae931f249"
+    },
+    {
+      "packet_id": "combined-callers-3fc4725-desktop-history-v1",
+      "scope": "One complete original closed-set caller engineering gate on exact 3fc; original command, raw, source inventories and wall-time observation, no new native execution",
+      "archive_bytes": 2330412,
+      "archive_sha256": "8eba6d8438f9109fc9c1e0850c233ec1cc588cc27d730675d817b0b75ebd9bbb",
+      "file_member_count": 24,
+      "manifest_path": "packets/combined-callers-3fc4725-desktop-history-v1/manifest.json",
+      "manifest_sha256": "20a508eec5961f4211694d0687455762122d70d27776fbbc5e37bde40f8d0f58"
+    }
+  ],
+  "prior_packet_bytes_unchanged": true,
+  "manifest_sha256": "3150d6cd10baefb2eb21759fb28286e76f16ef9dcc5a9d69a85ecdd09d0eda6d",
+  "pattern_review": {
+    "phase": "increment-007a",
+    "input_sha256": "64eb49094b22708bd0f845b245acefd109f1c138e3687a0ef3680beb2b58555f",
+    "inspected_member_count_with_overlap": 337,
+    "patterns": [
+      "github_token_shape",
+      "openai_token_shape",
+      "private_key_block",
+      "aws_access_key_shape"
+    ],
+    "findings": [],
+    "not_a_complete_secret_detection_claim": true
+  },
+  "original_81_packet_index_entries_unchanged": true,
+  "common_before": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "branch": "codex/cell-s0-common-20261108-898e",
+    "status": "",
+    "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+  },
+  "common_after": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "branch": "codex/cell-s0-common-20261108-898e",
+    "status": "",
+    "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+  },
+  "required_json_bindings_verified": true,
+  "original_81_packet_and_all_existing_nonmanifest_file_bytes_unchanged": true,
+  "supplementary_observations": [
+    {
+      "path": "observations/evidence-increment006-metadata-correction-publication-v1/RESULT.json",
+      "bytes": 35619,
+      "sha256": "c157d9441a26d97046dce8d9431ee28b4e4c5207894e74a8b39bcb815da45fc2"
+    },
+    {
+      "path": "observations/evidence-increment006-metadata-correction-publication-v1/commands.json",
+      "bytes": 263769,
+      "sha256": "97e8e4975faf656eb82fb91bd585767a9a647972ed4149a0a05cad1a8fb5bcc5"
+    },
+    {
+      "path": "observations/evidence-increment006-metadata-correction-independent-readback-v1/RESULT.json",
+      "bytes": 2582,
+      "sha256": "d53377d9418e110fa90eaa71a6d2e42f828e99579362d7ac83df76bb0717dfd4"
+    },
+    {
+      "path": "observations/evidence-increment006-metadata-correction-independent-readback-v1/commands.json",
+      "bytes": 120380,
+      "sha256": "beb068206fafa4f1b4e2e5de74e555a059f12709de8e4a27f05ec0f6ca3869de"
+    }
+  ],
+  "supplementary_observation_scope": {
+    "source_commit": "02f75555a857b161275ea5c6f7c960dde6cf8b13",
+    "source_tree": "456903461ff59e9fca71ba1fed2dcc5701d21b78",
+    "parent_commit": "a9116a22d4cc429e9b34a1327bcb3945280d72d4",
+    "files_included": "Only both RESULT.json files and both complete commands.json indexes",
+    "complete_stdout_stderr_prefixes_archived_here": false,
+    "external_original_prefixes": [
+      "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment006-metadata-correction-publication-v1",
+      "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment006-metadata-correction-independent-readback-v1"
+    ],
+    "original_raw_log_hashes_referenced_by_commands": true,
+    "raw_bytes_not_promoted_from_hash_references_to_archived_content": true,
+    "original_a911_1140_local_vs_1139_committed_preserved": true,
+    "corrected_1236_committed_files_verified": true,
+    "original_15_observations_verified": true,
+    "packet_count_changed_by_metadata_correction": false,
+    "publication_or_readback_is_not_native_validation": true,
+    "new_tests_executed": false,
+    "physical_cost": null,
+    "full_history_cost": null
+  },
+  "supplementary_original_result_commands_links_verified": true,
+  "new_metadata_still_requires_index_and_commit_blob_verification_at_publication": true,
+  "new_tests_executed": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false
+}

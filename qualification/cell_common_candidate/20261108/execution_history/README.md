@@ -1,3 +1,65 @@
+# Increment 007a: separate combined-source engineering records
+
+This checkpoint retains **83 bounded evidence packets and 9,469 file-member entries with overlap**. It adds the two completed records below to the corrected 81-packet checkpoint at evidence commit `02f75555a857b161275ea5c6f7c960dde6cf8b13`. The two new archives contain 333 member entries and 7,770,256 compressed archive bytes. These are archival counts; they are neither unique tasks nor a measurement of complete execution cost.
+
+The common candidate remains `bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d`, tree `f7b65a747a1d2f585be38a4665ab2b4f1b07efb6`. This evidence publication does not advance that source branch. **S0, S1, S2, S3, S4 and S5 remain HOLD.** The original formal `CURRENT_RESULT.json` bytes remain SHA-256 `c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4`. Physical cost and full history cost remain `null`; complete execution history and scientific acceptance remain false.
+
+## The two new packets
+
+| Packet                                        | Original archive SHA-256                                           | Original bytes | Member entries |
+| --------------------------------------------- | ------------------------------------------------------------------ | -------------: | -------------: |
+| `combined-3fc4725-native-history-v1`          | `ffafc08752e9f6d9c45258389858002b7afaf7239363e7bc6372c54dca162c4e` |      5,439,844 |            309 |
+| `combined-callers-3fc4725-desktop-history-v1` | `8eba6d8438f9109fc9c1e0850c233ec1cc588cc27d730675d817b0b75ebd9bbb` |      2,330,412 |             24 |
+
+Both packets bind the separately frozen combined source `3fc4725343dccfc9487e937f77e30bc6a5d80dbc`, tree `89d698ef2fba525a3b03466808337f125306085b`. Its ordered parents are `3f084182eb80bd8fac0a5717a2f5911978759a06` and `e54f7791068ad16ff6082c148cf73798836d36e4`. They are separate source observations and are not relabelled as common-candidate results.
+
+The native packet retains source admission, exact source exports and bundle prerequisites, strict preparation, both owning-package executions, the component selection, the Root parent execution, original commands and logs, fresh JUnit, independent readbacks, the first dependency failure and the one explicit recovery request. The caller packet independently retains the original full caller command, raw output, source inventories and completed receipt. Twelve original JSON members are bound by their exact bytes and complete typed values in the append inputs.
+
+## What actually ran on the separate combined source
+
+| Scope                              | Actual result                                                             | Counting and coverage boundary                                                                                                                                   |
+| ---------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Strict preparation                 | Seven steps returned 0 with unchanged source                              | Preparation and lint are not additional task or test passes.                                                                                                     |
+| App-server default owning scope    | 1,348 unique cases passed; two original ignored cases did not execute     | Fresh discovery, original raw output and JUnit were independently reconciled.                                                                                    |
+| Agentd default owning scope        | 781 unique cases passed; 71 original ignored cases did not execute        | The one SLOW progress report and repeated final output are not extra executions.                                                                                 |
+| Checkpoint component selection     | 13 selected executions passed                                             | These cases are a subset of the 781 agentd cases. They add no unique default cases; 785 outside this selection did not execute in this component command.        |
+| Registered Root checkpoint fixture | One exact parent case passed                                              | The non-Root child and its separate libtest summary are fixture activity, not a second acceptance case.                                                          |
+| Complete caller gate               | Passed in 388.5185359 seconds under the original 600-second command bound | The unchanged closed-set engineering gate covered 6,480 Rust files, 173 boundaries and 160 protected sources. It is not a unit-test count or an authority grant. |
+
+The two disjoint default owning package sets therefore contain **2,129 unique passed cases**, with the Root parent reported separately. Neither the component subset nor the caller gate is added to that total. The native readbacks found no selected retry, LEAK or the checked explicit early-return markers in these completed owning runs. Original ignored cases remain excluded.
+
+The first same-source agentd attempt failed while retrieving the V8 checksum with `ConnectionRefusedError` / errno 111, before any native case executed. That FAIL, the single explicitly authorized dependency-recovery request, and the separate successful second preparation/execution are all retained. The 781-case run was the first native execution for that scope; the failed dependency attempt is not erased or described as a passed run.
+
+The actual Root fixture is `authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack`. Its native Root PID was 2254272 with UID 0; the Python wrapper PID was 2254270; the ordinary child PID was 2254274 with UID 60001. The outer wrapper observed two libtest summaries, but the accepted scope contains one parent case. This establishes the recorded registered test-only Root/non-Root checkpoint transport behavior. It does not provision a production registration or establish ordinary deployed daemon learning, complete learning owner ports, actual candidate adoption or successor-task consumption. An independent experiment in elapsed lease expiry was not performed.
+
+Thirty-five actual binary files remain on the recorded host with their manifest-bound identities: ten source-bound helper copies, six app-server test binaries and nineteen agentd test binaries. Their bytes are not in these archives. The archive retains their metadata and the independent preservation checks; it does not claim that the current mutable Cargo cache was rehashed or that all operating-system dependencies were captured.
+
+## The common candidate's original failures remain failures
+
+The common source and its existing validation objects are retained with their original types and cutoffs. In particular, the original common snapshot at **2026-11-09 05:38:20.207529 UTC** records 18 terminal runs: 12 success, three skipped and three failure. The original full repository gate remains failed.
+
+For that common source, the full default workspace executed 20,563 selected cases: 20,562 passed on their single attempt and one ended in failure, across 20,564 attempts. The separate scoped 7,910-case result includes one case that passed after a retry; it is not a clean first-attempt pass and it overlaps the workspace scope. The HostCAS parent is a separately reported selected case. The common 38-case Linux follow-up and 130 Python checks retain their own distinct scopes. None of the separate 3fc results changes or augments those old totals.
+
+This increment contains no 45a or 6ec execution packet. Results or environmental observations from those later sources require their own original evidence and review. The unchanged historical sections below retain their stated cutoffs; an older statement that a result was pending or omitted is not silently rewritten as a current result.
+
+## Metadata completeness and committed-object checks
+
+The original increment-006a publication at `a9116a22d4cc429e9b34a1327bcb3945280d72d4` preserved 81 packets but omitted one ignored `VERIFY.log` from Git. Its reported 1,140 local files were not the committed count: its Git subtree held 1,139 files and fourteen of the fifteen declared observations. The independent readback failure is retained. The additive correction at `02f75555a857b161275ea5c6f7c960dde6cf8b13` restored the exact approved log and added the correction history without rewriting the original commit. Its independently verified Git subtree has 1,236 files and the original fifteen observations.
+
+This increment additionally preserves exactly four correction observations: both complete `RESULT.json` files and both complete `commands.json` indexes from the correction publication and its independent readback. The result-to-command SHA links are checked. **The complete stdout/stderr prefixes referenced by those command indexes remain external original records.** Referencing their hashes does not make their bytes part of this increment and does not establish complete historical cost.
+
+The 007 publication metadata lists a closed set of 21 original observations. This includes those four correction JSON files, the actual 007 append result, its pattern review and verifier log, the approved inputs and source scripts, the preparation and reverse review records, and the actual append launch request/result/stdout/stderr. The append was executed once and naturally returned 0 at **2026-11-09 07:40:24.191637 UTC**; its 48.2886701-second wall observation is not full cost. The append result itself is SHA-256 `a865cb5e8b8923f62adeaa7203ac18d8fa6e2c31d0a11d4624b8c36af824131e`.
+
+The publisher stages only the enumerated file set, forces addition only for the exact approved new verifier-log path, and checks every new or changed file's bytes in the actual Git index and then in the resulting commit. All old 81 packet entries, packet bytes, correction objects and other existing files remain unchanged; only the root index and README are intentionally updated. The reported published file count is taken from the committed Git tree. The original bounded packet verifier and pattern scanner remain unchanged; a zero pattern finding is not a complete secret-detection claim.
+
+The publisher's own terminal receipt and command logs are external to its own commit. A publication success requires the normal push and exact Git/API commit, tree and parent readbacks; preparation metadata alone is not a publication result. Publication and archival verification execute no new native tests and confer no scientific stage advancement.
+
+## Retained prior checkpoint documentation
+
+The previous README follows byte for byte. Its counts and status statements describe the historical checkpoints named in that text.
+
+---
+
 # Source-bound execution history
 
 This is a bounded, lossless checkpoint of engineering evidence. It preserves

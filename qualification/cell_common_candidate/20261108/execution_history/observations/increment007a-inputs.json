@@ -1,0 +1,3799 @@
+{
+  "schema_version": 1,
+  "phase": "increment-007a",
+  "expected_evidence_head": "02f75555a857b161275ea5c6f7c960dde6cf8b13",
+  "expected_evidence_tree": "456903461ff59e9fca71ba1fed2dcc5701d21b78",
+  "expected_index_sha256": "3a2771028bdcb0778eb4266a02994255d63e7875a1996d2fe6411e800f934664",
+  "expected_prior_packet_count": 81,
+  "expected_final_packet_count": 83,
+  "expected_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "expected_common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+  "current_common_validation": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+    "local_python": {
+      "packet_id": "bf42-python130-full-caller-originals-v1",
+      "independent_unit_cases_passed": 130,
+      "full_caller_passed": true,
+      "full_caller_elapsed_seconds": 380.6801889021881,
+      "full_caller_budget_seconds": 600,
+      "source_unchanged": true
+    },
+    "local_strict_preparation": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "prepared_clean",
+      "scope": "Same-source V8 and helper plus owning agentd qualification-cognitive-write just fix and read-only clippy; previous owners' unchanged-source preparations retain their own historical identities.",
+      "source_unchanged": true
+    },
+    "local_selected_native": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "PASS",
+      "selected_unique_cases_executed": 38,
+      "selected_unique_cases_passed": 38,
+      "selected_skips": 0,
+      "retries": 0,
+      "raw_nextest_leak_readback": "NO_NEXTEST_LEAK_OBSERVED",
+      "full_workspace": false,
+      "windows_execution": false,
+      "source_unchanged": true,
+      "filter_excluded_counts_not_added": true
+    },
+    "full_repository_ci": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "run_id": 42553073160,
+      "state": "completed",
+      "conclusion": "failure",
+      "green": false,
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+      "completion_result_included": true,
+      "actual_native_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+      "actual_native_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "same_tree_not_same_commit": true,
+      "full_post_build_working_tree_byte_snapshot": false,
+      "final_target_outcomes_not_case_counts": {
+        "128953043649": {
+          "failed": 3,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128953043675": {
+          "failed": 3,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128953043702": {
+          "failed": 5,
+          "flaky": 0,
+          "timeout": 2
+        },
+        "128953043792": {
+          "failed": 2,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128957722404": {
+          "additional_cases": 0,
+          "aggregation_only": true
+        },
+        "128961511532": {
+          "additional_cases": 0,
+          "aggregation_only": true
+        }
+      },
+      "original_failed_attempts_retained": true,
+      "all_common_workflows_terminal_at_cutoff": false
+    },
+    "independent_grouped_windows_result_included": true,
+    "ui_diagnostic_source_qualified_as_common": false,
+    "scientific_qualification_performed": false,
+    "full_history_cost": null,
+    "physical_cost": null,
+    "stage_advancement_claimed": false,
+    "independent_grouped_windows": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+      "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+      "run_id": 42550332155,
+      "terminal_status": "completed",
+      "terminal_conclusion": "failure",
+      "whole_selected_scope_passed": false,
+      "selected_executed": 11,
+      "selected_passed": 10,
+      "selected_failed": 1,
+      "selected_timeouts": 1,
+      "selected_skipped": 0,
+      "retry_records": 0,
+      "raw_leak_markers": 0,
+      "explicit_guard_skip_markers": 0,
+      "groups": [
+        {
+          "group": "matrix-startup-diagnostic",
+          "packet_id": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-matrix-sdk",
+              "name": "sdk::startup_deadline_tests::expired_finalization_rejects_success_without_erasing_a_written_session",
+              "time_seconds": "5.831",
+              "forbidden_nodes": []
+            }
+          ]
+        },
+        {
+          "group": "agentd-h7-qualification",
+          "packet_id": "windows-fixture-owner-agentd-h7-qualification-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+              "time_seconds": "2.480",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "agentd-fleet-default",
+          "packet_id": "windows-fixture-owner-agentd-fleet-default-bf42-v1",
+          "executed": 2,
+          "passed": 2,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+              "time_seconds": "2.339",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+              "time_seconds": "0.820",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "cli-cloud",
+          "packet_id": "windows-fixture-owner-cli-cloud-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-cli::sandbox_cloud_config",
+              "name": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+              "time_seconds": "31.998",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "appserver-fixtures",
+          "packet_id": "windows-fixture-owner-appserver-fixtures-bf42-v1",
+          "executed": 6,
+          "passed": 5,
+          "failed": 1,
+          "selected_scope_passed": false,
+          "cases": [
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+              "time_seconds": "60.015",
+              "problems": [
+                {
+                  "kind": "failure",
+                  "attributes": {
+                    "type": "test timeout"
+                  }
+                }
+              ],
+              "xml_passed": false
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_1_inherits_parent_developer_instructions_without_an_override",
+              "time_seconds": "1.535",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_2_reapplies_configured_subagent_developer_instructions",
+              "time_seconds": "1.488",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_3_reapplies_updated_configured_role_settings_and_restores_paginated_usage",
+              "time_seconds": "1.856",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_4_reapplies_an_implicitly_selected_configured_default_role",
+              "time_seconds": "1.456",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+              "time_seconds": "4.636",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        }
+      ],
+      "history_packet_id": "windows-fixture-owner-observer-history-bf42-v1",
+      "additional_topology": "five independent 65-minute owner jobs and an independent read-only aggregate",
+      "original_single_job_result_superseded": false,
+      "full_workspace_passed": false,
+      "full_history_cost": null,
+      "scientific_qualification_performed": false
+    },
+    "initial_full_repository_registration_observation": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "state": "pending_or_in_progress_at_publication_readback",
+      "conclusion": null,
+      "green": null,
+      "observation_cutoff": "2026-11-09T02:50:20.636321Z",
+      "registration_packet_id": "bf42-source-freeze-common-fastforward-and-publication-history-v3",
+      "initial_run_ids": {
+        "native": 42553066862,
+        "blocking": 42553073160,
+        "ui": 42553073250,
+        "windows": 42553073234
+      },
+      "completion_result_included": false
+    },
+    "ui_workflow_api_observation": {
+      "source_api_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "run_id": 42553073250,
+      "state": "completed",
+      "conclusion": "success",
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+      "complete_original_case_results_qualified": false,
+      "base_and_source_lanes_must_keep_separate_identities": true
+    },
+    "original_windows_regression": {
+      "packet_id": "bf42-original-windows-regression-failure-v1",
+      "run_id": 42553073234,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "terminal_status": "completed",
+      "conclusion": "failure",
+      "groups": 19,
+      "clean_passing_groups": 17,
+      "unique_selected_executed": 167,
+      "clean_passed": 158,
+      "failed": 8,
+      "passed_but_leaky": 1,
+      "selected_skips": 0,
+      "retries_observed": false,
+      "junit_available": false,
+      "whole_declared_scope_passed": false,
+      "source_binding": "original_checkout_and_before_after_git_identity_and_lock",
+      "full_source_byte_inventory_available": false
+    },
+    "original_ui_readback": {
+      "run_id": 42553073250,
+      "run_attempt": 1,
+      "conclusion": "success",
+      "packets": [
+        "bf42-original-ui-shared-history-native-v1",
+        "bf42-original-ui-source-head-browser-v1",
+        "bf42-original-ui-base-merge-browser-v1"
+      ],
+      "case_level_readback": "verified_original_scopes_only",
+      "tested_commits": {
+        "source_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+        "rust_ui_foundation_base_merge": "7450f0cbe49443a2b78826a2786ac37889c60e76",
+        "native_presentation_base_merge": "52ebeefecb4ab2d2fbb3e69100ab3773df0b8ea5"
+      },
+      "all_three_tested_trees": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "same_tree_not_same_commit": true,
+      "merge_identities_independently_fetched_through_commit_api": false,
+      "per_lane_library_executions": {
+        "sdk": 7,
+        "headless": 29,
+        "native": 52
+      },
+      "headless_and_sdk_name_sets_are_subsets_of_native": true,
+      "counts_are_not_summed_as_unique_cases": true,
+      "per_browser_lane_scenario_executions": {
+        "default": 6,
+        "fixtures_including_sidebar": 9,
+        "buffer_control": 1,
+        "gateway": 7
+      },
+      "gateway_includes_one_original_sdk_synthetic_sink_control": true,
+      "per_browser_lane_capture_observations_not_cases": {
+        "default": 60,
+        "fixtures": 78
+      },
+      "physical_device_or_full_product_qualification": false,
+      "new_tests_executed_by_readback": false,
+      "full_history_cost": null
+    },
+    "prior_checkpoint_ci_observations_before_increment006": {
+      "evidence_commit": "97543a30b941122ee42c99ab95c2dbf639ac6576",
+      "index_sha256": "33da1f4d0d31c0251fb5a303e72aa31a561b961e01e0c6495b6b234b6857cf9e",
+      "original_fields": {
+        "latest_common_ci_api_observation": {
+          "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+          "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+          "observation_cutoff": "2026-11-09T04:41:07.054469+00:00",
+          "summary_original_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-current-snapshot-006/SUMMARY.json",
+          "summary_original_bytes": 7032,
+          "summary_original_sha256": "d4826f12f62bf013da903e12065de8092f572558f641f590b5ecbf5b7d438fdf",
+          "workflow_run_count": 18,
+          "all_run_api_head_sha_equal_common": true,
+          "all_common_workflows_terminal": false,
+          "in_progress_job_ids": [
+            128952701454,
+            128953446740
+          ],
+          "run_observations": [
+            {
+              "id": 42553073435,
+              "name": "Hepta Windows private-state native (security qualification only)",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073516,
+              "name": "v8-canary",
+              "status": "in_progress",
+              "conclusion": null,
+              "nonpassing_jobs": [
+                {
+                  "id": 128953446740,
+                  "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "started_at": "2026-11-09T02:53:05Z",
+                  "completed_at": null,
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073516/job/128953446740"
+                }
+              ]
+            },
+            {
+              "id": 42553073264,
+              "name": "Hepta HCSN training bridge",
+              "status": "completed",
+              "conclusion": "skipped",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073130,
+              "name": "App-server schema refresh",
+              "status": "completed",
+              "conclusion": "skipped",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073141,
+              "name": "Production HOS2 owner proposal",
+              "status": "completed",
+              "conclusion": "skipped",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073121,
+              "name": "Hepta Cell research stage evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073195,
+              "name": "Hepta PRED-1 CPU checks",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073191,
+              "name": "Hepta MEM-1 evidence verifier",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073280,
+              "name": "Hepta EVOLVE-1 CPU contracts",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073159,
+              "name": "Hepta VERIFY-1 engineering validation",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073323,
+              "name": "Keyring synchronous backend lock proposal",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073131,
+              "name": "Bazel stable lock proposal",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073250,
+              "name": "Rust UI product foundation",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073160,
+              "name": "blocking-ci",
+              "status": "completed",
+              "conclusion": "failure",
+              "nonpassing_jobs": [
+                {
+                  "id": 128953043649,
+                  "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:51:34Z",
+                  "completed_at": "2026-11-09T03:05:52Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043649"
+                },
+                {
+                  "id": 128953043675,
+                  "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:52:24Z",
+                  "completed_at": "2026-11-09T03:09:09Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043675"
+                },
+                {
+                  "id": 128953043702,
+                  "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:52:13Z",
+                  "completed_at": "2026-11-09T03:21:17Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043702"
+                },
+                {
+                  "id": 128953043792,
+                  "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:52:25Z",
+                  "completed_at": "2026-11-09T03:06:54Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043792"
+                },
+                {
+                  "id": 128957722404,
+                  "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T03:08:57Z",
+                  "completed_at": "2026-11-09T03:09:00Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128957722404"
+                },
+                {
+                  "id": 128961511532,
+                  "name": "CI required",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T03:25:12Z",
+                  "completed_at": "2026-11-09T03:25:24Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128961511532"
+                }
+              ]
+            },
+            {
+              "id": 42553073125,
+              "name": "Hepta architecture convergence",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073234,
+              "name": "Windows original CI regressions (declared scope only)",
+              "status": "completed",
+              "conclusion": "failure",
+              "nonpassing_jobs": [
+                {
+                  "id": 128952720859,
+                  "name": "original-regressions",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:50:38Z",
+                  "completed_at": "2026-11-09T03:51:04Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073234/job/128952720859"
+                }
+              ]
+            },
+            {
+              "id": 42553066841,
+              "name": "Hepta Cell research stage evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553066862,
+              "name": "Hepta Cell framework native validation",
+              "status": "in_progress",
+              "conclusion": null,
+              "nonpassing_jobs": [
+                {
+                  "id": 128952701454,
+                  "name": "Cell framework (agentd-composition)",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "started_at": "2026-11-09T02:50:44Z",
+                  "completed_at": null,
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553066862/job/128952701454"
+                }
+              ]
+            }
+          ],
+          "observation_scope": "Original GitHub API workflow/job state only, not native case counts or new test execution. Prior cutoffs and their case evidence remain unchanged.",
+          "api_status_is_not_case_result": true,
+          "scientific_advancement_claimed": false,
+          "physical_cost": null,
+          "full_history_cost": null
+        },
+        "remaining_common_ci_at_cutoff": {
+          "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+          "scope": [
+            "native composition",
+            "original Windows regressions",
+            "Windows arm64 V8",
+            "Windows x64 V8"
+          ],
+          "state": "in_progress_at_cutoff",
+          "later_results_inferred": false
+        }
+      },
+      "retained_without_relabelling": true
+    },
+    "latest_common_ci_api_observation": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observation_cutoff": "2026-11-09T05:38:20.207529+00:00",
+      "packet_id": "bf42-original-ci-api-snapshots007-008-terminal-v1",
+      "summary_original_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-current-snapshot-008/SUMMARY.json",
+      "summary_original_bytes": 6654,
+      "summary_original_sha256": "06ce5c9a96c590eee0eac3c3275542c7fe94b84312884a7dbdf1b60451662a9e",
+      "workflow_run_count": 18,
+      "all_run_api_head_sha_equal_common": true,
+      "all_common_workflows_terminal": true,
+      "in_progress_job_ids": [],
+      "conclusion_counts_not_test_counts": {
+        "success": 12,
+        "skipped": 3,
+        "failure": 3
+      },
+      "run_observations": [
+        {
+          "id": 42553073435,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073516,
+          "name": "v8-canary",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073264,
+          "name": "Hepta HCSN training bridge",
+          "status": "completed",
+          "conclusion": "skipped",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073130,
+          "name": "App-server schema refresh",
+          "status": "completed",
+          "conclusion": "skipped",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073141,
+          "name": "Production HOS2 owner proposal",
+          "status": "completed",
+          "conclusion": "skipped",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073121,
+          "name": "Hepta Cell research stage evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073195,
+          "name": "Hepta PRED-1 CPU checks",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073191,
+          "name": "Hepta MEM-1 evidence verifier",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073280,
+          "name": "Hepta EVOLVE-1 CPU contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073159,
+          "name": "Hepta VERIFY-1 engineering validation",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073323,
+          "name": "Keyring synchronous backend lock proposal",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073131,
+          "name": "Bazel stable lock proposal",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073250,
+          "name": "Rust UI product foundation",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073160,
+          "name": "blocking-ci",
+          "status": "completed",
+          "conclusion": "failure",
+          "nonpassing_jobs": [
+            {
+              "id": 128953043649,
+              "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:51:34Z",
+              "completed_at": "2026-11-09T03:05:52Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043649"
+            },
+            {
+              "id": 128953043675,
+              "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:52:24Z",
+              "completed_at": "2026-11-09T03:09:09Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043675"
+            },
+            {
+              "id": 128953043702,
+              "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:52:13Z",
+              "completed_at": "2026-11-09T03:21:17Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043702"
+            },
+            {
+              "id": 128953043792,
+              "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:52:25Z",
+              "completed_at": "2026-11-09T03:06:54Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043792"
+            },
+            {
+              "id": 128957722404,
+              "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T03:08:57Z",
+              "completed_at": "2026-11-09T03:09:00Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128957722404"
+            },
+            {
+              "id": 128961511532,
+              "name": "CI required",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T03:25:12Z",
+              "completed_at": "2026-11-09T03:25:24Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128961511532"
+            }
+          ]
+        },
+        {
+          "id": 42553073125,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073234,
+          "name": "Windows original CI regressions (declared scope only)",
+          "status": "completed",
+          "conclusion": "failure",
+          "nonpassing_jobs": [
+            {
+              "id": 128952720859,
+              "name": "original-regressions",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:50:38Z",
+              "completed_at": "2026-11-09T03:51:04Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073234/job/128952720859"
+            }
+          ]
+        },
+        {
+          "id": 42553066841,
+          "name": "Hepta Cell research stage evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553066862,
+          "name": "Hepta Cell framework native validation",
+          "status": "completed",
+          "conclusion": "failure",
+          "nonpassing_jobs": [
+            {
+              "id": 128952701454,
+              "name": "Cell framework (agentd-composition)",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:50:44Z",
+              "completed_at": "2026-11-09T05:25:39Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553066862/job/128952701454"
+            }
+          ]
+        }
+      ],
+      "observation_scope": "Original GitHub API workflow/job state only; actual test results and base-merge checkout identities remain separately bound.",
+      "api_status_is_not_case_result": true,
+      "scientific_advancement_claimed": false,
+      "physical_cost": null,
+      "full_history_cost": null
+    },
+    "remaining_common_ci_at_cutoff": {
+      "observation_cutoff": "2026-11-09T05:38:20.207529+00:00",
+      "scope": [],
+      "state": "all_original_workflows_terminal_at_cutoff",
+      "later_results_inferred": false,
+      "packet_id": "bf42-original-ci-api-snapshots007-008-terminal-v1"
+    },
+    "original_native_workflow": {
+      "packet_id": "bf42-original-native-terminal-failure-v1",
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "actual_tested_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "actual_lane": "source-head",
+      "run_id": 42553066862,
+      "run_attempt": 1,
+      "terminal_status": "completed",
+      "conclusion": "failure",
+      "composition_job_id": 128952701454,
+      "composition_completed_at": "2026-11-09T05:25:39Z",
+      "full_workspace": {
+        "executed_unique": 20563,
+        "runner_clean_single_attempt_passed": 20562,
+        "final_failed": 1,
+        "native_attempts": 20564,
+        "original_outside_selection_skipped": 139,
+        "selected_junit_skipped": 0,
+        "command_exit_code": 100,
+        "outer_timeout": false,
+        "passed": false
+      },
+      "earlier_scoped": {
+        "executed_unique": 7910,
+        "runner_final_passed": 7910,
+        "runner_clean_single_attempt_passed": 7909,
+        "flaky_after_original_retry": 1,
+        "native_attempts": 7911,
+        "original_outside_selection_skipped": 107,
+        "selected_junit_skipped": 0,
+        "fully_clean_single_attempt_pass": false
+      },
+      "mechanisms": {
+        "executed_unique": 1215,
+        "runner_clean_single_attempt_passed": 1215,
+        "original_outside_selection_skipped": 7,
+        "selected_junit_skipped": 0
+      },
+      "separate_ignored_hostcas_parent": {
+        "executed_unique": 1,
+        "runner_clean_single_attempt_passed": 1,
+        "original_outside_selection_skipped": 791,
+        "selected_junit_skipped": 0
+      },
+      "unique_final_failure": {
+        "actual_aggregated_output_not_printed_by_original_assertion": true,
+        "binary_id": "codex-core::all",
+        "name": "suite::unified_exec::unified_exec_formats_large_output_summary",
+        "scoped_first_error": "unified_exec.rs:3186: HEAD missing; original retry passed",
+        "workspace_both_errors": "unified_exec.rs:3188: expected bytes-omitted regex not matched"
+      },
+      "phase_overlap": [
+        {
+          "left": "mechanisms",
+          "not_automatically_equivalent_feature_execution": true,
+          "right": "agentd_scoped",
+          "same_binary_case_pair_overlap": 0
+        },
+        {
+          "left": "mechanisms",
+          "not_automatically_equivalent_feature_execution": true,
+          "right": "hostcas",
+          "same_binary_case_pair_overlap": 0
+        },
+        {
+          "left": "mechanisms",
+          "not_automatically_equivalent_feature_execution": true,
+          "right": "default_workspace",
+          "same_binary_case_pair_overlap": 1215
+        },
+        {
+          "left": "agentd_scoped",
+          "not_automatically_equivalent_feature_execution": true,
+          "right": "hostcas",
+          "same_binary_case_pair_overlap": 0
+        },
+        {
+          "left": "agentd_scoped",
+          "not_automatically_equivalent_feature_execution": true,
+          "right": "default_workspace",
+          "same_binary_case_pair_overlap": 7910
+        },
+        {
+          "left": "hostcas",
+          "not_automatically_equivalent_feature_execution": true,
+          "right": "default_workspace",
+          "same_binary_case_pair_overlap": 0
+        }
+      ],
+      "scope_counts_not_added_as_unique_cases": true,
+      "raw_timeout_and_leak_markers_observed": false,
+      "raw_first_summary_and_junit_exact_case_closure": true,
+      "independent_original_nextest_listing_available": false,
+      "outside_selection_named_roster_available": false,
+      "original_successful_silent_early_return_absence": "unknown; original output capture policy retained",
+      "helper_metadata_retained": true,
+      "native_binary_bytes_archived_by_original_workflow": false,
+      "prior_xml_and_duplicate_artifacts_excluded_from_counts": true,
+      "full_history_cost": null,
+      "scientific_acceptance": false
+    },
+    "separate_source_observations": {
+      "scope": "Successor-source and observer histories; none is a bf42 execution or common-source qualification",
+      "appserver_linux": {
+        "packet_id": "appserver-3f084-native-owning-and-bfcbdb2-counterfactual-history-v1",
+        "source_sha": "3f084182eb80bd8fac0a5717a2f5911978759a06",
+        "source_tree": "3baf936ae98d761bcba25a4e38c2501407417737",
+        "owning_unique_passed": 1348,
+        "original_ignored_not_executed": 2,
+        "selected_retries": 0,
+        "counterfactual_source_sha": "bfcbdb20d378bdeab24078177128daec171c6063",
+        "counterfactual_source_tree": "6f4eb6cbf5dcb97353359d184877aa3bb0f0e995",
+        "counterfactual_actual_failed": 2,
+        "counterfactual_actual_passed": 0,
+        "counterfactual_expected_failure_is_not_product_PASS": true,
+        "source_results_not_added": true,
+        "full_workspace": false,
+        "host_only_binaries": 27,
+        "binary_bytes_archived": false,
+        "full_history_cost": null
+      },
+      "windows_cargo": {
+        "packet_id": "windows-appserver-3f084-two-V8-download-failures-v1",
+        "source_sha": "3f084182eb80bd8fac0a5717a2f5911978759a06",
+        "source_tree": "3baf936ae98d761bcba25a4e38c2501407417737",
+        "observer_sha": "f0550f79e6c8e729e60943e8e37dded924729998",
+        "observer_tree": "a1133030d8fd78b7719ea175b36a9b4a20c50a6b",
+        "run_id": 42566595607,
+        "attempts": [
+          {
+            "attempt": 1,
+            "failure_phase": "checksum_download_HTTP_504",
+            "native_test_cases_executed": 0,
+            "selected_cases_not_run": 5
+          },
+          {
+            "attempt": 2,
+            "failure_phase": "artifact_body_download_HTTP_504",
+            "native_test_cases_executed": 0,
+            "selected_cases_not_run": 5
+          }
+        ],
+        "original_case_set_size": 5,
+        "executed_across_both_attempts": 0,
+        "single_explicit_recovery_request": true,
+        "third_recovery_requested": false,
+        "junit_available": false,
+        "full_history_cost": null
+      },
+      "windows_bazel": {
+        "packets": [
+          "windows-appserver-bazel-preparation-attempt1-recovery-request-v1",
+          "windows-appserver-bazel-attempt2-dependency-failure-v1"
+        ],
+        "source_sha": "3f084182eb80bd8fac0a5717a2f5911978759a06",
+        "source_tree": "3baf936ae98d761bcba25a4e38c2501407417737",
+        "observer_sha": "b61e1a89ce6faea79d0518b990b78470e97e2244",
+        "observer_tree": "c42eae4f367d27b25c7a74846b7c1c66a4af24b2",
+        "run_id": 42566694888,
+        "attempts": [
+          {
+            "attempt": 1,
+            "failure_phase": "bazel_features_v1.50.0_dependency_HTTP504",
+            "native_test_cases_executed": 0
+          },
+          {
+            "attempt": 2,
+            "failure_phase": "rules_cc_0.2.20_dependency_HTTP504",
+            "native_test_cases_executed": 0
+          }
+        ],
+        "original_public_target": "//codex-rs/app-server:app-server-all-test",
+        "original_shards": 16,
+        "single_explicit_recovery_request": true,
+        "third_recovery_requested": false,
+        "no_native_qualification": true,
+        "full_history_cost": null
+      },
+      "checkpoint_next_bootstrap_review": {
+        "packet_id": "learning-checkpoint-next-bootstrap-review-e54-v1",
+        "source_sha": "e54f7791068ad16ff6082c148cf73798836d36e4",
+        "source_tree": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66",
+        "review_kind": "readonly_named_source_boundary_review",
+        "tested_sha": null,
+        "tests_executed_by_this_review": false,
+        "existing_checkpoint_transport_result_is_separate": true,
+        "ordinary_daemon_learning_installed": false,
+        "full_ports_production_provider": false,
+        "actual_model_learning_or_successor_consumption": false,
+        "full_history_cost": null
+      },
+      "combined_source_results": "deliberately omitted from increment006a; require a separate terminal packet and review",
+      "scientific_advancement_claimed": false,
+      "full_history_cost": null,
+      "combined_3fc_terminal_history": {
+        "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+        "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+        "parents": [
+          "3f084182eb80bd8fac0a5717a2f5911978759a06",
+          "e54f7791068ad16ff6082c148cf73798836d36e4"
+        ],
+        "base_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+        "native_packet_id": "combined-3fc4725-native-history-v1",
+        "caller_packet_id": "combined-callers-3fc4725-desktop-history-v1",
+        "scope": "Separate Linux candidate engineering executions; not bf42 CI or ordinary deployed learning",
+        "same_source_strict": {
+          "steps_passed": 7,
+          "source_unchanged": true,
+          "source_entries": 15010,
+          "finished_at": "2026-11-09T06:19:14.418149+00:00",
+          "native_test_cases": 0
+        },
+        "appserver_owning": {
+          "actual_unique_passed": 1348,
+          "original_ignored_not_executed": 2,
+          "selected_retries": 0,
+          "leak_or_known_guard_markers": 0,
+          "independent_readback_finished_at": "2026-11-09T06:33:09.722402+00:00"
+        },
+        "agentd_owning": {
+          "actual_unique_passed": 781,
+          "original_ignored_not_executed": 71,
+          "selected_retries": 0,
+          "leak_or_known_guard_markers": 0,
+          "slow_records_are_not_additional_attempts": true,
+          "independent_readback_finished_at": "2026-11-09T06:48:11.127733+00:00"
+        },
+        "unique_default_owning_cases": 2129,
+        "two_package_sets_disjoint": true,
+        "checkpoint_component_scope": {
+          "actual_executions": 13,
+          "subset_of_agentd_781": true,
+          "added_to_unique_count": false
+        },
+        "root_transport_parent": {
+          "actual_parent_passed": 1,
+          "child_is_additional_case": false,
+          "native_root_pid": 2254272,
+          "ordinary_child_pid": 2254274,
+          "test_only_registered_bind": true,
+          "production_registration": false
+        },
+        "original_agentd_dependency_failure": {
+          "status": "FAIL",
+          "failure_phase": "V8 checksum ConnectionRefusedError errno111",
+          "native_executed": 0,
+          "original_result_sha256": "bd25eee21d143c7e998c27cd7377204f8bb11271c6de8a89e6cf710596a29180"
+        },
+        "explicit_dependency_recovery": {
+          "request_count": 1,
+          "same_source": true,
+          "native_execution_first_on_v2": true,
+          "native_retry": false,
+          "checksum_bypass": false,
+          "test_budgets_changed": false,
+          "automatic_loop": false
+        },
+        "caller_gate": {
+          "passed": true,
+          "original_command": [
+            "python3",
+            "scripts/verify_hepta_callers.py",
+            "verify"
+          ],
+          "wall_seconds_not_full_cost": 388.51853591995314,
+          "timeout_seconds": 600,
+          "unit_tests_executed": false
+        },
+        "binary_bytes_archived": false,
+        "host_only_binary_count": 35,
+        "full_workspace": false,
+        "windows_native": false,
+        "windows_bazel": false,
+        "ordinary_daemon_learning": false,
+        "full_learning_owner_ports": false,
+        "production_registration": false,
+        "real_learning_candidate_adoption": false,
+        "real_successor_task_consumption": false,
+        "elapsed_lease_expiry_independent_experiment": false,
+        "common_source_advanced": false,
+        "scientific_acceptance": false,
+        "physical_cost": null,
+        "full_history_cost": null,
+        "full_history_cost_complete": false
+      }
+    }
+  },
+  "packets": [
+    {
+      "packet_id": "combined-3fc4725-native-history-v1",
+      "scope": "Separate combined 3fc Linux source: strict preparation, 1348 app-server and 781 agentd default cases, overlapping 13-component scope, one actual Root parent, original dependency failure and recovery retained",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/combined-3fc4725-native-history-v1-import.tar.xz",
+      "bytes": 5439844,
+      "sha256": "ffafc08752e9f6d9c45258389858002b7afaf7239363e7bc6372c54dca162c4e",
+      "file_member_count": 309,
+      "required_json_members": [
+        {
+          "path": "metadata/SCOPE.json",
+          "bytes": 8145,
+          "sha256": "3d0b56f6c63c96295cef51b45c4f04c258d9b350afa781fc1637b02448d5a5cf",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "collection_scope": "Completed combined 3fc source admission, strict preparation, both owning runs, component subset, Root parent and independent readbacks",
+                "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+                "parents": [
+                  "3f084182eb80bd8fac0a5717a2f5911978759a06",
+                  "e54f7791068ad16ff6082c148cf73798836d36e4"
+                ],
+                "base_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "input_prefixes": [
+                  "combined-3fc4725-source-admission-v1",
+                  "combined-3fc4725-strict-v1",
+                  "combined-3fc4725-appserver-owning-v1",
+                  "combined-3fc4725-appserver-stage-audit-v1",
+                  "combined-3fc4725-agentd-owning-v1",
+                  "combined-3fc4725-agentd-owning-v2",
+                  "combined-3fc4725-agentd-stage-audit-v1",
+                  "combined-3fc4725-checkpoint-components-v1",
+                  "combined-3fc4725-checkpoint-root-v1"
+                ],
+                "singletons": [
+                  "admit-combined-3fc4725-and-prepare-v1.py",
+                  "prepare-combined-3fc4725-strict-v1.py",
+                  "run-appserver-3f084-native-v2.py",
+                  "run-combined-3fc4725-agentd-owning-v1.py",
+                  "run-combined-3fc4725-checkpoint-components-v1.py",
+                  "run-combined-3fc4725-checkpoint-root-v1.py",
+                  "audit-combined-3fc4725-appserver-owning-stage-v1.py",
+                  "audit-combined-3fc4725-agentd-owning-stage-v1.py",
+                  "retain-combined-3fc4725-appserver-binaries-stage-v1.py",
+                  "retain-combined-3fc4725-agentd-binaries-stage-v1.py",
+                  "audit-combined-agentd-v1-from-reviewed-app.patch",
+                  "combined-source-3fc4725.bundle",
+                  "combined-3fc4725-agentd-dependency-recovery-request-v1.json"
+                ],
+                "retention_metadata_prefixes": [
+                  "combined-3fc4725-appserver-retained-binaries-v1",
+                  "combined-3fc4725-agentd-retained-binaries-v1"
+                ],
+                "historical_failure_preserved": "The first same-source agentd V8 checksum failure remains FAIL with zero native execution; its one explicit recovery request and separate v2 remain distinct.",
+                "prior_source_histories_separate_not_relabelled": [
+                  "3f084182eb80bd8fac0a5717a2f5911978759a06",
+                  "e54f7791068ad16ff6082c148cf73798836d36e4"
+                ],
+                "counts": {
+                  "default_owning_unique_passed": 2129,
+                  "appserver": {
+                    "actual_unique_passed": 1348,
+                    "original_ignored_not_executed": 2
+                  },
+                  "agentd": {
+                    "actual_unique_passed": 781,
+                    "original_ignored_not_executed": 71,
+                    "one_slow_case_is_not_additional_execution": true
+                  },
+                  "checkpoint_components": {
+                    "actual_executions": 13,
+                    "subset_of_agentd_default_781": true,
+                    "added_to_unique_count": false,
+                    "outside_selection_not_executed": 785
+                  },
+                  "root_parent": {
+                    "exact_parent_case": "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+                    "actual_parent_passed": 1,
+                    "python_root_runner_pid": 2254270,
+                    "python_runner_uid": 0,
+                    "native_root_pid": 2254272,
+                    "native_root_uid": 0,
+                    "ordinary_child_pid": 2254274,
+                    "ordinary_child_uid": 60001,
+                    "raw_log_sha256": "3f33e36600f05afaaca824412250317b2d81be1ab6ca16cab927fc784f736576",
+                    "raw_libtest_summary_count": 2,
+                    "outer_wrapper_observed_passed_tests": 2,
+                    "child_summaries_added_to_acceptance_count": false,
+                    "test_only_registered_bind": true,
+                    "production_registration": false
+                  },
+                  "xml_bindings": [
+                    {
+                      "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-appserver-owning-v1/original-fresh-junit.xml",
+                      "bytes": 300685,
+                      "sha256": "da1eaebd06bbb8317d0a4f602dd64818bf2b94af219c6d3c9b3a418b36973723",
+                      "count": 1348
+                    },
+                    {
+                      "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-owning-v2/original-fresh-junit.xml",
+                      "bytes": 186187,
+                      "sha256": "f966240f76cc9aa964ec676e724d9f9163a76171f7ce7d04af4e7522f3c5f7ec",
+                      "count": 781
+                    },
+                    {
+                      "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/checkpoint-codec-and-wire/tests-junit.xml",
+                      "bytes": 3538,
+                      "sha256": "e3680812cc42e10942cf194f991f53bd62036570226dcb2533239e86af2854e0",
+                      "count": 13
+                    }
+                  ],
+                  "default_package_sets_disjoint": true,
+                  "all_historical_attempts_retained_separately": true
+                },
+                "no_native_tests_started_or_rerun": true,
+                "exact_root_record_reads": [
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/root-fixture/RESULT.json",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/root-fixture/mount.stderr",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/root-fixture/mount.stdout",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/root-fixture/mountinfo-after.txt",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/root-fixture/mountinfo-before.txt",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/root-fixture/mountinfo-created.txt",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/root-fixture/original-test.log",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/root-fixture/umount.stderr",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/root-fixture/umount.stdout"
+                ],
+                "root_read_method": "sudo -n -- cat -- on only the exact nine original records; no chmod, key read, service registration or mount operation",
+                "root_test_scope": "Actual registered test-only Root/non-Root checkpoint transport; does not provision an ordinary deployed daemon.",
+                "elapsed_lease_expiry_independent_experiment": false,
+                "binary_bytes_archived": false,
+                "host_only_binary_file_count": 35,
+                "host_only_split": {
+                  "source_bound_helper_copies": 10,
+                  "appserver_discovered_test_binaries": 6,
+                  "agentd_discovered_test_binaries": 19
+                },
+                "original_cargo_target_rehashed_now": false,
+                "original_cargo_target_binding": "Pinned original retention receipts; current independent readonly copies are rehashed before and after collection.",
+                "desktop_caller_reference_only_not_in_this_archive": {
+                  "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "host": "desktop",
+                  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/combined-callers-3fc4725-desktop-history-v1/combined-callers-3fc4725-desktop-history.tar.xz",
+                  "bytes": 2330412,
+                  "sha256": "8eba6d8438f9109fc9c1e0850c233ec1cc588cc27d730675d817b0b75ebd9bbb",
+                  "member_count": 24,
+                  "actual_gate_wall_seconds": 388.51853591995314,
+                  "timeout_seconds": 600,
+                  "unit_test_count": null,
+                  "reference_not_reverified_by_this_AI_collector": true
+                },
+                "full_workspace": false,
+                "windows_native": false,
+                "windows_bazel": false,
+                "ordinary_daemon_learning": false,
+                "full_learning_owner_ports": false,
+                "production_registration": false,
+                "real_learning_candidate_adoption": false,
+                "real_successor_task_consumption": false,
+                "scientific_acceptance": false,
+                "physical_cost": null,
+                "full_history_cost": null,
+                "full_history_cost_complete": false,
+                "command_wall_times_retained_not_summed_or_called_cpu_or_learning_cost": true,
+                "archival_completeness": false,
+                "exclusions": "Only exact manifest-bound helper copies and independent native test binaries are host-only; no Cargo cache, private /run fixture keys, unrelated Java/tserver, PTY history sweep, or active successor source is collected.",
+                "source_exports": "Immutable commit, nineteen changed files, fifteen supporting files, and exact combined diff; source bundle requires recorded prerequisites.",
+                "source_observation_before": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "parents": [
+                    "3f084182eb80bd8fac0a5717a2f5911978759a06",
+                    "e54f7791068ad16ff6082c148cf73798836d36e4"
+                  ],
+                  "dirty": ""
+                }
+              }
+            }
+          ]
+        },
+        {
+          "path": "metadata/COUNT_BINDINGS.json",
+          "bytes": 2129,
+          "sha256": "6a68176bc7fe6be249f9d2072e46c7e2a81998bde64aeea6725a10bb5c1926af",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "default_owning_unique_passed": 2129,
+                "appserver": {
+                  "actual_unique_passed": 1348,
+                  "original_ignored_not_executed": 2
+                },
+                "agentd": {
+                  "actual_unique_passed": 781,
+                  "original_ignored_not_executed": 71,
+                  "one_slow_case_is_not_additional_execution": true
+                },
+                "checkpoint_components": {
+                  "actual_executions": 13,
+                  "subset_of_agentd_default_781": true,
+                  "added_to_unique_count": false,
+                  "outside_selection_not_executed": 785
+                },
+                "root_parent": {
+                  "exact_parent_case": "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+                  "actual_parent_passed": 1,
+                  "python_root_runner_pid": 2254270,
+                  "python_runner_uid": 0,
+                  "native_root_pid": 2254272,
+                  "native_root_uid": 0,
+                  "ordinary_child_pid": 2254274,
+                  "ordinary_child_uid": 60001,
+                  "raw_log_sha256": "3f33e36600f05afaaca824412250317b2d81be1ab6ca16cab927fc784f736576",
+                  "raw_libtest_summary_count": 2,
+                  "outer_wrapper_observed_passed_tests": 2,
+                  "child_summaries_added_to_acceptance_count": false,
+                  "test_only_registered_bind": true,
+                  "production_registration": false
+                },
+                "xml_bindings": [
+                  {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-appserver-owning-v1/original-fresh-junit.xml",
+                    "bytes": 300685,
+                    "sha256": "da1eaebd06bbb8317d0a4f602dd64818bf2b94af219c6d3c9b3a418b36973723",
+                    "count": 1348
+                  },
+                  {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-owning-v2/original-fresh-junit.xml",
+                    "bytes": 186187,
+                    "sha256": "f966240f76cc9aa964ec676e724d9f9163a76171f7ce7d04af4e7522f3c5f7ec",
+                    "count": 781
+                  },
+                  {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/checkpoint-codec-and-wire/tests-junit.xml",
+                    "bytes": 3538,
+                    "sha256": "e3680812cc42e10942cf194f991f53bd62036570226dcb2533239e86af2854e0",
+                    "count": 13
+                  }
+                ],
+                "default_package_sets_disjoint": true,
+                "all_historical_attempts_retained_separately": true
+              }
+            }
+          ]
+        },
+        {
+          "path": "metadata/TERMINAL_SUMMARIES.json",
+          "bytes": 1896,
+          "sha256": "a87d3cd2c64d59a406a4ef797dd12af41bcbe031a849f87e82c0fdf7b2b08195",
+          "equals": [
+            {
+              "path": [],
+              "value": [
+                {
+                  "scope": "source_admission",
+                  "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "status": "PASS",
+                  "native_tests_executed": 0
+                },
+                {
+                  "scope": "same_source_two_owner_strict_preparation",
+                  "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "status": "prepared_clean",
+                  "seven_phases_exit_zero": true,
+                  "native_tests_executed": 0
+                },
+                {
+                  "scope": "appserver_owning",
+                  "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "status": "PASS",
+                  "unique_passed": 1348,
+                  "original_ignored_not_executed": 2
+                },
+                {
+                  "scope": "agentd_dependency_attempt_v1",
+                  "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "status": "FAIL",
+                  "command_exit_code": 1,
+                  "native_tests_executed": 0,
+                  "first_cause": "V8 checksum retrieval URLError ConnectionRefusedError errno111",
+                  "explicit_recovery_request_sha256": "301935e3b7ce04b2eb54a03441c4a2afe05326c9a7a3c81753a651decca0cd68"
+                },
+                {
+                  "scope": "agentd_owning_attempt_v2",
+                  "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "status": "PASS",
+                  "unique_passed": 781,
+                  "original_ignored_not_executed": 71,
+                  "native_execution_was_not_a_retry": true
+                },
+                {
+                  "scope": "checkpoint_components",
+                  "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "status": "PASS",
+                  "actual_executions": 13,
+                  "subset_of_agentd_781": true,
+                  "added_to_unique_count": false
+                },
+                {
+                  "scope": "test_only_registered_Root_transport",
+                  "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "status": "PASS",
+                  "actual_parent_passed": 1,
+                  "child_summary_counted_as_additional_case": false
+                },
+                {
+                  "scope": "independent_owning_readback_and_binary_retention",
+                  "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "native_tests_executed": 0,
+                  "actual_test_binary_files_retained_host_only": 25
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "path": "originals/combined-3fc4725-strict-v1/preparation.json",
+          "bytes": 9368,
+          "sha256": "b392ce360950d0507ac0da5ee567412e9341018c288e90a4e965e608d37a1bec",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "scope": "same_source_appserver_and_agentd_lint_and_complete_helper_preparation",
+                "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+                "base_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "commands": [
+                  [
+                    "appserver-owning-strict-fix",
+                    [
+                      "just",
+                      "fix",
+                      "--locked",
+                      "-p",
+                      "codex-app-server",
+                      "--",
+                      "-D",
+                      "warnings"
+                    ]
+                  ],
+                  [
+                    "appserver-owning-readonly-strict-clippy",
+                    [
+                      "cargo",
+                      "clippy",
+                      "--tests",
+                      "--locked",
+                      "-p",
+                      "codex-app-server",
+                      "--",
+                      "-D",
+                      "warnings"
+                    ]
+                  ],
+                  [
+                    "agentd-owning-strict-fix",
+                    [
+                      "just",
+                      "fix",
+                      "--locked",
+                      "-p",
+                      "codex-hepta-agentd",
+                      "--",
+                      "-D",
+                      "warnings"
+                    ]
+                  ],
+                  [
+                    "agentd-owning-readonly-strict-clippy",
+                    [
+                      "cargo",
+                      "clippy",
+                      "--tests",
+                      "--locked",
+                      "-p",
+                      "codex-hepta-agentd",
+                      "--",
+                      "-D",
+                      "warnings"
+                    ]
+                  ]
+                ],
+                "formatting": "root already ran canonical just fmt before freezing this exact source; no repeat",
+                "helper_packages": [
+                  "codex-cli",
+                  "codex-exec",
+                  "codex-app-server",
+                  "codex-code-mode-host",
+                  "codex-rmcp-client",
+                  "codex-linux-sandbox",
+                  "codex-shell-escalation",
+                  "codex-hepta-infer-worker-host"
+                ],
+                "helper_scope": "all ten original CI helper binaries, rebuilt and pinned to this exact source",
+                "owning_package_lints": [
+                  "codex-app-server",
+                  "codex-hepta-agentd"
+                ],
+                "owning_package_features": [],
+                "canonical_fix_followed_by_nonmutating_strict_clippy": true,
+                "prior_lint_results_not_relabelled_to_this_source": true,
+                "tests_run": false,
+                "scientific_qualification_performed": false,
+                "full_workspace_lint_performed": false,
+                "full_cost": null,
+                "minimum_free_bytes_before_build": 4294967296,
+                "cargo_profile": "dev",
+                "build_jobs": 6,
+                "status": "prepared_clean",
+                "started_at": "2026-11-09T06:06:14.422262+00:00",
+                "steps": [
+                  {
+                    "name": "v8",
+                    "argv": [
+                      "python3",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725/scripts/hepta_ci_v8.py"
+                    ],
+                    "free_bytes_before": 555281162240,
+                    "observed_at": "2026-11-09T06:06:15.688327+00:00",
+                    "status": "finished",
+                    "returncode": 0,
+                    "free_bytes_after": 555281137664
+                  },
+                  {
+                    "name": "helper-build",
+                    "argv": [
+                      "python3",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725/scripts/hepta_cell_test_helpers.py",
+                      "--output-dir",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-strict-v1/helpers"
+                    ],
+                    "free_bytes_before": 555281137664,
+                    "observed_at": "2026-11-09T06:06:31.088093+00:00",
+                    "status": "finished",
+                    "returncode": 0,
+                    "free_bytes_after": 553469030400
+                  },
+                  {
+                    "name": "helper-verify",
+                    "argv": [
+                      "python3",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725/scripts/hepta_cell_test_helpers.py",
+                      "--output-dir",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-strict-v1/helpers",
+                      "--verify-only"
+                    ],
+                    "free_bytes_before": 553469030400,
+                    "observed_at": "2026-11-09T06:13:19.494880+00:00",
+                    "status": "finished",
+                    "returncode": 0,
+                    "free_bytes_after": 553469005824
+                  },
+                  {
+                    "name": "appserver-owning-strict-fix",
+                    "argv": [
+                      "just",
+                      "fix",
+                      "--locked",
+                      "-p",
+                      "codex-app-server",
+                      "--",
+                      "-D",
+                      "warnings"
+                    ],
+                    "free_bytes_before": 553469005824,
+                    "observed_at": "2026-11-09T06:13:21.114203+00:00",
+                    "status": "finished",
+                    "returncode": 0,
+                    "free_bytes_after": 553492504576
+                  },
+                  {
+                    "name": "appserver-owning-readonly-strict-clippy",
+                    "argv": [
+                      "cargo",
+                      "clippy",
+                      "--tests",
+                      "--locked",
+                      "-p",
+                      "codex-app-server",
+                      "--",
+                      "-D",
+                      "warnings"
+                    ],
+                    "free_bytes_before": 553492504576,
+                    "observed_at": "2026-11-09T06:14:49.640388+00:00",
+                    "status": "finished",
+                    "returncode": 0,
+                    "free_bytes_after": 553468338176
+                  },
+                  {
+                    "name": "agentd-owning-strict-fix",
+                    "argv": [
+                      "just",
+                      "fix",
+                      "--locked",
+                      "-p",
+                      "codex-hepta-agentd",
+                      "--",
+                      "-D",
+                      "warnings"
+                    ],
+                    "free_bytes_before": 553468338176,
+                    "observed_at": "2026-11-09T06:16:13.552823+00:00",
+                    "status": "finished",
+                    "returncode": 0,
+                    "free_bytes_after": 553493979136
+                  },
+                  {
+                    "name": "agentd-owning-readonly-strict-clippy",
+                    "argv": [
+                      "cargo",
+                      "clippy",
+                      "--tests",
+                      "--locked",
+                      "-p",
+                      "codex-hepta-agentd",
+                      "--",
+                      "-D",
+                      "warnings"
+                    ],
+                    "free_bytes_before": 553493979136,
+                    "observed_at": "2026-11-09T06:17:37.209775+00:00",
+                    "status": "finished",
+                    "returncode": 0,
+                    "free_bytes_after": 553464438784
+                  }
+                ],
+                "preparation_returncode": 0,
+                "driver_sha256": "a6e2fd510343fe6dcc84d6a36a6cb4cdd397fd30e4320a0105164835d0ca601e",
+                "tool_files": {
+                  "just": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/just-1.58.0/just",
+                    "sha256": "3ad66571feae522db2cad31b9613bf21035b8a06d2738d6fc8fe6089856f2042"
+                  },
+                  "cargo-nextest": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/nextest-0.9.103/cargo-nextest",
+                    "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+                  }
+                },
+                "selected_environment": {
+                  "PATH": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/just-1.58.0:/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/nextest-0.9.103:/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/uv-0.13.5:/home/qq/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+                  "RUSTUP_TOOLCHAIN": "1.96.0",
+                  "CARGO_TARGET_DIR": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/target-ci-test-bf42d2a-fresh",
+                  "CARGO_BUILD_JOBS": "6",
+                  "CARGO_PROFILE_DEV_DEBUG": "0",
+                  "CARGO_PROFILE_TEST_DEBUG": "0",
+                  "CARGO_INCREMENTAL": "0",
+                  "LIBCLANG_PATH": "/usr/lib/x86_64-linux-gnu",
+                  "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/clang-21-resources/usr/lib/llvm-21/lib/clang/21"
+                },
+                "source_before": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "status": "",
+                  "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-strict-v1/source-before.files.json",
+                  "files_sha256": "d1bd38cdd18337d53b9a55379a7c3bf23d4fd5bb98f0b527e3f0bb5927fb0f39",
+                  "files_count": 15010,
+                  "regular_file_bytes": 200411102,
+                  "untracked_count": 0,
+                  "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-strict-v1/source-before.diff.patch",
+                  "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "identity_stable_during_capture": true,
+                  "capture_elapsed_seconds": 1.242864942876622,
+                  "observed_at": "2026-11-09T06:06:15.684232+00:00",
+                  "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+                },
+                "identity_after_appserver-owning-strict-fix": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "status": ""
+                },
+                "identity_after_appserver-owning-readonly-strict-clippy": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "status": ""
+                },
+                "identity_after_agentd-owning-strict-fix": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "status": ""
+                },
+                "identity_after_agentd-owning-readonly-strict-clippy": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "status": ""
+                },
+                "source_after": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "status": "",
+                  "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-strict-v1/source-after.files.json",
+                  "files_sha256": "d1bd38cdd18337d53b9a55379a7c3bf23d4fd5bb98f0b527e3f0bb5927fb0f39",
+                  "files_count": 15010,
+                  "regular_file_bytes": 200411102,
+                  "untracked_count": 0,
+                  "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-strict-v1/source-after.diff.patch",
+                  "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "identity_stable_during_capture": true,
+                  "capture_elapsed_seconds": 0.30166174191981554,
+                  "observed_at": "2026-11-09T06:19:14.414993+00:00",
+                  "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+                },
+                "source_unchanged": true,
+                "returncode": 0,
+                "finished_at": "2026-11-09T06:19:14.418149+00:00"
+              }
+            }
+          ]
+        },
+        {
+          "path": "originals/combined-3fc4725-appserver-stage-audit-v1/RESULT.json",
+          "bytes": 6751,
+          "sha256": "d902285d38a25ac7eb1034e62e90fa490b476872834a56871e7a552381702baf",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "status": "ORIGINAL_1348_EXECUTIONS_INDEPENDENTLY_VERIFIED",
+                "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+                "tested_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "reviewer_executed_native_tests": 0,
+                "scope": "Independent readback of one completed owning app-server run",
+                "full_workspace": false,
+                "windows_bazel": false,
+                "ordinary_daemon_learning": false,
+                "scientific_acceptance": false,
+                "physical_cost": null,
+                "full_history_cost": null,
+                "started_at": "2026-11-09T06:33:07.821286+00:00",
+                "input_inventory_before": {
+                  "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-appserver-stage-audit-v1/INPUTS_BEFORE.json",
+                  "bytes": 12597,
+                  "sha256": "f09554a818688d58f99ae293075842eb67c38b2b36ab11186ab16453755a8d17"
+                },
+                "source_readback_before": {
+                  "before": {
+                    "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                    "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                    "parents": [
+                      "3f084182eb80bd8fac0a5717a2f5911978759a06",
+                      "e54f7791068ad16ff6082c148cf73798836d36e4"
+                    ],
+                    "status": ""
+                  },
+                  "after": {
+                    "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                    "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                    "parents": [
+                      "3f084182eb80bd8fac0a5717a2f5911978759a06",
+                      "e54f7791068ad16ff6082c148cf73798836d36e4"
+                    ],
+                    "status": ""
+                  },
+                  "entries_verified": 15010,
+                  "regular_file_bytes_verified": 200411102,
+                  "source_manifest_sha256": "d1bd38cdd18337d53b9a55379a7c3bf23d4fd5bb98f0b527e3f0bb5927fb0f39"
+                },
+                "execution_receipts": {
+                  "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-appserver-stage-audit-v1/EXECUTION_RECEIPTS.json",
+                  "bytes": 5574,
+                  "sha256": "1d5c4b88fe0511764f3f12d1e64a524b21b930371dc49377df129ec5883af381"
+                },
+                "selection": {
+                  "declared": 1350,
+                  "selected": 1348,
+                  "original_ignored": [
+                    {
+                      "binary_id": "codex-app-server",
+                      "name": "shutdown_signals::tests::retained_signal_child",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-app-server::all",
+                      "name": "suite::v2::review::review_start_exec_approval_item_id_matches_command_execution_item",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    }
+                  ],
+                  "unselected": 0,
+                  "exact_pair_roster": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-appserver-stage-audit-v1/SELECTED_CASES.json",
+                    "bytes": 309534,
+                    "sha256": "8b9b8bb48034812837ea72cdc08552ffbad9267bf464b69043e66f9a7177fa61"
+                  }
+                },
+                "raw": {
+                  "summary_line": 1390,
+                  "summary": "     Summary [ 169.814s] 1348 tests run: 1348 passed, 2 skipped",
+                  "summary_wall_seconds_not_full_cost": 169.814,
+                  "unique_pre_summary_executions": 1348,
+                  "post_summary_status_lines_excluded_from_execution_count": 1348,
+                  "whole_raw_leak_markers": [],
+                  "known_guard_markers": [],
+                  "no_test_retries_in_real_statuses": true,
+                  "actual_statuses": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-appserver-stage-audit-v1/RAW_EXECUTED_CASES.json",
+                    "bytes": 293711,
+                    "sha256": "e86c5cca84e546bf484c0b61a27ef1adafdebfa91cd0f0160b15ce1368a79ce2"
+                  }
+                },
+                "junit": {
+                  "sha256": "da1eaebd06bbb8317d0a4f602dd64818bf2b94af219c6d3c9b3a418b36973723",
+                  "bytes": 300685,
+                  "unique_passed": 1348,
+                  "skipped_in_xml": 0,
+                  "failures": 0,
+                  "retry_nodes": 0,
+                  "by_binary": {
+                    "codex-app-server": 324,
+                    "codex-app-server::all": 1020,
+                    "codex-app-server::bin/codex-app-server": 4
+                  },
+                  "all_case_timestamps_inside_original_execution": true,
+                  "native_mtime_inside_original_execution": true,
+                  "required_five_exact_cases": [
+                    {
+                      "binary_id": "codex-app-server",
+                      "name": "transport::tests::remote_control_update_freezes_ready_recipients_before_initialize",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-app-server",
+                      "name": "transport::tests::remote_control_update_with_no_ready_recipient_stays_behind_initialize",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-app-server::all",
+                      "name": "suite::v2::app_list::list_apps_uses_thread_feature_flag_when_thread_id_is_provided",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-app-server::all",
+                      "name": "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-app-server::all",
+                      "name": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+                      "passed": true
+                    }
+                  ]
+                },
+                "binary_retention": {
+                  "count": 6,
+                  "bytes": 1081583768,
+                  "host_only": true,
+                  "binary_bytes_in_archive": false,
+                  "verification": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-appserver-stage-audit-v1/BINARY_VERIFICATION.json",
+                    "bytes": 6112,
+                    "sha256": "6cd181f138db3d2030018fc4382249a4a63d10c664361a246c62e3510eaba1e2"
+                  }
+                },
+                "source_readback_after": {
+                  "before": {
+                    "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                    "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                    "parents": [
+                      "3f084182eb80bd8fac0a5717a2f5911978759a06",
+                      "e54f7791068ad16ff6082c148cf73798836d36e4"
+                    ],
+                    "status": ""
+                  },
+                  "after": {
+                    "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                    "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                    "parents": [
+                      "3f084182eb80bd8fac0a5717a2f5911978759a06",
+                      "e54f7791068ad16ff6082c148cf73798836d36e4"
+                    ],
+                    "status": ""
+                  },
+                  "entries_verified": 15010,
+                  "regular_file_bytes_verified": 200411102,
+                  "source_manifest_sha256": "d1bd38cdd18337d53b9a55379a7c3bf23d4fd5bb98f0b527e3f0bb5927fb0f39"
+                },
+                "source_unchanged": true,
+                "clean_passed_original_executions": 1348,
+                "original_ignored_not_executed": 2,
+                "all_required_five_passed": true,
+                "input_inventory_after": {
+                  "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-appserver-stage-audit-v1/INPUTS_AFTER.json",
+                  "bytes": 12597,
+                  "sha256": "f09554a818688d58f99ae293075842eb67c38b2b36ab11186ab16453755a8d17"
+                },
+                "original_inputs_stable": true,
+                "returncode": 0,
+                "finished_at": "2026-11-09T06:33:09.722402+00:00",
+                "readback_wall_seconds_not_native_or_full_cost": 1.901119020069018
+              }
+            }
+          ]
+        },
+        {
+          "path": "originals/combined-3fc4725-agentd-stage-audit-v1/RESULT.json",
+          "bytes": 31781,
+          "sha256": "8473ff99ed37d0df59a4249692a9ad134e6f1082e4723952f4814f8fbfc451ff",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "status": "ORIGINAL_781_EXECUTIONS_INDEPENDENTLY_VERIFIED",
+                "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+                "tested_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "reviewer_executed_native_tests": 0,
+                "scope": "Independent readback of one completed owning agentd run",
+                "full_workspace": false,
+                "windows_bazel": false,
+                "ordinary_daemon_learning": false,
+                "scientific_acceptance": false,
+                "physical_cost": null,
+                "full_history_cost": null,
+                "started_at": "2026-11-09T06:48:06.856058+00:00",
+                "input_inventory_before": {
+                  "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-stage-audit-v1/INPUTS_BEFORE.json",
+                  "bytes": 12501,
+                  "sha256": "3dbd54015bf2d7c2931a0e092442e82dc9ec14f8e5874f220248de97bbde086e"
+                },
+                "source_readback_before": {
+                  "before": {
+                    "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                    "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                    "parents": [
+                      "3f084182eb80bd8fac0a5717a2f5911978759a06",
+                      "e54f7791068ad16ff6082c148cf73798836d36e4"
+                    ],
+                    "status": ""
+                  },
+                  "after": {
+                    "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                    "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                    "parents": [
+                      "3f084182eb80bd8fac0a5717a2f5911978759a06",
+                      "e54f7791068ad16ff6082c148cf73798836d36e4"
+                    ],
+                    "status": ""
+                  },
+                  "entries_verified": 15010,
+                  "regular_file_bytes_verified": 200411102,
+                  "source_manifest_sha256": "d1bd38cdd18337d53b9a55379a7c3bf23d4fd5bb98f0b527e3f0bb5927fb0f39"
+                },
+                "execution_receipts": {
+                  "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-stage-audit-v1/EXECUTION_RECEIPTS.json",
+                  "bytes": 5536,
+                  "sha256": "63dc495c8cf0359f37301bea76f686f416248366412b87ec80b0061c85e699cc"
+                },
+                "selection": {
+                  "declared": 852,
+                  "selected": 781,
+                  "original_ignored": [
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_bootstrap_seal::tests::original_writer::root_native_writer_purpose_cannot_pass_the_unchanged_original_two_rights_receiver",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_bootstrap_seal::tests::original_writer::root_writer_transfer_consumes_sender_and_releases_original_lock_after_recipient_closes",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_bootstrap_seal::tests::root_descriptor_is_unlinked_sealed_and_never_mutable",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::physical_material::adopted_current_before_uid_release_cannot_be_adopted_again_or_reinitialized",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::physical_material::interrupted_install_resumes_same_original_current_cas_without_republication",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::physical_material::physical_current_survives_live_source_loss_and_refuses_corrupt_retained_image",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::physical_material::physical_material_never_promotes_actual_dirty_current_predecessor",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::physical_material::physical_recovery_requires_actual_old_exit_and_old_lease_expiry_before_installation",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::root_current_adoption_without_any_retained_old_pidfd_preserves_exact_cut",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::root_current_handoff_never_promotes_actual_dirty_publishing_or_fenced",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::root_current_handoff_post_cas_clock_failure_is_unknown_not_definite_conflict",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::root_current_handoff_post_cas_expiry_is_unknown_but_new_head_is_reconciled",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::root_current_handoff_refuses_changed_cut_phase_generation_and_dead_successor",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::root_current_handoff_requires_actual_exit_and_preserves_cut_and_counter",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::root_current_handoff_two_real_cas_handles_choose_one_successor",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::root_retired_adoption_never_promotes_dirty_publishing_or_fenced",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::root_retired_adoption_post_cas_clock_error_is_unknown_and_exactly_reconciled",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::root_retirement_observation_refuses_live_lifetime_uid_change_and_other_boot",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::adoption::tests::root_retirement_proof_cannot_replace_protected_predecessor_lifetime",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::fresh_tests::root_fresh_publication_binds_original_exclusive_owner_and_checkpoint_client",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::tests::root_cycle_is_durable_exact_and_never_implicitly_reinitialized",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::tests::root_expiry_after_actual_cas_returns_unknown_and_permanently_closes_object",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::tests::root_invalid_bindings_and_late_request_ids_leave_exact_head_unchanged",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::tests::root_read_ids_do_not_advance_mutation_highwater_or_revive_fenced_state",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::tests::root_trusted_successor_keeps_global_counter_separate_from_publisher_sequence",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::tests::root_two_independent_handles_cannot_both_win_the_same_original_cas",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_checkpoint::tests::root_unavailable_read_permanently_fences_even_after_original_file_returns",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_consumer_frontier::tests::root_forged_epoch_revision_namespace_and_replayed_transport_ids_do_not_mutate",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_consumer_frontier::tests::root_post_cas_expiry_returns_no_ack_and_never_revives_the_uncertain_object",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_consumer_frontier::tests::root_storage_disappearance_and_restoration_does_not_revive_a_lane",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_consumer_frontier::tests::root_two_original_stores_are_isolated_and_exact_cas_survives_reopen",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_consumer_frontier::tests::root_two_real_handles_race_one_durable_cas_and_refuse_the_other",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_runtime::listeners::tests::all_original_listeners_precede_the_one_shot_handoff_and_failure_cleans_up",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_runtime::process_tests::original_owner_process_rejects_same_uid_with_different_gid",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_runtime::session::filesystem::tests::original_registry_reader_child",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_runtime::session::filesystem::tests::original_root_filesystem_preserves_registry_reads_and_denies_control_writes",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_runtime::session::filesystem::tests::original_root_filesystem_rejects_aliases_and_existing_workspace_before_ownership_change",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_runtime::session::notes_startup::tests::original_root_seals_only_empty_private_deployment_and_readonly_consumer_observes_it",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_service::learning_checkpoint::tests::unprivileged_checkpoint_child",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_service::logind::tests::original_held_physical_login_matches_actual_logind_and_wrong_birth_or_uid_refuses",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_service::tests::root::protected_service_client",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_service::tests::root::root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "authority_host_service::writer::fresh::tests::original_fresh_state_retains_writer_lock_and_refuses_nonempty_or_changed_registry",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "automation_effect_host::hcsn_pq::tests::real_worker::pq_host_real_worker_cancel_cold_recovery",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "config::root_handoff::tests::original_root_preparation_releases_same_lock_for_fresh_owner_without_changing_registry",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "deployment_issuer::notes::tests::deployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distinct_payloads",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "deployment_issuer::root::tests::deployment_protected_root_factory_retains_original_key_head_counter_and_lease",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "native_g2_socket_publication::tests::configured_inode_is_published_and_accepts_the_dedicated_role",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "native_g2_socket_publication::tests::existing_final_is_not_replaced_and_own_pending_is_removed",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "native_g2_socket_publication::tests::final_replacement_inode_survives_listener_drop",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "native_g2_socket_publication::tests::pending_collision_is_preserved_without_publishing",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "native_g2_socket_publication::tests::pending_replacement_inode_survives_failed_publication_cleanup",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "native_g2_socket_publication::tests::preexisting_same_inode_alias_is_rejected_without_removing_final",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::process_tests::durable_native_job_child_readback",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::process_tests::durable_native_job_with_original_host_cas",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "production_composition::tests::owner_custody::root_preparation_does_not_unlock_a_retained_uninstalled_original_writer",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "root_bound_socket::tests::original_root_bound_listener_child",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "root_bound_socket::tests::original_root_bound_listener_preserves_peer_identity_and_path_custody",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "runtime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests::notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "runtime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests::notes_actual_app_legacy_checkpoint_original_owner_reopen_and_helper_ack_restart",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "runtime::hos2_recovery_tests::notes_tests::gui_tests::notes_actual_ui_original_owner_roundtrip",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "state::notes_objective::lock_tests::notes_objective_drain_child",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "text_session::provider::tests::fifo_reader_child",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "text_session::provider::tests::root_configuration_fifo_is_rejected_before_read",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+                      "name": "real_agentd_external_gpt53_spark_read_only_smoke",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+                      "name": "real_agentd_loopback_provider_read_only_smoke",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+                      "name": "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+                      "name": "two_real_agentd_app_servers_never_cross_recall",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd::optional_module_restart",
+                      "name": "optional_module_process_entrypoint",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd::terminal_cell_owner",
+                      "name": "durable_owner_history_and_concurrent_training_profile",
+                      "ignored": true,
+                      "filter_match": {
+                        "status": "mismatch",
+                        "reason": "ignored"
+                      }
+                    }
+                  ],
+                  "unselected": 0,
+                  "exact_pair_roster": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-stage-audit-v1/SELECTED_CASES.json",
+                    "bytes": 188949,
+                    "sha256": "96225424a6b09557d2a4462e1fd76bec921937a04d66edf53d2523c48726ae12"
+                  }
+                },
+                "raw": {
+                  "summary_line": 833,
+                  "summary": "     Summary [  68.353s] 781 tests run: 781 passed (1 slow), 71 skipped",
+                  "summary_wall_seconds_not_full_cost": 68.353,
+                  "unique_pre_summary_executions": 781,
+                  "post_summary_status_lines_excluded_from_execution_count": 781,
+                  "slow_progress_not_executions": [
+                    {
+                      "line": 829,
+                      "threshold_seconds": 30.0,
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown"
+                    }
+                  ],
+                  "slow_final_headers_not_executions": 1,
+                  "whole_raw_leak_markers": [],
+                  "known_guard_markers": [],
+                  "no_test_retries_in_real_statuses": true,
+                  "actual_statuses": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-stage-audit-v1/RAW_EXECUTED_CASES.json",
+                    "bytes": 179530,
+                    "sha256": "131e22a599f770ccc97b4996235f8606e00ce0a88cae0e9e430c2d13aec6ff3f"
+                  }
+                },
+                "junit": {
+                  "sha256": "f966240f76cc9aa964ec676e724d9f9163a76171f7ce7d04af4e7522f3c5f7ec",
+                  "bytes": 186187,
+                  "unique_passed": 781,
+                  "skipped_in_xml": 0,
+                  "failures": 0,
+                  "retry_nodes": 0,
+                  "by_binary": {
+                    "codex-hepta-agentd": 733,
+                    "codex-hepta-agentd::authbus_text_product": 8,
+                    "codex-hepta-agentd::cognitive_product_e2e": 9,
+                    "codex-hepta-agentd::cognitive_store_product_writer": 1,
+                    "codex-hepta-agentd::five_agent_rolling_upgrade": 2,
+                    "codex-hepta-agentd::fleet_harness_diagnostics": 1,
+                    "codex-hepta-agentd::intuition_policy_product": 1,
+                    "codex-hepta-agentd::kernel_evidence_product": 3,
+                    "codex-hepta-agentd::neuron_generation_process_e2e": 1,
+                    "codex-hepta-agentd::optional_module_restart": 1,
+                    "codex-hepta-agentd::plasticity_process_e2e": 1,
+                    "codex-hepta-agentd::queue_capacity_product": 2,
+                    "codex-hepta-agentd::runtime_codex_product_e2e": 1,
+                    "codex-hepta-agentd::runtime_shutdown_outcomes": 9,
+                    "codex-hepta-agentd::supervised_two_agents": 1,
+                    "codex-hepta-agentd::supervisord_product_e2e": 2,
+                    "codex-hepta-agentd::terminal_cell_owner": 2,
+                    "codex-hepta-agentd::two_agent_turn_recovery": 2,
+                    "codex-hepta-agentd::verify1_kernel_evidence_product": 1
+                  },
+                  "all_case_timestamps_inside_original_execution": true,
+                  "native_mtime_inside_original_execution": true,
+                  "required_thirteen_checkpoint_exact_cases": [
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::profile_tests::both_no_update_paths_keep_the_frozen_profile_and_full_parent_after_cold_reopen",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::profile_tests::changed_frozen_profile_cannot_restore_or_replace_the_original_checkpoint",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::profile_tests::previous_codec_version_is_refused_without_repair_or_append",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::tests::each_checkpoint_reopens_and_exact_retry_performs_no_second_cas",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::tests::foreign_owner_request_skipped_stage_and_divergent_successor_leave_current_unchanged",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::tests::malformed_counts_strings_tags_and_truncated_checkpoints_are_rejected",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::tests::maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::tests::valid_json_with_corrupt_protected_record_metadata_is_never_restored",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::tests::write_failure_and_lost_ack_reconcile_original_record_without_reexecution",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::transport::tests::before_send_contention_does_not_claim_commit_or_break_the_inflight_call",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::transport::tests::maximum_snapshots_fit_complete_frames_and_wrong_scope_never_changes_cas",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::transport::tests::missing_or_foreign_ack_closes_the_client_without_an_automatic_retry",
+                      "passed": true
+                    },
+                    {
+                      "binary_id": "codex-hepta-agentd",
+                      "name": "learning_iteration_checkpoint::transport::tests::oversize_malformed_and_unknown_scope_fields_leave_original_cas_bytes_unchanged",
+                      "passed": true
+                    }
+                  ]
+                },
+                "binary_retention": {
+                  "count": 19,
+                  "bytes": 1966635128,
+                  "host_only": true,
+                  "binary_bytes_in_archive": false,
+                  "original_target_current_rehashed": false,
+                  "original_target_bytes_verified_before_and_after_retention": true,
+                  "verification": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-stage-audit-v1/BINARY_VERIFICATION.json",
+                    "bytes": 16804,
+                    "sha256": "bb42dd721ce212652127241230ecee5a37779a405fc6d429ff15e217218bf8de"
+                  },
+                  "after": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-stage-audit-v1/BINARY_AFTER.json",
+                    "bytes": 9259,
+                    "sha256": "fa5b5559e009ba0d4d1e359b8361f3ca9118ebb3b2457a2e637aab9f3517f923"
+                  },
+                  "independent_copies_stable_during_audit": true
+                },
+                "source_readback_after": {
+                  "before": {
+                    "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                    "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                    "parents": [
+                      "3f084182eb80bd8fac0a5717a2f5911978759a06",
+                      "e54f7791068ad16ff6082c148cf73798836d36e4"
+                    ],
+                    "status": ""
+                  },
+                  "after": {
+                    "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                    "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                    "parents": [
+                      "3f084182eb80bd8fac0a5717a2f5911978759a06",
+                      "e54f7791068ad16ff6082c148cf73798836d36e4"
+                    ],
+                    "status": ""
+                  },
+                  "entries_verified": 15010,
+                  "regular_file_bytes_verified": 200411102,
+                  "source_manifest_sha256": "d1bd38cdd18337d53b9a55379a7c3bf23d4fd5bb98f0b527e3f0bb5927fb0f39"
+                },
+                "source_unchanged": true,
+                "clean_passed_original_executions": 781,
+                "original_ignored_not_executed": 71,
+                "all_required_thirteen_checkpoint_passed": true,
+                "input_inventory_after": {
+                  "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-stage-audit-v1/INPUTS_AFTER.json",
+                  "bytes": 12501,
+                  "sha256": "3dbd54015bf2d7c2931a0e092442e82dc9ec14f8e5874f220248de97bbde086e"
+                },
+                "original_inputs_stable": true,
+                "returncode": 0,
+                "finished_at": "2026-11-09T06:48:11.127733+00:00",
+                "readback_wall_seconds_not_native_or_full_cost": 4.271676540840417
+              }
+            }
+          ]
+        },
+        {
+          "path": "originals/combined-3fc4725-checkpoint-components-v1/RESULT.json",
+          "bytes": 25919,
+          "sha256": "022d374a755730680516eca17258f0d18897d54737c82e9d6dca4d4acdd1c9cd",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "scope": "selected_engineering_regression",
+                "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+                "base_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "groups": [
+                  {
+                    "name": "checkpoint-codec-and-wire",
+                    "package": "codex-hepta-agentd",
+                    "target": [
+                      "--lib"
+                    ],
+                    "features": [],
+                    "binary_id": "codex-hepta-agentd",
+                    "expected_count": 13,
+                    "exact_names": [
+                      "learning_iteration_checkpoint::tests::maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound",
+                      "learning_iteration_checkpoint::tests::malformed_counts_strings_tags_and_truncated_checkpoints_are_rejected",
+                      "learning_iteration_checkpoint::tests::each_checkpoint_reopens_and_exact_retry_performs_no_second_cas",
+                      "learning_iteration_checkpoint::tests::foreign_owner_request_skipped_stage_and_divergent_successor_leave_current_unchanged",
+                      "learning_iteration_checkpoint::tests::valid_json_with_corrupt_protected_record_metadata_is_never_restored",
+                      "learning_iteration_checkpoint::tests::write_failure_and_lost_ack_reconcile_original_record_without_reexecution",
+                      "learning_iteration_checkpoint::profile_tests::changed_frozen_profile_cannot_restore_or_replace_the_original_checkpoint",
+                      "learning_iteration_checkpoint::profile_tests::previous_codec_version_is_refused_without_repair_or_append",
+                      "learning_iteration_checkpoint::profile_tests::both_no_update_paths_keep_the_frozen_profile_and_full_parent_after_cold_reopen",
+                      "learning_iteration_checkpoint::transport::tests::maximum_snapshots_fit_complete_frames_and_wrong_scope_never_changes_cas",
+                      "learning_iteration_checkpoint::transport::tests::before_send_contention_does_not_claim_commit_or_break_the_inflight_call",
+                      "learning_iteration_checkpoint::transport::tests::oversize_malformed_and_unknown_scope_fields_leave_original_cas_bytes_unchanged",
+                      "learning_iteration_checkpoint::transport::tests::missing_or_foreign_ack_closes_the_client_without_an_automatic_retry"
+                    ],
+                    "scope_limit": "Nine original codec/CAS component regressions plus four new wire component regressions; no actual Root or production-learning admission claim."
+                  }
+                ],
+                "fixed_selected_tests": 13,
+                "privileged_root_execution": "separate exact binary receipt; never counted by this component driver",
+                "expected_selected_tests": 13,
+                "cargo_profile": "ci-test",
+                "test_threads": 4,
+                "build_jobs": 6,
+                "outer_timeout_seconds": 7200,
+                "retries": 0,
+                "minimum_free_bytes_before_build": 4294967296,
+                "full_workspace_tests_performed": false,
+                "windows_native_tests_run": false,
+                "scientific_qualification_performed": false,
+                "full_cost": null,
+                "cost_scope": "Observed wrapper wall only; physical/full-history cost not claimed.",
+                "counts_do_not_add_to_previous_overlapping_runs": true,
+                "status": "PASS",
+                "steps": [
+                  {
+                    "name": "v8",
+                    "argv": [
+                      "python3",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725/scripts/hepta_ci_v8.py"
+                    ],
+                    "cwd": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725",
+                    "execution_record": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/v8.json",
+                    "status": "finished",
+                    "free_bytes_before": 548732694528,
+                    "started_at": "2026-11-09T06:36:58.526596+00:00",
+                    "returncode": 0,
+                    "wrapper_wall_seconds": 5.2839454910717905,
+                    "free_bytes_after": 548732682240
+                  },
+                  {
+                    "name": "helpers-before-tests",
+                    "argv": [
+                      "python3",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725/scripts/hepta_cell_test_helpers.py",
+                      "--output-dir",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-strict-v1/helpers",
+                      "--verify-only"
+                    ],
+                    "cwd": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725",
+                    "execution_record": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/helpers-before-tests.json",
+                    "status": "finished",
+                    "free_bytes_before": 548732682240,
+                    "started_at": "2026-11-09T06:37:03.810940+00:00",
+                    "returncode": 0,
+                    "wrapper_wall_seconds": 1.0176561519037932,
+                    "free_bytes_after": 548732665856
+                  },
+                  {
+                    "name": "rust-version",
+                    "argv": [
+                      "rustc",
+                      "--version",
+                      "--verbose"
+                    ],
+                    "cwd": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725",
+                    "execution_record": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/rust-version.json",
+                    "status": "finished",
+                    "free_bytes_before": 548732665856,
+                    "started_at": "2026-11-09T06:37:04.829087+00:00",
+                    "returncode": 0,
+                    "wrapper_wall_seconds": 0.08271546894684434,
+                    "free_bytes_after": 548732653568
+                  },
+                  {
+                    "name": "cargo-version",
+                    "argv": [
+                      "cargo",
+                      "--version"
+                    ],
+                    "cwd": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725",
+                    "execution_record": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/cargo-version.json",
+                    "status": "finished",
+                    "free_bytes_before": 548732653568,
+                    "started_at": "2026-11-09T06:37:04.912229+00:00",
+                    "returncode": 0,
+                    "wrapper_wall_seconds": 0.0824920570012182,
+                    "free_bytes_after": 548732645376
+                  },
+                  {
+                    "name": "nextest-version",
+                    "argv": [
+                      "cargo",
+                      "nextest",
+                      "--version"
+                    ],
+                    "cwd": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725",
+                    "execution_record": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/nextest-version.json",
+                    "status": "finished",
+                    "free_bytes_before": 548732641280,
+                    "started_at": "2026-11-09T06:37:04.995075+00:00",
+                    "returncode": 0,
+                    "wrapper_wall_seconds": 0.08333197701722383,
+                    "free_bytes_after": 548732628992
+                  },
+                  {
+                    "name": "discovery",
+                    "argv": [
+                      "cargo",
+                      "nextest",
+                      "list",
+                      "--locked",
+                      "--cargo-profile",
+                      "ci-test",
+                      "-p",
+                      "codex-hepta-agentd",
+                      "--lib",
+                      "--profile",
+                      "local",
+                      "--tool-config-file",
+                      "hepta-followup:/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/checkpoint-codec-and-wire/nextest.toml",
+                      "--message-format",
+                      "json",
+                      "-E",
+                      "test(=learning_iteration_checkpoint::tests::maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound) | test(=learning_iteration_checkpoint::tests::malformed_counts_strings_tags_and_truncated_checkpoints_are_rejected) | test(=learning_iteration_checkpoint::tests::each_checkpoint_reopens_and_exact_retry_performs_no_second_cas) | test(=learning_iteration_checkpoint::tests::foreign_owner_request_skipped_stage_and_divergent_successor_leave_current_unchanged) | test(=learning_iteration_checkpoint::tests::valid_json_with_corrupt_protected_record_metadata_is_never_restored) | test(=learning_iteration_checkpoint::tests::write_failure_and_lost_ack_reconcile_original_record_without_reexecution) | test(=learning_iteration_checkpoint::profile_tests::changed_frozen_profile_cannot_restore_or_replace_the_original_checkpoint) | test(=learning_iteration_checkpoint::profile_tests::previous_codec_version_is_refused_without_repair_or_append) | test(=learning_iteration_checkpoint::profile_tests::both_no_update_paths_keep_the_frozen_profile_and_full_parent_after_cold_reopen) | test(=learning_iteration_checkpoint::transport::tests::maximum_snapshots_fit_complete_frames_and_wrong_scope_never_changes_cas) | test(=learning_iteration_checkpoint::transport::tests::before_send_contention_does_not_claim_commit_or_break_the_inflight_call) | test(=learning_iteration_checkpoint::transport::tests::oversize_malformed_and_unknown_scope_fields_leave_original_cas_bytes_unchanged) | test(=learning_iteration_checkpoint::transport::tests::missing_or_foreign_ack_closes_the_client_without_an_automatic_retry)"
+                    ],
+                    "cwd": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725/codex-rs",
+                    "execution_record": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/checkpoint-codec-and-wire/discovery.json",
+                    "status": "finished",
+                    "free_bytes_before": 548732620800,
+                    "started_at": "2026-11-09T06:37:05.078961+00:00",
+                    "returncode": 0,
+                    "wrapper_wall_seconds": 1.1980154400225729,
+                    "free_bytes_after": 548732305408
+                  },
+                  {
+                    "name": "tests",
+                    "argv": [
+                      "just",
+                      "test",
+                      "--locked",
+                      "--cargo-profile",
+                      "ci-test",
+                      "-p",
+                      "codex-hepta-agentd",
+                      "--lib",
+                      "--profile",
+                      "local",
+                      "--tool-config-file",
+                      "hepta-followup:/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/checkpoint-codec-and-wire/nextest.toml",
+                      "--test-threads",
+                      "4",
+                      "--retries",
+                      "0",
+                      "--no-tests",
+                      "fail",
+                      "--success-output",
+                      "final",
+                      "--failure-output",
+                      "final",
+                      "-E",
+                      "test(=learning_iteration_checkpoint::profile_tests::both_no_update_paths_keep_the_frozen_profile_and_full_parent_after_cold_reopen) | test(=learning_iteration_checkpoint::profile_tests::changed_frozen_profile_cannot_restore_or_replace_the_original_checkpoint) | test(=learning_iteration_checkpoint::profile_tests::previous_codec_version_is_refused_without_repair_or_append) | test(=learning_iteration_checkpoint::tests::each_checkpoint_reopens_and_exact_retry_performs_no_second_cas) | test(=learning_iteration_checkpoint::tests::foreign_owner_request_skipped_stage_and_divergent_successor_leave_current_unchanged) | test(=learning_iteration_checkpoint::tests::malformed_counts_strings_tags_and_truncated_checkpoints_are_rejected) | test(=learning_iteration_checkpoint::tests::maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound) | test(=learning_iteration_checkpoint::tests::valid_json_with_corrupt_protected_record_metadata_is_never_restored) | test(=learning_iteration_checkpoint::tests::write_failure_and_lost_ack_reconcile_original_record_without_reexecution) | test(=learning_iteration_checkpoint::transport::tests::before_send_contention_does_not_claim_commit_or_break_the_inflight_call) | test(=learning_iteration_checkpoint::transport::tests::maximum_snapshots_fit_complete_frames_and_wrong_scope_never_changes_cas) | test(=learning_iteration_checkpoint::transport::tests::missing_or_foreign_ack_closes_the_client_without_an_automatic_retry) | test(=learning_iteration_checkpoint::transport::tests::oversize_malformed_and_unknown_scope_fields_leave_original_cas_bytes_unchanged)"
+                    ],
+                    "cwd": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725/codex-rs",
+                    "execution_record": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/checkpoint-codec-and-wire/tests.json",
+                    "status": "finished",
+                    "free_bytes_before": 548731920384,
+                    "started_at": "2026-11-09T06:37:06.414980+00:00",
+                    "returncode": 0,
+                    "wrapper_wall_seconds": 1.25163129507564,
+                    "free_bytes_after": 548731879424
+                  },
+                  {
+                    "name": "helpers-after-checkpoint-codec-and-wire",
+                    "argv": [
+                      "python3",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725/scripts/hepta_cell_test_helpers.py",
+                      "--output-dir",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-strict-v1/helpers",
+                      "--verify-only"
+                    ],
+                    "cwd": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725",
+                    "execution_record": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/helpers-after-checkpoint-codec-and-wire.json",
+                    "status": "finished",
+                    "free_bytes_before": 548731879424,
+                    "started_at": "2026-11-09T06:37:07.667144+00:00",
+                    "returncode": 0,
+                    "wrapper_wall_seconds": 1.0004133500624448,
+                    "free_bytes_after": 548731858944
+                  },
+                  {
+                    "name": "collect-junit",
+                    "argv": [
+                      "python3",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725/scripts/hepta_ci_junit.py",
+                      "--execution",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/checkpoint-codec-and-wire/tests.json",
+                      "--junit",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/checkpoint-codec-and-wire/nextest-store/local/junit.xml",
+                      "--output",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/checkpoint-codec-and-wire/tests-junit.xml"
+                    ],
+                    "cwd": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725",
+                    "execution_record": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/checkpoint-codec-and-wire/collect-junit.json",
+                    "status": "finished",
+                    "free_bytes_before": 548731858944,
+                    "started_at": "2026-11-09T06:37:08.668132+00:00",
+                    "returncode": 0,
+                    "wrapper_wall_seconds": 0.1049358129967004,
+                    "free_bytes_after": 548731834368
+                  }
+                ],
+                "results": [
+                  {
+                    "name": "checkpoint-codec-and-wire",
+                    "status": "PASS",
+                    "expected_count": 13,
+                    "tool_config": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/checkpoint-codec-and-wire/nextest.toml",
+                    "tool_config_sha256": "c4e65c38eeb58f1d039353f4315ef153835db4460e1585931289849c87b529eb",
+                    "discovery_returncode": 0,
+                    "discovery_sha256": "ccf720d0ba78bf021729ea2c4a58dfb4e03e689518f259282bb62b211de78e67",
+                    "selection_sha256": "d9d28abe80aebb9c7e30e89524c23a20edc017253b9938999b27564d548a3c16",
+                    "selected": [
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::profile_tests::both_no_update_paths_keep_the_frozen_profile_and_full_parent_after_cold_reopen",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::profile_tests::changed_frozen_profile_cannot_restore_or_replace_the_original_checkpoint",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::profile_tests::previous_codec_version_is_refused_without_repair_or_append",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::tests::each_checkpoint_reopens_and_exact_retry_performs_no_second_cas",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::tests::foreign_owner_request_skipped_stage_and_divergent_successor_leave_current_unchanged",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::tests::malformed_counts_strings_tags_and_truncated_checkpoints_are_rejected",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::tests::maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::tests::valid_json_with_corrupt_protected_record_metadata_is_never_restored",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::tests::write_failure_and_lost_ack_reconcile_original_record_without_reexecution",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::transport::tests::before_send_contention_does_not_claim_commit_or_break_the_inflight_call",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::transport::tests::maximum_snapshots_fit_complete_frames_and_wrong_scope_never_changes_cas",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::transport::tests::missing_or_foreign_ack_closes_the_client_without_an_automatic_retry",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::transport::tests::oversize_malformed_and_unknown_scope_fields_leave_original_cas_bytes_unchanged",
+                        "ignored": false,
+                        "filter_match": {
+                          "status": "matches"
+                        }
+                      }
+                    ],
+                    "unselected_count": 785,
+                    "test_returncode": 0,
+                    "collect_returncode": 0,
+                    "explicit_skip_markers": [],
+                    "nextest_leak_observed": false,
+                    "observed_passed_tests": 13,
+                    "observed_failed_tests": 0,
+                    "summary_lines": [
+                      "     Summary [   0.049s] 13 tests run: 13 passed, 785 skipped"
+                    ],
+                    "testcases": [
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::profile_tests::previous_codec_version_is_refused_without_repair_or_append",
+                        "time": "0.007",
+                        "forbidden_result_nodes": []
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::profile_tests::changed_frozen_profile_cannot_restore_or_replace_the_original_checkpoint",
+                        "time": "0.009",
+                        "forbidden_result_nodes": []
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::tests::malformed_counts_strings_tags_and_truncated_checkpoints_are_rejected",
+                        "time": "0.005",
+                        "forbidden_result_nodes": []
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::tests::foreign_owner_request_skipped_stage_and_divergent_successor_leave_current_unchanged",
+                        "time": "0.007",
+                        "forbidden_result_nodes": []
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::profile_tests::both_no_update_paths_keep_the_frozen_profile_and_full_parent_after_cold_reopen",
+                        "time": "0.017",
+                        "forbidden_result_nodes": []
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::tests::valid_json_with_corrupt_protected_record_metadata_is_never_restored",
+                        "time": "0.006",
+                        "forbidden_result_nodes": []
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::tests::write_failure_and_lost_ack_reconcile_original_record_without_reexecution",
+                        "time": "0.006",
+                        "forbidden_result_nodes": []
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::transport::tests::before_send_contention_does_not_claim_commit_or_break_the_inflight_call",
+                        "time": "0.005",
+                        "forbidden_result_nodes": []
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::tests::maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound",
+                        "time": "0.012",
+                        "forbidden_result_nodes": []
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::transport::tests::oversize_malformed_and_unknown_scope_fields_leave_original_cas_bytes_unchanged",
+                        "time": "0.005",
+                        "forbidden_result_nodes": []
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::transport::tests::missing_or_foreign_ack_closes_the_client_without_an_automatic_retry",
+                        "time": "0.006",
+                        "forbidden_result_nodes": []
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::tests::each_checkpoint_reopens_and_exact_retry_performs_no_second_cas",
+                        "time": "0.037",
+                        "forbidden_result_nodes": []
+                      },
+                      {
+                        "binary_id": "codex-hepta-agentd",
+                        "name": "learning_iteration_checkpoint::transport::tests::maximum_snapshots_fit_complete_frames_and_wrong_scope_never_changes_cas",
+                        "time": "0.023",
+                        "forbidden_result_nodes": []
+                      }
+                    ],
+                    "exact_fresh_unique_set": true,
+                    "discovery_binary_bytes_unchanged": true,
+                    "passed": true
+                  }
+                ],
+                "started_at": "2026-11-09T06:36:58.198027+00:00",
+                "driver_sha256": "711bb00294d33786ec98f31b1d586f8623e3517bd43c82cf9c2674c8160542d8",
+                "preparation_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-strict-v1",
+                "preparation_sha256": "b392ce360950d0507ac0da5ee567412e9341018c288e90a4e965e608d37a1bec",
+                "selected_environment": {
+                  "PATH": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/just-1.58.0:/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/nextest-0.9.103:/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/uv-0.13.5:/home/qq/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+                  "RUSTUP_TOOLCHAIN": "1.96.0",
+                  "CARGO_TARGET_DIR": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/target-ci-test-bf42d2a-fresh",
+                  "CARGO_BUILD_JOBS": "6",
+                  "CARGO_INCREMENTAL": "0",
+                  "CARGO_PROFILE_DEV_DEBUG": "0",
+                  "CARGO_PROFILE_TEST_DEBUG": "0",
+                  "NEXTEST_TEST_THREADS": "4",
+                  "RUST_TEST_THREADS": "4",
+                  "LIBCLANG_PATH": "/usr/lib/x86_64-linux-gnu",
+                  "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/clang-21-resources/usr/lib/llvm-21/lib/clang/21"
+                },
+                "source_before": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "status": "",
+                  "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/source-before.files.json",
+                  "files_sha256": "d1bd38cdd18337d53b9a55379a7c3bf23d4fd5bb98f0b527e3f0bb5927fb0f39",
+                  "files_count": 15010,
+                  "regular_file_bytes": 200411102,
+                  "untracked_count": 0,
+                  "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/source-before.diff.patch",
+                  "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "identity_stable_during_capture": true,
+                  "capture_elapsed_seconds": 0.30502129392698407,
+                  "observed_at": "2026-11-09T06:36:58.503254+00:00",
+                  "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+                },
+                "tools": {
+                  "just": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/just-1.58.0/just",
+                    "sha256": "3ad66571feae522db2cad31b9613bf21035b8a06d2738d6fc8fe6089856f2042"
+                  },
+                  "cargo-nextest": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/nextest-0.9.103/cargo-nextest",
+                    "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+                  }
+                },
+                "source_after": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "status": "",
+                  "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/source-after.files.json",
+                  "files_sha256": "d1bd38cdd18337d53b9a55379a7c3bf23d4fd5bb98f0b527e3f0bb5927fb0f39",
+                  "files_count": 15010,
+                  "regular_file_bytes": 200411102,
+                  "untracked_count": 0,
+                  "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1/source-after.diff.patch",
+                  "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "identity_stable_during_capture": true,
+                  "capture_elapsed_seconds": 0.30568562098778784,
+                  "observed_at": "2026-11-09T06:37:09.215938+00:00",
+                  "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+                },
+                "source_unchanged": true,
+                "returncode": 0,
+                "finished_at": "2026-11-09T06:37:09.236330+00:00"
+              }
+            }
+          ]
+        },
+        {
+          "path": "originals/combined-3fc4725-checkpoint-root-v1/RESULT.json",
+          "bytes": 6537,
+          "sha256": "5ee653b64a230422c0df5ada45b81d087522fdaeba27a3218b261fea952bfb00",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+                "base_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "component_records": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-components-v1",
+                "component_result_sha256": "022d374a755730680516eca17258f0d18897d54737c82e9d6dca4d4acdd1c9cd",
+                "compiled_binary": {
+                  "binary_id": "codex-hepta-agentd",
+                  "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/target-ci-test-bf42d2a-fresh/ci-test/deps/codex_hepta_agentd-086aa0f6fbbc4f00",
+                  "bytes": 247429408,
+                  "sha256": "345305809c488b6fbb6c3a8242aa7bb9205c7d9199817207cac41f13cf8130f0",
+                  "cwd": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725/codex-rs/hepta-agentd",
+                  "package_id": "path+file:///home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0"
+                },
+                "root_runner_sha256": "c218dadbfa09f29c928c14a44e2539f0f8a4f43543b64fa1383f0fc4c933520f",
+                "exact_parent_case": "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+                "scope": "test-only registered Root/non-Root checkpoint transport",
+                "status": "PASS",
+                "parent_case_pass_count": 1,
+                "fixture_child_is_additional_acceptance_case": false,
+                "physical_cost": null,
+                "full_history_cost": null,
+                "scientific_qualification_performed": false,
+                "production_registration_performed": false,
+                "started_at": "2026-11-09T06:38:02.621876+00:00",
+                "source_before": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "status": "",
+                  "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/source-before.files.json",
+                  "files_sha256": "d1bd38cdd18337d53b9a55379a7c3bf23d4fd5bb98f0b527e3f0bb5927fb0f39",
+                  "files_count": 15010,
+                  "regular_file_bytes": 200411102,
+                  "untracked_count": 0,
+                  "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/source-before.diff.patch",
+                  "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "identity_stable_during_capture": true,
+                  "capture_elapsed_seconds": 0.311895766062662,
+                  "observed_at": "2026-11-09T06:38:02.933904+00:00",
+                  "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+                },
+                "command": [
+                  "sudo",
+                  "-n",
+                  "--",
+                  "python3",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/root-runner.py",
+                  "--records",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/root-fixture",
+                  "--binary-sha256",
+                  "345305809c488b6fbb6c3a8242aa7bb9205c7d9199817207cac41f13cf8130f0",
+                  "--",
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/target-ci-test-bf42d2a-fresh/ci-test/deps/codex_hepta_agentd-086aa0f6fbbc4f00",
+                  "--exact",
+                  "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+                  "--ignored",
+                  "--nocapture",
+                  "--test-threads=1"
+                ],
+                "wrapper_exit": 0,
+                "execution_record": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/root-execution.json",
+                "execution_record_sha256": "efc449ebb96de753c9047119557db1f7e9049b85d58eb9479b15a2e68b1e0c0f",
+                "root_fixture_result": {
+                  "started_at": "2026-11-09T06:38:03.128827+00:00",
+                  "uid": 0,
+                  "euid": 0,
+                  "pid": 2254270,
+                  "command": [
+                    "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/target-ci-test-bf42d2a-fresh/ci-test/deps/codex_hepta_agentd-086aa0f6fbbc4f00",
+                    "--exact",
+                    "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+                    "--ignored",
+                    "--nocapture",
+                    "--test-threads=1"
+                  ],
+                  "binary_sha256_before": "345305809c488b6fbb6c3a8242aa7bb9205c7d9199817207cac41f13cf8130f0",
+                  "native_execution_started": true,
+                  "command_exit": 0,
+                  "mount_created": true,
+                  "unmounted": true,
+                  "cleanup_complete": true,
+                  "full_history_cost": null,
+                  "physical_cost": null,
+                  "scientific_acceptance": false,
+                  "scope": "test-only Root bind and exact original test binary",
+                  "test_root": "/run/hepta-learning-checkpoint-898e-i17we0ai",
+                  "source": "/run/hepta-learning-checkpoint-898e-i17we0ai/source",
+                  "mountpoint": "/run/hepta-learning-checkpoint-898e-i17we0ai/mount",
+                  "mount_exit": 0,
+                  "bind_identity": {
+                    "device": 27,
+                    "inode": 931715
+                  },
+                  "command_wall_seconds": 0.2119858569931239,
+                  "observed_libtest_summaries": [
+                    [
+                      "ok",
+                      "1",
+                      "0",
+                      "0",
+                      "0",
+                      "797"
+                    ],
+                    [
+                      "ok",
+                      "1",
+                      "0",
+                      "0",
+                      "0",
+                      "797"
+                    ]
+                  ],
+                  "original_parent_case_executed": true,
+                  "original_parent_pass_count": 1,
+                  "fixture_child_summaries_are_additional_acceptance_cases": false,
+                  "binary_sha256_after": "345305809c488b6fbb6c3a8242aa7bb9205c7d9199817207cac41f13cf8130f0",
+                  "umount_exit": 0,
+                  "runner_wall_seconds": 0.3393259309232235,
+                  "finished_at": "2026-11-09T06:38:03.468198+00:00",
+                  "runner_exit": 0
+                },
+                "root_fixture_result_sha256": "2f60adafb0ce88e8e74cf0ac37cb43362ce3291a958093f80985c634e80554b5",
+                "binary_unchanged": true,
+                "source_after": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "status": "",
+                  "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/source-after.files.json",
+                  "files_sha256": "d1bd38cdd18337d53b9a55379a7c3bf23d4fd5bb98f0b527e3f0bb5927fb0f39",
+                  "files_count": 15010,
+                  "regular_file_bytes": 200411102,
+                  "untracked_count": 0,
+                  "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-checkpoint-root-v1/source-after.diff.patch",
+                  "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "identity_stable_during_capture": true,
+                  "capture_elapsed_seconds": 0.30872077005915344,
+                  "observed_at": "2026-11-09T06:38:03.936918+00:00",
+                  "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+                },
+                "source_unchanged": true,
+                "returncode": 0,
+                "finished_at": "2026-11-09T06:38:03.955717+00:00"
+              }
+            }
+          ]
+        },
+        {
+          "path": "originals/combined-3fc4725-agentd-owning-v1/RESULT.json",
+          "bytes": 3833,
+          "sha256": "bd25eee21d143c7e998c27cd7377204f8bb11271c6de8a89e6cf710596a29180",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "status": "FAIL",
+                "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+                "base_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "mode": "owning",
+                "cargo_profile": "ci-test",
+                "nextest_profile": "local",
+                "test_threads": 4,
+                "build_jobs": 6,
+                "retries": 0,
+                "original_per_case_budgets_unchanged": true,
+                "outer_command_timeout_seconds": 4200,
+                "owning_strict_qualification": true,
+                "preparation_sha256": "b392ce360950d0507ac0da5ee567412e9341018c288e90a4e965e608d37a1bec",
+                "counterfactual_expected_failures_are_not_product_passes": false,
+                "full_workspace_executed": false,
+                "windows_bazel_qualification": false,
+                "scientific_acceptance": false,
+                "physical_cost": null,
+                "full_history_cost": null,
+                "steps": [
+                  {
+                    "name": "v8",
+                    "argv": [
+                      "python3",
+                      "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725/scripts/hepta_ci_v8.py"
+                    ],
+                    "cwd": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/combined-source-3fc4725",
+                    "execution_record": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-owning-v1/v8.json",
+                    "started_at": "2026-11-09T06:30:19.070765+00:00",
+                    "status": "finished",
+                    "returncode": 1,
+                    "wrapper_wall_seconds_not_full_cost": 68.27669894997962
+                  }
+                ],
+                "started_at": "2026-11-09T06:30:18.731494+00:00",
+                "source_before": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "status": "",
+                  "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-owning-v1/source-before.files.json",
+                  "files_sha256": "d1bd38cdd18337d53b9a55379a7c3bf23d4fd5bb98f0b527e3f0bb5927fb0f39",
+                  "files_count": 15010,
+                  "regular_file_bytes": 200411102,
+                  "untracked_count": 0,
+                  "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-owning-v1/source-before.diff.patch",
+                  "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "identity_stable_during_capture": true,
+                  "capture_elapsed_seconds": 0.31986273103393614,
+                  "observed_at": "2026-11-09T06:30:19.051473+00:00",
+                  "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+                },
+                "tools": {
+                  "just": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/just-1.58.0/just",
+                    "sha256": "3ad66571feae522db2cad31b9613bf21035b8a06d2738d6fc8fe6089856f2042"
+                  },
+                  "cargo-nextest": {
+                    "path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/tools/nextest-0.9.103/cargo-nextest",
+                    "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+                  }
+                },
+                "error": "RuntimeError: same-source V8 admission failed",
+                "source_after": {
+                  "commit": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                  "tree": "89d698ef2fba525a3b03466808337f125306085b",
+                  "status": "",
+                  "files_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-owning-v1/source-after.files.json",
+                  "files_sha256": "d1bd38cdd18337d53b9a55379a7c3bf23d4fd5bb98f0b527e3f0bb5927fb0f39",
+                  "files_count": 15010,
+                  "regular_file_bytes": 200411102,
+                  "untracked_count": 0,
+                  "diff_path": "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/records/combined-3fc4725-agentd-owning-v1/source-after.diff.patch",
+                  "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "identity_stable_during_capture": true,
+                  "capture_elapsed_seconds": 0.3081196260172874,
+                  "observed_at": "2026-11-09T06:31:27.656088+00:00",
+                  "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+                },
+                "source_unchanged": true,
+                "returncode": 1,
+                "finished_at": "2026-11-09T06:31:27.675033+00:00"
+              }
+            }
+          ]
+        },
+        {
+          "path": "originals/combined-3fc4725-agentd-dependency-recovery-request-v1.json",
+          "bytes": 1393,
+          "sha256": "301935e3b7ce04b2eb54a03441c4a2afe05326c9a7a3c81753a651decca0cd68",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "schema_version": 1,
+                "status": "one_explicit_dependency_recovery_authorized",
+                "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+                "original_records": "combined-3fc4725-agentd-owning-v1",
+                "original_result_sha256": "bd25eee21d143c7e998c27cd7377204f8bb11271c6de8a89e6cf710596a29180",
+                "original_v8_receipt_sha256": "ecb064f647eb47ea4fe38800460e59cf666b59aee47de12e0b56692938acd9fd",
+                "original_v8_log_sha256": "1ca79b010741385a2dd13bfa0b8f145ccc0dab1927349bafa589ae6e82238e9b",
+                "original_natural_exit": 1,
+                "original_native_executed": 0,
+                "reason": "Original checksum retrieval failed with URLError ConnectionRefusedError [Errno 111] before helpers, discovery, or native execution. Perform one explicit same-command recovery under a fresh record prefix.",
+                "next_records": "combined-3fc4725-agentd-owning-v2",
+                "driver_sha256": "fad3abfabd3d170e4bbd2203655314a53032f6cfe1b985f358b1a69e9f8e29b3",
+                "resolver_unchanged": true,
+                "dependency_validation_bypassed": false,
+                "source_changed": false,
+                "original_native_case_budgets_unchanged": true,
+                "native_retries": 0,
+                "automatic_recovery_loop": false,
+                "prior_failure_retained": true,
+                "third_attempt_authorized": false,
+                "physical_cost": null,
+                "full_history_cost": null,
+                "scientific_acceptance": false,
+                "observed_at": "2026-11-09 06:32:35 UTC"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "combined-callers-3fc4725-desktop-history-v1",
+      "scope": "One complete original closed-set caller engineering gate on exact 3fc; original command, raw, source inventories and wall-time observation, no new native execution",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/combined-callers-3fc4725-desktop-history-v1/combined-callers-3fc4725-desktop-history.tar.xz",
+      "bytes": 2330412,
+      "sha256": "8eba6d8438f9109fc9c1e0850c233ec1cc588cc27d730675d817b0b75ebd9bbb",
+      "file_member_count": 24,
+      "required_json_members": [
+        {
+          "path": "metadata/SCOPE.json",
+          "bytes": 1286,
+          "sha256": "924c0bf574140c268c946a2c001fc9ea8f0825f47067fbd08301adf937f4545d",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "archive_scope": "all regular files in the one terminal execution prefix, plus this sealer and scope",
+                "authority_granted": false,
+                "caller_gate_passed": true,
+                "command": [
+                  "python3",
+                  "scripts/verify_hepta_callers.py",
+                  "verify"
+                ],
+                "cost_scope": "original elapsed wall only, not CPU, learning or full history cost",
+                "execution_result": "passed",
+                "full_history_cost": null,
+                "full_history_cost_complete": false,
+                "historical_receipts": "two e54 original scope/command receipts are provenance only and never counted as current execution",
+                "host": "desktop",
+                "ignored_tool_caches_in_source_inventory": false,
+                "minimum_tests": 0,
+                "ordinary_daemon_qualified": false,
+                "physical_cost": null,
+                "scientific_acceptance": false,
+                "scope": "one unchanged full caller closed-set engineering gate on the frozen combined checkout",
+                "source_evidence": "all tracked file byte/index inventories and Git identity; source checkout remains external",
+                "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+                "source_unchanged": true,
+                "tested_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "timeout_seconds": 600,
+                "unit_tests_executed": false,
+                "whole_workspace_source_archived": false
+              }
+            }
+          ]
+        },
+        {
+          "path": "originals/combined-callers-3fc4725-desktop-v1/RESULT.json",
+          "bytes": 2546,
+          "sha256": "b35baf5a9861a3159e17f0c63afddd2a171f62d5ac395b12685beccdaab2f1e4",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "authority_granted": false,
+                "base_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "caller_gate_passed": true,
+                "caller_receipt": {
+                  "authority_granted": false,
+                  "boundaries": 173,
+                  "privileged_inventory": 173,
+                  "protected_files_entries": 160,
+                  "rust_files_scanned": 6480,
+                  "schema": "hepta.caller-proof-receipt.v2",
+                  "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+                },
+                "command": [
+                  "python3",
+                  "scripts/verify_hepta_callers.py",
+                  "verify"
+                ],
+                "command_exit_code": 0,
+                "command_launched_at": "2026-11-09T06:18:33.805919+00:00",
+                "command_wall_seconds": 388.51853591995314,
+                "coordinator_wall_seconds": 395.57989197107963,
+                "cost_scope": "observed command wall time only, not CPU, learning or full history cost",
+                "execution_receipt": {
+                  "bytes": 1559,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/combined-callers-3fc4725-desktop-v1/caller-full-scan.json",
+                  "sha256": "0d8e41b1d80b659abde29df89caf113aba1d158a26fe319b06fe315922c2e7b5"
+                },
+                "finished_at": "2026-11-09T06:25:05.042397+00:00",
+                "full_history_cost": null,
+                "full_history_cost_complete": false,
+                "host": "desktop",
+                "minimum_tests": 0,
+                "ordinary_daemon_qualified": false,
+                "physical_cost": null,
+                "raw_log": {
+                  "bytes": 80458,
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/combined-callers-3fc4725-desktop-v1/caller-full-scan.json.8b04ce93e80b4b06868d45ba0ca54008.log",
+                  "sha256": "d61bcafc35a5f86900470549071b35f6cc0868bcdedebd42c7a0eaa829043d7d",
+                  "stderr": "merged by unchanged source hepta_ci_exec.py"
+                },
+                "schema": "hepta.combined-caller-gate-execution.v1",
+                "scientific_acceptance": false,
+                "scope": "unchanged full caller closed-set engineering gate",
+                "source_after": {
+                  "files_sha256": "c236ea6fe5f240cef52545b1390149fb7a0d32fffa825775eada5acd34e54eac",
+                  "index_sha256": "e4f1beb26941b93563fca8c64daed2d93c54540173e2afc4c56fb6fa70d5fb47",
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/combined-callers-3fc4725-desktop-v1/source-after.json",
+                  "tracked_count": 15010
+                },
+                "source_checkout": "/home/qian-qi/worktrees/hepta-cell-s0-combined-20261109-898e",
+                "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+                "source_unchanged": true,
+                "started_at": "2026-11-09T06:18:29.462556+00:00",
+                "status": "passed",
+                "tested_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+                "timeout_seconds": 600,
+                "unit_tests_executed": false,
+                "wrapper_exit_code": 0
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "supplementary_observations": [
+    {
+      "source_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment006-metadata-correction-publication-v1/RESULT.json",
+      "relative_path": "observations/evidence-increment006-metadata-correction-publication-v1/RESULT.json",
+      "bytes": 35619,
+      "sha256": "c157d9441a26d97046dce8d9431ee28b4e4c5207894e74a8b39bcb815da45fc2"
+    },
+    {
+      "source_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment006-metadata-correction-publication-v1/commands.json",
+      "relative_path": "observations/evidence-increment006-metadata-correction-publication-v1/commands.json",
+      "bytes": 263769,
+      "sha256": "97e8e4975faf656eb82fb91bd585767a9a647972ed4149a0a05cad1a8fb5bcc5"
+    },
+    {
+      "source_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment006-metadata-correction-independent-readback-v1/RESULT.json",
+      "relative_path": "observations/evidence-increment006-metadata-correction-independent-readback-v1/RESULT.json",
+      "bytes": 2582,
+      "sha256": "d53377d9418e110fa90eaa71a6d2e42f828e99579362d7ac83df76bb0717dfd4"
+    },
+    {
+      "source_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment006-metadata-correction-independent-readback-v1/commands.json",
+      "relative_path": "observations/evidence-increment006-metadata-correction-independent-readback-v1/commands.json",
+      "bytes": 120380,
+      "sha256": "beb068206fafa4f1b4e2e5de74e555a059f12709de8e4a27f05ec0f6ca3869de"
+    }
+  ],
+  "supplementary_observation_scope": {
+    "source_commit": "02f75555a857b161275ea5c6f7c960dde6cf8b13",
+    "source_tree": "456903461ff59e9fca71ba1fed2dcc5701d21b78",
+    "parent_commit": "a9116a22d4cc429e9b34a1327bcb3945280d72d4",
+    "files_included": "Only both RESULT.json files and both complete commands.json indexes",
+    "complete_stdout_stderr_prefixes_archived_here": false,
+    "external_original_prefixes": [
+      "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment006-metadata-correction-publication-v1",
+      "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment006-metadata-correction-independent-readback-v1"
+    ],
+    "original_raw_log_hashes_referenced_by_commands": true,
+    "raw_bytes_not_promoted_from_hash_references_to_archived_content": true,
+    "original_a911_1140_local_vs_1139_committed_preserved": true,
+    "corrected_1236_committed_files_verified": true,
+    "original_15_observations_verified": true,
+    "packet_count_changed_by_metadata_correction": false,
+    "publication_or_readback_is_not_native_validation": true,
+    "new_tests_executed": false,
+    "physical_cost": null,
+    "full_history_cost": null
+  },
+  "all_old_common_validation_fields_retained_typed": true,
+  "only_new_current_validation_path": [
+    "separate_source_observations",
+    "combined_3fc_terminal_history"
+  ],
+  "complete_execution_history": false,
+  "physical_cost": null,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "core_45a_or_negative_records_included": false,
+  "preparation_scope": "Read-only exact terminal inputs; no append, evidence/source writes, tests or network calls."
+}

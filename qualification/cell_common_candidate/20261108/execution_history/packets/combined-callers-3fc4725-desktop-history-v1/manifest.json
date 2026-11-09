@@ -1,0 +1,283 @@
+{
+  "packet_id": "combined-callers-3fc4725-desktop-history-v1",
+  "scope": "One complete original closed-set caller engineering gate on exact 3fc; original command, raw, source inventories and wall-time observation, no new native execution",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/combined-callers-3fc4725-desktop-history-v1/combined-callers-3fc4725-desktop-history.tar.xz",
+  "bytes": 2330412,
+  "sha256": "8eba6d8438f9109fc9c1e0850c233ec1cc588cc27d730675d817b0b75ebd9bbb",
+  "file_member_count": 24,
+  "required_json_members": [
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 1286,
+      "sha256": "924c0bf574140c268c946a2c001fc9ea8f0825f47067fbd08301adf937f4545d",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "archive_scope": "all regular files in the one terminal execution prefix, plus this sealer and scope",
+            "authority_granted": false,
+            "caller_gate_passed": true,
+            "command": [
+              "python3",
+              "scripts/verify_hepta_callers.py",
+              "verify"
+            ],
+            "cost_scope": "original elapsed wall only, not CPU, learning or full history cost",
+            "execution_result": "passed",
+            "full_history_cost": null,
+            "full_history_cost_complete": false,
+            "historical_receipts": "two e54 original scope/command receipts are provenance only and never counted as current execution",
+            "host": "desktop",
+            "ignored_tool_caches_in_source_inventory": false,
+            "minimum_tests": 0,
+            "ordinary_daemon_qualified": false,
+            "physical_cost": null,
+            "scientific_acceptance": false,
+            "scope": "one unchanged full caller closed-set engineering gate on the frozen combined checkout",
+            "source_evidence": "all tracked file byte/index inventories and Git identity; source checkout remains external",
+            "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+            "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+            "source_unchanged": true,
+            "tested_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+            "timeout_seconds": 600,
+            "unit_tests_executed": false,
+            "whole_workspace_source_archived": false
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/RESULT.json",
+      "bytes": 2546,
+      "sha256": "b35baf5a9861a3159e17f0c63afddd2a171f62d5ac395b12685beccdaab2f1e4",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "authority_granted": false,
+            "base_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "caller_gate_passed": true,
+            "caller_receipt": {
+              "authority_granted": false,
+              "boundaries": 173,
+              "privileged_inventory": 173,
+              "protected_files_entries": 160,
+              "rust_files_scanned": 6480,
+              "schema": "hepta.caller-proof-receipt.v2",
+              "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+            },
+            "command": [
+              "python3",
+              "scripts/verify_hepta_callers.py",
+              "verify"
+            ],
+            "command_exit_code": 0,
+            "command_launched_at": "2026-11-09T06:18:33.805919+00:00",
+            "command_wall_seconds": 388.51853591995314,
+            "coordinator_wall_seconds": 395.57989197107963,
+            "cost_scope": "observed command wall time only, not CPU, learning or full history cost",
+            "execution_receipt": {
+              "bytes": 1559,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/combined-callers-3fc4725-desktop-v1/caller-full-scan.json",
+              "sha256": "0d8e41b1d80b659abde29df89caf113aba1d158a26fe319b06fe315922c2e7b5"
+            },
+            "finished_at": "2026-11-09T06:25:05.042397+00:00",
+            "full_history_cost": null,
+            "full_history_cost_complete": false,
+            "host": "desktop",
+            "minimum_tests": 0,
+            "ordinary_daemon_qualified": false,
+            "physical_cost": null,
+            "raw_log": {
+              "bytes": 80458,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/combined-callers-3fc4725-desktop-v1/caller-full-scan.json.8b04ce93e80b4b06868d45ba0ca54008.log",
+              "sha256": "d61bcafc35a5f86900470549071b35f6cc0868bcdedebd42c7a0eaa829043d7d",
+              "stderr": "merged by unchanged source hepta_ci_exec.py"
+            },
+            "schema": "hepta.combined-caller-gate-execution.v1",
+            "scientific_acceptance": false,
+            "scope": "unchanged full caller closed-set engineering gate",
+            "source_after": {
+              "files_sha256": "c236ea6fe5f240cef52545b1390149fb7a0d32fffa825775eada5acd34e54eac",
+              "index_sha256": "e4f1beb26941b93563fca8c64daed2d93c54540173e2afc4c56fb6fa70d5fb47",
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/combined-callers-3fc4725-desktop-v1/source-after.json",
+              "tracked_count": 15010
+            },
+            "source_checkout": "/home/qian-qi/worktrees/hepta-cell-s0-combined-20261109-898e",
+            "source_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+            "source_tree": "89d698ef2fba525a3b03466808337f125306085b",
+            "source_unchanged": true,
+            "started_at": "2026-11-09T06:18:29.462556+00:00",
+            "status": "passed",
+            "tested_sha": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+            "timeout_seconds": 600,
+            "unit_tests_executed": false,
+            "wrapper_exit_code": 0
+          }
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/COMMAND.json",
+      "bytes": 602,
+      "sha256": "bdcff87d310acb21b3a847e10504a992dd9e93fee1afdeffe4ec176cbd4821ee"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/ENVIRONMENT.json",
+      "bytes": 653,
+      "sha256": "49e767946c59a5fb5b879e6e34707be92e8623266fb3d271cb360e7c8c66094f"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/LAUNCH.json",
+      "bytes": 1116,
+      "sha256": "ed32de6fc8ed9d509ce04f64e8f09f3a40e3b1a0b3ab0087a4547506c0f7a0cd"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/RESULT.json",
+      "bytes": 2546,
+      "sha256": "b35baf5a9861a3159e17f0c63afddd2a171f62d5ac395b12685beccdaab2f1e4"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/caller-full-scan.json",
+      "bytes": 1559,
+      "sha256": "0d8e41b1d80b659abde29df89caf113aba1d158a26fe319b06fe315922c2e7b5"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/caller-full-scan.json.8b04ce93e80b4b06868d45ba0ca54008.log",
+      "bytes": 80458,
+      "sha256": "d61bcafc35a5f86900470549071b35f6cc0868bcdedebd42c7a0eaa829043d7d"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/driver.py",
+      "bytes": 14839,
+      "sha256": "af836002f06b2545fef5b0ff10596de2d58b0c6d946f3083f1b715243fd134fa"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/prior-e54-INPUTS.json",
+      "bytes": 616,
+      "sha256": "3fa8a8dc2e5e3b5655c95bd0cfa06c02a80a7ec93804cf08da5980625dd7c2a7"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/prior-e54-caller-full-scan.json",
+      "bytes": 1472,
+      "sha256": "e0a38bf322f582f135b11811abdb29962a9ee63e4ccf6d0592564f25e8e7f0d0"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/source-after.files.json",
+      "bytes": 6183502,
+      "sha256": "c236ea6fe5f240cef52545b1390149fb7a0d32fffa825775eada5acd34e54eac"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/source-after.head-tree.bin",
+      "bytes": 1845838,
+      "sha256": "6c9f8b427c4c1bde682e37cf31143649eb3a0a5c1f9d4d76aee7e15159697e5e"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/source-after.index.bin",
+      "bytes": 1800808,
+      "sha256": "e4f1beb26941b93563fca8c64daed2d93c54540173e2afc4c56fb6fa70d5fb47"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/source-after.json",
+      "bytes": 5624,
+      "sha256": "c3d3264329732550f7dbb4a37dbf4f632ff8208e72c34e26553166234e1c82f0"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/source-after.untracked.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/source-before.files.json",
+      "bytes": 6183502,
+      "sha256": "c236ea6fe5f240cef52545b1390149fb7a0d32fffa825775eada5acd34e54eac"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/source-before.head-tree.bin",
+      "bytes": 1845838,
+      "sha256": "6c9f8b427c4c1bde682e37cf31143649eb3a0a5c1f9d4d76aee7e15159697e5e"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/source-before.index.bin",
+      "bytes": 1800808,
+      "sha256": "e4f1beb26941b93563fca8c64daed2d93c54540173e2afc4c56fb6fa70d5fb47"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/source-before.json",
+      "bytes": 5624,
+      "sha256": "228bf93759bd26083eaef894ad8ae0e01910079d720ad0cf15338b9ca870fd61"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/source-before.untracked.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/wrapper.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/combined-callers-3fc4725-desktop-v1/wrapper.stdout",
+      "bytes": 81869,
+      "sha256": "99a1fb4194706ff47eccf9c6ea772bca09b9d144966417b2abba4b09ec66b886"
+    },
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 1286,
+      "sha256": "924c0bf574140c268c946a2c001fc9ea8f0825f47067fbd08301adf937f4545d"
+    },
+    {
+      "path": "metadata/sealer.py",
+      "bytes": 7930,
+      "sha256": "e8154a49e386a4a4d1b1130a71cbbb6dfb59f076c765136b4027bd26fbf137d3"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 5303,
+      "sha256": "a00cea8a3c3a0982dea870c0e56c871374ba01f6d5910d23aa30fe36f8d6dc75"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/combined-callers-3fc4725-desktop-history-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "0dfea0fdb53d58e2c6e45341d21a6c00094435ccccdc9c159bef5612af98f9a7"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/combined-callers-3fc4725-desktop-history-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "9225d6f08b57fab807ed9afa31cb1e63447622a7a7f818a2d76668d5471524c5"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/combined-callers-3fc4725-desktop-history-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "46e0975174a41eb4e644a618d4d9d91688f54f47cbaf22da21f5f669f59ad504"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/combined-callers-3fc4725-desktop-history-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "3502ebd71a760e93a05d3b707d2345089bfb9eabb83f16890c0f3faa724c71bb"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/combined-callers-3fc4725-desktop-history-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 370412,
+      "sha256": "7f33bc7010d58ba018f12347b53ffad410f4630654b5ce6cdf2ce4063e506752"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}
