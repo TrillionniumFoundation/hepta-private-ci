@@ -1,0 +1,531 @@
+{
+  "packet_id": "increment012-base-and-preparation-provenance-v1",
+  "scope": "Bounded exact base and preparation provenance, original eight-packet seal and verifier results, and independently reconstructed published011 Git base. No product or new native execution.",
+  "compression": "xz",
+  "bytes": 481472,
+  "sha256": "7130379a30d59ecee0cad30707c35f11302b1cee4ef41b0481de2f9b53a31e2a",
+  "file_members": [
+    {
+      "path": "metadata/BASE_RECONSTRUCTION.json",
+      "bytes": 116193,
+      "sha256": "d78bc1df9629f374700e6aa869dd69b39b2471f552656d306dc37d2e0056fd5e"
+    },
+    {
+      "path": "metadata/EIGHT_ARCHIVE_DISK_READBACK.json",
+      "bytes": 1987,
+      "sha256": "ce0c1e0b41cead27293e0f9f229d3e531d763b9deb82bbc5b569b1968a910709"
+    },
+    {
+      "path": "metadata/PUBLICATION_INPUTS.original.json",
+      "bytes": 81667,
+      "sha256": "a12cf92833c750958e8640053faa63cb3d6d71a95d29f885798d1eb74c0f2864"
+    },
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 24008,
+      "sha256": "9b162ea37102a3e11478eb6f45c619343b223d243e06fb80dd6f606249e6078b"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/QUAL_PUBLICATION_PREPARATION_REVIEW_v1.json",
+      "bytes": 48131,
+      "sha256": "61cc7d5a18fd09ded61ac2c5ae285a0bca30ebff63c8005143aa25ff579f4945"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/base-readback/verify_packets.py",
+      "bytes": 2515,
+      "sha256": "50e086000bf0a2a414a00e0afb6010bec0394c9b5553e159b80fa9526f3846d7"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/build_publication_payload_v1.py",
+      "bytes": 15804,
+      "sha256": "580577601fa384001bee8e7f71ecd8948c574fe2d9dde234cb9654f042b54864"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/FILES_RESULT.json",
+      "bytes": 20593,
+      "sha256": "f4077f9946b2479918ef6f2d722bb84d452c7095ef69ff0da360bf7491ffea76"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/RESULT.json",
+      "bytes": 3600,
+      "sha256": "fe380788731aa6f4753b5962bab6fcd54a1bb18b3819800b7e5e6805799bff7e"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/TREES_RESULT.json",
+      "bytes": 3853,
+      "sha256": "cd1b507f1a56fd6fb905e9a41ccfe424771e8388a944ae831bb3057e50cf1b14"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/TREE_OBSERVER_ATTEMPT_01.json",
+      "bytes": 1299,
+      "sha256": "c3536abf951ab02e4017cf37e8668eb125355d29e2cb7dcf754e1e535a07f6a7"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/commit.json",
+      "bytes": 3608,
+      "sha256": "9ed72db5ff0c0ff506b3be526208f385b5364a4ac216faada09483bfd3bdd78f"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/post-ref.json",
+      "bytes": 8509,
+      "sha256": "4d3d8643227bc3a90815cfe6c93c9ee73c4896c02f8ebc3bdf26633d7b0aca02"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/tree-00.json",
+      "bytes": 3142,
+      "sha256": "706c8684506bb2eda17a3769e881295e952a4b15b62fb6c645307cc5de432832"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/tree-01.json",
+      "bytes": 3136,
+      "sha256": "3dd81421b31cc4c753e7a43c14cec3ecf955011d9829d454d7fc1d022986ba55"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/tree-02.json",
+      "bytes": 11786,
+      "sha256": "7766ed530a93661cbb477f024d942bfd39f117ceda6eb2e66dd6851f147101f0"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/tree-03.json",
+      "bytes": 6378,
+      "sha256": "8eb4873a6c182170b0eb340454160034bf74090456ca04b1ddea51ca82b16cab"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/tree-04.json",
+      "bytes": 5302,
+      "sha256": "249f4308efc90d1f6dcb2c133c9f40c1ab3ac5f585e8f2d64516451aac26c7f9"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/tree-05.json",
+      "bytes": 57656,
+      "sha256": "884db988b0d40209c438ff5bfbdbe9c0add0cf9d3a345cdef3d81672109879b8"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/tree-06.json",
+      "bytes": 41380,
+      "sha256": "056d10bccfa1ab9822235722ca759f994215ed2b396e9993bfe55aa6c058d277"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/tree-07.json",
+      "bytes": 4652,
+      "sha256": "0cfcff3d96105c602c0d0c67551f76c4bf03c1224068b09c104a21e0716d6a66"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/tree-08.json",
+      "bytes": 2429,
+      "sha256": "a4f954e02958ba0c1a16786befa1b9fc1ece99c7d0e188409686156d1f8078b5"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/tree-09.json",
+      "bytes": 28253,
+      "sha256": "5a9ba25113aaa3563d147784ec062550c29541c9bee72d18a2f8236df599f64f"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/github-publication-v1/readbacks/tree-10.json",
+      "bytes": 29332,
+      "sha256": "be6ceae63a825a9055f05d40ea9223263086dc2af2cb834742f02a7cffb1328e"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/prepare_closed_packets_v1.py",
+      "bytes": 15035,
+      "sha256": "487736808af862a66a2fa4af54c4aa8c387ec85e13a71dfdc432249828058504"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/publication-preparation-v1/PLAN.json",
+      "bytes": 88407,
+      "sha256": "49fe8d27ddf702bd9b5573df754ac1468a645be75f2c689686fed3454f5a5a7b"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/publication-preparation-v1/payload/README.md",
+      "bytes": 117943,
+      "sha256": "2e51e5d040bdaa85bdacf0de497e5dd23c3fd56512743a5d7255d0b02e596b5e"
+    },
+    {
+      "path": "originals/ci-fixes/increment011/publication-preparation-v1/payload/manifest.json",
+      "bytes": 209498,
+      "sha256": "cee46502b3a8c7e18f73f8c9257838e2a44ba48143031e7518b3555660d3ab08"
+    },
+    {
+      "path": "originals/ci-fixes/increment012-root-base-readback-v1/CURRENT_RESULT.json",
+      "bytes": 7587,
+      "sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+    },
+    {
+      "path": "originals/ci-fixes/increment012-root-base-readback-v1/RAW_RESPONSES.json",
+      "bytes": 18273,
+      "sha256": "6268de1cf37fb979d3e804d762396d4263393598ff8e9a409bbcb3f3986c58cf"
+    },
+    {
+      "path": "originals/ci-fixes/increment012-root-base-readback-v1/RESULT.json",
+      "bytes": 928,
+      "sha256": "31e9692de693032715471484cd133990f4e8e05abde86b57229c2acc81b3d020"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/README-ADDITION-DRAFT-v1.md",
+      "bytes": 10058,
+      "sha256": "a92365b187ed3bf68f052da6c81065f217957152fa6947fe97cbf222ecdea22b"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/ROOT_SEAL_EXECUTION_REVIEW_v1.json",
+      "bytes": 2900,
+      "sha256": "9d9d85f12f9685eb3d2bc59d9f185932ff5a2adf439f8538bccc14ef7bbf619a"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/SEALER_PREPARATION_v2.json",
+      "bytes": 2188,
+      "sha256": "40deb6c4ec66eab845f88a7d3861784b5ece18f773286efe5cbe242c2272f475"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/build_publication_payload_v1.py",
+      "bytes": 29754,
+      "sha256": "eb4ba103c2c93d5858d34091ce2ebcdc2caa9a4bed955b3d56c42f0bfad03061"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/eight-packet-independent-verification-v1/RESULT.json",
+      "bytes": 32823,
+      "sha256": "61931b97ed5aeedde7432719627f2b709f56fbadc37068c983cae19392a6ca27"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/eight-packet-independent-verification-v1/VERIFIER_EXECUTION.json",
+      "bytes": 2070,
+      "sha256": "2f54ce04dc6ab1e95c6c5318c0670f41528337ad61047fdc6ccbe275e1b04ff5"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/eight-packet-independent-verification-v1/VERIFIER_REQUEST.json",
+      "bytes": 934,
+      "sha256": "242dc9d31171122a946dc457d9405b4718218636f84fe8dc7d472288bebfea2d"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/eight-packet-independent-verification-v1/VERIFY.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/eight-packet-independent-verification-v1/VERIFY.stdout",
+      "bytes": 751,
+      "sha256": "fdfa0db646e19449c0b36ce66134da7b8c3a43e42fb4d6f6fde38bfdc6bd6120"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/eight-packet-independent-verification-v1/driver.py",
+      "bytes": 10234,
+      "sha256": "d6b587e155cf8565b6e202c54452487a2e1bbfce258b343f4657959a0d1c218c"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/eight-packet-independent-verification-v1/manifest.json",
+      "bytes": 3520,
+      "sha256": "0ae80e71fc5de3e08ea9f4658575eda1f47231185a30580fdd7d665a52dc53f2"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/eight-packet-independent-verification-v1/verify_packets.py",
+      "bytes": 2515,
+      "sha256": "50e086000bf0a2a414a00e0afb6010bec0394c9b5553e159b80fa9526f3846d7"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/eight-verifier-execution-v1/EXECUTION.json",
+      "bytes": 1347,
+      "sha256": "4a7f1a803b1a426c8cc108325ed82bb3e26f89fc24490c39acc9a4c891bbb57c"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/eight-verifier-execution-v1/REQUEST.json",
+      "bytes": 788,
+      "sha256": "df28e230b5b6a5d768b84053b4f4094d74a940ca7681bad99c4303837c48362c"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/eight-verifier-execution-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/eight-verifier-execution-v1/stdout.raw",
+      "bytes": 494,
+      "sha256": "83dd8c10ab2dfa4722b8d0b5e3d43e8e37ca8d69b15bf94214a5d33bd42a57fc"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/prepare_packet_selection_v1.py",
+      "bytes": 20522,
+      "sha256": "e7aa15e7914941d52d6f84519a23b8e3264bdcecfdc44ad44944f9f1eafa572e"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/prepare_packet_selection_v2.py",
+      "bytes": 19929,
+      "sha256": "42b0bbca2bb4722a2cbd4b9bfd169aa7eb806f0624fbf77d45f4d4b8b0e9e6a1"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/prepare_publication_inputs_v1.py",
+      "bytes": 10389,
+      "sha256": "53ec80266c6bd533526d840de4f659c1d743ba503c62dde95a9d93e72d07bf02"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/seal-execution-v2/EXECUTION.json",
+      "bytes": 1684,
+      "sha256": "60e0022c78b9875796e8f88c3085bfab2204a2193d92d786a9604571c96ef0e0"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/seal-execution-v2/REQUEST.json",
+      "bytes": 1143,
+      "sha256": "a8ac1b37440bd0c56cd426d731a70910c493d522522e58de4d7251c1e6ba8250"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/seal-execution-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/seal-execution-v2/stdout.raw",
+      "bytes": 293,
+      "sha256": "bf8713ae3fcaa46695308c4f4f56a19409b8271aefb3b57a0a0effb8c9e92392"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/seal_frozen_original_packets_v1.py",
+      "bytes": 16730,
+      "sha256": "87f56fa9848c54f9cdd771b4ca57d328af60349627c88c5c6aa36cc14d3b917e"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/seal_frozen_original_packets_v2.py",
+      "bytes": 16770,
+      "sha256": "d3053a77fbbde7d08b9036bb4f7aa15b78b68c2db28a69c927b30d9c047c0035"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/PATTERN_REVIEW.json",
+      "bytes": 1659682,
+      "sha256": "0b5544fb607d13abff4d85c0fafb438140452c14b820736c98410e7616618577"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/PLAN.original.json",
+      "bytes": 15277,
+      "sha256": "e890a3e57c2f71113964fd1e3bd66b4bf70d565805a05ed8601a96fbbca573d6"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/RESULT.json",
+      "bytes": 7804,
+      "sha256": "30c1f2d392435df4dc92554ad181c4112d6166a13a0c5ebb85dc3b72547d87bc"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/SOURCE_INVENTORY.json",
+      "bytes": 4044649,
+      "sha256": "0f8fcfe4684ff46fa5c95f684f5f5856f84f15f34620d609cee3e11f5cc2a2ca"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/driver.py",
+      "bytes": 16770,
+      "sha256": "d3053a77fbbde7d08b9036bb4f7aa15b78b68c2db28a69c927b30d9c047c0035"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/h9-original-strict-failure-terminal-history-v1/SEALED_MANIFEST.json",
+      "bytes": 18437,
+      "sha256": "a124a12ddd8ba4edd47e1f01bafe46976c485a13e19c9b4cdf817f5d71d123d5"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/hc-37df97a-source-publication-history-v1/SEALED_MANIFEST.json",
+      "bytes": 223864,
+      "sha256": "d6f8e8923b39bbdfbbd97fdab4edc979c967a1513f616be1b259c51578a0af91"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/SEALED_MANIFEST.json",
+      "bytes": 32426,
+      "sha256": "b2347b61b6d97c32211c1c6d4d443df88fd531739e3c775df8e09673c9974d9c"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/hc-a1-original-rpc-contacts-0000-0288-v1/SEALED_MANIFEST.json",
+      "bytes": 302288,
+      "sha256": "a0fe04eeabb1d8f259ec059522d264925de3410aaa72cfdf006d5e87bb48851d"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/hc-a1-original-rpc-contacts-0289-0576-v1/SEALED_MANIFEST.json",
+      "bytes": 301422,
+      "sha256": "8d029ad641ff06bf27281610db5d6b357d01910c4a05a2f8783a7b83f303c02f"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/hc-a1-original-rpc-contacts-0577-0864-v1/SEALED_MANIFEST.json",
+      "bytes": 301422,
+      "sha256": "6c2f8558b2d2900f1492d97d934c4f99a7783ba3e54cb93df7ccd501de7c2483"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/hc-canonical-format-failure-repairs-and-recovery-history-v1/SEALED_MANIFEST.json",
+      "bytes": 180026,
+      "sha256": "a56bca6488fa7bb8ccf5101aa42875e291f72757470d87238bec5dbdf5bba771"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealed-v2/hd-production-owner-interface-matrix-v1/SEALED_MANIFEST.json",
+      "bytes": 20526,
+      "sha256": "125cf840739a5b995cc7bb9dd776c2a4eeae5e7ec679156b9b0964c2e57e5ea6"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/sealer-v1-to-v2.patch",
+      "bytes": 3789,
+      "sha256": "3485c4cf5cc87f81a5c8b67fb0b037e0502ea05341f618ee54a5564c334ea7bf"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v1/PLAN.json",
+      "bytes": 14084,
+      "sha256": "0fa11e28b5f8e831c3e63e67345642e628074cca55d6b7d2caa2228bfe4e4a06"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v1/whitelists/h9-original-strict-failure-terminal-history-v1.json",
+      "bytes": 44433,
+      "sha256": "1e2971cb0e4bbcf619657a171f67ea0069820976219cfe54bfecd21f51fda3e9"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v1/whitelists/hc-37df97a-source-publication-history-v1.json",
+      "bytes": 277193,
+      "sha256": "9acd1b2568d7ddebaae3a73e7c4f9d664aa31e7f8315f10e37d51a51d7445b53"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v1/whitelists/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1.json",
+      "bytes": 79777,
+      "sha256": "9eadee4f4f49dbdc7ae464462703ac163d6b68efc7d19e3d39610bf04889ca29"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v1/whitelists/hc-a1-original-rpc-contacts-0000-0288-v1.json",
+      "bytes": 956274,
+      "sha256": "5399d3dc40a0ecea4297b231b8536bc5e249e33a3ba656f22496e8ef03a5ea66"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v1/whitelists/hc-a1-original-rpc-contacts-0289-0576-v1.json",
+      "bytes": 953518,
+      "sha256": "1f41979d3ed469b06d84772cb46b7ebebc48c8568327ca5d9be521a6cd112fca"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v1/whitelists/hc-a1-original-rpc-contacts-0577-0864-v1.json",
+      "bytes": 953518,
+      "sha256": "655c0f0f874ddab402c169496bf32de29e10ff365237344872fde6db46aaca1c"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v1/whitelists/hc-canonical-format-failure-repairs-and-recovery-history-v1.json",
+      "bytes": 448956,
+      "sha256": "384af66146c443c6ba9a00a29bf1251c5747c7cea72f9452aba4870973b2c86f"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v1/whitelists/hd-production-owner-interface-matrix-v1.json",
+      "bytes": 49380,
+      "sha256": "81942420abdb0b05cd9e0b36b6d1e286eadda98ba651e9905f5209d2556852f6"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v1/whitelists/increment012-base-and-preparation-provenance-v1.json",
+      "bytes": 5729,
+      "sha256": "5b349e8df19eb9ffecc8e263c3aa09669cbee647dd1b87844f2cade3ad9b4ae5"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2-execution/EXECUTION.json",
+      "bytes": 1128,
+      "sha256": "0eeb80b282f4b485fc9d32b448f4380819d49c3fb41ed402263c32582e86690c"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2-execution/REQUEST.json",
+      "bytes": 723,
+      "sha256": "049f81117a53394675fa86d54ea98bb440a375f65e995eb424071202ee3dd534"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2-execution/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2-execution/stdout.raw",
+      "bytes": 301,
+      "sha256": "177a3a0bfd9bdf3d7fd7d0166599ad8edbe4c8e0acbec86383554a752aaa669d"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/PLAN.json",
+      "bytes": 15277,
+      "sha256": "e890a3e57c2f71113964fd1e3bd66b4bf70d565805a05ed8601a96fbbca573d6"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/RESULT.json",
+      "bytes": 1859,
+      "sha256": "ed0e7c4a9adb6c698f65a6921d99165a2dedfe997fb1b04259febe2df5e77ffc"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/SOURCE_PUBLICATION_SUPPLEMENT.json",
+      "bytes": 287171,
+      "sha256": "64eecab8421cb2fa93eb1dbe2a2ea34bf0c6350715d39dbe25bb303033be62ba"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/v1-to-v2-plan.patch",
+      "bytes": 8827,
+      "sha256": "12e9520a0d6c5f1659c7eb3f33035ad3af4b84ce8953926b6c09b3383f87fdd7"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/whitelists/h9-original-strict-failure-terminal-history-v1.json",
+      "bytes": 44433,
+      "sha256": "1e2971cb0e4bbcf619657a171f67ea0069820976219cfe54bfecd21f51fda3e9"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/whitelists/hc-37df97a-source-publication-history-v1.json",
+      "bytes": 562773,
+      "sha256": "3d3683c854f235cccd6038f13ab2bb88d7cb8f6b846ce386ed85aa5f8ca69f50"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/whitelists/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1.json",
+      "bytes": 79777,
+      "sha256": "9eadee4f4f49dbdc7ae464462703ac163d6b68efc7d19e3d39610bf04889ca29"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/whitelists/hc-a1-original-rpc-contacts-0000-0288-v1.json",
+      "bytes": 956274,
+      "sha256": "5399d3dc40a0ecea4297b231b8536bc5e249e33a3ba656f22496e8ef03a5ea66"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/whitelists/hc-a1-original-rpc-contacts-0289-0576-v1.json",
+      "bytes": 953518,
+      "sha256": "1f41979d3ed469b06d84772cb46b7ebebc48c8568327ca5d9be521a6cd112fca"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/whitelists/hc-a1-original-rpc-contacts-0577-0864-v1.json",
+      "bytes": 953518,
+      "sha256": "655c0f0f874ddab402c169496bf32de29e10ff365237344872fde6db46aaca1c"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/whitelists/hc-canonical-format-failure-repairs-and-recovery-history-v1.json",
+      "bytes": 448956,
+      "sha256": "384af66146c443c6ba9a00a29bf1251c5747c7cea72f9452aba4870973b2c86f"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/whitelists/hd-production-owner-interface-matrix-v1.json",
+      "bytes": 49380,
+      "sha256": "81942420abdb0b05cd9e0b36b6d1e286eadda98ba651e9905f5209d2556852f6"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/selection-preparation-v2/whitelists/increment012-base-and-preparation-provenance-v1.json",
+      "bytes": 5729,
+      "sha256": "5b349e8df19eb9ffecc8e263c3aa09669cbee647dd1b87844f2cade3ad9b4ae5"
+    },
+    {
+      "path": "originals/ci-fixes/increment012/verify_eight_sealed_packets_v1.py",
+      "bytes": 10234,
+      "sha256": "d6b587e155cf8565b6e202c54452487a2e1bbfce258b343f4657959a0d1c218c"
+    }
+  ],
+  "new_native_executions": 0,
+  "new_numerical_executions": 0,
+  "new_lifecycle_executions": 0,
+  "full_history_cost": null,
+  "physical_cost": null,
+  "all_stage_gates": "HOLD",
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/increment012-base-and-preparation-provenance-v1/archive.part001",
+      "offset": 0,
+      "bytes": 196608,
+      "sha256": "89327c154170f7d530213087ae0a8e185cf0f9e68cd0a6e7da53186f2c28c948"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/increment012-base-and-preparation-provenance-v1/archive.part002",
+      "offset": 196608,
+      "bytes": 196608,
+      "sha256": "6097d3d48483088fda8bd95bda5654fdbc52beae0737881adbca59874a2da18c"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/increment012-base-and-preparation-provenance-v1/archive.part003",
+      "offset": 393216,
+      "bytes": 88256,
+      "sha256": "36cec27258d38a4b6cc47df115c1dfc657adf0e782933c62b9d0d1ad67a54c8c"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "disk_archive_whole_sha_and_members_verified": true
+}

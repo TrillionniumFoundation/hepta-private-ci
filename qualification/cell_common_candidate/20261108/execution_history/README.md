@@ -1,3 +1,63 @@
+# Engineering addendum 012: H9 strict failure, HC source history, and the first lifecycle failure
+
+This addendum retains the completed records following evidence commit `16570f30aeae38c8e1772ebb10736f62b74910fd`. The common candidate remains `bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d`, and formal `CURRENT` remains SHA256 `c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4`. **S0–S5 remain HOLD.** Source publication, canonical formatting, a successful record reader, and an archive verification do not establish an ordinary daemon iteration or scientific acceptance.
+
+The execution cutoff for the included product/controller attempts is **2026-11-09 20:53:28.189059 UTC**, the natural end of the original failed A1 lifecycle outer controller. Independent source reviews, record readers, and the bounded process/runtime observations retain their own later timestamps. The separate selection and sealing times are preparation metadata, not times at which the original attempts ran. The later HC runtime admission and later process-view source repair are outside this selection.
+
+## Source-specific results
+
+| Source or record scope | Result retained here | What that result establishes |
+| --- | --- | --- |
+| H9 `1d467787e2761192b0c545c377c5d7e281a298d4` | The original strict/helper-build attempt ended FAIL; the native owning tests did not run. | The earlier evidence 011 progress-only strict observation has a later terminal failure. Its original historical wording is preserved. |
+| First HC canonical-format attempt | Canonical `just fmt` returned 0; the overall source controller returned 1 when the exact protected call-site marker was absent after formatting. | Formatter success alone did not satisfy source admission. The original failed result and local observer errors remain original records. |
+| HC call-site repairs and isolated recovery v2 | Two original calls were assigned to local variables so the protected exact markers survived formatting. The isolated source-only recovery completed successfully. | The original current-check and restore calls, error mappings, and full snapshot comparison retain their ordering. This is source/formatter validation, with no native execution. |
+| Published HC `37df97ac9ce945d48489a3c70fcf8ef47a1a54da` | Twenty-one commits, their parent/tree chain, the final ref, and 103 final source bodies were independently read back. Final tree: `b05d81c81d4d561e7eee433de14aa203821b512f`. | The exact HC source is available for review. Publication did not move common `bf42`, formal `CURRENT`, or any scientific gate. |
+| HC A1 lifecycle fixture on that published source | Original outer OS exit 1; A1 failed or remained incomplete. A2–A5 were NOT_RUN. | The first real Python lifecycle attempt did not qualify the provider. There is no completed training observation or retained candidate from this attempt. |
+| HD production owner/interface study | Completed read-only source/interface analysis. | It identifies concrete owner, provider, role, and input boundaries; it is not a completed `LearningIterationOwnerPorts` implementation or an executed daemon iteration. |
+
+The HC formatter recovery retains all 330 original command receipts: 258 returned 0 and 72 returned the permitted `git diff --no-index` difference status 1. Those 72 exits are the two original diff commands for each of 36 new source files. The single actual canonical-format command returned 0. Its 3.663715321-second command duration is a formatter measurement, not training or full-history cost. The 103 source closure contains 49 changed files, including 36 additions, and 54 unchanged H9 files; three separate context witnesses are not extra source changes or tests. The original 19 Python AST comparisons and the actual CALLERS SHA rebinding remain in their source-only scope.
+
+## Original A1 failure and contact records
+
+A1 made **one Start contact and 864 Status contacts**. These 865 contacts belong to one failed attempt. They are not 865 test cases, training jobs, iterations, or retries. The Start RPC exited 120 with the expected closed-reader `BrokenPipe` behavior. The later 864 RPC processes each returned OS 0 and a typed `Unknown` status. Successful delivery of an `Unknown` observation did not make the underlying job successful.
+
+The durable runner's original stderr records `FileNotFoundError` while reading `/proc/5/stat` in process-identity construction. This exception occurred before the claim write and before the worker-launch call. The retained job directory has the descriptor and reservation plus the original runner logs; it has no completed claim, worker identity record, terminal success, or four-output success closure. The original training count remains null. The original 300,000-millisecond request budget and the original observation horizon were not changed, and the harness did not retry or send fallback signals after this failure.
+
+A2–A5 did not run because the original controller stopped at A1. The independent retained-candidate reader did not run. The five earlier H numerical tests were not repeated by this lifecycle attempt or by evidence preparation. The archive includes the exact **4,980,877-byte synthetic predecessor**, SHA256 `309e02dd4de69712bd3efd79cfdce0fb5927ba28e35118fe643424263c3d9198`, as a necessary original failure input. Its presence is not a new numerical result.
+
+The complete 5,212 original lifecycle files are retained across the control/input packet and three contiguous contact packets. The contacts cover `0000–0288`, `0289–0576`, and `0577–0864` without omissions or overlap. Archive aliases shorten paths only; each member is mapped to its exact original local path, size, SHA256, and recorded physical identity. Forty original contact records contain `/proc` data, but those records do not independently prove that the numeric PID and the mounted `/proc` view identified the actual RPC child.
+
+Later bounded observations are separate evidence. The local self-view probe found a mismatch between its process-local PID and the mounted `/proc` numeric view. It does not retroactively supply namespace observations missing from the original A1 run. The separate desktop feasibility probe found a consistent self/PID/pidfd view but a different Python/NumPy environment without Torch at the checked interpreter. That probe did not establish an admitted replacement for the original Python 3.12.14 / Torch 2.8.0 CPU / NumPy 2.3.5 runtime, and it did not run the lifecycle fixture.
+
+## Source-publication provenance and preserved preparation failures
+
+The source-publication history includes the actual v3 publication plan, its complete expected tree objects, final source closure, all 21 patches, original command stdout/stderr, the exact source copies used to reconstruct the layers, and the original generator. It also retains the earlier v1 and v2 plan-preparation failures, their `ERROR.txt` records, all three generators, and the two generator deltas. The v1 changed-scope rejection and v2 missing-key rejection remain failed preparation attempts. They are distinct from the successful v3 local plan and the later actual source publication.
+
+Fourteen original independent source-acceptance records preserve the pure verifier, original plan review, verified plan, complete actual publication readback, summaries, and their source readers. No separate source-review stdout/stderr files were saved for those local reviews; complete original JSON reports and summaries are retained without inventing replacement logs. The later desktop host-health/local-admission records are explicitly excluded. Their output cannot stand in for source-review output.
+
+## Packet and cost boundaries
+
+The addendum groups the original evidence into eight packets plus a separate preparation/provenance packet:
+
+1. H9 original strict failure and the exact locally retained terminal readbacks.
+2. HC first formatter failure, both source repairs, v9 composition, and isolated formatter recovery.
+3. HC publication plan/failure history, actual 21-commit publication, and independent source acceptance.
+4. A1 control records, original fixed inputs, failed lifecycle result, and bounded posthoc diagnosis.
+5. HD production owner/interface analysis and its retained source references.
+6. A1 original RPC contacts 0000–0288.
+7. A1 original RPC contacts 0289–0576.
+8. A1 original RPC contacts 0577–0864.
+9. Exact base, selection, sealing, and independent archive-verification provenance.
+
+The selected original files are preserved byte-for-byte. Generated scope/manifest records identify their own creation time. The only binary original exceptions are the bounded original formatter gzip JSON and the small synthetic predecessor packet named above. Interpreter/venv payloads, wheel caches, native executables, targets, and real large model weights are excluded. Seven successful H9 Cargo JSONL streams and two full source inventories were not copied locally; their original size/SHA references are retained, but their bytes are not claimed archived. No complete remote prefix or complete execution-history cost is claimed.
+
+All earlier 100 packet subtrees and existing file modes/bytes are preserved by the evidence tree overlay. The only existing paths updated are the root `README.md` and `manifest.json`; the complete earlier README remains an unchanged suffix, and earlier manifest observations retain their original types, source attribution, failures, and cutoff. The new archive manifests and numbered parts allow whole-archive and per-member verification with the existing verifier. Archive member totals include repeated metadata and repeated content across distinct original paths; they must not be summed as independent executions or programs.
+
+**Full-history and physical costs remain null.** Evidence preparation does not create a signed Training/Evaluation/Selection/Adoption receipt, prove a real-task improvement, or establish a complete ordinary daemon learning iteration. Existing scientific and production-profile requirements remain in force.
+
+
+---
+
 # Increment 011 — E–H9 source, original failures and numerical provenance
 
 This increment extends evidence commit **41e1ade6697fee40dd29aef6826348a631396a76**, tree **7171fd32421e18db4287cdde5e1a06f08bab243a**. The original 95 packet entries and their Git subtrees remain unchanged. Four new history packets retain 2,130 selected original files; a fifth packet retains the archiver's own provenance and the independent base/disk checks. Archive-member totals include repeated source and observation bytes. They are storage counts, not independent experiments or passed tests.

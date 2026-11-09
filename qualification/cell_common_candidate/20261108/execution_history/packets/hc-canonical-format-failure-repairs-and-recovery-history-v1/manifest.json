@@ -1,0 +1,3459 @@
+{
+  "packet_id": "hc-canonical-format-failure-repairs-and-recovery-history-v1",
+  "scope": "Original first formatter overall FAIL despite fmt 0; both real call-site marker repairs, v9 composition, isolated recovery v2 source-only PASS, original commands/readbacks, and local observer failures.",
+  "compression": "xz",
+  "archive_path": "/workspace/scratch/898e2183709e/ci-fixes/increment012/sealed-v2/hc-canonical-format-failure-repairs-and-recovery-history-v1/original.tar.xz",
+  "bytes": 1523468,
+  "sha256": "e7e465290196abb05eb926aaf89e7a479a0820bf4b22bb29eff77217208d191b",
+  "file_members": [
+    {
+      "path": "metadata/DRIVER.py",
+      "bytes": 16770,
+      "sha256": "d3053a77fbbde7d08b9036bb4f7aa15b78b68c2db28a69c927b30d9c047c0035"
+    },
+    {
+      "path": "metadata/ORIGINALS.json",
+      "bytes": 172021,
+      "sha256": "a23addb772b9d23bc00cbe8a9c5ae59d08801bd3e1349da8dcf5840e01a2fe12"
+    },
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 449457,
+      "sha256": "00248e324aee76d426f6649202c4f4320425f990cb1c01f899c44ea5aa718a90"
+    },
+    {
+      "path": "originals/ci-fixes/hc-composition-v9-independent-qualification-review-v1/INPUT_INVENTORY.json",
+      "bytes": 160143,
+      "sha256": "a253b830d3cb72faec4326ef9af83d0b8c0ca5ade647fac580845a93c1eeda78"
+    },
+    {
+      "path": "originals/ci-fixes/hc-composition-v9-independent-qualification-review-v1/RESULT.json",
+      "bytes": 10320,
+      "sha256": "4a7c2384d10c0a038bc0b19f31030e1e12b42bf7772e63067992e60ad9d27d11"
+    },
+    {
+      "path": "originals/ci-fixes/hc-marker-source-fix-independent-qualification-review-v2/EXPECTED_FAILED_FORMAT_WITNESS.json",
+      "bytes": 43822,
+      "sha256": "17353f6010281c811ab1f315a78393f43dfdc8afe09a7db8bc5c6ddee38292b7"
+    },
+    {
+      "path": "originals/ci-fixes/hc-marker-source-fix-independent-qualification-review-v2/RESULT.json",
+      "bytes": 5601,
+      "sha256": "92e75aa98e187fb106236d0b6712e710009fd6258e7197b7622ea3d308cbcaf5"
+    },
+    {
+      "path": "originals/ci-fixes/hc-recovery-v2-actual-independent-qualification-review-v1/ACTUAL_INPUT_INVENTORY.json",
+      "bytes": 72805,
+      "sha256": "2caa400e275702a87abc7c367121ca061ebe6b5dd9865429e009ceb0210a3cf3"
+    },
+    {
+      "path": "originals/ci-fixes/hc-recovery-v2-actual-independent-qualification-review-v1/CALLERS_REBIND.json",
+      "bytes": 28298,
+      "sha256": "7d2d02fa7904d38363e9840b0c54c9f454ed613e6822ef2912af1e6d648642e9"
+    },
+    {
+      "path": "originals/ci-fixes/hc-recovery-v2-actual-independent-qualification-review-v1/CORE_MULTIPLE_FILES_ORIGINAL.json",
+      "bytes": 37944,
+      "sha256": "406f5ec7262a8b71d240cf298c6bea5e916edc5f33a36b572d2dd897bc90ce83"
+    },
+    {
+      "path": "originals/ci-fixes/hc-recovery-v2-actual-independent-qualification-review-v1/EXECUTION.json",
+      "bytes": 3262,
+      "sha256": "0b513b5981ecbb15e9c37e08cea99509100700211a39bf70cc375ca5c07156d5"
+    },
+    {
+      "path": "originals/ci-fixes/hc-recovery-v2-actual-independent-qualification-review-v1/ORIGINAL_RESULT.json",
+      "bytes": 614281,
+      "sha256": "4b1a7b52df50a93f41865cd2cbdea6ece72701108d8f289490bf569f19a6df8f"
+    },
+    {
+      "path": "originals/ci-fixes/hc-recovery-v2-actual-independent-qualification-review-v1/RESULT.json",
+      "bytes": 11851,
+      "sha256": "8e530e2a7a3811b0ee98f3bce1208d6a16126e6c64b24af04caa0029533c27aa"
+    },
+    {
+      "path": "originals/ci-fixes/hc-recovery-v2-actual-independent-qualification-review-v1/RESULT_BINARY_CHUNKS.json",
+      "bytes": 822632,
+      "sha256": "20efeaee449be29431151292cb645509774d17b7fbf335d57fa993519dc721ef"
+    },
+    {
+      "path": "originals/ci-fixes/hc-recovery-v2-actual-independent-qualification-review-v1/callers-protected-sha-rebind.patch",
+      "bytes": 2844,
+      "sha256": "e4769cdfd2f2484c8a4cdad638fe95ffbcda15a4d7aef10a7a97f98e071714ae"
+    },
+    {
+      "path": "originals/ci-fixes/hc-recovery-v2-actual-independent-qualification-review-v1/review_actual_v2.py",
+      "bytes": 20657,
+      "sha256": "2d46fb909d4de161330f1a8bf0190e59ea260055d78835d958db3409576a7fbc"
+    },
+    {
+      "path": "originals/ci-fixes/hc-recovery-v2-independent-qualification-review-v1/INPUT_INVENTORY.json",
+      "bytes": 67063,
+      "sha256": "1f9621f998b64e15f96310f93dcde1d19fd1e9552d53a59dddba1d4b4de9dc77"
+    },
+    {
+      "path": "originals/ci-fixes/hc-recovery-v2-independent-qualification-review-v1/RESULT.json",
+      "bytes": 9929,
+      "sha256": "74cd558d02f8c92ac52577a3a6a38c9bac346fa55ac3767b5787a90999f12180"
+    },
+    {
+      "path": "originals/ci-fixes/hc-recovery-v2-independent-qualification-review-v1/review_full_typed_v1.py",
+      "bytes": 17565,
+      "sha256": "55458329a12d98680fefafc0c457bc544eebbc3858db0dbd59543b827e9300c4"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/CALLERS_METADATA_BINDINGS.json",
+      "bytes": 795,
+      "sha256": "c9b172f66b72293259666c70cd882990a8a0469153cbf4db0cce19d146df70a6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/COMMANDS.json",
+      "bytes": 40269,
+      "sha256": "e5fc7500b2a8d85528bc614246ad22b91f414a9506e3517d60eaf9bdb059fea3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/CUMULATIVE_SOURCE_FILES.json",
+      "bytes": 46475,
+      "sha256": "9ef95bce7fb5267b6e4725cd4d2e16e8d98f4d45bead898c69cd5dbad517989a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/FILE_PINS.json",
+      "bytes": 47884,
+      "sha256": "46e27d8037691d1690cc7d22390252e0f225a2dc78b9fc4c33dc33c571581300"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/H9-to-HC-combined-unformatted.patch",
+      "bytes": 322303,
+      "sha256": "33985344ee6579a0518b9d055b543fc7750c1b837ae921ee051bd02af28ae601"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/INPUTS.json",
+      "bytes": 95950,
+      "sha256": "cf9dfc466f7ad2f47d9f1913b0a2542825167d045ea944467f7ede3bc9f3c77a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/RESULT.json",
+      "bytes": 6675,
+      "sha256": "6477701d9b5604b33bb3158d011fff8ae70a00dccdab965ab01ca0cedc17118c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/UNCHANGED_CONTEXT_WITNESSES.json",
+      "bytes": 1412,
+      "sha256": "e9d530a8fcf34b090fbdb860e1421f99e234a6ba03d7ae5b61b3ad406ce1b101"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/CALLERS.toml",
+      "bytes": 235343,
+      "sha256": "62569052216a29ed868707526970b284304b027f06da0f27cb3d1cc85510fa3f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 7975,
+      "sha256": "9e6588ec7f046ec9ce4ca9f3e1e4787924b2f26d006b22d280f17bb6127a1a86"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/authority_host_learning_admission_tests.rs",
+      "bytes": 2408,
+      "sha256": "7f33644acd00075af9d098c35a47d2d55698a4e295224b66eb1b6a5f8e0b170b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "bytes": 18588,
+      "sha256": "9d611125b0a80f9872a864e7ce666940dc21dd3d8272018f2b70e8be5e6fe1cf"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_fixture_tests.rs",
+      "bytes": 10018,
+      "sha256": "5a31940f6ae1cfd0bf7ff12014453cdf9f4b80fae5c739805982df962457fa91"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_tests.rs",
+      "bytes": 15917,
+      "sha256": "b0b918ad6fc91f7f23041138256ea696da35682b212c4b0a14c14ac88837fe23"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 6005,
+      "sha256": "15c6dc7636883312a0d3dec314b91edcffb6f927b055354df86922b26a42a5d7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/authority_host_learning_delivery_stop_tests.rs",
+      "bytes": 847,
+      "sha256": "58c2880517dfa4adf6cdf2ebf546188ffa6cd7dbd81ec5bc7236aba9ab6e9ef8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/authority_host_learning_delivery_tests.rs",
+      "bytes": 11819,
+      "sha256": "838d0a13e643b900b1b7df4cd7dcbcc3451cf616d47461324a1b4eb595257b97"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "bytes": 8026,
+      "sha256": "c5343c8829ec4609b49ddd661919b1cf9cf6ab0cb4610b551a208acbf1c869ac"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "bytes": 22338,
+      "sha256": "ce312aac01e7b3d6bf281ef160387f48412a352766d83c3233c2b0dc51ae401c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "bytes": 15868,
+      "sha256": "affc295b01d319a9e8cf98f34557eda4900542bcadbafb50d0f83b5490dae04c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 48880,
+      "sha256": "581b2c55abecedf81ee207c997b9e67d3289a2c92c19eb7f5bb3ea5571a46524"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_hcsn_source.rs",
+      "bytes": 10059,
+      "sha256": "8d0ff88ad9254d73700b796113a3d47071d32e0fe8ca7422488a09e0cc192aa1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_joint_text_completion.rs",
+      "bytes": 11126,
+      "sha256": "d3351945719de593c9d810db281a2580f97753131bd6bf8cbdb3f828e51f3498"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_joint_text_completion_tests.rs",
+      "bytes": 11843,
+      "sha256": "2b6b4b106d318534f0c696e316448611bdd365be9022b4c5fc0f25f603a704d0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_joint_text_host.rs",
+      "bytes": 11692,
+      "sha256": "0fb207c23736f5b6d7857d30e27a81280d0f196cd0e2ba230e7321d1617b2f5c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_joint_text_input_files.rs",
+      "bytes": 8419,
+      "sha256": "ae3593d690de9b494bad0a7b1e6d30219d3114c609e9fa7b0b8e231fb81750d6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_joint_text_inputs.rs",
+      "bytes": 6328,
+      "sha256": "c117727a3b9bb8b6901f608ffcb210af515dfb3a5f39c55cf14647efe6332b44"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_joint_text_inputs_tests.rs",
+      "bytes": 7008,
+      "sha256": "06a64383de1620eb6ecc78c92721b899878946b58230d2b863abac7bec62da4c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_joint_text_owner_host.rs",
+      "bytes": 7475,
+      "sha256": "5a2b0e6a758344f2f5ea245897c9bab417e07c2080bed3e2534b82aeef2a3a73"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_joint_text_pq.rs",
+      "bytes": 9972,
+      "sha256": "d42a1e1ae1e9ecd5052c2f4b677d5fe0a48b526dec293718f3e42d152c5b507d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_joint_text_retained.rs",
+      "bytes": 5415,
+      "sha256": "fc50f8851d7eccffcb8239dfc5c683a28ec0bf5d66adaa2b758d1b81f5152a98"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_joint_text_source.rs",
+      "bytes": 8544,
+      "sha256": "d29768118ac83b217bffd76260a58117a251eac85a16bc5f5ca83b3073f884a8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/automation_joint_text_source_tests.rs",
+      "bytes": 8287,
+      "sha256": "c0d090b77fb549784f773ce0af144f9da34645da3c43fe21c147d2ccf27917bf"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/config.rs",
+      "bytes": 39380,
+      "sha256": "fc905db33ca6bb0d2edd72dd1940dfe1ea156cba525d292bbce04c097b22b67e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/joint_generation_bundle.rs",
+      "bytes": 5914,
+      "sha256": "9be416849ca948cd7b2b55aeb71305f870fe4699c151b0a7210b1f043276ec46"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/joint_generation_bundle_tests.rs",
+      "bytes": 14258,
+      "sha256": "9e325162e019a44dc3c3a8710effbbbe0c80ff588ac9827c8be3eb6bc2cd137a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/joint_generation_bundle_weight_fixture.rs",
+      "bytes": 6416,
+      "sha256": "f5b5715422a694aabd683bfa398a266f22a1cc8052b7f1313fb0de5ed3efc8d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/joint_memory_text_replay.rs",
+      "bytes": 14378,
+      "sha256": "d71c932d231ce161f3dc6b4b43bde220d1850287875dc688e0b90cf97912d10e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/joint_memory_text_replay_tests.rs",
+      "bytes": 7131,
+      "sha256": "144856cc332b9404937a48afd2780e62adc955f841d1b9d135466ac6e9d6549b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/joint_text_training.rs",
+      "bytes": 17923,
+      "sha256": "68bc1e20f9109bcb24752aa5601e10a6449770bdacc12328990b8c5d32016127"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/joint_text_training_fixture_tests.rs",
+      "bytes": 7570,
+      "sha256": "24c32e9f771abd86316177cac3fff476dbe4f474a26b0c17f9224f68aa739e4d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/joint_text_training_owner.rs",
+      "bytes": 14547,
+      "sha256": "a8a6bc2a9ec2bce16c36ea1b1d3b4ddea58cb94010eabfd5f539b09268fc5b61"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/joint_text_training_owner_checkpoint_tests.rs",
+      "bytes": 3747,
+      "sha256": "b9a46907a07ef65c69195dcfc794b85d941aca670d9fdfdc313d3470f4504a5e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/joint_text_training_readback.rs",
+      "bytes": 10415,
+      "sha256": "5fa570e52e59c0b1433665fc6afac711f4cd2aabd2f18dc2f4096981211c757b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/joint_text_training_tests.rs",
+      "bytes": 14659,
+      "sha256": "dd27cb26cfb24f548e017b7463f90c735e53f9a648b3af9696cd4e9d02f95901"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/joint_text_training_wire.rs",
+      "bytes": 15098,
+      "sha256": "601442445407a5f158140e19a12e04d8f950143192f105e6ded6e488b07e2e2c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 44644,
+      "sha256": "ea3f75ec82880e9050dd0cfb9355e0e6dfa30f5a04721b07816442863f24a923"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/neuron_generation_adopted_learning_tests.rs",
+      "bytes": 20397,
+      "sha256": "1c8c1945cb4b71eff45f86735860fe06ec5ba49da9d10d5a85edd8cb03594442"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/neuron_generation_joint_loading_guard_tests.rs",
+      "bytes": 3859,
+      "sha256": "4d77933900637188d3fb6ba7d6068c49b43343899e6b876543027a38662ba8ab"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs",
+      "bytes": 15744,
+      "sha256": "4e8a740fda2c867ac378196c87c66e243c1210c7dd25fc3c02cf2647a8d59539"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "bytes": 19949,
+      "sha256": "515806ed35189ef8d443a7db134933fca17e8d38e1d704222687702d10dd9af3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "bytes": 16452,
+      "sha256": "299039bcd1d0bf3d18fce458bbd011cb025650699b3fcc532f4e42666c13e770"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+      "bytes": 11333,
+      "sha256": "15517cb0a644e2f80b7eacafabcb9a86001471359ad28e5efc8a23cb90fb73ff"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-agentd/src/runtime.rs",
+      "bytes": 30624,
+      "sha256": "754bc707ea5423311554f5c51ab43b78bcea533a8c6fdf6f68657b675c726d72"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/fixed_job_supervisor.rs",
+      "bytes": 12868,
+      "sha256": "c1a7b92e978b0228c43a1bc7ee482cec359eb133fa16f38365d0a06206166a74"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/hcsn_supervisor.rs",
+      "bytes": 3366,
+      "sha256": "c2ac9b214af21dc82491233c84773c98667770ac4488188cb9392114a79ad58e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/hcsn_supervisor_tests.rs",
+      "bytes": 9716,
+      "sha256": "3d7041905b39600274c1493088ddf5c91a24c305527044e5d575ab7d704420ef"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/hcsn_taskflow.rs",
+      "bytes": 7854,
+      "sha256": "a96f973abc299bead00670662383ff2feaa75afde3127757acd77b2889b6eb65"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/hcsn_taskflow_tests.rs",
+      "bytes": 9445,
+      "sha256": "0ae06ae0efd532d6793761b535dca0e28a1451f213f5f9c95d6874cb157a8a86"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/joint_text_input.rs",
+      "bytes": 3820,
+      "sha256": "089d27a9c67a308c6af4474d0d43df5576f3cfb16023eddaa47e5b3c5a8054f9"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/joint_text_job.rs",
+      "bytes": 8126,
+      "sha256": "66d6cc9d25c343c04118c2a7cd45d65939a30c5dffc77b9dd5095b6dccaa6923"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/joint_text_job_observation.rs",
+      "bytes": 5321,
+      "sha256": "cbc87bcff274d4724dddd33094b047a50eb1522773057686fff210dee6944a02"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/joint_text_job_tests.rs",
+      "bytes": 4938,
+      "sha256": "583586b0feffcda944ac20a9e7fb2cc7b528a07bbb96f1abb16980517bbeb2df"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/joint_text_supervisor.rs",
+      "bytes": 3103,
+      "sha256": "fcc78c96ad40cee0b04114f65b1c0ab413efc0f7e2b91904b1b591eeccb6dab3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/joint_text_supervisor_root.rs",
+      "bytes": 2229,
+      "sha256": "3b1bcdf082a4c07111469e13a9e4f5219af5ac0289ac54d1baba0778dcd0bb86"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/joint_text_supervisor_tests.rs",
+      "bytes": 6408,
+      "sha256": "41ce4e9ddec05d24587368229385040a83bd798b89ad7bad1703f08bd232260e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/joint_text_taskflow.rs",
+      "bytes": 8239,
+      "sha256": "dbc8f6cdefc99f4ee5f36ac8eca8325cf4a94a948adcc762feefef1a30ccc4f7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/joint_text_taskflow_tests.rs",
+      "bytes": 7417,
+      "sha256": "81eb37e8446fe0225aed7e39d4edc30d003bb662a6728f2a5c12cbfee3d52325"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-automation/src/lib.rs",
+      "bytes": 11539,
+      "sha256": "dfd9f9638c98971899275babf50c59afb95c3d8967e2b142daa0c46f44a55252"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-core/src/joint_packet.rs",
+      "bytes": 7866,
+      "sha256": "dfa3eaece21e22674cebba05d6a611d0e9fd149cef690759343bbe65458b8f11"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-core/src/joint_v4_loading.rs",
+      "bytes": 2668,
+      "sha256": "a55ead3aebd688a9e134a88bb09bb4e64941f7f0947b50d18a80aeb38834d4ed"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-core/src/joint_v4_projection.rs",
+      "bytes": 18860,
+      "sha256": "bc2b43e6c782f93ad2848d30188be97698eb1f75da825581ed6868cac2a438ed"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-core/src/lib.rs",
+      "bytes": 9547,
+      "sha256": "ab33091f82126ef57a9fa175e1838fa5c1570400397578ada010325d612ca8de"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/joint_generation.bzl",
+      "bytes": 1520,
+      "sha256": "9916d9371a6b256b11ae40d4f9fb705b32517643dc8e8925a0d1cd5f8301f9e8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/codec.rs",
+      "bytes": 339,
+      "sha256": "5718421a34d5b31d7e7bdc79c9c158d26496475e075584aaf8db106fae481d0c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/loading_tests.rs",
+      "bytes": 8265,
+      "sha256": "9f1c20d26f091656b38ed919544e0336d5014e94cca15c4ba7123f7f2d1008a8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/math.rs",
+      "bytes": 4428,
+      "sha256": "2748da5be39ca45cd08fd015ec170f34f4c1d1ea869c5e2abf28632c830a4f9b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/media_codec.rs",
+      "bytes": 4299,
+      "sha256": "cbd2cfa2ac0977553d06b2605f40e72d1d48b6ca495e219995f4f8f79ec7b267"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/model.rs",
+      "bytes": 23823,
+      "sha256": "eb6c42a69b1a71c1e96251dbedf9b67332c24f371b8063f56b088d6c4f229ded"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs",
+      "bytes": 8476,
+      "sha256": "ee4c1f9e12406f6dde312d5df6b6e72c4ef62818175cc1e58150123387214853"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/observed_model.rs",
+      "bytes": 4041,
+      "sha256": "91bede5fa0dca7ce86015eeb0266c88353d272b3ca802c9278bba05656210a75"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/planner.rs",
+      "bytes": 13058,
+      "sha256": "5711a50b1bc6da57f0be0976a10c6d3d7412084759cbf9ffdf4e0274d4c2cc4d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/projection_tests.rs",
+      "bytes": 4435,
+      "sha256": "077a3cb0fe5742abe5686d41bf594c53cd5263e4a0f0b670045e85572319b8d7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs",
+      "bytes": 8515,
+      "sha256": "844fce4eb15221879899ab687ed8b7421fe074f3ce69ca295c9f8b462230536d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal_tests.rs",
+      "bytes": 9171,
+      "sha256": "8e6797f29236633e9cc59a837fe273c638caf1d46599441c05a832fcb8efa449"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/protocol.rs",
+      "bytes": 7441,
+      "sha256": "77c4d1aebdd2f454b4e4d24296c91d455db3b7d2a7fd6e3b31362163c96dfc81"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/state.rs",
+      "bytes": 5479,
+      "sha256": "724d9a8187535b8fe8017f00a414cb23975e69facca89e5ab338127ece24b16e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-infer-worker-host/src/joint_generation/text_codec.rs",
+      "bytes": 3635,
+      "sha256": "fec674e529337faf7d168fcc22a8d2f6d625d2787a13de840914dd024cecb60d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-neuron/src/cell_joint_generation.rs",
+      "bytes": 20504,
+      "sha256": "fc58e8d4d0ad290fd36332d93c960be2b3c030b46978e3a04732b4716c6504a3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-neuron/src/cell_joint_generation_tests.rs",
+      "bytes": 20943,
+      "sha256": "d40b2700ef443334e19e5b5f99879f52956ec9bb604b2d93bb88312ff4d93a9a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-neuron/src/cell_joint_loading.rs",
+      "bytes": 5623,
+      "sha256": "89960432ad83622d07037ea28f25c61a2d107e8cae650916450d2d75600087ac"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-neuron/src/cell_joint_loading_process_tests.rs",
+      "bytes": 11519,
+      "sha256": "484326f9d828b5e5c8933037c4e0d496263824c2437cc5c8b2b79427761a67d4"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-neuron/src/cell_joint_protocol.rs",
+      "bytes": 7839,
+      "sha256": "1ecdfa6a72b95985d419225214be536e3c53eb9132c9831517debc114bf7a3c0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-neuron/src/cell_joint_weights.rs",
+      "bytes": 3137,
+      "sha256": "38e43909b73782312bf629a682e33f3f5b353a94bb9d360866f480741ada717f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/codex-rs/hepta-neuron/src/lib.rs",
+      "bytes": 17390,
+      "sha256": "e6acc607cdc045951e77aa2e2784524b93badc69faf5e1039e709d7dd4133e2f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/joint_lifecycle.py",
+      "bytes": 9458,
+      "sha256": "b18f934b7f07e6ce1394bc431ea17af8cf168b72c7480fec2decc0044e41d17e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/joint_outputs.py",
+      "bytes": 8638,
+      "sha256": "d225118ca335d9a5f3aea12e50d6ed7863cebda9c73dadf305c74ca2d02ae4c6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/joint_process.py",
+      "bytes": 3414,
+      "sha256": "e2a00f0ea9ddc7a91b4d2bac6d05f1fe409b490b8a10a2c08fafe1492d758d62"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/joint_protocol.py",
+      "bytes": 6934,
+      "sha256": "0e5b604ffe2b9217a9782785492d10c138cfe7f6968fc5fb2fcc69f426423da0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/joint_runner.py",
+      "bytes": 8430,
+      "sha256": "16167d8a602912cc777987b31951c61d485d22eb823c3376165863e7155c37d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/joint_sources.py",
+      "bytes": 4782,
+      "sha256": "964a5f23968b3f3325aca64bde968c51938916a1f5bd3be16851fae5683b613c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/joint_store.py",
+      "bytes": 8811,
+      "sha256": "e91b22dba8a3d29a997479c5da38dc53cc502453e7f854de4cfd16b046818c33"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/joint_supervisor.py",
+      "bytes": 6113,
+      "sha256": "87a7a27ec87e7019b6c960278daa99c42600f2768a2a620693f7570147aab22c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/joint_test_support.py",
+      "bytes": 8544,
+      "sha256": "19a866d46c1d49f2910962e7ec735d53bc8d463c9dfa5e252ef3d4338e706d4d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/joint_worker_adapter.py",
+      "bytes": 2841,
+      "sha256": "2aabb37b7b2091343d41694fbc425b8bf5ba2a0abd5da48d83326ba8a755ce7f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/test_joint_lifecycle.py",
+      "bytes": 9880,
+      "sha256": "6dad3784bba20c5a7d992fa0bb35949511f067b9b72315e38f51e27a2733985c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/test_joint_protocol_store.py",
+      "bytes": 4718,
+      "sha256": "a7337da12a5221685e3fa414374ede82c154b87b267335cc38e1256c74263021"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/qualification/hcsn_training/test_joint_runner_adapter.py",
+      "bytes": 8810,
+      "sha256": "f3fe31187d6eed1fd7e4ab6aa2167d059cf13d9fbc2579a3a8c8e4ad509b9fd4"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/scripts/joint_generation_v4_text_worker.py",
+      "bytes": 13836,
+      "sha256": "08648a2c4e439ad541f1b57e8b26bd2d7e31962a510d51443dc47afe5b4f6006"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/scripts/joint_text_training_compute.py",
+      "bytes": 12333,
+      "sha256": "fd318fb6d0d5eb43a6690a7728e08bcec7617a354add7923d0918cdd0d9e8dfa"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/scripts/joint_text_training_contract.py",
+      "bytes": 18262,
+      "sha256": "bac742e07368d738fd8da942c5366a4f835e6e4d1fc15e93834a5c607d56b496"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/scripts/joint_text_training_io.py",
+      "bytes": 8392,
+      "sha256": "42aa2a78a44a5731af902eb372c1cbea7cb26dc6d52e4574c8abf2f71b459007"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/scripts/test_joint_text_training_compute.py",
+      "bytes": 8367,
+      "sha256": "81c41aa0654f52081af08ac12415f1f1ffef9519c15328e973dc93f496c1b563"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/after/scripts/test_joint_text_training_contract.py",
+      "bytes": 18055,
+      "sha256": "ab1c20295b2347b5949a48fc3b3dc72cd4c31d4bd755f44e4f41995933e1515b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/CALLERS.toml",
+      "bytes": 232522,
+      "sha256": "28131f744e8e5125de1106bde303f4037576bac332c5dce3259a620bcc1788ac"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 7975,
+      "sha256": "9e6588ec7f046ec9ce4ca9f3e1e4787924b2f26d006b22d280f17bb6127a1a86"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/authority_host_learning_admission_tests.rs",
+      "bytes": 2408,
+      "sha256": "7f33644acd00075af9d098c35a47d2d55698a4e295224b66eb1b6a5f8e0b170b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "bytes": 18588,
+      "sha256": "9d611125b0a80f9872a864e7ce666940dc21dd3d8272018f2b70e8be5e6fe1cf"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_fixture_tests.rs",
+      "bytes": 10018,
+      "sha256": "5a31940f6ae1cfd0bf7ff12014453cdf9f4b80fae5c739805982df962457fa91"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_tests.rs",
+      "bytes": 15678,
+      "sha256": "1751f62f94150158deb65decd57faa93b47007836ca8922280e2952271c30e76"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 5964,
+      "sha256": "aa78854079a86f4de8a96b2365bac89157062cafbdd076742cb9621b9caa455c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/authority_host_learning_delivery_stop_tests.rs",
+      "bytes": 847,
+      "sha256": "58c2880517dfa4adf6cdf2ebf546188ffa6cd7dbd81ec5bc7236aba9ab6e9ef8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/authority_host_learning_delivery_tests.rs",
+      "bytes": 11819,
+      "sha256": "838d0a13e643b900b1b7df4cd7dcbcc3451cf616d47461324a1b4eb595257b97"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "bytes": 8026,
+      "sha256": "c5343c8829ec4609b49ddd661919b1cf9cf6ab0cb4610b551a208acbf1c869ac"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "bytes": 22338,
+      "sha256": "ce312aac01e7b3d6bf281ef160387f48412a352766d83c3233c2b0dc51ae401c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "bytes": 15868,
+      "sha256": "affc295b01d319a9e8cf98f34557eda4900542bcadbafb50d0f83b5490dae04c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 47679,
+      "sha256": "2e3057df0a9fd9dfd5b1c4399251716f63371af15df5be39e5523fe660119c4f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/automation_hcsn_source.rs",
+      "bytes": 9928,
+      "sha256": "a3de028824146432600daa04b58f4fcfd43ada45abae4cc00ab7a0ef524b2274"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/config.rs",
+      "bytes": 37947,
+      "sha256": "b22d7df86a0e44c9cebce43e230fc6e71da0ba6f0d0ff650d50e44cc331db4f6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/joint_generation_bundle.rs",
+      "bytes": 5914,
+      "sha256": "9be416849ca948cd7b2b55aeb71305f870fe4699c151b0a7210b1f043276ec46"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/joint_generation_bundle_tests.rs",
+      "bytes": 14258,
+      "sha256": "9e325162e019a44dc3c3a8710effbbbe0c80ff588ac9827c8be3eb6bc2cd137a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/joint_generation_bundle_weight_fixture.rs",
+      "bytes": 6416,
+      "sha256": "f5b5715422a694aabd683bfa398a266f22a1cc8052b7f1313fb0de5ed3efc8d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/joint_memory_text_replay.rs",
+      "bytes": 14378,
+      "sha256": "d71c932d231ce161f3dc6b4b43bde220d1850287875dc688e0b90cf97912d10e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/joint_memory_text_replay_tests.rs",
+      "bytes": 7131,
+      "sha256": "144856cc332b9404937a48afd2780e62adc955f841d1b9d135466ac6e9d6549b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/joint_text_training.rs",
+      "bytes": 15929,
+      "sha256": "d0e2ddf78134ab6f67ceb44d1518943fe44be7f637ebc6d87ecf837e2fe03f6c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/joint_text_training_fixture_tests.rs",
+      "bytes": 7570,
+      "sha256": "24c32e9f771abd86316177cac3fff476dbe4f474a26b0c17f9224f68aa739e4d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/joint_text_training_readback.rs",
+      "bytes": 10415,
+      "sha256": "5fa570e52e59c0b1433665fc6afac711f4cd2aabd2f18dc2f4096981211c757b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/joint_text_training_tests.rs",
+      "bytes": 14659,
+      "sha256": "dd27cb26cfb24f548e017b7463f90c735e53f9a648b3af9696cd4e9d02f95901"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/joint_text_training_wire.rs",
+      "bytes": 15098,
+      "sha256": "601442445407a5f158140e19a12e04d8f950143192f105e6ded6e488b07e2e2c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 43946,
+      "sha256": "3bc8c8361bf390861f3843ea81fb7dbf85bd1ccf1db7f0e5d0d10a0874289029"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/neuron_generation_adopted_learning_tests.rs",
+      "bytes": 20397,
+      "sha256": "1c8c1945cb4b71eff45f86735860fe06ec5ba49da9d10d5a85edd8cb03594442"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/neuron_generation_joint_loading_guard_tests.rs",
+      "bytes": 3859,
+      "sha256": "4d77933900637188d3fb6ba7d6068c49b43343899e6b876543027a38662ba8ab"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs",
+      "bytes": 15756,
+      "sha256": "7e07d4ebd8cfc1d262b81e0c8e3ebe7499a89862b980367a9b38ea478d073ad6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "bytes": 19949,
+      "sha256": "515806ed35189ef8d443a7db134933fca17e8d38e1d704222687702d10dd9af3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "bytes": 16452,
+      "sha256": "299039bcd1d0bf3d18fce458bbd011cb025650699b3fcc532f4e42666c13e770"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+      "bytes": 11333,
+      "sha256": "15517cb0a644e2f80b7eacafabcb9a86001471359ad28e5efc8a23cb90fb73ff"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-agentd/src/runtime.rs",
+      "bytes": 29179,
+      "sha256": "009c969fe5288111fa6e5f50866281c64184d948ecf5cfcd40764d756faa88ec"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-automation/src/hcsn_supervisor.rs",
+      "bytes": 10875,
+      "sha256": "8389dd158339f56de3db26ea6fad8f3d7a7ba03b65ae6871d6910bb967261c57"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-automation/src/hcsn_supervisor_tests.rs",
+      "bytes": 9716,
+      "sha256": "3d7041905b39600274c1493088ddf5c91a24c305527044e5d575ab7d704420ef"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-automation/src/hcsn_taskflow.rs",
+      "bytes": 7854,
+      "sha256": "a96f973abc299bead00670662383ff2feaa75afde3127757acd77b2889b6eb65"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-automation/src/hcsn_taskflow_tests.rs",
+      "bytes": 9445,
+      "sha256": "0ae06ae0efd532d6793761b535dca0e28a1451f213f5f9c95d6874cb157a8a86"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-automation/src/lib.rs",
+      "bytes": 10124,
+      "sha256": "8f69823eabf54791f3dd326796bddc3f147388c513e0e5ba67d4b7bee762e1e5"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-core/src/joint_packet.rs",
+      "bytes": 7866,
+      "sha256": "dfa3eaece21e22674cebba05d6a611d0e9fd149cef690759343bbe65458b8f11"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-core/src/joint_v4_loading.rs",
+      "bytes": 2668,
+      "sha256": "a55ead3aebd688a9e134a88bb09bb4e64941f7f0947b50d18a80aeb38834d4ed"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-core/src/joint_v4_projection.rs",
+      "bytes": 18860,
+      "sha256": "bc2b43e6c782f93ad2848d30188be97698eb1f75da825581ed6868cac2a438ed"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-core/src/lib.rs",
+      "bytes": 9547,
+      "sha256": "ab33091f82126ef57a9fa175e1838fa5c1570400397578ada010325d612ca8de"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/joint_generation.bzl",
+      "bytes": 1520,
+      "sha256": "9916d9371a6b256b11ae40d4f9fb705b32517643dc8e8925a0d1cd5f8301f9e8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/codec.rs",
+      "bytes": 339,
+      "sha256": "5718421a34d5b31d7e7bdc79c9c158d26496475e075584aaf8db106fae481d0c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/loading_tests.rs",
+      "bytes": 8265,
+      "sha256": "9f1c20d26f091656b38ed919544e0336d5014e94cca15c4ba7123f7f2d1008a8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/math.rs",
+      "bytes": 4428,
+      "sha256": "2748da5be39ca45cd08fd015ec170f34f4c1d1ea869c5e2abf28632c830a4f9b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/media_codec.rs",
+      "bytes": 4299,
+      "sha256": "cbd2cfa2ac0977553d06b2605f40e72d1d48b6ca495e219995f4f8f79ec7b267"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/model.rs",
+      "bytes": 23823,
+      "sha256": "eb6c42a69b1a71c1e96251dbedf9b67332c24f371b8063f56b088d6c4f229ded"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs",
+      "bytes": 8476,
+      "sha256": "ee4c1f9e12406f6dde312d5df6b6e72c4ef62818175cc1e58150123387214853"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/observed_model.rs",
+      "bytes": 4041,
+      "sha256": "91bede5fa0dca7ce86015eeb0266c88353d272b3ca802c9278bba05656210a75"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/planner.rs",
+      "bytes": 13058,
+      "sha256": "5711a50b1bc6da57f0be0976a10c6d3d7412084759cbf9ffdf4e0274d4c2cc4d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/projection_tests.rs",
+      "bytes": 4435,
+      "sha256": "077a3cb0fe5742abe5686d41bf594c53cd5263e4a0f0b670045e85572319b8d7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs",
+      "bytes": 8515,
+      "sha256": "844fce4eb15221879899ab687ed8b7421fe074f3ce69ca295c9f8b462230536d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal_tests.rs",
+      "bytes": 9171,
+      "sha256": "8e6797f29236633e9cc59a837fe273c638caf1d46599441c05a832fcb8efa449"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/protocol.rs",
+      "bytes": 7441,
+      "sha256": "77c4d1aebdd2f454b4e4d24296c91d455db3b7d2a7fd6e3b31362163c96dfc81"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/state.rs",
+      "bytes": 5479,
+      "sha256": "724d9a8187535b8fe8017f00a414cb23975e69facca89e5ab338127ece24b16e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-infer-worker-host/src/joint_generation/text_codec.rs",
+      "bytes": 3635,
+      "sha256": "fec674e529337faf7d168fcc22a8d2f6d625d2787a13de840914dd024cecb60d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-neuron/src/cell_joint_generation.rs",
+      "bytes": 20504,
+      "sha256": "fc58e8d4d0ad290fd36332d93c960be2b3c030b46978e3a04732b4716c6504a3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-neuron/src/cell_joint_generation_tests.rs",
+      "bytes": 20943,
+      "sha256": "d40b2700ef443334e19e5b5f99879f52956ec9bb604b2d93bb88312ff4d93a9a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-neuron/src/cell_joint_loading.rs",
+      "bytes": 5623,
+      "sha256": "89960432ad83622d07037ea28f25c61a2d107e8cae650916450d2d75600087ac"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-neuron/src/cell_joint_loading_process_tests.rs",
+      "bytes": 11519,
+      "sha256": "484326f9d828b5e5c8933037c4e0d496263824c2437cc5c8b2b79427761a67d4"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-neuron/src/cell_joint_protocol.rs",
+      "bytes": 7839,
+      "sha256": "1ecdfa6a72b95985d419225214be536e3c53eb9132c9831517debc114bf7a3c0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-neuron/src/cell_joint_weights.rs",
+      "bytes": 3137,
+      "sha256": "38e43909b73782312bf629a682e33f3f5b353a94bb9d360866f480741ada717f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/codex-rs/hepta-neuron/src/lib.rs",
+      "bytes": 17220,
+      "sha256": "6d93893a36a4ffd345d3dd1325bb93640ca83a05eb008cf9289ea6e4e8004093"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/scripts/joint_generation_v4_text_worker.py",
+      "bytes": 13836,
+      "sha256": "08648a2c4e439ad541f1b57e8b26bd2d7e31962a510d51443dc47afe5b4f6006"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/scripts/joint_text_training_compute.py",
+      "bytes": 12333,
+      "sha256": "fd318fb6d0d5eb43a6690a7728e08bcec7617a354add7923d0918cdd0d9e8dfa"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/scripts/joint_text_training_contract.py",
+      "bytes": 18262,
+      "sha256": "bac742e07368d738fd8da942c5366a4f835e6e4d1fc15e93834a5c607d56b496"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/scripts/joint_text_training_io.py",
+      "bytes": 8392,
+      "sha256": "42aa2a78a44a5731af902eb372c1cbea7cb26dc6d52e4574c8abf2f71b459007"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/scripts/test_joint_text_training_compute.py",
+      "bytes": 8367,
+      "sha256": "81c41aa0654f52081af08ac12415f1f1ffef9519c15328e973dc93f496c1b563"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/base/scripts/test_joint_text_training_contract.py",
+      "bytes": 18055,
+      "sha256": "ab1c20295b2347b5949a48fc3b3dc72cd4c31d4bd755f44e4f41995933e1515b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC00-handoff-receiver-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC00-handoff-receiver-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC00-handoff-receiver-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC00-handoff-receiver-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC00-handoff-receiver-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC00-handoff-receiver-numstat.stdout",
+      "bytes": 66,
+      "sha256": "667c7ff5cbb90fac6ccae0967950c9b4ed9934975e62c5794ca6e2ed9a5e6693"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC00b-ordinary-neuron-projection-linkage-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC00b-ordinary-neuron-projection-linkage-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC00b-ordinary-neuron-projection-linkage-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC00b-ordinary-neuron-projection-linkage-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC00b-ordinary-neuron-projection-linkage-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC00b-ordinary-neuron-projection-linkage-numstat.stdout",
+      "bytes": 112,
+      "sha256": "3deb0aea924b62c3f45876944aedc64134f38affa31c3dc9eaa3798e276864d5"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC01-input-job-contracts-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC01-input-job-contracts-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC01-input-job-contracts-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC01-input-job-contracts-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC01-input-job-contracts-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC01-input-job-contracts-numstat.stdout",
+      "bytes": 236,
+      "sha256": "8cc31127109d4e757498426f2057d82edd6f3d6e11d67b92d295b97a91c0a9b4"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC02-fixed-input-custody-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC02-fixed-input-custody-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC02-fixed-input-custody-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC02-fixed-input-custody-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC02-fixed-input-custody-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC02-fixed-input-custody-numstat.stdout",
+      "bytes": 203,
+      "sha256": "c079aa808b2dc5e3759c26626a0617916735f98acf9dc4bc3dfec4f6b3b396c6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC03-private-fixed-transport-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC03-private-fixed-transport-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC03-private-fixed-transport-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC03-private-fixed-transport-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC03-private-fixed-transport-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC03-private-fixed-transport-numstat.stdout",
+      "bytes": 116,
+      "sha256": "054b264baa9543c130722d0d1743d61f9ba57611087e48421f9284b0a44e4f3b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC04-joint-fixed-transport-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC04-joint-fixed-transport-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC04-joint-fixed-transport-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC04-joint-fixed-transport-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC04-joint-fixed-transport-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC04-joint-fixed-transport-numstat.stdout",
+      "bytes": 192,
+      "sha256": "0a9acf720d42a26fc7ca21bcc151dd4a29febfd243feb9685811272943baa0e3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC05-joint-taskflow-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC05-joint-taskflow-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC05-joint-taskflow-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC05-joint-taskflow-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC05-joint-taskflow-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC05-joint-taskflow-numstat.stdout",
+      "bytes": 124,
+      "sha256": "2bb0f2287f069a0a4495aaff3191551450adae89cc60b40952099dc877fc10cb"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC06-python-contract-store-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC06-python-contract-store-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC06-python-contract-store-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC06-python-contract-store-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC06-python-contract-store-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC06-python-contract-store-numstat.stdout",
+      "bytes": 101,
+      "sha256": "6927702e42efe8266eb9bef1944f1e405b37873ad26269614222d4a0a5aa4d40"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC07-python-output-records-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC07-python-output-records-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC07-python-output-records-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC07-python-output-records-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC07-python-output-records-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC07-python-output-records-numstat.stdout",
+      "bytes": 170,
+      "sha256": "d44255442961a0ff03cb94cf5ed843d75d55c55c041fa0e223e776bd945c50e5"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC08-python-runner-lifecycle-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC08-python-runner-lifecycle-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC08-python-runner-lifecycle-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC08-python-runner-lifecycle-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC08-python-runner-lifecycle-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC08-python-runner-lifecycle-numstat.stdout",
+      "bytes": 153,
+      "sha256": "9835abba55d70a208c68b6637fe5b3708986b702a6d0b6d83d0adac23c846312"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC09-python-captured-bootstrap-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC09-python-captured-bootstrap-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC09-python-captured-bootstrap-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC09-python-captured-bootstrap-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC09-python-captured-bootstrap-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC09-python-captured-bootstrap-numstat.stdout",
+      "bytes": 162,
+      "sha256": "e77d88522d99e581a87289e97d9a9e5d658608d0dd1d26b8306c834cfcf1eb24"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC10-python-lifecycle-tests-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC10-python-lifecycle-tests-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC10-python-lifecycle-tests-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC10-python-lifecycle-tests-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC10-python-lifecycle-tests-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC10-python-lifecycle-tests-numstat.stdout",
+      "bytes": 121,
+      "sha256": "17db637ff40a8bf2253ab747714531c73fe1fa4497676824a72503fe0a6a9f75"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC11-original-source-capture-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC11-original-source-capture-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC11-original-source-capture-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC11-original-source-capture-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC11-original-source-capture-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC11-original-source-capture-numstat.stdout",
+      "bytes": 190,
+      "sha256": "9430df53da81dbb7c2c69407f5517cb9909e809623504a0650948826b14ac784"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC12-retained-job-binding-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC12-retained-job-binding-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC12-retained-job-binding-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC12-retained-job-binding-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC12-retained-job-binding-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC12-retained-job-binding-numstat.stdout",
+      "bytes": 66,
+      "sha256": "83b1e8835c3dc57cdbe6dd3d85b79d68482fbe2a1c89485954e538ac018820ad"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC13-terminal-custody-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC13-terminal-custody-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC13-terminal-custody-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC13-terminal-custody-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC13-terminal-custody-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC13-terminal-custody-numstat.stdout",
+      "bytes": 142,
+      "sha256": "251cb1d02838b1aada4ae112fc61a3f7c8ae072aa34d6dd41e3bbb272171fd37"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC14-signed-joint-provider-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC14-signed-joint-provider-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC14-signed-joint-provider-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC14-signed-joint-provider-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC14-signed-joint-provider-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC14-signed-joint-provider-numstat.stdout",
+      "bytes": 60,
+      "sha256": "b94a0bcbc9a992937031291f263d7458e124e8e8d65573070bbc6b7bab48f86f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC15-effect-host-routing-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC15-effect-host-routing-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC15-effect-host-routing-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC15-effect-host-routing-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC15-effect-host-routing-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC15-effect-host-routing-numstat.stdout",
+      "bytes": 119,
+      "sha256": "41d2b49d762878a94bb1bb539d8616bb246f1c1a8dc734337b5364c641d4b38a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC16-concrete-owner-bridge-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC16-concrete-owner-bridge-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC16-concrete-owner-bridge-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC16-concrete-owner-bridge-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC16-concrete-owner-bridge-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC16-concrete-owner-bridge-numstat.stdout",
+      "bytes": 129,
+      "sha256": "7f8e290af3849856f5f71dbe66a502e497919b82489880b5d73e6673b18c5dd1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC17-native-runtime-wiring-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC17-native-runtime-wiring-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC17-native-runtime-wiring-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC17-native-runtime-wiring-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC17-native-runtime-wiring-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC17-native-runtime-wiring-numstat.stdout",
+      "bytes": 217,
+      "sha256": "6881344dc8741d5f735e955bee31f20066124716eb9bede83c60a9d46389710d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC18-original-root-case-checks-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC18-original-root-case-checks-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC18-original-root-case-checks-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC18-original-root-case-checks-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC18-original-root-case-checks-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC18-original-root-case-checks-numstat.stdout",
+      "bytes": 151,
+      "sha256": "a6c5e6e21bbe3dffaec10ef073d9fdd4fa1ce0a8bc2efafecc0979349b04ba7e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC19-exact-caller-contract-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC19-exact-caller-contract-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC19-exact-caller-contract-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC19-exact-caller-contract-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC19-exact-caller-contract-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/HC19-exact-caller-contract-numstat.stdout",
+      "bytes": 18,
+      "sha256": "5c5ff3109ba07cd655aeb3f3bcb520e195189df29fcfa5ee38f94ec94ea84c3d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/full-error-all-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/commands/full-error-all-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-combined-preparation-v1/composition-v9/v8-to-v9-source-and-exact-metadata.patch",
+      "bytes": 4665,
+      "sha256": "fe38721b6f91c1c6ad628032ae1be44053172563abf7967e5729d8aa956855e9"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/EXECUTION.json",
+      "bytes": 3288,
+      "sha256": "38f842821a0310cebd166d9f9f1e0946ca122066a56b903ffb48084ebd93e589"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/FORMATTED_BEFORE_CALLERS_REBIND.json",
+      "bytes": 39793,
+      "sha256": "f0840839e0d685157c1ad1896a328386b66b5345e875705f7f78622a92d6b36a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/INDEPENDENT_ORIGINAL_READBACK_v1.json",
+      "bytes": 54652,
+      "sha256": "9f0f6bc3e70fc880d09fa00802ef5f3ce164b63cd8efea3d8fa877436957863e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/PQ-original-format-delta.patch",
+      "bytes": 7660,
+      "sha256": "78bb8f35b170d14ee8b4c93174dc8258cd3a41510e71ff584978c9014b70f33a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/RESULT.json",
+      "bytes": 429596,
+      "sha256": "38af62382c74e5dbd13ae7605d82c85d0cdf19d5b0cd41053e7c6a92fbbab579"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/SOURCE_TRANSFER_PLAN.json",
+      "bytes": 62118,
+      "sha256": "bf24e5aacc81abfe4476ac6052337fcd1ad6caceac23cee704c44f107a18a1e3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/CALLERS.toml",
+      "bytes": 235343,
+      "sha256": "ad284135cd7c37be1c803b06e40bd4eb5b6c5a2f5d27178ec125e60dce9ce4de"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 7975,
+      "sha256": "9e6588ec7f046ec9ce4ca9f3e1e4787924b2f26d006b22d280f17bb6127a1a86"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/authority_host_learning_admission_tests.rs",
+      "bytes": 2408,
+      "sha256": "7f33644acd00075af9d098c35a47d2d55698a4e295224b66eb1b6a5f8e0b170b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "bytes": 18588,
+      "sha256": "9d611125b0a80f9872a864e7ce666940dc21dd3d8272018f2b70e8be5e6fe1cf"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_fixture_tests.rs",
+      "bytes": 10018,
+      "sha256": "5a31940f6ae1cfd0bf7ff12014453cdf9f4b80fae5c739805982df962457fa91"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_tests.rs",
+      "bytes": 15917,
+      "sha256": "b0b918ad6fc91f7f23041138256ea696da35682b212c4b0a14c14ac88837fe23"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 6005,
+      "sha256": "15c6dc7636883312a0d3dec314b91edcffb6f927b055354df86922b26a42a5d7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/authority_host_learning_delivery_stop_tests.rs",
+      "bytes": 847,
+      "sha256": "58c2880517dfa4adf6cdf2ebf546188ffa6cd7dbd81ec5bc7236aba9ab6e9ef8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/authority_host_learning_delivery_tests.rs",
+      "bytes": 11819,
+      "sha256": "838d0a13e643b900b1b7df4cd7dcbcc3451cf616d47461324a1b4eb595257b97"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "bytes": 8026,
+      "sha256": "c5343c8829ec4609b49ddd661919b1cf9cf6ab0cb4610b551a208acbf1c869ac"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "bytes": 22338,
+      "sha256": "ce312aac01e7b3d6bf281ef160387f48412a352766d83c3233c2b0dc51ae401c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "bytes": 15868,
+      "sha256": "affc295b01d319a9e8cf98f34557eda4900542bcadbafb50d0f83b5490dae04c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 49181,
+      "sha256": "d13d7e504e93bad1a7d42dac13f0298cb5a465b3e8bbdaa690bde4b315edf5c8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_hcsn_source.rs",
+      "bytes": 10059,
+      "sha256": "8d0ff88ad9254d73700b796113a3d47071d32e0fe8ca7422488a09e0cc192aa1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_joint_text_completion.rs",
+      "bytes": 11760,
+      "sha256": "27446bf8b705c7b3547da98761db54c85a1d2c913d5cfd2097fb3178420fa09b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_joint_text_completion_tests.rs",
+      "bytes": 13575,
+      "sha256": "8a8fb344ea60d771b1039c455630eb227af7cd942fb236debf97ba4f5ce55d21"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_joint_text_host.rs",
+      "bytes": 12692,
+      "sha256": "87933ccb26b63fdda66a04915d2b1b34c5c6a6062aba4c994fa20d5246e90321"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_joint_text_input_files.rs",
+      "bytes": 8870,
+      "sha256": "20d2a56e112ad8b1341b64470d94c68a54ea58eae2fa957fdec832e6ca3e442a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_joint_text_inputs.rs",
+      "bytes": 6484,
+      "sha256": "e81b24a012bca6385b91c32aaf8b4129e4d78d4818c047686d61ca9fc1f601ac"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_joint_text_inputs_tests.rs",
+      "bytes": 7626,
+      "sha256": "8ae423c5bfefe87ff300aac69ec4a4d5f8b917f7830730ce9393105d50174ed8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_joint_text_owner_host.rs",
+      "bytes": 8739,
+      "sha256": "2391134e39821cf1b5cedd230f78a2a0bafd4a77557e82e97d9458e8d505e030"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_joint_text_pq.rs",
+      "bytes": 10437,
+      "sha256": "72aff03a23c406027f445b28f89a3f7b8db1fb2b0838593bd5cac5ec7696aa11"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_joint_text_retained.rs",
+      "bytes": 5490,
+      "sha256": "a4373147f204a967eb8128124c457201e584b6494b9943a69567f8bd8d46b141"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_joint_text_source.rs",
+      "bytes": 8864,
+      "sha256": "de8b06d29e83bf050d09f092214f2dda35b702e4145d40363e7c68807f8da1d8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/automation_joint_text_source_tests.rs",
+      "bytes": 8769,
+      "sha256": "059a15ac3e9240acdb6dff7e6a820fd0bb5468fc637bf313419e89c5d371d3f0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/config.rs",
+      "bytes": 39380,
+      "sha256": "fc905db33ca6bb0d2edd72dd1940dfe1ea156cba525d292bbce04c097b22b67e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/joint_generation_bundle.rs",
+      "bytes": 5914,
+      "sha256": "9be416849ca948cd7b2b55aeb71305f870fe4699c151b0a7210b1f043276ec46"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/joint_generation_bundle_tests.rs",
+      "bytes": 14258,
+      "sha256": "9e325162e019a44dc3c3a8710effbbbe0c80ff588ac9827c8be3eb6bc2cd137a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/joint_generation_bundle_weight_fixture.rs",
+      "bytes": 6416,
+      "sha256": "f5b5715422a694aabd683bfa398a266f22a1cc8052b7f1313fb0de5ed3efc8d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/joint_memory_text_replay.rs",
+      "bytes": 14378,
+      "sha256": "d71c932d231ce161f3dc6b4b43bde220d1850287875dc688e0b90cf97912d10e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/joint_memory_text_replay_tests.rs",
+      "bytes": 7131,
+      "sha256": "144856cc332b9404937a48afd2780e62adc955f841d1b9d135466ac6e9d6549b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/joint_text_training.rs",
+      "bytes": 17960,
+      "sha256": "f2b2eeafb80ac7f2ccdaf4a5147994808080a1b190f6ad3295e0b128a49e3650"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/joint_text_training_fixture_tests.rs",
+      "bytes": 7570,
+      "sha256": "24c32e9f771abd86316177cac3fff476dbe4f474a26b0c17f9224f68aa739e4d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/joint_text_training_owner.rs",
+      "bytes": 15121,
+      "sha256": "4e3dc3724dbe60ae89b860ab2fe5780c2923bc66a45b5ae2f18ca3098d34e14a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/joint_text_training_owner_checkpoint_tests.rs",
+      "bytes": 3747,
+      "sha256": "b9a46907a07ef65c69195dcfc794b85d941aca670d9fdfdc313d3470f4504a5e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/joint_text_training_readback.rs",
+      "bytes": 10415,
+      "sha256": "5fa570e52e59c0b1433665fc6afac711f4cd2aabd2f18dc2f4096981211c757b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/joint_text_training_tests.rs",
+      "bytes": 14659,
+      "sha256": "dd27cb26cfb24f548e017b7463f90c735e53f9a648b3af9696cd4e9d02f95901"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/joint_text_training_wire.rs",
+      "bytes": 15098,
+      "sha256": "601442445407a5f158140e19a12e04d8f950143192f105e6ded6e488b07e2e2c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 44644,
+      "sha256": "ea3f75ec82880e9050dd0cfb9355e0e6dfa30f5a04721b07816442863f24a923"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/neuron_generation_adopted_learning_tests.rs",
+      "bytes": 20397,
+      "sha256": "1c8c1945cb4b71eff45f86735860fe06ec5ba49da9d10d5a85edd8cb03594442"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/neuron_generation_joint_loading_guard_tests.rs",
+      "bytes": 3859,
+      "sha256": "4d77933900637188d3fb6ba7d6068c49b43343899e6b876543027a38662ba8ab"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs",
+      "bytes": 15744,
+      "sha256": "4e8a740fda2c867ac378196c87c66e243c1210c7dd25fc3c02cf2647a8d59539"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "bytes": 19949,
+      "sha256": "515806ed35189ef8d443a7db134933fca17e8d38e1d704222687702d10dd9af3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "bytes": 16452,
+      "sha256": "299039bcd1d0bf3d18fce458bbd011cb025650699b3fcc532f4e42666c13e770"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+      "bytes": 11333,
+      "sha256": "15517cb0a644e2f80b7eacafabcb9a86001471359ad28e5efc8a23cb90fb73ff"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-agentd/src/runtime.rs",
+      "bytes": 30624,
+      "sha256": "754bc707ea5423311554f5c51ab43b78bcea533a8c6fdf6f68657b675c726d72"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-automation/src/fixed_job_supervisor.rs",
+      "bytes": 13027,
+      "sha256": "992d8bc9116343346a20075b35a6e71e35dd673db7a6c38552cfac1d53fe0400"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-automation/src/hcsn_supervisor.rs",
+      "bytes": 3462,
+      "sha256": "c2a57c8207847a7beea234e0c95986054c28232449928e38466b631a7bef82b8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-automation/src/joint_text_input.rs",
+      "bytes": 3818,
+      "sha256": "d6ae2a618a27b5b47079efeee0b088cdbb134ce053ef065d66ea8297b51ab551"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-automation/src/joint_text_job.rs",
+      "bytes": 8174,
+      "sha256": "b3f4df011092ed07da6f18b3073bdd4ee045f6077a99d3ffa3a700cf06b2de74"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-automation/src/joint_text_job_observation.rs",
+      "bytes": 5402,
+      "sha256": "66153b3cdc189f822321ddbc6930715cb08470e83b02aa6800f3022fae2333ca"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-automation/src/joint_text_job_tests.rs",
+      "bytes": 5165,
+      "sha256": "4f35712e0b2cbd0cd141cba55dffd0f526b99346ef6da938428e723a25bcff59"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-automation/src/joint_text_supervisor.rs",
+      "bytes": 3199,
+      "sha256": "0605c264d2b0612f7b53f1468a73e7fdb31c76d85bfa2c77667025bf4a87a1cb"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-automation/src/joint_text_supervisor_root.rs",
+      "bytes": 2356,
+      "sha256": "1c575057829a86aa350677d65ae7a54cbb4cedfba2758226f7c63cfc2284a150"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-automation/src/joint_text_supervisor_tests.rs",
+      "bytes": 7182,
+      "sha256": "f64f15043c1ad6fc9d140b27f72ae22a9b578e08a1a8041c59b181c6609d07cd"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-automation/src/joint_text_taskflow.rs",
+      "bytes": 8402,
+      "sha256": "e291d4b0677841098b88b4b412ed402669c3a24f70a02089e86d1be69244a5a1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-automation/src/joint_text_taskflow_tests.rs",
+      "bytes": 8321,
+      "sha256": "69da8a44f8eeb3043bf60bc7e4a753851bda435eebf02606fbc5ce804bbf438e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-automation/src/lib.rs",
+      "bytes": 11539,
+      "sha256": "6b1703c7bbb5055ee987021fcc0412955911e1087495d10eefd5f0c8eb25b63e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-core/src/joint_packet.rs",
+      "bytes": 7866,
+      "sha256": "dfa3eaece21e22674cebba05d6a611d0e9fd149cef690759343bbe65458b8f11"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-core/src/joint_v4_loading.rs",
+      "bytes": 2668,
+      "sha256": "a55ead3aebd688a9e134a88bb09bb4e64941f7f0947b50d18a80aeb38834d4ed"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-core/src/joint_v4_projection.rs",
+      "bytes": 18860,
+      "sha256": "bc2b43e6c782f93ad2848d30188be97698eb1f75da825581ed6868cac2a438ed"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-core/src/lib.rs",
+      "bytes": 9547,
+      "sha256": "ab33091f82126ef57a9fa175e1838fa5c1570400397578ada010325d612ca8de"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/joint_generation.bzl",
+      "bytes": 1520,
+      "sha256": "9916d9371a6b256b11ae40d4f9fb705b32517643dc8e8925a0d1cd5f8301f9e8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/codec.rs",
+      "bytes": 339,
+      "sha256": "5718421a34d5b31d7e7bdc79c9c158d26496475e075584aaf8db106fae481d0c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/loading_tests.rs",
+      "bytes": 8265,
+      "sha256": "9f1c20d26f091656b38ed919544e0336d5014e94cca15c4ba7123f7f2d1008a8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/math.rs",
+      "bytes": 4428,
+      "sha256": "2748da5be39ca45cd08fd015ec170f34f4c1d1ea869c5e2abf28632c830a4f9b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/media_codec.rs",
+      "bytes": 4299,
+      "sha256": "cbd2cfa2ac0977553d06b2605f40e72d1d48b6ca495e219995f4f8f79ec7b267"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/model.rs",
+      "bytes": 23823,
+      "sha256": "eb6c42a69b1a71c1e96251dbedf9b67332c24f371b8063f56b088d6c4f229ded"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs",
+      "bytes": 8476,
+      "sha256": "ee4c1f9e12406f6dde312d5df6b6e72c4ef62818175cc1e58150123387214853"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/observed_model.rs",
+      "bytes": 4041,
+      "sha256": "91bede5fa0dca7ce86015eeb0266c88353d272b3ca802c9278bba05656210a75"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/planner.rs",
+      "bytes": 13058,
+      "sha256": "5711a50b1bc6da57f0be0976a10c6d3d7412084759cbf9ffdf4e0274d4c2cc4d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/projection_tests.rs",
+      "bytes": 4435,
+      "sha256": "077a3cb0fe5742abe5686d41bf594c53cd5263e4a0f0b670045e85572319b8d7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs",
+      "bytes": 8515,
+      "sha256": "844fce4eb15221879899ab687ed8b7421fe074f3ce69ca295c9f8b462230536d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal_tests.rs",
+      "bytes": 9171,
+      "sha256": "8e6797f29236633e9cc59a837fe273c638caf1d46599441c05a832fcb8efa449"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/protocol.rs",
+      "bytes": 7441,
+      "sha256": "77c4d1aebdd2f454b4e4d24296c91d455db3b7d2a7fd6e3b31362163c96dfc81"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/state.rs",
+      "bytes": 5479,
+      "sha256": "724d9a8187535b8fe8017f00a414cb23975e69facca89e5ab338127ece24b16e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-infer-worker-host/src/joint_generation/text_codec.rs",
+      "bytes": 3635,
+      "sha256": "fec674e529337faf7d168fcc22a8d2f6d625d2787a13de840914dd024cecb60d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-neuron/src/cell_joint_generation.rs",
+      "bytes": 20504,
+      "sha256": "fc58e8d4d0ad290fd36332d93c960be2b3c030b46978e3a04732b4716c6504a3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-neuron/src/cell_joint_generation_tests.rs",
+      "bytes": 20943,
+      "sha256": "d40b2700ef443334e19e5b5f99879f52956ec9bb604b2d93bb88312ff4d93a9a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-neuron/src/cell_joint_loading.rs",
+      "bytes": 5623,
+      "sha256": "89960432ad83622d07037ea28f25c61a2d107e8cae650916450d2d75600087ac"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-neuron/src/cell_joint_loading_process_tests.rs",
+      "bytes": 11519,
+      "sha256": "484326f9d828b5e5c8933037c4e0d496263824c2437cc5c8b2b79427761a67d4"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-neuron/src/cell_joint_protocol.rs",
+      "bytes": 7839,
+      "sha256": "1ecdfa6a72b95985d419225214be536e3c53eb9132c9831517debc114bf7a3c0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-neuron/src/cell_joint_weights.rs",
+      "bytes": 3137,
+      "sha256": "38e43909b73782312bf629a682e33f3f5b353a94bb9d360866f480741ada717f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/codex-rs/hepta-neuron/src/lib.rs",
+      "bytes": 17390,
+      "sha256": "e6acc607cdc045951e77aa2e2784524b93badc69faf5e1039e709d7dd4133e2f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/joint_lifecycle.py",
+      "bytes": 9458,
+      "sha256": "b18f934b7f07e6ce1394bc431ea17af8cf168b72c7480fec2decc0044e41d17e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/joint_outputs.py",
+      "bytes": 8638,
+      "sha256": "d225118ca335d9a5f3aea12e50d6ed7863cebda9c73dadf305c74ca2d02ae4c6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/joint_process.py",
+      "bytes": 3414,
+      "sha256": "e2a00f0ea9ddc7a91b4d2bac6d05f1fe409b490b8a10a2c08fafe1492d758d62"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/joint_protocol.py",
+      "bytes": 6934,
+      "sha256": "0e5b604ffe2b9217a9782785492d10c138cfe7f6968fc5fb2fcc69f426423da0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/joint_runner.py",
+      "bytes": 8430,
+      "sha256": "16167d8a602912cc777987b31951c61d485d22eb823c3376165863e7155c37d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/joint_sources.py",
+      "bytes": 4782,
+      "sha256": "964a5f23968b3f3325aca64bde968c51938916a1f5bd3be16851fae5683b613c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/joint_store.py",
+      "bytes": 8811,
+      "sha256": "e91b22dba8a3d29a997479c5da38dc53cc502453e7f854de4cfd16b046818c33"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/joint_supervisor.py",
+      "bytes": 6113,
+      "sha256": "87a7a27ec87e7019b6c960278daa99c42600f2768a2a620693f7570147aab22c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/joint_test_support.py",
+      "bytes": 8544,
+      "sha256": "19a866d46c1d49f2910962e7ec735d53bc8d463c9dfa5e252ef3d4338e706d4d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/joint_worker_adapter.py",
+      "bytes": 2841,
+      "sha256": "2aabb37b7b2091343d41694fbc425b8bf5ba2a0abd5da48d83326ba8a755ce7f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/test_joint_lifecycle.py",
+      "bytes": 9880,
+      "sha256": "6dad3784bba20c5a7d992fa0bb35949511f067b9b72315e38f51e27a2733985c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/test_joint_protocol_store.py",
+      "bytes": 4718,
+      "sha256": "a7337da12a5221685e3fa414374ede82c154b87b267335cc38e1256c74263021"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/qualification/hcsn_training/test_joint_runner_adapter.py",
+      "bytes": 8810,
+      "sha256": "f3fe31187d6eed1fd7e4ab6aa2167d059cf13d9fbc2579a3a8c8e4ad509b9fd4"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/scripts/joint_generation_v4_text_worker.py",
+      "bytes": 13836,
+      "sha256": "08648a2c4e439ad541f1b57e8b26bd2d7e31962a510d51443dc47afe5b4f6006"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/scripts/joint_text_training_compute.py",
+      "bytes": 12333,
+      "sha256": "fd318fb6d0d5eb43a6690a7728e08bcec7617a354add7923d0918cdd0d9e8dfa"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/scripts/joint_text_training_contract.py",
+      "bytes": 18262,
+      "sha256": "bac742e07368d738fd8da942c5366a4f835e6e4d1fc15e93834a5c607d56b496"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/scripts/joint_text_training_io.py",
+      "bytes": 8392,
+      "sha256": "42aa2a78a44a5731af902eb372c1cbea7cb26dc6d52e4574c8abf2f71b459007"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/scripts/test_joint_text_training_compute.py",
+      "bytes": 8367,
+      "sha256": "81c41aa0654f52081af08ac12415f1f1ffef9519c15328e973dc93f496c1b563"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/after-format/scripts/test_joint_text_training_contract.py",
+      "bytes": 18055,
+      "sha256": "ab1c20295b2347b5949a48fc3b3dc72cd4c31d4bd755f44e4f41995933e1515b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/canonical-format-only.patch",
+      "bytes": 152459,
+      "sha256": "de475c388981eccf19e01451df84b2a060211377f689b6eb3f44cf9f29344a45"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/canonical-logs/155-canonical-just-fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/canonical-logs/155-canonical-just-fmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/commands.json",
+      "bytes": 221944,
+      "sha256": "0267507a43256e1d9f5b512275afe94e5dea9e614885dd571ef9a9820517c656"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/outer-logs/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/outer-logs/stdout.log",
+      "bytes": 258,
+      "sha256": "2188da930be7492922e1dd3168f16cfd14c22d1b8cc5b80fe687459b0b083f59"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/CALLERS-0-ORIGINAL.json",
+      "bytes": 87853,
+      "sha256": "4161d5dba0f4d6c2903d3c282e5aca48f4c36e0d2544ac8278db4dbd1874fc71"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/CALLERS-131072-ORIGINAL.json",
+      "bytes": 87859,
+      "sha256": "8faec287c0b1879910c29eed51e543f11a69c4d9ba2f390c1ecb99090a04da60"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/CALLERS-196608-ORIGINAL.json",
+      "bytes": 52122,
+      "sha256": "28780fcf292a407cfd17295f3b9ff1d1b64af17d324b5861f56a06bbacb3159b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/CALLERS-65536-ORIGINAL.json",
+      "bytes": 87858,
+      "sha256": "9fd8049a77eeea45f0a97051d4eb5218d647fad8d3b9f838efe83c88abde7739"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/EXECUTION-read-ORIGINAL.json",
+      "bytes": 4836,
+      "sha256": "c6e33c0ea5ecf2f4aa974e4ebeaa51ef3b326bb7f2569e8f70d9007502570c3b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/PQ-formatted-ORIGINAL.json",
+      "bytes": 14423,
+      "sha256": "3ad12e7e32b884a65f2a8469cea3b833879109a1d3725fae5ec8ccd1dbcde60e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/RESULT-0-ORIGINAL.json",
+      "bytes": 87839,
+      "sha256": "6d62f15f30b9e8012f7457f3964bdcfb26edb647c7945692b81f5f5ee0f260b6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/RESULT-131072-ORIGINAL.json",
+      "bytes": 87845,
+      "sha256": "2e4596dcd2ddb3f23927eadfe723d3e66e788d3febd8c808591e1371fc88b78f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/RESULT-196608-ORIGINAL.json",
+      "bytes": 87845,
+      "sha256": "c570aa9d7f09bb1e2a4060261280d66da12080ddacb0e30e157e16f6e6421670"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/RESULT-262144-ORIGINAL.json",
+      "bytes": 87845,
+      "sha256": "3e5ae65d474f4c2305e0de5f9f137df21dc0dce8b9f0d7c931102a54f6ee6b64"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/RESULT-327680-ORIGINAL.json",
+      "bytes": 87845,
+      "sha256": "8a36c173adf635531c85251d91ae0a44fec1a8056022d6bfd28be5ebef6a0417"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/RESULT-393216-ORIGINAL.json",
+      "bytes": 48968,
+      "sha256": "d3658fe54f8f30d5b8c7a234f07907b8bdae6f40225d760c5d721bc88559b083"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/RESULT-65536-ORIGINAL.json",
+      "bytes": 87844,
+      "sha256": "8cbd291238cf475bcb81dc777873aa70a408f4d08d204e10731afc48396d5e11"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/RESULT-info-ORIGINAL.json",
+      "bytes": 618,
+      "sha256": "cac899d0ce3c68275c6428239a8c7dd7bf6d815ccbd56543ccb85c62178fac79"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-0-ORIGINAL.json",
+      "bytes": 82222,
+      "sha256": "227a4818f2e895c3e3c22af7e8dd17358a94ba139c3c0054c1eae3dae2c44b50"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-1-ORIGINAL.json",
+      "bytes": 50392,
+      "sha256": "7297b5e73b585fab50a62b8ae942663e470d11b23be3954300478d0ee5c0725c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-10-ORIGINAL.json",
+      "bytes": 88321,
+      "sha256": "762d33b7e9b55b7962e95b1f30b5eaee4b32daf35b9d7ef7937ac6e4a538347c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-11-ORIGINAL.json",
+      "bytes": 66680,
+      "sha256": "a231778d56eda14a76a9fcd2968fe659e43d2c0c8fede6242ab9a68cbd340921"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-12-ORIGINAL.json",
+      "bytes": 84261,
+      "sha256": "15123fcef06b9f84974af6e81ce721ed926f1ab2ab4ef4931b3ff86604fc370c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-13-ORIGINAL.json",
+      "bytes": 85558,
+      "sha256": "aa854f0be51f87675fcfbb59e89223b9beb6ce782ea6aafcc110d9441dc04ad0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-14-ORIGINAL.json",
+      "bytes": 82151,
+      "sha256": "1be4d81f56dae72586b754432c5bb92dc7fa690ab2dcc2f42f2a561a218347b9"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-15-ORIGINAL.json",
+      "bytes": 21220,
+      "sha256": "9ac37b356ac10965e261b4d8c257633a80a7f28c3ee28f813983bc15151bfa58"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-2-ORIGINAL.json",
+      "bytes": 77751,
+      "sha256": "e111d04abd3cdb573e36f3272a86f8b02cf28942b27d015e7d28b0c0b07c4770"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-3-ORIGINAL.json",
+      "bytes": 81483,
+      "sha256": "71fb641f97ad98623c531f2a5ba28547145ff3061f538feade977ab24fce8e1f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-4-ORIGINAL.json",
+      "bytes": 82969,
+      "sha256": "0d944a8f6103a637dada997dc761fbd93af88669b1c1d499759d02e1e478319f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-5-ORIGINAL.json",
+      "bytes": 85625,
+      "sha256": "c5921987a4ae1143a30cc616c5264044fd2dc901dd937fa943c228202aebfa20"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-6-ORIGINAL.json",
+      "bytes": 82322,
+      "sha256": "7629a491f5f0e0c9938c9dd4224fd6197ce556cff73978279221990a6567d027"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-7-ORIGINAL.json",
+      "bytes": 83467,
+      "sha256": "0e6f6f4aef5984529eae1a2eeca2af419f11b7afac00ab48b30abe300d747fdd"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-8-ORIGINAL.json",
+      "bytes": 83689,
+      "sha256": "28fb56826d895c8ce448f55c96d18f72599a676437ad9fb2cb3fe23d6f6bd591"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/SOURCE-BATCH-9-ORIGINAL.json",
+      "bytes": 85720,
+      "sha256": "696b3609f603bc29bf3c89511cc9e6c3895690e38dadb70a65df415b4f4d9e54"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/canonical-logs-ORIGINAL.json",
+      "bytes": 889,
+      "sha256": "0bbb376cd75b60c5daefc7edc28855fad1a779b337f9f64d7abe26c92a38d038"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/commands-0-ORIGINAL.json",
+      "bytes": 87841,
+      "sha256": "42a87e8299d0308d085bee9f9947e0a974bd813754793c821ba71335a1e6397b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/commands-131072-ORIGINAL.json",
+      "bytes": 87847,
+      "sha256": "181aa0ae15f77d41765a8986a4ef6073ab10b6d1b9113d36cd1c66330d09faf2"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/commands-196608-ORIGINAL.json",
+      "bytes": 34246,
+      "sha256": "a706e492b3e8274ce20356e1c2a23f09f83c94039bec26be15aa12059cf660df"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/commands-65536-ORIGINAL.json",
+      "bytes": 87846,
+      "sha256": "dcac0eb423dddb35fc83d63b76b031bb046ed0c2b1d6504aa81038aa6b04159e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/commands-info-ORIGINAL.json",
+      "bytes": 620,
+      "sha256": "f83db638e21524c0fdb85118f6140cad5e4b0c5dc7d3c08d40652c8ed5b082c9"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/format-patch-0-ORIGINAL.json",
+      "bytes": 87855,
+      "sha256": "1aeb2238c40dd86f2d146dbedb3de76faa324cbe395df098b89f390c7bf24115"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/format-patch-131072-ORIGINAL.json",
+      "bytes": 28992,
+      "sha256": "13a233d3b1501b923529665561f3f469c8760156b211d1318026e910d456de4e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/format-patch-65536-ORIGINAL.json",
+      "bytes": 87860,
+      "sha256": "80aba8d43128e8f02f6a625b4d8061f0b0a062fe411820ce26be400e429c57a3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/format-patch-info-ORIGINAL.json",
+      "bytes": 634,
+      "sha256": "1e34c83405eba190267e79c95f931d55ff91eeb140c22d5c795314e2b5303778"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/formatted-manifest-0-ORIGINAL.json",
+      "bytes": 53537,
+      "sha256": "9ee5c764c74227d21564b3f7009d0c480f6b6ebb71723dc01ba7f34df9700302"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/formatted-manifest-info-ORIGINAL.json",
+      "bytes": 641,
+      "sha256": "34196dd39d338f42901cdb7690de21803f4d6425b6380950e9db4e5cc59b1817"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/actual-v1/raw/outer-logs-ORIGINAL.json",
+      "bytes": 1145,
+      "sha256": "a97aab0c0652c0f7441fb32ce5a19e9f89f4c6eb9f6ff562a3c5fa0c8b348b72"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/EXECUTION_PACKAGE.json",
+      "bytes": 3404,
+      "sha256": "ab4ada9de94776db2d7edebb91f0a3ea0cf1b37f8edebeaacb79ee32a79c6716"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/FINAL_BINDING_PROOF.json",
+      "bytes": 837,
+      "sha256": "7e358f319d59483bdbc8757bd3b1cb22f7c70f4793f2ad4c0b1a6377e7bc0a6a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/INPUTS_READBACK.json",
+      "bytes": 71194,
+      "sha256": "164e7f65af2a1a90c00dd1e5b44893b565cccc41696aca0b7617e192a15fbca3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/PREPARATION.json",
+      "bytes": 8723,
+      "sha256": "eab2a827ea4ac67b8f3371c8e31459289fc45e101c57c9d449db8005cfd9db61"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/PUBLICATION_PLAN_UNBOUND.json",
+      "bytes": 13552,
+      "sha256": "8ba286d20dd2508c8543551cee5d63426b53dca864055e254b33eeac7781b4d8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/REVIEW_SCOPE.json",
+      "bytes": 19979,
+      "sha256": "1579dacb3bd99a47a23efbc8a5aaa1fe6cb88b92fd692f7c1929ced293730537"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/ROOT_EXECUTION_REVIEW_v1.json",
+      "bytes": 2905,
+      "sha256": "892758cce815fa51cc59dd33fd5f98b09de02ebce6b27876255b6ac5b40985e6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/ROOT_OBSERVER_ATTEMPT_01.json",
+      "bytes": 557,
+      "sha256": "3f113d0ad8b504a023390a4fb34d7a52f79ef3b0f42ba183284622db801af713"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/integrate_h9_durable_hc_and_format_v1.py",
+      "bytes": 54457,
+      "sha256": "8e673a45c225c20f1d938b33bc0c74f1c30fbb53a095b26e9f7f0c328329a6e6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/integration-inputs-v1.json",
+      "bytes": 663269,
+      "sha256": "6ceab9a5cd2c86afc0db5222332f678ef6e8da925eaa22eaeb7e02ff3a93271e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/launch_integrate_h9_durable_hc_and_format_v1.py",
+      "bytes": 4379,
+      "sha256": "07b8a2d1e684e98dff2ddf06d8d6f7e2105b33cc3a8215be8087fe4df807ee8e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/prior-to-HC-formatter.patch",
+      "bytes": 37065,
+      "sha256": "8bd7190fc332c1c15337248a8ae3014e236c5d2b296cc5f29f81bc83e8383480"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/prior-to-HC-outer.patch",
+      "bytes": 1736,
+      "sha256": "4d6396f7df243b5f666a55c29705bbf7497b615ff0e1acf81dd99242caa723e0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v1/frozen-v1/unbound-review-to-final.patch",
+      "bytes": 14136,
+      "sha256": "2588de7698e62eb21d099d3d7f8cc52a34af0587f3d9fadda02d5e1ad69415ee"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/AFTER_PAYLOAD_LOCAL_READBACK.json",
+      "bytes": 28315,
+      "sha256": "a98e3faed3999ad4a50d5f1afaf35d3d555141487e831e2e64fd709356578e5c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/CALLERS_REBIND.json",
+      "bytes": 28298,
+      "sha256": "7d2d02fa7904d38363e9840b0c54c9f454ed613e6822ef2912af1e6d648642e9"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/EXECUTION.json",
+      "bytes": 3262,
+      "sha256": "0b513b5981ecbb15e9c37e08cea99509100700211a39bf70cc375ca5c07156d5"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/FORMATTED_BEFORE_CALLERS_REBIND.json",
+      "bytes": 39797,
+      "sha256": "1311ee7b97899b4ba7e170bc35a5f07659f9c982e539c5e0d24be800c03e2cbe"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/FORMATTED_SOURCE_MANIFEST.json",
+      "bytes": 40264,
+      "sha256": "46cfb8c32ba158ca24e3c9501cf94ff80fec2f8fe188f0032b51aca5ae96b635"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/H9-to-formatted-durable-HC.patch",
+      "bytes": 336205,
+      "sha256": "fed80745fa256a7bfe606f64e226585b8b9a9fb82f2de8b63e80e8ac3883eaf7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/LOCAL_OBSERVER_ATTEMPT_01.json",
+      "bytes": 614,
+      "sha256": "4ecf801557d3419d86493f1f33f932c8582370432ae3e5fed6da73d4686b5126"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/ORIGINAL_READBACK_RESULT.json",
+      "bytes": 8469,
+      "sha256": "f62b87d1beee140326b390a6e3e1cf0e96114ce2a37bd169609c66c91af452f0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/ORIGINAL_REUSE_PROVENANCE.json",
+      "bytes": 3760,
+      "sha256": "06fc7b2dd8092c02e1f34481e5f517804862ee33166d7d9cf49dcf773212ce6c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/RESULT.json",
+      "bytes": 614281,
+      "sha256": "4b1a7b52df50a93f41865cd2cbdea6ece72701108d8f289490bf569f19a6df8f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/ROOT_ACTUAL_REVIEW_v2.json",
+      "bytes": 3424,
+      "sha256": "950163eddc66d7282b8cc836b0e7eb5f05967b5ba4b44746e27ef5daca794c17"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/CALLERS.toml",
+      "bytes": 235343,
+      "sha256": "0fdff48817fdb4c53141e4c11f9aa2e67fc44cacb1198e613fffbeea82ac5807"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 7975,
+      "sha256": "9e6588ec7f046ec9ce4ca9f3e1e4787924b2f26d006b22d280f17bb6127a1a86"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_admission_tests.rs",
+      "bytes": 2408,
+      "sha256": "7f33644acd00075af9d098c35a47d2d55698a4e295224b66eb1b6a5f8e0b170b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "bytes": 18588,
+      "sha256": "9d611125b0a80f9872a864e7ce666940dc21dd3d8272018f2b70e8be5e6fe1cf"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_fixture_tests.rs",
+      "bytes": 10018,
+      "sha256": "5a31940f6ae1cfd0bf7ff12014453cdf9f4b80fae5c739805982df962457fa91"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_tests.rs",
+      "bytes": 15917,
+      "sha256": "b0b918ad6fc91f7f23041138256ea696da35682b212c4b0a14c14ac88837fe23"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 6005,
+      "sha256": "15c6dc7636883312a0d3dec314b91edcffb6f927b055354df86922b26a42a5d7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_delivery_stop_tests.rs",
+      "bytes": 847,
+      "sha256": "58c2880517dfa4adf6cdf2ebf546188ffa6cd7dbd81ec5bc7236aba9ab6e9ef8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/authority_host_learning_delivery_tests.rs",
+      "bytes": 11819,
+      "sha256": "838d0a13e643b900b1b7df4cd7dcbcc3451cf616d47461324a1b4eb595257b97"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "bytes": 8026,
+      "sha256": "c5343c8829ec4609b49ddd661919b1cf9cf6ab0cb4610b551a208acbf1c869ac"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "bytes": 22338,
+      "sha256": "ce312aac01e7b3d6bf281ef160387f48412a352766d83c3233c2b0dc51ae401c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "bytes": 15868,
+      "sha256": "affc295b01d319a9e8cf98f34557eda4900542bcadbafb50d0f83b5490dae04c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 49181,
+      "sha256": "d13d7e504e93bad1a7d42dac13f0298cb5a465b3e8bbdaa690bde4b315edf5c8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_hcsn_source.rs",
+      "bytes": 10059,
+      "sha256": "8d0ff88ad9254d73700b796113a3d47071d32e0fe8ca7422488a09e0cc192aa1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_joint_text_completion.rs",
+      "bytes": 11760,
+      "sha256": "27446bf8b705c7b3547da98761db54c85a1d2c913d5cfd2097fb3178420fa09b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_joint_text_completion_tests.rs",
+      "bytes": 13575,
+      "sha256": "8a8fb344ea60d771b1039c455630eb227af7cd942fb236debf97ba4f5ce55d21"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_joint_text_host.rs",
+      "bytes": 12692,
+      "sha256": "87933ccb26b63fdda66a04915d2b1b34c5c6a6062aba4c994fa20d5246e90321"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_joint_text_input_files.rs",
+      "bytes": 8870,
+      "sha256": "20d2a56e112ad8b1341b64470d94c68a54ea58eae2fa957fdec832e6ca3e442a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_joint_text_inputs.rs",
+      "bytes": 6484,
+      "sha256": "e81b24a012bca6385b91c32aaf8b4129e4d78d4818c047686d61ca9fc1f601ac"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_joint_text_inputs_tests.rs",
+      "bytes": 7626,
+      "sha256": "8ae423c5bfefe87ff300aac69ec4a4d5f8b917f7830730ce9393105d50174ed8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_joint_text_owner_host.rs",
+      "bytes": 8739,
+      "sha256": "2391134e39821cf1b5cedd230f78a2a0bafd4a77557e82e97d9458e8d505e030"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_joint_text_pq.rs",
+      "bytes": 10452,
+      "sha256": "27715c38683a973ab7880bd44a9b0616fcbb97773ab7ccbb531cb6d456c70b7c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_joint_text_retained.rs",
+      "bytes": 5490,
+      "sha256": "a4373147f204a967eb8128124c457201e584b6494b9943a69567f8bd8d46b141"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_joint_text_source.rs",
+      "bytes": 8864,
+      "sha256": "de8b06d29e83bf050d09f092214f2dda35b702e4145d40363e7c68807f8da1d8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/automation_joint_text_source_tests.rs",
+      "bytes": 8769,
+      "sha256": "059a15ac3e9240acdb6dff7e6a820fd0bb5468fc637bf313419e89c5d371d3f0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/config.rs",
+      "bytes": 39380,
+      "sha256": "fc905db33ca6bb0d2edd72dd1940dfe1ea156cba525d292bbce04c097b22b67e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/joint_generation_bundle.rs",
+      "bytes": 5914,
+      "sha256": "9be416849ca948cd7b2b55aeb71305f870fe4699c151b0a7210b1f043276ec46"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/joint_generation_bundle_tests.rs",
+      "bytes": 14258,
+      "sha256": "9e325162e019a44dc3c3a8710effbbbe0c80ff588ac9827c8be3eb6bc2cd137a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/joint_generation_bundle_weight_fixture.rs",
+      "bytes": 6416,
+      "sha256": "f5b5715422a694aabd683bfa398a266f22a1cc8052b7f1313fb0de5ed3efc8d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/joint_memory_text_replay.rs",
+      "bytes": 14378,
+      "sha256": "d71c932d231ce161f3dc6b4b43bde220d1850287875dc688e0b90cf97912d10e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/joint_memory_text_replay_tests.rs",
+      "bytes": 7131,
+      "sha256": "144856cc332b9404937a48afd2780e62adc955f841d1b9d135466ac6e9d6549b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/joint_text_training.rs",
+      "bytes": 17960,
+      "sha256": "f2b2eeafb80ac7f2ccdaf4a5147994808080a1b190f6ad3295e0b128a49e3650"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/joint_text_training_fixture_tests.rs",
+      "bytes": 7570,
+      "sha256": "24c32e9f771abd86316177cac3fff476dbe4f474a26b0c17f9224f68aa739e4d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/joint_text_training_owner.rs",
+      "bytes": 15107,
+      "sha256": "4faf76f30b4b78d5825d5953765340861b45e8d2e41a177014bd63e6c13f54e3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/joint_text_training_owner_checkpoint_tests.rs",
+      "bytes": 3747,
+      "sha256": "b9a46907a07ef65c69195dcfc794b85d941aca670d9fdfdc313d3470f4504a5e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/joint_text_training_readback.rs",
+      "bytes": 10415,
+      "sha256": "5fa570e52e59c0b1433665fc6afac711f4cd2aabd2f18dc2f4096981211c757b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/joint_text_training_tests.rs",
+      "bytes": 14659,
+      "sha256": "dd27cb26cfb24f548e017b7463f90c735e53f9a648b3af9696cd4e9d02f95901"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/joint_text_training_wire.rs",
+      "bytes": 15098,
+      "sha256": "601442445407a5f158140e19a12e04d8f950143192f105e6ded6e488b07e2e2c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 44644,
+      "sha256": "ea3f75ec82880e9050dd0cfb9355e0e6dfa30f5a04721b07816442863f24a923"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/neuron_generation_adopted_learning_tests.rs",
+      "bytes": 20397,
+      "sha256": "1c8c1945cb4b71eff45f86735860fe06ec5ba49da9d10d5a85edd8cb03594442"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/neuron_generation_joint_loading_guard_tests.rs",
+      "bytes": 3859,
+      "sha256": "4d77933900637188d3fb6ba7d6068c49b43343899e6b876543027a38662ba8ab"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs",
+      "bytes": 15744,
+      "sha256": "4e8a740fda2c867ac378196c87c66e243c1210c7dd25fc3c02cf2647a8d59539"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "bytes": 19949,
+      "sha256": "515806ed35189ef8d443a7db134933fca17e8d38e1d704222687702d10dd9af3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "bytes": 16452,
+      "sha256": "299039bcd1d0bf3d18fce458bbd011cb025650699b3fcc532f4e42666c13e770"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+      "bytes": 11333,
+      "sha256": "15517cb0a644e2f80b7eacafabcb9a86001471359ad28e5efc8a23cb90fb73ff"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-agentd/src/runtime.rs",
+      "bytes": 30624,
+      "sha256": "754bc707ea5423311554f5c51ab43b78bcea533a8c6fdf6f68657b675c726d72"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-automation/src/fixed_job_supervisor.rs",
+      "bytes": 13027,
+      "sha256": "992d8bc9116343346a20075b35a6e71e35dd673db7a6c38552cfac1d53fe0400"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-automation/src/hcsn_supervisor.rs",
+      "bytes": 3462,
+      "sha256": "c2a57c8207847a7beea234e0c95986054c28232449928e38466b631a7bef82b8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-automation/src/joint_text_input.rs",
+      "bytes": 3818,
+      "sha256": "d6ae2a618a27b5b47079efeee0b088cdbb134ce053ef065d66ea8297b51ab551"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-automation/src/joint_text_job.rs",
+      "bytes": 8174,
+      "sha256": "b3f4df011092ed07da6f18b3073bdd4ee045f6077a99d3ffa3a700cf06b2de74"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-automation/src/joint_text_job_observation.rs",
+      "bytes": 5402,
+      "sha256": "66153b3cdc189f822321ddbc6930715cb08470e83b02aa6800f3022fae2333ca"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-automation/src/joint_text_job_tests.rs",
+      "bytes": 5165,
+      "sha256": "4f35712e0b2cbd0cd141cba55dffd0f526b99346ef6da938428e723a25bcff59"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-automation/src/joint_text_supervisor.rs",
+      "bytes": 3199,
+      "sha256": "0605c264d2b0612f7b53f1468a73e7fdb31c76d85bfa2c77667025bf4a87a1cb"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-automation/src/joint_text_supervisor_root.rs",
+      "bytes": 2356,
+      "sha256": "1c575057829a86aa350677d65ae7a54cbb4cedfba2758226f7c63cfc2284a150"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-automation/src/joint_text_supervisor_tests.rs",
+      "bytes": 7182,
+      "sha256": "f64f15043c1ad6fc9d140b27f72ae22a9b578e08a1a8041c59b181c6609d07cd"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-automation/src/joint_text_taskflow.rs",
+      "bytes": 8402,
+      "sha256": "e291d4b0677841098b88b4b412ed402669c3a24f70a02089e86d1be69244a5a1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-automation/src/joint_text_taskflow_tests.rs",
+      "bytes": 8321,
+      "sha256": "69da8a44f8eeb3043bf60bc7e4a753851bda435eebf02606fbc5ce804bbf438e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-automation/src/lib.rs",
+      "bytes": 11539,
+      "sha256": "6b1703c7bbb5055ee987021fcc0412955911e1087495d10eefd5f0c8eb25b63e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-core/src/joint_packet.rs",
+      "bytes": 7866,
+      "sha256": "dfa3eaece21e22674cebba05d6a611d0e9fd149cef690759343bbe65458b8f11"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-core/src/joint_v4_loading.rs",
+      "bytes": 2668,
+      "sha256": "a55ead3aebd688a9e134a88bb09bb4e64941f7f0947b50d18a80aeb38834d4ed"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-core/src/joint_v4_projection.rs",
+      "bytes": 18860,
+      "sha256": "bc2b43e6c782f93ad2848d30188be97698eb1f75da825581ed6868cac2a438ed"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-core/src/lib.rs",
+      "bytes": 9547,
+      "sha256": "ab33091f82126ef57a9fa175e1838fa5c1570400397578ada010325d612ca8de"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/joint_generation.bzl",
+      "bytes": 1520,
+      "sha256": "9916d9371a6b256b11ae40d4f9fb705b32517643dc8e8925a0d1cd5f8301f9e8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/codec.rs",
+      "bytes": 339,
+      "sha256": "5718421a34d5b31d7e7bdc79c9c158d26496475e075584aaf8db106fae481d0c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/loading_tests.rs",
+      "bytes": 8265,
+      "sha256": "9f1c20d26f091656b38ed919544e0336d5014e94cca15c4ba7123f7f2d1008a8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/math.rs",
+      "bytes": 4428,
+      "sha256": "2748da5be39ca45cd08fd015ec170f34f4c1d1ea869c5e2abf28632c830a4f9b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/media_codec.rs",
+      "bytes": 4299,
+      "sha256": "cbd2cfa2ac0977553d06b2605f40e72d1d48b6ca495e219995f4f8f79ec7b267"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/model.rs",
+      "bytes": 23823,
+      "sha256": "eb6c42a69b1a71c1e96251dbedf9b67332c24f371b8063f56b088d6c4f229ded"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs",
+      "bytes": 8476,
+      "sha256": "ee4c1f9e12406f6dde312d5df6b6e72c4ef62818175cc1e58150123387214853"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/observed_model.rs",
+      "bytes": 4041,
+      "sha256": "91bede5fa0dca7ce86015eeb0266c88353d272b3ca802c9278bba05656210a75"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/planner.rs",
+      "bytes": 13058,
+      "sha256": "5711a50b1bc6da57f0be0976a10c6d3d7412084759cbf9ffdf4e0274d4c2cc4d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/projection_tests.rs",
+      "bytes": 4435,
+      "sha256": "077a3cb0fe5742abe5686d41bf594c53cd5263e4a0f0b670045e85572319b8d7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs",
+      "bytes": 8515,
+      "sha256": "844fce4eb15221879899ab687ed8b7421fe074f3ce69ca295c9f8b462230536d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal_tests.rs",
+      "bytes": 9171,
+      "sha256": "8e6797f29236633e9cc59a837fe273c638caf1d46599441c05a832fcb8efa449"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/protocol.rs",
+      "bytes": 7441,
+      "sha256": "77c4d1aebdd2f454b4e4d24296c91d455db3b7d2a7fd6e3b31362163c96dfc81"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/state.rs",
+      "bytes": 5479,
+      "sha256": "724d9a8187535b8fe8017f00a414cb23975e69facca89e5ab338127ece24b16e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-infer-worker-host/src/joint_generation/text_codec.rs",
+      "bytes": 3635,
+      "sha256": "fec674e529337faf7d168fcc22a8d2f6d625d2787a13de840914dd024cecb60d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-neuron/src/cell_joint_generation.rs",
+      "bytes": 20504,
+      "sha256": "fc58e8d4d0ad290fd36332d93c960be2b3c030b46978e3a04732b4716c6504a3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-neuron/src/cell_joint_generation_tests.rs",
+      "bytes": 20943,
+      "sha256": "d40b2700ef443334e19e5b5f99879f52956ec9bb604b2d93bb88312ff4d93a9a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-neuron/src/cell_joint_loading.rs",
+      "bytes": 5623,
+      "sha256": "89960432ad83622d07037ea28f25c61a2d107e8cae650916450d2d75600087ac"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-neuron/src/cell_joint_loading_process_tests.rs",
+      "bytes": 11519,
+      "sha256": "484326f9d828b5e5c8933037c4e0d496263824c2437cc5c8b2b79427761a67d4"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-neuron/src/cell_joint_protocol.rs",
+      "bytes": 7839,
+      "sha256": "1ecdfa6a72b95985d419225214be536e3c53eb9132c9831517debc114bf7a3c0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-neuron/src/cell_joint_weights.rs",
+      "bytes": 3137,
+      "sha256": "38e43909b73782312bf629a682e33f3f5b353a94bb9d360866f480741ada717f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/codex-rs/hepta-neuron/src/lib.rs",
+      "bytes": 17390,
+      "sha256": "e6acc607cdc045951e77aa2e2784524b93badc69faf5e1039e709d7dd4133e2f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/joint_lifecycle.py",
+      "bytes": 9458,
+      "sha256": "b18f934b7f07e6ce1394bc431ea17af8cf168b72c7480fec2decc0044e41d17e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/joint_outputs.py",
+      "bytes": 8638,
+      "sha256": "d225118ca335d9a5f3aea12e50d6ed7863cebda9c73dadf305c74ca2d02ae4c6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/joint_process.py",
+      "bytes": 3414,
+      "sha256": "e2a00f0ea9ddc7a91b4d2bac6d05f1fe409b490b8a10a2c08fafe1492d758d62"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/joint_protocol.py",
+      "bytes": 6934,
+      "sha256": "0e5b604ffe2b9217a9782785492d10c138cfe7f6968fc5fb2fcc69f426423da0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/joint_runner.py",
+      "bytes": 8430,
+      "sha256": "16167d8a602912cc777987b31951c61d485d22eb823c3376165863e7155c37d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/joint_sources.py",
+      "bytes": 4782,
+      "sha256": "964a5f23968b3f3325aca64bde968c51938916a1f5bd3be16851fae5683b613c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/joint_store.py",
+      "bytes": 8811,
+      "sha256": "e91b22dba8a3d29a997479c5da38dc53cc502453e7f854de4cfd16b046818c33"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/joint_supervisor.py",
+      "bytes": 6113,
+      "sha256": "87a7a27ec87e7019b6c960278daa99c42600f2768a2a620693f7570147aab22c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/joint_test_support.py",
+      "bytes": 8544,
+      "sha256": "19a866d46c1d49f2910962e7ec735d53bc8d463c9dfa5e252ef3d4338e706d4d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/joint_worker_adapter.py",
+      "bytes": 2841,
+      "sha256": "2aabb37b7b2091343d41694fbc425b8bf5ba2a0abd5da48d83326ba8a755ce7f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/test_joint_lifecycle.py",
+      "bytes": 9880,
+      "sha256": "6dad3784bba20c5a7d992fa0bb35949511f067b9b72315e38f51e27a2733985c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/test_joint_protocol_store.py",
+      "bytes": 4718,
+      "sha256": "a7337da12a5221685e3fa414374ede82c154b87b267335cc38e1256c74263021"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/qualification/hcsn_training/test_joint_runner_adapter.py",
+      "bytes": 8810,
+      "sha256": "f3fe31187d6eed1fd7e4ab6aa2167d059cf13d9fbc2579a3a8c8e4ad509b9fd4"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/scripts/joint_generation_v4_text_worker.py",
+      "bytes": 13836,
+      "sha256": "08648a2c4e439ad541f1b57e8b26bd2d7e31962a510d51443dc47afe5b4f6006"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/scripts/joint_text_training_compute.py",
+      "bytes": 12333,
+      "sha256": "fd318fb6d0d5eb43a6690a7728e08bcec7617a354add7923d0918cdd0d9e8dfa"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/scripts/joint_text_training_contract.py",
+      "bytes": 18262,
+      "sha256": "bac742e07368d738fd8da942c5366a4f835e6e4d1fc15e93834a5c607d56b496"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/scripts/joint_text_training_io.py",
+      "bytes": 8392,
+      "sha256": "42aa2a78a44a5731af902eb372c1cbea7cb26dc6d52e4574c8abf2f71b459007"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/scripts/test_joint_text_training_compute.py",
+      "bytes": 8367,
+      "sha256": "81c41aa0654f52081af08ac12415f1f1ffef9519c15328e973dc93f496c1b563"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/after/scripts/test_joint_text_training_contract.py",
+      "bytes": 18055,
+      "sha256": "ab1c20295b2347b5949a48fc3b3dc72cd4c31d4bd755f44e4f41995933e1515b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/callers-protected-sha-rebind.patch",
+      "bytes": 2844,
+      "sha256": "e4769cdfd2f2484c8a4cdad638fe95ffbcda15a4d7aef10a7a97f98e071714ae"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/canonical-format-only.patch",
+      "bytes": 151652,
+      "sha256": "b7c7e9815bbebc70885e168d2467a8dce6091d5d202ac365665a20028bcc5b1d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/canonical-logs/162-canonical-just-fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/canonical-logs/162-canonical-just-fmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/commands.json",
+      "bytes": 306171,
+      "sha256": "36fc46a08b6492b08c9dbb2392077dfdb00bdb0d8fa265f358a12c97e737c8e2"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/formatted-source-files.json.gz",
+      "bytes": 279476,
+      "sha256": "0930e6af24f09aff74431e9e1d9848dc108fce7f3e27540092e67189958d82c3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/outer-logs/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/outer-logs/stdout.log",
+      "bytes": 306,
+      "sha256": "46cefc0daf513ee248ee3636d0e666f04ab1daa767772962b598cf689ead1775"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/H9-to-formatted-durable-HC.patch-131072.json",
+      "bytes": 87866,
+      "sha256": "a6cd7f23015ab6a208157657a23be36c038a2f2be0c3b4a0f36a9a19947131b1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/H9-to-formatted-durable-HC.patch-196608.json",
+      "bytes": 87866,
+      "sha256": "ae1531516ddebaaef1c130ac4cce09cfc64b4cf2c2de52425de92c09fa94d5fb"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/H9-to-formatted-durable-HC.patch-262144.json",
+      "bytes": 87866,
+      "sha256": "c655e293ac2579493788f35ee79f8ade864e02469bc7bea3863366b0d6d927c0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/H9-to-formatted-durable-HC.patch-327680.json",
+      "bytes": 11849,
+      "sha256": "37c8f2f13dad3f2a2a663cc26f6af98b21eab074951ce93f61074513e7cdd5ee"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/H9-to-formatted-durable-HC.patch-65536.json",
+      "bytes": 87865,
+      "sha256": "6d09101f51ae02a30360f3ac1a0e2fa65f6edb42b5ca37b851c5b4c423596391"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/H9-to-formatted-durable-HC.patch-first-original.json",
+      "bytes": 87860,
+      "sha256": "b9b788bf0594a7e96bbe20666ce7f68d294a1a58bc7f8ab333e69927ada33b3b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/canonical-and-outer-logs-original.json",
+      "bytes": 1879,
+      "sha256": "dce9ee881e7361c2f8ac5ff1cda2ed446f79fd74c6fb7544cc2ef110019999e1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/canonical-format-only.patch-131072.json",
+      "bytes": 27916,
+      "sha256": "956cfbba13173cc3c9748e215f8852041842de054d9fb00ad329a4628d9166ec"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/canonical-format-only.patch-65536.json",
+      "bytes": 87860,
+      "sha256": "834e77fe5f215574c9f14414db914be99d5187580c20ad0a9beabb20e34ec814"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/canonical-format-only.patch-first-original.json",
+      "bytes": 87855,
+      "sha256": "48c9100b6df58a133a4bf1f16e13f79908aaadfe614b57fa85acb16c2a6fa7c4"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/commands.json-131072.json",
+      "bytes": 87847,
+      "sha256": "f2c69a304d7d3fc32905510a9378ac472004af975eab19024cc5c59fa6609454"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/commands.json-196608.json",
+      "bytes": 87847,
+      "sha256": "47c68beda43350b494643b18095de5aab5736cb6cefca28740c028500da327c9"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/commands.json-262144.json",
+      "bytes": 59166,
+      "sha256": "44b3c066c21639a1ac45e685c6db06c8826a8c7a823dd630d99a50df17637c54"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/commands.json-65536.json",
+      "bytes": 87846,
+      "sha256": "cf4883b9b338e90cdd0ebb2090ec9461e48baf45a85adb7115534bcbe1328194"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/commands.json-first-original.json",
+      "bytes": 87841,
+      "sha256": "a3f36ab92fdbf7ed679833ef6da9702a4f9da0ee19fef0aa9390796227bd3a14"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/inner-info.json",
+      "bytes": 618,
+      "sha256": "93e3cb0381282ffa7872fe77d68c4cd5ea392331818551bfb23206047d2bdb9c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/manifests-first-original.json",
+      "bytes": 101356,
+      "sha256": "d30fffa6ec8e7423d082b64f85ac1fca55a6fb52d54b5abd45b883e3269e1d7a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/outer-original.json",
+      "bytes": 4804,
+      "sha256": "b31312d52248f4cb0c7e37ebf2a38f1e31f8e337aeecdf4eb7ed02ab6d71436e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/payload-0.json",
+      "bytes": 87858,
+      "sha256": "4789a3a4058fea5898522f92e02a0b8b1fc2bd779c89e5eeb539c550cf889a7c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/payload-131072.json",
+      "bytes": 87864,
+      "sha256": "a62576c3c3fe2746a0bc8bba03922924a73a69cd3b65cbaa5f234d17c9ad0f1d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/payload-196608.json",
+      "bytes": 87864,
+      "sha256": "7ce45a5acc42337fa51b3ddb346c40dc1d61c6f8d237d1c3bc5f0e330f6e0d36"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/payload-262144.json",
+      "bytes": 23591,
+      "sha256": "b725d959408bca7a770d6b11cc0e20b000f7e95eca53dab0892d9f4559db81d8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/payload-65536.json",
+      "bytes": 87863,
+      "sha256": "bdfaca715b69bb3434a1e245c3758f19e78ff27bb8ad2db720220d426395b00b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/payload-info.json",
+      "bytes": 637,
+      "sha256": "6c501dee983468d87b3d627997bdfc05fa0636bb43ac03f8a7dcaeda98148940"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/qualification-CORE_MULTIPLE_FILES_ORIGINAL.json",
+      "bytes": 37944,
+      "sha256": "406f5ec7262a8b71d240cf298c6bea5e916edc5f33a36b572d2dd897bc90ce83"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/actual-v2/raw/qualification-RESULT_BINARY_CHUNKS.json",
+      "bytes": 822632,
+      "sha256": "20efeaee449be29431151292cb645509774d17b7fbf335d57fa993519dc721ef"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/frozen-v2/EXECUTION_PACKAGE.json",
+      "bytes": 2474,
+      "sha256": "142c3a2eaff3b6fb9e502febebd3b9cef8067fe51adfcf7774d1d50477003907"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/frozen-v2/INPUTS_READBACK.json",
+      "bytes": 149033,
+      "sha256": "3b3f303c754ac9015f614dc927a20b9a9427b90b73a67f0d1c4fc475f25d0c0b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/frozen-v2/PREPARATION.json",
+      "bytes": 2477,
+      "sha256": "e7aa9ef7bcbf42d609daa1790db912c46dce91f38ad37670ffa1e753adbdf8ad"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/frozen-v2/REVIEW_SCOPE.json",
+      "bytes": 71163,
+      "sha256": "c2f3364ab1420fa261b8d14a7a10404dba4997e8963f273d2a9acb7a7b5b24a6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/frozen-v2/ROOT_EXECUTION_REVIEW_v2.json",
+      "bytes": 3949,
+      "sha256": "f76db6a2b25856a4868b9384c6ccf8a27771b96fd905663e8c0fc7dfb4d4de0f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/frozen-v2/ROOT_LOCAL_INPUT_REVIEW_v1.json",
+      "bytes": 1281,
+      "sha256": "51719c2343ae1ca23f2c44e3926141d50b98ee04d7a389c62d6f224dd5969094"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/frozen-v2/ROOT_OBSERVER_ATTEMPT_01.json",
+      "bytes": 825,
+      "sha256": "780d81be4d223e55906957689b44bc3fcf9805d2258cbab1269f9e69ac7656ad"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/frozen-v2/integrate_h9_durable_hc_and_format_v2.py",
+      "bytes": 57749,
+      "sha256": "87f9624aa9e8c6b0a404775551dde9ef32dcb1ddf83537fc601941f625035304"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/frozen-v2/integration-inputs-v2.json",
+      "bytes": 732113,
+      "sha256": "35cf67a94fed0bee8925957e3ae713374092aa12089f18d7307ba7aafd6a29b3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/frozen-v2/launch_integrate_h9_durable_hc_and_format_v2.py",
+      "bytes": 4379,
+      "sha256": "6951fa7cb78dc2645e7e999eaaaaddc222b50d3db25bf56200a1a5916ef7f030"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/frozen-v2/v1-to-v2-inner.patch",
+      "bytes": 25099,
+      "sha256": "fa043949b12c98617b3eead94b2da5d27a5c87247c3c38f6387d05704639f571"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-integration-preparation-v2/frozen-v2/v1-to-v2-outer.patch",
+      "bytes": 1052,
+      "sha256": "1d89932b64c87544bfac38108841e8430a86bb8c118c53c42e39b21e27d68df8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-marker-source-fix-v1/PREPARATION.json",
+      "bytes": 3368,
+      "sha256": "f5ff1316c911edf22c8641dbde9ff80c4d1b2f338ffb4dc9e2866fdadfad365c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-marker-source-fix-v1/base/codex-rs/hepta-agentd/src/automation_joint_text_pq.rs",
+      "bytes": 10437,
+      "sha256": "72aff03a23c406027f445b28f89a3f7b8db1fb2b0838593bd5cac5ec7696aa11"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-marker-source-fix-v1/checkpoint-current-binding.patch",
+      "bytes": 658,
+      "sha256": "e236827ca4668ade2eec79f1bf6cf12228953a502ade0d33fd75efb8c4691503"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-marker-source-fix-v1/patched/codex-rs/hepta-agentd/src/automation_joint_text_pq.rs",
+      "bytes": 10452,
+      "sha256": "27715c38683a973ab7880bd44a9b0616fcbb97773ab7ccbb531cb6d456c70b7c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-marker-source-fix-v2/FILE_PINS.json",
+      "bytes": 644,
+      "sha256": "3fe2afafea94204941895f2fc991b810a284d74a36b5efa45c60ccbc44d245dc"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-marker-source-fix-v2/LOCAL_PREPARER_ERROR_01.json",
+      "bytes": 442,
+      "sha256": "6ece0e44ee3fe01111dc634860c4447ba71db38f71afb6c7af99b210c69d07d3"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-marker-source-fix-v2/ROOT_INDEPENDENT_REVIEW_v1.json",
+      "bytes": 3081,
+      "sha256": "8af7ec64e8c0304a4c40db353010fd8ffd0c13e25e71eaaad84a8497bd298a0c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-marker-source-fix-v2/base/codex-rs/hepta-agentd/src/automation_joint_text_pq.rs",
+      "bytes": 10437,
+      "sha256": "72aff03a23c406027f445b28f89a3f7b8db1fb2b0838593bd5cac5ec7696aa11"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-marker-source-fix-v2/base/codex-rs/hepta-agentd/src/joint_text_training_owner.rs",
+      "bytes": 15121,
+      "sha256": "4e3dc3724dbe60ae89b860ab2fe5780c2923bc66a45b5ae2f18ca3098d34e14a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-marker-source-fix-v2/checkpoint-original-calls-local-bindings.patch",
+      "bytes": 1698,
+      "sha256": "6eaa81aa0337c5bbabc3896f315bc104f467aae3d99cfdf46bf1e53c5cf56c7f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-marker-source-fix-v2/patched/codex-rs/hepta-agentd/src/automation_joint_text_pq.rs",
+      "bytes": 10452,
+      "sha256": "27715c38683a973ab7880bd44a9b0616fcbb97773ab7ccbb531cb6d456c70b7c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-marker-source-fix-v2/patched/codex-rs/hepta-agentd/src/joint_text_training_owner.rs",
+      "bytes": 15107,
+      "sha256": "4faf76f30b4b78d5825d5953765340861b45e8d2e41a177014bd63e6c13f54e3"
+    }
+  ],
+  "execution_cutoff": "2026-11-09T20:53:28.189059+00:00",
+  "source_scope_description": "Original first formatter overall FAIL despite fmt 0; both real call-site marker repairs, v9 composition, isolated recovery v2 source-only PASS, original commands/readbacks, and local observer failures.",
+  "no_cross_source_result_inheritance": true,
+  "full_history_cost": null,
+  "all_stage_gates": "HOLD",
+  "new_native_executions": 0,
+  "new_numerical_executions": 0,
+  "new_lifecycle_executions": 0,
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/hc-canonical-format-failure-repairs-and-recovery-history-v1/archive.part001",
+      "offset": 0,
+      "bytes": 196608,
+      "sha256": "247870a49f91cdfb3b5906720eee7eebe796121a77892492773dba40409988bf"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/hc-canonical-format-failure-repairs-and-recovery-history-v1/archive.part002",
+      "offset": 196608,
+      "bytes": 196608,
+      "sha256": "dd90ee233fdbdd5e3042362eaa015dd5a8404d15f4c515f5f07683c87064c961"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/hc-canonical-format-failure-repairs-and-recovery-history-v1/archive.part003",
+      "offset": 393216,
+      "bytes": 196608,
+      "sha256": "75db7a1b036a8784c2c3edeba1ec084c9facfe0ea57156b5c63a853bb5436d21"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/hc-canonical-format-failure-repairs-and-recovery-history-v1/archive.part004",
+      "offset": 589824,
+      "bytes": 196608,
+      "sha256": "81888e02bc75d7adaf6221c32799e7a24397198334d18d329368b54464b589e0"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/hc-canonical-format-failure-repairs-and-recovery-history-v1/archive.part005",
+      "offset": 786432,
+      "bytes": 196608,
+      "sha256": "79b4e25ea4a0becefd896787ea59766454df090ef7e4d707b9287a52c972d9ff"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/hc-canonical-format-failure-repairs-and-recovery-history-v1/archive.part006",
+      "offset": 983040,
+      "bytes": 196608,
+      "sha256": "31a45b8ef9bf6c09f70c23f401b69538330e2d7dde3750454d2543b7df1b2c77"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/hc-canonical-format-failure-repairs-and-recovery-history-v1/archive.part007",
+      "offset": 1179648,
+      "bytes": 196608,
+      "sha256": "bd71c54d8b09327b3f8afabc439db1e3bc69be38e001f6c816a634833758d877"
+    },
+    {
+      "sequence": 8,
+      "path": "packets/hc-canonical-format-failure-repairs-and-recovery-history-v1/archive.part008",
+      "offset": 1376256,
+      "bytes": 147212,
+      "sha256": "1f2b8582dcc3a886efd521d556092d529baf2fbeece8846170b0599e293a5043"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "disk_archive_whole_sha_and_members_verified": true
+}

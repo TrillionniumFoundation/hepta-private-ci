@@ -1,0 +1,751 @@
+{
+  "packet_id": "hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1",
+  "scope": "Original single failed A1, original A2-A5 NOT_RUN, frozen controllers/binding, exact small predecessor, original fifty-input guard, later read-only diagnosis and runtime-feasibility observations.",
+  "compression": "xz",
+  "archive_path": "/workspace/scratch/898e2183709e/ci-fixes/increment012/sealed-v2/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/original.tar.xz",
+  "bytes": 2595724,
+  "sha256": "be5e7a56dbe7617bef57f954a976ee2e649eca205b56a1e6fb3d0f07be7a1937",
+  "file_members": [
+    {
+      "path": "metadata/DRIVER.py",
+      "bytes": 16770,
+      "sha256": "d3053a77fbbde7d08b9036bb4f7aa15b78b68c2db28a69c927b30d9c047c0035"
+    },
+    {
+      "path": "metadata/ORIGINALS.json",
+      "bytes": 29928,
+      "sha256": "013e347f5e10db2d7e89d836867769703e6436afaba8d6651b17c01185b0fb5f"
+    },
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 80278,
+      "sha256": "ec97616b5ba4702d6d9fe914364da6d3707e3b6f80a8d25cbfd1b5ee2a177a07"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/PREFLIGHT.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/PREFLIGHT.stdout.json",
+      "bytes": 3135,
+      "sha256": "8a9a315d0d97b2c8c812517a5e3a2fc1e5629ebd808c72c326c207ad790c907c"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/PREFLIGHT_EXECUTION.json",
+      "bytes": 1064,
+      "sha256": "e64a9a79f9f714f6d13ddb8301566f5ba4236c379995258b5e3a3a72269a3e05"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/PREFLIGHT_REQUEST.json",
+      "bytes": 530,
+      "sha256": "82a9bf65ba3db6b70fd0019a7bfa49c8974048b8162712f86bb9d70d05150517"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/observe_local_proc_view_v1.py",
+      "bytes": 4839,
+      "sha256": "9050761d26b39a6d43707029c7a3fd8afc8fd0a54e81494a3e267ff58eb72c1d"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/prepare_fail_closed_patch_v1.py",
+      "bytes": 8946,
+      "sha256": "9eca3502dd98f81f4db21aa133595ab0e912b9f764383f2de8258e94cb906743"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/source-fix-v1/PREPARATION.json",
+      "bytes": 7288,
+      "sha256": "a40ccb1f1cfa515207a8d624756da7b943ddfb9febfff9805cb48e925869585e"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/source-fix-v1/base/qualification/hcsn_training/joint_lifecycle.py",
+      "bytes": 9458,
+      "sha256": "b18f934b7f07e6ce1394bc431ea17af8cf168b72c7480fec2decc0044e41d17e"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/source-fix-v1/base/qualification/hcsn_training/joint_process.py",
+      "bytes": 3414,
+      "sha256": "e2a00f0ea9ddc7a91b4d2bac6d05f1fe409b490b8a10a2c08fafe1492d758d62"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/source-fix-v1/base/qualification/hcsn_training/joint_runner.py",
+      "bytes": 8430,
+      "sha256": "16167d8a602912cc777987b31951c61d485d22eb823c3376165863e7155c37d1"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/source-fix-v1/patched/qualification/hcsn_training/joint_lifecycle.py",
+      "bytes": 9619,
+      "sha256": "1b8cb886ab6258d7da2765eb316662df79cfe14609bb0d89c81d664c542740d6"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/source-fix-v1/patched/qualification/hcsn_training/joint_process.py",
+      "bytes": 4856,
+      "sha256": "276e120e804f446667cf6006f5ef79b9c13e9c024d28a590d1b8617cb66bfcd2"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/source-fix-v1/patched/qualification/hcsn_training/joint_runner.py",
+      "bytes": 8487,
+      "sha256": "f45cd32275d1bc8f3802dfaeefd1b322df7d4c96a24e88ee943bede23c57604c"
+    },
+    {
+      "path": "originals/ci-fixes/hc-a1-process-identity-diagnosis-v1/source-fix-v1/proc-pid-view-admission.patch",
+      "bytes": 4384,
+      "sha256": "e89aa24907fe9a893b57692c504a664562f29458c8adf7e10753dcb0a52706c1"
+    },
+    {
+      "path": "originals/ci-fixes/hc-desktop-cpu-runtime-feasibility-v1/PTY_READ_000.json",
+      "bytes": 8053,
+      "sha256": "862b38ff663d4a34c44c966213b68f01381598db0c2aa4162e3cc4340eda3351"
+    },
+    {
+      "path": "originals/ci-fixes/hc-desktop-cpu-runtime-feasibility-v1/PTY_START_ACK.json",
+      "bytes": 586,
+      "sha256": "499e343ebb97130d3140e3dfb01bebb4d1e8c2b47a707ebd5bccc202ebec5456"
+    },
+    {
+      "path": "originals/ci-fixes/hc-desktop-cpu-runtime-feasibility-v1/REQUEST.json",
+      "bytes": 4705,
+      "sha256": "bea4c04d92d840ba0abb8182be1aa3998b0f8bcfd75728000aef66f90c47ccde"
+    },
+    {
+      "path": "originals/ci-fixes/hc-desktop-cpu-runtime-feasibility-v1/RESULT.json",
+      "bytes": 2171,
+      "sha256": "a4687722703fa3db443d0f73daa2fe847d43025a7106fe9eb76bb91c238e1d32"
+    },
+    {
+      "path": "originals/ci-fixes/hc-desktop-cpu-runtime-feasibility-v1/probe.py",
+      "bytes": 3603,
+      "sha256": "107bd485f960c6b9edd24c91bed7a787cd31f819fd9caa574a793784de8d3828"
+    },
+    {
+      "path": "originals/ci-fixes/hc-desktop-cpu-runtime-feasibility-v1/stdout.raw",
+      "bytes": 1996,
+      "sha256": "654685077e5296b9952742d2f14fd02aeccb60163ac4c2d390f38ae095d125a4"
+    },
+    {
+      "path": "originals/joint-text-H-numerical-runtime-v3/records/RESULT.json",
+      "bytes": 70565,
+      "sha256": "101f1eaa699e5fe9c4eaa863e423f4fc7b6a17543874d78e248969e507b14155"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/A1/FAILURE.json",
+      "bytes": 214925,
+      "sha256": "30fe1e40941564646a38c00dc118b1d794b70767dbcb24e20a3df9276a6fb649"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/A1/FIXTURE.json",
+      "bytes": 4925,
+      "sha256": "1069249e356ce667d22d6ac2189eb4aa7f2da54bfebdefce9ba188b2b7853559"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/A1/OBSERVATION_BOUND_REACHED.json",
+      "bytes": 270,
+      "sha256": "9b1b915d0c3aba9557739e02badcf885f669e6264b9594cfe489a49a8b847638"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/A1/root/dispatch.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/A1/root/inputs/252170e20970d60df8c2faffd41a28c9600506cd0665b7594ded2e1e9a197e9c/manifest.json",
+      "bytes": 482,
+      "sha256": "5525d3fd1d17702bda546b9fbd0cc36755cff84ef346d85e91ee996d29f58051"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/A1/root/inputs/252170e20970d60df8c2faffd41a28c9600506cd0665b7594ded2e1e9a197e9c/predecessor.heptapk",
+      "bytes": 4980877,
+      "sha256": "309e02dd4de69712bd3efd79cfdce0fb5927ba28e35118fe643424263c3d9198"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/A1/root/inputs/252170e20970d60df8c2faffd41a28c9600506cd0665b7594ded2e1e9a197e9c/request.json",
+      "bytes": 1726,
+      "sha256": "63ed5fdb264696f578c8b2a0cd8bf7e4c943ab05643d74157db1d8981b256b9a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/A1/root/jobs/6a890f020bc4a553892fff34f917898a64b6f76fe3da2e054dea189b558838c2/descriptor.json",
+      "bytes": 658,
+      "sha256": "9c4e0a91b9b78553f346a6b9520407d7734935bb94b1799f84bb51c81fe284a5"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/A1/root/jobs/6a890f020bc4a553892fff34f917898a64b6f76fe3da2e054dea189b558838c2/reservation.json",
+      "bytes": 4191,
+      "sha256": "97aa33c09618bb80c04a28337f4599ac0d9bad34ce8eedc8ad96ca24bc69f122"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/A1/root/jobs/6a890f020bc4a553892fff34f917898a64b6f76fe3da2e054dea189b558838c2/runner.stderr",
+      "bytes": 1498,
+      "sha256": "db643ae88405b19baee7828d2b667f9e45dbf4d89397f602f8cf240b14337a77"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/A1/root/jobs/6a890f020bc4a553892fff34f917898a64b6f76fe3da2e054dea189b558838c2/runner.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/A1/root/layout.json",
+      "bytes": 68,
+      "sha256": "c2fc0e0c3438ee6fdd63b39c5723bc1c4c3511406dfc3ed1fa3b8bdfb4fabc88"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/REQUEST.json",
+      "bytes": 32062,
+      "sha256": "0fa39f76ee45d15ed04b641088b1a4e44e435f26e95f3f4a6d18c45e2964056b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/RESULT.json",
+      "bytes": 261117,
+      "sha256": "1d23ca4e8579e831f9f926219df2f65bae46d737c0f219bb75de9263af7eb8cc"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/input-00-run_hc_real_lifecycle_unbound_v1.py",
+      "bytes": 16852,
+      "sha256": "1b968ff0b60ab5eb99d34cebe98ab690b486d64c406b0515aca0bc7c8bba9498"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/input-01-hc_lifecycle_validation_support_v1.py",
+      "bytes": 27187,
+      "sha256": "95b4b823248e8de27c459f8706ee293744864c95626bb5335d0cb3e57032b6b1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/input-02-hc_lifecycle_validation_records_v1.py",
+      "bytes": 20215,
+      "sha256": "fdcf375a3bff54fc0fa6e754affbf2dc7930ae0fbf458ef0a5250aff024eb7d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/input-03-read_hc_retained_candidate_v1.py",
+      "bytes": 12426,
+      "sha256": "85414bef77da444e94dfba1481e6f6999a7dcd2603d8141765e30c4be201ad3e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-actual-v1/input-04-BOUND_INPUTS_v1.json",
+      "bytes": 10240,
+      "sha256": "eb64280e02063f1c2ef98de4f563117d12089bcb5294224ab483af2bacc34c26"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-binding-preparation-v1/RUNTIME_READONLY_RECHECK_v1.json",
+      "bytes": 23390,
+      "sha256": "dc073b595b8666237e687d79d3acb081154c74bc6a6b648aed0c700e97927a76"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/ACTUAL_COMPLETION_TOOL_ORIGINAL_v1.json",
+      "bytes": 1250,
+      "sha256": "4bb68814b1a43fffb5c1315da4a6ba8e47ef5d95eea5a02556e711181fccf9df"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/ACTUAL_LAUNCH_TOOL_ORIGINAL_v1.json",
+      "bytes": 873,
+      "sha256": "37d731a5b3fb6d9bc158677a9ac3e547d11a1102f6647d499b4046fc50504e82"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/BOUND_INPUTS_v1.json",
+      "bytes": 10240,
+      "sha256": "eb64280e02063f1c2ef98de4f563117d12089bcb5294224ab483af2bacc34c26"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/COMMIT_BOUND_INPUTS_PENDING_REF.json",
+      "bytes": 7893,
+      "sha256": "eb610dd6277a82e947a19cb48e00ddf4616cab3f42a87bf7f82876e7d275e38a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/FINAL_BINDING_PREPARATION_v1.json",
+      "bytes": 18165,
+      "sha256": "1bac6dc2b2beadeb769cb16943d4b065eb5b21225e88e07fa0bd8470ee020ad1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/GITHUB_ORIGINAL_RESPONSES.json",
+      "bytes": 535912,
+      "sha256": "7b39437ac92706bd1e40455c2214476eefa0fc8842fe56e81ee391b46d3fe81e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/PREPARATION.json",
+      "bytes": 1264,
+      "sha256": "8408cbf6aa451dca44699d2b3a44d675a1eb695bc7d5ef6a020b79b5d69fe3e7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/ROOT_EXECUTION_REVIEW_v1.json",
+      "bytes": 4066,
+      "sha256": "a4a856f36dc2131dcc47602f4c5afc47a0e8541be211c50dce29b571e01b052c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/SOURCE_READBACK.json",
+      "bytes": 24831,
+      "sha256": "191eeeaf9004bc620dbdcbbff03e4f3d1a4a11e14d25664ce6754e86a5ef2839"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/bind_final_ref_inputs_v1.py",
+      "bytes": 12696,
+      "sha256": "301f4bd84e57d62ab3f123283396baa21b1063087bfcac020a7ed6eb71d16bd7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/launch_HC_five_lifecycle_UNBOUND_v1.py",
+      "bytes": 6427,
+      "sha256": "95c3762749e771377a3f30479410b947fb2c561be1900c43e07a585ae04e5aaa"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/launch_HC_five_lifecycle_v1.py",
+      "bytes": 6450,
+      "sha256": "9cab2c32800d17b87aee308950bdc16d892ad84b19d8f5f432e3b051fd5f093c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/pending-to-final-inputs-v1.patch",
+      "bytes": 4279,
+      "sha256": "a691f5b5cc48fea0ab96085ac67da86a9ed5b46b91ed7785841bb948bcdef5e4"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/read_failed_A1_records_v1.py",
+      "bytes": 14981,
+      "sha256": "be50a5e7b1a61909af8213cdb1293c5165f07a6c088ac46b977110fd445a1678"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py",
+      "bytes": 14705,
+      "sha256": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/qualification/hcsn_training/__init__.py",
+      "bytes": 82,
+      "sha256": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/qualification/hcsn_training/joint_lifecycle.py",
+      "bytes": 9458,
+      "sha256": "b18f934b7f07e6ce1394bc431ea17af8cf168b72c7480fec2decc0044e41d17e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/qualification/hcsn_training/joint_outputs.py",
+      "bytes": 8638,
+      "sha256": "d225118ca335d9a5f3aea12e50d6ed7863cebda9c73dadf305c74ca2d02ae4c6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/qualification/hcsn_training/joint_process.py",
+      "bytes": 3414,
+      "sha256": "e2a00f0ea9ddc7a91b4d2bac6d05f1fe409b490b8a10a2c08fafe1492d758d62"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/qualification/hcsn_training/joint_protocol.py",
+      "bytes": 6934,
+      "sha256": "0e5b604ffe2b9217a9782785492d10c138cfe7f6968fc5fb2fcc69f426423da0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/qualification/hcsn_training/joint_runner.py",
+      "bytes": 8430,
+      "sha256": "16167d8a602912cc777987b31951c61d485d22eb823c3376165863e7155c37d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/qualification/hcsn_training/joint_sources.py",
+      "bytes": 4782,
+      "sha256": "964a5f23968b3f3325aca64bde968c51938916a1f5bd3be16851fae5683b613c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/qualification/hcsn_training/joint_store.py",
+      "bytes": 8811,
+      "sha256": "e91b22dba8a3d29a997479c5da38dc53cc502453e7f854de4cfd16b046818c33"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/qualification/hcsn_training/joint_supervisor.py",
+      "bytes": 6113,
+      "sha256": "87a7a27ec87e7019b6c960278daa99c42600f2768a2a620693f7570147aab22c"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/qualification/hcsn_training/joint_worker_adapter.py",
+      "bytes": 2841,
+      "sha256": "2aabb37b7b2091343d41694fbc425b8bf5ba2a0abd5da48d83326ba8a755ce7f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/scripts/joint_generation_v4_io.py",
+      "bytes": 9640,
+      "sha256": "f2d67927c9f2c7dbf729ff30d9d0c5b5b3477d4a0ff59c148348e45aae6b4fcf"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/scripts/joint_generation_v4_model.py",
+      "bytes": 14590,
+      "sha256": "f200835d4d41327000af69f3f9b6d53d746a2efad545bec5b1364414485b77a2"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/scripts/joint_generation_v4_text_worker.py",
+      "bytes": 13836,
+      "sha256": "08648a2c4e439ad541f1b57e8b26bd2d7e31962a510d51443dc47afe5b4f6006"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/scripts/joint_text_training_compute.py",
+      "bytes": 12333,
+      "sha256": "fd318fb6d0d5eb43a6690a7728e08bcec7617a354add7923d0918cdd0d9e8dfa"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/scripts/joint_text_training_contract.py",
+      "bytes": 18262,
+      "sha256": "bac742e07368d738fd8da942c5366a4f835e6e4d1fc15e93834a5c607d56b496"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/source/scripts/joint_text_training_io.py",
+      "bytes": 8392,
+      "sha256": "42aa2a78a44a5731af902eb372c1cbea7cb26dc6d52e4574c8abf2f71b459007"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/unbound-to-final-outer-v1.patch",
+      "bytes": 628,
+      "sha256": "7f24bd66179daf700a09a9644a30f325e17a7d548bc485678578868903700d34"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-final-source-37df97a-v1/verify_commit_and_prepare_binding_v1.py",
+      "bytes": 13155,
+      "sha256": "2bb2a549ebba34dd76ac8a6bede2e3756c5c002994aa40b92946d2ac685ea0d8"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-outer-v1/EXECUTION.json",
+      "bytes": 6570,
+      "sha256": "0889a6c65029999ba1769c3713b38d30a23ae574fd6b27e1305265f541a53e4f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-outer-v1/REQUEST.json",
+      "bytes": 2903,
+      "sha256": "87ed74914c25687db10b1e539f2e1b22af6f53a3c738ae8affd7f3c6755238c7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-outer-v1/stdout.log",
+      "bytes": 437,
+      "sha256": "b3c4b90d1f7e546252fd77850c080532d93f391a154454c8417f6b1b6c38a9e2"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-posthoc-readback-v1/ORIGINAL_CONTACTS_INDEX.json",
+      "bytes": 1088772,
+      "sha256": "97dfb29623788ce620d8bfac9a0a999f149738c1b580076745dea818ea20440b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-posthoc-readback-v1/ORIGINAL_RECORDS_INDEX.json",
+      "bytes": 3771791,
+      "sha256": "481288ce344387773f15bf9f2b7924d8ae3bd1dd4365d1316a8ea1379a6ed7b9"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-posthoc-readback-v1/RESULT.json",
+      "bytes": 8464,
+      "sha256": "922b5fb9535789f1c73c5dfa928efe120948893a77b99ff4823d9d164740b3de"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-posthoc-readback-v1/ROOT_ACTUAL_REVIEW_v1.json",
+      "bytes": 2551,
+      "sha256": "ea3b7e7c110d80cfc1ed394aa9b00a3bf10a6399197f80a8fbeef1011082bb8f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/FREEZE_OBSERVER_FAILURE_v1.json",
+      "bytes": 695,
+      "sha256": "82a61f0dbfd167ed7a9c50c2645e8b2bac7c15cd7022bef8c3c2bb6368c53388"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/PREPARATION_v1.json",
+      "bytes": 5182,
+      "sha256": "a1146344aae2aeb18509709a407a3dc24d78c58e92741397cd7b835575ced3c0"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/PREPARATION_v2.json",
+      "bytes": 2944,
+      "sha256": "bd4723e87af9a288fc937289e34cdf6d5c030c403e84eb17f6624779e65d2777"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/PREPARATION_v3.json",
+      "bytes": 3132,
+      "sha256": "7098048cf93219d830b3427fc96830dbe10e7b228469e4c80623f815115b4ecf"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/READER_REUSE_PROOF_v1.json",
+      "bytes": 1483,
+      "sha256": "e7798434a6bb1b7ca1795b58eea2f62d8b364196c33a5afe896ee9d47a23ce44"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/REVIEWABLE_CONTROLLER_v1.md",
+      "bytes": 10542,
+      "sha256": "b567ae9ea4849a47a8dbfb8ef60a6cbed819687cef390ae76066afd36a50aa25"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/REVIEWABLE_CONTROLLER_v2.md",
+      "bytes": 11605,
+      "sha256": "af1a1bcf98ea7db569571ad0e272324a9c2d1c0231ea6922eac79b44674b8d3a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/REVIEW_INDEX_v1.json",
+      "bytes": 2584,
+      "sha256": "70b8b8d0155ec842383e366ec6803b9500b39badb91dacab7cb6abb276ac769b"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/REVIEW_INDEX_v2.json",
+      "bytes": 1389,
+      "sha256": "09e6f271ef9efee349c8eb299aa75d7be29b94aa679f3d0a2b5c3a8636e1684f"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/REVIEW_INDEX_v3.json",
+      "bytes": 1458,
+      "sha256": "53395a97ffbefa237e75f125cccda0a40a930a84dc6815f21586d06adcfc79af"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/ROOT_FULL_REVIEW_v3.json",
+      "bytes": 2952,
+      "sha256": "a5398a36fae8eee0b70e67e4969097f8490e348483772e8c9d99e5b0771e9c84"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/ROOT_V2_GLOBAL_NAME_OBSERVATION.json",
+      "bytes": 1039,
+      "sha256": "0ff5d9ad96838fff1d42691c789db0cd2e24f76f6356e87908b2e2686446f2e6"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/STATIC_PURE_CHECKS_v1.json",
+      "bytes": 3107,
+      "sha256": "825b8fdeb93b380b0b3a87543c0e0519668c40f4bad9dcd97a2a8a5e8e180703"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/UNBOUND_INPUTS_v1.json",
+      "bytes": 6319,
+      "sha256": "601acc02d3db6d089a38ffaece46f7559cb98131c265887d0bb553540b8bdbcb"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/UNBOUND_INPUTS_v2.json",
+      "bytes": 6359,
+      "sha256": "bfdda39e839343ee4907635f4e42af071607c70d2ff3780dc7fcccbd9582cf55"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/UNBOUND_INPUTS_v3.json",
+      "bytes": 6359,
+      "sha256": "7563f8f6df3e620b974a0973bccacd668bf10ffca6c88f86d6b3256e74ad8301"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/candidate-reader-numerical-v2-to-HC-v1.patch",
+      "bytes": 6514,
+      "sha256": "e6c1bb9936fe8d1102b347b0c412b99c0df90b46692aebeb6240166517060551"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/freeze-observer-v1-to-v2.patch",
+      "bytes": 2762,
+      "sha256": "7969eb21dd4622acf5d593e21b915f8eaa8396adc3d882531cbfaafbf0d47b73"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/freeze_reader_call_correction_v3.py",
+      "bytes": 6181,
+      "sha256": "62d4768655e8d4593d5a1cb3f79f1651141253311a4d325b2c2a6d433b747293"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/freeze_unbound_real_lifecycle_v1.py",
+      "bytes": 10288,
+      "sha256": "b350cfa31353309e73238545e80e723ba8d550437eb1347a5a1d6d5e1d5c35e7"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/freeze_unbound_real_lifecycle_v2.py",
+      "bytes": 11155,
+      "sha256": "e97256ab547a0892704973df2e38bc3e08da1c92894e840efeee2b4f32502450"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v1/UNBOUND_INPUTS_v1.json",
+      "bytes": 6319,
+      "sha256": "601acc02d3db6d089a38ffaece46f7559cb98131c265887d0bb553540b8bdbcb"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v1/hc_lifecycle_validation_records_v1.py",
+      "bytes": 20215,
+      "sha256": "fdcf375a3bff54fc0fa6e754affbf2dc7930ae0fbf458ef0a5250aff024eb7d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v1/hc_lifecycle_validation_support_v1.py",
+      "bytes": 27084,
+      "sha256": "e74817f705c8f33cdf0c9cba7a2939e8754d17762b07c8b92d7581b5cfd2d49a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v1/read_hc_retained_candidate_v1.py",
+      "bytes": 12424,
+      "sha256": "eb8b144de3fb778327ee57ab4aacb68c1334ca9a49df3466677ded39a6f07665"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v1/run_hc_real_lifecycle_unbound_v1.py",
+      "bytes": 16852,
+      "sha256": "0a04f4eb666641abcc7303aac5325cb428da17a2621e16ec2537a76ef0301cae"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v2/UNBOUND_INPUTS_v2.json",
+      "bytes": 6359,
+      "sha256": "bfdda39e839343ee4907635f4e42af071607c70d2ff3780dc7fcccbd9582cf55"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v2/hc_lifecycle_validation_records_v1.py",
+      "bytes": 20215,
+      "sha256": "fdcf375a3bff54fc0fa6e754affbf2dc7930ae0fbf458ef0a5250aff024eb7d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v2/hc_lifecycle_validation_support_v1.py",
+      "bytes": 27187,
+      "sha256": "95b4b823248e8de27c459f8706ee293744864c95626bb5335d0cb3e57032b6b1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v2/read_hc_retained_candidate_v1.py",
+      "bytes": 12424,
+      "sha256": "eb8b144de3fb778327ee57ab4aacb68c1334ca9a49df3466677ded39a6f07665"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v2/run_hc_real_lifecycle_unbound_v1.py",
+      "bytes": 16852,
+      "sha256": "4740ca8b1d34920e7ad861bf8dc4e0f1bc74c2af9f39ccf8c266a5389a71ad6d"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v3/hc_lifecycle_validation_records_v1.py",
+      "bytes": 20215,
+      "sha256": "fdcf375a3bff54fc0fa6e754affbf2dc7930ae0fbf458ef0a5250aff024eb7d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v3/hc_lifecycle_validation_support_v1.py",
+      "bytes": 27187,
+      "sha256": "95b4b823248e8de27c459f8706ee293744864c95626bb5335d0cb3e57032b6b1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v3/read_hc_retained_candidate_v1.py",
+      "bytes": 12426,
+      "sha256": "85414bef77da444e94dfba1481e6f6999a7dcd2603d8141765e30c4be201ad3e"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/frozen-v3/run_hc_real_lifecycle_unbound_v1.py",
+      "bytes": 16852,
+      "sha256": "1b968ff0b60ab5eb99d34cebe98ab690b486d64c406b0515aca0bc7c8bba9498"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/hc_lifecycle_validation_records_v1.py",
+      "bytes": 20215,
+      "sha256": "fdcf375a3bff54fc0fa6e754affbf2dc7930ae0fbf458ef0a5250aff024eb7d1"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/hc_lifecycle_validation_support_v1.py",
+      "bytes": 27084,
+      "sha256": "e74817f705c8f33cdf0c9cba7a2939e8754d17762b07c8b92d7581b5cfd2d49a"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/lifecycle-controller-v1-to-v2-provenance-pins.patch",
+      "bytes": 1959,
+      "sha256": "52770a35a8c8fb73d15d520f86f4bfbf73084ac0772331e6abb1d82cddb75c99"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/lifecycle-controller-v2-to-v3-reader-call.patch",
+      "bytes": 1456,
+      "sha256": "56872c6399ea21fa86a403e43b7a07b1285755bb310c9eba2a8b78f57ae9cdbc"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/read_hc_retained_candidate_v1.py",
+      "bytes": 12424,
+      "sha256": "eb8b144de3fb778327ee57ab4aacb68c1334ca9a49df3466677ded39a6f07665"
+    },
+    {
+      "path": "originals/joint-text-training-durable-HC-python-v1/real-lifecycle-preparation-v1/run_hc_real_lifecycle_unbound_v1.py",
+      "bytes": 16852,
+      "sha256": "0a04f4eb666641abcc7303aac5325cb428da17a2621e16ec2537a76ef0301cae"
+    }
+  ],
+  "execution_cutoff": "2026-11-09T20:53:28.189059+00:00",
+  "source_scope_description": "Original single failed A1, original A2-A5 NOT_RUN, frozen controllers/binding, exact small predecessor, original fifty-input guard, later read-only diagnosis and runtime-feasibility observations.",
+  "no_cross_source_result_inheritance": true,
+  "full_history_cost": null,
+  "all_stage_gates": "HOLD",
+  "new_native_executions": 0,
+  "new_numerical_executions": 0,
+  "new_lifecycle_executions": 0,
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part001",
+      "offset": 0,
+      "bytes": 196608,
+      "sha256": "d4580a2fa412f2d1fb78149e4af0000a613c8fe0ebabc2d3581e4623f97d1a19"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part002",
+      "offset": 196608,
+      "bytes": 196608,
+      "sha256": "51458705137369e242842562bb1895faccbdee39b03794a1b5311755a0c76670"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part003",
+      "offset": 393216,
+      "bytes": 196608,
+      "sha256": "c1e6f0909681155aa7ae9be5ff521ab633d68b865ee9f95e068589c3f48ee476"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part004",
+      "offset": 589824,
+      "bytes": 196608,
+      "sha256": "c8369b9447deb1a675d5dfe4e317a7e5af766a6bb00c2d9af3d6fd6a44d474f1"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part005",
+      "offset": 786432,
+      "bytes": 196608,
+      "sha256": "7588397a3f66f7aa24da0d7f1a0f03f785d01ef1f2b177e7e47feb6cf3c0e00d"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part006",
+      "offset": 983040,
+      "bytes": 196608,
+      "sha256": "5e46f71a3f97c8248626162d5b14dadf58d3fb79a428206a038396b441b81a04"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part007",
+      "offset": 1179648,
+      "bytes": 196608,
+      "sha256": "f9aca632ff39c4c0ab994182b50c6b1a56aada74d104c8673e0a27b6e03602dc"
+    },
+    {
+      "sequence": 8,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part008",
+      "offset": 1376256,
+      "bytes": 196608,
+      "sha256": "03e5bfe033181f6f192e8ee1ab0e76cfad9186b1322f5d725d4b60a64c4d6144"
+    },
+    {
+      "sequence": 9,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part009",
+      "offset": 1572864,
+      "bytes": 196608,
+      "sha256": "3d7295bc0f1d6834852e8e3d00c84e8afa4bf6a1cff2038a4ea0e025740195d5"
+    },
+    {
+      "sequence": 10,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part010",
+      "offset": 1769472,
+      "bytes": 196608,
+      "sha256": "c5ae7a0e9fd4a20ce455dc0e4e25270b7e8e9a5d879335333e50c0bb709c751c"
+    },
+    {
+      "sequence": 11,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part011",
+      "offset": 1966080,
+      "bytes": 196608,
+      "sha256": "581fc8db8ff4e4a63907a771a4f4922183f6daa372499f09ce9c52436159b453"
+    },
+    {
+      "sequence": 12,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part012",
+      "offset": 2162688,
+      "bytes": 196608,
+      "sha256": "aca91331e191308e897657e99fccb35b6e772300fd95f3dfe7223af1385e23f1"
+    },
+    {
+      "sequence": 13,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part013",
+      "offset": 2359296,
+      "bytes": 196608,
+      "sha256": "e6dd713f6a8cd5d2cbc90e6c24ed524c81a495c8a5098baaa0ea59fb6a776aea"
+    },
+    {
+      "sequence": 14,
+      "path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/archive.part014",
+      "offset": 2555904,
+      "bytes": 39820,
+      "sha256": "e8902b64722872c1c54071d83ef234bdd091313e89e0a096b57c49ccf84e08c5"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "disk_archive_whole_sha_and_members_verified": true
+}

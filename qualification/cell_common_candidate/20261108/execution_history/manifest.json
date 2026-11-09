@@ -902,6 +902,87 @@
       "file_member_count": 19,
       "manifest_path": "packets/increment011-sealing-and-base-provenance-v1/manifest.json",
       "manifest_sha256": "4ed3025fbf9b2a2c6fedd34851b097f6c0d11f56f5d3a02f88325a326b189375"
+    },
+    {
+      "packet_id": "h9-original-strict-failure-terminal-history-v1",
+      "scope": "H9 original strict/helper-build terminal failure and exact locally retained raw/tool readbacks; 20 actual payloads plus original transport and independent review records.",
+      "archive_bytes": 221800,
+      "archive_sha256": "588c8e8ecc51256fa77505dec6d8b9347f590cc7c1c2e62e5d4f6073da834fec",
+      "file_member_count": 74,
+      "manifest_path": "packets/h9-original-strict-failure-terminal-history-v1/manifest.json",
+      "manifest_sha256": "facac43c24fe665e5bf7c725e8964a0dff6fb48488c5fa385a72ee5224c26b5a"
+    },
+    {
+      "packet_id": "hc-canonical-format-failure-repairs-and-recovery-history-v1",
+      "scope": "Original first formatter overall FAIL despite fmt 0; both real call-site marker repairs, v9 composition, isolated recovery v2 source-only PASS, original commands/readbacks, and local observer failures.",
+      "archive_bytes": 1523468,
+      "archive_sha256": "e7e465290196abb05eb926aaf89e7a479a0820bf4b22bb29eff77217208d191b",
+      "file_member_count": 676,
+      "manifest_path": "packets/hc-canonical-format-failure-repairs-and-recovery-history-v1/manifest.json",
+      "manifest_sha256": "8d78859a909a9baed1119b1a14b0802575f918077a7b354ad5eeddb9a2f364d1"
+    },
+    {
+      "packet_id": "hc-37df97a-source-publication-history-v1",
+      "scope": "Closed original local 21-commit source publication requests/responses, final ref and common/CURRENT readbacks, and fresh 103-file source closure. Includes actual v3 layer plan, its 21 patches and original command outputs, prior v1/v2 plan-preparation failures, and fourteen independent source-only acceptance records.",
+      "archive_bytes": 1045236,
+      "archive_sha256": "c4c4c65073254622411451247aec89f6a6a152a399a988984c2d6b175c32baec",
+      "file_member_count": 864,
+      "manifest_path": "packets/hc-37df97a-source-publication-history-v1/manifest.json",
+      "manifest_sha256": "3e32a3676b5ea38882c8cb437a3d26bd692375d459c836d506b95793cb2b722c"
+    },
+    {
+      "packet_id": "hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1",
+      "scope": "Original single failed A1, original A2-A5 NOT_RUN, frozen controllers/binding, exact small predecessor, original fifty-input guard, later read-only diagnosis and runtime-feasibility observations.",
+      "archive_bytes": 2595724,
+      "archive_sha256": "be5e7a56dbe7617bef57f954a976ee2e649eca205b56a1e6fb3d0f07be7a1937",
+      "file_member_count": 126,
+      "manifest_path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/manifest.json",
+      "manifest_sha256": "5802c75cb17eebc16bf59735dc5071647e880a39fc188b7700cf9fcaa264069e"
+    },
+    {
+      "packet_id": "hd-production-owner-interface-matrix-v1",
+      "scope": "Completed read-only HD owner/role/interface matrix with its exact retained source copies and original retrieval/inspection records.",
+      "archive_bytes": 168968,
+      "archive_sha256": "39e7b4bd880f8155febfee9799e8032ff743e130c9cd6c4a6ffa81760ba18cc1",
+      "file_member_count": 79,
+      "manifest_path": "packets/hd-production-owner-interface-matrix-v1/manifest.json",
+      "manifest_sha256": "ef12edd4bd2e2b3ebb7e63a30d95b1ab4c509b9f84f1972bc875b566d0ce4c2f"
+    },
+    {
+      "packet_id": "hc-a1-original-rpc-contacts-0000-0288-v1",
+      "scope": "Original A1 RPC contacts 0 through 288, inclusive, with all local request/launch/raw/result files.",
+      "archive_bytes": 99748,
+      "archive_sha256": "83a0b7779a9106fedf766a45db9322ddff498d24e302aed96fa67b9442c2b06c",
+      "file_member_count": 1736,
+      "manifest_path": "packets/hc-a1-original-rpc-contacts-0000-0288-v1/manifest.json",
+      "manifest_sha256": "4a0bcece7c16d221987b16aa62022032e8926c63c56a62cb65dc8bcd0b4df626"
+    },
+    {
+      "packet_id": "hc-a1-original-rpc-contacts-0289-0576-v1",
+      "scope": "Original A1 RPC contacts 289 through 576, inclusive, with all local request/launch/raw/result files.",
+      "archive_bytes": 93676,
+      "archive_sha256": "142f8e79e7598e748db45509921f978dfe7c35e7b42aba2f4f5a6fba68e41cba",
+      "file_member_count": 1731,
+      "manifest_path": "packets/hc-a1-original-rpc-contacts-0289-0576-v1/manifest.json",
+      "manifest_sha256": "86518934aecee85097d2304e4aba2b92df255650a0b06c12825e498a66f9c933"
+    },
+    {
+      "packet_id": "hc-a1-original-rpc-contacts-0577-0864-v1",
+      "scope": "Original A1 RPC contacts 577 through 864, inclusive, with all local request/launch/raw/result files.",
+      "archive_bytes": 93076,
+      "archive_sha256": "0c1edd9e0d0e2742adf4f823992da2b87b952ac49c3b2ccc9c2df08ab359ce6b",
+      "file_member_count": 1731,
+      "manifest_path": "packets/hc-a1-original-rpc-contacts-0577-0864-v1/manifest.json",
+      "manifest_sha256": "a2a93f95805b0ee9e6dec35fec12e4ed09a66619718396d568dc4f9145fcc119"
+    },
+    {
+      "packet_id": "increment012-base-and-preparation-provenance-v1",
+      "scope": "Bounded exact base and preparation provenance, original eight-packet seal and verifier results, and independently reconstructed published011 Git base. No product or new native execution.",
+      "archive_bytes": 481472,
+      "archive_sha256": "7130379a30d59ecee0cad30707c35f11302b1cee4ef41b0481de2f9b53a31e2a",
+      "file_member_count": 98,
+      "manifest_path": "packets/increment012-base-and-preparation-provenance-v1/manifest.json",
+      "manifest_sha256": "11e3a0a8d6d56db48c277a912daae55567dad487ba86143411e46b6cbc6bae98"
     }
   ],
   "max_chunk_bytes": 490000,
@@ -923,7 +1004,7 @@
   "publication_commit_location": "external_git_readback_receipt",
   "source_branch_mutated_by_publication": false,
   "counts_and_wall_times_must_not_be_added_across_packets": true,
-  "preceding_evidence_commit": "41e1ade6697fee40dd29aef6826348a631396a76",
+  "preceding_evidence_commit": "16570f30aeae38c8e1772ebb10736f62b74910fd",
   "latest_reviewed_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
   "latest_reviewed_common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
   "increment003_original_metadata_observations": [
@@ -4194,6 +4275,185 @@
     "full_history_cost": null,
     "new_native_executions_by_publication": 0,
     "new_numerical_executions_by_publication": 0,
+    "stages": {
+      "S0": "HOLD",
+      "S1": "HOLD",
+      "S2": "HOLD",
+      "S3": "HOLD",
+      "S4": "HOLD",
+      "S5": "HOLD"
+    }
+  },
+  "increment012_separate_source_observations": {
+    "schema": "evidence012-separate-source-observations-v1",
+    "parent_evidence_commit": "16570f30aeae38c8e1772ebb10736f62b74910fd",
+    "execution_cutoff": "2026-11-09T20:53:28.189059+00:00",
+    "input_freeze_completed_at": "2026-11-09T21:15:07.652985+00:00",
+    "evidence_preparation_at_utc": "2026-11-09T21:33:20.436742+00:00",
+    "common_source": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "formal_CURRENT_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+    "HC_source": "37df97ac9ce945d48489a3c70fcf8ef47a1a54da",
+    "HC_tree": "b05d81c81d4d561e7eee433de14aa203821b512f",
+    "new_packets": [
+      {
+        "packet_id": "h9-original-strict-failure-terminal-history-v1",
+        "scope": "H9 original strict/helper-build terminal failure and exact locally retained raw/tool readbacks; 20 actual payloads plus original transport and independent review records.",
+        "archive_bytes": 221800,
+        "archive_sha256": "588c8e8ecc51256fa77505dec6d8b9347f590cc7c1c2e62e5d4f6073da834fec",
+        "file_member_count": 74,
+        "manifest_path": "packets/h9-original-strict-failure-terminal-history-v1/manifest.json",
+        "manifest_sha256": "facac43c24fe665e5bf7c725e8964a0dff6fb48488c5fa385a72ee5224c26b5a"
+      },
+      {
+        "packet_id": "hc-canonical-format-failure-repairs-and-recovery-history-v1",
+        "scope": "Original first formatter overall FAIL despite fmt 0; both real call-site marker repairs, v9 composition, isolated recovery v2 source-only PASS, original commands/readbacks, and local observer failures.",
+        "archive_bytes": 1523468,
+        "archive_sha256": "e7e465290196abb05eb926aaf89e7a479a0820bf4b22bb29eff77217208d191b",
+        "file_member_count": 676,
+        "manifest_path": "packets/hc-canonical-format-failure-repairs-and-recovery-history-v1/manifest.json",
+        "manifest_sha256": "8d78859a909a9baed1119b1a14b0802575f918077a7b354ad5eeddb9a2f364d1"
+      },
+      {
+        "packet_id": "hc-37df97a-source-publication-history-v1",
+        "scope": "Closed original local 21-commit source publication requests/responses, final ref and common/CURRENT readbacks, and fresh 103-file source closure. Includes actual v3 layer plan, its 21 patches and original command outputs, prior v1/v2 plan-preparation failures, and fourteen independent source-only acceptance records.",
+        "archive_bytes": 1045236,
+        "archive_sha256": "c4c4c65073254622411451247aec89f6a6a152a399a988984c2d6b175c32baec",
+        "file_member_count": 864,
+        "manifest_path": "packets/hc-37df97a-source-publication-history-v1/manifest.json",
+        "manifest_sha256": "3e32a3676b5ea38882c8cb437a3d26bd692375d459c836d506b95793cb2b722c"
+      },
+      {
+        "packet_id": "hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1",
+        "scope": "Original single failed A1, original A2-A5 NOT_RUN, frozen controllers/binding, exact small predecessor, original fifty-input guard, later read-only diagnosis and runtime-feasibility observations.",
+        "archive_bytes": 2595724,
+        "archive_sha256": "be5e7a56dbe7617bef57f954a976ee2e649eca205b56a1e6fb3d0f07be7a1937",
+        "file_member_count": 126,
+        "manifest_path": "packets/hc-a1-lifecycle-failure-control-input-and-diagnosis-history-v1/manifest.json",
+        "manifest_sha256": "5802c75cb17eebc16bf59735dc5071647e880a39fc188b7700cf9fcaa264069e"
+      },
+      {
+        "packet_id": "hd-production-owner-interface-matrix-v1",
+        "scope": "Completed read-only HD owner/role/interface matrix with its exact retained source copies and original retrieval/inspection records.",
+        "archive_bytes": 168968,
+        "archive_sha256": "39e7b4bd880f8155febfee9799e8032ff743e130c9cd6c4a6ffa81760ba18cc1",
+        "file_member_count": 79,
+        "manifest_path": "packets/hd-production-owner-interface-matrix-v1/manifest.json",
+        "manifest_sha256": "ef12edd4bd2e2b3ebb7e63a30d95b1ab4c509b9f84f1972bc875b566d0ce4c2f"
+      },
+      {
+        "packet_id": "hc-a1-original-rpc-contacts-0000-0288-v1",
+        "scope": "Original A1 RPC contacts 0 through 288, inclusive, with all local request/launch/raw/result files.",
+        "archive_bytes": 99748,
+        "archive_sha256": "83a0b7779a9106fedf766a45db9322ddff498d24e302aed96fa67b9442c2b06c",
+        "file_member_count": 1736,
+        "manifest_path": "packets/hc-a1-original-rpc-contacts-0000-0288-v1/manifest.json",
+        "manifest_sha256": "4a0bcece7c16d221987b16aa62022032e8926c63c56a62cb65dc8bcd0b4df626"
+      },
+      {
+        "packet_id": "hc-a1-original-rpc-contacts-0289-0576-v1",
+        "scope": "Original A1 RPC contacts 289 through 576, inclusive, with all local request/launch/raw/result files.",
+        "archive_bytes": 93676,
+        "archive_sha256": "142f8e79e7598e748db45509921f978dfe7c35e7b42aba2f4f5a6fba68e41cba",
+        "file_member_count": 1731,
+        "manifest_path": "packets/hc-a1-original-rpc-contacts-0289-0576-v1/manifest.json",
+        "manifest_sha256": "86518934aecee85097d2304e4aba2b92df255650a0b06c12825e498a66f9c933"
+      },
+      {
+        "packet_id": "hc-a1-original-rpc-contacts-0577-0864-v1",
+        "scope": "Original A1 RPC contacts 577 through 864, inclusive, with all local request/launch/raw/result files.",
+        "archive_bytes": 93076,
+        "archive_sha256": "0c1edd9e0d0e2742adf4f823992da2b87b952ac49c3b2ccc9c2df08ab359ce6b",
+        "file_member_count": 1731,
+        "manifest_path": "packets/hc-a1-original-rpc-contacts-0577-0864-v1/manifest.json",
+        "manifest_sha256": "a2a93f95805b0ee9e6dec35fec12e4ed09a66619718396d568dc4f9145fcc119"
+      },
+      {
+        "packet_id": "increment012-base-and-preparation-provenance-v1",
+        "scope": "Bounded exact base and preparation provenance, original eight-packet seal and verifier results, and independently reconstructed published011 Git base. No product or new native execution.",
+        "archive_bytes": 481472,
+        "archive_sha256": "7130379a30d59ecee0cad30707c35f11302b1cee4ef41b0481de2f9b53a31e2a",
+        "file_member_count": 98,
+        "manifest_path": "packets/increment012-base-and-preparation-provenance-v1/manifest.json",
+        "manifest_sha256": "11e3a0a8d6d56db48c277a912daae55567dad487ba86143411e46b6cbc6bae98"
+      }
+    ],
+    "old_packet_count": 100,
+    "new_packet_count": 109,
+    "old_member_entries_with_overlap": 13545,
+    "new_archive_member_entries_with_overlap": 7115,
+    "new_total_member_entries_with_overlap": 20660,
+    "original_input_selection": {
+      "unique_original_paths": 7002,
+      "bytes": 55125313
+    },
+    "original_eight_packets": {
+      "original_files": 6993,
+      "generated_metadata_members": 24,
+      "members": 7017,
+      "archive_bytes": 5841696
+    },
+    "ninth_provenance": {
+      "original_records": 94,
+      "generated_metadata_members": 4,
+      "members": 98,
+      "archive_bytes": 481472,
+      "original_bytes": 16237987,
+      "no_execution_or_training_count": true
+    },
+    "H9_strict": {
+      "status": "FAIL",
+      "native_tests_executed": 0,
+      "original_observation_in_011_not_rewritten": true
+    },
+    "HC_first_formatter": {
+      "canonical_fmt_returncode": 0,
+      "overall_returncode": 1,
+      "original_failure_preserved": true
+    },
+    "HC_formatter_recovery": {
+      "source_only": true,
+      "returncode": 0,
+      "source_files": 103,
+      "changed": 49,
+      "new_files": 36,
+      "preserved_H9": 54,
+      "context_witnesses": 3,
+      "native_executions": 0
+    },
+    "HC_publication": {
+      "status": "SOURCE_ONLY_PUBLISHED_AND_INDEPENDENTLY_READ_BACK",
+      "commits": 21,
+      "source_files": 103,
+      "common_or_CURRENT_advanced": false
+    },
+    "HC_original_lifecycle": {
+      "A1": "FAILED_OR_INCOMPLETE",
+      "outer_returncode": 1,
+      "Start_RPC_count": 1,
+      "Start_RPC_returncode": 120,
+      "Status_RPC_count": 864,
+      "Status_RPC_returncode": 0,
+      "Status_observation": "Unknown",
+      "contacts_are_not_tests_or_training_jobs": true,
+      "A2": "NOT_RUN",
+      "A3": "NOT_RUN",
+      "A4": "NOT_RUN",
+      "A5": "NOT_RUN",
+      "independent_candidate_reader": "NOT_RUN",
+      "training_count": null,
+      "original_five_numerical_tests_rerun": false,
+      "original_budget_milliseconds": 300000,
+      "harness_fallback_signals": 0,
+      "automatic_retry": 0
+    },
+    "later_process_and_feasibility_observations": "Posthoc only; not original A1 namespace or worker identity proof.",
+    "HD_scope": "Completed read-only production owner/interface study; not implementation or daemon execution.",
+    "excluded": "Later HC runtime admission and process-view source repairs; runtime/wheel/ELF payloads; uncopied remote raw bodies.",
+    "old_100_packet_subtrees_preserved": true,
+    "complete_execution_history": false,
+    "physical_cost": null,
+    "full_history_cost": null,
+    "new_native_or_numerical_or_lifecycle_executions_by_preparation": 0,
     "stages": {
       "S0": "HOLD",
       "S1": "HOLD",
