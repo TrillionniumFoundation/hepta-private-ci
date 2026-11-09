@@ -170,3 +170,33 @@ fn invalid_event_is_rejected_before_append() {
     drop(reopened);
     std::fs::remove_file(path).expect("cleanup");
 }
+
+#[test]
+fn owner_drop_releases_lock_with_duplicate_descriptor() {
+    let path = path("inherited-writer-lock");
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 32).expect("owner");
+    control.submit(/*now_ms*/ 100, request()).expect("submit");
+    let expected = control.get("request.1").cloned();
+    // A concurrent fork can retain this same open file description until exec.
+    let inherited = control.file.try_clone().expect("duplicate descriptor");
+    assert!(matches!(
+        DurableInferenceControl::open(&path, /*capacity*/ 32),
+        Err(Error::WriterUnavailable)
+    ));
+    drop(control);
+
+    let reopened =
+        DurableInferenceControl::open(&path, /*capacity*/ 32).expect("owner releases its lock");
+    assert_eq!(reopened.get("request.1"), expected.as_ref());
+    drop(inherited);
+    // Closing an old descriptor must not release the new owner's lock.
+    assert!(matches!(
+        DurableInferenceControl::open(&path, /*capacity*/ 32),
+        Err(Error::WriterUnavailable)
+    ));
+    drop(reopened);
+    let final_owner = DurableInferenceControl::open(&path, /*capacity*/ 32).expect("next owner");
+    assert_eq!(final_owner.get("request.1"), expected.as_ref());
+    drop(final_owner);
+    fs::remove_file(path).expect("cleanup");
+}
