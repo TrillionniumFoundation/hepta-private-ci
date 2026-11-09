@@ -1,0 +1,34 @@
+{
+  "schema": "hepta-scoped-v2-final-sensitive-scan-v1",
+  "created_unix_ns": 1794199760683353457,
+  "archives": [
+    {
+      "archive": "actual-scoped-runs.tar.gz",
+      "bytes": 6306956,
+      "sha256": "2b1088d0730deedaea6dfa6b4f3d89ce84d0d7998128fe69ebaea487bfe4ba24",
+      "members": 495,
+      "member_bytes": 9747511,
+      "all_member_sizes_and_hashes_equal": true
+    },
+    {
+      "archive": "maintenance-records.tar.gz",
+      "bytes": 6057750,
+      "sha256": "c83e9437b9fc66a7ece56d61cd058733da0133ef138cc473640341379db9b645",
+      "members": 49,
+      "member_bytes": 6262096,
+      "all_member_sizes_and_hashes_equal": true
+    },
+    {
+      "archive": "local-validation-records.tar.zst",
+      "bytes": 3874652,
+      "sha256": "286109d276827553c32b40c749441353600910de516a02bcb25fe3cc2aaf98c8",
+      "members": 170,
+      "member_bytes": 21932642,
+      "all_member_sizes_and_hashes_equal": true
+    }
+  ],
+  "decompressed_inner_gzip_members": 60,
+  "findings": [],
+  "exclusions": [],
+  "scope": "Bounded credential/private-key byte patterns and normalized named secret JSON fields; original binary database bytes read without opening SQLite; no universal secret absence claim"
+}

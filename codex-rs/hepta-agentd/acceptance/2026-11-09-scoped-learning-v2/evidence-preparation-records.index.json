@@ -1,0 +1,33 @@
+{
+  "schema": "hepta-scoped-v2-evidence-preparation-v1",
+  "candidate": "11728cc4799d2acecc3938f541306bed14a8e563",
+  "records": [
+    {
+      "path": "evidence-child-validation.json",
+      "bytes": 5038,
+      "sha256": "e573b064819233c4e1e27070be58418aa0b8f20c9bde700b5f9946ab47caa34a"
+    },
+    {
+      "path": "evidence-blob-size.log",
+      "bytes": 204,
+      "sha256": "3d4d998cd0a26ab86a907aceeaa16d7367b8b92fc6b604996fdd13786d9bfd70"
+    },
+    {
+      "path": "evidence-codespell.log",
+      "bytes": 254,
+      "sha256": "5f1ba8f21b56d28416cac53e8b53a6db52623ca9176b29f9c3cde4117cff7eb1"
+    },
+    {
+      "path": "evidence-diff-check.log",
+      "bytes": 2698,
+      "sha256": "334669d49cad2d1503a4c71714aacbb2d46078aa6e33164111464af5396e6ee2"
+    }
+  ],
+  "archive_bytes": 1434,
+  "archive_sha256": "30b2766943d86d06d015347e814cc89b6d1b9b3e94584bd88e7aa255ec3b8abb",
+  "classification": "initial evidence packaging checks; no model or native-test run",
+  "resolutions": [
+    "supply the required exact allowlist argument to the blob checker",
+    "store original serialized control response and hosted output using byte-exact deterministic gzip"
+  ]
+}

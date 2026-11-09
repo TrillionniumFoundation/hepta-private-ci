@@ -1,0 +1,24 @@
+{
+  "schema": "hepta-scoped-v2-raw-record-encodings-v1",
+  "records": [
+    {
+      "file": "capture-control-readbacks.json.gz",
+      "encoded_bytes": 5933,
+      "encoded_sha256": "07bc8ce77830e35bef86c53f2e4030a8738a2b8a02f4ea2f4961423685f5eef4",
+      "original_name": "capture-control-readbacks.json",
+      "original_bytes": 20343,
+      "original_sha256": "9b3293161aeb4e785e2a442bb99c4672e5016611cf16975d9ece460443da1b6c",
+      "roundtrip_byte_exact": true
+    },
+    {
+      "file": "codespell-original-hosted.log.gz",
+      "encoded_bytes": 6994,
+      "encoded_sha256": "6515e454c71dfa9b50e60755a7f6b918049cbcd9c5e6d158476050c863faadfd",
+      "original_name": "codespell-original-hosted.log",
+      "original_bytes": 28012,
+      "original_sha256": "fd1ee50176bc34aa4a9b349eb90a86e74cc8c5f554be4aa9a785655b8339d036",
+      "roundtrip_byte_exact": true
+    }
+  ],
+  "reason": "Preserve original serialized commands and hosted whitespace byte-exactly in standard compressed evidence; no additional spelling exception or directory skip"
+}
