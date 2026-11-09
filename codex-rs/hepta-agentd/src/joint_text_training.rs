@@ -9,6 +9,14 @@
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
+#[cfg(target_os = "linux")]
+use codex_hepta_automation::JointTextInputManifestV1;
+#[cfg(target_os = "linux")]
+use codex_hepta_automation::JointTextInputRefV1;
+#[cfg(target_os = "linux")]
+use codex_hepta_automation::JointTextProfileV1;
+#[cfg(target_os = "linux")]
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_learning_artifacts::CellBundleComponentsV1;
 use codex_hepta_learning_artifacts::CellTrainingLineageV1;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
@@ -73,6 +81,11 @@ pub struct PreparedJointTextTrainingRequestV1 {
 }
 
 impl PreparedJointTextTrainingRequestV1 {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn iteration_snapshot(&self) -> &LearningIterationSnapshotV1 {
+        &self.snapshot
+    }
+
     pub fn request_bytes(&self) -> &[u8] {
         &self.request_bytes
     }
@@ -84,6 +97,36 @@ impl PreparedJointTextTrainingRequestV1 {
     }
     pub const fn authority(&self) -> AuthorityPosture {
         AuthorityPosture::DENY_ALL
+    }
+    /// Data custody binding only. The registered owner still supplies current
+    /// source/snapshot and actual permission before contacting a worker.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn input_reference(
+        &self,
+        predecessor: &[u8],
+    ) -> Result<JointTextInputRefV1, JointTextTrainingErrorV1> {
+        if self.wire.encode()? != self.request_bytes
+            || self.wire.binding_digest()? != self.request_digest
+            || predecessor.len() as u64 != self.wire.predecessor_bytes
+            || Sha256Digest::for_bytes(predecessor).as_str() != self.wire.predecessor_sha256
+        {
+            return Err(JointTextTrainingErrorV1::Binding("original custody inputs"));
+        }
+        let digest = |value: &str| {
+            Sha256Digest::parse(value)
+                .map_err(|_| JointTextTrainingErrorV1::Binding("custody digest"))
+        };
+        JointTextInputRefV1::from_manifest(JointTextInputManifestV1 {
+            schema_version: 1,
+            profile: JointTextProfileV1::VerifiedMemoryTextSgdV1,
+            request_sha256: Sha256Digest::for_bytes(&self.request_bytes),
+            request_bytes: self.request_bytes.len() as u64,
+            request_binding_digest: digest(&wire::hex(self.request_digest))?,
+            predecessor_sha256: digest(&self.wire.predecessor_sha256)?,
+            predecessor_bytes: self.wire.predecessor_bytes,
+            worker_execution_source_digest: digest(&self.wire.execution_source_digest)?,
+        })
+        .map_err(|_| JointTextTrainingErrorV1::Binding("bounded custody manifest"))
     }
 }
 

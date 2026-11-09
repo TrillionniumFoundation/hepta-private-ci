@@ -222,6 +222,8 @@ mod authbus_ingress;
 mod authbus_trust;
 mod automation;
 mod automation_effect_host;
+#[cfg(target_os = "linux")]
+mod automation_joint_text_inputs;
 mod automation_recovery;
 mod browser_servo;
 mod client;
@@ -309,6 +311,8 @@ mod intuition_policy;
 mod joint_generation_bundle;
 mod joint_memory_text_replay;
 mod joint_text_training;
+#[cfg(target_os = "linux")]
+mod joint_text_training_owner;
 mod lane_b_runtime;
 mod learning_iteration;
 mod learning_iteration_auth;
@@ -669,6 +673,18 @@ pub use joint_text_training::PreparedJointTextTrainingRequestV1;
 pub use joint_text_training::UnsignedJointTextTrainingCandidateV1;
 pub use joint_text_training::prepare_joint_text_training_request_v1;
 pub use joint_text_training::revalidate_joint_text_training_output_v1;
+#[cfg(target_os = "linux")]
+pub use joint_text_training_owner::JointTextTrainingCompletionV1;
+#[cfg(target_os = "linux")]
+pub use joint_text_training_owner::JointTextTrainingOwnerBootstrapV1;
+#[cfg(target_os = "linux")]
+pub use joint_text_training_owner::JointTextTrainingOwnerErrorV1;
+#[cfg(target_os = "linux")]
+pub use joint_text_training_owner::JointTextTrainingOwnerHandleV1;
+#[cfg(target_os = "linux")]
+pub use joint_text_training_owner::JointTextTrainingOwnerInputsV1;
+#[cfg(target_os = "linux")]
+pub use joint_text_training_owner::joint_text_training_owner_channel_v1;
 pub use lane_b_runtime::AgentRunCoordinator;
 pub use lane_b_runtime::AgentRunError;
 pub use lane_b_runtime::CancellationDisposition;

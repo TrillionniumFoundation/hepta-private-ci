@@ -119,6 +119,8 @@ pub struct AgentdConfig {
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
     learning_iteration_bootstrap: Option<crate::LearningIterationRuntimeBootstrapV1>,
+    #[cfg(target_os = "linux")]
+    joint_text_training_owner_bootstrap: Option<crate::JointTextTrainingOwnerBootstrapV1>,
     terminal_learning_bootstrap: Option<crate::TerminalLearningRuntimeBootstrapV1>,
     neuron_generation_bootstrap: Option<crate::NeuronGenerationRuntimeBootstrapV2>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
@@ -283,6 +285,8 @@ impl AgentdConfig {
             cognitive_retrieval_learning: None,
             plasticity_bootstrap: None,
             learning_iteration_bootstrap: None,
+            #[cfg(target_os = "linux")]
+            joint_text_training_owner_bootstrap: None,
             terminal_learning_bootstrap: None,
             neuron_generation_bootstrap: None,
             intuition_policy_host: None,
@@ -743,6 +747,34 @@ impl AgentdConfig {
         self.learning_iteration_bootstrap.take()
     }
 
+    /// Attach one concrete original-owner Joint input/completion channel.
+    /// The producer retains its returned handle; this does not configure full
+    /// learning ports or remove the production launcher's missing-profile gate.
+    #[cfg(target_os = "linux")]
+    pub fn with_joint_text_training_owner_bootstrap(
+        mut self,
+        bootstrap: crate::JointTextTrainingOwnerBootstrapV1,
+    ) -> Result<Self, AgentdError> {
+        bootstrap.require_identity(&self.identity)?;
+        if self.joint_text_training_owner_bootstrap.is_some()
+            || self.notes_objective.is_some()
+            || self.desktop_objective.is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "Joint training owner requires an unclaimed ordinary in-process profile".into(),
+            ));
+        }
+        self.joint_text_training_owner_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn take_joint_text_training_owner_bootstrap(
+        &mut self,
+    ) -> Option<crate::JointTextTrainingOwnerBootstrapV1> {
+        self.joint_text_training_owner_bootstrap.take()
+    }
+
     /// Attach the narrow native terminal-value learner explicitly. It shares
     /// the existing ledger/Memory owners and runs outside foreground turns.
     pub fn with_terminal_learning_bootstrap(
@@ -899,6 +931,7 @@ impl AgentdConfig {
             || self.cognitive_retrieval_learning.is_some()
             || self.plasticity_bootstrap.is_some()
             || self.learning_iteration_bootstrap.is_some()
+            || self.joint_text_training_owner_bootstrap.is_some()
             || self.terminal_learning_bootstrap.is_some()
             || self.neuron_generation_bootstrap.is_some()
             || self.intuition_policy_host.is_some()

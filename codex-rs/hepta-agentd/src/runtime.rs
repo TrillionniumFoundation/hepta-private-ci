@@ -68,6 +68,8 @@ pub async fn run_with_shutdown(
     let app_server_model_tools = crate::app_runtime::AppServerModelToolProfile::Standard;
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let learning_iteration = config.take_learning_iteration_bootstrap();
+    #[cfg(target_os = "linux")]
+    let joint_text_training_owner = config.take_joint_text_training_owner_bootstrap();
     let terminal_learning = config.take_terminal_learning_bootstrap();
     let neuron_generation = config.take_neuron_generation_bootstrap();
     if learning_iteration.is_some() && plasticity_bootstrap.is_none() {
@@ -115,6 +117,14 @@ pub async fn run_with_shutdown(
     let intelligence_invocation = config.intelligence_invocation_provider();
     let notes_objective = config.notes_objective();
     let desktop_objective = config.desktop_objective();
+    #[cfg(target_os = "linux")]
+    if joint_text_training_owner.is_some()
+        && (notes_objective.is_some() || desktop_objective.is_some())
+    {
+        return Err(AgentdError::Invalid(
+            "Joint training owner cannot extend a finite Objective profile".into(),
+        ));
+    }
     if notes_objective.is_some() && desktop_objective.is_some() {
         return Err(AgentdError::Invalid(
             "multiple finite Objective profiles selected".into(),
@@ -319,6 +329,21 @@ pub async fn run_with_shutdown(
         state.refresh_generation()?;
         state.attach_automation_effect_host(Arc::new(host))?;
     }
+    #[cfg(target_os = "linux")]
+    let joint_text_training_owner = match joint_text_training_owner {
+        Some(owner) => {
+            let host = state.automation_effect_host().ok_or_else(|| {
+                AgentdError::Invalid("Joint owner requires an opened automation effect host".into())
+            })?;
+            // This is the same opened store attached to AgentdState above,
+            // never a second pathname open or a caller-supplied replacement.
+            let store = automation_store.as_ref().cloned().ok_or_else(|| {
+                AgentdError::Invalid("Joint owner requires the original automation store".into())
+            })?;
+            Some((owner, host, store))
+        }
+        None => None,
+    };
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
     let (control, app_server_socket) = match sockets {
@@ -416,6 +441,13 @@ pub async fn run_with_shutdown(
             tasks.spawn_required(
                 "learning-iteration-owner",
                 owner.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
+        #[cfg(target_os = "linux")]
+        if let Some((owner, host, store)) = joint_text_training_owner {
+            tasks.spawn_required(
+                "joint-text-training-owner",
+                owner.run(Arc::clone(&state), host, store, cancellation.clone()),
             )?;
         }
         if let Some(owner) = terminal_learning {
