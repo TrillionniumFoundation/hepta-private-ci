@@ -17,6 +17,7 @@ use codex_hepta_types::StableId;
 
 use crate::CircuitCellErrorV1;
 use crate::circuit_cell_output::circuit_cell_output_schema_v1;
+use crate::circuit_cell_ports::circuit_cell_output_schema_v2;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CircuitCellRouteV1 {
@@ -86,7 +87,8 @@ impl CircuitCellRegistryV1 {
             if max_work < binding.cell.runtime.resource_envelope.p99_latency_micros
                 || definition.parameter_bundle_digest.as_str()
                     != binding.cell.bundle_digest.to_string()
-                || node.output_schema != circuit_cell_output_schema_v1()
+                || (node.output_schema != circuit_cell_output_schema_v1()
+                    && node.output_schema != circuit_cell_output_schema_v2())
                 || binding.routes.len() != binding.cell.candidates.len()
             {
                 return Err(CircuitCellErrorV1::InvalidBinding);

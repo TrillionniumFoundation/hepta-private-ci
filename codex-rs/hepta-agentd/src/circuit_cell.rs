@@ -34,6 +34,8 @@ use crate::CircuitCellRegistryV1;
 use crate::circuit_cell_dispatch::GuardedCellDispatchV1;
 use crate::circuit_cell_output::encode_output;
 use crate::circuit_cell_output::encode_receipt;
+use crate::circuit_cell_ports::circuit_cell_output_schema_v2;
+use crate::circuit_cell_ports::encode_ports;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CircuitCellErrorV1 {
@@ -297,7 +299,14 @@ pub(crate) fn finish(
         }
     }
     let route = &binding.routes[selected];
-    let output = encode_output(&decision)?;
+    let output = if dispatch.output_schema == circuit_cell_output_schema_v2() {
+        if decision.representation.drive_q24.len() != binding.cell.runtime.state_width {
+            return Err(CircuitCellErrorV1::InvalidReceipt);
+        }
+        encode_ports(&decision, binding.cell.state_schema_digest)?
+    } else {
+        encode_output(&decision)?
+    };
     let output_digest = Sha256Digest::for_bytes(&output);
     let mut receipt_bytes = b"hepta.circuit.cell-completion.v1\0".to_vec();
     receipt_bytes.extend_from_slice(dispatch.invocation_digest.as_str().as_bytes());
