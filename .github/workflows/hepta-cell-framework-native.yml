@@ -12,6 +12,7 @@ on:
       - research/cell-rsi-p0p2-20261108-858e
       - engineering/training-result-bridge-858e
       - engineering/cell-integrated-20261108-08b6
+      - engineering/cell-integrated-20261109-08b6
   workflow_dispatch:
 
 permissions:
@@ -84,7 +85,7 @@ jobs:
             -- python -B -m unittest -v ndu_real_runtime.test_state_codec
       - name: Check bounded trainer supervision and result recovery
         run: |
-          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 18 \
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 22 \
             --output "$RUNNER_TEMP/cell-runtime-records/training-job-result-tests.json" \
             -- python -B -m unittest -v ndu_real_runtime.test_subprocess_supervisor \
             ndu_real_runtime.test_training_job_result
@@ -98,6 +99,12 @@ jobs:
           python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 14 \
             --output "$RUNNER_TEMP/cell-runtime-records/pred1-diagnostic-tests.json" \
             -- python -B -m unittest -v hepta_pred1.test_diagnose_training
+      - name: Check fixed-graph memory decision verification controls
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 13 \
+            --output "$RUNNER_TEMP/cell-runtime-records/mdv-control-tests.json" \
+            -- python -B -m unittest -v cell_repo_mdv.test_memory \
+            cell_repo_mdv.test_runner
       - name: Retain final source state
         if: always()
         shell: bash
