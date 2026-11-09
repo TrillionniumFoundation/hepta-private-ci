@@ -15,6 +15,9 @@ pub use notes_startup::RootNotesPolicyPredecessor;
 #[path = "authority_host_session_material.rs"]
 mod material;
 
+#[path = "authority_host_learning_session.rs"]
+mod learning;
+
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional
 /// issuer, clock, checkpoint or consumer owner during bootstrap capture.
@@ -25,6 +28,7 @@ pub struct PreparedHostAuthoritySession {
     service: HostAuthorityService,
     fresh_filesystem: bool,
     root_admin: Option<crate::authority_host_admin::RootAdminRuntime>,
+    learning: Option<crate::authority_host_service::RegisteredHostLearningCheckpointV1>,
 }
 
 impl PreparedHostAuthoritySession {
@@ -75,6 +79,7 @@ impl PreparedHostAuthoritySession {
             service,
             fresh_filesystem: true,
             root_admin: None,
+            learning: None,
         })
     }
 
@@ -99,6 +104,7 @@ impl PreparedHostAuthoritySession {
             service,
             fresh_filesystem: true,
             root_admin: None,
+            learning: None,
         })
     }
 
@@ -119,6 +125,7 @@ impl PreparedHostAuthoritySession {
             service,
             fresh_filesystem: false,
             root_admin: None,
+            learning: None,
         })
     }
 
@@ -210,13 +217,19 @@ impl PreparedHostAuthoritySession {
         self.serve_selected(/*text_ui*/ None, || Ok(()))
     }
 
+    /// Release an already prepared trusted handoff only after all original
+    /// listeners, including any registered learning lane, have been bound.
+    pub fn serve_with_ready(self, ready: impl FnOnce() -> io::Result<()>) -> io::Result<()> {
+        self.serve_selected(/*text_ui*/ None, ready)
+    }
+
     /// Serve this same retained session and the original native text lane.
     /// The original profile, peer, socket and text registration checks apply.
     pub fn serve_with_text(self, text_file: &Path, ui_pidfd: OwnedFd) -> io::Result<()> {
         self.serve_selected(Some((text_file, ui_pidfd)), || Ok(()))
     }
 
-    pub(crate) fn serve_with_text_and_ready(
+    pub fn serve_with_text_and_ready(
         self,
         text_file: &Path,
         ui_pidfd: OwnedFd,
@@ -304,8 +317,14 @@ impl PreparedHostAuthoritySession {
             owner_pidfd,
             service,
             root_admin,
+            learning,
             ..
         } = self;
+        // Bind the dedicated optional lane before either five-lane ready
+        // callback can release the child. Its accept loop runs independently.
+        let learning = learning
+            .map(|owner| learning::BoundLearning::bind(owner, &config))
+            .transpose()?;
         if text_ui.is_some()
             && config.issuer_record_profile
                 != crate::authority_host_config::HostIssuerRecordProfile::TextRecovery
@@ -332,6 +351,9 @@ impl PreparedHostAuthoritySession {
             .chain(config.sockets.device_frontier.iter())
             .chain(config.sockets.notes_frontier.iter())
             .any(|path| path == &text.socket_path)
+                || learning
+                    .as_ref()
+                    .is_some_and(|lane| lane.path() == text.socket_path)
             {
                 return Err(io::Error::other("text UI requires a distinct private lane"));
             }
@@ -347,28 +369,37 @@ impl PreparedHostAuthoritySession {
             };
             let bound = listeners::bind_runtime_lanes(&config, ready)?;
             let serve = || {
-                std::thread::scope(|scope| {
-                    let worker = scope.spawn(|| {
-                        service.serve_text_ui(
-                            &text,
-                            &ui_pidfd,
-                            &owner_pidfd,
-                            std::time::Duration::from_millis(config.timeout_ms),
-                            std::time::Duration::from_millis(config.lifetime_ms),
-                        )
-                    });
-                    let original = listeners::serve_bound_lanes(
-                        &service,
-                        &config,
-                        &registration,
-                        &owner_pidfd,
-                        bound,
-                    );
-                    let ui = worker
-                        .join()
-                        .map_err(|_| io::Error::other("text UI lane panicked"))?;
-                    original.and(ui)
-                })
+                learning::serve_optional(
+                    learning.as_ref(),
+                    &service,
+                    &config,
+                    &registration,
+                    &owner_pidfd,
+                    || {
+                        std::thread::scope(|scope| {
+                            let worker = scope.spawn(|| {
+                                service.serve_text_ui(
+                                    &text,
+                                    &ui_pidfd,
+                                    &owner_pidfd,
+                                    std::time::Duration::from_millis(config.timeout_ms),
+                                    std::time::Duration::from_millis(config.lifetime_ms),
+                                )
+                            });
+                            let original = listeners::serve_bound_lanes(
+                                &service,
+                                &config,
+                                &registration,
+                                &owner_pidfd,
+                                bound,
+                            );
+                            let ui = worker
+                                .join()
+                                .map_err(|_| io::Error::other("text UI lane panicked"))?;
+                            original.and(ui)
+                        })
+                    },
+                )
             };
             match &root_admin {
                 Some(admin) => admin.run(&service, &config, &registration, &owner_pidfd, serve),
@@ -376,17 +407,26 @@ impl PreparedHostAuthoritySession {
             }
         } else {
             let serve = || {
-                listeners::serve_lanes_with_ready(
+                learning::serve_optional(
+                    learning.as_ref(),
                     &service,
                     &config,
                     &registration,
                     &owner_pidfd,
                     || {
-                        ready()?;
-                        if let Some(admin) = &root_admin {
-                            admin.activate()?;
-                        }
-                        Ok(())
+                        listeners::serve_lanes_with_ready(
+                            &service,
+                            &config,
+                            &registration,
+                            &owner_pidfd,
+                            || {
+                                ready()?;
+                                if let Some(admin) = &root_admin {
+                                    admin.activate()?;
+                                }
+                                Ok(())
+                            },
+                        )
                     },
                 )
             };
