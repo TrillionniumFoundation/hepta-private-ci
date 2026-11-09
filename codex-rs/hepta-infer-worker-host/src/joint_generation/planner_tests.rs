@@ -158,3 +158,68 @@ fn changed_inference_profile_cannot_silently_become_an_ndu_solver() -> Result<()
     );
     Ok(())
 }
+
+#[test]
+fn deterministic_risk_parameter_is_retained_without_claiming_a_risk_effect() -> Result<()> {
+    let fixture = support::observed_fixture(support::observed_weights())?;
+    let public = Packet::decode(&fixture.public)?;
+    let law = EmissionLaw {
+        seed: 3,
+        sampler: Sampler::Mean,
+    };
+    let mut reference = None;
+    for risk in [0.0, 0.25, 10.0] {
+        let mut weights = support::observed_weights();
+        weights.meta.insert("ndu.risk".into(), risk.to_string());
+        let model = Model::new(weights)?;
+        let receipt = planner::choose(
+            &model,
+            &model.encode(&public)?,
+            &Prefixes::for_model(&model),
+            &owner(),
+            &public,
+            law,
+        )?;
+        assert_eq!(
+            receipt.risk_evidence,
+            planner::RiskEvidence::InactiveSingleParticle(risk)
+        );
+        let decision = (
+            receipt.action,
+            receipt.scores,
+            receipt.scored,
+            receipt.forecasts,
+        );
+        if let Some(expected) = reference {
+            assert_eq!(decision, expected);
+        } else {
+            reference = Some(decision);
+        }
+        let mut packet = Packet::default();
+        receipt.write_packet(&mut packet);
+        assert_eq!(
+            planner::PlanningReceipt::read(&packet)?,
+            Some(receipt.clone())
+        );
+        packet
+            .meta
+            .insert("planning.risk_semantics".into(), "risk-sensitive".into());
+        assert!(planner::PlanningReceipt::read(&packet).is_err());
+        packet.meta.insert(
+            "planning.risk_semantics".into(),
+            "inactive-single-particle".into(),
+        );
+        packet
+            .meta
+            .insert("planning.support_particles".into(), "4".into());
+        assert!(planner::PlanningReceipt::read(&packet).is_err());
+        for key in ["risk_semantics", "risk_parameter", "support_particles"] {
+            packet.meta.remove(&format!("planning.{key}"));
+        }
+        let legacy = planner::PlanningReceipt::read(&packet)?.ok_or("legacy receipt")?;
+        let mut expected = receipt;
+        expected.risk_evidence = planner::RiskEvidence::LegacyUnrecorded;
+        assert_eq!(legacy, expected);
+    }
+    Ok(())
+}

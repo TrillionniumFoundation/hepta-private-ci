@@ -141,7 +141,7 @@ def finite_differences(generator, reference, public, owner, gradients, base_plan
                 return float(-plan.scores[plan.action]), plan.trace_sha256
             if loss_name == "policy":
                 value = policy_improvement_loss(
-                    generator, state, owner, target_scores, scored
+                    generator, state, owner, target_scores, scored, public=public
                 )
             else:
                 value = generator.text_loss(state, "Hepta🙂")[0]
