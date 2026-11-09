@@ -58,6 +58,10 @@ impl CellBatchQueueV1 {
         })
     }
 
+    /// At most one prepared state transition may wait per Cell scope. A later
+    /// operation must be prepared again after the predecessor commits; two
+    /// prepared snapshots are not a sequence of state updates. Other scopes
+    /// can still share the same bounded numerical batch.
     pub fn enqueue(
         &mut self,
         prepared: PreparedCellStepV1,
@@ -71,10 +75,11 @@ impl CellBatchQueueV1 {
         if self.queue.len() == self.max_queued {
             return Err(CellExecutionError::CapacityExceeded);
         }
-        if self.queue.iter().any(|p| {
-            p.prepared.input.scope == prepared.input.scope
-                && p.prepared.input.operation_id == prepared.input.operation_id
-        }) {
+        if self
+            .queue
+            .iter()
+            .any(|p| p.prepared.input.scope == prepared.input.scope)
+        {
             return Err(CellExecutionError::OperationConflict);
         }
         self.queue.push_back(QueuedCell {
