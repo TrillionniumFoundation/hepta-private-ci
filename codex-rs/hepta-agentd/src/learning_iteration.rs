@@ -8,6 +8,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationError;
 use codex_hepta_learning_artifacts::LearningIterationOwnersV1;
@@ -126,6 +127,7 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     owners: LearningIterationOwnersV1,
     ports: Arc<dyn LearningIterationOwnerPortsV1>,
     verifier: LearningEvidenceVerifierV1,
+    scope: Option<FrozenLearningScopeV2>,
     receiver: mpsc::Receiver<LearningIterationCommandV1>,
     sender: mpsc::Sender<LearningIterationCommandV1>,
     circuit_delivery_request: Option<LearningIterationRequestV1>,
@@ -146,12 +148,67 @@ pub fn learning_iteration_channel_v1(
     ),
     AgentdError,
 > {
+    learning_iteration_channel(
+        agent_id,
+        spawn_generation,
+        owners,
+        ports,
+        verifier,
+        capacity,
+        /*scope*/ None,
+    )
+}
+
+/// Select a frozen Cell/Organ update boundary with its matching registered
+/// checkpoint. Legacy ports cannot enter this profile or silently downgrade it.
+pub fn learning_iteration_channel_scoped_v2(
+    agent_id: AgentId,
+    spawn_generation: u64,
+    owners: LearningIterationOwnersV1,
+    ports: Arc<dyn LearningIterationOwnerPortsV1>,
+    verifier: LearningEvidenceVerifierV1,
+    capacity: usize,
+    scope: FrozenLearningScopeV2,
+) -> Result<
+    (
+        LearningIterationHandleV1,
+        LearningIterationRuntimeBootstrapV1,
+    ),
+    AgentdError,
+> {
+    learning_iteration_channel(
+        agent_id,
+        spawn_generation,
+        owners,
+        ports,
+        verifier,
+        capacity,
+        Some(scope),
+    )
+}
+
+fn learning_iteration_channel(
+    agent_id: AgentId,
+    spawn_generation: u64,
+    owners: LearningIterationOwnersV1,
+    ports: Arc<dyn LearningIterationOwnerPortsV1>,
+    verifier: LearningEvidenceVerifierV1,
+    capacity: usize,
+    scope: Option<FrozenLearningScopeV2>,
+) -> Result<
+    (
+        LearningIterationHandleV1,
+        LearningIterationRuntimeBootstrapV1,
+    ),
+    AgentdError,
+> {
     if spawn_generation == 0
         || !(1..=MAX_LEARNING_QUEUE).contains(&capacity)
         || owners.evidence_trust_digest != verifier.trust_digest()
+        || ports.frozen_scope_binding() != scope.as_ref().map(FrozenLearningScopeV2::binding)
     {
         return Err(AgentdError::Invalid(
-            "learning owner requires generation, pinned trust and bounded queue".into(),
+            "learning owner requires generation, pinned trust, matching checkpoint profile and bounded queue".into(),
         ));
     }
     let (sender, receiver) = mpsc::channel(capacity);
@@ -165,6 +222,7 @@ pub fn learning_iteration_channel_v1(
             owners,
             ports,
             verifier,
+            scope,
             receiver,
             sender,
             circuit_delivery_request: None,
@@ -256,6 +314,7 @@ impl LearningIterationRuntimeBootstrapV1 {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
         LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?;
+        self.require_frozen_scope(&request)?;
         require_ready(state)?;
         let snapshot = self
             .ports
@@ -266,6 +325,9 @@ impl LearningIterationRuntimeBootstrapV1 {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
         let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
+        if let Some(scope) = &self.scope {
+            scope.validate_snapshot(restored.snapshot())?;
+        }
         crate::learning_iteration_auth::authenticate_restored_iteration_v1(
             state,
             self.ports.as_ref(),
@@ -291,6 +353,7 @@ impl LearningIterationRuntimeBootstrapV1 {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
         let initial = LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?;
+        self.require_frozen_scope(&request)?;
         require_ready(state)?;
         let mut coordinator = match self.ports.restore(&request).await? {
             Some(snapshot) => {
@@ -298,6 +361,9 @@ impl LearningIterationRuntimeBootstrapV1 {
                     return Err(LearningIterationRuntimeErrorV1::WrongScope);
                 }
                 let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
+                if let Some(scope) = &self.scope {
+                    scope.validate_snapshot(restored.snapshot())?;
+                }
                 require_ready(state)?;
                 if restored.next_stage().is_some()
                     && clock()? >= request.envelope.expiry_unix_seconds
@@ -368,6 +434,9 @@ impl LearningIterationRuntimeBootstrapV1 {
             };
             self.require_stage_admission(state)?;
             let previous = coordinator.snapshot().head_digest;
+            if let Some(scope) = &self.scope {
+                scope.validate_observation(&receipt.observation)?;
+            }
             coordinator.record(receipt, clock()?)?;
             let committed = self
                 .ports
@@ -378,6 +447,21 @@ impl LearningIterationRuntimeBootstrapV1 {
             }
         }
         Ok(coordinator.snapshot().clone())
+    }
+
+    fn require_frozen_scope(
+        &self,
+        request: &LearningIterationRequestV1,
+    ) -> Result<(), LearningIterationRuntimeErrorV1> {
+        if self.ports.frozen_scope_binding()
+            != self.scope.as_ref().map(FrozenLearningScopeV2::binding)
+        {
+            return Err(LearningIterationRuntimeErrorV1::WrongScope);
+        }
+        if let Some(scope) = &self.scope {
+            scope.validate_request(request, &self.owners)?;
+        }
+        Ok(())
     }
 
     fn require_stage_admission(
