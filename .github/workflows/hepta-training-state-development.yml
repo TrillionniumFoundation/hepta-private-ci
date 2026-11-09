@@ -1,0 +1,112 @@
+name: Hepta training state development checks
+
+on:
+  pull_request:
+    paths:
+      - proposals/localization-v2/**
+      - scripts/hepta_ci_exec.py
+      - .github/workflows/hepta-training-state-development.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-training-state-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  HEPTA_CI_LANE: source-head
+  PYTHONDONTWRITEBYTECODE: "1"
+  OMP_NUM_THREADS: "1"
+  OPENBLAS_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+
+jobs:
+  development:
+    name: CPU training instrumentation regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+
+      - name: Set up pinned Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+
+      - name: Prepare records outside the checkout
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/training-state-development"
+
+      - name: Install the declared CPU import path
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/training-state-development"
+          python -m pip install --disable-pip-version-check "torch==2.8.0+cpu" \
+            --index-url https://download.pytorch.org/whl/cpu > "$records/torch-install.log" 2>&1
+          python -m pip install --disable-pip-version-check "numpy==2.3.5" \
+            > "$records/numpy-install.log" 2>&1
+          # dependencies.json explicitly permits this selected CPU import path.
+          # Optional distribution dependencies and GPU execution are not qualified.
+          python -m pip install --disable-pip-version-check --no-deps \
+            "spikingjelly==0.0.0.0.14" > "$records/spikingjelly-install.log" 2>&1
+          python -m pip freeze --all > "$records/pip-freeze.txt"
+          python - <<'PY' > "$records/runtime.json"
+          import hashlib
+          import importlib.metadata
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import numpy
+          import torch
+          from spikingjelly.activation_based import functional, neuron, surrogate
+
+          assert platform.python_version() == "3.12.14"
+          assert torch.__version__ == "2.8.0+cpu" and torch.version.cuda is None
+          assert numpy.__version__ == "2.3.5"
+          assert importlib.metadata.version("spikingjelly") == "0.0.0.0.14"
+          print(json.dumps({
+              "source_sha": os.environ["SOURCE_SHA"],
+              "python": platform.python_version(),
+              "torch": torch.__version__, "torch_git": torch.version.git_version,
+              "numpy": numpy.__version__,
+              "spikingjelly": importlib.metadata.version("spikingjelly"),
+              "loaded_source_sha256": {
+                  module.__name__: hashlib.sha256(Path(module.__file__).read_bytes()).hexdigest()
+                  for module in (functional, neuron, surrogate)
+              },
+              "scope": "selected CPU development regressions",
+              "full_distribution_environment_qualified": False,
+              "scientific_efficacy_qualified": False,
+              "production_adoption_qualified": False,
+          }, indent=2))
+          PY
+
+      - name: Verify real gradients, spikes and unchanged optimizer updates
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 5 \
+            --output "$RUNNER_TEMP/training-state-development/gradient-diagnostics.json" \
+            -- python -m unittest discover -s proposals/localization-v2 \
+            -p test_training_diagnostics.py -v
+
+      - name: Retain original logs on every outcome
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: training-state-development-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/training-state-development/
+          if-no-files-found: error
+          retention-days: 30
