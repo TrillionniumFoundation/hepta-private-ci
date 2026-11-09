@@ -22,6 +22,12 @@ from PIL import Image
 from ndu_real_materials.common import read_bound, strict_json
 from ndu_real_materials.isolate import run_actor
 from .controllers import ACTIONS, ControlPlan
+from .content_identity import (
+    SELECTION_SCHEMA,
+    check_selection,
+    content_identity_report,
+    verify_evaluation,
+)
 from .metering import Meter, atomic_json, canonical_sha, file_sha
 from .interval_costs import actor_receipts, close_observer_tail, reconcile
 from .objective import utility_profile
@@ -233,6 +239,7 @@ class EpisodeHost:
                 or value.get("utility_profile_sha256") != self.utility_profile_sha256
                 or value.get("control_profile_sha256") != self.control_profile_sha256
                 or value.get("memory_mode") != self.control.memory_mode
+                or value.get("content_identity_profile") not in (None, SELECTION_SCHEMA)
             ):
                 raise ValueError("Invalid actor readiness or actual model pin")
             self.ready = True
@@ -300,6 +307,11 @@ class EpisodeHost:
         if set(arguments) != expected:
             raise ValueError("Action contains unexpected arguments")
         with self.meter.stage("codec", "execute real " + name):
+            check_selection(
+                value,
+                required=self.ready_receipt.get("content_identity_profile")
+                == SELECTION_SCHEMA,
+            )
             if name in {"PREPARE_ROI", "RENDER_IMAGE"}:
                 box = arguments["bbox"]
                 width, height = self.source_size
@@ -417,6 +429,7 @@ class EpisodeHost:
                     max_output_bytes=4 * 1024 * 1024,
                     host_callback=self.callback,
                 )
+                self.launch = launch
                 if (
                     launch["exit_code"] != 0
                     or not launch["enforced_before_actor_exec"]
@@ -505,6 +518,9 @@ class EpisodeHost:
                     gross_score=scores[-1]["quality"],
                     score_components=scores[-1],
                     evaluation_meter=score_cost,
+                    content_identity_sha256=file_sha(
+                        self.output / "content-identity.json"
+                    ),
                     net_latency_utility=scores[-1]["quality"]
                     - self.config["latency_weight"] * measured["wall_seconds"],
                 )
@@ -579,11 +595,29 @@ class EpisodeHost:
                 write_bytes_once(directory / "evaluation.stdout", run.stdout)
                 write_bytes_once(directory / "evaluation.stderr", run.stderr)
                 score = strict_json(output.read_bytes())
-                if score["evaluator_source_sha256"] != self.config["evaluator_sha256"]:
-                    raise ValueError(
-                        "External scorer source differs from the predeclared pin"
-                    )
+                verify_evaluation(
+                    score,
+                    (directory / "delivery.json").read_bytes(),
+                    case_id=self.case["id"],
+                    evaluator_sha256=self.config["evaluator_sha256"],
+                    rubric_sha256=self.config["rubric_sha256"],
+                )
                 scores.append(score)
+            if getattr(self, "launch", None) is not None:
+                with meter.stage(
+                    "codec", "bind content identity to actual scorer input"
+                ):
+                    atomic_json(
+                        self.output / "content-identity.json",
+                        content_identity_report(
+                            self.steps,
+                            self.snapshots,
+                            scores,
+                            self.launch,
+                            evaluator_sha256=self.config["evaluator_sha256"],
+                            rubric_sha256=self.config["rubric_sha256"],
+                        ),
+                    )
             meter_status = "SUCCEEDED"
         finally:
             self.evaluation_meter = meter.finish(meter_status)

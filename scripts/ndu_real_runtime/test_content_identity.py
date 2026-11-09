@@ -1,0 +1,246 @@
+"""Content identity across the real host, persisted snapshot and scorer."""
+
+import copy
+import hashlib
+import io
+import json
+from pathlib import Path
+import tempfile
+import time
+from types import SimpleNamespace
+import unittest
+
+from PIL import Image
+
+from ndu_real_materials.evaluator import score_delivery
+from .content_identity import (
+    SELECTION_SCHEMA,
+    check_selection,
+    content_identity_report,
+    selection_receipt,
+    verify_content_identity,
+)
+from .controllers import ACTIONS
+from .episode import EpisodeHost
+from .metering import Meter, canonical_sha
+
+
+class ContentIdentityTests(unittest.TestCase):
+    def observation(self, selected=0):
+        candidates = [
+            {"text": "wrong candidate", "bbox": [0, 0, 5, 5], "origin": "pixel_ocr"},
+            {
+                "text": "Café 正确",
+                "bbox": [1, 1, 6, 6],
+                "origin": "registered_public_text",
+            },
+        ]
+        action = {
+            "schema": "ndu.real.actor-action.v1",
+            "action": "WRITE_TEXT",
+            "arguments": {"text": candidates[selected]["text"]},
+        }
+        return {
+            "schema": "ndu.real.actor-observation.v1",
+            "case_id": "case",
+            "step": 0,
+            "weights_sha256": "a" * 64,
+            "utility_profile_sha256": "b" * 64,
+            "control_profile_sha256": "c" * 64,
+            "memory_mode": "reset",
+            "parameters_unchanged": True,
+            "remaining_seconds": 10.0,
+            "legal_actions": [
+                a for a in ACTIONS if a not in {"READ_ROI", "RENDER_IMAGE"}
+            ],
+            "candidate_features": [[0], [1]],
+            "candidate_metadata": candidates,
+            "action": action,
+            "content_selection": selection_receipt(candidates, selected, action),
+        }
+
+    def evidence(self, observation):
+        wire = json.dumps(observation, ensure_ascii=False).encode()
+        raw = json.dumps(
+            {
+                "schema": "ndu.real.delivery.v1",
+                "case_id": "case",
+                "text": observation["action"]["arguments"]["text"],
+                "image": None,
+            }
+        ).encode()
+        evaluation = {
+            "schema": "ndu.real.independent-evaluation.v1",
+            "case_id": "case",
+            "evaluator_source_sha256": "d" * 64,
+            "rubric_sha256": "e" * 64,
+            "delivery_sha256": hashlib.sha256(raw).hexdigest(),
+        }
+        kwargs = {
+            "expected_evaluator_sha256": "d" * 64,
+            "expected_rubric_sha256": "e" * 64,
+            "actor_payload_raw": wire,
+            "expected_payload_sha256": hashlib.sha256(wire).hexdigest(),
+        }
+        return raw, evaluation, kwargs
+
+    def test_real_host_delivery_and_scoring_keep_execution_separate_from_correctness(
+        self,
+    ):
+        for selected in (0, 1):
+            with (
+                self.subTest(selected=selected),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                host = EpisodeHost.__new__(EpisodeHost)
+                host.output, host.case = Path(directory), {"id": "case"}
+                host.profile = {"model_sha256": "a" * 64}
+                host.utility_profile_sha256, host.control_profile_sha256 = (
+                    "b" * 64,
+                    "c" * 64,
+                )
+                host.control = SimpleNamespace(memory_mode="reset")
+                host.training, host.ready, host.stopped = True, True, False
+                host.ready_receipt = {"content_identity_profile": SELECTION_SCHEMA}
+                host.prepared, host.steps, host.snapshots = None, [], []
+                host.packet = {
+                    "requirements": {"image": False},
+                    "initial_delivery": {"text": None, "image": None},
+                }
+                host.delivery = {
+                    "schema": "ndu.real.delivery.v1",
+                    "case_id": "case",
+                    "text": None,
+                    "image": None,
+                }
+                host.last_public, host.last_send = (
+                    {"remaining_seconds": 10.0},
+                    time.perf_counter(),
+                )
+                host.public_step = lambda: b"{}\n"
+                host.meter = Meter("content-identity-test")
+                host.snapshot()
+                observation = self.observation(selected)
+                wire = json.dumps(observation, ensure_ascii=False).encode()
+                host.callback(wire)
+                raw = (host.snapshots[-1] / "delivery.json").read_bytes()
+                image = io.BytesIO()
+                Image.new("RGB", (8, 8)).save(image, format="PNG")
+                reference = {
+                    "case_id": "case",
+                    "field": "company",
+                    "expected_text": "Café 正确",
+                    "initial_commitment": {"text": None, "image": None},
+                    "weights": {"text": 1.0, "image": 0.0},
+                }
+                score = score_delivery(reference, json.loads(raw), image.getvalue())
+                _, evaluation, _ = self.evidence(observation)
+                evaluation.update(
+                    score, delivery_sha256=hashlib.sha256(raw).hexdigest()
+                )
+                ready = json.dumps(
+                    {
+                        "schema": "ndu.real.actor-ready.v1",
+                        "content_identity_profile": SELECTION_SCHEMA,
+                    }
+                ).encode()
+                launch = {
+                    "stdout": (ready + b"\n" + wire + b"\n").decode(),
+                    "host_exchanges": [
+                        {"event_sha256": hashlib.sha256(x).hexdigest()}
+                        for x in (ready, wire)
+                    ],
+                }
+                report = content_identity_report(
+                    host.steps,
+                    host.snapshots,
+                    [evaluation],
+                    launch,
+                    evaluator_sha256="d" * 64,
+                    rubric_sha256="e" * 64,
+                )
+                receipt = report["receipts"][0]
+                self.assertEqual(
+                    (
+                        receipt["status"],
+                        receipt["selected_used"],
+                        receipt["effect_occurred"],
+                        score["quality"],
+                    ),
+                    ("complete", True, None, float(selected)),
+                )
+                self.assertEqual(
+                    receipt["selected_candidate_sha256"],
+                    canonical_sha(observation["candidate_metadata"][selected]),
+                )
+                self.assertNotIn("Café", json.dumps(report, ensure_ascii=False))
+                host.meter.finish()
+
+    def test_changed_candidate_payload_delivery_and_scorer_bindings_are_rejected(self):
+        for stage in (
+            "candidate",
+            "selection",
+            "action",
+            "wire",
+            "delivery",
+            "score",
+            "case",
+            "rubric",
+        ):
+            with self.subTest(stage=stage):
+                observation = self.observation()
+                raw, evaluation, kwargs = self.evidence(observation)
+                if stage == "candidate":
+                    observation["candidate_metadata"].reverse()
+                elif stage == "selection":
+                    observation["content_selection"]["selected_index"] = 1
+                elif stage == "action":
+                    observation["action"]["arguments"]["text"] = "replacement"
+                elif stage == "wire":
+                    kwargs["actor_payload_raw"] += b" "
+                elif stage == "delivery":
+                    value = json.loads(raw)
+                    value["text"] = "replacement"
+                    raw = json.dumps(value).encode()
+                elif stage == "score":
+                    evaluation["delivery_sha256"] = "f" * 64
+                elif stage == "case":
+                    evaluation["case_id"] = "different"
+                else:
+                    evaluation["rubric_sha256"] = "f" * 64
+                with self.assertRaises(ValueError):
+                    verify_content_identity(observation, raw, evaluation, **kwargs)
+
+    def test_missing_legacy_selection_wire_or_evaluation_remains_unknown(self):
+        original = self.observation()
+        for absent, status in (
+            ("selection", "legacy_selection_missing"),
+            ("wire", "actor_payload_missing"),
+            ("evaluation", "unscored_delivery"),
+        ):
+            with self.subTest(absent=absent):
+                observation = copy.deepcopy(original)
+                if absent == "selection":
+                    observation.pop("content_selection")
+                    with self.assertRaises(ValueError):
+                        check_selection(observation, required=True)
+                raw, evaluation, kwargs = self.evidence(observation)
+                if absent == "wire":
+                    kwargs["actor_payload_raw"] = None
+                elif absent == "evaluation":
+                    evaluation = None
+                receipt = verify_content_identity(
+                    observation, raw, evaluation, **kwargs
+                )
+                self.assertEqual(
+                    (
+                        receipt["status"],
+                        receipt["selected_used"],
+                        receipt["effect_occurred"],
+                    ),
+                    (status, None, None),
+                )
+
+
+if __name__ == "__main__":
+    unittest.main()
