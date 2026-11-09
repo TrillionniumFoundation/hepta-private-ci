@@ -44,6 +44,7 @@ pub(crate) struct RecoveryContext {
     pub(crate) intent_digest: [u8; 32],
     pub(crate) request: CellGenerationRequestV2,
     pub(crate) receipt: CellGenerationReceiptV2,
+    pub(crate) original_use_record_sha256: [u8; 32],
     pub(crate) initial_record_sha256: [u8; 32],
     pub(crate) checkpoint_sha256: [u8; 32],
     pub(crate) external_proposal: bool,
@@ -168,6 +169,15 @@ fn fresh_native_owner_process_recovery_child() -> anyhow::Result<()> {
     let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
     anyhow::ensure!(now < context.deadline_unix_seconds, "original research window expired");
     let before = retained_owner_files(&context)?;
+    let original_use_raw = read_bounded(&context.evidence.join("next-use-owner.json"), 65_536)?;
+    anyhow::ensure!(Digest32::of_bytes(&original_use_raw) == Digest32::from_array(context.original_use_record_sha256), "original next-use evidence changed");
+    let original_use: serde_json::Value = serde_json::from_slice(&original_use_raw)?;
+    anyhow::ensure!(
+        original_use["original_generation_request"] == serde_json::to_value(&context.request)?
+            && original_use["receipt"] == serde_json::to_value(&context.receipt)?
+            && original_use["native_nonce_count"] == 1,
+        "context differs from original executed and acknowledged next use"
+    );
     let initial_raw = read_bounded(&context.evidence.join("native-checkpoint-0-owner.json"), 65_536)?;
     anyhow::ensure!(Digest32::of_bytes(&initial_raw) == Digest32::from_array(context.initial_record_sha256), "initial owner record changed");
     let initial_record: LearningIterationCheckpointRecordV1 = serde_json::from_slice(&initial_raw)?;

@@ -1133,7 +1133,14 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         .request
         .clone()
         .ok_or_else(|| anyhow::anyhow!("original next request missing"))?;
-    let recovery_receipt = running.runtime.handle.step(recovery_request.clone()).await?;
+    let original_use_raw = fs::read(driver.evidence.join("next-use-owner.json"))?;
+    let original_use: Value = serde_json::from_slice(&original_use_raw)?;
+    anyhow::ensure!(
+        original_use["original_generation_request"] == serde_json::to_value(&recovery_request)?
+            && original_use["native_nonce_count"] == 1,
+        "original next-use evidence differs"
+    );
+    let recovery_receipt = serde_json::from_value(original_use["receipt"].clone())?;
     let recovery_context = crate::learning_iteration_checkpoint::os_process_recovery::RecoveryContext {
         parent_pid: std::process::id(),
         deadline_unix_seconds: driver.deadline,
@@ -1146,6 +1153,7 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         intent_digest: running.runtime.publication.intent_digest().into_array(),
         request: recovery_request,
         receipt: recovery_receipt,
+        original_use_record_sha256: d(&original_use_raw).into_array(),
         initial_record_sha256: d(&fs::read(driver.evidence.join("native-checkpoint-0-owner.json"))?).into_array(),
         checkpoint_sha256: d(&checkpoint_before).into_array(),
         external_proposal: flow == ResearchFlow::ExternalTrainedArtifact,
