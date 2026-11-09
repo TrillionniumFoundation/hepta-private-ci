@@ -49,6 +49,44 @@ impl ProviderEffectAdapter for ProbeProvider {
     }
 }
 
+/// A completed status lookup for the runtime-view tests. The original probe's
+/// NotFound behavior remains unchanged for the existing recovery tests.
+struct LookupProbeProvider(ProbeProvider);
+
+impl ProviderEffectAdapter for LookupProbeProvider {
+    fn capability(&self) -> ProviderEffectIdempotencyCapability {
+        self.0.capability()
+    }
+
+    fn dispatch<'a>(
+        &'a self,
+        intent: &'a ProviderEffectIntent,
+    ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
+        self.0.dispatch(intent)
+    }
+
+    fn lookup<'a>(
+        &'a self,
+        key: &'a ProviderEffectKey,
+    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        self.0.lookup(key)
+    }
+
+    fn lookup_for_intent<'a>(
+        &'a self,
+        intent: &'a ProviderEffectIntent,
+    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        Box::pin(async move {
+            ProviderEffectLookup::Ack(ProviderEffectAck::new(
+                intent.key.clone(),
+                intent.payload_sha256.clone(),
+                Sha256Digest::for_bytes(b"provider-operation"),
+                ProviderEffectAckStatus::Completed,
+            ))
+        })
+    }
+}
+
 #[derive(Clone, Copy)]
 enum ObservationCase {
     Satisfied,
@@ -56,6 +94,9 @@ enum ObservationCase {
     OldAttempt,
     WrongContract,
     WrongPayload,
+    WrongObserver,
+    WrongProviderReceipt,
+    Timeout,
     Partial,
     Waiting,
 }
@@ -109,12 +150,76 @@ impl ActionSkillObserver for ProbeObserver {
                 observed.binding.provider_intent.payload_sha256 =
                     Sha256Digest::for_bytes(b"other-payload")
             }
+            ObservationCase::WrongObserver => observed.observer_id = "another-observer".to_string(),
+            ObservationCase::WrongProviderReceipt => {
+                observed.provider_receipt_digest = Sha256Digest::for_bytes(b"another-receipt")
+            }
+            ObservationCase::Timeout => std::future::pending::<()>().await,
             ObservationCase::Partial => observed.goal = ActionGoalStateV1::Partial,
             ObservationCase::Waiting => {
                 observed.execution = ActionExecutionStateV1::WaitingForInput
             }
         }
         Ok(observed)
+    }
+}
+
+#[tokio::test]
+async fn act2_runtime_view_rejects_unavailable_or_mismatched_observer_evidence() {
+    for case in [
+        ObservationCase::Satisfied,
+        ObservationCase::Error,
+        ObservationCase::OldAttempt,
+        ObservationCase::WrongContract,
+        ObservationCase::WrongPayload,
+        ObservationCase::WrongObserver,
+        ObservationCase::WrongProviderReceipt,
+        ObservationCase::Timeout,
+    ] {
+        let mut contract = contract();
+        if matches!(case, ObservationCase::Timeout) {
+            contract.budget.observer_timeout_ms = 1;
+        }
+        let wire = contract
+            .encode_invocation(b"create".to_vec())
+            .expect("wire");
+        let intent = effect(&wire);
+        let pending = AuthorizedEffectPending {
+            run_id: intent.run_id.clone(),
+            step_id: intent.step_id.clone(),
+            attempt: intent.attempt,
+            intent_digest: intent.digest().expect("intent"),
+            payload_digest: intent.payload_digest.clone(),
+            binding_digest: Sha256Digest::for_bytes(b"binding"),
+            destination_id: intent.destination_id.clone(),
+            authority_epoch: 1,
+            grant_id: "grant".to_string(),
+            started_at_ms: 1,
+        };
+        let calls = Arc::new(AtomicUsize::new(0));
+        let driver = GoalCheckedActionSkillDriver::new(
+            contract,
+            LookupProbeProvider(ProbeProvider {
+                calls: Arc::clone(&calls),
+                status: ProviderEffectAckStatus::Completed,
+            }),
+            ProbeObserver(case),
+        )
+        .expect("driver");
+        let result = driver.observe_pending_state(&pending, &wire).await;
+        if matches!(case, ObservationCase::Satisfied) {
+            let view = result.expect("bound completed provider and satisfied goal");
+            assert_eq!(view.provider_outcome, AuthorizedEffectOutcome::Succeeded);
+            assert_eq!(
+                view.state,
+                ActionRuntimeStateV1::Terminal {
+                    outcome: ActionTerminalOutcomeV1::Succeeded,
+                }
+            );
+        } else {
+            assert_eq!(result, Err(ActionSkillError::Observation));
+        }
+        assert_eq!(calls.load(Ordering::SeqCst), 0);
     }
 }
 
