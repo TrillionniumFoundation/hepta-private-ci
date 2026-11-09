@@ -89,6 +89,12 @@ pub trait LearningIterationStageOwnerPortsV1: Send + Sync {
 /// ambiguous commit returns CommitUncertain. These are mandatory host duties,
 /// not guarantees provided by an in-memory implementation.
 pub trait LearningIterationOwnerPortsV1: Send + Sync {
+    /// Frozen scope held by the original protected checkpoint owner. None is
+    /// the legacy profile; a stage provider cannot supply this custody binding.
+    fn frozen_scope_binding(&self) -> Option<Digest32> {
+        None
+    }
+
     fn restore<'a>(
         &'a self,
         request: &'a LearningIterationRequestV1,
