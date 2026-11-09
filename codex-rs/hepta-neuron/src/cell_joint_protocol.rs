@@ -6,7 +6,7 @@ use serde::Serialize;
 
 use crate::CellGenerationErrorV2;
 
-pub(crate) const MAX_WEIGHTS_BYTES: usize = 8 * 1024 * 1024;
+pub(crate) const MAX_WEIGHTS_BYTES: usize = crate::cell_joint_weights::MAX_JOINT_WEIGHTS_BYTES;
 pub(crate) const MAX_PUBLIC_BYTES: usize = 1024 * 1024;
 pub(crate) const MAX_RESULT_BYTES: usize = 8 + 32 + 1 + 32 + 8 + 2 * 65_536 + 64;
 

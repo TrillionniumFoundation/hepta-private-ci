@@ -37,6 +37,7 @@ mod cell_joint_observed;
 mod cell_joint_process;
 #[cfg(target_os = "linux")]
 mod cell_joint_protocol;
+mod cell_joint_weights;
 mod cell_journal;
 mod cell_journal_codec;
 mod cell_owner;
@@ -130,6 +131,8 @@ pub use cell_joint_protocol::JointGenerationInputV1;
 pub use cell_joint_protocol::JointGenerationModalityV1;
 #[cfg(target_os = "linux")]
 pub use cell_joint_protocol::JointGenerationSamplerV1;
+pub use cell_joint_weights::JointGenerationWeightInspectionV1;
+pub use cell_joint_weights::inspect_joint_v4_generation_weights_v1;
 pub use cell_journal::CellJournalPartitionV1;
 pub use cell_journal::CellOwnerJournalV1;
 pub use cell_owner::CellPartitionOwnerV1;
