@@ -24,7 +24,8 @@ class FiniteV4Tests(unittest.TestCase):
             self.assertEqual(
                 (first.action, first.trace_sha256), (second.action, second.trace_sha256)
             )
-            self.assertTrue(all(first.scored))
+            # The fixture has no observed media: verify is not a legal root.
+            self.assertEqual(first.scored, (True, True, True, True, True, False, True))
             self.assertLessEqual(first.forecasts, 32)
             self.assertTrue(first.exhausted)
             with self.assertRaisesRegex(ValueError, "No affordable"):
@@ -40,8 +41,18 @@ class FiniteV4Tests(unittest.TestCase):
                 replace(self.owner, budget_remaining=1000),
                 self.public,
             )
-            self.assertEqual(bounded.forecasts, 7)
-            self.assertTrue(all(bounded.scored))
+            self.assertEqual(bounded.forecasts, 6)
+            self.assertEqual(bounded.scored, first.scored)
+            observed = {key: value.clone() for key, value in self.public.items()}
+            observed["image_mask"].fill_(1.0)
+            with_evidence = choose(
+                self.generator,
+                live_state(self.generator, observed),
+                replace(self.owner, budget_remaining=1000),
+                observed,
+            )
+            self.assertEqual(with_evidence.forecasts, 7)
+            self.assertTrue(all(with_evidence.scored))
 
     def test_stop_flushes_required_and_started_optional(self):
         with torch.no_grad():
