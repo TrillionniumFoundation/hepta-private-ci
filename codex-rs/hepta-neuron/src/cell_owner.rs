@@ -206,6 +206,8 @@ impl CellPartitionOwnerV1 {
             || pending.model_request.input_digest != proposal.receipt.operation_digest
             || pending.model_request.input_digest != proposal.tick.input_digest
             || pending.deadline_micros != proposal.deadline_micros
+            || proposal.receipt.representation.drive_q24 != proposal.tick.drive_q24
+            || proposal.receipt.representation.prediction_q24 != proposal.tick.prediction_q24
         {
             return Err(CellExecutionError::OperationConflict);
         }
