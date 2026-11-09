@@ -1,7 +1,7 @@
-"""Replay eleven original Windows cases, with exact discovery and fresh receipts.
+"""Observe one original image-edit failure and existing typed-error unit on Windows.
 
-This separate Cargo lane does not replace the original Bazel target or qualify
-legacy isolation, power-loss durability, full workspace CI, or scientific stages.
+Owning strict checks must finish without source drift before either selected case.
+This diagnostic lane does not repair or qualify the underlying sandbox launch.
 """
 
 import argparse
@@ -391,6 +391,56 @@ def check_sources(output, name, root, observer, baseline):
         raise ValueError("source/observer drift: later scopes remain not_run")
 
 
+def strict_owner(group, output, root, observer, baseline):
+    result = {"package": group["package"], "passed": False, "steps": []}
+    commands = [
+        (
+            "canonical-just-fix",
+            [
+                "just",
+                "fix",
+                "--locked",
+                "--profile",
+                "dev-small",
+                "-p",
+                group["package"],
+                "--",
+                "-D",
+                "warnings",
+            ],
+        ),
+        (
+            "readonly-strict-clippy",
+            [
+                "cargo",
+                "clippy",
+                "--tests",
+                "--locked",
+                "--profile",
+                "dev-small",
+                "-p",
+                group["package"],
+                "--",
+                "-D",
+                "warnings",
+            ],
+        ),
+    ]
+    try:
+        for name, command in commands:
+            row = capture(output, name, command, root / "codex-rs")
+            result["steps"].append(row)
+            check_sources(output, name + "-after", root, observer, baseline)
+            if row["exitCode"] != 0:
+                raise ValueError(
+                    "owning strict check failed; native case remains not_run"
+                )
+        result["passed"] = True
+    finally:
+        write_json(output / "strict-preparation.json", result)
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-root", type=Path, required=True)
@@ -412,9 +462,11 @@ def main():
         raise ValueError("records and target must be outside both read-only checkouts")
     output.mkdir(parents=True, exist_ok=False)
     target.mkdir(parents=True, exist_ok=True)
-    scope_path = observer / ".github/fixtures/windows-fixture-followup-scope.json"
+    scope_path = observer / ".github/fixtures/windows-image-edit-diagnostic-scope.json"
     scope = json.loads(scope_path.read_text(encoding="utf-8"))
     groups = select_groups(scope, args.group_id)
+    if args.group_id is None or len(groups) != 1:
+        raise ValueError("the diagnostic owner job requires exactly one closed group")
     selected_total = sum(group["expected"] for group in groups)
     receipt = {
         "status": "failed_or_incomplete",
@@ -452,13 +504,13 @@ def main():
         "legacyIsolationQualified": False,
         "durabilityQualified": False,
         "originalBazelRunnerReplayed": False,
-        "executionTopology": "original_single_job_five_groups"
-        if args.group_id is None
-        else "additional_owner_group_job",
+        "executionTopology": "independent_diagnostic_owner_job_with_strict_preparation",
         "selectedGroupId": args.group_id,
         "selectedExpectedTotal": selected_total,
-        "originalExpectedTotal": scope["expectedTotal"],
-        "originalSingleJobReplayed": args.group_id is None,
+        "diagnosticExpectedTotalAcrossJobs": scope["expectedTotal"],
+        "originalFailureSourceSha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+        "underlyingSandboxLaunchRepaired": False,
+        "originalSingleJobReplayed": False,
         "originalSingleJobResultSuperseded": False,
         "scope": scope,
         "groups": [
@@ -507,6 +559,8 @@ def main():
                     "codex-rs/Cargo.toml",
                     "codex-rs/Cargo.lock",
                     "codex-rs/windows-sandbox-rs/Cargo.toml",
+                    "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+                    "codex-rs/app-server/tests/suite/v2/imagegen_extension.rs",
                 ],
             ),
             (
@@ -517,9 +571,10 @@ def main():
                     ".github/scripts/windows_native_probe.py",
                     ".github/scripts/windows_current_ci.py",
                     ".github/fixtures/windows-fixture-followup-scope.json",
+                    ".github/fixtures/windows-image-edit-diagnostic-scope.json",
                     ".github/scripts/test_windows_fixture_followup.py",
-                    ".github/scripts/windows_fixture_owner_aggregate.py",
-                    ".github/workflows/hepta-windows-fixture-owner-groups.yml",
+                    ".github/scripts/test_windows_image_edit_diagnostic.py",
+                    ".github/workflows/hepta-windows-image-edit-diagnostic.yml",
                 ],
             ),
         ):
@@ -595,6 +650,9 @@ def main():
         from hepta_ci_junit import NoDoctypeTreeBuilder
 
         check_sources(output, "after-preparation", root, observer, before)
+        receipt["strictPreparation"] = strict_owner(
+            groups[0], output, root, observer, before
+        )
         for index, group in enumerate(groups):
             check_sources(output, group["id"] + "-before", root, observer, before)
             receipt["groups"][index] = run_group(

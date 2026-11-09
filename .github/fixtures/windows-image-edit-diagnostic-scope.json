@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.windows.image-edit-diagnostic-scope.v1",
+  "expectedTotal": 2,
+  "originalRunner": "Cargo Nextest 0.9.103, dev-small, local, one test thread",
+  "thisRunner": "Same original native flags and budget, additional strict owning checks",
+  "groups": [
+    {
+      "id": "appserver-image-edit",
+      "package": "codex-app-server",
+      "binaryId": "codex-app-server::all",
+      "crate": "app-server",
+      "target": ["--test", "all"],
+      "features": [],
+      "required": [
+        "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image"
+      ],
+      "prefixes": {},
+      "expected": 1,
+      "interpretation": "Actual ImageGeneration and all original assertions remain mandatory. A terminal turn without that item must fail. Exact launch error/context is diagnostic evidence, not a repair claim."
+    },
+    {
+      "id": "windows-runner-typed-error",
+      "package": "codex-windows-sandbox",
+      "binaryId": "codex-windows-sandbox",
+      "crate": "windows-sandbox-rs",
+      "target": ["--lib"],
+      "features": [],
+      "required": [
+        "elevated::runner_client::tests::refreshable_sandbox_creds_error_recognizes_credential_and_child_start_failures"
+      ],
+      "prefixes": {},
+      "expected": 1,
+      "interpretation": "Existing context-wrapped typed-error classification unit; does not exercise real launch or establish Windows filesystem isolation."
+    }
+  ],
+  "explicitSkipMarkers": [
+    "skipping cloud-managed sandbox subprocess:",
+    "Skipping test in a remote test environment:",
+    "Skipping test because it cannot execute when network is disabled in a Codex sandbox."
+  ]
+}
