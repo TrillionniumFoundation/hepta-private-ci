@@ -49,7 +49,7 @@ Notes 当前采用原子操作 profile；它只能报告有证据支持的 **ter
 1. 原 operation 的既有 durable receipt，且 receipt 与 target、原 operation identity 和操作内容绑定一致。
 2. 独立于写入返回值的本次 nonce 关联文档读取，取得当前 revision 与 text 摘要。
 3. receipt 所绑定的结果与这次读取的 revision / text 按既有精确契约一致。
-4. 当前原操作的取消、tombstone 与其他拒绝条件仍允许发布这一观察结论。
+4. 原 owner 的保留状态不得与 receipt 矛盾。较早的非终局快照可以与后续合法 receipt 并存；Rejected / RolledBack 与 Applied 的组合不能发布成功。
 
 原 receipt 证明原操作的历史结果，fresh readback 说明当前读取时的文档状态。
 两者均需要：旧 receipt 不能证明文档现在仍保持原状；当前 text 匹配也不能独自证明原操作提交过。
@@ -58,6 +58,11 @@ Notes 当前采用原子操作 profile；它只能报告有证据支持的 **ter
 这里的 fresh 指本次观察实际重新读取；不承诺读取后文档永远不变。
 若服务的读取不具备所需一致性，记录该限制，不能将缓存读取提升为权威当前状态。
 部分效果、等待输入或进程运行不能从 Notes 的原子 receipt 状态反向猜出。
+
+当前 Notes profile 没有新增或采集 cancel / tombstone 事实。历史 NotApplied 响应不提供
+durable absence proof，也不提供排除迟到提交的 fence。通用 ACT 继续沿用原 owner 的授权、
+恢复和终局证据约束，这些通用约束不能替代 Notes 目的地自身的取消或 tombstone 证据。
+Notes 的 tombstone 后迟到结果、cancel 与完成竞态专项验收仍为 **HOLD**；第 5 节的对应要求保留不变。
 
 ## 4. 身份、恢复与观察顺序
 
