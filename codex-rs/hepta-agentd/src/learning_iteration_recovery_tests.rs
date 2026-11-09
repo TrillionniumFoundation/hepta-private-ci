@@ -7,6 +7,9 @@ use pretty_assertions::assert_eq;
 
 use super::*;
 
+#[path = "learning_iteration_delivery_runtime_tests.rs"]
+mod delivery_runtime_tests;
+
 #[derive(Clone, Copy)]
 enum Decision {
     EvaluatedNoUpdate,
