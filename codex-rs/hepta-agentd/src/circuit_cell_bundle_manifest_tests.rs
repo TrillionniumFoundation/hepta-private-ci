@@ -167,7 +167,7 @@ fn registry_requires_complete_graph_coverage_even_with_new_manifest_and_routes()
 #[test]
 fn retained_manifest_binds_bundle_weights_encoder_and_full_cell_limits() {
     let (definition, bindings) = private_heads();
-    let mut variants = vec![bindings.clone(); 4];
+    let mut variants = vec![bindings; 4];
     variants[0][1].cell.bundle_digest = d("changed-private-bundle");
     variants[1][1].cell.runtime.weights_digest = d("changed-composed-weights");
     variants[2][1].cell.runtime.encoder_digest = d("changed-encoder");
