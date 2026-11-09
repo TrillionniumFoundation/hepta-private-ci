@@ -242,4 +242,3 @@ class CandidateMemory:
         except (ValueError, TypeError, OverflowError) as error:
             raise CandidateMemoryError(str(error), receipt("rejected")) from error
         return MemoryDecision(copied, receipt("selected" if copied else "empty"))
-
