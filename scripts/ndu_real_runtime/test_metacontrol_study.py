@@ -122,6 +122,121 @@ class MetacontrolStudyTests(unittest.TestCase):
                     result["planning_cost"], result["planning_seconds"] * 0.01
                 )
 
+    def test_missing_action_keeps_denominator_and_never_imputes_return(self):
+        future = [
+            row
+            for row in fixture_rows("future")
+            if row["observation"]["action"] != "WRITE_TEXT"
+        ]
+        report = study.run_study(**self.setup_inputs(future_rows=future))
+        self.assertEqual(report["incomplete_table_count"], 20)
+        self.assertFalse(report["counterfactual_replay_performed"])
+        for summary in report["summaries"].values():
+            self.assertEqual(summary["contexts"], 20)
+            self.assertEqual(summary["unknown_contexts"], 20)
+            self.assertIsNone(summary["source_balanced_net_gain"])
+
+    def test_fixture_opt_in_and_sha_source_pins_are_required(self):
+        options = self.setup_inputs()
+        with self.assertRaisesRegex(ValueError, "explicit fixture"):
+            study.run_study(**{**options, "allow_fixtures": False})
+        self.assertTrue((options["output"] / "failure.json").is_file())
+        path, pin = options["train"], options["train_sha256"]
+        path.write_bytes(path.read_bytes() + b" ")
+        with self.assertRaisesRegex(ValueError, "SHA256"):
+            study.read_input(path, pin, allow_fixtures=True)
+        with self.assertRaisesRegex(ValueError, "source"):
+            study.run_study(**{**options, "expected_source_sha256": "0" * 64})
+        duplicate_planning = fixture_rows("double-cost", 2)
+        duplicate_planning[0]["evidence"][
+            "incremental_cost_includes_policy_planning"
+        ] = True
+        path, pin = self.put("double-cost", duplicate_planning)
+        with self.assertRaisesRegex(ValueError, "cost scope"):
+            study.read_input(path, pin, allow_fixtures=True)
+
+    def test_source_alias_and_inconsistent_same_state_scores_reject(self):
+        aliases = fixture_rows("train")
+        for row in aliases:
+            row["observation"]["source_group"] = (
+                "alias/" + row["observation"]["source_group"]
+            )
+        options = self.setup_inputs(future_rows=aliases)
+        with self.assertRaisesRegex(ValueError, "identities overlap"):
+            study.run_study(**options)
+        rows = fixture_rows("bad", groups=2)
+        rows[1]["observation"]["stop_quality"] = 0.3
+        path, pin = self.put("bad", rows)
+        supplied, _ = study.read_input(path, pin, allow_fixtures=True)
+        with self.assertRaisesRegex(ValueError, "conflicting identities"):
+            study._table_groups(supplied)
+
+    def test_read_useful_repeated_and_noise_are_information_only_before_stop(self):
+        # All three are explicit fixture packets. No committed output changes
+        # until a separately charged delivery suffix executes.
+        for kind, packet in (
+            ("useful", {"answer": "correct", "trusted": True}),
+            ("repeated", {"answer": "old", "trusted": True}),
+            ("noise", {"answer": "random", "trusted": False}),
+        ):
+            packet_path, delivered = (
+                self.root / f"{kind}.packet",
+                self.root / f"{kind}.delivery",
+            )
+            packet_path.write_bytes(json.dumps(packet).encode())
+            delivered.write_bytes(b"old")
+            expected_packet = hashlib.sha256(packet_path.read_bytes()).hexdigest()
+            observed_raw = packet_path.read_bytes()  # Actual fixture READ.
+            self.assertEqual(hashlib.sha256(observed_raw).hexdigest(), expected_packet)
+            self.assertEqual(delivered.read_bytes(), b"old")
+            # The same public fixed resolver executes only in the explicit
+            # second primitive. Its offline fixture reference is never an input.
+            observed = json.loads(observed_raw)
+            if observed["trusted"]:
+                delivered.write_bytes(observed["answer"].encode())
+            self.assertEqual(delivered.read_bytes() == b"correct", kind == "useful")
+            rows = [
+                row
+                for row in fixture_rows(kind, 2)
+                if row["observation"]["action"] == "READ_ROI"
+            ]
+            rows[0]["evidence"]["continuation_steps"] = [
+                "READ_ROI",
+                "WRITE_TEXT",
+                "STOP",
+            ]
+            path, pin = self.put(kind, rows)
+            with self.assertRaisesRegex(ValueError, "suffix macro"):
+                study.read_input(path, pin, allow_fixtures=True)
+        rows = [
+            row
+            for row in fixture_rows("mislabelled", 2)
+            if row["observation"]["action"] == "READ_ROI"
+        ]
+        rows[0]["observation"]["continuation_quality"] = 1.0
+        path, pin = self.put("mislabelled", rows)
+        with self.assertRaisesRegex(ValueError, "cannot change delivery"):
+            study.read_input(path, pin, allow_fixtures=True)
+
+    def test_supported_outcomes_do_not_fill_unsupported_policy_predictions(self):
+        rows = fixture_rows("future")
+        for row in rows:
+            row["observation"]["state"]["features"] = (2.0,)
+            row["evidence"]["state_sha256"] = _digest(row["observation"]["state"])
+        report = study.run_study(**self.setup_inputs(future_rows=rows))
+        self.assertEqual(report["incomplete_table_count"], 0)
+        for method in ("point", "unconditional", "conditional"):
+            self.assertEqual(report["summaries"][method]["unknown_contexts"], 20)
+            self.assertIsNone(report["summaries"][method]["source_balanced_net_gain"])
+
+    def test_study_cannot_mix_execution_cost_scopes_across_splits(self):
+        rows = fixture_rows("future")
+        for row in rows:
+            row["observation"]["full_cost_observed"] = True
+            row["evidence"]["cost_scope"] = "complete_declared"
+        with self.assertRaisesRegex(ValueError, "cost-scope profiles"):
+            study.run_study(**self.setup_inputs(future_rows=rows))
+
 
 if __name__ == "__main__":
     unittest.main()
