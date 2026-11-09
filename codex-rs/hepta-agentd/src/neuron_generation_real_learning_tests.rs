@@ -973,11 +973,16 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
     }
     let initial = LearningIterationCoordinatorV1::new(learning_request.clone(), owners.clone())?;
     let frozen_scope = FrozenLearningScopeV2::freeze(
-        &learning_request, &owners, LearningUpdateScopeV2::Cell,
+        &learning_request,
+        &owners,
+        LearningUpdateScopeV2::Cell,
         digest(&prepared["source_digest"])?,
     )?;
     let checkpoint = publication.research_checkpoint_scoped_v2(
-        learning_request.clone(), owners.clone(), frozen_scope.clone(), /*create*/ true,
+        learning_request.clone(),
+        owners.clone(),
+        frozen_scope.clone(),
+        /*create*/ true,
     )?;
     let control = ProcessControl::new(driver.clone(), publication.target_config.manifest.clone());
     let external_owner = match flow {
@@ -1048,9 +1053,12 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
     *ports
         .checkpoint
         .lock()
-        .map_err(|_| anyhow::anyhow!("checkpoint poisoned"))? =
-        publication.research_checkpoint_scoped_v2(
-            learning_request.clone(), owners.clone(), frozen_scope.clone(), /*create*/ false,
+        .map_err(|_| anyhow::anyhow!("checkpoint poisoned"))? = publication
+        .research_checkpoint_scoped_v2(
+            learning_request.clone(),
+            owners.clone(),
+            frozen_scope.clone(),
+            /*create*/ false,
         )?;
     let (recovered, bootstrap) = learning_iteration_channel_scoped_v2(
         host.identity.agent_id.clone(),

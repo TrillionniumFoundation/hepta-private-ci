@@ -162,7 +162,9 @@ impl LearningIterationOwnerPortsV1 for IterationPorts {
                 update_rule,
                 evaluation_profile: digest("frozen-evaluation"),
             });
-            if let Some(mutate) = self.training_mutation { mutate(&mut candidate); }
+            if let Some(mutate) = self.training_mutation {
+                mutate(&mut candidate);
+            }
             let candidate_bundle = ok(candidate.digest());
             let observation = match stage {
                 LearningIterationStageV1::Experience => {

@@ -105,7 +105,10 @@ impl FrozenLearningScopeV2 {
                 }
             }
             if preserved != self.components
-                || candidate.training_lineage.as_ref().map(|lineage| lineage.update_rule)
+                || candidate
+                    .training_lineage
+                    .as_ref()
+                    .map(|lineage| lineage.update_rule)
                     != Some(self.update_rule)
             {
                 return Err(LearningIterationError::UpdateScopeMismatch);
