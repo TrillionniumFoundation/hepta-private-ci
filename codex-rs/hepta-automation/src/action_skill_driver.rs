@@ -17,10 +17,10 @@ use crate::AuthorizedEffectProviderReceipt;
 use crate::AuthorizedProviderEffectLookup;
 use crate::AuthorizedProviderEffectRequest;
 use crate::ProviderEffectTaskFlowDriver;
+use crate::action_runtime::ActionRuntimeObservationV1;
+use crate::action_runtime::verified_outcome;
 use crate::action_skill::ACTION_SKILL_SCHEMA_VERSION;
 use crate::action_skill::ActionConditionV1;
-use crate::action_skill::ActionExecutionStateV1;
-use crate::action_skill::ActionGoalStateV1;
 use crate::action_skill::ActionSkillBindingV1;
 use crate::action_skill::ActionSkillContractV1;
 use crate::action_skill::ActionSkillError;
@@ -128,6 +128,20 @@ impl<A: ProviderEffectAdapter, O: ActionSkillObserver> GoalCheckedActionSkillDri
         pending: &AuthorizedEffectPending,
         original_wire_payload: &[u8],
     ) -> Result<ActionSkillObservationV1, ActionSkillError> {
+        self.observe_pending_state(pending, original_wire_payload)
+            .await
+            .map(|readback| readback.observation)
+    }
+
+    /// Query the original operation once and retain the independent provider,
+    /// execution, goal and cancellation facts alongside their five-state view.
+    /// An observation error means UNKNOWN, never failure or permission to retry.
+    /// This method neither settles the attempt nor dispatches another effect.
+    pub async fn observe_pending_state(
+        &self,
+        pending: &AuthorizedEffectPending,
+        original_wire_payload: &[u8],
+    ) -> Result<ActionRuntimeObservationV1, ActionSkillError> {
         let binding = self.bind_pending(pending, original_wire_payload)?;
         let provider = match tokio::time::timeout(
             Duration::from_millis(self.contract.budget.provider_timeout_ms),
@@ -138,8 +152,13 @@ impl<A: ProviderEffectAdapter, O: ActionSkillObserver> GoalCheckedActionSkillDri
             Ok(AuthorizedProviderEffectLookup::Observed(receipt)) => receipt,
             _ => unresolved(&binding, &Sha256Digest::for_bytes(b"status_unresolved")),
         };
-        self.read_observation(&binding, &provider.receipt_digest)
-            .await
+        let observation = self
+            .read_observation(&binding, &provider.receipt_digest)
+            .await?;
+        Ok(ActionRuntimeObservationV1::from_observation(
+            provider.outcome,
+            observation,
+        ))
     }
 
     fn bind_pending(
@@ -199,27 +218,7 @@ impl<A: ProviderEffectAdapter, O: ActionSkillObserver> GoalCheckedActionSkillDri
         else {
             return unresolved(binding, &provider.receipt_digest);
         };
-        let terminal = matches!(
-            observation.execution,
-            ActionExecutionStateV1::Returned { .. } | ActionExecutionStateV1::Interrupted
-        );
-        // Exit code and cancellation requests do not determine business effect.
-        let outcome = if provider.outcome == AuthorizedEffectOutcome::Succeeded
-            && terminal
-            && observation.termination == ActionConditionV1::Met
-            && observation.goal == ActionGoalStateV1::Satisfied
-        {
-            AuthorizedEffectOutcome::Succeeded
-        } else if provider.outcome == AuthorizedEffectOutcome::Failed
-            && observation.absence_proof_digest.is_some()
-            && observation.goal == ActionGoalStateV1::Unsatisfied
-            && observation.termination == ActionConditionV1::Met
-            && (terminal || observation.execution == ActionExecutionStateV1::NotStarted)
-        {
-            AuthorizedEffectOutcome::Failed
-        } else {
-            AuthorizedEffectOutcome::Indeterminate
-        };
+        let outcome = verified_outcome(provider.outcome, &observation);
         AuthorizedEffectProviderReceipt {
             outcome,
             receipt_digest,
