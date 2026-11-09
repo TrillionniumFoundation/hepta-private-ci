@@ -9,11 +9,16 @@ use std::sync::atomic::Ordering;
 #[tokio::test]
 async fn expired_launch_admission_consumes_carrier_before_receiving() {
     let directory = tempfile::tempdir().unwrap();
+    let root = directory.path().canonicalize().unwrap();
+    let fleet_root = root.join("fleet");
+    let workspace = root.join("workspace");
+    std::fs::create_dir(&fleet_root).unwrap();
+    std::fs::create_dir(&workspace).unwrap();
     let identity = crate::HostAuthorityRegisteredIdentity {
         agent_id: AgentId::parse("019a2a19-0000-7000-8000-000000000005").unwrap(),
         spawn_generation: 1,
-        fleet_root: directory.path().join("fleet"),
-        workspace: directory.path().join("workspace"),
+        fleet_root,
+        workspace,
         resources: ResourceBudget::local_default(),
     }
     .identity()

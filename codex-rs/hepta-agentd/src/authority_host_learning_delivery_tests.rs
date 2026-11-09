@@ -5,6 +5,8 @@ use crate::authority_host_config::HostAuthorityConsumerConfig;
 use crate::authority_host_config::HostAuthorityConsumersConfig;
 use crate::authority_host_config::HostAuthorityServiceConfig;
 use codex_hepta_contracts::HostAuthorityFrontierStore;
+use sha2::Digest;
+use std::io::Read;
 
 #[test]
 #[ignore = "requires test-only bind, actual Root and same-source codex-hepta-agentd binary"]
@@ -15,9 +17,27 @@ fn original_product_startup_delivers_checkpoint_then_refuses_incomplete_profile(
     // A libtest child cannot substitute for that single-thread preflight.
     let original = codex_utils_cargo_bin::cargo_bin("codex-hepta-agentd")?;
     let binary = fixture.binary.with_file_name("codex-hepta-agentd");
+    let original_sha256 = binary_sha256(&original)?;
+    let original_bytes = std::fs::metadata(&original)?.len();
     let copied = std::fs::copy(&original, &binary)?;
-    assert_eq!(copied, std::fs::metadata(&original)?.len());
+    assert_eq!(copied, original_bytes);
+    let original_after_sha256 = binary_sha256(&original)?;
+    let copied_sha256 = binary_sha256(&binary)?;
+    assert_eq!(original_after_sha256, original_sha256);
+    assert_eq!(copied_sha256, original_sha256);
+    assert_eq!(std::fs::metadata(&original)?.len(), original_bytes);
     std::fs::set_permissions(&binary, std::fs::Permissions::from_mode(0o555))?;
+    eprintln!(
+        "LCP_PRODUCT_BINARY_PROVENANCE {}",
+        serde_json::json!({
+            "original_path": original,
+            "copied_path": binary,
+            "bytes": copied,
+            "original_before_sha256": original_sha256,
+            "original_after_sha256": original_after_sha256,
+            "copied_sha256": copied_sha256,
+        }),
+    );
     let identity = fixture.identity.identity()?;
     let mut config: HostAuthorityServiceConfig =
         crate::authority_host_config::read_root_json(&fixture.config_path)?;
@@ -57,9 +77,17 @@ fn original_product_startup_delivers_checkpoint_then_refuses_incomplete_profile(
         /*uid*/ 60001,
         /*gid*/ 60001,
     )?;
-    let payload = crate::authority_host_bootstrap_seal::seal_bytes(include_bytes!(
+    let sealed_payload = crate::authority_host_bootstrap_seal::seal_bytes(include_bytes!(
         "../tests/fixtures/android-bound-text-v1.json"
     ))?;
+    // The original product parser requires a separate read-only description,
+    // even though the producer's memfd already has immutable content seals.
+    let payload = File::open(format!("/proc/self/fd/{}", sealed_payload.as_raw_fd()))?;
+    crate::authority_host_bootstrap_seal::validate_sealed(
+        &payload,
+        sealed_payload.metadata()?.len(),
+    )?;
+    drop(sealed_payload);
     let numbers = [
         original_receiver.as_raw_fd(),
         learning_receiver.as_raw_fd(),
@@ -236,4 +264,18 @@ fn original_product_startup_delivers_checkpoint_then_refuses_incomplete_profile(
     )?;
     assert_eq!(reopened.restore(&initial.request)?, None);
     Ok(())
+}
+
+fn binary_sha256(path: &std::path::Path) -> io::Result<String> {
+    let mut file = std::fs::File::open(path)?;
+    let mut hash = sha2::Sha256::new();
+    let mut buffer = [0_u8; 64 * 1024];
+    loop {
+        let read = file.read(&mut buffer)?;
+        if read == 0 {
+            break;
+        }
+        hash.update(&buffer[..read]);
+    }
+    Ok(format!("{:x}", hash.finalize()))
 }
