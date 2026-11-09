@@ -69,6 +69,10 @@ impl<'de> Deserialize<'de> for HcsnSourceManifest {
 }
 
 impl HcsnSourceManifest {
+    pub(super) fn expected_digest(&self, relative: &str) -> Option<&Sha256Digest> {
+        self.0.get(relative)
+    }
+
     pub(super) fn verify(&self, repository: &Path) -> io::Result<()> {
         if !repository.is_absolute() {
             return invalid("HCSN source repository must be absolute");
@@ -196,7 +200,7 @@ fn canonical_directory(path: &Path) -> io::Result<fs::Metadata> {
     Ok(metadata)
 }
 
-fn read_source_digest(path: &Path, maximum: u64) -> io::Result<(Sha256Digest, u64)> {
+pub(super) fn read_source_digest(path: &Path, maximum: u64) -> io::Result<(Sha256Digest, u64)> {
     let parent = path
         .parent()
         .ok_or_else(|| io::Error::other("source has no parent"))?;
