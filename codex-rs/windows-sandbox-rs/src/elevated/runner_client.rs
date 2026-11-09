@@ -372,16 +372,25 @@ pub(crate) fn spawn_runner_transport(
             &mut pi,
         )
     };
+    // Capture the launch error before restoring the process error mode calls another Win32 API.
+    let spawn_error = if spawn_res == 0 {
+        Some(unsafe { GetLastError() })
+    } else {
+        None
+    };
     unsafe {
         SetErrorMode(previous_error_mode);
     }
-    if spawn_res == 0 {
-        let err = unsafe { GetLastError() };
+    if let Some(code) = spawn_error {
         unsafe {
             CloseHandle(h_pipe_in);
             CloseHandle(h_pipe_out);
         }
-        return Err(RunnerLogonError { code: err }.into());
+        return Err(
+            anyhow::Error::new(RunnerLogonError { code }).context(format!(
+                "launching sandbox runner executable {runner_cmdline:?} with cwd {cwd:?}"
+            )),
+        );
     }
     let expected_runner_pid = pi.dwProcessId;
     // Custody begins at the successful native launch, including pipe-connect

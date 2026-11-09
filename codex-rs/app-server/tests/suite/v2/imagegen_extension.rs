@@ -17,6 +17,7 @@ use codex_app_server_protocol::ThreadResumeParams;
 use codex_app_server_protocol::ThreadResumeResponse;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
+use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::UserInput as V2UserInput;
@@ -830,7 +831,7 @@ async fn run_image_edit_test(
     .await?;
     let completed = timeout(
         DEFAULT_READ_TIMEOUT,
-        wait_for_image_generation_completed(&mut mcp),
+        wait_for_image_edit_completed(&mut mcp, &turn_id),
     )
     .await??;
     let ThreadItem::ImageGeneration(completed_image) = completed.item else {
@@ -902,6 +903,52 @@ async fn start_turn(
         timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(turn_req)).await??;
 
     Ok(turn.id)
+}
+
+async fn wait_for_image_edit_completed(
+    mcp: &mut TestAppServer,
+    expected_turn_id: &str,
+) -> Result<ItemCompletedNotification> {
+    loop {
+        let notification = mcp
+            .read_stream_until_matching_notification(
+                "image edit item or terminal turn",
+                |notification| {
+                    let Some(params) = &notification.params else {
+                        return false;
+                    };
+                    match notification.method.as_str() {
+                        "item/completed" => {
+                            params.get("turnId").and_then(serde_json::Value::as_str)
+                                == Some(expected_turn_id)
+                        }
+                        "turn/completed" => {
+                            params
+                                .get("turn")
+                                .and_then(|turn| turn.get("id"))
+                                .and_then(serde_json::Value::as_str)
+                                == Some(expected_turn_id)
+                        }
+                        _ => false,
+                    }
+                },
+            )
+            .await?;
+        let params = notification
+            .params
+            .context("image edit notification params")?;
+        if notification.method == "turn/completed" {
+            let completed: TurnCompletedNotification = serde_json::from_value(params)?;
+            anyhow::bail!(
+                "image edit turn {expected_turn_id} ended with {:?} before an ImageGeneration item completed",
+                completed.turn.status
+            );
+        }
+        let completed: ItemCompletedNotification = serde_json::from_value(params)?;
+        if matches!(&completed.item, ThreadItem::ImageGeneration(_)) {
+            return Ok(completed);
+        }
+    }
 }
 
 async fn wait_for_image_generation_completed(
