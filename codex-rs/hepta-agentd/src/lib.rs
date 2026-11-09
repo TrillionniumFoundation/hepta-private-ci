@@ -698,9 +698,13 @@ pub use learning_iteration_checkpoint::AgentdLearningCheckpointClientV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_checkpoint::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V1;
 #[cfg(target_os = "linux")]
+pub use learning_iteration_checkpoint::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V2;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_checkpoint::HostAuthorityLearningBootstrapV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_checkpoint::HostAuthorityLearningProfileV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_checkpoint::HostAuthorityLearningScopeV2;
 #[cfg(unix)]
 pub use learning_iteration_checkpoint::LearningIterationCheckpointErrorV1;
 #[cfg(unix)]

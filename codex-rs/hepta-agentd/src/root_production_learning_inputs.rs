@@ -7,6 +7,7 @@ use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
 
+use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 
@@ -28,6 +29,7 @@ pub struct AgentdRootLearningInputsV1 {
     client: AgentdLearningCheckpointClientV1,
     initial: LearningIterationSnapshotV1,
     identity: AgentdIdentity,
+    scope: Option<FrozenLearningScopeV2>,
 }
 
 impl RootLearningHandoffV1 {
@@ -63,6 +65,7 @@ impl RootLearningHandoffV1 {
         }
         let bundle: HostAuthorityLearningBootstrapV1 = serde_json::from_slice(&bytes)?;
         let initial = validate_binding(&bundle, &production.bootstrap, expected, self.root_pid)?;
+        let scope = bundle.frozen_scope(&initial)?;
         let paths = &production.bootstrap.sockets;
         // SAFETY: getegid only observes this process's current credentials.
         crate::authority_host_runtime::validate_lane_paths(
@@ -82,18 +85,30 @@ impl RootLearningHandoffV1 {
         )
         .await
         .map_err(|_| refused("learning connection deadline elapsed"))??;
-        let client = AgentdLearningCheckpointClientV1::from_root_stream(
-            stream.into_std()?,
-            AgentdRootAuthorityPeer {
-                pid: bundle.root.pid,
-                boot_id: bundle.root.boot_id,
-                process_start_ticks: bundle.root.process_start_ticks,
-            },
-            self.root_pidfd,
-            initial.clone(),
-            timeout,
-            remaining(end)?,
-        )
+        let peer = AgentdRootAuthorityPeer {
+            pid: bundle.root.pid,
+            boot_id: bundle.root.boot_id,
+            process_start_ticks: bundle.root.process_start_ticks,
+        };
+        let client = match scope.clone() {
+            Some(scope) => AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2(
+                stream.into_std()?,
+                peer,
+                self.root_pidfd,
+                initial.clone(),
+                timeout,
+                remaining(end)?,
+                scope,
+            ),
+            None => AgentdLearningCheckpointClientV1::from_root_stream(
+                stream.into_std()?,
+                peer,
+                self.root_pidfd,
+                initial.clone(),
+                timeout,
+                remaining(end)?,
+            ),
+        }
         .map_err(|error| refused(format!("learning Root transport: {error}")))?;
         // Confirm the actual registered CURRENT through its live writer before
         // retaining the capability. This observation is not a stage attestation.
@@ -106,6 +121,7 @@ impl RootLearningHandoffV1 {
             client,
             initial,
             identity: expected.clone(),
+            scope,
         })
     }
 }
@@ -122,8 +138,7 @@ fn validate_binding(
         .parent()
         .ok_or_else(|| refused("original Root socket parent missing"))?
         .join("learning-checkpoint-v1.sock");
-    if bundle.schema_version != 1
-        || bundle.operation != "runtime.learning.bootstrap.v1"
+    if !matches!(bundle.schema_version, 1 | 2)
         || bundle.root != original.root
         || bundle.consumer != original.consumer
         || bundle.root.pid != root_pid
@@ -138,6 +153,7 @@ fn validate_binding(
         ));
     }
     let initial = bundle.decode_initial()?;
+    bundle.frozen_scope(&initial)?;
     if initial.request.agent_id.as_str() != expected.agent_id.as_str() {
         return Err(refused("learning operation belongs to another agent"));
     }
@@ -168,14 +184,26 @@ impl AgentdRootLearningInputsV1 {
         ),
         AgentdError,
     > {
-        let (handle, bootstrap) = crate::learning_iteration_channel_v1(
-            self.identity.agent_id,
-            self.identity.spawn_generation,
-            self.initial.owners,
-            self.client.with_stage_owners(stages),
-            verifier,
-            capacity,
-        )?;
+        let ports = self.client.with_stage_owners(stages);
+        let (handle, bootstrap) = match self.scope {
+            Some(scope) => crate::learning_iteration_channel_scoped_v2(
+                self.identity.agent_id,
+                self.identity.spawn_generation,
+                self.initial.owners,
+                ports,
+                verifier,
+                capacity,
+                scope,
+            ),
+            None => crate::learning_iteration_channel_v1(
+                self.identity.agent_id,
+                self.identity.spawn_generation,
+                self.initial.owners,
+                ports,
+                verifier,
+                capacity,
+            ),
+        }?;
         Ok((
             handle,
             bootstrap.with_circuit_learning_delivery(self.initial.request)?,
