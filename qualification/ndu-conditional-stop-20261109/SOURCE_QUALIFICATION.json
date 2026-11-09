@@ -101,13 +101,15 @@
     "format_command": "just fmt",
     "format_exit_code": 0,
     "source_unchanged_after_format": true,
-    "raw_log_availability": "Recorded in the shared workspace before its subsequent disconnection; the digest is preserved here. This document does not recreate the raw log."
+    "raw_log_availability": "Original 8,447-byte log recovered after workspace restoration, SHA-256 identical to the recorded value; published at local/all-source-tests.log. No test log was reconstructed or test rerun counted.",
+    "raw_log_restored_sha256_match": true
   },
   "publication_readback": {
     "files_compared": 81,
     "all_git_blob_hashes_match": true,
     "all_frozen_sha256_match": true,
-    "commit": "6f6d76b78349448015655de7fbba9ac89c0b94fb"
+    "commit": "6f6d76b78349448015655de7fbba9ac89c0b94fb",
+    "restored_workspace_all_81_sha256_match": true
   },
   "scientific_limits": {
     "independent_training_repeats": 0,
