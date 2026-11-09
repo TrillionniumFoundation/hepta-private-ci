@@ -25,6 +25,10 @@ use serde::Serialize;
 #[path = "learning_iteration_checkpoint_codec.rs"]
 mod codec;
 
+#[cfg(target_os = "linux")]
+#[path = "learning_iteration_checkpoint_transport.rs"]
+pub(crate) mod transport;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LearningIterationCheckpointErrorV1 {
     Capacity,

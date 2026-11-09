@@ -51,6 +51,12 @@ mod logind;
 #[path = "authority_host_notes_successor.rs"]
 mod notes_successor;
 
+#[path = "authority_host_learning_checkpoint.rs"]
+mod learning_checkpoint;
+pub use learning_checkpoint::PreparedRootLearningCheckpointV1;
+pub use learning_checkpoint::RootLearningCheckpointProfileV1;
+pub use learning_checkpoint::receive_learning_checkpoint_handoff_v1;
+
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
 pub enum HostAuthorityLane {
