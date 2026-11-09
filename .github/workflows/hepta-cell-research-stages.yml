@@ -7,6 +7,8 @@ on:
     paths:
       - scripts/hepta_cell_research_gate.py
       - scripts/test_hepta_cell_research_gate.py
+      - scripts/hepta_cell_research_units.py
+      - scripts/test_hepta_cell_research_units.py
       - scripts/hepta_cell_research_foundation.py
       - scripts/test_hepta_cell_research_successor.py
       - scripts/hepta_cell_joint_config.py
@@ -49,6 +51,10 @@ jobs:
             --output "$records/research-gate.json" \
             -- python3 -B -m unittest discover -s scripts \
             -p test_hepta_cell_research_gate.py -v
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 11 \
+            --output "$records/research-units.json" \
+            -- python3 -B -m unittest discover -s scripts \
+            -p test_hepta_cell_research_units.py -v
           python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 23 \
             --output "$records/joint-configuration.json" \
             -- python3 -B -m unittest discover -s scripts \
