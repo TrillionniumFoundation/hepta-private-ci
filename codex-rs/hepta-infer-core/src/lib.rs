@@ -6,7 +6,29 @@
 
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
+mod joint_v4_projection;
 mod neuron_feature;
+
+pub use joint_v4_projection::JOINT_V4_CORE_DT;
+pub use joint_v4_projection::JOINT_V4_INPUT_BYTE_LIMIT;
+pub use joint_v4_projection::JOINT_V4_LAYER_NORM_EPSILON;
+pub use joint_v4_projection::JOINT_V4_MEDIA_PROFILE;
+pub use joint_v4_projection::JOINT_V4_NUMERIC_PROFILE;
+pub use joint_v4_projection::JOINT_V4_OBSERVATION_FEATURES;
+pub use joint_v4_projection::JOINT_V4_OBSERVATION_PROFILE;
+pub use joint_v4_projection::JOINT_V4_OUTPUT_SCHEMA;
+pub use joint_v4_projection::JOINT_V4_RESIDUAL_GAIN;
+pub use joint_v4_projection::JOINT_V4_STATE_SCHEMA;
+pub use joint_v4_projection::JOINT_V4_TEXT_PROFILE;
+pub use joint_v4_projection::JOINT_V4_TEXT_SCALAR_LIMIT;
+pub use joint_v4_projection::JointV4ComponentDigestsV1;
+pub use joint_v4_projection::JointV4InferenceV1;
+pub use joint_v4_projection::JointV4NduProfileV1;
+pub use joint_v4_projection::JointV4TensorBindingV1;
+pub use joint_v4_projection::JointV4TensorComponentV1;
+pub use joint_v4_projection::JointV4TensorViewV1;
+pub use joint_v4_projection::JointV4WeightProjectionV1;
+pub use joint_v4_projection::project_joint_v4_weights_v1;
 
 pub use neuron_feature::NeuronFeatureContractError;
 pub use neuron_feature::NeuronFeatureObservationV1;
