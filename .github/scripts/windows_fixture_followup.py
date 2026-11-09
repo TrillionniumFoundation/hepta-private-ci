@@ -157,7 +157,92 @@ def junit_result(path, execution, selected, parser_class):
     }
 
 
-def run_group(group, root, target, directory, parser_class, skip_markers):
+def select_groups(scope, group_id):
+    groups = scope["groups"]
+    identities = [group["id"] for group in groups]
+    if (
+        len(set(identities)) != len(identities)
+        or not groups
+        or sum(group["expected"] for group in groups) != scope["expectedTotal"]
+    ):
+        raise ValueError("declared scope has duplicate groups or inconsistent totals")
+    if group_id is None:
+        return groups
+    if group_id not in identities:
+        raise ValueError("owner job must select exactly one registered original group")
+    return [group for group in groups if group["id"] == group_id]
+
+
+def leak_observations(log):
+    terminal = re.findall(r"^\s*LEAK\s+\[[^\]\n]+\].*$", log, re.MULTILINE)
+    summaries = [int(value) for value in re.findall(r"\b([1-9][0-9]*) leaky\b", log)]
+    return {"terminalLines": terminal, "nonzeroSummaryCounts": summaries}
+
+
+def cli_helper_environment(helpers, target, inherited):
+    names = {"codex-command-runner", "codex-windows-sandbox-setup"}
+    artifacts = helpers.get("artifacts", []) if helpers else []
+    if (
+        not helpers
+        or not helpers.get("passed")
+        or len(artifacts) != len(names)
+        or {row["name"] for row in artifacts} != names
+    ):
+        raise ValueError("CLI metadata requires both original verified native helpers")
+    environment = inherited.copy()
+    bindings = []
+    for row in sorted(artifacts, key=lambda item: item["name"]):
+        name = row["name"]
+        binary = Path(row["source"]).resolve(strict=True)
+        sibling = Path(row["testSibling"]).resolve(strict=True)
+        if binary != target / "dev-small" / (
+            name + ".exe"
+        ) or sibling != target / "dev-small/deps" / (name + ".exe"):
+            raise ValueError("CLI helper metadata escaped the verified native profile")
+        before = fingerprint(binary)
+        sibling_before = fingerprint(sibling)
+        if any(
+            value["sha256"] != row["sha256"] or value["st_size"] != row["bytes"]
+            for value in (before, sibling_before)
+        ):
+            raise ValueError("CLI helper bytes differ from the compiler artifact")
+        for prefix in ("CARGO_BIN_EXE", "NEXTEST_BIN_EXE"):
+            for alias in (name, name.replace("-", "_")):
+                aliases = [
+                    value
+                    for key, value in environment.items()
+                    if key.casefold() == (prefix + "_" + alias).casefold()
+                ]
+                if any(
+                    not Path(value).is_absolute()
+                    or Path(value).resolve(strict=True) != binary
+                    for value in aliases
+                ):
+                    raise ValueError(
+                        "inherited CLI helper metadata conflicts with this build"
+                    )
+        key = "CARGO_BIN_EXE_" + name
+        environment = {
+            original: value
+            for original, value in environment.items()
+            if original.casefold() != key.casefold()
+        }
+        environment[key] = str(binary)
+        bindings.append(
+            {
+                "name": name,
+                "environmentKey": key,
+                "environmentValue": str(binary),
+                "source": before,
+                "testSibling": sibling_before,
+            }
+        )
+    return environment, bindings
+
+
+def run_group(
+    group, root, target, directory, parser_class, skip_markers, sandbox_helpers=None
+):
     directory.mkdir(exist_ok=False)
     result = {
         "id": group["id"],
@@ -167,6 +252,13 @@ def run_group(group, root, target, directory, parser_class, skip_markers):
         "scope": group,
     }
     try:
+        environment, helper_bindings = None, None
+        if group["id"] == "cli-cloud":
+            environment, helper_bindings = cli_helper_environment(
+                sandbox_helpers, target, os.environ
+            )
+            result["cliHelperBindingsBefore"] = helper_bindings
+            write_json(directory / "cli-helper-bindings-before.json", helper_bindings)
         store = directory / "nextest-store"
         store.mkdir(exist_ok=False)
         config = directory / "nextest.toml"
@@ -198,6 +290,7 @@ def run_group(group, root, target, directory, parser_class, skip_markers):
             "discovery",
             ["cargo", "nextest", "list", *common, "--message-format", "json"],
             root / "codex-rs",
+            environment,
         )
         result["discoveryExecution"] = discovery
         selection = None
@@ -237,6 +330,7 @@ def run_group(group, root, target, directory, parser_class, skip_markers):
                 "final",
             ],
             root / "codex-rs",
+            environment,
         )
         result["nativeExecution"] = execution
         log = "\n".join(
@@ -248,6 +342,15 @@ def run_group(group, root, target, directory, parser_class, skip_markers):
         result["explicitSkipMarkers"] = [
             marker for marker in skip_markers if marker in log
         ]
+        result["leakObservations"] = leak_observations(log)
+        helper_bindings_intact = True
+        if helper_bindings is not None:
+            _, helper_after = cli_helper_environment(
+                sandbox_helpers, target, os.environ
+            )
+            result["cliHelperBindingsAfter"] = helper_after
+            write_json(directory / "cli-helper-bindings-after.json", helper_after)
+            helper_bindings_intact = helper_bindings == helper_after
         if selection is not None:
             result["junit"] = junit_result(
                 junit, execution, selection["selected"], parser_class
@@ -263,6 +366,8 @@ def run_group(group, root, target, directory, parser_class, skip_markers):
                 and result["junit"]["passed"]
                 and result["binariesUnchanged"]
                 and not result["explicitSkipMarkers"]
+                and not any(result["leakObservations"].values())
+                and helper_bindings_intact
             )
         result["status"] = (
             "passed_selected_scope" if result["passed"] else "failed_or_incomplete"
@@ -293,6 +398,7 @@ def main():
     parser.add_argument("--expected-tree", required=True)
     parser.add_argument("--expected-observer-head", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--group-id")
     args = parser.parse_args()
     observer = Path(__file__).resolve().parents[2]
     root = args.source_root.resolve(strict=True)
@@ -308,6 +414,8 @@ def main():
     target.mkdir(parents=True, exist_ok=True)
     scope_path = observer / ".github/fixtures/windows-fixture-followup-scope.json"
     scope = json.loads(scope_path.read_text(encoding="utf-8"))
+    groups = select_groups(scope, args.group_id)
+    selected_total = sum(group["expected"] for group in groups)
     receipt = {
         "status": "failed_or_incomplete",
         "sourceSha": args.expected_head,
@@ -344,10 +452,18 @@ def main():
         "legacyIsolationQualified": False,
         "durabilityQualified": False,
         "originalBazelRunnerReplayed": False,
+        "executionTopology": "original_single_job_five_groups"
+        if args.group_id is None
+        else "additional_owner_group_job",
+        "selectedGroupId": args.group_id,
+        "selectedExpectedTotal": selected_total,
+        "originalExpectedTotal": scope["expectedTotal"],
+        "originalSingleJobReplayed": args.group_id is None,
+        "originalSingleJobResultSuperseded": False,
         "scope": scope,
         "groups": [
             {"id": group["id"], "nativeExecution": "not_run", "passed": False}
-            for group in scope["groups"]
+            for group in groups
         ],
     }
     write_json(output / "started.json", receipt)
@@ -401,6 +517,9 @@ def main():
                     ".github/scripts/windows_native_probe.py",
                     ".github/scripts/windows_current_ci.py",
                     ".github/fixtures/windows-fixture-followup-scope.json",
+                    ".github/scripts/test_windows_fixture_followup.py",
+                    ".github/scripts/windows_fixture_owner_aggregate.py",
+                    ".github/workflows/hepta-windows-fixture-owner-groups.yml",
                 ],
             ),
         ):
@@ -408,7 +527,7 @@ def main():
                 destination = snapshots / label / path
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(repo / path, destination)
-        for group in scope["groups"]:
+        for group in groups:
             manifest = root / "codex-rs" / group["crate"] / "Cargo.toml"
             destination = snapshots / "tested" / manifest.relative_to(root)
             destination.parent.mkdir(parents=True, exist_ok=True)
@@ -476,7 +595,7 @@ def main():
         from hepta_ci_junit import NoDoctypeTreeBuilder
 
         check_sources(output, "after-preparation", root, observer, before)
-        for index, group in enumerate(scope["groups"]):
+        for index, group in enumerate(groups):
             check_sources(output, group["id"] + "-before", root, observer, before)
             receipt["groups"][index] = run_group(
                 group,
@@ -485,6 +604,7 @@ def main():
                 output / group["id"],
                 NoDoctypeTreeBuilder,
                 scope["explicitSkipMarkers"],
+                receipt["sandboxHelpers"],
             )
             check_sources(output, group["id"] + "-after", root, observer, before)
         receipt["sandboxHelpersAfter"] = [
@@ -504,7 +624,7 @@ def main():
             and helpers_intact
             and all(row["passed"] for row in receipt["groups"])
             and sum(row["junit"]["executed"] for row in receipt["groups"])
-            == scope["expectedTotal"]
+            == selected_total
         ):
             exit_code = 0
     except Exception:

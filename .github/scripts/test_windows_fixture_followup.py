@@ -1,6 +1,7 @@
 """Reject false native receipts without starting Cargo or Rust."""
 
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -94,6 +95,145 @@ class ReceiptTests(unittest.TestCase):
             ),
             (1, 1, 1),
         )
+
+    def test_owner_selection_preserves_the_registered_closed_scope(self):
+        other = copy.deepcopy(self.group)
+        other.update(id="second", expected=2)
+        scope = {"groups": [self.group, other], "expectedTotal": 3}
+        self.assertEqual(subject.select_groups(scope, None), scope["groups"])
+        self.assertEqual(subject.select_groups(scope, "second"), [other])
+        for group_id in ("missing", "test,second", ""):
+            with self.subTest(group_id=group_id), self.assertRaises(ValueError):
+                subject.select_groups(scope, group_id)
+        scope["expectedTotal"] = 4
+        with self.assertRaises(ValueError):
+            subject.select_groups(scope, "second")
+
+    def helper_fixture(self):
+        rows = []
+        for name in ("codex-command-runner", "codex-windows-sandbox-setup"):
+            data = b"MZ checker fixture, never executed: " + name.encode()
+            binary = self.target / "dev-small" / (name + ".exe")
+            sibling = self.target / "dev-small/deps" / (name + ".exe")
+            binary.write_bytes(data)
+            sibling.write_bytes(data)
+            rows.append(
+                {
+                    "name": name,
+                    "source": str(binary),
+                    "testSibling": str(sibling),
+                    "bytes": len(data),
+                    "sha256": hashlib.sha256(data).hexdigest(),
+                }
+            )
+        return {"passed": True, "artifacts": rows}
+
+    def test_cli_receives_only_verified_compiler_metadata_in_child_environment(self):
+        helpers = self.helper_fixture()
+        inherited = {"PATH": "preserve-existing-path"}
+        environment, bindings = subject.cli_helper_environment(
+            helpers, self.target, inherited
+        )
+        self.assertEqual(inherited, {"PATH": "preserve-existing-path"})
+        self.assertEqual(environment["PATH"], inherited["PATH"])
+        self.assertEqual(len(environment), 3)
+        self.assertEqual(len(bindings), 2)
+        for row in helpers["artifacts"]:
+            self.assertEqual(environment["CARGO_BIN_EXE_" + row["name"]], row["source"])
+        self.group["id"] = "cli-cloud"
+        commands = []
+
+        def capture(folder, name, command, cwd, environment=None):
+            commands.append((name, environment))
+            if name == "discovery":
+                stdout = json.dumps(self.document)
+            else:
+                stdout = ""
+                report = folder / "nextest-store/local/junit.xml"
+                report.parent.mkdir()
+                report.write_text(self.xml())
+            (folder / (name + ".stdout")).write_text(stdout)
+            (folder / (name + ".stderr")).write_text("")
+            return {
+                "exitCode": 0,
+                "startedUnix": time.time() - 5,
+                "finishedUnix": time.time() + 5,
+            }
+
+        with patch.object(subject, "capture", side_effect=capture):
+            result = subject.run_group(
+                self.group,
+                self.root,
+                self.target,
+                self.base / "cli",
+                NoDoctypeTreeBuilder,
+                [],
+                helpers,
+            )
+        self.assertTrue(result["passed"])
+        self.assertEqual([name for name, _ in commands], ["discovery", "tests"])
+        for _, child_environment in commands:
+            for row in helpers["artifacts"]:
+                self.assertEqual(
+                    child_environment["CARGO_BIN_EXE_" + row["name"]], row["source"]
+                )
+        self.assertEqual(
+            result["cliHelperBindingsBefore"], result["cliHelperBindingsAfter"]
+        )
+
+    def test_missing_changed_or_conflicting_cli_helper_metadata_is_rejected(self):
+        helpers = self.helper_fixture()
+        for changed in (
+            None,
+            {"passed": False},
+            {"passed": True, "artifacts": helpers["artifacts"][:1]},
+        ):
+            with self.subTest(changed=changed), self.assertRaises(ValueError):
+                subject.cli_helper_environment(changed, self.target, {})
+        wrong = copy.deepcopy(helpers)
+        wrong["artifacts"][0]["sha256"] = "0" * 64
+        with self.assertRaises(ValueError):
+            subject.cli_helper_environment(wrong, self.target, {})
+        with self.assertRaises(ValueError):
+            subject.cli_helper_environment(
+                helpers,
+                self.target,
+                {"CARGO_BIN_EXE_CODEX-COMMAND-RUNNER": str(self.binary)},
+            )
+        Path(helpers["artifacts"][0]["testSibling"]).write_bytes(b"MZ changed")
+        with self.assertRaises(ValueError):
+            subject.cli_helper_environment(helpers, self.target, {})
+
+    def test_passed_junit_does_not_rescue_a_native_process_leak(self):
+        def capture(folder, name, command, cwd, environment=None):
+            if name == "discovery":
+                stdout = json.dumps(self.document)
+            else:
+                stdout = "LEAK [ 0.1s] codex-example required_case\nSummary 1 tests run: 1 passed (1 leaky)"
+                report = folder / "nextest-store/local/junit.xml"
+                report.parent.mkdir()
+                report.write_text(self.xml())
+            (folder / (name + ".stdout")).write_text(stdout)
+            (folder / (name + ".stderr")).write_text("")
+            return {
+                "exitCode": 0,
+                "startedUnix": time.time() - 5,
+                "finishedUnix": time.time() + 5,
+            }
+
+        with patch.object(subject, "capture", side_effect=capture):
+            result = subject.run_group(
+                self.group,
+                self.root,
+                self.target,
+                self.base / "leak",
+                NoDoctypeTreeBuilder,
+                [],
+            )
+        self.assertTrue(result["junit"]["passed"])
+        self.assertFalse(result["passed"])
+        self.assertTrue(result["leakObservations"]["terminalLines"])
+        self.assertEqual(result["leakObservations"]["nonzeroSummaryCounts"], [1])
 
     def test_wrong_source_binary_or_ignored_is_rejected(self):
         for change in ("binary-id", "cwd", "ignored", "missing"):
