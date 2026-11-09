@@ -1,0 +1,51 @@
+name: Windows directory flush API observation
+
+on:
+  push:
+    branches: ["codex/cell-windows-flush-probe-20261109-898e"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-directory-flush-${{ github.ref }}-${{ github.run_id }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+
+jobs:
+  observe-native-api:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Enable the existing Windows checkout convention
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
+      - name: Checkout the independent observer
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: observer
+          persist-credentials: false
+      - name: Checkout the source referenced by the original failing paths
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1
+          path: reference-source
+          persist-credentials: false
+      - name: Observe six handle and flush combinations on new owned objects
+        shell: pwsh
+        run: |
+          python observer/.github/scripts/windows_directory_flush_observer.py --reference-root "$env:GITHUB_WORKSPACE/reference-source" --expected-observer-head "${{ github.sha }}" --output "$env:RUNNER_TEMP/hepta-windows-directory-flush"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve API results, errors, source receipts, and original bytes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-directory-flush-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-windows-directory-flush/
+          if-no-files-found: error
+          retention-days: 14
