@@ -194,7 +194,7 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
 
     def test_client_requires_cross_lane_scope_and_original_current(self):
         for marker in (
-            "bundle.schema_version != 1", "bundle.operation !=",
+            "!matches!(bundle.schema_version, 1 | 2)", "bundle.frozen_scope(&initial)?",
             "bundle.root != original.root", "bundle.consumer != original.consumer",
             "bundle.root.pid != root_pid", "bundle.root.uid != 0",
             "bundle.registered_identity.identity()? != *expected",
