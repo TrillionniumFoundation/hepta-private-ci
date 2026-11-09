@@ -1,0 +1,74 @@
+{
+  "schema": "ndu.conditional-stop.final-ci-addendum.v1",
+  "source_head": "6f6d76b78349448015655de7fbba9ac89c0b94fb",
+  "tested_merge_sha": "f3cb5024d94dfa3040c4a44b0c8851dd2b3644cd",
+  "previous_review_blob": "6e835e3ab7796d640297efce4a6bf64bbf48f9ff",
+  "snapshot": {
+    "blob_sha": "37693b2284ff7933f0d06df7b5bdf5a3ade9409d",
+    "observed_at_utc": "2026-11-09 08:27:27 UTC",
+    "total": 44,
+    "success": 18,
+    "failure": 15,
+    "skipped": 10,
+    "cancelled": 1,
+    "counts_independently_recomputed": true
+  },
+  "scope": "Only the three newly requested failed-job representatives. Neither this addendum nor the earlier three-job review explains every failed check.",
+  "jobs": [
+    {
+      "name": "Linux Bazel test",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42582743042/job/129045298341",
+      "failed_step": "5: Check MODULE.bazel.lock is up to date",
+      "observed_cause": "bazel mod deps failed while fetching eleven distinct dependency archives with HTTP 504, including hermetic-llvm v0.8.11, pybind11_bazel v2.13.6 and bazel-skylib 1.9.0.",
+      "final_error": "08:03:19.3996971Z: no such package '@@llvm+//extensions' due to failed download; step exited 1 at 08:03:19.4449899Z.",
+      "lockfile_caveat": "The later MODULE.bazel.lock is out of date message is emitted for every nonzero mod-deps result by the existing wrapper. It does not establish actual lockfile drift.",
+      "wrapper_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6f6d76b78349448015655de7fbba9ac89c0b94fb/scripts/check-module-bazel-lock.sh",
+      "wrapper_sha256": "a6c3842bb9c884ebd31dd79b99949e7c66b0f82a594dda87797013db572dc180",
+      "other_results": "bazel test //... skipped. Existing .github script tests passed 113 cases. The separate native OpenSSH acceptance action actually passed 1/1 test after 2068 build actions. Clean-worktree check passed.",
+      "new_python_relation": "No added stopped-runtime Python failure is shown. The broad Bazel suite supplies no pass evidence because it was skipped.",
+      "raw_log_blob": "48ecae9cf807ec098a01d46cdb8d1c20a5ba64e9",
+      "raw_log_sha256": "4d1310e473e4fa8784ea22aabe72410ec2cea5fbeea8ec5d3d5ad8cdee5cc1af",
+      "raw_log_bytes": 110354,
+      "steps_blob": "20b2231ca3f8ab837f3f35acc93f9e1352eea9ee",
+      "log_and_steps_readback_exact": true
+    },
+    {
+      "name": "macOS Native Hepta paths",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42582743042/job/129045298050",
+      "failed_step": "6: taiki-e/install-action",
+      "observed_cause": "Installing nextest@0.9.103 returned eleven HTTP 504 responses for its universal Apple Darwin archive. curl exited 56 at 08:04:10.9824400Z.",
+      "download_url": "https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-universal-apple-darwin.tar.gz",
+      "other_results": "Native wrapper tests, setup-ci, Rust toolchain and clean-worktree checks passed. Test host-native state and fleet roots was skipped.",
+      "new_python_relation": "The failure occurred before the native state/fleet test step. No new stopped-runtime Python defect is demonstrated; native path qualification remains unverified.",
+      "raw_log_blob": "d958384c5fde1659ed432dfee1a58f32db38a4bc",
+      "raw_log_sha256": "4a573fbf8a9f1d86a8ee2242d719618a5243db00f0414f9c36cd7e66dc9c1ade",
+      "raw_log_bytes": 102129,
+      "steps_blob": "ba4243d44a9f0496a44252ba7fb42ff84f63d46c",
+      "log_and_steps_readback_exact": true
+    },
+    {
+      "name": "Windows Bazel shard 1",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42582743042/job/129045298267",
+      "failed_step": "5: Smoke test the native MSVC header parser",
+      "observed_cause": "At 08:06:19.3871376Z, bazel-skylib 1.9.0 download returned HTTP 504. Building @llvm//tools/internal:header-parser returned status 2; the smoke step exited 1 at 08:06:19.6223764Z.",
+      "download_url": "https://github.com/bazelbuild/bazel-skylib/releases/download/1.9.0/bazel-skylib-1.9.0.tar.gz",
+      "other_results": "Existing wrapper suite passed 48 tests. The actual Bazel test shard was skipped. Upload success reported no files and does not establish test execution.",
+      "script_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f3cb5024d94dfa3040c4a44b0c8851dd2b3644cd/.github/scripts/llvm_header_parser_smoke.py",
+      "script_git_blob_sha": "b78d65371d5ddc80db880e692eb74c3167cb3758",
+      "script_evidence": "build_msvc_header_parser runs before unittest.main; its check=True subprocess builds the parser binary. HeaderParserSmokeTest had not started when dependency setup failed.",
+      "new_python_relation": "No stopped_*, conditional_particles or ndu_real_runtime execution marker appears in the original log. This does not demonstrate a new-runtime defect or establish new-runtime test success.",
+      "raw_log_blob": "b03e8ca87727609fdbf861cf0732668d8cb160c4",
+      "raw_log_sha256": "7d1a55ed1baff504cac6bd0ca6502ae7342ebd99af1bc671ffdb1c685a991a9d",
+      "raw_log_bytes": 161290,
+      "steps_blob": "f545e1e4ab929cd2aa9bfad6d575921231eea51e",
+      "log_and_steps_readback_exact": true
+    }
+  ],
+  "conclusions": [
+    "These three observed failure chains are dependency acquisition/preparation failures. Available evidence does not attribute them to newly added stopped-runtime Python.",
+    "The Linux wrapper's generic lockfile message cannot be treated as proven dependency-lock regression.",
+    "HTTP 504 is observed, but its responsible server/proxy/network segment is not established.",
+    "The final 44-check state remains 18 success, 15 failure, 10 skipped and 1 cancelled. Other failed checks require their own evidence.",
+    "No workflow rerun, source edit, dependency update or branch mutation was performed during this review."
+  ]
+}
