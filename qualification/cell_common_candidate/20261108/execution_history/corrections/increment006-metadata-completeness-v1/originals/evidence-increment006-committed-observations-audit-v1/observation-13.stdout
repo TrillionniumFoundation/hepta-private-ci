@@ -1,0 +1,128 @@
+{
+  "status": "published_and_remote_readback_verified",
+  "finished_at": "2026-11-09T06:06:05.872737+00:00",
+  "branch": "codex/cell-s0-evidence-20261108-898e",
+  "commit": "97543a30b941122ee42c99ab95c2dbf639ac6576",
+  "tree": "dde03df86ff345a325bad85c14e2c5e36da88728",
+  "parent": "5a3137e8ed198a07eb63bd97b5bb639f4471011f",
+  "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "original_metadata_observations": [
+    {
+      "path": "observations/evidence-addendum-increment-005a/RESULT.json",
+      "bytes": 5635,
+      "sha256": "aafcd6aec808a46462dda1f1b3ff6f6423bed21d4d9e0f4c2b988d5980cfe6bb"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-005b/RESULT.json",
+      "bytes": 3796,
+      "sha256": "17c7be2da832207a6307e05ca2e0dad9676ccf4957a4609343cb8b7f9502143f"
+    },
+    {
+      "path": "observations/evidence-increment004-publication-v1/RESULT.json",
+      "bytes": 3543,
+      "sha256": "607e2ded5d1eaa5f4df6477e4087a5f9162849189899d7776ed30e4be56e2bf4"
+    },
+    {
+      "path": "observations/pr5397-status007-update-v1/RESULT.json",
+      "bytes": 1063,
+      "sha256": "36aa8a236e262976e8808d125fe90277217fbc1bf0f23205515ccddb318db7aa"
+    },
+    {
+      "path": "observations/ci-bf42-current-snapshot-006/SUMMARY.json",
+      "bytes": 7032,
+      "sha256": "d4826f12f62bf013da903e12065de8092f572558f641f590b5ecbf5b7d438fdf"
+    },
+    {
+      "path": "observations/ci-bf42-ui-evidence-packets-v1/RESULT.json",
+      "bytes": 6526,
+      "sha256": "e236b8e5dc6ff9a83982e55f4b51478bf26c930223fae4360669bae0e189da10"
+    },
+    {
+      "path": "observations/ci-bf42-windows-original-evidence-v1/RESULT.json",
+      "bytes": 2174,
+      "sha256": "fbba8f7d4b53399035d039a608b8e29ce72d264fd45d4c670540f9bded20f038"
+    },
+    {
+      "path": "observations/learning-checkpoint-desktop-history-v1/SUMMARY.json",
+      "bytes": 2326,
+      "sha256": "24418d88d0bcb553b056a5cb45bc50f4c1094a997794b4c35ddf231aaa56ed8e"
+    },
+    {
+      "path": "observations/learning-checkpoint-quiet-publication-v1/publication.json",
+      "bytes": 14447,
+      "sha256": "278e73a458e6f941c4eb1eb97e9b19f3d34599ecfa6e5a55e92fb941fd35feb5"
+    },
+    {
+      "path": "observations/learning-checkpoint-desktop-history-v1/SCOPE.json",
+      "bytes": 3567,
+      "sha256": "32a269bb3c22b181acdc45e1b2d12910cc08ebe75e07a192ac84108a84d9fdfc"
+    },
+    {
+      "path": "observations/append-evidence-increment-005-v1.py",
+      "bytes": 13820,
+      "sha256": "08e78ae5af235d13bab508ca55531a85e9ea0b0193233c8108e3633d0fd614c9"
+    },
+    {
+      "path": "observations/publish-evidence-increment-005-v1.py",
+      "bytes": 11935,
+      "sha256": "1642b2b365dbe0058c9800556cdb159e76b1608c26e3f2eaf1502171c661a2e7"
+    }
+  ],
+  "prior_packet_bytes_unchanged": true,
+  "original_66_packet_index_entries_unchanged": true,
+  "source_worktree_clean_and_unmodified": true,
+  "packet_count": 72,
+  "file_member_count_with_overlap": 7050,
+  "published_file_count": 948,
+  "max_blob_bytes": 490000,
+  "manifest_sha256": "33da1f4d0d31c0251fb5a303e72aa31a561b961e01e0c6495b6b234b6857cf9e",
+  "readme_sha256": "c7f386b376073ba38ac1b73e8607ff8a6c97c4a644027103f3f5a8c2d70595c8",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "publication_receipt_is_external_to_its_own_commit": true,
+  "original_publication_attempt": {
+    "job_id": "1a1bebb4fdd-5e21-248",
+    "outer_status": "timed_out",
+    "outer_exit_code": 124,
+    "git_push_exit_code": null,
+    "original_command_bytes_unchanged": true,
+    "reconciliation_sha256": "0a9decbd1c760756becb067295043a6aa4259f01c39539a3f21833db3403f9ae"
+  },
+  "normal_recovery_push_performed": true,
+  "automatic_retry": false,
+  "transport_recovery": {
+    "observed_at": "2026-11-09T06:01:58.863047+00:00",
+    "related_processes": [],
+    "memory": {
+      "MemTotal_bytes": 134923063296,
+      "MemAvailable_bytes": 92710461440
+    },
+    "signals_sent": false,
+    "request_local_http_version": "HTTP/1.1",
+    "request_local_post_buffer_bytes": 268435456,
+    "max_uncompressed_new_objects_bytes": 177690531,
+    "network_cause_not_established": true,
+    "tls_auth_proxy_and_endpoint_unchanged": true
+  },
+  "prior_recovery_failure": {
+    "commands_sha256": "2b7fc141115c6df26fdba6aa292daa36598768b12b5a185ce335bfcb2cdc397a",
+    "push_exit_code": 1,
+    "http_status": 408,
+    "push_stderr_sha256": "aa7602d000b7133f3c471a163ad6f3a4dec974cdcf9d1b286b45b4e507f25bce",
+    "duration_seconds_not_native_or_full_cost": 425.32588792592287
+  },
+  "transport_preflight_sha256": "e05d4ae7bb9e7a538fd3324c949dee0832a2c59fb00f4a7813049993ede26526",
+  "commit_rewritten": false,
+  "native_tests_executed_by_recovery": false,
+  "commands_receipt_sha256": "81aa87ac1626472903cb6e9af3d3a09f02889eeaa2bd1d820ae6cd6f0af56537",
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/97543a30b941122ee42c99ab95c2dbf639ac6576/qualification/cell_common_candidate/20261108/execution_history"
+}

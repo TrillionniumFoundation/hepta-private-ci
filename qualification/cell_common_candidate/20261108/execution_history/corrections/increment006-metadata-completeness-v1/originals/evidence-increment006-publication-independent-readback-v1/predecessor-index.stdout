@@ -1,0 +1,1493 @@
+{
+  "schema": "hepta.source-bound-publication-checkpoint.v1",
+  "status": "bounded_checkpoint_verified",
+  "original_inventory_sha256": "def710605375f143910702995a147288f751c7ea704d6c6f670a24046e2fd1c7",
+  "packets": [
+    {
+      "packet_id": "history-capture-002",
+      "scope": "mixed recorded sources; earlier terminal attempts; external baseline pair retains weak observed linkage",
+      "archive_bytes": 36458,
+      "archive_sha256": "beb50897c8155ec4e9affa503f0f80dcfa1afda6b6bb5a8a64796eafd8cdc10f",
+      "file_member_count": 39,
+      "manifest_path": "packets/history-capture-002/manifest.json",
+      "manifest_sha256": "37f593331492cd1e17a09caf8d8db77e28ee7c2ff2aac7cb881b53fc1b71fdd1"
+    },
+    {
+      "packet_id": "python-v1",
+      "scope": "6fd7471; original Python execution with caller full-scan failure and post-reader errors preserved",
+      "archive_bytes": 20195,
+      "archive_sha256": "f673ef024de1f7cadb1e7f02a0806f5b7e0444c1b16b15e06f91cf0ee5318dbf",
+      "file_member_count": 43,
+      "manifest_path": "packets/python-v1/manifest.json",
+      "manifest_sha256": "ae9ff0873e0f48ecff2ff1cfec9704ef39529e4b165013ad557838b5f1608992"
+    },
+    {
+      "packet_id": "python-v2",
+      "scope": "86ac779; 127 Python tests and 943.885s diagnostic scan; not within 600s CI scan budget",
+      "archive_bytes": 62281,
+      "archive_sha256": "378fb82a8297bd03becb4eec5b8a11452584d14581ce978d3bcbab4734a0baff",
+      "file_member_count": 45,
+      "manifest_path": "packets/python-v2/manifest.json",
+      "manifest_sha256": "f218082e72618d281ca94ca6fb34faf8a2721f805796292abb4f986a87283905"
+    },
+    {
+      "packet_id": "python-v3",
+      "scope": "09f543c; 130 Python tests and 371.628s full scan within original 600s budget; CURRENT bytes unchanged",
+      "archive_bytes": 45325,
+      "archive_sha256": "c86e865fab453df852bb5ad680323f566d4d7a549df5e1f759c21072e75bdfcc",
+      "file_member_count": 46,
+      "manifest_path": "packets/python-v3/manifest.json",
+      "manifest_sha256": "958b69fceaf43074fd952c48568d2e89d1640390ab39eed4bbcd608f4baacb2d"
+    },
+    {
+      "packet_id": "history-capture-003",
+      "scope": "mixed recorded sources; failed collector setup due wrong external log basename; preserve failure",
+      "archive_bytes": 237457,
+      "archive_sha256": "cf8739bd282482863a05f583a76c3e63392eb2896d704dae737badd23c5bea90",
+      "file_member_count": 144,
+      "manifest_path": "packets/history-capture-003/manifest.json",
+      "manifest_sha256": "72c9c9bfa6cb27764592947e1f46d31ff9c96e954c0261745b2ea9473a27b69c"
+    },
+    {
+      "packet_id": "history-capture-004",
+      "scope": "mixed recorded sources; 74 terminal records /146 files; includes original failures/rejections; not exhaustive",
+      "archive_bytes": 238754,
+      "archive_sha256": "bc64f04912b8599c388c45c706b14ac96ba1da812732416f7e6f8fa062dd093c",
+      "file_member_count": 146,
+      "manifest_path": "packets/history-capture-004/manifest.json",
+      "manifest_sha256": "48b9396cb07d4ce57f1c028f4661ae5455903a744256304913cdb42d370478b6"
+    },
+    {
+      "packet_id": "ui-patch-preparation",
+      "scope": "dirty patch on86ac; original3 failures plus SDK7/fix preparation; not a frozen v3 qualification",
+      "archive_bytes": 150488,
+      "archive_sha256": "cc3f58f84a998c5a0f99749c95e81c51d26b0d22054b2b0bd1073b0d9adcc061",
+      "file_member_count": 169,
+      "manifest_path": "packets/ui-patch-preparation/manifest.json",
+      "manifest_sha256": "f1928481186595967b8b3decaba8f0679d861741324abfb92420244889564b35"
+    },
+    {
+      "packet_id": "cargo-deny-v3",
+      "scope": "09f543c dependency/advisory/policy checks; not research or whole-workspace tests",
+      "archive_bytes": 711417,
+      "archive_sha256": "5efa5760e3f4b98b8abcb465dcfdda5bbc53c1061e1c916c75201d5e617b893b",
+      "file_member_count": 9,
+      "manifest_path": "packets/cargo-deny-v3/manifest.json",
+      "manifest_sha256": "257706ff848b6d32a9c1c5a8e10b863fc15ee4283e3ff0b23961708ef0da7fd3"
+    },
+    {
+      "packet_id": "ci-sdk7-v3",
+      "scope": "two CI lanes each exact7; source-head and base-merge retain distinct tested identity",
+      "archive_bytes": 41815,
+      "archive_sha256": "2012fa72686c5c81f84ee8ace6338bf6219cd3003bdd5fcea4837655d29d7169",
+      "file_member_count": 23,
+      "manifest_path": "packets/ci-sdk7-v3/manifest.json",
+      "manifest_sha256": "bc596061ae54db2f69bca7ec210c5e6570ce8e0ae2f4164478131ff55177d7ca"
+    },
+    {
+      "packet_id": "native-v3-history",
+      "scope": "09f543c; r1 Clang failure + officialheaders prep +r2 core700/agentd729/HostCAS1; native unique1430, full workspace false",
+      "archive_bytes": 2350760,
+      "archive_sha256": "961c1c5a3fceb599f969690c252d5ed091daeb20835e0a436a2ddc074b8b680e",
+      "file_member_count": 105,
+      "manifest_path": "packets/native-v3-history/manifest.json",
+      "manifest_sha256": "0ba56440b6c49485514f3d5272aec82ab1c496dbb6d7ed8e7a5e63f6691fbbed"
+    },
+    {
+      "packet_id": "v3-ui-original-gates",
+      "scope": "Original UI source-head 09f and explicit base-merge e422: SDK, all browser cases and pixel reports; not v4.",
+      "archive_bytes": 5380830,
+      "archive_sha256": "dd14f5f3bf26f6ff79ee6382e899e91d27793619f9aa3350edba3e4f1be64563",
+      "file_member_count": 22,
+      "manifest_path": "packets/v3-ui-original-gates/manifest.json",
+      "manifest_sha256": "93fcd29142a7e7fa1a30b951bc834c1e6132a49e3debe7a75e525226be55fd18"
+    },
+    {
+      "packet_id": "v3-windows-shards-234",
+      "scope": "Original Windows Bazel failures; actual synthetic merge checkout f7fca4fe on common v3 tree9be.",
+      "archive_bytes": 437782,
+      "archive_sha256": "f935d75898b727603746a14a4271f2e9a5efd64afd437a7830531385d86151ce",
+      "file_member_count": 22,
+      "manifest_path": "packets/v3-windows-shards-234/manifest.json",
+      "manifest_sha256": "f8fceaf41c2b224e038f864d2293babb3b8d14b2813476a9f322d2bedc027a50"
+    },
+    {
+      "packet_id": "guardian-pagination-preparation",
+      "scope": "Original preparation failures, final four native passes and scoped lint on prep57556e; not final common source.",
+      "archive_bytes": 1153044,
+      "archive_sha256": "88cacaabab2f879fe088c8ed5b7aeacbf92618371e66088642201500c846c01e",
+      "file_member_count": 192,
+      "manifest_path": "packets/guardian-pagination-preparation/manifest.json",
+      "manifest_sha256": "6ceea72d42bda15b9a67c34583611e85b9243a5ba214cf8084b293174b94f42a"
+    },
+    {
+      "packet_id": "zsh-linux-c-preparation",
+      "scope": "Linux original C baseline failure, intermediate and final guarded wrapper builds; published artifact preparation.",
+      "archive_bytes": 955743,
+      "archive_sha256": "402fda317d277ea724c36fddc96db95abdfc665d7904bf34511e492fc3fac858",
+      "file_member_count": 118,
+      "manifest_path": "packets/zsh-linux-c-preparation/manifest.json",
+      "manifest_sha256": "26e07c70030ea631fdbb0c152b0581a4ee9e39bb646784d47a47364ac70a6a3e"
+    },
+    {
+      "packet_id": "zsh-macos-c-preparation",
+      "scope": "Native macOS C build and original failure history; baseline real exit1 and final pass; no Rust gate claim.",
+      "archive_bytes": 432631,
+      "archive_sha256": "fd4aed8f42caba64c09a7dbffcafc43870a4ff35991ca0bb194170f753bbf1e6",
+      "file_member_count": 40,
+      "manifest_path": "packets/zsh-macos-c-preparation/manifest.json",
+      "manifest_sha256": "0eaef9c93482c481834a16dce3a1606d05bd5d49fe480ea6ae5584d124fec3fb"
+    },
+    {
+      "packet_id": "notes-macos-peer-lifetime",
+      "scope": "Native macOS exact-body diagnostic: original peer-close EINVAL and held-peer1024 passes; not whole crate qualification.",
+      "archive_bytes": 9170,
+      "archive_sha256": "48e92d84e5e9ce9f369d5276eaef2333e73f4ef91a8229227b83663f133d3c78",
+      "file_member_count": 12,
+      "manifest_path": "packets/notes-macos-peer-lifetime/manifest.json",
+      "manifest_sha256": "74546243941044659d2818830bcda071a1792f3e2827e1fb6745466e43c72c72"
+    },
+    {
+      "packet_id": "zsh-published-v012-and-consumption",
+      "scope": "Original failed v0.1.1 Mac runner admission, real v0.1.2 four-platform build/release, byte-pinned Python consumption and native DotSlash Linux/macOS executions, including rejected first attempts. No Rust gate claim.",
+      "archive_bytes": 5241099,
+      "archive_sha256": "239d7536c4edbddbdde73860552ccaf8afcb2b40e90dcc4630bda41d3c18bc66",
+      "file_member_count": 215,
+      "manifest_path": "packets/zsh-published-v012-and-consumption/manifest.json",
+      "manifest_sha256": "d7b78ecd9186065253d899ddcd881bfe1cb69388c8b58942e7962f8e3f740fa6"
+    },
+    {
+      "packet_id": "v3-late-platform-originals",
+      "scope": "Original Windows shard1/native and both macOS failing jobs on v3; source head and actual merge checkout remain distinct.",
+      "archive_bytes": 1918587,
+      "archive_sha256": "00cbd37cd789fa60007477d00f56b9ed05be658222b798e1c86b03409378da31",
+      "file_member_count": 22,
+      "manifest_path": "packets/v3-late-platform-originals/manifest.json",
+      "manifest_sha256": "0266277284fa370e12a012cecedeae64878e740999238e96f8f61f578c9a4726"
+    },
+    {
+      "packet_id": "v3-native-terminal-originals",
+      "scope": "All three original native CI jobs on source09f completed successfully, including the default workspace; original job logs and metadata, not v4 qualification.",
+      "archive_bytes": 1919536,
+      "archive_sha256": "9c37875081b3deaac3e8f7ac402aa55ed267500876d3ae1e141503eb82801119",
+      "file_member_count": 19,
+      "manifest_path": "packets/v3-native-terminal-originals/manifest.json",
+      "manifest_sha256": "a2efcc0559dfefc365ba5ecc92ae6ff567bc2e63365ff0ccad0331043183d81b"
+    },
+    {
+      "packet_id": "v4-common-preparation",
+      "scope": "Exact preparation, canonical formatting, source commits and owner-observer correction records; no test acceptance is inferred from preparation.",
+      "archive_bytes": 1336806,
+      "archive_sha256": "2656fe251cdd319c8bd9421cd6ca9b5b9ab0889931e10d358fdd66638303e8cc",
+      "file_member_count": 134,
+      "manifest_path": "packets/v4-common-preparation/manifest.json",
+      "manifest_sha256": "7eef5fe3339bd396a06978a6636c4e370f2fade9508e8e192a97af03520c47a4"
+    },
+    {
+      "packet_id": "v4-python-ce754c3",
+      "scope": "Clean ce754c3 source: 130 independent Python fixtures, full caller scan under original600s, and unchanged CURRENT bytes; not successor5fd0247 execution.",
+      "archive_bytes": 40928,
+      "archive_sha256": "f443cc94f0f2134dc3a494249e59a769dbc8cf4a10d816fe74bb09a38f8d8d49",
+      "file_member_count": 42,
+      "manifest_path": "packets/v4-python-ce754c3/manifest.json",
+      "manifest_sha256": "ce749edea4148059dd4c3f716b70ee0c93a288176fbb1990021df64f2c5db298"
+    },
+    {
+      "packet_id": "ce754c3-native-compile-failure",
+      "scope": "Original clean ce754c3 native build/list failed with three test observer type errors; no selected Rust test or strict lint ran. Source and locks unchanged.",
+      "archive_bytes": 3251260,
+      "archive_sha256": "d01d3c7bf04403d7793da5fa5d39ad04edfc08da4d6cc45e58d610df816dd2d1",
+      "file_member_count": 27,
+      "manifest_path": "packets/ce754c3-native-compile-failure/manifest.json",
+      "manifest_sha256": "bbc007d092b666233138715bd9d8e7cf92ae59894215bb65bf8f504504809e42"
+    },
+    {
+      "packet_id": "v3-native-original-artifacts",
+      "scope": "Original09f native CI four exact artifacts: complete default workspace20562 executed passes/139 skipped; subset7910 and1214 overlap, original ignored HostCAS1 separate; Python23+6 separate. All receipt/JUnit/raw/source bindings verified.",
+      "archive_bytes": 5283391,
+      "archive_sha256": "88ece7e53f630054126416f10b1b9824ac7fa35dd7ba31a149eba42afc568993",
+      "file_member_count": 30,
+      "manifest_path": "packets/v3-native-original-artifacts/manifest.json",
+      "manifest_sha256": "12c234abe3f1f7f1491ccf9f37364ca0c593b776da19911eb8ac7a7787cf45dc"
+    },
+    {
+      "packet_id": "zsh-old-new-actual-abi",
+      "scope": "Actual published/new and pinned/original Linux archives and binaries: dynamic glibc in both generations, same loader/NEEDED/GLIBC symbol version set through2.38; no musl or complete ABI equivalence claim.",
+      "archive_bytes": 1729832,
+      "archive_sha256": "ec633d21d56a9960737d430018d65ff3e62fd714b2d6e10b65b724acfdc2b9e8",
+      "file_member_count": 48,
+      "manifest_path": "packets/zsh-old-new-actual-abi/manifest.json",
+      "manifest_sha256": "1d2370bee5eb54604faa20d32a54b121ad2c18876fd33d4ec1e9276f65bacf91"
+    },
+    {
+      "packet_id": "5fd0247-owner-native-pass",
+      "scope": "Clean5fd0247 actual23 owner cases and five owning-package strict lint passes, original raw/freshJUnit/source snapshots; not relabeled as finalba4 execution.",
+      "archive_bytes": 4892441,
+      "archive_sha256": "3a6ba309c979fae0993c4719515fba76506a5aa34e3d64410e069f53c4d89042",
+      "file_member_count": 41,
+      "manifest_path": "packets/5fd0247-owner-native-pass/manifest.json",
+      "manifest_sha256": "e577f5a03ec0503484ef1b18d82d0b319dfcb80f93913c03bf1ddab4bdc07965"
+    },
+    {
+      "packet_id": "ba4e-original-quality-history",
+      "scope": "Cleanba4e original Codespell/format/blob policy passes, with first missing-UV PATH failure retained and same-source recovery; no Rust invocation.",
+      "archive_bytes": 145299,
+      "archive_sha256": "2d4792fc681b08c1b2c2915f2e098524ea3cdbe6ed3ce8e54547a8dc077cde38",
+      "file_member_count": 22,
+      "manifest_path": "packets/ba4e-original-quality-history/manifest.json",
+      "manifest_sha256": "750f36e6ef5be09bc0262fd5b1cbb48296f2625c51fd97318dc6452e004187f9"
+    },
+    {
+      "packet_id": "windows-original-probe-contrasts",
+      "scope": "Original separate probe9624484 retained31/33 and16 fixture contrasts; subsequentcf858 Python-only22x2 environment observations isolate ProgramData. No prior failure is overwritten.",
+      "archive_bytes": 174264,
+      "archive_sha256": "723dc89c6f3f2d2f6a4fd516e26bcd41c83daf924dc0b77ac015d1f443db4136",
+      "file_member_count": 250,
+      "manifest_path": "packets/windows-original-probe-contrasts/manifest.json",
+      "manifest_sha256": "0b94a8aa93d5cb948fdeb79a3c8cee00eda191f2639aae80f4cab1e9a1cf9484"
+    },
+    {
+      "packet_id": "windows-probe-preparation",
+      "scope": "Independent Windows observation preparation, formatting/setup failures, exact branch code and source bundles; no production authority.",
+      "archive_bytes": 59928,
+      "archive_sha256": "010922e402a57b99ff526e8c3b63b19777103cf49a98952947a4346c88c76aea",
+      "file_member_count": 38,
+      "manifest_path": "packets/windows-probe-preparation/manifest.json",
+      "manifest_sha256": "d83e62e0a88fac18aab53742614516830979efcf3b228b63ece9cb74f7afd1ad"
+    },
+    {
+      "packet_id": "queue-post-admission-lease-preparation",
+      "scope": "Originala849168 preparation executed four exact queue lease cases and owning strict lint with unchanged source, before final common integration.",
+      "archive_bytes": 1053288,
+      "archive_sha256": "a54fd3085c8ad3cd388413af710c80434394222f491a069393295ad968c47e99",
+      "file_member_count": 44,
+      "manifest_path": "packets/queue-post-admission-lease-preparation/manifest.json",
+      "manifest_sha256": "84ea0371abba9ef4a8b99361cda4610cb3c47e318ba3b325c3d32ffd6c986035"
+    },
+    {
+      "packet_id": "ba4e-original-windows-33",
+      "scope": "Actual Windows source/testedba4e with observer2fcc separately bound: original33/33PASS, zero failure/skip/retry; Windows owning strict lint0, both checkouts clean, no source edits. Original CI did not upload native test executable.",
+      "archive_bytes": 88920,
+      "archive_sha256": "09c0599d509b98ac81776c884b47484fdfc91932ff9ffdc23ad95d6fbd149b89",
+      "file_member_count": 43,
+      "manifest_path": "packets/ba4e-original-windows-33/manifest.json",
+      "manifest_sha256": "d6f6a37895fb33b37a02e65e9ddc2691d108be6c19c5ba329d8e3c7c71029c3c"
+    },
+    {
+      "packet_id": "ba4e-python-source-publication-and-lock-timeouts",
+      "scope": "Original130 Python passes/caller scan375.202s and unchanged CURRENT; exact source preparation and publication; two unchanged-budget300s Bazel resolution timeouts. Initial new CI API snapshot is nonterminal observation only.",
+      "archive_bytes": 153266,
+      "archive_sha256": "c3e71f9f5dc7e48dea256d132f5889a64c9501368aff77d7f4d9f8c9f28b8db9",
+      "file_member_count": 93,
+      "manifest_path": "packets/ba4e-python-source-publication-and-lock-timeouts/manifest.json",
+      "manifest_sha256": "eea8dc117d627aaecc67fccfa84814cf7677c91d76d6faa9800d8c7df7e3e2c6"
+    },
+    {
+      "packet_id": "ba4e-native-chain-and-changed-scopes",
+      "scope": "Exact clean ba4e native original chain 701 core-family/729 agentd/one ignored HostCAS, actual discovery-to-fresh-JUnit coverage, and separate core-memory 4 and queue 4 passes. Original driver/budgets/retries and all raw/source snapshots retained; complete history cost not inferred.",
+      "archive_bytes": 1847624,
+      "archive_sha256": "10cf70767c305648a7bea6992fe0cc2c9ee77fda39c6084131e10bcfde5388e1",
+      "file_member_count": 126,
+      "manifest_path": "packets/ba4e-native-chain-and-changed-scopes/manifest.json",
+      "manifest_sha256": "e811f1e1093512b0ab2aa5cefe2132171b7bdfe165fb0544e40810950c250c02"
+    },
+    {
+      "packet_id": "ba4e-final-acceptance-readonly",
+      "scope": "Source-bound read-only final audit: unchanged CURRENT flags/HOLD, 49 of original 51 source paths unchanged and two narrowly reviewed changes, exact ordinary daemon/checkpoint/publication/bundle gaps. No new tests, authority, stage advancement or cost claim.",
+      "archive_bytes": 214652,
+      "archive_sha256": "b2b41ba9df235851ea73b773b096a0a7ae5d96192be3901ee0dbbc367228ecfe",
+      "file_member_count": 75,
+      "manifest_path": "packets/ba4e-final-acceptance-readonly/manifest.json",
+      "manifest_sha256": "b72b01dcb8aa5a1308a84d1dbc42520fa58e324886dfa0a2ffebf7d9c157d29d"
+    },
+    {
+      "packet_id": "ba4e-current-ci-nonterminal-snapshot",
+      "scope": "Non-atomic 2026-11-08T23:28:37\u201323:28:48Z API metadata snapshot for 18 workflows associated with ba4e: 8 success, 7 in progress, 3 skipped and zero completed failures. Actual tested merge remains unverified. No waiting, rerun, cancellation or product/scientific qualification inference.",
+      "archive_bytes": 20376,
+      "archive_sha256": "d7330a39cf8f6f5ccb300a47afccb7a364ad543de92ac85bca5afde3f3137102",
+      "file_member_count": 21,
+      "manifest_path": "packets/ba4e-current-ci-nonterminal-snapshot/manifest.json",
+      "manifest_sha256": "00dd294c0072cafb5665cc6ea6de208c2dbfc999c7ffe2ba5601810b8a7aed01"
+    },
+    {
+      "packet_id": "ba4e-ci-failures-shards2-and3-cutoff2342",
+      "scope": "Immutable 23:42 UTC Nov8 ba4e CI snapshot, original Windows shards2/3 failures, actual checkout merge object/tree and failure bindings. Nonterminal observation, not full CI pass or scientific acceptance.",
+      "archive_bytes": 135648,
+      "archive_sha256": "0d52d1359a853693e64da293c5248debe2ce66fd7b3f5e96b880cb96a427ba9f",
+      "file_member_count": 35,
+      "manifest_path": "packets/ba4e-ci-failures-shards2-and3-cutoff2342/manifest.json",
+      "manifest_sha256": "33dc1c04e58889cb0279f0869b280ca9cbe1492858717d36c893d2fc2a2fa005"
+    },
+    {
+      "packet_id": "windows-directory-flush-api-observations-two-attempts",
+      "scope": "Original failed script-byte guard and second six-case native Win32 API observation on owned temporary objects, exact observer source and artifacts. First attempt executed zero API probes; no production Rust, namespace or power-loss durability qualified.",
+      "archive_bytes": 28948,
+      "archive_sha256": "3a03ba5f12fe61db598c76e0c315557985905af0b49b3517dd95eb1fc7a07a7c",
+      "file_member_count": 43,
+      "manifest_path": "packets/windows-directory-flush-api-observations-two-attempts/manifest.json",
+      "manifest_sha256": "0590e1ce92076f5c514cd0ba9fc9ca1d596ef58aa8e14314fc72f37ec400361a"
+    },
+    {
+      "packet_id": "bf516-source-preparation-four-owning-strict-checks",
+      "scope": "Exact bf516 source helper/V8 preparation and agentd H7-feature, Matrix, CLI and app-server strict fixes completed clean; original logs and source inventories retained. Native12 did not run; no test or scientific acceptance claim.",
+      "archive_bytes": 1505576,
+      "archive_sha256": "ff5448683e5753fa45af95c8c18ddadc7a6fd740ead542bbb763cabda38e8134",
+      "file_member_count": 68,
+      "manifest_path": "packets/bf516-source-preparation-four-owning-strict-checks/manifest.json",
+      "manifest_sha256": "451cc62465922410a317776d4bc3d93ee3a7153047871819e228a89d59c58061"
+    },
+    {
+      "packet_id": "bf516-and-82ff-source-preparation-publication-and-ci-observation",
+      "scope": "bf516 and 82ff exact source preparation, formatting, publication, original setup failures, prior evidence publication observer timeout and eventual readback, PR update, and nonterminal ba4e CI snapshot through 00:23:20 UTC Nov9. No new native or scientific acceptance is inferred.",
+      "archive_bytes": 154724,
+      "archive_sha256": "2b8497577864eb4d204cbeca45e8f6d409e88319a7b36cd21c53463bae11562e",
+      "file_member_count": 339,
+      "manifest_path": "packets/bf516-and-82ff-source-preparation-publication-and-ci-observation/manifest.json",
+      "manifest_sha256": "f565a244bd95aa88a6d6d917fe56498129653ba589733f952f2172a21a3ab928"
+    },
+    {
+      "packet_id": "82ff-python130-and-original-full-caller-gate",
+      "scope": "Exact 82ff Python130 original fixtures, self-test, unchanged CURRENT comparison and complete caller scan 388.7012557149865 seconds under original 600-second limit; clean identical source before/after. No Rust tests or scientific stage acceptance in this packet.",
+      "archive_bytes": 20768,
+      "archive_sha256": "d4f77526018bdb26fe8955a7f3fb273916a788891018cbc2bac745b277a32762",
+      "file_member_count": 45,
+      "manifest_path": "packets/82ff-python130-and-original-full-caller-gate/manifest.json",
+      "manifest_sha256": "e1b41ffe04ebe660c422cdde10d3ab02388cb53ba3764dce254c994878c7f2b0"
+    },
+    {
+      "packet_id": "82ff-strict-preparation-and-native13-original-failures",
+      "scope": "Exact82ff same-source helper/V8 and changed-owner strict preparation passed clean; selected native13 actually executed nine passes and four cold-resume failures under original10-second budgets, zero selected skips/retries. Complete original discovery, freshJUnit, logs and source inventories retained. Archive verification is not native or scientific acceptance.",
+      "archive_bytes": 2663768,
+      "archive_sha256": "44ffa8a9fb645e321fb7f4008b2f42f98f8b0696fcc81b2bb3b22ad26ed35cf5",
+      "file_member_count": 157,
+      "manifest_path": "packets/82ff-strict-preparation-and-native13-original-failures/manifest.json",
+      "manifest_sha256": "190f8b2c38665e9b28c43707017a6714535e76f6639690681da41808001b41c6"
+    },
+    {
+      "packet_id": "ba4-ci-failures-003-004-and-ui-original-artifacts",
+      "scope": "Original ba4 CI failure job APIs and raw logs, exact merge checkout identity, four UI artifact ZIPs and member hashes, and bounded source-backed diagnosis through snapshots003/004. Includes failed first sealing observer. UI hang cause remains unknown; original failures and flaky attempts are not erased. No new test execution or scientific acceptance.",
+      "archive_bytes": 2791500,
+      "archive_sha256": "069168b68fc80d0743574b0c2d501c6afeef7eafed2e1605228c24628bf8a56a",
+      "file_member_count": 408,
+      "manifest_path": "packets/ba4-ci-failures-003-004-and-ui-original-artifacts/manifest.json",
+      "manifest_sha256": "2f93446cbba5938886e9e6d1d9944a22ed89c0d6b3bb44a7b0e568fb409cd10e"
+    },
+    {
+      "packet_id": "a8d0-operator-compile-failure-and-native-not-run",
+      "scope": "Exact a8d0b3d preparation: V8/helper/app-server strict passed; operator strict failed E0433 after differential test lost indirect Command import. Source unchanged. All native groups not_run, zero cases executed. Original logs, source inventories and failure retained; packet integrity is not test success.",
+      "archive_bytes": 1500740,
+      "archive_sha256": "ba1b2a9f8cbb80ff957742921a1a970c8d33f5a23e37492478e1e796d384feb4",
+      "file_member_count": 64,
+      "manifest_path": "packets/a8d0-operator-compile-failure-and-native-not-run/manifest.json",
+      "manifest_sha256": "7e85e2b480576b690b7048963cb7bb1fb7760b083a805ce0cc3dfd94afc0fda0"
+    },
+    {
+      "packet_id": "a39b-operator-source-drift-failure-and-native-not-run",
+      "scope": "Exact a39bf3e isolated preparation failed source identity: canonical just fix child exit0 still left two path-statements warnings and modified durable.rs; outer gate rejected source drift. Original and changed full file, full-index patch, inventories and raw logs retained. V8/helper passed; native not_run zero. No automatic diff adopted into common source.",
+      "archive_bytes": 1499968,
+      "archive_sha256": "086f7e6819f68fd41e2b19ba8a7aadba5ad1b1a3dbdb15ec4f1d910f27635533",
+      "file_member_count": 64,
+      "manifest_path": "packets/a39b-operator-source-drift-failure-and-native-not-run/manifest.json",
+      "manifest_sha256": "a073574aef44d07f4eb0910c8f0448ea3a74330cc48db9a714931c1d52da93f0"
+    },
+    {
+      "packet_id": "ba4-original-windows-native-65-minute-timeout",
+      "scope": "Original Windows native run42534602318/job128896014047 stopped by original 65-minute Actions job cap, proven by annotation; no manual cancellation. Original operator33 passed; sandbox groups7+2 failed; launched core group lacks completion receipt. Includes raw log, APIs, original artifact and verified20 ZIP members. Source-before ba4/d2 clean; source-after absent. Whole gate not passed and full cost unknown.",
+      "archive_bytes": 127020,
+      "archive_sha256": "bd27ffa81e5c2f6274aea9be640d1e8bf6fb3c688be5472deb1e7d17433c8f5c",
+      "file_member_count": 18,
+      "manifest_path": "packets/ba4-original-windows-native-65-minute-timeout/manifest.json",
+      "manifest_sha256": "9db17e1cbc768d4c2243ba43384eabbec35292ad3f3eea16a19a33cac12de85f"
+    },
+    {
+      "packet_id": "a8d0b3d-python130-and-original-full-caller-gate",
+      "scope": "Exact a8d0b3dab62045a6aa6e61966c3fbeeccf1b48d6 Python130 original fixtures, self-test, unchanged CURRENT comparison and complete caller scan 369.8617806970142 seconds under original 600-second limit; clean identical source before/after. No Rust tests or scientific stage acceptance in this packet.",
+      "archive_bytes": 20792,
+      "archive_sha256": "60ba567fb0c83c24f298b1716b6f182688d137c7671beebbbb5c7ac6acd34954",
+      "file_member_count": 45,
+      "manifest_path": "packets/a8d0b3d-python130-and-original-full-caller-gate/manifest.json",
+      "manifest_sha256": "d07c4ea00ca710e749d63670aca51d2c596847b465404987bd30f440ebd5079c"
+    },
+    {
+      "packet_id": "a39bf3e-python130-and-original-full-caller-gate",
+      "scope": "Exact a39bf3eeac945c83aebcadbb81dfcb93d623e0f4 Python130 original fixtures, self-test, unchanged CURRENT comparison and complete caller scan 373.9014078550972 seconds under original 600-second limit; clean identical source before/after. No Rust tests or scientific stage acceptance in this packet.",
+      "archive_bytes": 20780,
+      "archive_sha256": "6a029423cf820e6e9e54ce36ac29d439ba0a8b0e0264648ad2d452678d6bb6bb",
+      "file_member_count": 45,
+      "manifest_path": "packets/a39bf3e-python130-and-original-full-caller-gate/manifest.json",
+      "manifest_sha256": "76b259a4e2526f8d73673fb9eea135460507e8568a8c0ff7d6dae354fa50414e"
+    },
+    {
+      "packet_id": "d1b32a6-python130-and-original-full-caller-gate",
+      "scope": "Exact d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca Python130 original fixtures, self-test, unchanged CURRENT comparison and complete caller scan 374.1610191750806 seconds under original 600-second limit; clean identical source before/after. No Rust tests or scientific stage acceptance in this packet.",
+      "archive_bytes": 20796,
+      "archive_sha256": "096b7f6e2abc9c8cc8ec20645c9b490e7b23b3b0ff02abb6e877f9693a4118ed",
+      "file_member_count": 45,
+      "manifest_path": "packets/d1b32a6-python130-and-original-full-caller-gate/manifest.json",
+      "manifest_sha256": "b604ffb2c950a1384250f1a60108314ffda37354c5683dcdbe176436c4c3be34"
+    },
+    {
+      "packet_id": "a8d0-a39b-d1b3-source-preparation-publication-and-ci-observation",
+      "scope": "Exact a8d0, a39b and d1b3 successor source preparation, canonical formatting, quiet publication and remote readback; reviewed patches, immutable prior Python execution packet sealing, PR status004 and nonterminal common ba4 CI snapshots004/005 through 01:19:38 UTC Nov9. These preparations do not turn failed native gates into passes or qualify scientific stages.",
+      "archive_bytes": 152296,
+      "archive_sha256": "766df638db0221f8ffc31326eefccdc7477b797eb868fac03e0f2cf21e15c635",
+      "file_member_count": 385,
+      "manifest_path": "packets/a8d0-a39b-d1b3-source-preparation-publication-and-ci-observation/manifest.json",
+      "manifest_sha256": "1a51407a5a567505f3e28222fb74245cfb251b7e96969fff398941f8d9548650"
+    },
+    {
+      "packet_id": "d1b32a6-strict-preparation-native13-and-complete-operator-library",
+      "scope": "Exact d1b32a6 Linux source: V8, helper build/verify, canonical operator just fix and readonly strict clippy all passed without edits; original thirteen selected regressions and all twenty-five actually discovered operator library cases passed. Six fresh JUnit unique case sets exactly match original discovery; selected skips/retries zero. All15004 tracked entries identical before/after. Includes all original raw logs, discovery, tool/binary identities and receipts. Not a full workspace, Windows, Bazel, scientific or full-cost pass.",
+      "archive_bytes": 2667596,
+      "archive_sha256": "c993bd959ebb3815223d71374cfba130198cc6953d58600cab2471b87479622f",
+      "file_member_count": 171,
+      "manifest_path": "packets/d1b32a6-strict-preparation-native13-and-complete-operator-library/manifest.json",
+      "manifest_sha256": "f921cc006d4c8ba4b11d38c309741b119e4b4b2a5f2d8d01a556e5297d32ac38"
+    },
+    {
+      "packet_id": "d1-original-bazel-observer-wsl-launch-failure",
+      "scope": "Original observer e401c77 run42545618817 tested checkout d1 clean before/after. Discovery launch exited1 after0.0317s with original UTF16LE WSL-no-distribution output, noBEP and nativeExecution not_run: zero original33 cases executed. Full raw/API and original22-member artifact preserved with derived UTF8 text explicitly marked; first resolved bash path/hash/version unknown. This is observer launch failure, not target33 failure; later fixes do not erase it.",
+      "archive_bytes": 58744,
+      "archive_sha256": "33f2aa9ece8bf6fdcdd08d60e06533669d5ca9e9b7ec64eaecbca96215ef6b12",
+      "file_member_count": 16,
+      "manifest_path": "packets/d1-original-bazel-observer-wsl-launch-failure/manifest.json",
+      "manifest_sha256": "8bc6fd67a4d1e907c572aa0bc6477b0c5cf64c7a8a4c7ea7135818c43e49fe5b"
+    },
+    {
+      "packet_id": "ba4-original-native-complete-default-workspace-and-terminal-ci",
+      "scope": "Original ba4 native CI run 42534597157 completed naturally. Retains all three original job logs, four exact original artifact ZIPs and every member index, run/job/API metadata, receipt/log/fresh-JUnit audit and complete terminal CI snapshot006. The complete default workspace has 20,563 unique passes and 139 original raw skips; scoped 7,910 and mechanisms 1,215 are subsets and are not added. The separate original ignored HostCAS case passed once, with duplicate uploaded copies identified. No retries, leaks or XML failures were observed in the verified selected executions. This packet does not qualify all feature combinations, successor sources, full repository CI, UI, scientific stage advancement, ordinary daemon closure or full historical/physical cost. The first local auditor-generation assertion failure and the first sealing type-comparison failure are retained; no new tests were executed for this audit.",
+      "archive_bytes": 4271052,
+      "archive_sha256": "80e43610d9388fce77642f390c6d610a3f1154d6788a88dc53c20bf4c29b2291",
+      "file_member_count": 89,
+      "manifest_path": "packets/ba4-original-native-complete-default-workspace-and-terminal-ci/manifest.json",
+      "manifest_sha256": "4af5d94839e63898da4ce3a2416af510626c2f62666c17fd871371410c2291ff"
+    },
+    {
+      "packet_id": "windows-fixture-eleven-82-partial-v1",
+      "scope": "Original Windows eleven-case observer 630a5cf5 tested clean source 82ff/tree c457 before and after. Run 42540772106 reached its original 65-minute Actions limit naturally: four actual cases, fleet and H7 passed, CLI and signed-credit failed, selected skips/retries/leaks zero. Seven planned cases were not executed: Matrix discovery/build began and incurred actual cost, while six app-server cases were not launched. All original job/API/annotation/log and artifact bytes retained, including 88 verified ZIP members. This partial failed run is not a complete eleven-case result, and unexecuted or unmeasured costs are not represented as zero.",
+      "archive_bytes": 18031544,
+      "archive_sha256": "4cfceadf6375309008e74d813829400dd4b023b30821208230503d9998e481b2",
+      "file_member_count": 18,
+      "manifest_path": "packets/windows-fixture-eleven-82-partial-v1/manifest.json",
+      "manifest_sha256": "44f7a6dcc5856328c7068815e48ee303beb329076711a8244a325c519fabcddf"
+    },
+    {
+      "packet_id": "windows-original-operator-bazel-d1-pass-v1",
+      "scope": "Original public Windows Bazel operator target executed with observer cea37b82 and exact tested source d1/tree f95 in run 42546897394. Actual original libtest discovery and execution match 33 unique passing cases with zero ignored/filtered/retry/cache. BEP records one run, shard and attempt; original XML records one aggregate wrapper testcase rather than synthetic per-case JUnit. Source and observer stayed clean; all 53 original artifact ZIP members are verified. The first observer WSL-launch failure remains separately retained. This original-wrapper single-target, keyless-BuildBuddy environment is not whole-shard or whole-Windows qualification.",
+      "archive_bytes": 3099296,
+      "archive_sha256": "60a079044fd4de72865fd41677834240548412973a07bf6441a022b085af67ab",
+      "file_member_count": 18,
+      "manifest_path": "packets/windows-original-operator-bazel-d1-pass-v1/manifest.json",
+      "manifest_sha256": "a11faa2f3bdce42195cb6fbaa4280bf0e7fc50db120298a768e6df3b304300e6"
+    },
+    {
+      "packet_id": "bf42-python130-full-caller-originals-v1",
+      "scope": "Exact bf42 fixed-source engineering Python validation: 130 independent unit cases, original caller self-test and complete caller scan passing in 380.6801889021881 seconds under the unchanged 600-second gate, with original command logs, clean before/after source and unchanged formal CURRENT. The original earlier sealer-invocation failure is retained in the archive. This packet runs no Rust and provides no S0-S5 or complete-cost qualification.",
+      "archive_bytes": 22044,
+      "archive_sha256": "793167e250598093524aa4f1de2de0a4b25f1fc691610db80675b731c21da200",
+      "file_member_count": 49,
+      "manifest_path": "packets/bf42-python130-full-caller-originals-v1/manifest.json",
+      "manifest_sha256": "7f6b11b6157013bb7101f7e5f79249e631ea7ea0c8723156eee84c44ab7545fd"
+    },
+    {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "scope": "Exact bf42 selected Linux engineering validation: same-source V8/helper preparation, owning agentd qualification-feature strict fix and read-only clippy with unchanged source, followed by 13 selected cases plus the discovered complete 25-case operator lib target. All 38 selected unique cases pass with fresh JUnit, zero selected skips/retries and an independently bound raw-log readback reporting NO_NEXTEST_LEAK_OBSERVED. Filter-excluded cases and overlapping historical scopes are not additional executions. Includes the first failed launch before Cargo, the unexplained disappearance of the prior task target, admission of the new empty Cargo target, and resulting cold-build command costs; registry-cache state and full physical/history cost remain unknown. This is not a full workspace or Windows run.",
+      "archive_bytes": 2709476,
+      "archive_sha256": "4deb1c2bdaf59eba048f8ab05de06a383909f60dc21e70c37886421f00f0a2d0",
+      "file_member_count": 179,
+      "manifest_path": "packets/bf42-selected-linux-native38-and-preparation-history-v1/manifest.json",
+      "manifest_sha256": "43a4f7eabec19e6515652f885421b5bc3762ea47b471b1a909bd451b04c16cb2"
+    },
+    {
+      "packet_id": "ui-status-diagnostic-originals-5e33-history-v1",
+      "scope": "Original UI diagnostic execution and preparation history on instrumented source 5e33, parent d1, run 42549225359. Seven original cases pass with zero retries/skips: six real gateway status cases plus one synthetic SDK export-sink control. Includes original job raw, verified 180-member artifact, paired recorded wait boundaries, and preparation/publication failures. The previous timeout was not reproduced; root cause remains unknown. Synchronous diagnostic I/O can change scheduling; the pass does not qualify uninstrumented d1 or bf42, prove a production fix, or advance a research stage.",
+      "archive_bytes": 2340476,
+      "archive_sha256": "e8c880a965de795c7d11b8b82a0a089cf7e6eea8daeb79a06dd0148540e26923",
+      "file_member_count": 417,
+      "manifest_path": "packets/ui-status-diagnostic-originals-5e33-history-v1/manifest.json",
+      "manifest_sha256": "23e930d54592daef21e9e1182af518d93d179e20b30e6a2bc21ac173523477e0"
+    },
+    {
+      "packet_id": "windows-fixture-eleven-d1-partial-v1",
+      "scope": "Historical d1 Windows observer bd7962, run 42545587597/job 128929757824, naturally cancelled at its original 65-minute cap. Four of the eleven planned cases actually executed: fleet and H7 passed; CLI and signed-credit failed. Seven did not execute, including Matrix after discovery compilation began and all six app-server cases. Original selected-case logs/JUnit and tested/observer before-after identities remain present; zero selected skips/retries/LEAK markers. Seven hidden execution-source copies were omitted by the original artifact upload and are explicitly not claimed archived or reconstructed. This partial cancelled run is not a complete scope pass and is never relabelled bf42.",
+      "archive_bytes": 18034120,
+      "archive_sha256": "6b6c52207b134864fc02f8df16d46858036a15dfc6ee5c41d2869a1318acfe79",
+      "file_member_count": 38,
+      "manifest_path": "packets/windows-fixture-eleven-d1-partial-v1/manifest.json",
+      "manifest_sha256": "d199da0b0e34478d17ee6d6271216364af988835950348093b6af7f003d4bbf7"
+    },
+    {
+      "packet_id": "ordinary-learning-slice-bf42-readonly-v1",
+      "scope": "Targeted read-only review of exact bf42 source and the unchanged formal CURRENT, with original source copies and a proposed minimal D02 ordinary-learning checkpoint delivery slice. This packet contains feasibility analysis/design only: no source change, test execution, provisioning, newly granted authority, product adoption or scientific acceptance. It does not include any later implementation work.",
+      "archive_bytes": 143952,
+      "archive_sha256": "9ed951422bb44dcb9ac40c9bc77983ee09c091aa60107623a02819ee7f33b72b",
+      "file_member_count": 45,
+      "manifest_path": "packets/ordinary-learning-slice-bf42-readonly-v1/manifest.json",
+      "manifest_sha256": "017ea46364299cc271629b9bc7faeb95db5eccae975afd6881793c49b2faa8af"
+    },
+    {
+      "packet_id": "bf42-source-freeze-common-fastforward-and-publication-history-v3",
+      "scope": "Exact bf42 source freeze, unchanged-source quiet publication, the completed 53-packet evidence checkpoint publication, PR status005 and status006, and the normal ba4-to-bf42 common draft fast-forward with original Git/API readback and two fresh observations that all preceding ba4 workflows were terminal. Includes initial nonterminal bf42 CI registration, independent root native review, native archive-transfer receipt, and Python packet-sealing metadata. Actual bf42 Python/strict/native test originals are separate packets, and the original failed first strict launch and Python-sealer invocation remain in those packets. No original result is relabeled to another source. Source/publication actions are not scientific qualification, and initial CI registrations are not test results. Full physical and historical costs remain unknown.",
+      "archive_bytes": 361892,
+      "archive_sha256": "5a9962dc4db95f4db0b6bbf955e034235bfcc0a8c165e9dfe4397869781f7268",
+      "file_member_count": 273,
+      "manifest_path": "packets/bf42-source-freeze-common-fastforward-and-publication-history-v3/manifest.json",
+      "manifest_sha256": "1c6d0c3ec848aa949b351cdad09a8b783dde7799df49c8cfd052f70544222e47"
+    },
+    {
+      "packet_id": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1",
+      "scope": "Original Windows matrix-startup-diagnostic owner job: 1 selected cases executed, 1 passed, 0 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+      "archive_bytes": 17967716,
+      "archive_sha256": "4482994b3243513f0e324545cc12f6e5f22d172fab96f021740152f08bde6012",
+      "file_member_count": 19,
+      "manifest_path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/manifest.json",
+      "manifest_sha256": "6e09e27252f38fdaa230bccfa00265c5f9e7fb9cf557af9d452f43f643fb9d24"
+    },
+    {
+      "packet_id": "windows-fixture-owner-agentd-h7-qualification-bf42-v1",
+      "scope": "Original Windows agentd-h7-qualification owner job: 1 selected cases executed, 1 passed, 0 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+      "archive_bytes": 18043196,
+      "archive_sha256": "db3a43d4f70ad6dc8547916c97ecbaac10d564b52eec7d968b4c53ae5f8d672d",
+      "file_member_count": 24,
+      "manifest_path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/manifest.json",
+      "manifest_sha256": "98ae30e1f7ad2f73e31f36ab94729d63c0f39020095dc4acf1eee4bc416cfc9c"
+    },
+    {
+      "packet_id": "windows-fixture-owner-agentd-fleet-default-bf42-v1",
+      "scope": "Original Windows agentd-fleet-default owner job: 2 selected cases executed, 2 passed, 0 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+      "archive_bytes": 18040428,
+      "archive_sha256": "f1656cc57fbc672774e694ed4bb7885e2fdacf5b9fd7fed898964dc6eff1287d",
+      "file_member_count": 19,
+      "manifest_path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/manifest.json",
+      "manifest_sha256": "3dd4e64b2259c0a34d307f9bdd5968fb6a30032dd88c9cfbe4a8d608ca563038"
+    },
+    {
+      "packet_id": "windows-fixture-owner-cli-cloud-bf42-v1",
+      "scope": "Original Windows cli-cloud owner job: 1 selected cases executed, 1 passed, 0 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+      "archive_bytes": 18004732,
+      "archive_sha256": "db11066b80b9b6610e699ac3ad26fafcf1a4d3f5e42dcfdbc4b16194d851cce7",
+      "file_member_count": 19,
+      "manifest_path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/manifest.json",
+      "manifest_sha256": "a69cdf696181cfce298b8885a8bcfd123a676dd48d95d7d2edb07f9d7ee1b995"
+    },
+    {
+      "packet_id": "windows-fixture-owner-appserver-fixtures-bf42-v1",
+      "scope": "Original Windows appserver-fixtures owner job: 6 selected cases executed, 5 passed, 1 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+      "archive_bytes": 18111768,
+      "archive_sha256": "d4cdc6f963ce15d83ed4e92899c6b662b7d6a63bd85d75dfeffbf9162118dbff",
+      "file_member_count": 26,
+      "manifest_path": "packets/windows-fixture-owner-appserver-fixtures-bf42-v1/manifest.json",
+      "manifest_sha256": "26b504fb3644c631602710a5b30e1e5a0e0d937c7a0a67ecd2dceab09d9047e5"
+    },
+    {
+      "packet_id": "windows-fixture-owner-observer-history-bf42-v1",
+      "scope": "Original Windows observer preparation and publication history, including first Ruff-path ENOENT and unchanged v1/v2 originals, exact observer 5574 publication/readbacks, terminal run and read-only aggregate originals. Independently reconciled closed set: eleven executions, ten passed, one timeout, overall failure. The five native artifact ZIPs are retained in separately bound packets; no tests or aggregation reruns were performed to seal this packet.",
+      "archive_bytes": 102780,
+      "archive_sha256": "46ce0378c8bc75fa4e083e53d34b09ac27f6899f6e21e4f7034473b249c73a7f",
+      "file_member_count": 213,
+      "manifest_path": "packets/windows-fixture-owner-observer-history-bf42-v1/manifest.json",
+      "manifest_sha256": "1adeaa2bac887a47bc894e60f2b8ff973a9dd81d098414e385b253685fb4e47e"
+    },
+    {
+      "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+      "scope": "Original terminal blocking CI failure for API head bf42. Four native jobs actually checked out merge8828133f at the same tree; Windows2 has 3 failed targets, Windows4 has 2, macOS ARM has 3, and macOS Intel has 5 failed plus 2 timed-out targets. Two aggregation jobs add no test cases. Original repeated attempts, first errors, source bindings, full raw logs and snapshot cutoffs remain distinct. No reruns or scientific acceptance were performed.",
+      "archive_bytes": 507152,
+      "archive_sha256": "4beffe0dace6d56e657cc9a7f58346fb032bcf8251ca3831717cdc39802127c5",
+      "file_member_count": 235,
+      "manifest_path": "packets/bf42-original-full-ci-failure-snapshots002-003-v1/manifest.json",
+      "manifest_sha256": "5faba16c0a2cfc6a4739861bf2f4a8f3174b778035a8937363d6971c468037e5"
+    },
+    {
+      "packet_id": "bf42-original-ui-shared-history-native-v1",
+      "scope": "Original UI run 42553073250 shared API, five job logs, native/SDK artifacts, original partial download and failed readers, and successful one-artifact recovery. Per lane SDK 7, headless 29 and native 52 are distinct feature/profile executions with the 7 and 29 name sets contained in 52, not 88 unique cases. Actual source-head bf42, foundation merge 7450f0cb and native merge 52ebeefe have the same f7b tree and distinct commit identities. Merge identities are bound by original creation and execution records, not independent commit API retrieval. No device, real-task or stage advancement is claimed.",
+      "archive_bytes": 22567308,
+      "archive_sha256": "1e4dc0c00bf3f7c59c83fdfd2ad2f6f4ad5a1f723012bcfc9ad812b2fad8f8ce",
+      "file_member_count": 288,
+      "manifest_path": "packets/bf42-original-ui-shared-history-native-v1/manifest.json",
+      "manifest_sha256": "b5638eb46f379e223c8729d786efd145947931909b360117ffb5e002aa395808"
+    },
+    {
+      "packet_id": "bf42-original-ui-source-head-browser-v1",
+      "scope": "Original source-head bf42/f7b browser and gateway artifacts from UI run 42553073250: default 6, fixtures including sidebar 9, buffer-control 1 and gateway 7 actual reported scenario executions. Gateway contains six actual missing-owner-status cases plus one original SDK synthetic-sink control. Original capture bytes, manifests and report results are verified. The 60+78 captures and 138+438 semantic checks are observations, not additional cases. No pixel checker, browser or native test was rerun, and no human visual or physical IME/GPU/device qualification is claimed.",
+      "archive_bytes": 75093912,
+      "archive_sha256": "8fa3391d5c10c95516e63e015e185a893edbc7de8d9904a50853273ae28d9ab2",
+      "file_member_count": 75,
+      "manifest_path": "packets/bf42-original-ui-source-head-browser-v1/manifest.json",
+      "manifest_sha256": "942133de72ff6d9bb762f14c9cd2f0477134c7307e727c240f9204bd00efc45d"
+    },
+    {
+      "packet_id": "bf42-original-ui-base-merge-browser-v1",
+      "scope": "Original base-merge browser/gateway lane tested 7450f0cbe49443a2b78826a2786ac37889c60e76/f7b, separate from source head and the native-presentation merge. Original default 6, fixtures including sidebar 9, buffer-control 1 and gateway 7 reported scenario executions and image byte bindings are retained. Counts are not added across repeated attachments, feature profiles or source identities. No rerun, pixel-checker rerun, human visual review, executable-byte retention or physical-device qualification is inferred.",
+      "archive_bytes": 75166320,
+      "archive_sha256": "a207b056f809952903506e70678c4a0ea1aff4bac667e0c7f10b41ebd8e46e8a",
+      "file_member_count": 75,
+      "manifest_path": "packets/bf42-original-ui-base-merge-browser-v1/manifest.json",
+      "manifest_sha256": "dc1ddb9aaee1ff7529901b56fc81547ebcf5ccbb1dc61ceea7558e0fef824663"
+    },
+    {
+      "packet_id": "bf42-original-windows-regression-failure-v1",
+      "scope": "Original common-source Windows regression run 42553073234 completed with failure naturally. All 19 groups contain 167 distinct selected case executions: 158 clean passes, eight failures and one body-pass with LEAK. No JUnit was included in the original artifact; the original scope, raw nextest status and summary lines and receipts establish the accounting. Deletion-route controls completed on the ordinary host before the unchanged legacy FILE_DELETE_CHILD refusal. The original collector ACK timeout was reconciled with the exact same key and no replay; no native test was rerun. Unselected cases, leaky bodies and missing full-history costs are not counted as passes or zero cost.",
+      "archive_bytes": 169124,
+      "archive_sha256": "fb52c5cd35c1b8208052757d66d26de27cfe3636bb4eec069fdc204a6db844cc",
+      "file_member_count": 45,
+      "manifest_path": "packets/bf42-original-windows-regression-failure-v1/manifest.json",
+      "manifest_sha256": "9412b097d6fa53f901deb1a4363bcaaeae2b8f12fe4af476dbf22a669f8567e2"
+    },
+    {
+      "packet_id": "e54-learning-checkpoint-native-history-v1",
+      "scope": "Isolated e54/dfd0 learning-checkpoint delivery history: original owning strict preparation, exact 13 component cases, and one actual Root parent case with a live UID 60001 consumer through fresh sealed handoffs, restore, CAS conflict, committed lost ACK and revocation. The child fixture is not another acceptance case. Original 0eed compile failure and 9d Root noexec failure plus post-reader PermissionDenied are retained at their original identities. Elapsed lease expiry was not independently tested. Large retained binaries remain host-only. This is no ordinary daemon installation, real learner/model run, complete workspace pass, scientific qualification, or complete historical cost.",
+      "archive_bytes": 3618492,
+      "archive_sha256": "7c51d224ad2638ab810ba97f1aba9dadf8e7a06a36e6f9821d1a65e019dd1d87",
+      "file_member_count": 254,
+      "manifest_path": "packets/e54-learning-checkpoint-native-history-v1/manifest.json",
+      "manifest_sha256": "46d735d89f616023d9f71a66d9ff4edd849eebdf1f40988d0bdec08690315f6b"
+    },
+    {
+      "packet_id": "e54-learning-checkpoint-source-publication-history-v1",
+      "scope": "Exact e54/dfd0 source/preparation, original 9d and e54 caller receipts, and normal quiet-branch Git/API publication. Final source full caller scan passed in 400.582825327 seconds within its original 600-second budget; it is not a native case count. Actual common before/after stayed bf42/f7b clean with unchanged CURRENT c8b2. The packet SCOPE pins the separate original native archive and keeps ordinary_daemon_installed, all_learning_ports_available, real_learning_dataset_or_model_executed and published successor qualification false. Engineering failures and transport rejections remain visible. No common/evidence append or source qualification was performed by this preparation.",
+      "archive_bytes": 415064,
+      "archive_sha256": "b94387249400ba0f841a3862ceb93d6bbbdf6251e2090dfb230a12f4665f14ce",
+      "file_member_count": 219,
+      "manifest_path": "packets/e54-learning-checkpoint-source-publication-history-v1/manifest.json",
+      "manifest_sha256": "f004522e194d736935310f44f56e90ef5fceea37faec192f118637f1476f6b62"
+    }
+  ],
+  "max_chunk_bytes": 490000,
+  "complete_execution_history": false,
+  "physical_cost": null,
+  "cpu_seconds": null,
+  "learning_cost": null,
+  "full_history_cost": null,
+  "full_history_cost_known": false,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "stage_advancement_claimed": false,
+  "publication_commit_location": "external_git_readback_receipt",
+  "source_branch_mutated_by_publication": false,
+  "counts_and_wall_times_must_not_be_added_across_packets": true,
+  "preceding_evidence_commit": "5a3137e8ed198a07eb63bd97b5bb639f4471011f",
+  "latest_reviewed_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "latest_reviewed_common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "increment003_original_metadata_observations": [
+    {
+      "path": "observations/followup4-d1b32a6-strict-preparation.json",
+      "bytes": 7722,
+      "sha256": "1e10f137637a98b41787bcb1fec14e9b66484a1ef97d294ec694e0d25ef0615f"
+    },
+    {
+      "path": "observations/independent-review-followup4-stage.json",
+      "bytes": 7187,
+      "sha256": "232477fefcba193832b59d1c0c633cd1e6036c9e79102e550a185fd013e3437f"
+    },
+    {
+      "path": "observations/windows-followup4-observer-publication-v1/RESULT.json",
+      "bytes": 1185,
+      "sha256": "003d743ff36e34f4ce3d3d7ef2e1aaea1083b084ab22e88c1f68bd57ba9fef8b"
+    },
+    {
+      "path": "observations/windows-legacy-summary-CORRECTION-v1.json",
+      "bytes": 6851,
+      "sha256": "ac48183f696af7d4505bda1db5d2a7f0a523e1ccb1592c54596f56c2366a40e4"
+    },
+    {
+      "path": "observations/windows-legacy-readonly-AUDIT-d1-v1.json",
+      "bytes": 41792,
+      "sha256": "aa7678a0857b5d11326a3c52aa322de596a896fd9cb8345395080c55fb110fa1"
+    },
+    {
+      "path": "observations/windows-legacy-source-BINDING-d1-v1.json",
+      "bytes": 4346,
+      "sha256": "c8296605138151f214db6ab785047622697f908e8e9225d9745498c9b0a345dd"
+    },
+    {
+      "path": "observations/native-ci-ba4-artifacts-v1/VERIFIED_OBSERVATIONS.json",
+      "bytes": 57195,
+      "sha256": "fcdfa1ec9d59934b3d5b6d731fc02c25d1a9d89e83abff58a0b6cd61037649a9"
+    },
+    {
+      "path": "observations/ci-ba4e-current-snapshot-006/SUMMARY.json",
+      "bytes": 7384,
+      "sha256": "90361b0ed19a884df9684a8bc11a84ac8af23f234b9731a6096ad6d0c3951c30"
+    },
+    {
+      "path": "observations/operator-bazel-ci-42546897394-v1/INDEPENDENT_ANALYSIS.json",
+      "bytes": 10396,
+      "sha256": "b4813509a1b79013d239eda4271448c78261d8eb7bd57e535c3e7177d5ecd409"
+    },
+    {
+      "path": "observations/windows-fixture-eleven-82-partial-packet-v1/CASE_ANALYSIS.json",
+      "bytes": 23557,
+      "sha256": "925ad2c5b0c5731e3bc54e5f978c850f477539c9e522394db644f6ee19101bba"
+    }
+  ],
+  "windows_82_eleven_case_original_partial": {
+    "source_sha": "82ff5119200cab9d65461eb62a3829567fbc2e8f",
+    "run_id": 42540772106,
+    "conclusion": "cancelled_at_original_65_minute_limit",
+    "executed": 4,
+    "passed": 2,
+    "failed": 2,
+    "not_executed": 7,
+    "selected_skipped": 0,
+    "leaky_observed": 0,
+    "complete_scope_passed": false,
+    "matrix_discovery_started": true,
+    "unexecuted_cost_assumed_zero": false
+  },
+  "original_windows_count_correction": {
+    "run_id": 42534602318,
+    "original_archive_sha256": "bd27ffa81e5c2f6274aea9be640d1e8bf6fb3c688be5472deb1e7d17433c8f5c",
+    "prior_prose_label": "7+2 FAIL",
+    "first_group": {
+      "executed": 7,
+      "failed": 6,
+      "passed_but_leaky": 1,
+      "clean_passed": 0
+    },
+    "delete_group": {
+      "executed": 2,
+      "failed": 2,
+      "clean_passed": 0
+    },
+    "original_observer_already_rejected_leak": true,
+    "original_packet_bytes_preserved": true,
+    "correction_path": "observations/windows-legacy-summary-CORRECTION-v1.json"
+  },
+  "lock_identity_scope": "unchanged_Git_source_blobs_platform_working_tree_hashes_preserved_separately",
+  "preceding_checkpoint_successor_status": {
+    "evidence_commit": "4628cc139cc8067b1fa42713aa80c32c819e4e48",
+    "index_sha256": "c87b370cf668f143f08b74fd3b0e0f51d34023f6c611828c8538387039cdc388",
+    "source_sha": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+    "source_tree": "f95a33684df6aac0a32326e20b63d4017d7b1968",
+    "original_fields": {
+      "isolated_followup_source_sha": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+      "isolated_followup_source_tree": "f95a33684df6aac0a32326e20b63d4017d7b1968",
+      "latest_successor_selected_linux_native_passed": true,
+      "latest_successor_selected_linux_case_count": 38,
+      "latest_successor_full_workspace_passed": false,
+      "latest_successor_full_workspace_execution": "not_run",
+      "latest_successor_windows_result_claimed": true,
+      "latest_successor_windows_result_scope": "original_operator_Bazel_target_only",
+      "latest_successor_windows_original_operator_case_count": 33,
+      "latest_successor_full_windows_passed": false,
+      "first_successor_bazel_observer_native_execution": "not_run"
+    }
+  },
+  "historical_ba4_original_native_ci": {
+    "source_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1",
+    "run_id": 42534597157,
+    "default_workspace_passed_unique": 20563,
+    "default_workspace_raw_skipped": 139,
+    "scoped_passed_subset": 7910,
+    "mechanisms_passed_subset": 1215,
+    "separate_original_hostcas_passed": 1,
+    "scope_counts_added": false,
+    "all_feature_combinations_qualified": false,
+    "full_history_cost": null
+  },
+  "historical_ba4_repository_ci_status": {
+    "source_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1",
+    "index_sha256": "c87b370cf668f143f08b74fd3b0e0f51d34023f6c611828c8538387039cdc388",
+    "common_full_repository_ci_green": false
+  },
+  "current_common_validation": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+    "local_python": {
+      "packet_id": "bf42-python130-full-caller-originals-v1",
+      "independent_unit_cases_passed": 130,
+      "full_caller_passed": true,
+      "full_caller_elapsed_seconds": 380.6801889021881,
+      "full_caller_budget_seconds": 600,
+      "source_unchanged": true
+    },
+    "local_strict_preparation": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "prepared_clean",
+      "scope": "Same-source V8 and helper plus owning agentd qualification-cognitive-write just fix and read-only clippy; previous owners' unchanged-source preparations retain their own historical identities.",
+      "source_unchanged": true
+    },
+    "local_selected_native": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "PASS",
+      "selected_unique_cases_executed": 38,
+      "selected_unique_cases_passed": 38,
+      "selected_skips": 0,
+      "retries": 0,
+      "raw_nextest_leak_readback": "NO_NEXTEST_LEAK_OBSERVED",
+      "full_workspace": false,
+      "windows_execution": false,
+      "source_unchanged": true,
+      "filter_excluded_counts_not_added": true
+    },
+    "full_repository_ci": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "run_id": 42553073160,
+      "state": "completed",
+      "conclusion": "failure",
+      "green": false,
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+      "completion_result_included": true,
+      "actual_native_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+      "actual_native_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "same_tree_not_same_commit": true,
+      "full_post_build_working_tree_byte_snapshot": false,
+      "final_target_outcomes_not_case_counts": {
+        "128953043649": {
+          "failed": 3,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128953043675": {
+          "failed": 3,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128953043702": {
+          "failed": 5,
+          "flaky": 0,
+          "timeout": 2
+        },
+        "128953043792": {
+          "failed": 2,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128957722404": {
+          "additional_cases": 0,
+          "aggregation_only": true
+        },
+        "128961511532": {
+          "additional_cases": 0,
+          "aggregation_only": true
+        }
+      },
+      "original_failed_attempts_retained": true,
+      "all_common_workflows_terminal_at_cutoff": false
+    },
+    "independent_grouped_windows_result_included": true,
+    "ui_diagnostic_source_qualified_as_common": false,
+    "scientific_qualification_performed": false,
+    "full_history_cost": null,
+    "physical_cost": null,
+    "stage_advancement_claimed": false,
+    "independent_grouped_windows": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+      "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+      "run_id": 42550332155,
+      "terminal_status": "completed",
+      "terminal_conclusion": "failure",
+      "whole_selected_scope_passed": false,
+      "selected_executed": 11,
+      "selected_passed": 10,
+      "selected_failed": 1,
+      "selected_timeouts": 1,
+      "selected_skipped": 0,
+      "retry_records": 0,
+      "raw_leak_markers": 0,
+      "explicit_guard_skip_markers": 0,
+      "groups": [
+        {
+          "group": "matrix-startup-diagnostic",
+          "packet_id": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-matrix-sdk",
+              "name": "sdk::startup_deadline_tests::expired_finalization_rejects_success_without_erasing_a_written_session",
+              "time_seconds": "5.831",
+              "forbidden_nodes": []
+            }
+          ]
+        },
+        {
+          "group": "agentd-h7-qualification",
+          "packet_id": "windows-fixture-owner-agentd-h7-qualification-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+              "time_seconds": "2.480",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "agentd-fleet-default",
+          "packet_id": "windows-fixture-owner-agentd-fleet-default-bf42-v1",
+          "executed": 2,
+          "passed": 2,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+              "time_seconds": "2.339",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+              "time_seconds": "0.820",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "cli-cloud",
+          "packet_id": "windows-fixture-owner-cli-cloud-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-cli::sandbox_cloud_config",
+              "name": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+              "time_seconds": "31.998",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "appserver-fixtures",
+          "packet_id": "windows-fixture-owner-appserver-fixtures-bf42-v1",
+          "executed": 6,
+          "passed": 5,
+          "failed": 1,
+          "selected_scope_passed": false,
+          "cases": [
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+              "time_seconds": "60.015",
+              "problems": [
+                {
+                  "kind": "failure",
+                  "attributes": {
+                    "type": "test timeout"
+                  }
+                }
+              ],
+              "xml_passed": false
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_1_inherits_parent_developer_instructions_without_an_override",
+              "time_seconds": "1.535",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_2_reapplies_configured_subagent_developer_instructions",
+              "time_seconds": "1.488",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_3_reapplies_updated_configured_role_settings_and_restores_paginated_usage",
+              "time_seconds": "1.856",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_4_reapplies_an_implicitly_selected_configured_default_role",
+              "time_seconds": "1.456",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+              "time_seconds": "4.636",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        }
+      ],
+      "history_packet_id": "windows-fixture-owner-observer-history-bf42-v1",
+      "additional_topology": "five independent 65-minute owner jobs and an independent read-only aggregate",
+      "original_single_job_result_superseded": false,
+      "full_workspace_passed": false,
+      "full_history_cost": null,
+      "scientific_qualification_performed": false
+    },
+    "initial_full_repository_registration_observation": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "state": "pending_or_in_progress_at_publication_readback",
+      "conclusion": null,
+      "green": null,
+      "observation_cutoff": "2026-11-09T02:50:20.636321Z",
+      "registration_packet_id": "bf42-source-freeze-common-fastforward-and-publication-history-v3",
+      "initial_run_ids": {
+        "native": 42553066862,
+        "blocking": 42553073160,
+        "ui": 42553073250,
+        "windows": 42553073234
+      },
+      "completion_result_included": false
+    },
+    "ui_workflow_api_observation": {
+      "source_api_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "run_id": 42553073250,
+      "state": "completed",
+      "conclusion": "success",
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+      "complete_original_case_results_qualified": false,
+      "base_and_source_lanes_must_keep_separate_identities": true
+    },
+    "remaining_common_ci_at_cutoff": {
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "scope": [
+        "native composition",
+        "original Windows regressions",
+        "Windows arm64 V8",
+        "Windows x64 V8"
+      ],
+      "state": "in_progress_at_cutoff",
+      "later_results_inferred": false
+    },
+    "original_windows_regression": {
+      "packet_id": "bf42-original-windows-regression-failure-v1",
+      "run_id": 42553073234,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "terminal_status": "completed",
+      "conclusion": "failure",
+      "groups": 19,
+      "clean_passing_groups": 17,
+      "unique_selected_executed": 167,
+      "clean_passed": 158,
+      "failed": 8,
+      "passed_but_leaky": 1,
+      "selected_skips": 0,
+      "retries_observed": false,
+      "junit_available": false,
+      "whole_declared_scope_passed": false,
+      "source_binding": "original_checkout_and_before_after_git_identity_and_lock",
+      "full_source_byte_inventory_available": false
+    },
+    "original_ui_readback": {
+      "run_id": 42553073250,
+      "run_attempt": 1,
+      "conclusion": "success",
+      "packets": [
+        "bf42-original-ui-shared-history-native-v1",
+        "bf42-original-ui-source-head-browser-v1",
+        "bf42-original-ui-base-merge-browser-v1"
+      ],
+      "case_level_readback": "verified_original_scopes_only",
+      "tested_commits": {
+        "source_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+        "rust_ui_foundation_base_merge": "7450f0cbe49443a2b78826a2786ac37889c60e76",
+        "native_presentation_base_merge": "52ebeefecb4ab2d2fbb3e69100ab3773df0b8ea5"
+      },
+      "all_three_tested_trees": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "same_tree_not_same_commit": true,
+      "merge_identities_independently_fetched_through_commit_api": false,
+      "per_lane_library_executions": {
+        "sdk": 7,
+        "headless": 29,
+        "native": 52
+      },
+      "headless_and_sdk_name_sets_are_subsets_of_native": true,
+      "counts_are_not_summed_as_unique_cases": true,
+      "per_browser_lane_scenario_executions": {
+        "default": 6,
+        "fixtures_including_sidebar": 9,
+        "buffer_control": 1,
+        "gateway": 7
+      },
+      "gateway_includes_one_original_sdk_synthetic_sink_control": true,
+      "per_browser_lane_capture_observations_not_cases": {
+        "default": 60,
+        "fixtures": 78
+      },
+      "physical_device_or_full_product_qualification": false,
+      "new_tests_executed_by_readback": false,
+      "full_history_cost": null
+    },
+    "latest_common_ci_api_observation": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observation_cutoff": "2026-11-09T04:41:07.054469+00:00",
+      "summary_original_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-current-snapshot-006/SUMMARY.json",
+      "summary_original_bytes": 7032,
+      "summary_original_sha256": "d4826f12f62bf013da903e12065de8092f572558f641f590b5ecbf5b7d438fdf",
+      "workflow_run_count": 18,
+      "all_run_api_head_sha_equal_common": true,
+      "all_common_workflows_terminal": false,
+      "in_progress_job_ids": [
+        128952701454,
+        128953446740
+      ],
+      "run_observations": [
+        {
+          "id": 42553073435,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073516,
+          "name": "v8-canary",
+          "status": "in_progress",
+          "conclusion": null,
+          "nonpassing_jobs": [
+            {
+              "id": 128953446740,
+              "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-11-09T02:53:05Z",
+              "completed_at": null,
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073516/job/128953446740"
+            }
+          ]
+        },
+        {
+          "id": 42553073264,
+          "name": "Hepta HCSN training bridge",
+          "status": "completed",
+          "conclusion": "skipped",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073130,
+          "name": "App-server schema refresh",
+          "status": "completed",
+          "conclusion": "skipped",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073141,
+          "name": "Production HOS2 owner proposal",
+          "status": "completed",
+          "conclusion": "skipped",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073121,
+          "name": "Hepta Cell research stage evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073195,
+          "name": "Hepta PRED-1 CPU checks",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073191,
+          "name": "Hepta MEM-1 evidence verifier",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073280,
+          "name": "Hepta EVOLVE-1 CPU contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073159,
+          "name": "Hepta VERIFY-1 engineering validation",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073323,
+          "name": "Keyring synchronous backend lock proposal",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073131,
+          "name": "Bazel stable lock proposal",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073250,
+          "name": "Rust UI product foundation",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073160,
+          "name": "blocking-ci",
+          "status": "completed",
+          "conclusion": "failure",
+          "nonpassing_jobs": [
+            {
+              "id": 128953043649,
+              "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:51:34Z",
+              "completed_at": "2026-11-09T03:05:52Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043649"
+            },
+            {
+              "id": 128953043675,
+              "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:52:24Z",
+              "completed_at": "2026-11-09T03:09:09Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043675"
+            },
+            {
+              "id": 128953043702,
+              "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:52:13Z",
+              "completed_at": "2026-11-09T03:21:17Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043702"
+            },
+            {
+              "id": 128953043792,
+              "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:52:25Z",
+              "completed_at": "2026-11-09T03:06:54Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043792"
+            },
+            {
+              "id": 128957722404,
+              "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T03:08:57Z",
+              "completed_at": "2026-11-09T03:09:00Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128957722404"
+            },
+            {
+              "id": 128961511532,
+              "name": "CI required",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T03:25:12Z",
+              "completed_at": "2026-11-09T03:25:24Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128961511532"
+            }
+          ]
+        },
+        {
+          "id": 42553073125,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073234,
+          "name": "Windows original CI regressions (declared scope only)",
+          "status": "completed",
+          "conclusion": "failure",
+          "nonpassing_jobs": [
+            {
+              "id": 128952720859,
+              "name": "original-regressions",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:50:38Z",
+              "completed_at": "2026-11-09T03:51:04Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073234/job/128952720859"
+            }
+          ]
+        },
+        {
+          "id": 42553066841,
+          "name": "Hepta Cell research stage evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553066862,
+          "name": "Hepta Cell framework native validation",
+          "status": "in_progress",
+          "conclusion": null,
+          "nonpassing_jobs": [
+            {
+              "id": 128952701454,
+              "name": "Cell framework (agentd-composition)",
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-11-09T02:50:44Z",
+              "completed_at": null,
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553066862/job/128952701454"
+            }
+          ]
+        }
+      ],
+      "observation_scope": "Original GitHub API workflow/job state only, not native case counts or new test execution. Prior cutoffs and their case evidence remain unchanged.",
+      "api_status_is_not_case_result": true,
+      "scientific_advancement_claimed": false,
+      "physical_cost": null,
+      "full_history_cost": null
+    }
+  },
+  "common_full_repository_ci_green": false,
+  "increment004_original_metadata_observations": [
+    {
+      "path": "observations/evidence-addendum-increment-004a/RESULT.json",
+      "bytes": 7973,
+      "sha256": "c7aa6a73708861f6946dfaea62eb2c529122ddb958f7aef27907073765c5ba83"
+    },
+    {
+      "path": "observations/common-bf42-publication-v1/RESULT.json",
+      "bytes": 10498,
+      "sha256": "e07bfd14ed0e7591dc73cbe4255282d05fc95212ca83c7d0bef7d7f0630d63ac"
+    },
+    {
+      "path": "observations/pr5397-status006-update-v1/RESULT.json",
+      "bytes": 1154,
+      "sha256": "4b71609a093b17d90e92e9529d63b255d0c700d7f22779f93664197c2ce68a19"
+    },
+    {
+      "path": "observations/followup-source-history-sealed-v3/RESULT.json",
+      "bytes": 1588,
+      "sha256": "d5955a05a50ea63dbde51d0e2361ac228b09bfd609240e07bd9788036c947dc5"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-004b/RESULT.json",
+      "bytes": 6537,
+      "sha256": "207ed63b17b0f221342a067d6fa22bb2998578eadc8378ebefa97152c3a4d328"
+    },
+    {
+      "path": "observations/ci-bf42-current-snapshot-003/SUMMARY.json",
+      "bytes": 7408,
+      "sha256": "e6ca91aed884d39101751837c9730664f724c3273dc3be88aa1a5180c165fcc4"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-004c/RESULT.json",
+      "bytes": 2426,
+      "sha256": "4a484562bdb24ed64a8e3dbd134c0fe1d47daf5de23f83e9323fb6913068e438"
+    },
+    {
+      "path": "observations/ci-bf42-failure-evidence-002-003-v1/RESULT.json",
+      "bytes": 2164,
+      "sha256": "852c852c718e84e8de749050dc82e0846b498d9c5c03d5321c2538a312ed008d"
+    },
+    {
+      "path": "observations/append-evidence-increment-004-v2.py",
+      "bytes": 13571,
+      "sha256": "54a2e973d1d3305f0fecbd8c9198603059cf0c38df884307cb6ad13787fa308d"
+    },
+    {
+      "path": "observations/append-evidence-increment-004-v3.py",
+      "bytes": 13820,
+      "sha256": "6677b9fb074d1c353797c496beea978187336048f0ab05fa1d9f0210f3adee2e"
+    },
+    {
+      "path": "observations/publish-evidence-increment-004-v1.py",
+      "bytes": 11921,
+      "sha256": "ad0172b917d64d50296dc82be018dcfd33c5e1ef81b3bfb2bb6d2aeb8813b0ae"
+    }
+  ],
+  "increment005_original_metadata_observations": [
+    {
+      "path": "observations/evidence-addendum-increment-005a/RESULT.json",
+      "bytes": 5635,
+      "sha256": "aafcd6aec808a46462dda1f1b3ff6f6423bed21d4d9e0f4c2b988d5980cfe6bb"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-005b/RESULT.json",
+      "bytes": 3796,
+      "sha256": "17c7be2da832207a6307e05ca2e0dad9676ccf4957a4609343cb8b7f9502143f"
+    },
+    {
+      "path": "observations/evidence-increment004-publication-v1/RESULT.json",
+      "bytes": 3543,
+      "sha256": "607e2ded5d1eaa5f4df6477e4087a5f9162849189899d7776ed30e4be56e2bf4"
+    },
+    {
+      "path": "observations/pr5397-status007-update-v1/RESULT.json",
+      "bytes": 1063,
+      "sha256": "36aa8a236e262976e8808d125fe90277217fbc1bf0f23205515ccddb318db7aa"
+    },
+    {
+      "path": "observations/ci-bf42-current-snapshot-006/SUMMARY.json",
+      "bytes": 7032,
+      "sha256": "d4826f12f62bf013da903e12065de8092f572558f641f590b5ecbf5b7d438fdf"
+    },
+    {
+      "path": "observations/ci-bf42-ui-evidence-packets-v1/RESULT.json",
+      "bytes": 6526,
+      "sha256": "e236b8e5dc6ff9a83982e55f4b51478bf26c930223fae4360669bae0e189da10"
+    },
+    {
+      "path": "observations/ci-bf42-windows-original-evidence-v1/RESULT.json",
+      "bytes": 2174,
+      "sha256": "fbba8f7d4b53399035d039a608b8e29ce72d264fd45d4c670540f9bded20f038"
+    },
+    {
+      "path": "observations/learning-checkpoint-desktop-history-v1/SUMMARY.json",
+      "bytes": 2326,
+      "sha256": "24418d88d0bcb553b056a5cb45bc50f4c1094a997794b4c35ddf231aaa56ed8e"
+    },
+    {
+      "path": "observations/learning-checkpoint-quiet-publication-v1/publication.json",
+      "bytes": 14447,
+      "sha256": "278e73a458e6f941c4eb1eb97e9b19f3d34599ecfa6e5a55e92fb941fd35feb5"
+    },
+    {
+      "path": "observations/learning-checkpoint-desktop-history-v1/SCOPE.json",
+      "bytes": 3567,
+      "sha256": "32a269bb3c22b181acdc45e1b2d12910cc08ebe75e07a192ac84108a84d9fdfc"
+    },
+    {
+      "path": "observations/append-evidence-increment-005-v1.py",
+      "bytes": 13820,
+      "sha256": "08e78ae5af235d13bab508ca55531a85e9ea0b0193233c8108e3633d0fd614c9"
+    },
+    {
+      "path": "observations/publish-evidence-increment-005-v1.py",
+      "bytes": 11935,
+      "sha256": "1642b2b365dbe0058c9800556cdb159e76b1608c26e3f2eaf1502171c661a2e7"
+    }
+  ]
+}

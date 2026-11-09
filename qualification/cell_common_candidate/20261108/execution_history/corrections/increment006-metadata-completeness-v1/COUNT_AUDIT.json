@@ -1,0 +1,25 @@
+{
+  "status": "original_reported_local_file_count_and_committed_count_disambiguated",
+  "parent_commit": "a9116a22d4cc429e9b34a1327bcb3945280d72d4",
+  "parent_tree": "cc2aabdda8e465e88279b858e940ce62dd83273f",
+  "index_sha256": "3a2771028bdcb0778eb4266a02994255d63e7875a1996d2fe6411e800f934664",
+  "original_publication_result_sha256": "2a47c7ae33765e64c12c6e32ce2614078077b8dac048bb10e4b1cb069ee30260",
+  "original_reported_published_file_count": 1140,
+  "actual_parent_committed_evidence_subtree_file_count": 1139,
+  "observed_unchanged_local_evidence_subtree_file_count": 1140,
+  "local_minus_committed_paths": [
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-006a/VERIFY.log"
+  ],
+  "committed_minus_local_paths": [],
+  "root_index_has_published_file_count_field": false,
+  "root_index_packet_count": 81,
+  "root_index_archive_member_entries_with_overlap": 9136,
+  "root_index_counts_are_not_Git_tracked_file_counts": true,
+  "original_reported_value_retained_not_overwritten": true,
+  "root_cause": "The original publisher used a working-tree rglob count, which included the ignored VERIFY.log.",
+  "git_tree_listing_sha256": "94f5096ce74902e14da9990045a64115b091096f1298dfae384beef59b9cfedd",
+  "new_tests_executed": false,
+  "physical_cost": null,
+  "full_history_cost": null,
+  "observed_at": "2026-11-09T07:08:15.798873+00:00"
+}

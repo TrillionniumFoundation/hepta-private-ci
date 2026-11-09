@@ -1,0 +1,123 @@
+{
+  "phase": "increment-006a",
+  "status": "appended_verified_not_committed",
+  "prior_head": "97543a30b941122ee42c99ab95c2dbf639ac6576",
+  "packet_count": 81,
+  "added_packets": [
+    {
+      "packet_id": "bf42-original-native-terminal-failure-v1",
+      "scope": "Original bf42 native CI terminal failure with raw/JUnit case closure, original retries and overlap retained",
+      "archive_bytes": 6453120,
+      "archive_sha256": "93bd9903de1191055d6a1811d4b2ba7fed401e1fd4261c653df5fdcdbd1fd19a",
+      "file_member_count": 234,
+      "manifest_path": "packets/bf42-original-native-terminal-failure-v1/manifest.json",
+      "manifest_sha256": "792a753660b0ae9b82e74431cfe4a72741e9ea02bda6cf8d462e41862e7cdbee"
+    },
+    {
+      "packet_id": "windows-appserver-bazel-preparation-attempt1-recovery-request-v1",
+      "scope": "Separate 3f084 Bazel observer preparation/publication and first dependency failure plus one authorized recovery request; native zero",
+      "archive_bytes": 3290756,
+      "archive_sha256": "66cf86773b716105694c61d307ab34f4c766e32bb6d5bfb606401419bf9d50a3",
+      "file_member_count": 332,
+      "manifest_path": "packets/windows-appserver-bazel-preparation-attempt1-recovery-request-v1/manifest.json",
+      "manifest_sha256": "9bff8f16b59ad527719b2985f801d1a94f1d21142d57a9d5d77bd08f36c3b623"
+    },
+    {
+      "packet_id": "windows-appserver-bazel-attempt2-dependency-failure-v1",
+      "scope": "Same separate 3f084/b61 observer second dependency GET504 failure, all original bytes and idempotent collector reconciliation; native zero",
+      "archive_bytes": 3136204,
+      "archive_sha256": "05be50a6a4beb82b236e63d284b83bc9c97fab145243d8bc247b0980eef1dfc5",
+      "file_member_count": 79,
+      "manifest_path": "packets/windows-appserver-bazel-attempt2-dependency-failure-v1/manifest.json",
+      "manifest_sha256": "e8158d0f77e81d9a60eee4f0039f8c18e04455368826b137943cbf18282c30b5"
+    },
+    {
+      "packet_id": "evidence-increment005-three-upload-attempts-and-readbacks-v1",
+      "scope": "Three original uploads of identical evidence commit, failed/unknown attempts, readonly reconciliation and final remote readback; no tests",
+      "archive_bytes": 66424,
+      "archive_sha256": "66e9e35f03bf605ab75b0c99e32e3d13269c718153ff1cb3eda59c7d503069d3",
+      "file_member_count": 243,
+      "manifest_path": "packets/evidence-increment005-three-upload-attempts-and-readbacks-v1/manifest.json",
+      "manifest_sha256": "dd37d9aeededcec00be3b2fc304614a4345ee42cb7f79f76efec5d2263ad510c"
+    },
+    {
+      "packet_id": "windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1",
+      "scope": "Separate a57 missing-Clippy and 5eee actual fixture compilation failures, native zero; 3f084 successor publication at its original pending cutoff",
+      "archive_bytes": 60379436,
+      "archive_sha256": "b9c36855ed79e25f2e3b572efed0720390a274eae38445d71daddc7c49165d40",
+      "file_member_count": 454,
+      "manifest_path": "packets/windows-cargo-observer-a57-5eee-original-failures-and-3f084-publication-v1/manifest.json",
+      "manifest_sha256": "d22f38312d442c4de616534daf8f35f0da996de3d9ba4a29cda63bc31146e1ee"
+    },
+    {
+      "packet_id": "windows-appserver-3f084-two-V8-download-failures-v1",
+      "scope": "Two original same-source Cargo observer V8 HTTP504 failures; unique five selected cases all not run, one explicit recovery only",
+      "archive_bytes": 470808,
+      "archive_sha256": "47d9e17ea3011467b45959b90568b0330e790afef6d41e4ea6ccce8388c25567",
+      "file_member_count": 141,
+      "manifest_path": "packets/windows-appserver-3f084-two-V8-download-failures-v1/manifest.json",
+      "manifest_sha256": "2be4b81293c47c1643be95098759abc08528e353d9f52096f99f42e2e08746d5"
+    },
+    {
+      "packet_id": "appserver-3f084-native-owning-and-bfcbdb2-counterfactual-history-v1",
+      "scope": "Separate 3f084 Linux owning 1348 PASS/2 ignored and original-broadcast counterfactual two actual FAIL, plus all bounded preparation/readback histories; 27 binaries host-only",
+      "archive_bytes": 4358348,
+      "archive_sha256": "dd1a594cc460905bfc47cb0d3050e6dbb9335526954905f39558738d7dc99f3d",
+      "file_member_count": 418,
+      "manifest_path": "packets/appserver-3f084-native-owning-and-bfcbdb2-counterfactual-history-v1/manifest.json",
+      "manifest_sha256": "2d1f10e383c0e347cd955be88fa85955ceb8c7c85e57f9803339dd1bb0511732"
+    },
+    {
+      "packet_id": "learning-checkpoint-next-bootstrap-review-e54-v1",
+      "scope": "Separate e54 readonly next-bootstrap boundary audit; existing tested checkpoint transport is not ordinary-daemon learning installation or new execution",
+      "archive_bytes": 56712,
+      "archive_sha256": "d61f5f8509c1089d0d871d599a068b968e15c2b51d74be284a35e92add5d1e8a",
+      "file_member_count": 40,
+      "manifest_path": "packets/learning-checkpoint-next-bootstrap-review-e54-v1/manifest.json",
+      "manifest_sha256": "715b05b60d117e4539607f5c4ce933abd474a6e204e50491576a4b298e685e88"
+    },
+    {
+      "packet_id": "bf42-original-ci-api-snapshots007-008-terminal-v1",
+      "scope": "Original API-only snapshots007 and008; terminal18 runs 12success/3skipped/3failure; repeated run observations not test executions",
+      "archive_bytes": 36168,
+      "archive_sha256": "ded93291d9b023704d8be4c75f5600028bfe0b9dc22c74994d67e9c76d7e49a5",
+      "file_member_count": 145,
+      "manifest_path": "packets/bf42-original-ci-api-snapshots007-008-terminal-v1/manifest.json",
+      "manifest_sha256": "708f84ef33424e5191e4ef07b0d8fe10931b2fa60eb0abd1421e31b7b416802a"
+    }
+  ],
+  "prior_packet_bytes_unchanged": true,
+  "manifest_sha256": "0a39abef29aaecb84805cd02eb546285ed52a460bb4acc69edc19c433ab5fce6",
+  "pattern_review": {
+    "phase": "increment-006a",
+    "input_sha256": "9b843f8b5f55aff31be778170b6fe48755886ccc947f00b2a1d46b0bbab7fae4",
+    "inspected_member_count_with_overlap": 2487,
+    "patterns": [
+      "github_token_shape",
+      "openai_token_shape",
+      "private_key_block",
+      "aws_access_key_shape"
+    ],
+    "findings": [],
+    "not_a_complete_secret_detection_claim": true
+  },
+  "original_72_packet_index_entries_unchanged": true,
+  "common_before": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "branch": "codex/cell-s0-common-20261108-898e",
+    "status": "",
+    "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+  },
+  "common_after": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "branch": "codex/cell-s0-common-20261108-898e",
+    "status": "",
+    "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+  },
+  "required_json_bindings_verified": true,
+  "new_tests_executed": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false
+}
