@@ -159,6 +159,32 @@ pub(super) struct BoundLanes {
     listeners: Vec<(HostAuthorityLane, UnixListener)>,
 }
 
+pub(super) struct BoundLearningListener {
+    _guard: SocketGuard,
+    pub(super) listener: UnixListener,
+}
+
+/// Bind one explicitly selected learning endpoint without changing the fixed
+/// lane roster. Cleanup owns only the socket inode created by this call.
+pub(super) fn bind_learning_listener(
+    endpoint: &std::path::PathBuf,
+    peer_gid: u32,
+) -> io::Result<BoundLearningListener> {
+    validate_lane_paths(&[endpoint], peer_gid)?;
+    let listener = UnixListener::bind(endpoint)?;
+    let metadata = std::fs::symlink_metadata(endpoint)?;
+    let guard = SocketGuard(vec![(endpoint.clone(), metadata.dev(), metadata.ino())]);
+    if metadata.uid() != 0 || metadata.gid() != peer_gid {
+        return Err(io::Error::other("learning socket ownership mismatch"));
+    }
+    std::fs::set_permissions(endpoint, std::fs::Permissions::from_mode(0o660))?;
+    listener.set_nonblocking(true)?;
+    Ok(BoundLearningListener {
+        _guard: guard,
+        listener,
+    })
+}
+
 pub(super) fn bind_runtime_lanes(
     config: &HostAuthorityServiceConfig,
     ready: impl FnOnce() -> io::Result<()>,

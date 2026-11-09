@@ -15,6 +15,9 @@ pub use notes_startup::RootNotesPolicyPredecessor;
 #[path = "authority_host_session_material.rs"]
 mod material;
 
+#[path = "authority_host_learning_delivery.rs"]
+mod learning_delivery;
+
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional
 /// issuer, clock, checkpoint or consumer owner during bootstrap capture.
