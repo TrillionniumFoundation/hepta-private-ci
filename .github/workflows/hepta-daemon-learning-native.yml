@@ -118,7 +118,7 @@ jobs:
                               str(target), str(records)], check=True)
 
           def test(name, arguments, root=False):
-              report = target / "nextest/local/junit.xml"
+              report = repo / "codex-rs/target/nextest/local/junit.xml"
               if report.exists():
                   report.rename(records / (name + "-prior-junit-excluded.xml"))
               command = ["python3", "scripts/hepta_ci_exec.py", "--timeout-seconds", "7200",

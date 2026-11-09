@@ -40,7 +40,7 @@ fn temporal(name: &str) -> TemporalEvaluationPlan {
     plan
 }
 
-pub(super) fn observations() -> (
+pub(super) fn observations(clusters: usize) -> (
     CellEvaluationRegistrationV1,
     TemporalEvaluationPlan,
     TemporalEvaluationPlan,
@@ -123,7 +123,7 @@ pub(super) fn observations() -> (
         snapshot_ids: vec![id("snapshot")],
         future_window_ids: vec![id("final-window")],
     };
-    for index in 0..128 {
+    for index in 0..clusters {
         let decision = id(&format!("decision-{index}"));
         inputs.targets.push(HeldOutTarget {
             decision_id: decision.clone(),
