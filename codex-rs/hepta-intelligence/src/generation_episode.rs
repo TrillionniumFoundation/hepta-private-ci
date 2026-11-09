@@ -21,7 +21,10 @@ use codex_hepta_types::StableId;
 
 use crate::ObservedOutcomeRequestV2;
 use crate::OutcomeCreditClosureErrorV2;
+use crate::OutcomeCreditClosureReceiptV2;
+use crate::OutcomeCreditClosureRequestV2;
 use crate::append_observed_outcome_v2;
+use crate::append_outcome_credit_v2;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FrozenGenerationEpisodeInputV1 {
@@ -213,6 +216,36 @@ pub fn append_generation_outcome_v1(
     request: ObservedOutcomeRequestV2,
     now: u64,
 ) -> Result<AppendReceipt, GenerationEpisodeErrorV1> {
+    validate_generation_outcome(ledger, frozen, observation, &request)?;
+    append_observed_outcome_v2(ledger, request, now).map_err(GenerationEpisodeErrorV1::Outcome)
+}
+
+/// Close an observed generation with independently signed terminal utility and
+/// conserved credit. The original generation, Decision and evaluation bindings
+/// are checked before either append; LedgerWriter still owns authentication,
+/// role independence, conservation, correction lineage and durable publication.
+///
+/// Credit failure may follow a durable Outcome. Its original receipt is retained
+/// in the error for exact reconciliation, without redispatching generation.
+/// This records an allocator's attribution; it proves neither causal benefit
+/// nor that the assigned credit is a gradient for any model parameter.
+pub fn append_generation_outcome_credit_v1(
+    ledger: &mut LedgerWriter,
+    frozen: &FrozenGenerationEpisodeV1,
+    observation: &CellGenerationObservationV1,
+    request: OutcomeCreditClosureRequestV2,
+    now: u64,
+) -> Result<OutcomeCreditClosureReceiptV2, GenerationEpisodeErrorV1> {
+    validate_generation_outcome(ledger, frozen, observation, &request.outcome)?;
+    append_outcome_credit_v2(ledger, request, now).map_err(GenerationEpisodeErrorV1::Outcome)
+}
+
+fn validate_generation_outcome(
+    ledger: &LedgerWriter,
+    frozen: &FrozenGenerationEpisodeV1,
+    observation: &CellGenerationObservationV1,
+    request: &ObservedOutcomeRequestV2,
+) -> Result<(), GenerationEpisodeErrorV1> {
     let support = frozen.outcome_evidence(observation)?;
     let input = frozen.input();
     if request.run_id != input.decision_id
@@ -245,7 +278,7 @@ pub fn append_generation_outcome_v1(
             "generation decision contract",
         ));
     }
-    append_observed_outcome_v2(ledger, request, now).map_err(GenerationEpisodeErrorV1::Outcome)
+    Ok(())
 }
 
 #[cfg(test)]
