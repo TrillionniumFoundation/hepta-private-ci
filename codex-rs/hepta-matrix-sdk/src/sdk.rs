@@ -680,8 +680,33 @@ fn persist_session(path: &std::path::Path, session: &MatrixSession) -> Result<()
         std::fs::rename(&temporary, path).map_err(|error| {
             session_persist_io_error(PersistSessionIoStage::PublishRename, error)
         })?;
-        std::fs::File::open(parent)
-            .map_err(|error| session_persist_io_error(PersistSessionIoStage::ParentOpen, error))?
+        let mut parent_options = OpenOptions::new();
+        parent_options.read(true);
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+
+            // Windows directory opens need BACKUP_SEMANTICS, and FlushFileBuffers
+            // requires GENERIC_WRITE. Do not follow a final reparse point.
+            parent_options
+                .write(true)
+                .custom_flags(0x0200_0000 | 0x0020_0000);
+        }
+        let parent_handle = parent_options
+            .open(parent)
+            .map_err(|error| session_persist_io_error(PersistSessionIoStage::ParentOpen, error))?;
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::MetadataExt;
+
+            let metadata = parent_handle.metadata().map_err(|error| {
+                session_persist_io_error(PersistSessionIoStage::ParentMetadata, error)
+            })?;
+            if !metadata.file_type().is_dir() || metadata.file_attributes() & 0x0400 != 0 {
+                return Err(MatrixSdkError::Initialization);
+            }
+        }
+        parent_handle
             .sync_all()
             .map_err(|error| session_persist_io_error(PersistSessionIoStage::ParentSync, error))?;
         Ok(())

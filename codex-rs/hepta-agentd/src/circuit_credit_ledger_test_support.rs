@@ -76,19 +76,20 @@ fn sign(
 
 pub(super) struct LedgerFixture {
     pub(super) writer: LedgerWriter,
-    directory: tempfile::TempDir,
+    _directory: tempfile::TempDir,
 }
 
 impl LedgerFixture {
     pub(super) fn new(domain: &str) -> Self {
         let directory = checked(tempfile::tempdir());
+        let directory_path = checked(directory.path().canonicalize());
         let file = |name| {
             checked(
                 OpenOptions::new()
                     .read(true)
                     .write(true)
                     .create_new(true)
-                    .open(directory.path().join(name)),
+                    .open(directory_path.join(name)),
             )
         };
         let ledger = checked(DurableLedger::create(
@@ -139,9 +140,10 @@ impl LedgerFixture {
         #[cfg(windows)]
         {
             use std::os::windows::fs::OpenOptionsExt;
-            options.custom_flags(0x0200_0000 | 0x0020_0000);
+            // FlushFileBuffers requires GENERIC_WRITE on the existing directory handle.
+            options.write(true).custom_flags(0x0200_0000 | 0x0020_0000);
         }
-        let directory_handle: File = checked(options.open(directory.path()));
+        let directory_handle: File = checked(options.open(&directory_path));
         let writer = checked(LedgerWriter::from_durable(
             ledger,
             witness,
@@ -149,14 +151,14 @@ impl LedgerFixture {
             &directory_handle,
             &directory_handle,
         ));
-        Self { writer, directory }
+        Self {
+            writer,
+            _directory: directory,
+        }
     }
 
-    pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        [
-            checked(std::fs::read(self.directory.path().join("ledger"))),
-            checked(std::fs::read(self.directory.path().join("witness"))),
-        ]
+    pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+        checked(self.writer.retained_bytes_for_qualification())
     }
 }
 
