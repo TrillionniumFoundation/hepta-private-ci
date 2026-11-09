@@ -1141,28 +1141,35 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         "original next-use evidence differs"
     );
     let recovery_receipt = serde_json::from_value(original_use["receipt"].clone())?;
-    let recovery_context = crate::learning_iteration_checkpoint::os_process_recovery::RecoveryContext {
-        parent_pid: std::process::id(),
-        deadline_unix_seconds: driver.deadline,
-        root: publication.research_directory()?.to_path_buf(),
-        evidence: driver.evidence.clone(),
-        model: driver.output.clone(),
-        old_config: publication.old_config.clone(),
-        target_config: running.target_config.clone(),
-        operation_id: adoption::operation(&running.coordinator)?,
-        intent_digest: running.runtime.publication.intent_digest().into_array(),
-        request: recovery_request,
-        receipt: recovery_receipt,
-        original_use_record_sha256: d(&original_use_raw).into_array(),
-        initial_record_sha256: d(&fs::read(driver.evidence.join("native-checkpoint-0-owner.json"))?).into_array(),
-        checkpoint_sha256: d(&checkpoint_before).into_array(),
-        external_proposal: flow == ResearchFlow::ExternalTrainedArtifact,
-        probe: crate::learning_iteration_checkpoint::os_process_recovery::Probe::Completed,
-    };
+    let recovery_context =
+        crate::learning_iteration_checkpoint::os_process_recovery::RecoveryContext {
+            parent_pid: std::process::id(),
+            deadline_unix_seconds: driver.deadline,
+            root: publication.research_directory()?.to_path_buf(),
+            evidence: driver.evidence.clone(),
+            model: driver.output.clone(),
+            old_config: publication.old_config.clone(),
+            target_config: running.target_config.clone(),
+            operation_id: adoption::operation(&running.coordinator)?,
+            intent_digest: running.runtime.publication.intent_digest().into_array(),
+            request: recovery_request,
+            receipt: recovery_receipt,
+            original_use_record_sha256: d(&original_use_raw).into_array(),
+            initial_record_sha256: d(&fs::read(
+                driver.evidence.join("native-checkpoint-0-owner.json"),
+            )?)
+            .into_array(),
+            checkpoint_sha256: d(&checkpoint_before).into_array(),
+            external_proposal: flow == ResearchFlow::ExternalTrainedArtifact,
+            probe: crate::learning_iteration_checkpoint::os_process_recovery::Probe::Completed,
+        };
     running.tasks.shutdown().await;
-    let os_process_recovery = tokio::task::spawn_blocking(move ||
-        crate::learning_iteration_checkpoint::os_process_recovery::verify_in_new_process(recovery_context)
-    ).await??;
+    let os_process_recovery = tokio::task::spawn_blocking(move || {
+        crate::learning_iteration_checkpoint::os_process_recovery::verify_in_new_process(
+            recovery_context,
+        )
+    })
+    .await??;
     let result = json!({"schema":match flow {
             ResearchFlow::RetainedOnly => "hepta.research.real-model-native-completion.v1",
             ResearchFlow::ExternalTrainedArtifact => "hepta.research.external-trained-native-completion.v1",
