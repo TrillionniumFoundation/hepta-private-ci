@@ -9,12 +9,7 @@ use pretty_assertions::assert_eq;
 
 use super::*;
 
-#[allow(
-    clippy::duplicate_mod,
-    reason = "This test-only module reuses the original fsync CAS fixture without widening its visibility"
-)]
-#[path = "learning_iteration_checkpoint_test_support.rs"]
-mod support;
+use crate::learning_iteration_checkpoint::test_support as support;
 use support::Decision;
 use support::FileCas;
 use support::owner;

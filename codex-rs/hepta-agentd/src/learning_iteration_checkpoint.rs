@@ -356,6 +356,10 @@ impl LearningIterationCheckpointOwnerV1 {
 }
 
 #[cfg(test)]
+#[path = "learning_iteration_checkpoint_test_support.rs"]
+mod test_support;
+
+#[cfg(test)]
 #[path = "learning_iteration_checkpoint_tests.rs"]
 mod tests;
 

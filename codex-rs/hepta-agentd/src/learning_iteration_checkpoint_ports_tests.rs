@@ -15,8 +15,7 @@ use crate::LearningIterationRuntimeErrorV1;
 use crate::LearningIterationStageOwnerPortsV1;
 use crate::PreparedLearningIterationProposalV1;
 
-#[path = "learning_iteration_checkpoint_test_support.rs"]
-mod support;
+use crate::learning_iteration_checkpoint::test_support as support;
 use support::Decision;
 use support::FileCas;
 use support::OWNER;
