@@ -2,6 +2,7 @@
 //! erfc is supplied by the Linux system math library, not Python/Torch.
 use crate::codec::Packet;
 use crate::codec::Result;
+use codex_hepta_infer_core::JOINT_V4_LAYER_NORM_EPSILON;
 #[link(name = "m")]
 unsafe extern "C" {
     fn erfc(x: f64) -> f64;
@@ -111,7 +112,7 @@ pub fn norm(p: &Packet, name: &str, x: &[f64]) -> Result<Vec<f64>> {
     let var = x.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / x.len() as f64;
     Ok(x.iter()
         .enumerate()
-        .map(|(i, v)| (v - mean) / (var + 1e-5).sqrt() * w[i] + b[i])
+        .map(|(i, v)| (v - mean) / (var + JOINT_V4_LAYER_NORM_EPSILON).sqrt() * w[i] + b[i])
         .collect())
 }
 /// SplitMix64 counter law is separately versioned; it is not Torch's RNG.

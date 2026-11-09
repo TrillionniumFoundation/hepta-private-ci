@@ -10,16 +10,12 @@ use crate::model::State;
 use crate::observation::DeliveryObservation;
 
 impl Model {
-    pub(crate) fn is_observed(&self) -> bool {
-        self.observed
-    }
-
     pub(crate) fn total_units(&self) -> [u32; 4] {
         [
             16,
             1024,
             4,
-            if self.observed {
+            if self.is_observed() {
                 crate::text_codec::TEXT_SCALAR_LIMIT
             } else {
                 2
@@ -28,13 +24,13 @@ impl Model {
     }
 
     pub(crate) fn ordered_text(&self, tokens: &[f64]) -> Result<Vec<f64>> {
-        let table = self.weights.get("token_encoder.weight")?;
-        let mut hidden = vec![0.0; self.width];
+        let table = self.weights().get("token_encoder.weight")?;
+        let mut hidden = vec![0.0; self.width()];
         for token in tokens {
-            let mut next = linear(&self.weights, "text_recurrent", &hidden)?;
+            let mut next = linear(self.weights(), "text_recurrent", &hidden)?;
             let index = *token as usize;
             for (channel, value) in next.iter_mut().enumerate() {
-                *value += table[index * self.width + channel];
+                *value += table[index * self.width() + channel];
             }
             hidden = tanh(next);
         }
@@ -47,7 +43,7 @@ impl Model {
         observation: &DeliveryObservation,
     ) -> Result<Vec<f64>> {
         observation.owner.validate()?;
-        if !self.observed
+        if !self.is_observed()
             || observation.totals != self.total_units()
             || observation
                 .cursors
@@ -92,7 +88,7 @@ impl Model {
     pub(crate) fn byte_logits(&self, state: &State) -> Result<Vec<f64>> {
         let text = state.text.as_ref().ok_or("missing byte decoder state")?;
         linear(
-            &self.weights,
+            self.weights(),
             "emissions.text",
             &cat(&[&state.shared, &text.hidden]),
         )
@@ -100,15 +96,18 @@ impl Model {
 
     pub(crate) fn consume_byte(&self, state: &mut State, byte: u8) -> Result<()> {
         let text = state.text.as_ref().ok_or("missing byte decoder state")?;
-        let mut next = linear(&self.weights, "text_recurrent", &text.hidden)?;
+        let mut next = linear(self.weights(), "text_recurrent", &text.hidden)?;
         let condition = linear(
-            &self.weights,
+            self.weights(),
             "text_condition",
-            &cat(&[&state.shared, &state.slots[3 * self.width..4 * self.width]]),
+            &cat(&[
+                &state.shared,
+                &state.slots[3 * self.width()..4 * self.width()],
+            ]),
         )?;
-        let table = self.weights.get("token_encoder.weight")?;
+        let table = self.weights().get("token_encoder.weight")?;
         for (channel, value) in next.iter_mut().enumerate() {
-            *value += condition[channel] + table[usize::from(byte) * self.width + channel];
+            *value += condition[channel] + table[usize::from(byte) * self.width() + channel];
         }
         let text = state.text.as_mut().ok_or("missing byte decoder state")?;
         text.hidden = tanh(next);

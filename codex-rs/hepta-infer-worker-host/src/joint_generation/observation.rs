@@ -5,8 +5,8 @@ use crate::codec::Result;
 use crate::decoder::Prefixes;
 use crate::protocol::MAX_PREFIX_BYTES;
 
-pub(crate) const OBSERVATION_PROFILE: &str = "owner-prefix-budget-v1";
-pub(crate) const OBSERVATION_FEATURES: usize = 68;
+pub(crate) use codex_hepta_infer_core::JOINT_V4_OBSERVATION_FEATURES as OBSERVATION_FEATURES;
+pub(crate) use codex_hepta_infer_core::JOINT_V4_OBSERVATION_PROFILE as OBSERVATION_PROFILE;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct OwnerContext {

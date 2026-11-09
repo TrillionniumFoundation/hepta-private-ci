@@ -7,8 +7,8 @@ use crate::model::State;
 use crate::protocol::EmissionLaw;
 use crate::protocol::Sampler;
 
-pub(crate) const TEXT_PROFILE: &str = "utf8-byte256-scalar128-v1";
-pub(crate) const TEXT_SCALAR_LIMIT: u32 = 128;
+pub(crate) use codex_hepta_infer_core::JOINT_V4_TEXT_PROFILE as TEXT_PROFILE;
+pub(crate) use codex_hepta_infer_core::JOINT_V4_TEXT_SCALAR_LIMIT as TEXT_SCALAR_LIMIT;
 
 pub(crate) fn generate(
     model: &Model,

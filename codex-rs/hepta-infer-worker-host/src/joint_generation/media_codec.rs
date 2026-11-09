@@ -4,7 +4,7 @@
 
 use crate::codec::Result;
 
-pub(crate) const MEDIA_PROFILE: &str = "ppm-wav16000-y4m4-v1";
+pub(crate) use codex_hepta_infer_core::JOINT_V4_MEDIA_PROFILE as MEDIA_PROFILE;
 const PPM_HEADER: &[u8] = b"P6\n16 16\n255\n";
 const Y4M_HEADER: &[u8] = b"YUV4MPEG2 W16 H16 F4:1 Ip A1:1 C444\n";
 const FRAME_HEADER: &[u8] = b"FRAME\n";

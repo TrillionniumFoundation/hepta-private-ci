@@ -71,11 +71,11 @@ impl JointGenerationProcessWorkerV1 {
     }
 
     pub fn observed_state_schema_digest() -> [u8; 32] {
-        Digest32::of_bytes(b"hepta.joint.observed-complete-proposal-state.v2").into_array()
+        Digest32::of_bytes(codex_hepta_infer_core::JOINT_V4_STATE_SCHEMA).into_array()
     }
 
     pub fn observed_output_schema_digest() -> [u8; 32] {
-        Digest32::of_bytes(b"hepta.joint.HGC2-multimodal-prefix.v2").into_array()
+        Digest32::of_bytes(codex_hepta_infer_core::JOINT_V4_OUTPUT_SCHEMA).into_array()
     }
 
     pub fn input_schema_digest() -> [u8; 32] {

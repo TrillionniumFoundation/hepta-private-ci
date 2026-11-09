@@ -5,6 +5,8 @@
 //! sampler seed. Duration forecasts are explicit checkpoint metadata, not
 //! measured timings; actual planning/decoder costs remain in the host receipt.
 
+use codex_hepta_infer_core::JointV4InferenceV1;
+
 use crate::codec::Packet;
 use crate::codec::Result;
 use crate::decoder::Prefixes;
@@ -21,7 +23,7 @@ pub(crate) const NDU_PROFILE: &str = "ndu-finite-deterministic-v1";
 pub(crate) const ACTOR_PROFILE: &str = "actor-greedy-observed-v1";
 
 pub(crate) fn validate_profile(model: &Model) -> Result<()> {
-    match model.weights.text("inference_profile")? {
+    match model.weights().text("inference_profile")? {
         NDU_PROFILE => Profile::read(model).map(|_| ()),
         ACTOR_PROFILE => Ok(()),
         _ => Err("unknown observed inference profile".into()),
@@ -140,60 +142,16 @@ struct Profile {
 
 impl Profile {
     fn read(model: &Model) -> Result<Self> {
-        let f64_value = |name: &str| -> Result<f64> {
-            model
-                .weights
-                .text(name)?
-                .parse()
-                .map_err(|_| format!("invalid {name}"))
+        let JointV4InferenceV1::FiniteNdu(profile) = model.joint_v4_projection()?.inference()
+        else {
+            return Err("not the finite NDU profile".into());
         };
-        let usize_value = |name: &str| -> Result<usize> {
-            model
-                .weights
-                .text(name)?
-                .parse()
-                .map_err(|_| format!("invalid {name}"))
-        };
-        let risk = f64_value("ndu.risk")?;
-        let discount = f64_value("ndu.discount_per_second")?;
-        let latency_weight = f64_value("ndu.latency_weight")?;
-        let horizon = usize_value("ndu.horizon")?;
-        let cap = usize_value("ndu.max_forecasts")?;
-        let durations: Vec<u64> = model
-            .weights
-            .text("ndu.action_micros")?
-            .split(',')
-            .map(|value| {
-                value
-                    .parse()
-                    .map_err(|_| "invalid action duration".to_string())
-            })
-            .collect::<Result<_>>()?;
-        let durations: [u64; 7] = durations
-            .try_into()
-            .map_err(|_| "duration forecast width")?;
-        if !(risk.is_finite()
-            && risk >= 0.0
-            && discount.is_finite()
-            && 0.0 < discount
-            && discount <= 1.0
-            && latency_weight.is_finite()
-            && latency_weight >= 0.0)
-            || !(1..=4).contains(&horizon)
-            || !(7..=512).contains(&cap)
-            || durations
-                .iter()
-                .any(|value| *value == 0 || *value > 3_600_000_000)
-            || model.weights.text("ndu.critic_output")? != "sigmoid-quality-v1"
-        {
-            return Err("invalid finite NDU profile".into());
-        }
         Ok(Self {
-            discount,
-            latency_weight,
-            horizon,
-            cap,
-            durations,
+            discount: profile.discount,
+            latency_weight: profile.latency_weight,
+            horizon: profile.horizon,
+            cap: profile.forecast_cap,
+            durations: profile.durations_micros,
         })
     }
 
@@ -318,7 +276,7 @@ pub(crate) fn choose(
     public: &Packet,
     law: EmissionLaw,
 ) -> Result<PlanningReceipt> {
-    let profile_name = model.weights.text("inference_profile")?;
+    let profile_name = model.weights().text("inference_profile")?;
     let node = Node {
         state: state.clone(),
         prefixes: prefixes.clone(),

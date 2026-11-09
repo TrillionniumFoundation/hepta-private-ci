@@ -21,6 +21,7 @@ def joint_generation_binary():
         crate_root = "src/bin/hepta-joint-propose.rs",
         edition = "2024",
         visibility = ["//visibility:public"],
+        deps = ["//codex-rs/hepta-infer-core"],
     )
 
     # The binary builds an explicit unsupported stub elsewhere; its numerical
@@ -32,4 +33,5 @@ def joint_generation_binary():
         crate_root = "src/bin/hepta-joint-propose.rs",
         edition = "2024",
         target_compatible_with = ["@platforms//os:linux"],
+        deps = ["//codex-rs/hepta-infer-core"],
     )

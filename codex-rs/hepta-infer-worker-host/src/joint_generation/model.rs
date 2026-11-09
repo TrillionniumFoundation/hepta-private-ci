@@ -1,4 +1,12 @@
 //! Actual encoder, recurrent content, policy and decoder inference.
+use codex_hepta_infer_core::JOINT_V4_CORE_DT;
+use codex_hepta_infer_core::JOINT_V4_INPUT_BYTE_LIMIT;
+use codex_hepta_infer_core::JOINT_V4_NUMERIC_PROFILE;
+use codex_hepta_infer_core::JOINT_V4_RESIDUAL_GAIN;
+use codex_hepta_infer_core::JointV4TensorViewV1;
+use codex_hepta_infer_core::JointV4WeightProjectionV1;
+use codex_hepta_infer_core::project_joint_v4_weights_v1;
+
 use crate::codec::Packet;
 use crate::codec::Result;
 use crate::math::cat;
@@ -16,16 +24,19 @@ pub const ACTIONS: [&str; 7] = [
 ];
 pub const MODALITIES: [&str; 4] = ["image", "audio", "video", "text"];
 pub use crate::state::State;
+/// Parameters and all kernel configuration are fixed together at construction.
+/// Sibling modules can inspect them, but cannot stale the cached projection.
 pub struct Model {
-    pub weights: Packet,
-    pub width: usize,
-    pub depth: usize,
-    pub mode: String,
-    pub boundary: String,
-    pub initial_stop: bool,
-    pub suppress_verify: bool,
-    pub(crate) observed: bool,
-    pub(crate) reset_core: bool,
+    weights: Packet,
+    joint_v4_projection: Option<JointV4WeightProjectionV1>,
+    width: usize,
+    depth: usize,
+    mode: String,
+    boundary: String,
+    initial_stop: bool,
+    suppress_verify: bool,
+    observed: bool,
+    reset_core: bool,
 }
 impl Model {
     pub fn new(weights: Packet) -> Result<Self> {
@@ -67,7 +78,7 @@ impl Model {
         {
             return Err("unsupported core profile".into());
         }
-        if weights.text("numeric_profile")? != "fp64-linux-libm-v1" {
+        if weights.text("numeric_profile")? != JOINT_V4_NUMERIC_PROFILE {
             return Err("unknown numeric profile".into());
         }
         let initial_stop = weights
@@ -78,8 +89,24 @@ impl Model {
             .text("suppress_redundant_verify")?
             .parse::<bool>()
             .map_err(|e| e.to_string())?;
+        let joint_v4_projection = if observed {
+            Some(project_joint_v4_weights_v1(
+                &weights.meta,
+                weights
+                    .tensors
+                    .iter()
+                    .map(|(name, tensor)| JointV4TensorViewV1 {
+                        name,
+                        shape: &tensor.shape,
+                        values: &tensor.data,
+                    }),
+            )?)
+        } else {
+            None
+        };
         let model = Self {
             weights,
+            joint_v4_projection,
             width,
             depth,
             mode,
@@ -89,8 +116,35 @@ impl Model {
             observed,
             reset_core,
         };
-        model.validate_weights()?;
+        if !observed {
+            model.validate_weights()?;
+        }
         Ok(model)
+    }
+    pub(crate) fn weights(&self) -> &Packet {
+        &self.weights
+    }
+    pub(crate) fn width(&self) -> usize {
+        self.width
+    }
+    pub(crate) fn depth(&self) -> usize {
+        self.depth
+    }
+    pub(crate) fn mode(&self) -> &str {
+        &self.mode
+    }
+    pub(crate) fn boundary(&self) -> &str {
+        &self.boundary
+    }
+    pub(crate) fn is_observed(&self) -> bool {
+        self.observed
+    }
+    /// Read the descriptor of the actual, immutably held decoded parameters.
+    /// This is not a training, execution, or artifact-authority attestation.
+    pub(crate) fn joint_v4_projection(&self) -> Result<&JointV4WeightProjectionV1> {
+        self.joint_v4_projection
+            .as_ref()
+            .ok_or_else(|| "not a Joint v4 model".into())
     }
     fn validate_weights(&self) -> Result<()> {
         let w = self.width;
@@ -236,7 +290,7 @@ impl Model {
         let tokens = p.get("tokens")?;
         if p.tensors["tokens"].shape != vec![1, tokens.len()]
             || (!self.observed && tokens.is_empty())
-            || tokens.len() > 4096
+            || tokens.len() > JOINT_V4_INPUT_BYTE_LIMIT
             || tokens.iter().any(|v| {
                 *v < 0.0 || *v >= if self.observed { 256.0 } else { 128.0 } || v.fract() != 0.0
             })
@@ -516,7 +570,7 @@ impl Model {
                     &cat(&[&next.shared, slot, &s.context]),
                 )?);
                 for j in 0..w {
-                    next.slots[i * w + j] = slot[j] + 0.25 * delta[j];
+                    next.slots[i * w + j] = slot[j] + JOINT_V4_RESIDUAL_GAIN * delta[j];
                 }
             }
         }
@@ -548,7 +602,7 @@ impl Model {
             "fixed_boundary"
         })?;
         let mut next = [vec![0.0; w], vec![0.0; w], vec![0.0; w], vec![0.0; w]];
-        let dt: f64 = 0.5;
+        let dt = JOINT_V4_CORE_DT;
         for i in 0..w {
             let rec = softplus(recovery[i]) * sigmoid(gates[i]);
             let reg = if self.mode == "single" {

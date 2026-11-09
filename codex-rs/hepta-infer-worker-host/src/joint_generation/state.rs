@@ -89,12 +89,12 @@ impl State {
             Ok(x.to_vec())
         };
         let mut core = Vec::new();
-        for l in 0..model.depth {
+        for l in 0..model.depth() {
             core.push([
-                vector(&format!("core.{l}.content"), model.width)?,
-                vector(&format!("core.{l}.voltage"), model.width)?,
-                vector(&format!("core.{l}.adaptation"), model.width)?,
-                vector(&format!("core.{l}.event"), model.width)?,
+                vector(&format!("core.{l}.content"), model.width())?,
+                vector(&format!("core.{l}.voltage"), model.width())?,
+                vector(&format!("core.{l}.adaptation"), model.width())?,
+                vector(&format!("core.{l}.event"), model.width())?,
             ]);
         }
         let steps = p
@@ -140,7 +140,7 @@ impl State {
                 return Err("text decoder cursor bound".into());
             }
             Some(ByteTextState {
-                hidden: vector("text.hidden", model.width)?,
+                hidden: vector("text.hidden", model.width())?,
                 units,
                 bytes,
             })
@@ -148,9 +148,9 @@ impl State {
             None
         };
         Ok(Self {
-            context: vector("context", model.width)?,
-            shared: vector("shared", model.width)?,
-            slots: vector("slots", 4 * model.width)?,
+            context: vector("context", model.width())?,
+            shared: vector("shared", model.width())?,
+            slots: vector("slots", 4 * model.width())?,
             feedback: vector("feedback", 3)?,
             core,
             steps,
