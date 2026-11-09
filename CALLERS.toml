@@ -2311,8 +2311,8 @@ symbol = "PqFinalUseConfig::open"
 receiver_type = "PqFinalUseConfig"
 definition_path = "codex-rs/hepta-agentd/src/pq_final_use.rs"
 definition_markers = ["pub(crate) struct PqFinalUseConfig", "pub(crate) fn open(", "self.validate_roles_and_paths(owner, additional_roles)?", "UnixPqAuthorityClock::new", "UnixPqFinalUseFrontier::new", "FinalUseAuthority::open_pq_state_dir_with_issuer_keys"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_hcsn_pq.rs"]
-caller_markers = ["pub(super) fn open_hcsn_pq", "HcsnProductionProfile::MlDsa65", "verify_exact_message", "gate.refresh"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_hcsn_pq.rs", "codex-rs/hepta-agentd/src/automation_joint_text_pq.rs"]
+caller_markers = ["config.deployment_key.public_key_id", "key.verify_exact_message", "gate.refresh"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/authority_authentication.rs"
@@ -2359,13 +2359,13 @@ forbidden = ["FinalUseAuthority::open_state_dir", "pub fn permit_all"]
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/automation_hcsn_pq.rs"
 source_sha256 = "a10e908c37b551e506759acfe2b9dd57e3b335c8c75edf8fef0ddfcd7631c392"
-required = ["HcsnProductionProfile::MlDsa65", "config.deployment_key.public_key_id", "key.verify_exact_message", "gate.refresh", "driver_with_contact_guard", "OnceLock::<LockedDispatchLease>::new()", "driver.pq_claim = Some"]
+required = ["pub(super) fn open_hcsn_pq(", "HcsnProductionProfile::MlDsa65", "config.deployment_key.public_key_id", "key.verify_exact_message", "gate.refresh", "driver_with_contact_guard", "OnceLock::<LockedDispatchLease>::new()", "driver.pq_claim = Some"]
 forbidden = ["FinalUseAuthority::open_state_dir", "pub fn permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/automation_hcsn_source.rs"
-source_sha256 = "a3de028824146432600daa04b58f4fcfd43ada45abae4cc00ab7a0ef524b2274"
-required = ["pub(super) struct HcsnSourceManifest", "impl<'de> Deserialize<'de> for HcsnSourceManifest", "entries.insert(path, digest).is_some()", "pub(super) fn verify", "observe_inventory(repository)? != expected", "if &digest != expected_digest", "MAX_SOURCE_FILES", "MAX_SOURCE_BYTES", "qualification/hcsn_training", "qualification/__init__.py", "OFlags::NOFOLLOW", "metadata.nlink() != 1", "file_observation(&initial) != file_observation(&named)"]
+source_sha256 = "8d0ff88ad9254d73700b796113a3d47071d32e0fe8ca7422488a09e0cc192aa1"
+required = ["pub(super) struct HcsnSourceManifest", "impl<'de> Deserialize<'de> for HcsnSourceManifest", "entries.insert(path, digest).is_some()", "pub(super) fn verify", "observe_inventory(repository)? != expected", "if &digest != expected_digest", "MAX_SOURCE_FILES", "MAX_SOURCE_BYTES", "qualification/hcsn_training", "qualification/__init__.py", "OFlags::NOFOLLOW", "metadata.nlink() != 1", "file_observation(&initial) != file_observation(&named)", "pub(super) fn expected_digest(", "pub(super) fn read_source_digest("]
 forbidden = ["impl Default for HcsnSourceManifest", "pub fn permit_all"]
 
 # Learning checkpoint delivery is an explicit extension. No ordinary launcher
@@ -2472,3 +2472,19 @@ path = "codex-rs/hepta-agentd/src/authority_host_writer.rs"
 required_order = [["pub(super) fn exchange_learning_checkpoint(", ".with_live(&self.leases", "issuer.retained_writer_authorization(&self.registration)? != self.proof", "backend.exchange(bytes)", "issuer.revocations()?", ".refresh_projection()", "validate_observation_lease(", "Ok(response)"]]
 required = []
 forbidden = []
+
+# Joint uses the same original PQ owner. Profile-specific guards remain per file.
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/automation_joint_text_pq.rs"
+source_sha256 = "27715c38683a973ab7880bd44a9b0616fcbb97773ab7ccbb531cb6d456c70b7c"
+required = ["pub(super) fn open_joint_text_pq(", "let ProductionProfile::MlDsa65 = config.authority_profile;", "config.schema_version != 4", "joint.text.training.start", "joint.text.training.cancel", "hepta.joint.text.deployment-contract.pq.v1\\0", "config.deployment_key.public_key_id", "key.verify_exact_message", "JointTextInputCustodyV1::open_existing(", "&deployment.root_identity", "gate.refresh", "JointTextProcessSupervisor::new_with_contact_guard(", "guard_provider.verify_sources_and_custody(None)?", "OnceLock::<LockedDispatchLease>::new()", "checkpoint.require_current()", "JointTextSupervisorError::BeforeContact", "driver.claim = Some"]
+forbidden = ["FinalUseAuthority::open_state_dir", "pub fn permit_all"]
+required_function_order = [{ function = "fn open_joint_text_pq(", sequence = ["config.schema_version != 4", "PqNativeVerifier::from_pinned_spki(", "key.verify_exact_message(", ".verify(&deployment.repository_root)", "JointTextInputCustodyV1::open_existing(", ".open(&authority_root, &[&config.deployment_key])", "gate.refresh(&authority, &revocations_file)", "JointTextProcessSupervisor::new_with_contact_guard("] }, { function = "fn driver_with_lease(", sequence = ["self.checkpoint_for(&input)?", "OnceLock::<LockedDispatchLease>::new()", "self.driver_with_contact_guard(", "checkpoint.require_current()", ".ok_or(JointTextSupervisorError::BeforeContact)?", ".authenticate(&authority, &revocations_file, &grant)", "driver.claim = Some"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/joint_text_training_owner.rs"
+source_sha256 = "4faf76f30b4b78d5825d5953765340861b45e8d2e41a177014bd63e6c13f54e3"
+required = ["pub(crate) struct JointTextCheckpointBindingV1", "owner: Arc<LearningIterationCheckpointOwnerV1>", "pub(crate) fn bind(", "binding.require_current()?", "pub(crate) fn require_current(", "self.owner.restore(&self.snapshot.request)", "current.as_ref() != Some(&self.snapshot)", "AgentdError::GenerationFenced"]
+forbidden = ["HostAuthorityFrontierStore::initialize", "register_host_writer_authorization(", "SigningKey::from_bytes", "pub fn permit_all"]
+required_function_order = [{ function = "fn bind(", sequence = ["let binding = Self { owner, snapshot }", "binding.require_current()?", "Ok(binding)"] }, { function = "fn require_current(", sequence = ["self.owner.restore(&self.snapshot.request)", "current.as_ref() != Some(&self.snapshot)", "return Err(AgentdError::GenerationFenced("] }]
