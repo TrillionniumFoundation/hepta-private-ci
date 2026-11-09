@@ -19,7 +19,9 @@ permissions:
 jobs:
   contract:
     name: Validate canonical branch and contract metadata
-    runs-on: ubuntu-24.04
+    # Production development-profile checks passed on the x64 container
+    # (run 38851095188); no Docker, sudo, or VM-specific capability is used.
+    runs-on: ubuntu-slim
     timeout-minutes: 15
     steps:
       - name: Check out repository

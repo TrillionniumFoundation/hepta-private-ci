@@ -8,7 +8,9 @@ permissions:
 
 jobs:
   build-test:
-    runs-on: ubuntu-latest
+    # All original production steps passed on ARM64 (isolated run 38854922587).
+    # Leave native-paths x64/Windows/macOS checks on their target architectures.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     env:
       NODE_OPTIONS: --max-old-space-size=4096
@@ -96,7 +98,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-latest, macos-15]
+        # Ubuntu 26 x64 ran these exact native steps successfully on GH runner
+        # (isolated run 38867041490, job 116862147951). Keep OS ABI variants.
+        os: [ubuntu-26.04, windows-latest, macos-15]
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

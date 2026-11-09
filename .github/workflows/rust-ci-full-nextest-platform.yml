@@ -437,7 +437,8 @@ jobs:
     name: Platform result
     needs: shard
     if: always()
-    runs-on: ubuntu-24.04
+    # Needs-result-only bash gate verified fail-closed on Slim (38901488180).
+    runs-on: ubuntu-slim
     steps:
       - name: Confirm test shards passed
         shell: bash

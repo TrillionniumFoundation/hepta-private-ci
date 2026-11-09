@@ -9,9 +9,11 @@ permissions:
 jobs:
   # --- Detect what changed so the fast PR workflow only runs relevant jobs ----
   changed:
-    timeout-minutes: 30
+    timeout-minutes: 15
     name: Detect changed areas
-    runs-on: ubuntu-24.04
+    # Exact PR base/head history fetch and 20 selector regressions passed on
+    # ubuntu-slim (isolated run 38852455881); native Cargo/Bazel stay on VMs.
+    runs-on: ubuntu-slim
     outputs:
       argument_comment_lint_package: ${{ steps.detect.outputs.argument_comment_lint_package }}
       codex: ${{ steps.detect.outputs.codex }}
@@ -78,7 +80,8 @@ jobs:
   workspace_manifest:
     timeout-minutes: 15
     name: Cargo manifest preflight
-    runs-on: ubuntu-24.04
+    # ARM64 validated with real locked Cargo metadata (run 38853074844).
+    runs-on: ubuntu-24.04-arm
     needs: changed
     if: ${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}
     steps:
@@ -104,7 +107,8 @@ jobs:
   general:
     timeout-minutes: 30
     name: Rust format
-    runs-on: ubuntu-24.04
+    # The exact pinned setup-ci/rustfmt/cargo fmt path passed on ARM64.
+    runs-on: ubuntu-24.04-arm
     needs: changed
     if: ${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}
     defaults:
@@ -128,7 +132,9 @@ jobs:
   benchmark_smoke:
     timeout-minutes: 30
     name: Rust benchmark smoke
-    runs-on: ubuntu-24.04
+    # The exact pinned setup-ci, Rust 1.95, and just bench-smoke succeeded
+    # on hosted Ubuntu 26 x64 (isolated run 38869370228, job 116869576053).
+    runs-on: ubuntu-26.04
     needs: [changed, workspace_manifest]
     if: ${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}
     defaults:
@@ -149,7 +155,9 @@ jobs:
   cargo_shear:
     timeout-minutes: 30
     name: cargo shear
-    runs-on: ubuntu-24.04
+    # The identical pinned tool and --locked policy passed on hosted ARM64.
+    # Isolated run 38854512686, job 116822866100.
+    runs-on: ubuntu-24.04-arm
     needs: changed
     if: ${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}
     defaults:
@@ -176,7 +184,9 @@ jobs:
   argument_comment_lint_package:
     timeout-minutes: 30
     name: Argument comment lint package
-    runs-on: ubuntu-24.04
+    # Exact pinned nightly Dylint/cargo-test gate passed on Ubuntu 26 x64
+    # in isolated run 38899825980 (job 116969020536).
+    runs-on: ubuntu-26.04
     needs: changed
     if: ${{ needs.changed.outputs.argument_comment_lint_package == 'true' }}
     env:
@@ -243,7 +253,9 @@ jobs:
         argument_comment_lint_package,
       ]
     if: always()
-    runs-on: ubuntu-24.04
+    # Bash-only fan-in, no checkout/native toolchain. Keep required verdict on
+    # a lightweight x64 runner without changing any dependency conditions.
+    runs-on: ubuntu-slim
     steps:
       - name: Summarize
         shell: bash
