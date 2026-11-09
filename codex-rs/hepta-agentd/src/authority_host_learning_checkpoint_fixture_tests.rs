@@ -29,6 +29,7 @@ pub(super) struct Fixture {
     pub(super) private_path: PathBuf,
     _state: tempfile::TempDir,
     _runtime: tempfile::TempDir,
+    _executable: tempfile::TempDir,
 }
 
 impl Fixture {
@@ -100,7 +101,13 @@ impl Fixture {
         // SAFETY: this NUL-free path is a fresh test-only Root directory.
         assert_eq!(unsafe { libc::chown(lane_c.as_ptr(), 0, 60001) }, 0);
         std::fs::set_permissions(&lanes, std::fs::Permissions::from_mode(0o2710))?;
-        let binary = runtime.path().join("original-libtest");
+        // /run may be noexec. Keep its original state/socket boundary and use
+        // a separate test-owned executable directory without changing mounts.
+        let executable = tempfile::Builder::new()
+            .prefix("learning-exec-")
+            .tempdir_in("/var/tmp")?;
+        std::fs::set_permissions(executable.path(), std::fs::Permissions::from_mode(0o755))?;
+        let binary = executable.path().join("original-libtest");
         std::fs::copy(std::env::current_exe()?, &binary)?;
         std::fs::set_permissions(&binary, std::fs::Permissions::from_mode(0o555))?;
         let now = std::time::SystemTime::now()
@@ -185,6 +192,7 @@ impl Fixture {
             private_path,
             _state: state,
             _runtime: runtime,
+            _executable: executable,
         })
     }
 
