@@ -108,3 +108,69 @@ fn learning_profile_refuses_unknown_storage_fields_and_incompatible_schema() -> 
     );
     Ok(())
 }
+
+#[test]
+fn scoped_learning_profile_roundtrips_and_refuses_scope_substitution() -> anyhow::Result<()> {
+    let (_directory, identity, coordinator) = fixture()?;
+    let initial = coordinator.snapshot();
+    let writer = Digest32::from_array([7; 32]).to_string();
+    let rule = Digest32::of_bytes(b"frozen-rule");
+    for scope in [LearningUpdateScopeV2::Cell, LearningUpdateScopeV2::Organ] {
+        let profile = HostAuthorityLearningProfileV1::new_scoped_v2(
+            &identity,
+            [7; 32],
+            initial.request.clone(),
+            initial.owners.clone(),
+            scope,
+            rule,
+        )?;
+        let expected =
+            FrozenLearningScopeV2::freeze(&initial.request, &initial.owners, scope, rule)?;
+        let encoded = serde_json::to_value(&profile)?;
+        let roundtrip: HostAuthorityLearningProfileV1 = serde_json::from_value(encoded.clone())?;
+        assert_eq!(roundtrip.require_binding(&identity, &writer)?, *initial);
+        assert_eq!(roundtrip.frozen_scope(initial)?, Some(expected));
+        for mutation in 0..6 {
+            let mut changed = encoded.clone();
+            match mutation {
+                0 => changed["schema_version"] = serde_json::json!(1),
+                1 => changed["update_scope"] = serde_json::Value::Null,
+                2 => {
+                    changed["update_scope"]["scope"] =
+                        serde_json::json!(if scope == LearningUpdateScopeV2::Cell {
+                            "organ"
+                        } else {
+                            "cell"
+                        })
+                }
+                3 => {
+                    changed["update_scope"]["update_rule"] =
+                        serde_json::json!(Digest32::of_bytes(b"other-rule").to_string())
+                }
+                4 => {
+                    changed["update_scope"]["binding"] =
+                        serde_json::json!(Digest32::of_bytes(b"other-binding").to_string())
+                }
+                5 => changed["update_scope"]["scope"] = serde_json::json!("base_release"),
+                _ => unreachable!(),
+            }
+            let changed: HostAuthorityLearningProfileV1 = serde_json::from_value(changed)?;
+            assert!(
+                changed.require_binding(&identity, &writer).is_err(),
+                "mutation {mutation}"
+            );
+        }
+    }
+    assert!(
+        HostAuthorityLearningProfileV1::new_scoped_v2(
+            &identity,
+            [7; 32],
+            initial.request.clone(),
+            initial.owners.clone(),
+            LearningUpdateScopeV2::BaseRelease,
+            rule,
+        )
+        .is_err()
+    );
+    Ok(())
+}
