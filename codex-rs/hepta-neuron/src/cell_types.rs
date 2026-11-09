@@ -2,6 +2,7 @@
 
 use std::error::Error;
 use std::fmt;
+use std::sync::Arc;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -113,6 +114,31 @@ pub struct CellPolicyEntryV1 {
     pub probability_ppm: u32,
 }
 
+/// Exact model readouts consumed by the committed state transition. Values use
+/// signed Q24 with range [-8, 8], and each channel has 1..=256 components. These
+/// are numerical representations, not action probabilities or effect authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CellRepresentationV1 {
+    pub drive_q24: Vec<i64>,
+    pub prediction_q24: Vec<i64>,
+}
+
+impl CellRepresentationV1 {
+    pub fn validate(&self) -> Result<(), CellExecutionError> {
+        if !(1..=256).contains(&self.drive_q24.len())
+            || self.prediction_q24.len() != self.drive_q24.len()
+            || self
+                .drive_q24
+                .iter()
+                .chain(&self.prediction_q24)
+                .any(|value| !(-8 * (1 << 24)..=8 * (1 << 24)).contains(value))
+        {
+            return Err(CellExecutionError::ModelBindingMismatch);
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CellExecutionCostV1 {
     pub model_latency_micros: u64,
@@ -137,6 +163,11 @@ pub struct CellDecisionReceiptV1 {
     pub checkpoint_before: Digest32,
     pub checkpoint_after: Digest32,
     pub model_output_digest: Digest32,
+    /// Reconstructed from the journal's existing committed tick on recovery.
+    /// The V1 policy wire output intentionally does not expose these channels.
+    /// History and readback share immutable values. A caller that needs edits
+    /// uses `Arc::make_mut` to detach its copy from the owner's original values.
+    pub representation: Arc<CellRepresentationV1>,
     pub policy: Vec<CellPolicyEntryV1>,
     pub selected_candidate: StableId,
     pub confidence_ppm: u32,

@@ -1,5 +1,7 @@
 //! Bounded, canonical records for the shared Cell owner journal.
 
+use std::sync::Arc;
+
 use crate::NeuronModelRequestV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -372,6 +374,10 @@ pub(crate) fn apply_record(
         checkpoint_before,
         checkpoint_after,
         model_output_digest,
+        representation: Arc::new(CellRepresentationV1 {
+            drive_q24: tick.drive_q24.clone(),
+            prediction_q24: tick.prediction_q24.clone(),
+        }),
         policy,
         selected_candidate,
         confidence_ppm,
