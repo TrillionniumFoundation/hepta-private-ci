@@ -22,6 +22,9 @@ mod fixture;
 #[path = "authority_host_learning_delivery_tests.rs"]
 mod delivery;
 
+#[path = "joint_text_training_owner_checkpoint_tests.rs"]
+mod joint_owner;
+
 const CHILD: &str =
     "authority_host_service::learning_checkpoint::tests::unprivileged_checkpoint_child";
 
@@ -156,6 +159,7 @@ fn unprivileged_checkpoint_child() -> anyhow::Result<()> {
 fn registered_root_cross_process_restore_conflict_and_committed_lost_ack() -> anyhow::Result<()> {
     let fixture = fixture::Fixture::create()?;
     let states = data::snapshots()?;
+    let mut joint_guard = joint_owner::CheckpointGuardChecks::from_vacant(&fixture, &states[0])?;
     let mut senders = Vec::new();
     let mut receivers = Vec::new();
     for _ in 0..5 {
@@ -370,6 +374,7 @@ fn registered_root_cross_process_restore_conflict_and_committed_lost_ack() -> an
             fixture.owner()?.restore(&states[0].request)?,
             Some(expected.clone())
         );
+        joint_guard.observe_original_phase(&fixture, expected)?;
         crate::authority_host_runtime::owner_alive(
             &consumer,
             Instant::now() + Duration::from_secs(1),
