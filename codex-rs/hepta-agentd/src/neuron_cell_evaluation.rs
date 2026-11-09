@@ -113,7 +113,9 @@ pub fn freeze_cell_learning_evaluation_plan_v1<C: AnchorWitnessStore, F: AnchorW
     evaluation_profile: Digest32,
 ) -> Result<CellEvaluationPlanV1, CellEvaluationErrorV1> {
     if evaluation_profile.is_zero() {
-        return Err(CellEvaluationErrorV1::Binding("learning evaluation profile"));
+        return Err(CellEvaluationErrorV1::Binding(
+            "learning evaluation profile",
+        ));
     }
     freeze_plan(
         registration,

@@ -37,7 +37,12 @@ fn original_owners(
     )?
     .snapshot()
     .clone();
-    let training = fixture.snapshot.receipts.last().expect("original Training").clone();
+    let training = fixture
+        .snapshot
+        .receipts
+        .last()
+        .expect("original Training")
+        .clone();
     Ok((
         Fixture {
             initial: initial.clone(),
@@ -61,23 +66,26 @@ fn serve(
     requests: u64,
 ) -> std::thread::JoinHandle<anyhow::Result<()>> {
     std::thread::spawn(move || {
-        let receipt_digest = Digest32::of_bytes(
-            &learning_iteration_receipt_signing_bytes_v1(&fixture.receipt)?,
-        );
+        let receipt_digest = Digest32::of_bytes(&learning_iteration_receipt_signing_bytes_v1(
+            &fixture.receipt,
+        )?);
         for request_id in 1..=requests {
             let request = read_request(&mut server)?;
             // Exact field equality also rules out a payload/signing command.
-            assert_eq!(serde_json::to_value(&request)?, serde_json::json!({
-                "schema": 1,
-                "operation": wire::OPERATION,
-                "request_id": request_id,
-                "binding": fixture.initial.head_digest.to_string(),
-                "snapshot_head": snapshot_head.to_string(),
-                "operation_id": fixture.receipt.operation_id.to_string(),
-                "actor_id": fixture.receipt.actor_id.to_string(),
-                "predecessor": fixture.receipt.predecessor.to_string(),
-                "receipt_digest": receipt_digest.to_string(),
-            }));
+            assert_eq!(
+                serde_json::to_value(&request)?,
+                serde_json::json!({
+                    "schema": 1,
+                    "operation": wire::OPERATION,
+                    "request_id": request_id,
+                    "binding": fixture.initial.head_digest.to_string(),
+                    "snapshot_head": snapshot_head.to_string(),
+                    "operation_id": fixture.receipt.operation_id.to_string(),
+                    "actor_id": fixture.receipt.actor_id.to_string(),
+                    "predecessor": fixture.receipt.predecessor.to_string(),
+                    "receipt_digest": receipt_digest.to_string(),
+                })
+            );
             reply(&mut server, &response(request, fixture.evidence()))?;
         }
         Ok(())
@@ -95,8 +103,11 @@ async fn current_signed_qualification_reads_original_stage_evidence_for_all_deci
         let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
         let fixture = LearningFixture::new_at(disposition, now);
         let prepared = prepare_cell_learning_evaluation_v1(
-            fixture.runner(), &fixture.snapshot, &fixture.receipt,
-            &fixture.qualification, &fixture.request(now),
+            fixture.runner(),
+            &fixture.snapshot,
+            &fixture.receipt,
+            &fixture.qualification,
+            &fixture.request(now),
         )?;
         let (training, evaluation) = original_owners(&fixture, prepared.clone())?;
         let expected = evaluation.signature.clone();
@@ -106,35 +117,44 @@ async fn current_signed_qualification_reads_original_stage_evidence_for_all_deci
         let trainer_peer = serve(trainer_server, training, head, /*requests*/ 2);
         let evaluator_peer = serve(evaluator_server, evaluation, head, /*requests*/ 2);
         for _ in 0..2 {
-            let authenticated = read_cell_learning_evaluation_v1(
-                request(&fixture), &trainer, &evaluator,
-            ).await?;
+            let authenticated =
+                read_cell_learning_evaluation_v1(request(&fixture), &trainer, &evaluator).await?;
             assert_eq!(authenticated.receipt(), &prepared);
             assert_eq!(authenticated.attestation(), &expected);
-            assert_eq!(authenticated.receipt().observed_unix_seconds,
-                fixture.evidence.evaluator_bundle.issued_at);
+            assert_eq!(
+                authenticated.receipt().observed_unix_seconds,
+                fixture.evidence.evaluator_bundle.issued_at
+            );
             let after = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
             assert!((now..=after).contains(&authenticated.verified_at_unix_seconds()));
         }
         trainer_peer.join().expect("original trainer readback")?;
-        evaluator_peer.join().expect("original evaluator readback")?;
+        evaluator_peer
+            .join()
+            .expect("original evaluator readback")?;
     }
     Ok(())
 }
 
 #[tokio::test]
-async fn product_signature_cannot_replace_the_original_iteration_attestation()
--> anyhow::Result<()> {
+async fn product_signature_cannot_replace_the_original_iteration_attestation() -> anyhow::Result<()>
+{
     let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
     let fixture = LearningFixture::new_at(IndependentEvaluationDispositionV1::Ineligible, now);
     let prepared = prepare_cell_learning_evaluation_v1(
-        fixture.runner(), &fixture.snapshot, &fixture.receipt,
-        &fixture.qualification, &fixture.request(now),
+        fixture.runner(),
+        &fixture.snapshot,
+        &fixture.receipt,
+        &fixture.qualification,
+        &fixture.request(now),
     )?;
     let (training, mut evaluation) = original_owners(&fixture, prepared.clone())?;
     // This Product signature has just passed qualification revalidation, but
     // its payload belongs to a different domain from the iteration receipt.
-    assert_ne!(evaluation.signature.payload_digest, fixture.evidence.evaluator_bundle.payload_digest);
+    assert_ne!(
+        evaluation.signature.payload_digest,
+        fixture.evidence.evaluator_bundle.payload_digest
+    );
     evaluation.signature = fixture.evidence.evaluator_bundle.clone();
     let (trainer, trainer_server) = training.client()?;
     let (evaluator, evaluator_server) = evaluation.client()?;
@@ -147,10 +167,14 @@ async fn product_signature_cannot_replace_the_original_iteration_attestation()
             Error::Evidence(SignedEvidenceError::PayloadMismatch)
         ))
     ));
-    assert!(matches!(evaluator.readback(&fixture.snapshot, &prepared).await,
-        Err(Error::OwnerUnavailable(_))));
+    assert!(matches!(
+        evaluator.readback(&fixture.snapshot, &prepared).await,
+        Err(Error::OwnerUnavailable(_))
+    ));
     trainer_peer.join().expect("original trainer readback")?;
-    evaluator_peer.join().expect("wrong-domain evaluator fixture")?;
+    evaluator_peer
+        .join()
+        .expect("wrong-domain evaluator fixture")?;
     Ok(())
 }
 
@@ -160,8 +184,11 @@ async fn missing_original_trainer_refuses_no_update_before_contacting_evaluator(
     let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
     let fixture = LearningFixture::new_at(IndependentEvaluationDispositionV1::Ineligible, now);
     let prepared = prepare_cell_learning_evaluation_v1(
-        fixture.runner(), &fixture.snapshot, &fixture.receipt,
-        &fixture.qualification, &fixture.request(now),
+        fixture.runner(),
+        &fixture.snapshot,
+        &fixture.receipt,
+        &fixture.qualification,
+        &fixture.request(now),
     )?;
     let (training, evaluation) = original_owners(&fixture, prepared)?;
     let (trainer, trainer_server) = training.client()?;
@@ -170,9 +197,16 @@ async fn missing_original_trainer_refuses_no_update_before_contacting_evaluator(
     evaluator_server.set_nonblocking(true)?;
     assert!(matches!(
         read_cell_learning_evaluation_v1(request(&fixture), &trainer, &evaluator).await,
-        Err(CellLearningEvaluationReadbackErrorV1::Evidence(Error::OwnerUnavailable(_)))
+        Err(CellLearningEvaluationReadbackErrorV1::Evidence(
+            Error::OwnerUnavailable(_)
+        ))
     ));
-    assert_eq!(evaluator_server.read(&mut [0]).expect_err("no evaluator request").kind(),
-        ErrorKind::WouldBlock);
+    assert_eq!(
+        evaluator_server
+            .read(&mut [0])
+            .expect_err("no evaluator request")
+            .kind(),
+        ErrorKind::WouldBlock
+    );
     Ok(())
 }

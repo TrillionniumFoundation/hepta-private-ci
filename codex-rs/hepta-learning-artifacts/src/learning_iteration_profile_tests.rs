@@ -1,13 +1,13 @@
 use pretty_assertions::assert_eq;
 
 use super::*;
+use crate::FrozenLearningScopeV2;
+use crate::LearningUpdateScopeV2;
 use crate::learning_iteration_test_support::digest;
 use crate::learning_iteration_test_support::owners;
 use crate::learning_iteration_test_support::receipt;
 use crate::learning_iteration_test_support::request;
 use crate::test_support::FixtureValue;
-use crate::FrozenLearningScopeV2;
-use crate::LearningUpdateScopeV2;
 
 #[test]
 fn frozen_profile_is_required_and_committed_before_any_owner_work() {
@@ -129,11 +129,9 @@ fn frozen_scope_preserves_the_owner_profile_across_request_and_snapshot_readback
         .fixture("original scope");
         let mut changed_request = original_request.clone();
         changed_request.evaluation_profile = digest("different-preregistered-profile");
-        let changed = LearningIterationCoordinatorV1::new(
-            changed_request.clone(),
-            original_owners.clone(),
-        )
-        .fixture("different owner request");
+        let changed =
+            LearningIterationCoordinatorV1::new(changed_request.clone(), original_owners.clone())
+                .fixture("different owner request");
         assert_eq!(
             scope.validate_request(&changed_request, &original_owners),
             Err(LearningIterationError::UpdateScopeMismatch)

@@ -80,18 +80,33 @@ fn previous_or_missing_profile_bytes_are_refused_in_both_outer_schemas() -> anyh
         // Even the new tag cannot supply an omitted profile by inference.
         let mut missing_profile = codec::encode(snapshot)?;
         let request = &snapshot.request;
-        let profile_offset = 8 + 64 + [
-            &request.operation_id, &request.principal_id, &request.agent_id,
-            &request.cell_id, &request.source_run_id,
-        ].iter().map(|id| 1 + id.as_str().len()).sum::<usize>();
+        let profile_offset = 8
+            + 64
+            + [
+                &request.operation_id,
+                &request.principal_id,
+                &request.agent_id,
+                &request.cell_id,
+                &request.source_run_id,
+            ]
+            .iter()
+            .map(|id| 1 + id.as_str().len())
+            .sum::<usize>();
         missing_profile.drain(profile_offset..profile_offset + 32);
         for wire in [legacy_tag, missing_profile] {
             let error = codec::decode(&wire).expect_err("missing original profile");
             for scope in [None, Some(scope.clone())] {
                 let record = LearningIterationCheckpointRecordV1 {
                     schema: if scope.is_some() { 2 } else { 1 },
-                    binding: scope.as_ref().map_or(initial.head_digest, FrozenLearningScopeV2::binding).to_string(),
-                    predecessor: snapshot.receipts.last().map_or(Digest32::ZERO, |receipt| receipt.predecessor).to_string(),
+                    binding: scope
+                        .as_ref()
+                        .map_or(initial.head_digest, FrozenLearningScopeV2::binding)
+                        .to_string(),
+                    predecessor: snapshot
+                        .receipts
+                        .last()
+                        .map_or(Digest32::ZERO, |receipt| receipt.predecessor)
+                        .to_string(),
                     snapshot: Some(STANDARD_NO_PAD.encode(&wire)),
                 };
                 let directory = tempfile::tempdir()?;
@@ -105,7 +120,10 @@ fn previous_or_missing_profile_bytes_are_refused_in_both_outer_schemas() -> anyh
                     scope,
                 };
                 assert_eq!(current.restore(&initial.request), Err(error.clone()));
-                assert_eq!(current.checkpoint(snapshot.head_digest, &snapshots[index + 1]), Err(error.clone()));
+                assert_eq!(
+                    current.checkpoint(snapshot.head_digest, &snapshots[index + 1]),
+                    Err(error.clone())
+                );
                 assert_eq!(store.commits.load(Ordering::SeqCst), 0);
                 assert_eq!(std::fs::read(&path)?, retained_bytes);
             }

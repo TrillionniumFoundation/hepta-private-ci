@@ -40,7 +40,9 @@ fn temporal(name: &str) -> TemporalEvaluationPlan {
     plan
 }
 
-pub(super) fn observations(clusters: usize) -> (
+pub(super) fn observations(
+    clusters: usize,
+) -> (
     CellEvaluationRegistrationV1,
     TemporalEvaluationPlan,
     TemporalEvaluationPlan,

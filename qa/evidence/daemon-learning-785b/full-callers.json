@@ -1,0 +1,47 @@
+{
+  "after": {
+    "commit": "7c798134918f800c3fa1fa208ce9247dc0ef5d1f",
+    "dirty": false,
+    "parents": [
+      "6ad5f924b84b6cc1cd5ab834c5a824699b910a1a"
+    ],
+    "tree": "ec49bc547ff5e5f305d658226810503d9d939571"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "7c798134918f800c3fa1fa208ce9247dc0ef5d1f",
+    "dirty": false,
+    "parents": [
+      "6ad5f924b84b6cc1cd5ab834c5a824699b910a1a"
+    ],
+    "tree": "ec49bc547ff5e5f305d658226810503d9d939571"
+  },
+  "command": [
+    "python3",
+    "scripts/verify_hepta_callers.py",
+    "verify"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 282.44420250994153,
+  "exit_code": 0,
+  "finished_at": "2026-11-09T14:39:19.393177+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 88591,
+  "log_file": "full-callers.json.b48c730b11594c5fa63b85f2534e36f0.log",
+  "log_sha256": "20fdb6baee2386a6bb6378b533768ec1519b3447d12919af2d57e0e25131f92a",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "7c798134918f800c3fa1fa208ce9247dc0ef5d1f",
+  "started_at": "2026-11-09T14:34:36.947444+00:00",
+  "status": "passed",
+  "tested_sha": "7c798134918f800c3fa1fa208ce9247dc0ef5d1f",
+  "timed_out": false,
+  "working_directory": "/home/qq/hepta-daemon-learning-785b-20261109/source-published"
+}

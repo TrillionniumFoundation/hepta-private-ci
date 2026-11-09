@@ -1,0 +1,62 @@
+{
+  "after": {
+    "commit": "8fda6017ec84d59a2e43d16692f37cc112aa2054",
+    "dirty": false,
+    "parents": [
+      "93c1e9046157dc1773de5a13c5a29162f62ac251"
+    ],
+    "tree": "10f04d44a6f6d246e89981fcabc9f7ff2244fea8"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "8fda6017ec84d59a2e43d16692f37cc112aa2054",
+    "dirty": false,
+    "parents": [
+      "93c1e9046157dc1773de5a13c5a29162f62ac251"
+    ],
+    "tree": "10f04d44a6f6d246e89981fcabc9f7ff2244fea8"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "--lib",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 133.56372762308456,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-09T14:52:19.159533+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 651812,
+  "log_file": "ordinary.json.c9111941bb0a4375a28c605d79b68d56.log",
+  "log_sha256": "3b5a041afbde63a012a82a3bed59b61e86a9ab545026d5582ba0aeb658126dbc",
+  "minimum_tests": 1,
+  "observed_failed_tests": 5,
+  "observed_passed_tests": 891,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "8fda6017ec84d59a2e43d16692f37cc112aa2054",
+  "started_at": "2026-11-09T14:50:05.584383+00:00",
+  "status": "failed",
+  "tested_sha": "8fda6017ec84d59a2e43d16692f37cc112aa2054",
+  "timed_out": false,
+  "working_directory": "/home/qq/hepta-daemon-learning-785b-20261109/source-published"
+}
