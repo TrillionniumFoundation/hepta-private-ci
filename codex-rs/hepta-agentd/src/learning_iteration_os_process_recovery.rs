@@ -41,11 +41,11 @@ pub(crate) struct RecoveryContext {
     pub(crate) old_config: CellGenerationConfigV2,
     pub(crate) target_config: CellGenerationConfigV2,
     pub(crate) operation_id: String,
-    pub(crate) intent_digest: Digest32,
+    pub(crate) intent_digest: [u8; 32],
     pub(crate) request: CellGenerationRequestV2,
     pub(crate) receipt: CellGenerationReceiptV2,
-    pub(crate) initial_record_sha256: Digest32,
-    pub(crate) checkpoint_sha256: Digest32,
+    pub(crate) initial_record_sha256: [u8; 32],
+    pub(crate) checkpoint_sha256: [u8; 32],
     pub(crate) external_proposal: bool,
     pub(crate) probe: Probe,
 }
@@ -84,6 +84,23 @@ fn owner_files(root: &Path) -> anyhow::Result<BTreeMap<PathBuf, Digest32>> {
     Ok(files)
 }
 
+fn retained_owner_files(context: &RecoveryContext) -> anyhow::Result<BTreeMap<PathBuf, Digest32>> {
+    let mut roots = vec![("generation", context.root.clone())];
+    if context.external_proposal {
+        roots.extend([
+            ("external-artifact-owner", context.evidence.join("external-artifact-owner")),
+            ("external-artifact-owner-anchor", context.evidence.join("external-artifact-owner-anchor")),
+        ]);
+    }
+    let mut files = BTreeMap::new();
+    for (name, root) in roots {
+        for (path, digest) in owner_files(&root)? {
+            files.insert(PathBuf::from(name).join(path), digest);
+        }
+    }
+    Ok(files)
+}
+
 fn persist(path: &Path, bytes: &[u8]) -> anyhow::Result<()> {
     let mut file = OpenOptions::new().create_new(true).write(true).open(path)?;
     file.write_all(bytes)?;
@@ -93,7 +110,7 @@ fn persist(path: &Path, bytes: &[u8]) -> anyhow::Result<()> {
 }
 
 pub(crate) fn verify_in_new_process(context: RecoveryContext) -> anyhow::Result<serde_json::Value> {
-    let before = owner_files(&context.root)?;
+    let before = retained_owner_files(&context)?;
     let mut observations = Vec::new();
     for (name, probe) in [
         ("completed", Probe::Completed),
@@ -126,7 +143,7 @@ pub(crate) fn verify_in_new_process(context: RecoveryContext) -> anyhow::Result<
         );
         observations.push(result);
     }
-    assert_eq!(owner_files(&context.root)?, before);
+    assert_eq!(retained_owner_files(&context)?, before);
     Ok(json!({
         "schema":"hepta.research.native-owner-os-process-recovery.v1",
         "result":"PASS_RESEARCH_OWNER_PROCESS_REPLAY",
@@ -150,15 +167,15 @@ fn fresh_native_owner_process_recovery_child() -> anyhow::Result<()> {
     anyhow::ensure!(context.parent_pid != std::process::id(), "same native OS process");
     let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
     anyhow::ensure!(now < context.deadline_unix_seconds, "original research window expired");
-    let before = owner_files(&context.root)?;
+    let before = retained_owner_files(&context)?;
     let initial_raw = read_bounded(&context.evidence.join("native-checkpoint-0-owner.json"), 65_536)?;
-    anyhow::ensure!(Digest32::of_bytes(&initial_raw) == context.initial_record_sha256, "initial owner record changed");
+    anyhow::ensure!(Digest32::of_bytes(&initial_raw) == Digest32::from_array(context.initial_record_sha256), "initial owner record changed");
     let initial_record: LearningIterationCheckpointRecordV1 = serde_json::from_slice(&initial_raw)?;
     let encoded = initial_record.snapshot.as_ref().ok_or_else(|| anyhow::anyhow!("initial snapshot absent"))?;
     let initial = codec::decode(&STANDARD_NO_PAD.decode(encoded)?)?;
     anyhow::ensure!(initial.receipts.is_empty() && initial.request.envelope.expiry_unix_seconds == context.deadline_unix_seconds, "original genesis or deadline changed");
     let checkpoint_path = context.root.join("learning-checkpoint");
-    anyhow::ensure!(Digest32::of_bytes(&read_bounded(&checkpoint_path, 65_536)?) == context.checkpoint_sha256, "completed owner record changed");
+    anyhow::ensure!(Digest32::of_bytes(&read_bounded(&checkpoint_path, 65_536)?) == Digest32::from_array(context.checkpoint_sha256), "completed owner record changed");
     let owner = crate::neuron_generation_current::test_support::process_recovery::reopen_checkpoint(&context, &initial)?;
     let restored = owner.restore(&initial.request)?.ok_or_else(|| anyhow::anyhow!("completed checkpoint absent"))?;
     anyhow::ensure!(LearningIterationCoordinatorV1::from_snapshot(restored.clone())?.next_stage().is_none(), "incomplete original checkpoint");
@@ -184,7 +201,7 @@ fn fresh_native_owner_process_recovery_child() -> anyhow::Result<()> {
             }
         }
     }
-    assert_eq!(owner_files(&context.root)?, before);
+    assert_eq!(retained_owner_files(&context)?, before);
     anyhow::ensure!(SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs() < context.deadline_unix_seconds, "recovery exceeded original research window");
     persist(&path.with_extension("result.json"), &serde_json::to_vec(&json!({
         "schema":"hepta.research.native-owner-os-process-recovery-child.v1",

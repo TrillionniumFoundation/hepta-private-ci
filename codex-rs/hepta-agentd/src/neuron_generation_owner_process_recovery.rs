@@ -13,7 +13,7 @@ pub(crate) fn reopen_generation(context: &RecoveryContext) -> anyhow::Result<()>
     let current = Arc::new(NeuronGenerationCurrentOwnerV1 {
         store: CurrentStore::from_test_store(&context.old_config.initial.scope, current_file)?
     });
-    let prepared = current.recover_operation(&context.operation_id, context.intent_digest)?;
+    let prepared = current.recover_operation(&context.operation_id, Digest32::from_array(context.intent_digest))?;
     anyhow::ensure!(
         matches!(current.read_operation(&prepared)?, super::super::types::NeuronGenerationUpdateReadbackV1::Published(_)),
         "original CURRENT is not published"
