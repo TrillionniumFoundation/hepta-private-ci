@@ -2,6 +2,7 @@ use super::*;
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationError;
 use codex_hepta_learning_artifacts::LearningUpdateScopeV2;
+use pretty_assertions::assert_eq;
 use crate::learning_iteration_channel_scoped_v2;
 
 #[tokio::test]
