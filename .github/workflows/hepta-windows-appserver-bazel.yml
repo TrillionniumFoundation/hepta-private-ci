@@ -1,0 +1,96 @@
+name: Original Windows Bazel app-server target validation
+
+on:
+  push:
+    branches:
+      - codex/cell-windows-appserver-bazel-20261109-898e
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-appserver-bazel-${{ github.run_id }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: 3f084182eb80bd8fac0a5717a2f5911978759a06
+  TESTED_SHA: 3f084182eb80bd8fac0a5717a2f5911978759a06
+  SOURCE_TREE: 3baf936ae98d761bcba25a4e38c2501407417737
+
+jobs:
+  appserver-original-wrapper:
+    runs-on: windows-latest
+    # Preserve the original Windows Bazel shard's ceiling and internal budgets.
+    timeout-minutes: 120
+    steps:
+      - name: Enable the existing Windows checkout convention
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: |
+          git config --global core.longpaths true
+          git config --global core.autocrlf false
+
+      - name: Checkout the independent observer
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Retain the exact observer in a separate detached worktree
+        shell: pwsh
+        run: |
+          $observer = Join-Path $env:RUNNER_TEMP "appserver-bazel-observer"
+          if (Test-Path $observer) { throw "Observer worktree must be new" }
+          git worktree add --detach $observer $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "OBSERVER_ROOT=$observer" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "OBSERVER_SHA=$env:GITHUB_SHA" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Checkout the exact quiet source at the original runner root
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+
+      - name: Check observer rejection controls
+        shell: pwsh
+        run: |
+          python -m unittest discover -s "$env:OBSERVER_ROOT/.github/scripts" -p test_windows_appserver_bazel.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Admit both clean source identities before preparation
+        id: admission
+        shell: pwsh
+        run: |
+          python "$env:OBSERVER_ROOT/.github/scripts/windows_appserver_bazel.py" --mode admit --root "$env:GITHUB_WORKSPACE" --observer "$env:OBSERVER_ROOT" --output "$env:RUNNER_TEMP/appserver-bazel-evidence" --source-sha "$env:SOURCE_SHA" --tested-sha "$env:TESTED_SHA" --source-tree "$env:SOURCE_TREE" --observer-sha "$env:OBSERVER_SHA"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Prepare the original Windows MSVC Bazel runner
+        id: preparation
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+
+      - name: Discover and execute the original complete sixteen-shard app-server wrapper
+        shell: bash
+        run: |
+          set -euo pipefail
+          observer_bash_path="$BASH"
+          if [[ "$observer_bash_path" != *.[eE][xX][eE] ]]; then
+            observer_bash_path="${observer_bash_path}.exe"
+          fi
+          [[ "$BASH" -ef "$observer_bash_path" ]]
+          observer_bash="$(cygpath -am "$observer_bash_path")"
+          python "$OBSERVER_ROOT/.github/scripts/windows_appserver_bazel.py" --mode run --root "$GITHUB_WORKSPACE" --observer "$OBSERVER_ROOT" --output "$RUNNER_TEMP/appserver-bazel-evidence" --source-sha "$SOURCE_SHA" --tested-sha "$TESTED_SHA" --source-tree "$SOURCE_TREE" --observer-sha "$OBSERVER_SHA" --bash-executable "$observer_bash"
+
+      - name: Preserve original outputs and every attempt, including failure
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: windows-appserver-bazel-${{ env.TESTED_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/appserver-bazel-evidence
+            ${{ runner.temp }}/bazel-execution-logs
+          include-hidden-files: true
+          if-no-files-found: error
