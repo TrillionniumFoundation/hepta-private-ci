@@ -1,0 +1,506 @@
+{
+  "all_archive_member_sizes_and_hashes_equal": true,
+  "all_original_file_hashes_still_equal": true,
+  "archive": {
+    "bytes": 6306956,
+    "sha256": "2b1088d0730deedaea6dfa6b4f3d89ce84d0d7998128fe69ebaea487bfe4ba24"
+  },
+  "created_unix_ns": 1794198183184953205,
+  "index": {
+    "bytes": 124917,
+    "sha256": "b88f62111d894ee7b5d8bcf70dbbae0a74ac566791bfbe32777d5a14086c417f"
+  },
+  "qualification": "HOLD_NO_GO",
+  "runs": {
+    "native-adopt-v1": {
+      "independent_evaluation": false,
+      "native_result": {
+        "actual_evaluation_forward_calls": 8,
+        "actual_next_task_forward_calls": 1,
+        "actual_source_forward_calls": 1,
+        "actual_training_optimizer_steps": 10,
+        "checkpoint_sha256": "5b9974480b7327980308d55320402e7e0c4b3ed65af545c8881110583b91ff5f",
+        "disposition": "ResearchExternalTrainedArtifactAdopt",
+        "evaluation_profile": "f63295913fee2ef1a58d5ced814fc6279b5c394eff4af09b45896c9182ee0144",
+        "frozen_plan_sha256": "97c738e264ac7da5f3a44a51910f5bd18a780fbe089a4936f341457ae051a625",
+        "generation_owner_reopened": true,
+        "independent_operator_custody": false,
+        "initial_learning_head": "4b5bf3adb14a25d4bf1156f9385e70bb4b8ca7307b3e23d8bcc7d50cb3a342ec",
+        "learning_head": "dfa9c48420e5692b5f40f0ef27fb1a9d3fb2170a184dab00276229bc455e5b38",
+        "learning_owner_reopened": true,
+        "native_daemon_os_restart": false,
+        "native_fleet_lifecycle_recreated": true,
+        "native_iteration_complete": true,
+        "native_proposal_update_candidates": true,
+        "operation": "learning-scoped-v2-d81cb97c-adopt-v1",
+        "original_checkpoint_codec": true,
+        "original_generation_actor": true,
+        "original_learning_signature_verifier": true,
+        "original_parameter_v3_qualified": false,
+        "positive_adoption_rejection": null,
+        "positive_adoption_validation": {
+          "cold_forward_budget_delta": 0,
+          "cold_worker_pid": 1525846,
+          "forward_count_kind": "source-bound-live-worker-ledger-delta-inference",
+          "hot_and_cold_original_readback_equal": true,
+          "hot_forward_budget_delta": 1,
+          "hot_worker_pid": 1525375,
+          "original_proposal": "UpdateCandidates",
+          "selected_candidate_bundle": "b61e0ac0d24233ea641213dce1aebf26a229902b66204906607281b88e8ff343",
+          "selected_candidate_sha256": "56d88f2dda61db06f88a96ebed05d29e1a9e2e8d1d02e3f296a8544df743e45c"
+        },
+        "product_ope_qualified": false,
+        "production_activation": false,
+        "production_final_use": false,
+        "production_root_capability": false,
+        "qualification": "HOLD_NO_GO",
+        "real_new_candidate_adoption": true,
+        "reexecuted_after_recovery": false,
+        "research_keys_and_custody": true,
+        "result": "PASS",
+        "retained_artifact_sha256": null,
+        "schema": "hepta.research.external-trained-native-completion.v1",
+        "selected_adapter": "aefe5a8343fac51a7ad5b141342cb6d052f0163b68627a3d6b92eda23044c21b",
+        "selected_artifact_sha256": "56d88f2dda61db06f88a96ebed05d29e1a9e2e8d1d02e3f296a8544df743e45c",
+        "worker_process_restarted": true
+      },
+      "next_actual": "no",
+      "next_question": "Answer with only yes or no. Is 8517 greater than 8516?",
+      "observed_evaluations": [
+        {
+          "correct": 1,
+          "role": "parent",
+          "rows": [
+            {
+              "actual": "no",
+              "correct": false,
+              "expected": "yes",
+              "question": "Answer with only yes or no. Is 4807 greater than 4806?"
+            },
+            {
+              "actual": "no",
+              "correct": true,
+              "expected": "no",
+              "question": "Answer with only yes or no. Is 5208 greater than 5209?"
+            },
+            {
+              "actual": "no",
+              "correct": false,
+              "expected": "yes",
+              "question": "Answer with only yes or no. Is 6311 greater than 6310?"
+            },
+            {
+              "actual": "yes",
+              "correct": false,
+              "expected": "no",
+              "question": "Answer with only yes or no. Is 7402 greater than 7403?"
+            }
+          ]
+        },
+        {
+          "correct": 2,
+          "role": "candidate",
+          "rows": [
+            {
+              "actual": "no",
+              "correct": false,
+              "expected": "yes",
+              "question": "Answer with only yes or no. Is 4807 greater than 4806?"
+            },
+            {
+              "actual": "no",
+              "correct": true,
+              "expected": "no",
+              "question": "Answer with only yes or no. Is 5208 greater than 5209?"
+            },
+            {
+              "actual": "no",
+              "correct": false,
+              "expected": "yes",
+              "question": "Answer with only yes or no. Is 6311 greater than 6310?"
+            },
+            {
+              "actual": "no",
+              "correct": true,
+              "expected": "no",
+              "question": "Answer with only yes or no. Is 7402 greater than 7403?"
+            }
+          ]
+        }
+      ],
+      "prior_tasks_and_outcomes_exposed": true,
+      "runtime_result": {
+        "action": "run",
+        "archive_sha256": "c770a7b7187d84c06805629fb530fd6a40192d6715e17a10486e1e662d7386c6",
+        "automatic_retries": 0,
+        "binary_sha256": "1b71791e45562c7059662001df67e688a67aa679f96e3e79ae0a2e2807eaafd5",
+        "cgroup_after": {
+          "cpu_max": "400000 100000",
+          "cpu_stat": "usage_usec 62356094\nuser_usec 57852481\nsystem_usec 4503612\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 539\nnr_throttled 4\nthrottled_usec 3065380\nnr_bursts 0\nburst_usec 0\n",
+          "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0\n",
+          "memory_max": "8589934592",
+          "memory_peak": "3938709504",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1be76691a-5e21-e7.service"
+        },
+        "cgroup_before": {
+          "cpu_max": "400000 100000",
+          "cpu_stat": "usage_usec 50484\nuser_usec 38367\nsystem_usec 12116\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+          "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0\n",
+          "memory_max": "8589934592",
+          "memory_peak": "22290432",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1be76691a-5e21-e7.service"
+        },
+        "checkpoint_profile": 2,
+        "checkpoint_sha256": "5b9974480b7327980308d55320402e7e0c4b3ed65af545c8881110583b91ff5f",
+        "cpu_quota_percent": 400,
+        "ended_unix_ns": 1794196859456988877,
+        "evaluation_scores": [
+          1,
+          2
+        ],
+        "execution_tools": {
+          "cargo": "/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+          "cargo_home": "/home/qq/hepta-scoped-v2-20261109-d81cb97c/execution-cargo-home",
+          "cargo_nextest": "/home/qq/hepta-learning-native-edf03ec-d9fb-20261108/transfer/cargo-nextest",
+          "cargo_nextest_sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1",
+          "cargo_nextest_version": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu\n",
+          "cargo_sha256": "f30f9fd1b1d0b8fd10dc33219eb4cd4bec3543f40e434ac71f5a03fd0359063f"
+        },
+        "frozen_update_scope": "55270d24b39df0bcf0ed9fb842a17405608d5220fb5691a2cc9760cdec2cce5c",
+        "junit_candidates": [
+          "/home/qq/hepta-scoped-v2-20261109-d81cb97c/source/codex-rs/target/nextest/local/junit.xml"
+        ],
+        "junit_sha256": "b8d937592e958c21079f14c0d1d409d5b1176734ff4e5d4c84a7776026aed69b",
+        "memory_max_bytes": 8589934592,
+        "model_test_started": true,
+        "native_exit_code": 0,
+        "native_result": {
+          "actual_evaluation_forward_calls": 8,
+          "actual_next_task_forward_calls": 1,
+          "actual_source_forward_calls": 1,
+          "actual_training_optimizer_steps": 10,
+          "checkpoint_sha256": "5b9974480b7327980308d55320402e7e0c4b3ed65af545c8881110583b91ff5f",
+          "disposition": "ResearchExternalTrainedArtifactAdopt",
+          "evaluation_profile": "f63295913fee2ef1a58d5ced814fc6279b5c394eff4af09b45896c9182ee0144",
+          "frozen_plan_sha256": "97c738e264ac7da5f3a44a51910f5bd18a780fbe089a4936f341457ae051a625",
+          "generation_owner_reopened": true,
+          "independent_operator_custody": false,
+          "initial_learning_head": "4b5bf3adb14a25d4bf1156f9385e70bb4b8ca7307b3e23d8bcc7d50cb3a342ec",
+          "learning_head": "dfa9c48420e5692b5f40f0ef27fb1a9d3fb2170a184dab00276229bc455e5b38",
+          "learning_owner_reopened": true,
+          "native_daemon_os_restart": false,
+          "native_fleet_lifecycle_recreated": true,
+          "native_iteration_complete": true,
+          "native_proposal_update_candidates": true,
+          "operation": "learning-scoped-v2-d81cb97c-adopt-v1",
+          "original_checkpoint_codec": true,
+          "original_generation_actor": true,
+          "original_learning_signature_verifier": true,
+          "original_parameter_v3_qualified": false,
+          "positive_adoption_rejection": null,
+          "positive_adoption_validation": {
+            "cold_forward_budget_delta": 0,
+            "cold_worker_pid": 1525846,
+            "forward_count_kind": "source-bound-live-worker-ledger-delta-inference",
+            "hot_and_cold_original_readback_equal": true,
+            "hot_forward_budget_delta": 1,
+            "hot_worker_pid": 1525375,
+            "original_proposal": "UpdateCandidates",
+            "selected_candidate_bundle": "b61e0ac0d24233ea641213dce1aebf26a229902b66204906607281b88e8ff343",
+            "selected_candidate_sha256": "56d88f2dda61db06f88a96ebed05d29e1a9e2e8d1d02e3f296a8544df743e45c"
+          },
+          "product_ope_qualified": false,
+          "production_activation": false,
+          "production_final_use": false,
+          "production_root_capability": false,
+          "qualification": "HOLD_NO_GO",
+          "real_new_candidate_adoption": true,
+          "reexecuted_after_recovery": false,
+          "research_keys_and_custody": true,
+          "result": "PASS",
+          "retained_artifact_sha256": null,
+          "schema": "hepta.research.external-trained-native-completion.v1",
+          "selected_adapter": "aefe5a8343fac51a7ad5b141342cb6d052f0163b68627a3d6b92eda23044c21b",
+          "selected_artifact_sha256": "56d88f2dda61db06f88a96ebed05d29e1a9e2e8d1d02e3f296a8544df743e45c",
+          "worker_process_restarted": true
+        },
+        "native_result_sha256": "8ec932b3b0c4b7e6e15a5a1117048da684533ff4445c46528978126b523007d1",
+        "operation": "learning-scoped-v2-d81cb97c-adopt-v1",
+        "original_watchdog_seconds": 60,
+        "outer_owned_job_cgroup_cleanup_readback_required": true,
+        "production_activation": false,
+        "qualification": "HOLD_NO_GO",
+        "readback_sha256": "fe44357244aff2d6e6d5579f9b6ca39d6a9480f7d25cae39cf82c08aa3a36fcf",
+        "result": "PASS_FRESH_SCOPED_NATIVE_MODEL",
+        "runner_sha256": "e5e8c78d423902111449690000a341b07dc4eb81864e9c4081000b899b5ad821",
+        "schema": "hepta.scoped-v2.actual-run-observation.v1",
+        "source": "d81cb97c5b01aea0df03d84d40336b25576337de",
+        "started_unix_ns": 1794196805544885217,
+        "testcases": [
+          {
+            "error": false,
+            "failure": false,
+            "name": "neuron_generation_runtime::tests::update::real_learning::actual_smollm_external_artifact_native_adoption_and_cold_readback",
+            "skipped": false,
+            "time": "52.077"
+          }
+        ],
+        "tracked_after": 11218,
+        "tracked_before": 11218,
+        "tree": "49829b9efd25251907743d36fd9c87625ae2bdce"
+      }
+    },
+    "native-no-update-v1": {
+      "independent_evaluation": false,
+      "native_result": {
+        "actual_evaluation_forward_calls": 8,
+        "actual_next_task_forward_calls": 1,
+        "actual_source_forward_calls": 1,
+        "actual_training_optimizer_steps": 10,
+        "checkpoint_sha256": "6b4d93560aa43b7312e5bcc571abab47e8e3b0e641e45e42f27e5537c51d0540",
+        "disposition": "NoUpdate",
+        "evaluation_profile": "5bfea1fd31deaad061a7dae79b9e40bd8deb212500c2db27649919508d8cb860",
+        "frozen_plan_sha256": "8212e7cdb28921cec9dbe26496ee12634f7c0806f998daa59fb7fe7b559c979a",
+        "generation_owner_reopened": true,
+        "independent_operator_custody": false,
+        "initial_learning_head": "3085100f5871582edfe4861c270cd32b0365d3c474317e7074c5714ead98ff9c",
+        "learning_head": "3a2a3aacdeab9e3f33479b5a6ba981e243e98b6a50f57a1ac72dcb97ff11d3d1",
+        "learning_owner_reopened": true,
+        "native_daemon_os_restart": false,
+        "native_fleet_lifecycle_recreated": true,
+        "native_iteration_complete": true,
+        "native_proposal_update_candidates": false,
+        "operation": "learning-scoped-v2-d81cb97c-no-update-v1",
+        "original_checkpoint_codec": true,
+        "original_generation_actor": true,
+        "original_learning_signature_verifier": true,
+        "original_parameter_v3_qualified": false,
+        "positive_adoption_rejection": null,
+        "positive_adoption_validation": null,
+        "product_ope_qualified": false,
+        "production_activation": false,
+        "production_final_use": false,
+        "production_root_capability": false,
+        "qualification": "HOLD_NO_GO",
+        "real_new_candidate_adoption": false,
+        "reexecuted_after_recovery": false,
+        "research_keys_and_custody": true,
+        "result": "PASS",
+        "retained_artifact_sha256": "a946c2cd7073092e607fb5ee3fd9b2dc78053ba5dc3d357a0a27c273ebbf95e2",
+        "schema": "hepta.research.real-model-native-completion.v1",
+        "selected_adapter": "e1a9ce940c9d4b04bb827490708604178d4e2391e7afd81a3ca63008389d1e53",
+        "selected_artifact_sha256": "a946c2cd7073092e607fb5ee3fd9b2dc78053ba5dc3d357a0a27c273ebbf95e2",
+        "worker_process_restarted": true
+      },
+      "next_actual": "yes",
+      "next_question": "Answer with only yes or no. Is 8517 greater than 8516?",
+      "observed_evaluations": [
+        {
+          "correct": 3,
+          "role": "parent",
+          "rows": [
+            {
+              "actual": "yes",
+              "correct": true,
+              "expected": "yes",
+              "question": "Answer with only yes or no. Is 4807 greater than 4806?"
+            },
+            {
+              "actual": "no",
+              "correct": true,
+              "expected": "no",
+              "question": "Answer with only yes or no. Is 5208 greater than 5209?"
+            },
+            {
+              "actual": "yes",
+              "correct": true,
+              "expected": "yes",
+              "question": "Answer with only yes or no. Is 6311 greater than 6310?"
+            },
+            {
+              "actual": "yes",
+              "correct": false,
+              "expected": "no",
+              "question": "Answer with only yes or no. Is 7402 greater than 7403?"
+            }
+          ]
+        },
+        {
+          "correct": 1,
+          "role": "candidate",
+          "rows": [
+            {
+              "actual": "no",
+              "correct": false,
+              "expected": "yes",
+              "question": "Answer with only yes or no. Is 4807 greater than 4806?"
+            },
+            {
+              "actual": "no",
+              "correct": true,
+              "expected": "no",
+              "question": "Answer with only yes or no. Is 5208 greater than 5209?"
+            },
+            {
+              "actual": "no",
+              "correct": false,
+              "expected": "yes",
+              "question": "Answer with only yes or no. Is 6311 greater than 6310?"
+            },
+            {
+              "actual": "yes",
+              "correct": false,
+              "expected": "no",
+              "question": "Answer with only yes or no. Is 7402 greater than 7403?"
+            }
+          ]
+        }
+      ],
+      "prior_tasks_and_outcomes_exposed": true,
+      "runtime_result": {
+        "action": "run",
+        "archive_sha256": "c770a7b7187d84c06805629fb530fd6a40192d6715e17a10486e1e662d7386c6",
+        "automatic_retries": 0,
+        "binary_sha256": "1b71791e45562c7059662001df67e688a67aa679f96e3e79ae0a2e2807eaafd5",
+        "cgroup_after": {
+          "cpu_max": "400000 100000",
+          "cpu_stat": "usage_usec 62153256\nuser_usec 56897683\nsystem_usec 5255572\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 539\nnr_throttled 3\nthrottled_usec 2805909\nnr_bursts 0\nburst_usec 0\n",
+          "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0\n",
+          "memory_max": "8589934592",
+          "memory_peak": "4190310400",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1be737b16-5e21-cd.service"
+        },
+        "cgroup_before": {
+          "cpu_max": "400000 100000",
+          "cpu_stat": "usage_usec 50646\nuser_usec 39932\nsystem_usec 10713\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+          "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0\n",
+          "memory_max": "8589934592",
+          "memory_peak": "21565440",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1be737b16-5e21-cd.service"
+        },
+        "checkpoint_profile": 2,
+        "checkpoint_sha256": "6b4d93560aa43b7312e5bcc571abab47e8e3b0e641e45e42f27e5537c51d0540",
+        "cpu_quota_percent": 400,
+        "ended_unix_ns": 1794196667749681297,
+        "evaluation_scores": [
+          3,
+          1
+        ],
+        "execution_tools": {
+          "cargo": "/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+          "cargo_home": "/home/qq/hepta-scoped-v2-20261109-d81cb97c/execution-cargo-home",
+          "cargo_nextest": "/home/qq/hepta-learning-native-edf03ec-d9fb-20261108/transfer/cargo-nextest",
+          "cargo_nextest_sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1",
+          "cargo_nextest_version": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu\n",
+          "cargo_sha256": "f30f9fd1b1d0b8fd10dc33219eb4cd4bec3543f40e434ac71f5a03fd0359063f"
+        },
+        "frozen_update_scope": "a4bfc9dd8bda270479bd34beb43792352ab3930ba974ae086b1bb84d983a8f27",
+        "junit_candidates": [
+          "/home/qq/hepta-scoped-v2-20261109-d81cb97c/source/codex-rs/target/nextest/local/junit.xml"
+        ],
+        "junit_sha256": "ac804835dd426a30b8239cf84e55a63826795cb841084954b857d872dd5b8585",
+        "memory_max_bytes": 8589934592,
+        "model_test_started": true,
+        "native_exit_code": 0,
+        "native_result": {
+          "actual_evaluation_forward_calls": 8,
+          "actual_next_task_forward_calls": 1,
+          "actual_source_forward_calls": 1,
+          "actual_training_optimizer_steps": 10,
+          "checkpoint_sha256": "6b4d93560aa43b7312e5bcc571abab47e8e3b0e641e45e42f27e5537c51d0540",
+          "disposition": "NoUpdate",
+          "evaluation_profile": "5bfea1fd31deaad061a7dae79b9e40bd8deb212500c2db27649919508d8cb860",
+          "frozen_plan_sha256": "8212e7cdb28921cec9dbe26496ee12634f7c0806f998daa59fb7fe7b559c979a",
+          "generation_owner_reopened": true,
+          "independent_operator_custody": false,
+          "initial_learning_head": "3085100f5871582edfe4861c270cd32b0365d3c474317e7074c5714ead98ff9c",
+          "learning_head": "3a2a3aacdeab9e3f33479b5a6ba981e243e98b6a50f57a1ac72dcb97ff11d3d1",
+          "learning_owner_reopened": true,
+          "native_daemon_os_restart": false,
+          "native_fleet_lifecycle_recreated": true,
+          "native_iteration_complete": true,
+          "native_proposal_update_candidates": false,
+          "operation": "learning-scoped-v2-d81cb97c-no-update-v1",
+          "original_checkpoint_codec": true,
+          "original_generation_actor": true,
+          "original_learning_signature_verifier": true,
+          "original_parameter_v3_qualified": false,
+          "positive_adoption_rejection": null,
+          "positive_adoption_validation": null,
+          "product_ope_qualified": false,
+          "production_activation": false,
+          "production_final_use": false,
+          "production_root_capability": false,
+          "qualification": "HOLD_NO_GO",
+          "real_new_candidate_adoption": false,
+          "reexecuted_after_recovery": false,
+          "research_keys_and_custody": true,
+          "result": "PASS",
+          "retained_artifact_sha256": "a946c2cd7073092e607fb5ee3fd9b2dc78053ba5dc3d357a0a27c273ebbf95e2",
+          "schema": "hepta.research.real-model-native-completion.v1",
+          "selected_adapter": "e1a9ce940c9d4b04bb827490708604178d4e2391e7afd81a3ca63008389d1e53",
+          "selected_artifact_sha256": "a946c2cd7073092e607fb5ee3fd9b2dc78053ba5dc3d357a0a27c273ebbf95e2",
+          "worker_process_restarted": true
+        },
+        "native_result_sha256": "cbfdedadd117bb134aed7167824bf9f16fd35e882c5c80ce95bcf52fb5085036",
+        "operation": "learning-scoped-v2-d81cb97c-no-update-v1",
+        "original_watchdog_seconds": 60,
+        "outer_owned_job_cgroup_cleanup_readback_required": true,
+        "production_activation": false,
+        "qualification": "HOLD_NO_GO",
+        "readback_sha256": "b53cfa94457be459ab83ce770b41642357610052e707ae7872891ed51a4a7de2",
+        "result": "PASS_FRESH_SCOPED_NATIVE_MODEL",
+        "runner_sha256": "e5e8c78d423902111449690000a341b07dc4eb81864e9c4081000b899b5ad821",
+        "schema": "hepta.scoped-v2.actual-run-observation.v1",
+        "source": "d81cb97c5b01aea0df03d84d40336b25576337de",
+        "started_unix_ns": 1794196613908580066,
+        "testcases": [
+          {
+            "error": false,
+            "failure": false,
+            "name": "neuron_generation_runtime::tests::update::real_learning::actual_smollm_training_no_update_native_next_use_and_cold_readback",
+            "skipped": false,
+            "time": "51.749"
+          }
+        ],
+        "tracked_after": 11218,
+        "tracked_before": 11218,
+        "tree": "49829b9efd25251907743d36fd9c87625ae2bdce"
+      }
+    }
+  },
+  "schema": "hepta-scoped-v2-original-capture-verification-v1",
+  "source": "d81cb97c5b01aea0df03d84d40336b25576337de",
+  "sqlite_files_read_as_bytes_only": [
+    {
+      "bytes": 663552,
+      "path": "native-no-update-v1/tmp/.tmpscgCXq/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3",
+      "sha256": "22dcd391f42c9cfe3e7cfd817c53fc1cd926e0946fccaca172103369ca315b77"
+    },
+    {
+      "bytes": 32768,
+      "path": "native-no-update-v1/tmp/.tmpscgCXq/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-shm",
+      "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+    },
+    {
+      "bytes": 0,
+      "path": "native-no-update-v1/tmp/.tmpscgCXq/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 663552,
+      "path": "native-adopt-v1/tmp/.tmpfBrWKc/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3",
+      "sha256": "1fe320501a157adc9c796d18dd7dc4a7d67f055fab56ecf83abe2c90a6757e38"
+    },
+    {
+      "bytes": 0,
+      "path": "native-adopt-v1/tmp/.tmpfBrWKc/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/cognitive/cognitive_1.sqlite3-wal",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "tar_member_names_unique_and_safe": true,
+  "tree": "49829b9efd25251907743d36fd9c87625ae2bdce",
+  "verification_scope": "read-only byte and result audit; no model, source, owner, or database execution",
+  "verified_bytes": 9747511,
+  "verified_files": 495
+}

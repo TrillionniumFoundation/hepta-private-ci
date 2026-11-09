@@ -1,0 +1,336 @@
+{
+  "kind": "publication-readback-audit-v1",
+  "qualification": "Draft source publication only; no merge, activation, deployed FinalUse or qualification award.",
+  "chain_c1": {
+    "status": {
+      "at_unix_ms": 1794198538520,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1be909080-5e21-176",
+      "launch_nonce": "dd5d407dfb9cc7e9662adfcb44fe3d57",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 1236,
+          "stored": 1236
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "result": {
+      "result": "PASS_EXACT_GIT_BUNDLE_PUSH_AND_PR_READBACK",
+      "actor": "ProfHepta",
+      "repo": "Trillionnium-Chain",
+      "commit": "e8f81ca15634d0393e7bc6257193b4dbe88d9b2e",
+      "tree": "563992ef5bd3db98d95b7e249ea67cbbec2e2978",
+      "changed_paths": [
+        "config/pon/pq-cross-branch-corpus-v1.json",
+        "docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md",
+        "docs/development/specs/pon/GROUPED_SECURITY_WORK_METERING_V1.md",
+        "docs/development/specs/pon/SERVICE_WORK_SETTLEMENT_V1.md",
+        "evidence/pon-hepta-accounting-convergence-20261109/source-inputs.json",
+        "formal/pon-nakamoto-v1/experiments/grouped_fresh_fanout_v0.py",
+        "formal/pon-nakamoto-v1/experiments/reanalyze_grouped_fanout_v1.py",
+        "formal/pon-nakamoto-v1/grouped_fresh_deployment_cost_v0.py",
+        "formal/pon-nakamoto-v1/service_work_settlement_v1.py",
+        "formal/pon-nakamoto-v1/test_grouped_fanout_reanalysis_v1.py",
+        "formal/pon-nakamoto-v1/test_grouped_fresh_deployment_cost_v0.py",
+        "formal/pon-nakamoto-v1/test_service_work_settlement_v1.py"
+      ],
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/832",
+      "number": 832,
+      "draft": true,
+      "base": "fix/chain-hepta-preservation-ac851-20261108",
+      "body_sha256": "f8dba14bc4d89e089f6d3865de1980ac49e1578ba7e4d91b5d73a6a0c67577e3"
+    }
+  },
+  "hepta_stage_1": {
+    "number": 5419,
+    "head": "eba4601966388af65f811d31077fabd00886e4e1",
+    "base": "codex/learning-completion-d9fb-20261108",
+    "draft": true
+  },
+  "hepta_stage_2": {
+    "number": 5420,
+    "head": "d81cb97c5b01aea0df03d84d40336b25576337de",
+    "base": "fix/scoped-learning-contract-v2-20261109-d9bb",
+    "draft": true,
+    "quality_failure_paragraph_read_back": true
+  },
+  "hepta_maintenance_initial_attempt": {
+    "status": {
+      "at_unix_ms": 1794199044665,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 1,
+      "job_id": "1a1be971d22-5e21-196",
+      "launch_nonce": "404728d21b5493b4b79623c1ffaebfaa",
+      "log_bytes": {
+        "stderr": {
+          "seen": 321,
+          "stored": 321
+        },
+        "stdout": {
+          "seen": 0,
+          "stored": 0
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "failed",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "raw_read": {
+      "audit_recorded": true,
+      "job_id": "1a1be971d22-5e21-196",
+      "stderr": {
+        "bytes_hex": "54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520223c737472696e673e222c206c696e652036322c20696e203c6d6f64756c653e0a202046696c6520223c737472696e673e222c206c696e652033392c20696e206170690a52756e74696d654572726f723a204769744875622041504920657869743d313a20476574202268747470733a2f2f6170692e6769746875622e636f6d2f7265706f732f5472696c6c696f6e6e69756d466f756e646174696f6e2f68657074612d707269766174652d63692f6769742f7265662f68656164732f6669782f73636f7065642d6c6561726e696e672d6d61696e74656e616e63652d6439626262352d3230323631313039223a206469616c20746370203134302e38322e3131322e353a3434333a20692f6f2074696d656f75740a0a",
+        "eof": true,
+        "next_offset": 321,
+        "offset": 0,
+        "size": 321,
+        "text": "Traceback (most recent call last):\n  File \"<string>\", line 62, in <module>\n  File \"<string>\", line 39, in api\nRuntimeError: GitHub API exit=1: Get \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/fix/scoped-learning-maintenance-d9bbb5-20261109\": dial tcp 140.82.112.5:443: i/o timeout\n\n"
+      },
+      "stdout": {
+        "bytes_hex": "",
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0,
+        "text": ""
+      }
+    },
+    "post_failure_ref": {
+      "content": "{\"ref\":\"refs/heads/fix/scoped-learning-maintenance-d9bbb5-20261109\",\"node_id\":\"REF_kwDOTrgxoNoAOnJlZnMvaGVhZHMvZml4L3Njb3BlZC1sZWFybmluZy1tYWludGVuYW5jZS1kOWJiYjUtMjAyNjExMDk\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/fix/scoped-learning-maintenance-d9bbb5-20261109\",\"object\":{\"sha\":\"d2ebadca8bb95a7f208bf0538690125acdd784eb\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/d2ebadca8bb95a7f208bf0538690125acdd784eb\"}}",
+      "title": "scoped-learning-maintenance-d9bbb5-20261109",
+      "modified_date": null,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/fix/scoped-learning-maintenance-d9bbb5-20261109",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/fix/scoped-learning-maintenance-d9bbb5-20261109",
+      "display_title": "scoped-learning-maintenance-d9bbb5-20261109",
+      "structuredContent": {
+        "title": "scoped-learning-maintenance-d9bbb5-20261109",
+        "content": "{\"ref\":\"refs/heads/fix/scoped-learning-maintenance-d9bbb5-20261109\",\"node_id\":\"REF_kwDOTrgxoNoAOnJlZnMvaGVhZHMvZml4L3Njb3BlZC1sZWFybmluZy1tYWludGVuYW5jZS1kOWJiYjUtMjAyNjExMDk\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/fix/scoped-learning-maintenance-d9bbb5-20261109\",\"object\":{\"sha\":\"d2ebadca8bb95a7f208bf0538690125acdd784eb\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/d2ebadca8bb95a7f208bf0538690125acdd784eb\"}}",
+        "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/fix/scoped-learning-maintenance-d9bbb5-20261109"
+      }
+    },
+    "note": "The branch was pushed. The original process then failed during GitHub API readback with a network timeout. The exact remote commit was independently read before a new publication reconciliation job."
+  },
+  "hepta_maintenance_reconciliation": {
+    "status": {
+      "at_unix_ms": 1794199137422,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1be99fcf4-5e21-1a2",
+      "launch_nonce": "9c25aa54229ed024e66f2e80a1d7e7d2",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 1107,
+          "stored": 1107
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "result": {
+      "result": "PASS_EXACT_GIT_BUNDLE_PUSH_AND_PR_READBACK",
+      "actor": "ProfHepta",
+      "repo": "hepta-private-ci",
+      "commit": "d2ebadca8bb95a7f208bf0538690125acdd784eb",
+      "tree": "5a23c73d908a551631280384474f10944aff88fb",
+      "changed_paths": [
+        "codex-rs/hepta-agentd/src/learning_iteration.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_scope_tests.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_tests.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_scope_tests.rs",
+        "codex-rs/hepta-agentd/src/lib.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+        "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+        "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope_tests.rs"
+      ],
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5431",
+      "number": 5431,
+      "draft": true,
+      "base": "fix/scoped-learning-v2-20261109-ac851",
+      "body_sha256": "0759c87ce6d907adb399eafd73b74dd15bfb03df468d2a414f7e81948d88006f"
+    }
+  },
+  "model_runtime_cleanup": [
+    {
+      "job": "1a1be737b16-5e21-cd",
+      "cgroup_exists": false,
+      "cgroup_events": null
+    },
+    {
+      "job": "1a1be76691a-5e21-e7",
+      "cgroup_exists": false,
+      "cgroup_events": null
+    }
+  ],
+  "model_inventory_cleanup_readback": {
+    "services": [
+      {
+        "exit_code": 0,
+        "name": "hepta-runtime-job-1a1be737b16-5e21-cd.service",
+        "observations": [
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1be737b16-5e21-cd.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "system",
+            "stderr": "",
+            "stderr_truncated": false
+          },
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1be737b16-5e21-cd.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "user",
+            "stderr": "",
+            "stderr_truncated": false
+          }
+        ],
+        "properties": {
+          "LoadState": "not-found"
+        },
+        "resolution": "not_found",
+        "resolution_complete": true,
+        "scope": null,
+        "stderr": ""
+      },
+      {
+        "exit_code": 0,
+        "name": "hepta-runtime-job-1a1be76691a-5e21-e7.service",
+        "observations": [
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1be76691a-5e21-e7.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "system",
+            "stderr": "",
+            "stderr_truncated": false
+          },
+          {
+            "exit_code": 0,
+            "observation_complete": true,
+            "properties": {
+              "ActiveState": "inactive",
+              "Description": "hepta-runtime-job-1a1be76691a-5e21-e7.service",
+              "ExecMainStatus": "0",
+              "InvocationID": "",
+              "LoadState": "not-found",
+              "MainPID": "0",
+              "Result": "success",
+              "SubState": "dead",
+              "UnitFileState": ""
+            },
+            "properties_truncated": [],
+            "scope": "user",
+            "stderr": "",
+            "stderr_truncated": false
+          }
+        ],
+        "properties": {
+          "LoadState": "not-found"
+        },
+        "resolution": "not_found",
+        "resolution_complete": true,
+        "scope": null,
+        "stderr": ""
+      }
+    ]
+  }
+}
