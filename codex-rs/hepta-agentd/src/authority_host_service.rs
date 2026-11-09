@@ -31,6 +31,8 @@ mod checkpoint;
 use checkpoint::RegisteredCheckpoint;
 #[path = "authority_host_consumers.rs"]
 mod consumers;
+#[path = "authority_host_learning_checkpoint.rs"]
+mod learning_checkpoint;
 use consumers::RegisteredConsumers;
 #[path = "authority_host_text_ui.rs"]
 mod text_ui;
