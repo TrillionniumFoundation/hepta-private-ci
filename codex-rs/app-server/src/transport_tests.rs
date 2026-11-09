@@ -110,7 +110,7 @@ async fn assert_remote_control_update_does_not_overtake_initialize(
     send_remote_control_status_to_ready_connections(&connections, &outgoing, status.clone()).await;
     let response = InitializeResponse {
         user_agent: "test-agent".to_string(),
-        codex_home: std::path::PathBuf::from("test-home"),
+        codex_home: AbsolutePathBuf::current_dir().expect("current directory"),
         platform_family: "test".to_string(),
         platform_os: "test".to_string(),
         process_indeterminate: false,
