@@ -41,6 +41,8 @@ fn scoped_checkpoint_reopens_all_decisions_and_refuses_profile_downgrade() -> an
         let vacant = LearningIterationCheckpointRecordV1::vacant(initial.request.clone(), initial.owners.clone())?;
         let store = Arc::new(FileCas::create(&legacy, &vacant)?);
         let bytes = std::fs::read(&legacy)?;
+        let legacy_owner = LearningIterationCheckpointOwnerV1::from_research_store(store.clone(), OWNER.into(), initial.request.clone(), initial.owners.clone())?;
+        assert_eq!(legacy_owner.restore(&initial.request)?, None);
         assert!(matches!(LearningIterationCheckpointOwnerV1::from_research_store_scoped_v2(store, OWNER.into(), initial.request.clone(), initial.owners.clone(), scope), Err(Error::WrongScope)));
         assert_eq!(std::fs::read(&legacy)?, bytes);
     }
