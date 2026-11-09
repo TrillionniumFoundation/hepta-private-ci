@@ -22,6 +22,9 @@ use support::snapshots;
 #[path = "learning_iteration_checkpoint_transport_ports_tests.rs"]
 mod ports_tests;
 
+#[path = "learning_iteration_checkpoint_transport_scope_tests.rs"]
+mod scope_tests;
+
 fn pidfd() -> OwnedFd {
     // SAFETY: a live test PID and zero flags return a new owned descriptor.
     let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };
@@ -71,6 +74,7 @@ fn client(initial: &LearningIterationSnapshotV1) -> (AgentdLearningCheckpointCli
                 next_request_id: 1,
             })),
             initial: initial.clone(),
+            scope: None,
         },
         server,
     )

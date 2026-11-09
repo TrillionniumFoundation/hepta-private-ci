@@ -6,6 +6,7 @@ use std::sync::atomic::Ordering;
 
 use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
+use codex_hepta_learning_artifacts::LearningUpdateScopeV2;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use pretty_assertions::assert_eq;
 
@@ -96,6 +97,40 @@ impl LearningIterationStageOwnerPortsV1 for StageOwners {
             ))
         })
     }
+}
+
+#[tokio::test]
+async fn registered_scoped_checkpoint_ports_preserve_binding_on_every_cold_reopen()
+-> anyhow::Result<()> {
+    let history = snapshots(Decision::EvaluatedNoUpdate)?;
+    let initial = &history[0];
+    let scope = FrozenLearningScopeV2::freeze(
+        &initial.request,
+        &initial.owners,
+        LearningUpdateScopeV2::Cell,
+        Digest32::of_bytes(b"rule"),
+    )?;
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("scoped-frontier");
+    let vacant = LearningIterationCheckpointRecordV1::vacant_scoped_v2(
+        initial.request.clone(), initial.owners.clone(), &scope,
+    )?;
+    FileCas::create(&path, &vacant)?;
+    let stages = Arc::new(StageOwners::new(history.clone()));
+    for (index, snapshot) in history.iter().enumerate() {
+        let checkpoint = LearningIterationCheckpointOwnerV1::from_research_store_scoped_v2(
+            Arc::new(FileCas::reopen(&path)?), OWNER.into(),
+            initial.request.clone(), initial.owners.clone(), scope.clone(),
+        )?;
+        let ports = checkpoint.with_stage_owners(stages.clone());
+        assert_eq!(ports.frozen_scope_binding(), Some(scope.binding()));
+        assert_eq!(ports.restore(&initial.request).await?, index.checked_sub(1).map(|i| history[i].clone()));
+        let expected = index.checked_sub(1).map_or(Digest32::ZERO, |i| history[i].head_digest);
+        assert_eq!(ports.checkpoint(expected, snapshot).await?, snapshot.head_digest);
+        assert_eq!(ports.restore(&initial.request).await?, Some(snapshot.clone()));
+    }
+    assert_eq!(stages.calls.load(Ordering::SeqCst), 0);
+    Ok(())
 }
 
 #[tokio::test]

@@ -11,6 +11,7 @@ use std::sync::Mutex;
 use std::time::Duration;
 
 const OPERATION: &str = "runtime.learning.checkpoint.v1";
+const SCOPED_OPERATION: &str = "runtime.learning.checkpoint.v2";
 const FRAME_BOUND: usize = 16 * 1024;
 
 #[derive(Deserialize, Serialize)]
@@ -63,6 +64,7 @@ struct Channel {
 pub struct AgentdLearningCheckpointClientV1 {
     channel: Mutex<Option<Channel>>,
     pub(super) initial: LearningIterationSnapshotV1,
+    scope: Option<FrozenLearningScopeV2>,
 }
 
 impl AgentdLearningCheckpointClientV1 {
@@ -91,7 +93,33 @@ impl AgentdLearningCheckpointClientV1 {
                 next_request_id: 1,
             })),
             initial,
+            scope: None,
         })
+    }
+
+    /// Select the original schema-2 Root record and its exact frozen scope.
+    /// The dedicated connection retains its original peer and lifetime checks;
+    /// a legacy owner or another frozen scope refuses this protocol profile.
+    pub fn from_root_stream_scoped_v2(
+        stream: UnixStream,
+        peer: AgentdRootAuthorityPeer,
+        root_pidfd: OwnedFd,
+        initial: LearningIterationSnapshotV1,
+        scope: FrozenLearningScopeV2,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> Result<Self, Error> {
+        scope
+            .validate_request(&initial.request, &initial.owners)
+            .map_err(Error::Snapshot)?;
+        let mut client =
+            Self::from_root_stream(stream, peer, root_pidfd, initial, timeout, lifetime)?;
+        client.scope = Some(scope);
+        Ok(client)
+    }
+
+    pub fn frozen_scope_binding(&self) -> Option<Digest32> {
+        self.scope.as_ref().map(FrozenLearningScopeV2::binding)
     }
 
     pub async fn restore(
@@ -110,6 +138,9 @@ impl AgentdLearningCheckpointClientV1 {
                     {
                         return Err(Error::WrongScope);
                     }
+                    if let Some(scope) = &self.scope {
+                        scope.validate_snapshot(&snapshot).map_err(Error::Snapshot)?;
+                    }
                     Ok(snapshot)
                 })
                 .transpose(),
@@ -127,6 +158,9 @@ impl AgentdLearningCheckpointClientV1 {
             return Err(Error::WrongScope);
         }
         LearningIterationCoordinatorV1::from_snapshot(snapshot.clone()).map_err(Error::Snapshot)?;
+        if let Some(scope) = &self.scope {
+            scope.validate_snapshot(snapshot).map_err(Error::Snapshot)?;
+        }
         let predecessor = snapshot
             .receipts
             .last()
@@ -171,11 +205,15 @@ impl AgentdLearningCheckpointClientV1 {
             .ok_or_else(&unavailable)?;
         let request_id = channel.next_request_id;
         channel.next_request_id = request_id.checked_add(1).ok_or_else(&unavailable)?;
+        let (schema, operation, binding) = match self.frozen_scope_binding() {
+            Some(binding) => (2, SCOPED_OPERATION, binding.to_string()),
+            None => (1, OPERATION, self.initial.head_digest.to_string()),
+        };
         let request = Request {
-            schema: 1,
-            operation: OPERATION.into(),
+            schema,
+            operation: operation.into(),
             request_id,
-            binding: self.initial.head_digest.to_string(),
+            binding,
             command,
         };
         let response: Response = channel
@@ -183,7 +221,7 @@ impl AgentdLearningCheckpointClientV1 {
             .read(&request)
             .await
             .map_err(|_| unavailable())?;
-        if response.schema != 1
+        if response.schema != schema
             || response.request_id != request_id
             || response.binding != request.binding
         {
@@ -212,11 +250,16 @@ impl LearningIterationCheckpointOwnerV1 {
         }
         let request: Request =
             serde_json::from_slice(bytes).map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-        if request.schema != 1
-            || request.operation != OPERATION
+        let (schema, binding) = self.profile_identity();
+        let operation = match self.frozen_scope_binding() {
+            Some(_) => SCOPED_OPERATION,
+            None => OPERATION,
+        };
+        if request.schema != schema
+            || request.operation != operation
             || request.request_id != *next_request_id
             || request.request_id == 0
-            || request.binding != self.initial.head_digest.to_string()
+            || request.binding != binding
         {
             return Err(HostIssuerTransportError::InvalidRequest);
         }
@@ -265,9 +308,9 @@ impl LearningIterationCheckpointOwnerV1 {
             }
         };
         let bytes = serde_json::to_vec(&Response {
-            schema: 1,
+            schema,
             request_id: request.request_id,
-            binding: self.initial.head_digest.to_string(),
+            binding,
             result,
         })
         .map_err(|_| HostIssuerTransportError::Unavailable)?;

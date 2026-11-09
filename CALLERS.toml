@@ -22,7 +22,7 @@ id = "root_original_learning_checkpoint_exchange"
 symbol = "LearningIterationCheckpointOwnerV1::exchange_learning_checkpoint"
 receiver_type = "LearningIterationCheckpointOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs"
-definition_markers = ["pub(crate) fn exchange_learning_checkpoint(", "request.request_id != *next_request_id", "request.binding != self.initial.head_digest.to_string()", "self.checkpoint(expected, &next)"]
+definition_markers = ["pub(crate) fn exchange_learning_checkpoint(", "let (schema, binding) = self.profile_identity()", "request.schema != schema", "request.request_id != *next_request_id", "request.binding != binding", "self.checkpoint(expected, &next)"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_writer.rs"]
 caller_markers = ["backend: &crate::LearningIterationCheckpointOwnerV1", ".with_live(&self.leases", ".exchange_learning_checkpoint(bytes, next_request_id)", "if before != after"]
 
@@ -73,10 +73,13 @@ required_order = [[
   "let request_id = channel.next_request_id",
   "channel.next_request_id = request_id",
   ".checked_add(1)",
+  "match self.frozen_scope_binding()",
+  "Some(binding) => (2, SCOPED_OPERATION, binding.to_string())",
+  "None => (1, OPERATION, self.initial.head_digest.to_string())",
   "let response: Response = channel",
   ".read(&request)",
   ".await",
-  "response.schema != 1",
+  "response.schema != schema",
   "response.request_id != request_id",
   "response.binding != request.binding",
   "let result = validate(response.result)",
@@ -86,14 +89,21 @@ required_order = [[
 ]]
 required_function_order = [
   { function = "fn from_root_stream(", sequence = ["LearningIterationCoordinatorV1::new(", "expected.snapshot() != &initial", "RootObservationStream::from_stream(", "channel: Mutex::new(Some(Channel"] },
-  { function = "fn checkpoint(", sequence = ["snapshot.request != self.initial.request", "snapshot.owners != self.initial.owners", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())", "predecessor != expected_head", "self.exchange(command", "head == snapshot.head_digest.to_string()"] },
+  { function = "fn from_root_stream_scoped_v2(", sequence = [".validate_request(&initial.request, &initial.owners)", "Self::from_root_stream(", "client.scope = Some(scope)"] },
+  { function = "fn frozen_scope_binding(", sequence = ["fn frozen_scope_binding(", "self.scope.as_ref().map(FrozenLearningScopeV2::binding)"] },
+  { function = "fn restore(", sequence = ["request != &self.initial.request", "self.exchange(Command::Restore", "snapshot.request != self.initial.request", "snapshot.owners != self.initial.owners", "scope.validate_snapshot(&snapshot)"] },
+  { function = "fn checkpoint(", sequence = ["snapshot.request != self.initial.request", "snapshot.owners != self.initial.owners", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())", "scope.validate_snapshot(snapshot)", "predecessor != expected_head", "self.exchange(command", "head == snapshot.head_digest.to_string()"] },
   { function = "fn exchange_learning_checkpoint(", sequence = [
     "bytes.is_empty() || bytes.len() > FRAME_BOUND",
     "serde_json::from_slice(bytes)",
-    "request.schema != 1",
-    "request.operation != OPERATION",
+    "let (schema, binding) = self.profile_identity()",
+    "let operation = match self.frozen_scope_binding()",
+    "Some(_) => SCOPED_OPERATION",
+    "None => OPERATION",
+    "request.schema != schema",
+    "request.operation != operation",
     "request.request_id != *next_request_id",
-    "request.binding != self.initial.head_digest.to_string()",
+    "request.binding != binding",
     "*next_request_id = next_request_id",
     ".checked_add(1)",
     "self.restore(&self.initial.request)",

@@ -96,6 +96,17 @@ committed checkpoint. A bare `HEPLCP02` export is insufficient evidence of V2
 scope: its protected outer record and original host admission must accompany
 any scoped qualification claim.
 
+The registered-owner stage adapter preserves this scope binding. A dedicated
+Root stream selects V2 explicitly with
+`AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2`: both peers bind
+schema 2, `runtime.learning.checkpoint.v2`, and the original frozen-scope digest.
+V1/V2 substitution and a changed scope are refused without rewriting the Root
+record. The original peer, process lifetime, sequence and uncertain-connection
+checks still apply. Readback revalidates every retained Training observation;
+ordinary delivery also checks its exact request before enrollment. These
+interfaces do not construct production stage owners or authorize resubmitting a
+claimed operation whose checkpoint is missing or incomplete.
+
 ## Native regression entry
 
 The existing Agentd process qualification workflow runs:

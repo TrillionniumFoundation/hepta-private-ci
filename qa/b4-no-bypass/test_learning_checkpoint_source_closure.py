@@ -114,12 +114,29 @@ class LearningCheckpointSourceClosureTests(unittest.TestCase):
 
     def test_request_binding_and_original_checkpoint_dispatch_are_required(self):
         for marker in (
+            "let (schema, binding) = self.profile_identity()",
+            "request.schema != schema",
+            "request.operation != operation",
             "request.request_id != *next_request_id",
-            "request.binding != self.initial.head_digest.to_string()",
+            "request.binding != binding",
             "self.checkpoint(expected, &next)",
         ):
             with self.subTest(marker=marker):
                 self.rejects(TRANSPORT, "fn exchange_learning_checkpoint(", marker)
+
+    def test_scoped_profile_and_material_validation_cannot_be_omitted(self):
+        cases = (
+            ("fn from_root_stream_scoped_v2(", ".validate_request(&initial.request, &initial.owners)"),
+            ("fn from_root_stream_scoped_v2(", "client.scope = Some(scope)"),
+            ("fn frozen_scope_binding(", "self.scope.as_ref().map(FrozenLearningScopeV2::binding)"),
+            ("fn restore(", "scope.validate_snapshot(&snapshot)"),
+            ("fn checkpoint(", "scope.validate_snapshot(snapshot)"),
+            ("fn exchange<T>(", "Some(binding) => (2, SCOPED_OPERATION, binding.to_string())"),
+            ("fn exchange_learning_checkpoint(", "Some(_) => SCOPED_OPERATION"),
+        )
+        for function, marker in cases:
+            with self.subTest(function=function, marker=marker):
+                self.rejects(TRANSPORT, function, marker)
 
     def test_unvalidated_reply_cannot_restore_the_consumed_connection(self):
         self.rejects(
