@@ -37,6 +37,7 @@ pub struct HostAuthorityLearningRegistrationV1 {
     pub schema_version: u32,
     pub initial_head: String,
     pub writer_proof_digest: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub frozen_scope_binding: Option<String>,
     pub production_ready: bool,
 }

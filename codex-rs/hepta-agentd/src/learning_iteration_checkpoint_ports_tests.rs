@@ -340,6 +340,7 @@ async fn cancelled_checkpoint_waiter_keeps_the_original_persistence_lane() -> an
             gate: std::sync::Mutex::new(Some((entered, blocked))),
         })),
         initial: initial.clone(),
+        scope: None,
     };
     let ports = checkpoint.with_stage_owners(Arc::new(StageOwners::new(snapshots)));
     let pending = tokio::spawn({
