@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "just",
+    "test",
+    "--archive-file",
+    "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/native-nextest.tar.zst",
+    "--workspace-remap",
+    "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh/codex-rs",
+    "--extract-to",
+    "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/run-extracted",
+    "--run-ignored",
+    "only",
+    "--retries",
+    "0",
+    "--no-tests",
+    "fail",
+    "--no-capture",
+    "-E",
+    "test(actual_smollm_training_no_update_native_next_use_and_cold_readback)"
+  ],
+  "independent_confirmation_tasks": 0,
+  "nextest_archive": {
+    "bytes": 90922965,
+    "path": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/native-nextest.tar.zst",
+    "resolved": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/native-nextest.tar.zst",
+    "sha256": "a439bbb5bdc4a8d36f1a34495033de2d94d65acf6fe0b665d4a654a3ab8f7244"
+  },
+  "ordinary_daemon_task_loop": false,
+  "original_test_watchdog_seconds": 60,
+  "outer_owned_job_budget_seconds": 240,
+  "research_operator_custody": true,
+  "scientific_status": "HOLD",
+  "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+  "started_unix_ns": 1794227004169916900
+}

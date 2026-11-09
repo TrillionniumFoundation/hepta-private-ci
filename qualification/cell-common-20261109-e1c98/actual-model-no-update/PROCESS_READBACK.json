@@ -1,0 +1,33 @@
+{
+  "matching_live_model_workers": [],
+  "observed_unix_ns": 1794227571116787201,
+  "scan_scope": "current UID and this operation output/request plus known model worker executable markers",
+  "systemctl_argv": [
+    "systemctl",
+    "--user",
+    "show",
+    "hepta-runtime-job-1a1c0435e71-5e21-994",
+    "-p",
+    "LoadState",
+    "-p",
+    "ActiveState",
+    "-p",
+    "SubState",
+    "-p",
+    "ControlGroup",
+    "-p",
+    "TasksCurrent",
+    "-p",
+    "CPUQuotaPerSecUSec",
+    "-p",
+    "MemoryMax",
+    "-p",
+    "MemoryPeak",
+    "-p",
+    "CPUUsageNSec"
+  ],
+  "systemctl_exit_code": 0,
+  "systemctl_stderr": "",
+  "systemctl_stdout": "LoadState=not-found\nActiveState=inactive\nSubState=dead\nControlGroup=\nMemoryPeak=[not set]\nCPUUsageNSec=[not set]\nTasksCurrent=[not set]\nCPUQuotaPerSecUSec=infinity\nMemoryMax=infinity\n",
+  "unit": "hepta-runtime-job-1a1c0435e71-5e21-994"
+}
