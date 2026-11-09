@@ -10,6 +10,9 @@ use super::*;
 mod support;
 use support::*;
 
+#[path = "neuron_cell_evaluation_readback_tests.rs"]
+mod readback;
+
 struct FileSink {
     file: std::fs::File,
     publications: usize,
