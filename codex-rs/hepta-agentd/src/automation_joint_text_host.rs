@@ -211,7 +211,7 @@ impl AuthorizedEffectDriver for RetainedJointTextDriver {
             .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
         self.provider
             .custody
-            .retain_effect(&request.intent_digest, &bytes)
+            .retain_effect(request.intent_digest, &bytes)
             .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
         if self.action == JointTextTaskFlowActionV1::Start {
             let input = JointTextInputRefV1::decode(request.wire_payload)
