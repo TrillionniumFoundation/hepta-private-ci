@@ -719,6 +719,7 @@ pub use neuron_generation_current::PreparedNeuronGenerationUpdateV1;
 pub use neuron_generation_current::PublishedNeuronGenerationInitialV1;
 #[cfg(unix)]
 pub use neuron_generation_current::PublishedNeuronGenerationUpdateV1;
+pub use neuron_generation_episode::append_neuron_generation_outcome_credit_v1;
 pub use neuron_generation_episode::append_neuron_generation_outcome_v1;
 #[cfg(unix)]
 pub use neuron_generation_initial::PreparedAgentdGenerationInitialV1;
