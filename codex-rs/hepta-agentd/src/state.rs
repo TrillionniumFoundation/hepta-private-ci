@@ -60,6 +60,7 @@ pub(crate) struct AgentdState {
     pub(crate) circuit_task: std::sync::OnceLock<crate::CircuitTaskHandleV1>,
     pub(crate) circuit_task_invocation:
         std::sync::OnceLock<Arc<dyn AgentdCircuitTaskInvocationProviderV1>>,
+    circuit_learning_source: std::sync::OnceLock<StableId>,
     circuit_task_admissions: Arc<std::sync::atomic::AtomicUsize>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) cognitive_retrieval_context:
@@ -167,6 +168,7 @@ impl AgentdState {
             intelligence_invocation: std::sync::OnceLock::new(),
             circuit_task: std::sync::OnceLock::new(),
             circuit_task_invocation: std::sync::OnceLock::new(),
+            circuit_learning_source: std::sync::OnceLock::new(),
             circuit_task_admissions: Arc::new(std::sync::atomic::AtomicUsize::new(0)),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),

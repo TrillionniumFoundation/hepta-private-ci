@@ -58,6 +58,7 @@ pub use generation_episode::FrozenGenerationEpisodeInputV1;
 pub use generation_episode::FrozenGenerationEpisodeV1;
 pub use generation_episode::GenerationEpisodeErrorV1;
 pub use generation_episode::GenerationEpisodeEvidenceV1;
+pub use generation_episode::append_generation_outcome_credit_v1;
 pub use generation_episode::append_generation_outcome_v1;
 pub use outcome_credit_v2::ObservedOutcomeRequestV2;
 pub use outcome_credit_v2::OutcomeCreditClosureErrorV2;

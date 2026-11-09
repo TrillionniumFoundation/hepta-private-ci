@@ -263,10 +263,13 @@ mod calculator_observer;
 mod calculator_recovery_process;
 #[cfg(target_os = "linux")]
 mod calculator_recovery_selection;
+mod cell_composed_q24;
 mod circuit_cell;
 mod circuit_cell_binding;
 mod circuit_cell_dispatch;
 mod circuit_cell_output;
+mod circuit_cell_ports;
+mod circuit_cell_representation_encoder;
 mod circuit_credit;
 mod circuit_learning_delivery;
 mod circuit_task;
@@ -311,6 +314,9 @@ mod learning_iteration_checkpoint;
 mod learning_iteration_ports;
 mod learning_iteration_proposal;
 mod neuron_cell_evaluation;
+pub use cell_composed_q24::CellQ24GenerationWorkerV1;
+pub use cell_composed_q24::CellQ24ModelFilesV1;
+pub use cell_composed_q24::LoadedCellQ24ModelV1;
 mod neuron_generation;
 #[cfg(unix)]
 mod neuron_generation_current;
@@ -466,6 +472,11 @@ pub use circuit_cell_binding::circuit_cell_operation_id_v1;
 pub use circuit_cell_binding::circuit_cell_route_policy_digest_v1;
 pub use circuit_cell_binding::circuit_cell_scope_digest_v1;
 pub use circuit_cell_output::circuit_cell_output_schema_v1;
+pub use circuit_cell_ports::CircuitCellActionPortV1;
+pub use circuit_cell_ports::CircuitCellPortsV2;
+pub use circuit_cell_ports::circuit_cell_output_schema_v2;
+pub use circuit_cell_ports::decode_circuit_cell_ports_v2;
+pub use circuit_cell_representation_encoder::CircuitCellRepresentationEncoderV1;
 pub use circuit_credit::CircuitCreditErrorV1;
 pub use circuit_credit::CircuitCreditSupportV1;
 pub use circuit_credit::CircuitCreditTargetV1;
@@ -667,6 +678,8 @@ pub use learning_iteration::LearningIterationHandleV1;
 pub use learning_iteration::LearningIterationRuntimeBootstrapV1;
 pub use learning_iteration::LearningIterationRuntimeErrorV1;
 pub use learning_iteration::learning_iteration_channel_v1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_checkpoint::AgentdLearningCheckpointClientV1;
 #[cfg(unix)]
 pub use learning_iteration_checkpoint::LearningIterationCheckpointErrorV1;
 #[cfg(unix)]
@@ -676,6 +689,7 @@ pub use learning_iteration_checkpoint::LearningIterationCheckpointRecordV1;
 pub use learning_iteration_ports::LearningIterationOwnerFutureV1;
 pub use learning_iteration_ports::LearningIterationOwnerPortsV1;
 pub use learning_iteration_ports::LearningIterationProposalPayloadV1;
+pub use learning_iteration_ports::LearningIterationStageOwnerPortsV1;
 pub use learning_iteration_ports::PreparedLearningIterationProposalV1;
 pub use neuron_cell_evaluation::CellComparisonContractV1;
 pub use neuron_cell_evaluation::CellCostCoverageV1;
@@ -715,6 +729,7 @@ pub use neuron_generation_current::PreparedNeuronGenerationUpdateV1;
 pub use neuron_generation_current::PublishedNeuronGenerationInitialV1;
 #[cfg(unix)]
 pub use neuron_generation_current::PublishedNeuronGenerationUpdateV1;
+pub use neuron_generation_episode::append_neuron_generation_outcome_credit_v1;
 pub use neuron_generation_episode::append_neuron_generation_outcome_v1;
 #[cfg(unix)]
 pub use neuron_generation_initial::PreparedAgentdGenerationInitialV1;

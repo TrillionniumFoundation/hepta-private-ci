@@ -14,11 +14,14 @@ use std::sync::atomic::Ordering;
 use codex_hepta_intelligence::FrozenGenerationEpisodeInputV1;
 use codex_hepta_intelligence::FrozenGenerationEpisodeV1;
 use codex_hepta_intelligence::ObservedOutcomeRequestV2;
+use codex_hepta_intelligence::OutcomeCreditClosureRequestV2;
 use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::AppendReceipt;
 use codex_hepta_learning_ledger::AuthenticatedOutcomeV1;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
+use codex_hepta_learning_ledger::CreditAllocationBatchV1;
+use codex_hepta_learning_ledger::CreditAllocationV1;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
@@ -36,7 +39,9 @@ use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_learning_ledger::activate_learning_trust;
 use codex_hepta_learning_ledger::candidate_ids_digest_v2;
 use codex_hepta_learning_ledger::candidate_order_digest_v2;
+use codex_hepta_learning_ledger::credit_batch_signing_payload_v2;
 use codex_hepta_learning_ledger::decision_signing_payload_v2;
+use codex_hepta_learning_ledger::finalize_credit_batch;
 use codex_hepta_learning_ledger::outcome_signing_payload_v2;
 use codex_hepta_neuron::CellBackendManifestV2;
 use codex_hepta_neuron::CellCostAccountingV2;
@@ -225,6 +230,7 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
                 signers: vec![
                     trusted("generator", 1, LearningEvidenceRoleV1::Generator),
                     trusted("observer", 2, LearningEvidenceRoleV1::Observer),
+                    trusted("allocator", 3, LearningEvidenceRoleV1::CreditAllocator),
                 ],
             },
         },
@@ -246,6 +252,7 @@ fn sign(
     let seed = match name {
         "generator" => 1,
         "observer" => 2,
+        "allocator" => 3,
         _ => panic!("fixture signer"),
     };
     let mut evidence = SignedLearningEvidenceV1 {
@@ -427,5 +434,45 @@ pub(super) fn signed_request(
         expected_ledger_head: expected,
         outcome,
         evidence,
+    }
+}
+
+pub(super) fn signed_closure(
+    writer: &LedgerWriter,
+    outcome: ObservedOutcomeRequestV2,
+) -> OutcomeCreditClosureRequestV2 {
+    let value = checked(outcome.outcome.value.ok_or("terminal value"));
+    let first = value.raw() / 2;
+    let credit = CreditAllocationBatchV1 {
+        batch_id: id("generation-credit"),
+        episode_id: outcome.outcome.episode_id.clone(),
+        outcome_id: outcome.outcome.outcome_id.clone(),
+        allocator: trusted("allocator", 3, LearningEvidenceRoleV1::CreditAllocator).principal,
+        terminal_outcome: value,
+        allocations: vec![
+            CreditAllocationV1 {
+                target_id: id("cell-artifact"),
+                credit: FixedQ32::from_raw(first),
+            },
+            CreditAllocationV1 {
+                target_id: id("router-artifact"),
+                credit: FixedQ32::from_raw(value.raw() - first),
+            },
+        ],
+        conservation_residual: FixedQ32::ZERO,
+        support_digest: digest("fixture-allocation-support"),
+        finalized: true,
+    };
+    let batch = checked(finalize_credit_batch(credit.clone(), /*now*/ 50));
+    let credit_evidence = sign(
+        writer,
+        "allocator",
+        LearningEvidenceRoleV1::CreditAllocator,
+        &credit_batch_signing_payload_v2(&credit, batch.batch_digest),
+    );
+    OutcomeCreditClosureRequestV2 {
+        outcome,
+        credit,
+        credit_evidence,
     }
 }
