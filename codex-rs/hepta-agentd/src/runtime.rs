@@ -325,6 +325,9 @@ pub async fn run_with_shutdown(
     .await?;
     if let Some(store) = automation_store.as_ref() {
         state.attach_automation_store(store.clone())?;
+        if let Some(host) = state.objective_runtime.get() {
+            host.reconcile_learning_outbox(store).await?;
+        }
     }
     if let Some(path) = automation_effect_host_file {
         state.refresh_generation()?;

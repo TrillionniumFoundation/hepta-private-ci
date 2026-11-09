@@ -9,7 +9,16 @@ from environment import Experience, Owner, ReplayPool, schedule
 
 def experience(owner, source):
     fact = owner.facts[source]
-    return Experience(source, fact.version, owner.features[source], fact.label, 1, 0.4, source[0], owner.generation)
+    return Experience(
+        source,
+        fact.version,
+        owner.features[source],
+        fact.label,
+        1,
+        0.4,
+        source[0],
+        owner.generation,
+    )
 
 
 class OwnerTests(unittest.TestCase):

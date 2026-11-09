@@ -409,6 +409,30 @@ async fn signed_objective_sink_ack_loss_replays_original_circuit_and_cell_result
         Some(first.trace()),
         "the service uses the attached original AutomationStore",
     );
+    assert!(
+        f.store
+            .pending_circuit_learning(/*limit*/ 1)
+            .await
+            .unwrap()
+            .is_empty()
+    );
+    // The sink observed the committed result but lost its ACK. Startup repair
+    // derives a pointer from original journals, without a second Objective call.
+    state
+        .objective_runtime
+        .get()
+        .expect("original objective owner")
+        .reconcile_learning_outbox(&f.store)
+        .await?;
+    let pending = f.store.pending_circuit_learning(/*limit*/ 1).await.unwrap();
+    assert_eq!(pending.len(), 1);
+    assert_eq!(
+        pending[0].intent.completed_task_receipt,
+        *first.trace().history_digest()
+    );
+    assert_eq!(pending[0].request_digest, None);
+    assert_eq!(pending[0].acknowledged_head, None);
+    assert_eq!(f.calls.load(Ordering::SeqCst), 1);
     let authentication = crate::authbus_objective_claims(state.identity(), &f.request)?;
     let record = f.invocation.records.lock().expect("record")[0].clone();
     assert_eq!(
@@ -444,6 +468,10 @@ async fn signed_objective_sink_ack_loss_replays_original_circuit_and_cell_result
     assert_eq!(
         f.store.bounded_circuit_committed_trace(RUN).await?.as_ref(),
         Some(first.trace())
+    );
+    assert_eq!(
+        f.store.pending_circuit_learning(/*limit*/ 1).await.unwrap(),
+        pending
     );
     f.stop().await;
     let reopened = cell_owner(&f.runtime);
@@ -509,5 +537,58 @@ async fn ordinary_ingress_rejects_invalid_trust_generation_and_deadline_before_c
         assert_eq!(owner.pending_inference(&cell::scope(RUN))?, None);
         f.store.close().await;
     }
+    Ok(())
+}
+
+#[tokio::test]
+async fn historical_completion_repair_does_not_renew_revoked_objective_authority()
+-> anyhow::Result<()> {
+    let mut f = fixture(/*lose_ack*/ true, /*expire*/ false).await?;
+    let state = Arc::clone(&f.runtime.state);
+    assert!(
+        state
+            .response(
+                /*request_id*/ 1,
+                /*spawn_generation*/ 1,
+                AgentdMethod::ObjectiveStart {
+                    request: f.request.clone()
+                }
+            )
+            .await
+            .is_err()
+    );
+    let path = f.runtime.identity.home_root.join("circuit-trust.json");
+    let mut trust: Value = serde_json::from_slice(&fs::read(&path)?)?;
+    trust["revoked"] = json!(true);
+    fs::write(path, serde_json::to_vec(&trust)?)?;
+    state
+        .objective_runtime
+        .get()
+        .expect("objective owner")
+        .reconcile_learning_outbox(&f.store)
+        .await?;
+    let pending = f.store.pending_circuit_learning(/*limit*/ 1).await.unwrap();
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].request_digest, None);
+    assert_eq!(pending[0].acknowledged_head, None);
+    assert!(
+        state
+            .response(
+                /*request_id*/ 2,
+                /*spawn_generation*/ 1,
+                AgentdMethod::ObjectiveStart {
+                    request: f.request.clone()
+                }
+            )
+            .await
+            .is_err()
+    );
+    assert_eq!(f.calls.load(Ordering::SeqCst), 1);
+    assert_eq!(
+        f.store.pending_circuit_learning(/*limit*/ 1).await.unwrap(),
+        pending
+    );
+    f.stop().await;
+    f.store.close().await;
     Ok(())
 }

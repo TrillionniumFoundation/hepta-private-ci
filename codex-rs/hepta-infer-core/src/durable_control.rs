@@ -185,6 +185,14 @@ pub struct DurableInferenceControl {
     poisoned: bool,
 }
 
+impl Drop for DurableInferenceControl {
+    fn drop(&mut self) {
+        // A concurrent fork can retain the open file description until exec.
+        // Release this owner's lock even while such a descriptor is still open.
+        let _ = self.file.unlock();
+    }
+}
+
 impl DurableInferenceControl {
     pub fn open(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
         if capacity == 0 || capacity > MAX_RECORDS {

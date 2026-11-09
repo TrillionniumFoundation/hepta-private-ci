@@ -10,7 +10,11 @@ WIDTH, OUTPUTS, POOL_CAPACITY = 16, 8, 24
 
 
 def commitment(value):
-    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+    return hashlib.sha256(
+        json.dumps(
+            value, sort_keys=True, separators=(",", ":"), allow_nan=False
+        ).encode()
+    ).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -47,7 +51,9 @@ class Owner:
             for index in range(12):
                 source = f"{task}:{index}"
                 self.facts[source] = Fact(source, rng.randrange(OUTPUTS))
-                self.features[source] = tuple(rng.choice((-0.25, 0.25)) for _ in range(WIDTH))
+                self.features[source] = tuple(
+                    rng.choice((-0.25, 0.25)) for _ in range(WIDTH)
+                )
 
     def resolve(self, source, purpose="Recall", version=None):
         self.checks += 1
@@ -66,19 +72,34 @@ class Owner:
         for index in (8, 9):
             old = self.facts[f"A:{index}"]
             self.previous_labels[old.source] = old.label
-            self.facts[old.source] = Fact(old.source, (old.label + 3) % OUTPUTS, version=2)
+            self.facts[old.source] = Fact(
+                old.source, (old.label + 3) % OUTPUTS, version=2
+            )
         old = self.facts["A:10"]
         self.facts[old.source] = Fact(old.source, old.label, version=2, live=False)
         old = self.facts["A:11"]
-        self.facts[old.source] = Fact(old.source, old.label, version=2, scope="scope:other")
+        self.facts[old.source] = Fact(
+            old.source, old.label, version=2, scope="scope:other"
+        )
         self.generation += 1
 
     def support(self, experience):
         fact = self.resolve(experience.source, "Replay", experience.version)
-        if fact is None or experience.label != fact.label or experience.key_generation != self.generation:
+        if (
+            fact is None
+            or experience.label != fact.label
+            or experience.key_generation != self.generation
+        ):
             return None
-        return commitment({"owner_generation": self.generation, "purpose": "Replay", "fact": asdict(fact),
-                           "experience": asdict(experience), "encoder": "mem1-fixed-features-v1"})
+        return commitment(
+            {
+                "owner_generation": self.generation,
+                "purpose": "Replay",
+                "fact": asdict(fact),
+                "experience": asdict(experience),
+                "encoder": "mem1-fixed-features-v1",
+            }
+        )
 
 
 class ReplayPool:
@@ -106,20 +127,30 @@ class ReplayPool:
         if selector == 1:
             return max(rows, key=lambda row: (row.surprise, row.source))
         if selector == 2:
-            counts = {label: sum(row.label == label for row in rows) for label in range(OUTPUTS)}
+            counts = {
+                label: sum(row.label == label for row in rows)
+                for label in range(OUTPUTS)
+            }
             return min(rows, key=lambda row: (counts[row.label], row.source))
         retention = [row for row in rows if row.task == "A"]
         return rng.choice(retention or rows)
 
     def payload_bytes(self):
-        return len(json.dumps([asdict(row) for row in self.rows.values()], sort_keys=True).encode())
+        return len(
+            json.dumps(
+                [asdict(row) for row in self.rows.values()], sort_keys=True
+            ).encode()
+        )
 
 
 def schedule(seed):
     rng = random.Random(seed + 10_000)
     result = []
     for task, count in (("A1", 8), ("B", 8), ("A2", 4)):
-        population = [f"{'B' if task == 'B' else 'A'}:{index}" for index in range(12 if task != "A2" else 10)]
+        population = [
+            f"{'B' if task == 'B' else 'A'}:{index}"
+            for index in range(12 if task != "A2" else 10)
+        ]
         rows = population * count
         rng.shuffle(rows)
         if task == "B":

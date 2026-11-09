@@ -154,6 +154,19 @@ impl AgentdState {
         self.require_current_run_start(record)?;
         provider.publish_result(self.identity(), record, &receipt)?;
         self.require_current_run_start(record)?;
+        // This also runs on the completed-task readback path: a crash after
+        // result publication cannot permanently omit the stable learning intent.
+        let objective = codex_hepta_contracts::Sha256Digest::parse(
+            record.snapshot.objective_digest.to_string(),
+        )
+        .map_err(|error| AgentdError::Protocol(format!("Circuit learning objective: {error}")))?;
+        self.circuit_task_store()?
+            .enqueue_circuit_learning(receipt.trace(), objective)
+            .await
+            .map_err(|error| {
+                AgentdError::Protocol(format!("Circuit learning outbox: {error:?}"))
+            })?;
+        self.require_current_run_start(record)?;
         Ok(Some(receipt))
     }
 }

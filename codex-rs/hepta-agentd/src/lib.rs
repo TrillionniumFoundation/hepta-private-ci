@@ -268,6 +268,7 @@ mod circuit_cell_binding;
 mod circuit_cell_dispatch;
 mod circuit_cell_output;
 mod circuit_credit;
+mod circuit_learning_delivery;
 mod circuit_task;
 #[cfg(target_os = "linux")]
 mod cpu_policy;
@@ -469,6 +470,8 @@ pub use circuit_credit::CircuitCreditErrorV1;
 pub use circuit_credit::CircuitCreditSupportV1;
 pub use circuit_credit::CircuitCreditTargetV1;
 pub use circuit_credit::circuit_learning_run_id_v1;
+pub use circuit_learning_delivery::deliver_circuit_learning_v1;
+pub use circuit_learning_delivery::reconcile_circuit_learning_v1;
 pub use circuit_task::CircuitTaskErrorV1;
 pub use circuit_task::CircuitTaskHandleV1;
 pub use circuit_task::CircuitTaskInputModeV1;
