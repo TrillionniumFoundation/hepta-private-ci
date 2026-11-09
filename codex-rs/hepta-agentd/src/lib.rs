@@ -653,6 +653,7 @@ pub use learning_iteration::LearningIterationHandleV1;
 pub use learning_iteration::LearningIterationRuntimeBootstrapV1;
 pub use learning_iteration::LearningIterationRuntimeErrorV1;
 pub use learning_iteration::learning_iteration_channel_v1;
+pub use learning_iteration::learning_iteration_channel_scoped_v2;
 #[cfg(unix)]
 pub use learning_iteration_checkpoint::LearningIterationCheckpointErrorV1;
 #[cfg(unix)]

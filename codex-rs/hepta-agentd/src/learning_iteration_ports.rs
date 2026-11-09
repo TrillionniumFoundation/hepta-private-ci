@@ -54,6 +54,13 @@ pub struct PreparedLearningIterationProposalV1 {
 /// ambiguous commit returns CommitUncertain. These are mandatory host duties,
 /// not guarantees provided by an in-memory implementation.
 pub trait LearningIterationOwnerPortsV1: Send + Sync {
+    /// The registered protected checkpoint's frozen V2 scope binding. Return
+    /// None for the legacy unscoped profile. This is a host custody contract,
+    /// not authority inferred from a trainer-supplied hash.
+    fn frozen_scope_binding(&self) -> Option<Digest32> {
+        None
+    }
+
     fn restore<'a>(
         &'a self,
         request: &'a LearningIterationRequestV1,

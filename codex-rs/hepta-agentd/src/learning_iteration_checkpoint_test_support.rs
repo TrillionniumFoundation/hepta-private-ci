@@ -128,6 +128,7 @@ pub(super) fn owner(
         owner_id: OWNER.into(),
         store: Store::Test(store),
         initial: initial.clone(),
+        scope: None,
     }
 }
 
