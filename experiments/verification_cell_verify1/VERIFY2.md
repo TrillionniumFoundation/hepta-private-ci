@@ -105,6 +105,19 @@ at steps 0 and 2. Early-stopped trajectories keep missing uninterrupted-target
 labels. Calibration reference panels have no policy acceptance decision. This
 replay is a historical diagnostic and does not establish prospective collection.
 
+Profile the retained initial neural forecasts as thresholded checker channels:
+
+```sh
+python -B -m experiments.verification_cell_verify1.checker_replay \
+  --input /path/to/retained-run --output /path/to/new-checker-diagnostic
+```
+
+This fixes a 0.5 threshold, fits the prior only on train labels, and fits paired
+channels only on calibration panels. It retains separate confirmation-arm
+labels, including their censoring. The analytical zero checker cost isolates
+gross information value; it does not assert free physical checking. These
+forecast channels are distinct from the mandatory SQLite owner readback.
+
 Run the package regression suite from the repository root:
 
 ```sh
