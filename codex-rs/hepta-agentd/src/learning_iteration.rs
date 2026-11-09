@@ -117,7 +117,13 @@ pub fn learning_iteration_channel_v1(
     AgentdError,
 > {
     learning_iteration_channel(
-        agent_id, spawn_generation, owners, ports, verifier, capacity, /*scope*/ None,
+        agent_id,
+        spawn_generation,
+        owners,
+        ports,
+        verifier,
+        capacity,
+        /*scope*/ None,
     )
 }
 
@@ -131,9 +137,21 @@ pub fn learning_iteration_channel_scoped_v2(
     verifier: LearningEvidenceVerifierV1,
     capacity: usize,
     scope: FrozenLearningScopeV2,
-) -> Result<(LearningIterationHandleV1, LearningIterationRuntimeBootstrapV1), AgentdError> {
+) -> Result<
+    (
+        LearningIterationHandleV1,
+        LearningIterationRuntimeBootstrapV1,
+    ),
+    AgentdError,
+> {
     learning_iteration_channel(
-        agent_id, spawn_generation, owners, ports, verifier, capacity, Some(scope),
+        agent_id,
+        spawn_generation,
+        owners,
+        ports,
+        verifier,
+        capacity,
+        Some(scope),
     )
 }
 
@@ -145,7 +163,13 @@ fn learning_iteration_channel(
     verifier: LearningEvidenceVerifierV1,
     capacity: usize,
     scope: Option<FrozenLearningScopeV2>,
-) -> Result<(LearningIterationHandleV1, LearningIterationRuntimeBootstrapV1), AgentdError> {
+) -> Result<
+    (
+        LearningIterationHandleV1,
+        LearningIterationRuntimeBootstrapV1,
+    ),
+    AgentdError,
+> {
     if spawn_generation == 0
         || !(1..=MAX_LEARNING_QUEUE).contains(&capacity)
         || owners.evidence_trust_digest != verifier.trust_digest()

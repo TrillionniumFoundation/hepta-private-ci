@@ -13,6 +13,9 @@ use support::OWNER;
 use support::owner;
 use support::snapshots;
 
+#[path = "learning_iteration_checkpoint_scope_tests.rs"]
+mod scope_tests;
+
 #[test]
 fn maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound() -> anyhow::Result<()>
 {

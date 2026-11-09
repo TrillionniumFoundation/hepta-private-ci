@@ -65,7 +65,9 @@ impl LearningIterationCheckpointRecordV1 {
         owners: LearningIterationOwnersV1,
         scope: &FrozenLearningScopeV2,
     ) -> Result<Self, Error> {
-        scope.validate_request(&request, &owners).map_err(Error::Snapshot)?;
+        scope
+            .validate_request(&request, &owners)
+            .map_err(Error::Snapshot)?;
         let mut record = Self::vacant(request, owners)?;
         record.schema = 2;
         record.binding = scope.binding().to_string();
@@ -156,8 +158,11 @@ impl LearningIterationCheckpointOwnerV1 {
         owners: LearningIterationOwnersV1,
         scope: FrozenLearningScopeV2,
     ) -> Result<Self, Error> {
-        scope.validate_request(&request, &owners).map_err(Error::Snapshot)?;
-        let initial = LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
+        scope
+            .validate_request(&request, &owners)
+            .map_err(Error::Snapshot)?;
+        let initial =
+            LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
         let owner = Self {
             owner_id: original_owner_id,
             store: Store::Host(store),
@@ -177,8 +182,11 @@ impl LearningIterationCheckpointOwnerV1 {
         owners: LearningIterationOwnersV1,
         scope: FrozenLearningScopeV2,
     ) -> Result<Self, Error> {
-        scope.validate_request(&request, &owners).map_err(Error::Snapshot)?;
-        let initial = LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
+        scope
+            .validate_request(&request, &owners)
+            .map_err(Error::Snapshot)?;
+        let initial =
+            LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
         let owner = Self {
             owner_id: original_owner_id,
             store: Store::Test(store),
@@ -315,7 +323,9 @@ impl LearningIterationCheckpointOwnerV1 {
         }
         let snapshot = codec::decode(bytes)?;
         if let Some(scope) = &self.scope {
-            scope.validate_snapshot(&snapshot).map_err(Error::Snapshot)?;
+            scope
+                .validate_snapshot(&snapshot)
+                .map_err(Error::Snapshot)?;
         }
         if snapshot.request != self.initial.request || snapshot.owners != self.initial.owners {
             return Err(Error::WrongScope);
@@ -338,7 +348,3 @@ mod tests;
 #[cfg(test)]
 #[path = "learning_iteration_checkpoint_profile_tests.rs"]
 mod profile_tests;
-
-#[cfg(test)]
-#[path = "learning_iteration_checkpoint_scope_tests.rs"]
-mod scope_tests;
