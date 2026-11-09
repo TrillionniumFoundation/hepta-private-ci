@@ -7,6 +7,7 @@ on:
       - scripts/ndu_real_runtime/**
       - scripts/ndu_real_materials/**
       - scripts/memory_cell_mem1/**
+      - scripts/memory_cell_mem3/**
       - experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py
       - scripts/hepta_ci_exec.py
   push:
@@ -83,6 +84,12 @@ jobs:
           python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 7 \
             --output "$RUNNER_TEMP/mem-records/candidate-runner-tests.json" \
             -- python -B -m unittest -v ndu_real_runtime.test_run_candidate_retention
+      - name: Check composition paths and partial native failure costs
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 7 \
+            --output "$RUNNER_TEMP/mem-records/composition-tests.json" \
+            -- python -B -m unittest discover -s scripts/memory_cell_mem3 \
+            -p test_mechanism.py -v
       - name: Retain final source state
         if: always()
         shell: bash
