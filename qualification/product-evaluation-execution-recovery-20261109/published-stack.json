@@ -1,0 +1,157 @@
+{
+  "code_cuts": [
+    {
+      "cut": "01-journal",
+      "title": "persist original evaluation executions",
+      "branch": "codex/eval-recovery-173a-01-journal",
+      "base": "codex/root-learning-aefe-09-evidence",
+      "parent": "e2e20033daa67d9d9826d4942e4d6bdd15ba4ab5",
+      "commit": "e780c9df60e834ad71ee500fefe34173d2fe7735",
+      "tree": "7bcf2ca26efad2c7db3e4680c97ff55dcb4ca63d",
+      "pr": 5503,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5503",
+      "additions": 486,
+      "deletions": 0
+    },
+    {
+      "cut": "02-journal-tests",
+      "title": "verify execution journal process recovery",
+      "branch": "codex/eval-recovery-173a-02-journal-tests",
+      "base": "codex/eval-recovery-173a-01-journal",
+      "parent": "e780c9df60e834ad71ee500fefe34173d2fe7735",
+      "commit": "f163e85ae3e994e1dbb36475064f9d51ad821a8a",
+      "tree": "bbaf7b307971905a9512fb30aa090510735c1145",
+      "pr": 5504,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5504",
+      "additions": 289,
+      "deletions": 0
+    },
+    {
+      "cut": "03-codec",
+      "title": "define private bounded execution encoding",
+      "branch": "codex/eval-recovery-173a-03-codec",
+      "base": "codex/eval-recovery-173a-02-journal-tests",
+      "parent": "f163e85ae3e994e1dbb36475064f9d51ad821a8a",
+      "commit": "498b408e20937acf7f13895b3f1490e950cc49a3",
+      "tree": "5045dbeaa00fee797a220cc6a50fdb10389adf70",
+      "pr": 5505,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5505",
+      "additions": 354,
+      "deletions": 0
+    },
+    {
+      "cut": "04-signed-readback",
+      "title": "authenticate completed evaluation readback",
+      "branch": "codex/eval-recovery-173a-04-signed-readback",
+      "base": "codex/eval-recovery-173a-03-codec",
+      "parent": "498b408e20937acf7f13895b3f1490e950cc49a3",
+      "commit": "b65df630c309a8ef21df68b3ed73db61000c283f",
+      "tree": "5caa341c6252848c578898cd38d38b50b7320985",
+      "pr": 5506,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5506",
+      "additions": 328,
+      "deletions": 3
+    },
+    {
+      "cut": "05-readback-tests",
+      "title": "verify original owner and uncertain execution boundaries",
+      "branch": "codex/eval-recovery-173a-05-readback-tests",
+      "base": "codex/eval-recovery-173a-04-signed-readback",
+      "parent": "b65df630c309a8ef21df68b3ed73db61000c283f",
+      "commit": "d7f86834484dbcba02196b65661acb06b91b4605",
+      "tree": "69dfeaf68adf9fcc182da8fe3fd88b581d785ad7",
+      "pr": 5507,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5507",
+      "additions": 497,
+      "deletions": 0
+    },
+    {
+      "cut": "06-process-recovery",
+      "title": "verify signed execution and holdout across process exit",
+      "branch": "codex/eval-recovery-173a-06-process-recovery",
+      "base": "codex/eval-recovery-173a-05-readback-tests",
+      "parent": "d7f86834484dbcba02196b65661acb06b91b4605",
+      "commit": "715dfcecd10afcdaf9db4d2559c306c11282ba7b",
+      "tree": "449a94a5d583248a97d00605a77c5a54592f05e2",
+      "pr": 5508,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5508",
+      "additions": 236,
+      "deletions": 0
+    }
+  ],
+  "readbacks": [
+    {
+      "pr": 5503,
+      "head": "e780c9df60e834ad71ee500fefe34173d2fe7735",
+      "base": "codex/root-learning-aefe-09-evidence",
+      "base_sha": "e2e20033daa67d9d9826d4942e4d6bdd15ba4ab5",
+      "draft": true,
+      "merged": false,
+      "state": "open",
+      "changed_files": 3,
+      "additions": 486,
+      "deletions": 0
+    },
+    {
+      "pr": 5504,
+      "head": "f163e85ae3e994e1dbb36475064f9d51ad821a8a",
+      "base": "codex/eval-recovery-173a-01-journal",
+      "base_sha": "e780c9df60e834ad71ee500fefe34173d2fe7735",
+      "draft": true,
+      "merged": false,
+      "state": "open",
+      "changed_files": 2,
+      "additions": 289,
+      "deletions": 0
+    },
+    {
+      "pr": 5505,
+      "head": "498b408e20937acf7f13895b3f1490e950cc49a3",
+      "base": "codex/eval-recovery-173a-02-journal-tests",
+      "base_sha": "f163e85ae3e994e1dbb36475064f9d51ad821a8a",
+      "draft": true,
+      "merged": false,
+      "state": "open",
+      "changed_files": 1,
+      "additions": 354,
+      "deletions": 0
+    },
+    {
+      "pr": 5506,
+      "head": "b65df630c309a8ef21df68b3ed73db61000c283f",
+      "base": "codex/eval-recovery-173a-03-codec",
+      "base_sha": "498b408e20937acf7f13895b3f1490e950cc49a3",
+      "draft": true,
+      "merged": false,
+      "state": "open",
+      "changed_files": 6,
+      "additions": 328,
+      "deletions": 3
+    },
+    {
+      "pr": 5507,
+      "head": "d7f86834484dbcba02196b65661acb06b91b4605",
+      "base": "codex/eval-recovery-173a-04-signed-readback",
+      "base_sha": "b65df630c309a8ef21df68b3ed73db61000c283f",
+      "draft": true,
+      "merged": false,
+      "state": "open",
+      "changed_files": 2,
+      "additions": 497,
+      "deletions": 0
+    },
+    {
+      "pr": 5508,
+      "head": "715dfcecd10afcdaf9db4d2559c306c11282ba7b",
+      "base": "codex/eval-recovery-173a-05-readback-tests",
+      "base_sha": "d7f86834484dbcba02196b65661acb06b91b4605",
+      "draft": true,
+      "merged": false,
+      "state": "open",
+      "changed_files": 2,
+      "additions": 236,
+      "deletions": 0
+    }
+  ],
+  "intermediate_cuts_individually_tested": false
+}
