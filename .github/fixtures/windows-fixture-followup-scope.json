@@ -1,0 +1,83 @@
+{
+  "schema": "hepta.windows.fixture-followup-scope.v1",
+  "expectedTotal": 11,
+  "originalRunner": "Bazel Windows CI",
+  "thisRunner": "Cargo Nextest 0.9.103, dev-small, local, one test thread",
+  "groups": [
+    {
+      "id": "cli-cloud",
+      "package": "codex-cli",
+      "binaryId": "codex-cli::sandbox_cloud_config",
+      "crate": "cli",
+      "target": ["--test", "sandbox_cloud_config"],
+      "features": [],
+      "required": [
+        "sandbox_fetches_and_enforces_cloud_managed_permission_profile"
+      ],
+      "prefixes": {},
+      "expected": 1
+    },
+    {
+      "id": "agentd-fleet-default",
+      "package": "codex-hepta-agentd",
+      "binaryId": "codex-hepta-agentd",
+      "crate": "hepta-agentd",
+      "target": ["--lib"],
+      "features": [],
+      "required": [
+        "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+        "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append"
+      ],
+      "prefixes": {},
+      "expected": 2
+    },
+    {
+      "id": "agentd-h7-qualification",
+      "package": "codex-hepta-agentd",
+      "binaryId": "codex-hepta-agentd",
+      "crate": "hepta-agentd",
+      "target": ["--lib"],
+      "features": ["--features", "qualification-cognitive-write"],
+      "required": [
+        "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+      ],
+      "prefixes": {},
+      "expected": 1
+    },
+    {
+      "id": "matrix-startup-diagnostic",
+      "package": "codex-hepta-matrix-sdk",
+      "binaryId": "codex-hepta-matrix-sdk",
+      "crate": "hepta-matrix-sdk",
+      "target": ["--lib"],
+      "features": [],
+      "required": [
+        "sdk::startup_deadline_tests::expired_finalization_rejects_success_without_erasing_a_written_session"
+      ],
+      "prefixes": {},
+      "expected": 1,
+      "interpretation": "SDK startup failure diagnostics plus Windows parent directory open/flush access repair; an isolated pass cannot establish the cause or resolution of earlier pre-persist initialization or whole-target failure. The original internal 20-second budget remains; durability is not qualified."
+    },
+    {
+      "id": "appserver-fixtures",
+      "package": "codex-app-server",
+      "binaryId": "codex-app-server::all",
+      "crate": "app-server",
+      "target": ["--test", "all"],
+      "features": [],
+      "required": [
+        "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+        "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2"
+      ],
+      "prefixes": {
+        "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::": 4
+      },
+      "expected": 6
+    }
+  ],
+  "explicitSkipMarkers": [
+    "skipping cloud-managed sandbox subprocess:",
+    "Skipping test in a remote test environment:",
+    "Skipping test because it cannot execute when network is disabled in a Codex sandbox."
+  ]
+}
