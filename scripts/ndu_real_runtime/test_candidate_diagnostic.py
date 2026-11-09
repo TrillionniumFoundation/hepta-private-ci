@@ -7,7 +7,13 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from .candidate_diagnostic import DEVELOPMENT_SCHEMA, episode_diagnostic
+from .candidate_diagnostic import (
+    DEVELOPMENT_SCHEMA,
+    Reader,
+    decode,
+    diagnose,
+    episode_diagnostic,
+)
 from .objective import canonical_sha
 from .trajectory import V2_SCHEMA
 
@@ -286,6 +292,179 @@ class CandidateDiagnosticTests(unittest.TestCase):
         args[2][0]["duration_seconds"] = float("nan")
         with self.assertRaises(ValueError):
             episode_diagnostic(*args)
+
+    def test_reader_checks_hash_root_budget_and_duplicate_json_keys(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "data.json"
+            path.write_text('{"a":1,"a":2}')
+            with self.assertRaisesRegex(ValueError, "digest"):
+                Reader(100).read(path, "0" * 64, root=root)
+            with self.assertRaisesRegex(ValueError, "budget"):
+                Reader(1).read(path, root=root)
+            with self.assertRaisesRegex(ValueError, "Duplicate JSON"):
+                decode(path.read_bytes())
+            link = root / "link"
+            link.symlink_to(path)
+            with self.assertRaisesRegex(ValueError, "regular-file"):
+                Reader(100).read(link, root=root)
+
+    def test_registered_unstarted_and_failed_attempts_keep_denominator(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+
+            def put(name, value):
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                raw = (json.dumps(value, sort_keys=True) + "\n").encode()
+                path.write_bytes(raw)
+                return {"path": str(path), "digest": hashlib.sha256(raw).hexdigest()}
+
+            case, packet, rows, trajectory = episode()
+            packet_path = f"public/train/{case['id']}/case.json"
+            bound = put(packet_path, packet)
+            case["packet"] = {"path": packet_path, "sha256": bound["digest"]}
+            selection = put("selected.json", {"cases": {"training": [case]}})
+            registrations = []
+            for operation in ("attempt", "failed", "unstarted"):
+                bound = put(
+                    f"phase/requests/{operation}.json",
+                    {
+                        "case": case,
+                        "profile": {"original_operation_id": operation},
+                        "output": str(root / "episodes" / operation),
+                        "config": {"material_root": str(root)},
+                    },
+                )
+                registrations.append(
+                    {"request": bound["path"], "sha256": bound["digest"]}
+                )
+            result = put(
+                "episodes/failed/result.json",
+                {
+                    "case_id": case["id"],
+                    "split": "train",
+                    "terminal_status": "Failed",
+                    "original_operation_id": "failed",
+                },
+            )
+            receipt = {
+                "original_operation_id": "failed",
+                "request_sha256": registrations[1]["sha256"],
+                "result_sha256": result["digest"],
+                "terminal_status": "Failed",
+                "wall_seconds": 2.0,
+                "cpu_seconds": 1.0,
+                "retry_of": None,
+            }
+            put("episodes/failed/original-attempt.json", receipt)
+            delivery = put(
+                "episodes/attempt/delivery-04/delivery.json",
+                {"case_id": case["id"], "text": "ACME"},
+            )
+            result = put(
+                "episodes/attempt/result.json",
+                {
+                    "case_id": case["id"],
+                    "split": "train",
+                    "terminal_status": "Completed",
+                    "original_operation_id": "attempt",
+                    "score_components": {
+                        "delivery_sha256": delivery["digest"],
+                        "text_quality": 1.0,
+                    },
+                },
+            )
+            complete = {
+                "original_operation_id": "attempt",
+                "request_sha256": registrations[0]["sha256"],
+                "result_sha256": result["digest"],
+                "terminal_status": "Completed",
+                "wall_seconds": 3.0,
+                "cpu_seconds": 2.0,
+                "retry_of": None,
+            }
+            put("episodes/attempt/original-attempt.json", complete)
+            put("episodes/attempt/trajectory.json", trajectory)
+            inventory = put(
+                "phase/inventory.json", {"phase": "phase", "planned": registrations}
+            )
+            terminal = put(
+                "phase/result.json",
+                {
+                    "phase": "phase",
+                    "planned": 3,
+                    "attempts": [
+                        {"output": str(root / "episodes/failed"), "attempt": receipt},
+                        {"output": str(root / "episodes/attempt"), "attempt": complete},
+                    ],
+                    "not_started_requests": [registrations[2]["request"]],
+                    "elapsed_wall_seconds": 6.0,
+                },
+            )
+            records = root / "records.jsonl"
+            raw = b"".join((json.dumps(row) + "\n").encode() for row in rows)
+            records.write_bytes(raw)
+            plan = {
+                "schema": "ndu.real.candidate-diagnostic-plan.v1",
+                "diagnostic_id": "fixture",
+                "roles": ["train"],
+                "max_input_bytes": 100000,
+                "collection_root": str(root),
+                "material_root": str(root),
+                "selected_sources": selection,
+                "phases": [{"inventory": inventory, "result": terminal}],
+                "records": {
+                    "path": str(records),
+                    "digest": hashlib.sha256(raw).hexdigest(),
+                },
+            }
+            report = diagnose(plan)
+            self.assertEqual(
+                report["summary"],
+                {
+                    "registered_attempts": 3,
+                    "observed_rows": 4,
+                    "terminal_status_counts": {
+                        "Completed": 1,
+                        "Failed": 1,
+                        "NotStarted": 1,
+                    },
+                    "candidate_status_counts": {
+                        "missing_correct_candidate": 2,
+                        "covered": 2,
+                    },
+                    "decision_counts": {
+                        "prepare_roi": 1,
+                        "read_roi": 1,
+                        "write_correct": 1,
+                        "stop_after_reconstructed_text_success": 1,
+                    },
+                    "roi_outcome_counts": {"coverage_gained": 1},
+                },
+            )
+            self.assertEqual(
+                (
+                    report["costs"]["sum_known_attempt_wall_seconds"],
+                    report["costs"]["unknown_attempt_wall_count"],
+                ),
+                (5.0, 1),
+            )
+            self.assertEqual(report["costs"]["observed_action_seconds"], 1.0)
+            self.assertTrue(report["attempts"][0]["text_evaluator_agrees"])
+            plan["phases"].append(plan["phases"][0])
+            with self.assertRaisesRegex(ValueError, "Duplicate registered"):
+                diagnose(plan)
+            plan["phases"].pop()
+            invalid = json.loads(Path(terminal["path"]).read_text())
+            for value in (-1, float("inf")):
+                invalid["elapsed_wall_seconds"] = value
+                plan["phases"][0]["result"] = put("phase/result.json", invalid)
+                with (
+                    self.subTest(value=value),
+                    self.assertRaisesRegex(ValueError, "phase elapsed"),
+                ):
+                    diagnose(plan)
 
 
 if __name__ == "__main__":
