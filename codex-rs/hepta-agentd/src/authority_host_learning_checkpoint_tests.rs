@@ -283,7 +283,7 @@ fn registered_root_cross_process_restore_conflict_and_committed_lost_ack() -> an
                     }
                     Ok(response)
                 });
-                if result.is_err() {
+                if !matches!(result, Ok(true)) {
                     break;
                 }
             }

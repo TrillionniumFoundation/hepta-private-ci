@@ -278,14 +278,16 @@ impl AgentdLearningCheckpointClientV1 {
             .try_lock()
             .map_err(|_| Error::Store(AuthorityTrustError::Unavailable))?;
         let (mut channel, sequence) = slot.take().ok_or_else(|| kind.unavailable())?;
-        let next = sequence.checked_add(1).ok_or_else(|| kind.unavailable())?;
+        let next = sequence
+            .checked_add(1)
+            .ok_or(Error::Store(AuthorityTrustError::Unavailable))?;
         let request = encode_frame(&Request {
             schema_version: 1,
             operation: DOMAIN.into(),
             sequence,
             command,
         })
-        .map_err(|_| kind.unavailable())?;
+        .map_err(|_| Error::Capacity)?;
         let bytes = channel.request(&request).map_err(|_| kind.unavailable())?;
         let response: Response = serde_json::from_slice(&bytes).map_err(|_| kind.unavailable())?;
         if response.schema_version != 1
