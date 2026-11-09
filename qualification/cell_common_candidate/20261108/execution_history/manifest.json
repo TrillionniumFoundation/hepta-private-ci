@@ -785,6 +785,60 @@
       "file_member_count": 109,
       "manifest_path": "packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/manifest.json",
       "manifest_sha256": "f4f49a8d9e4691f7a493da10378e377729685dcfdfea2ce091ae8198864d8524"
+    },
+    {
+      "packet_id": "core-output-6ec5993-desktop-dependency-strict-history-v1",
+      "scope": "Completed desktop V8 dependency failure/recovery, exact tool import and nine-stage strict preparation; execution cutoff 09:37:11 UTC; no native cases",
+      "archive_bytes": 1305748,
+      "archive_sha256": "367a522060ce8270a64663b42e523a062adda630628c051597cf9bbadf88239f",
+      "file_member_count": 198,
+      "manifest_path": "packets/core-output-6ec5993-desktop-dependency-strict-history-v1/manifest.json",
+      "manifest_sha256": "8d5b910315f63250d697727bfbd9125bc68419b0ec54b6e1b895d34252e634b5"
+    },
+    {
+      "packet_id": "core-output-6ec5993-desktop-core-native-retention-history-v1",
+      "scope": "Desktop codex-core owning native 3827 PASS plus9 ignored and metadata-only retention; not workspace",
+      "archive_bytes": 1860496,
+      "archive_sha256": "4cf21a3b17a142c293890d4dd106e8b9ca6cb57fd4a79d401dcabccd63973140",
+      "file_member_count": 64,
+      "manifest_path": "packets/core-output-6ec5993-desktop-core-native-retention-history-v1/manifest.json",
+      "manifest_sha256": "9c2d3a3337c5be94f99d9c75ecad039ec5bedd433878e5351242e71bfc7e3012"
+    },
+    {
+      "packet_id": "core-output-6ec5993-desktop-appserver-failed-native-retention-history-v1",
+      "scope": "Desktop codex-app-server owning native FAIL:1345 PASS+3 exit101,2 ignored; retention does not change failure",
+      "archive_bytes": 1941672,
+      "archive_sha256": "61b1ed43544123461865e26a9617f094abb5eb6f00c2606a18d8b7fa4fb5d440",
+      "file_member_count": 86,
+      "manifest_path": "packets/core-output-6ec5993-desktop-appserver-failed-native-retention-history-v1/manifest.json",
+      "manifest_sha256": "ad01af6b5c9958e79a2536547bca0aa5bd6b16f2b39198310a75485f5bc9e3e8"
+    },
+    {
+      "packet_id": "core-output-6ec5993-desktop-agentd-root-native-retention-history-v1",
+      "scope": "Desktop agentd default781 PASS/71 ignored and separate Root parent1 PASS; metadata-only29 binary retention, not workspace or ordinary daemon",
+      "archive_bytes": 1223632,
+      "archive_sha256": "767da1f5ba1d3f047239a45ea979a61e6d4cd2ad1040cdff0bfdbc01da5a2f76",
+      "file_member_count": 100,
+      "manifest_path": "packets/core-output-6ec5993-desktop-agentd-root-native-retention-history-v1/manifest.json",
+      "manifest_sha256": "143dac072b9863b838bcc9499fda0d9c117baef3486765e9f3a03241d691f494"
+    },
+    {
+      "packet_id": "core-output-6ec5993-desktop-posthoc-diagnostics-readback-history-v1",
+      "scope": "Posthoc managed/OAuth diagnostic and independent records-reader history, including observer failures and lossless timestamp correction; zero native execution",
+      "archive_bytes": 247008,
+      "archive_sha256": "bc76222d16adcfeaab2d3a745fd8bfeb67164c82b5ef28bf3f8963896c3eed03",
+      "file_member_count": 117,
+      "manifest_path": "packets/core-output-6ec5993-desktop-posthoc-diagnostics-readback-history-v1/manifest.json",
+      "manifest_sha256": "e0f4cec3bb4ac12fc46b20dec46ef6343b15f869f2e10bcc762de6547143c633"
+    },
+    {
+      "packet_id": "core-output-6ec5993-quiet-source-publication-history-v1",
+      "scope": "Completed one normal quiet-source publication of frozen6ec,17 retained validation observations,93 commands and Actions0 readback; source reviewability only",
+      "archive_bytes": 1547100,
+      "archive_sha256": "e11d190b31472cbc00582a4728a6073dfeda4d5a235b39527d6524df7c23699d",
+      "file_member_count": 439,
+      "manifest_path": "packets/core-output-6ec5993-quiet-source-publication-history-v1/manifest.json",
+      "manifest_sha256": "5e98567e721f6308af0526fa06c4ffb2f2e340806c6279cce22127587c175289"
     }
   ],
   "max_chunk_bytes": 490000,
@@ -806,7 +860,7 @@
   "publication_commit_location": "external_git_readback_receipt",
   "source_branch_mutated_by_publication": false,
   "counts_and_wall_times_must_not_be_added_across_packets": true,
-  "preceding_evidence_commit": "e781fbebad63968adf18cce97dd04657b3854917",
+  "preceding_evidence_commit": "8ca3f19c69f2f14a42aa5fbe3ff72af807c65ff2",
   "latest_reviewed_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
   "latest_reviewed_common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
   "increment003_original_metadata_observations": [
@@ -2229,6 +2283,200 @@
         ],
         "collector_v1_schema_failure_preserved": true,
         "historical_cutoff": "Exactly two original AI checksum failures and completed desktop freeze/caller preparation; subsequent desktop V8 or native work is excluded"
+      },
+      "desktop_6ec_dependency_strict_history": {
+        "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+        "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+        "source_parent": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+        "host": "desktop",
+        "source_publication_claimed_by_this_observation": false,
+        "common_source_advanced": false,
+        "full_workspace_qualified": false,
+        "scientific_acceptance": false,
+        "physical_cost": null,
+        "full_history_cost": null,
+        "packet_id": "core-output-6ec5993-desktop-dependency-strict-history-v1",
+        "execution_cutoff": "2026-11-09T09:37:11.142579+00:00",
+        "strict_preparation_status": "prepared_clean",
+        "strict_phase_count": 9,
+        "all_original_phase_returncodes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "native_cases_in_this_packet": 0,
+        "initial_desktop_artifact_HTTP504_preserved": true,
+        "partial_or_unknown_transport_not_upgraded": true,
+        "exact_tool_import_record_retained": true,
+        "later_owner_executions_in_separate_packets": true
+      },
+      "desktop_6ec_core_owning_history": {
+        "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+        "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+        "source_parent": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+        "host": "desktop",
+        "source_publication_claimed_by_this_observation": false,
+        "common_source_advanced": false,
+        "full_workspace_qualified": false,
+        "scientific_acceptance": false,
+        "physical_cost": null,
+        "full_history_cost": null,
+        "packet_id": "core-output-6ec5993-desktop-core-native-retention-history-v1",
+        "execution_finished_at": "2026-11-09T09:58:20.164166+00:00",
+        "status": "PASS",
+        "driver_returncode": 0,
+        "test_returncode": 0,
+        "collect_returncode": 0,
+        "counts": {
+          "selected_executed_unique": 3827,
+          "passed": 3827,
+          "failed": 0,
+          "original_ignored": 9,
+          "retries": 0,
+          "leaks": 0,
+          "required_passed_subset": 4
+        },
+        "host_only_binary_count": 14,
+        "host_only_binary_bytes": 3037089672,
+        "binary_bytes_archived": false,
+        "named_ignored_source": "Actual discovery and original Summary count; no per-case SKIP raw lines",
+        "original_45a_failure_preserved": true
+      },
+      "desktop_6ec_appserver_failed_owning_history": {
+        "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+        "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+        "source_parent": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+        "host": "desktop",
+        "source_publication_claimed_by_this_observation": false,
+        "common_source_advanced": false,
+        "full_workspace_qualified": false,
+        "scientific_acceptance": false,
+        "physical_cost": null,
+        "full_history_cost": null,
+        "packet_id": "core-output-6ec5993-desktop-appserver-failed-native-retention-history-v1",
+        "execution_finished_at": "2026-11-09T10:14:19.348118+00:00",
+        "status": "FAIL",
+        "driver_returncode": 1,
+        "test_returncode": 100,
+        "collect_returncode": 1,
+        "junit_collection_status": "retained-failed",
+        "counts": {
+          "selected_executed_unique": 1348,
+          "passed": 1345,
+          "failed_exit101": 3,
+          "original_ignored": 2,
+          "retries": 0,
+          "leaks": 0,
+          "required_passed_subset": 5
+        },
+        "original_required_five_overall_passed_field": false,
+        "five_actual_passes_do_not_rescue_whole_run": true,
+        "host_only_binary_count": 16,
+        "host_only_binary_bytes": 2874949592,
+        "binary_bytes_archived": false,
+        "retention_success_does_not_change_native_failure": true,
+        "failed_case_payload_files": 15,
+        "root_cause_all_failures": null,
+        "all_failures_classified_as_environment": false
+      },
+      "desktop_6ec_agentd_root_owning_history": {
+        "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+        "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+        "source_parent": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+        "host": "desktop",
+        "source_publication_claimed_by_this_observation": false,
+        "common_source_advanced": false,
+        "full_workspace_qualified": false,
+        "scientific_acceptance": false,
+        "physical_cost": null,
+        "full_history_cost": null,
+        "packet_id": "core-output-6ec5993-desktop-agentd-root-native-retention-history-v1",
+        "agentd_status": "PASS",
+        "agentd_execution_finished_at": "2026-11-09T10:39:34.313091+00:00",
+        "agentd_counts": {
+          "selected_executed_unique": 781,
+          "passed": 781,
+          "failed": 0,
+          "original_ignored": 71,
+          "retries": 0,
+          "leaks": 0,
+          "required_checkpoint_passed_subset": 13
+        },
+        "Root_status": "PASS",
+        "Root_execution_finished_at": "2026-11-09T10:47:17.647268+00:00",
+        "Root_counts": {
+          "separate_ignored_parent_executed": 1,
+          "parent_passed": 1,
+          "child_summaries_additional_acceptance": false
+        },
+        "host_only_binary_count": 29,
+        "host_only_binary_bytes": 3760364392,
+        "binary_bytes_archived": false,
+        "original_reference53_not_claimed_as53_copied_records": true,
+        "ordinary_daemon_learning_bootstrap_qualified": false
+      },
+      "desktop_6ec_posthoc_diagnostics_history": {
+        "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+        "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+        "source_parent": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+        "host": "desktop",
+        "source_publication_claimed_by_this_observation": false,
+        "common_source_advanced": false,
+        "full_workspace_qualified": false,
+        "scientific_acceptance": false,
+        "physical_cost": null,
+        "full_history_cost": null,
+        "packet_id": "core-output-6ec5993-desktop-posthoc-diagnostics-readback-history-v1",
+        "posthoc_seal_finished_at": "2026-11-09T11:24:28.143469+00:00",
+        "original_file_count": 112,
+        "new_native_tests": 0,
+        "additional_native_passes_claimed": 0,
+        "appserver_original_status": "FAIL",
+        "all_appserver_failures_assigned_one_environment_cause": false,
+        "OAuth_original_cardinality_capture_failure_retained": true,
+        "OAuth_rounded_derived_v1_retained_as_history_not_typed_admission": true,
+        "OAuth_lossless_v2_original_timestamp_ns": 1794219243183664456,
+        "independent_readback_does_not_add_Core_or_agentd_or_Root_cases": true,
+        "agentd_archive_reader_original_slow_summary_rejection_retained": true
+      },
+      "quiet_6ec_source_publication_history": {
+        "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+        "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+        "source_parent": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+        "host": "desktop",
+        "source_publication_claimed_by_this_observation": true,
+        "common_source_advanced": false,
+        "full_workspace_qualified": false,
+        "scientific_acceptance": false,
+        "physical_cost": null,
+        "full_history_cost": null,
+        "packet_id": "core-output-6ec5993-quiet-source-publication-history-v1",
+        "status": "existing_frozen_source_normally_published_and_readback_verified",
+        "target_ref": "refs/heads/codex/cell-s0-core-output-20261109-898e",
+        "execution_finished_at": "2026-11-09T11:23:34.001558+00:00",
+        "actual_normal_push_count": 1,
+        "new_source_commits_created": 0,
+        "new_native_tests": 0,
+        "actual_command_count": 93,
+        "retained_validation_observation_count": 17,
+        "actions_count_at_original_observation": 0,
+        "actions_zero_is_not_CI_success": true,
+        "workspace_v2_result_not_read_or_inferred": true,
+        "same_source_appserver_FAIL_and_workspace_v1_controller_FAIL_preserved": true,
+        "original_records_count": 433,
+        "exact_Git_z_NUL_stdout_count": 13,
+        "unique_changed_paths_relative_to_common": 25,
+        "separate_diff_path_counts_not_summed": [
+          19,
+          6,
+          1
+        ]
       }
     }
   },
@@ -2803,6 +3051,362 @@
       "path": "observations/evidence-addendum-increment-008a-launch-v1/stderr",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "increment009a_supplementary_metadata_observations": [
+    {
+      "path": "observations/core-output-6ec5993-desktop-dependency-strict-independent-verification-v1/RESULT.json",
+      "bytes": 5913,
+      "sha256": "ebaf19ad7e6261d30cd49a3cd8258cdc0e271dd9cca0997036e526d4cdf758ed"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-core-history-independent-verification-v1/RESULT.json",
+      "bytes": 3995,
+      "sha256": "401fc50e6421b81641c0ded4d192e6c551aefbbf6f47fca8fa5cdc088ce287ea"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-appserver-failed-history-independent-verification-v1/RESULT.json",
+      "bytes": 11001,
+      "sha256": "776e58bec33a9d99696931064679bec2194271dda35ff5dd4be4ba0e96a8fc63"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-agentd-root-history-independent-verification-v2/RESULT.json",
+      "bytes": 2568,
+      "sha256": "dea8199f05ec4ac23757c74c2ea9c26d43415f988e819a5af83fb1d95e4ad5f6"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-posthoc-history-independent-verification-v1/RESULT.json",
+      "bytes": 1918,
+      "sha256": "c9b2ddfc2aeb133775e18094b06bfe17bb9b51af56c8590ff563bbfd5ca09168"
+    },
+    {
+      "path": "observations/core-output-6ec5993-source-publication-history-independent-verification-v2/RESULT.json",
+      "bytes": 1946,
+      "sha256": "0f24ddaf16e47d3ce4dc44ad720da1a43d7d8d383fecf1ae725801d912b6332c"
+    },
+    {
+      "path": "observations/evidence-increment008-publication-v1/RESULT.json",
+      "bytes": 23048,
+      "sha256": "4a81a52fd8e105bd28ed668cc30dafae3852149496faa93ae225335b14906e3a"
+    },
+    {
+      "path": "observations/evidence-increment008-publication-v1/commands.json",
+      "bytes": 57080,
+      "sha256": "f7ab0e9777ffcee5e2d3d6f99a25be492dedc64cda1fe7cfacb403796cc49a4b"
+    },
+    {
+      "path": "observations/evidence-increment008-independent-readback-v1/RESULT.json",
+      "bytes": 3139,
+      "sha256": "83e8d642a25e64b0d21acf94e4a1a76fd976176e71c74489e3829d10dc92f3fb"
+    },
+    {
+      "path": "observations/evidence-increment008-independent-readback-v1/commands.json",
+      "bytes": 130728,
+      "sha256": "41d5910eca439bcbb9e40f76b68920e5ee287c7d1189acaa385570e773a628be"
+    },
+    {
+      "path": "observations/pr5397-status009-v6-publication-observation-v1.json",
+      "bytes": 87275,
+      "sha256": "3c31fbcb0493488deac4916bf880bd8811384cdce485eb5f9afd25e2e36d2f06"
+    },
+    {
+      "path": "observations/core-output-6ec5993-source-publication-history-independent-verification-v1/RESULT.json",
+      "bytes": 373,
+      "sha256": "6bc9c7e179701dc90dbff2d0c20f61e134f34b5071fdc4086a8473e696668c41"
+    },
+    {
+      "path": "observations/core-output-6ec5993-source-publication-history-independent-verification-v1/H_PTY_READ_ORIGINAL.json",
+      "bytes": 4365,
+      "sha256": "a6549e162b6e28f2084b3cc3df8b551d6122162b3840fc0f7a8af8a81bb3d8cf"
+    },
+    {
+      "path": "observations/core-output-6ec5993-source-publication-history-independent-verification-v1/v1-to-v2.patch",
+      "bytes": 1779,
+      "sha256": "0e9d209edde22a404c2999ecdb6ac1249791d030e6da930a231d1474a251eca7"
+    },
+    {
+      "path": "observations/verify-desktop-6ec-source-publication-history-v1.py",
+      "bytes": 7606,
+      "sha256": "d445ec705132ae2b26cdf15dccd4ce76b4ecce0b995bbe8cc7ee6ba486bd5483"
+    },
+    {
+      "path": "observations/verify-desktop-6ec-source-publication-history-v2.py",
+      "bytes": 7603,
+      "sha256": "625993a9081d5ec78e127b385a2996d104e7846ee35c1c1f4c6fe77c4a9edb4d"
+    },
+    {
+      "path": "observations/desktop-6ec-source-publication-history-seal-launch-v1/RESULT.json",
+      "bytes": 882,
+      "sha256": "b7965b43bec7b61346bc142cfa4911b653edf731f84b211a192a02e2f9bfb562"
+    },
+    {
+      "path": "observations/desktop-6ec-source-publication-history-seal-launch-v1/stdout",
+      "bytes": 1937,
+      "sha256": "a6c37602f2ef72e8f085f34ff8c63d4e81f506db0dcf7db5fd0706412f015c52"
+    },
+    {
+      "path": "observations/desktop-6ec-source-publication-history-seal-launch-v1/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "increment009a_supplementary_metadata_scope": {
+    "source_commit": "8ca3f19c69f2f14a42aa5fbe3ff72af807c65ff2",
+    "source_tree": "2e734a7f4bf5a24b9876f44b303e96e36a8cd5ec",
+    "files_included": "Six independent archive RESULTs, prior008 publication/readback RESULT+commands pairs, PRv6 actual observation, exact source-publication sealer and reader failure/correction records.",
+    "complete_stdout_stderr_prefixes_archived_here": false,
+    "prior008_full_stdout_stderr_prefixes_included": false,
+    "source_publication_original433_records_are_in_separate_packet": true,
+    "exact19_supplementary_files": true,
+    "hash_references_not_claimed_as_archived_raw": true,
+    "no_new_native_execution": true,
+    "costs_are_not_complete": true
+  },
+  "increment009_original_metadata_observations": [
+    {
+      "path": "observations/core-output-6ec5993-desktop-dependency-strict-independent-verification-v1/RESULT.json",
+      "bytes": 5913,
+      "sha256": "ebaf19ad7e6261d30cd49a3cd8258cdc0e271dd9cca0997036e526d4cdf758ed"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-core-history-independent-verification-v1/RESULT.json",
+      "bytes": 3995,
+      "sha256": "401fc50e6421b81641c0ded4d192e6c551aefbbf6f47fca8fa5cdc088ce287ea"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-appserver-failed-history-independent-verification-v1/RESULT.json",
+      "bytes": 11001,
+      "sha256": "776e58bec33a9d99696931064679bec2194271dda35ff5dd4be4ba0e96a8fc63"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-agentd-root-history-independent-verification-v2/RESULT.json",
+      "bytes": 2568,
+      "sha256": "dea8199f05ec4ac23757c74c2ea9c26d43415f988e819a5af83fb1d95e4ad5f6"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-posthoc-history-independent-verification-v1/RESULT.json",
+      "bytes": 1918,
+      "sha256": "c9b2ddfc2aeb133775e18094b06bfe17bb9b51af56c8590ff563bbfd5ca09168"
+    },
+    {
+      "path": "observations/core-output-6ec5993-source-publication-history-independent-verification-v2/RESULT.json",
+      "bytes": 1946,
+      "sha256": "0f24ddaf16e47d3ce4dc44ad720da1a43d7d8d383fecf1ae725801d912b6332c"
+    },
+    {
+      "path": "observations/evidence-increment008-publication-v1/RESULT.json",
+      "bytes": 23048,
+      "sha256": "4a81a52fd8e105bd28ed668cc30dafae3852149496faa93ae225335b14906e3a"
+    },
+    {
+      "path": "observations/evidence-increment008-publication-v1/commands.json",
+      "bytes": 57080,
+      "sha256": "f7ab0e9777ffcee5e2d3d6f99a25be492dedc64cda1fe7cfacb403796cc49a4b"
+    },
+    {
+      "path": "observations/evidence-increment008-independent-readback-v1/RESULT.json",
+      "bytes": 3139,
+      "sha256": "83e8d642a25e64b0d21acf94e4a1a76fd976176e71c74489e3829d10dc92f3fb"
+    },
+    {
+      "path": "observations/evidence-increment008-independent-readback-v1/commands.json",
+      "bytes": 130728,
+      "sha256": "41d5910eca439bcbb9e40f76b68920e5ee287c7d1189acaa385570e773a628be"
+    },
+    {
+      "path": "observations/pr5397-status009-v6-publication-observation-v1.json",
+      "bytes": 87275,
+      "sha256": "3c31fbcb0493488deac4916bf880bd8811384cdce485eb5f9afd25e2e36d2f06"
+    },
+    {
+      "path": "observations/core-output-6ec5993-source-publication-history-independent-verification-v1/RESULT.json",
+      "bytes": 373,
+      "sha256": "6bc9c7e179701dc90dbff2d0c20f61e134f34b5071fdc4086a8473e696668c41"
+    },
+    {
+      "path": "observations/core-output-6ec5993-source-publication-history-independent-verification-v1/H_PTY_READ_ORIGINAL.json",
+      "bytes": 4365,
+      "sha256": "a6549e162b6e28f2084b3cc3df8b551d6122162b3840fc0f7a8af8a81bb3d8cf"
+    },
+    {
+      "path": "observations/core-output-6ec5993-source-publication-history-independent-verification-v1/v1-to-v2.patch",
+      "bytes": 1779,
+      "sha256": "0e9d209edde22a404c2999ecdb6ac1249791d030e6da930a231d1474a251eca7"
+    },
+    {
+      "path": "observations/verify-desktop-6ec-source-publication-history-v1.py",
+      "bytes": 7606,
+      "sha256": "d445ec705132ae2b26cdf15dccd4ce76b4ecce0b995bbe8cc7ee6ba486bd5483"
+    },
+    {
+      "path": "observations/verify-desktop-6ec-source-publication-history-v2.py",
+      "bytes": 7603,
+      "sha256": "625993a9081d5ec78e127b385a2996d104e7846ee35c1c1f4c6fe77c4a9edb4d"
+    },
+    {
+      "path": "observations/desktop-6ec-source-publication-history-seal-launch-v1/RESULT.json",
+      "bytes": 882,
+      "sha256": "b7965b43bec7b61346bc142cfa4911b653edf731f84b211a192a02e2f9bfb562"
+    },
+    {
+      "path": "observations/desktop-6ec-source-publication-history-seal-launch-v1/stdout",
+      "bytes": 1937,
+      "sha256": "a6c37602f2ef72e8f085f34ff8c63d4e81f506db0dcf7db5fd0706412f015c52"
+    },
+    {
+      "path": "observations/desktop-6ec-source-publication-history-seal-launch-v1/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-009a/RESULT.json",
+      "bytes": 10370,
+      "sha256": "ac8fc7048f5d5f9976a4ee3ab1f9689f1679a8732346ef6de6cec4b5a112ea82"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-009a/PATTERN_REVIEW.json",
+      "bytes": 357,
+      "sha256": "25ba4f6b2041f2c908570e101d6d2ecc6e7a88823920ca7400dd8b2c046c4590"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-009a/VERIFY.log",
+      "bytes": 7330,
+      "sha256": "6726370472fc6ca4c63b5f53b573d057abf7404ad994613b518ba44036d5c474"
+    },
+    {
+      "path": "observations/increment009-six-ready-packet-preparation-v2/DRAFT_INPUTS.json",
+      "bytes": 400760,
+      "sha256": "6cda57d0cd1dc1ec4c25248285c1c55549ab7c6511d8b0d7a8040e15ef782f77"
+    },
+    {
+      "path": "observations/append-evidence-increment-009-draft-v1.py",
+      "bytes": 26623,
+      "sha256": "02b05621f874c64dd39831f1ec252a9f53ccdb3d2c153b140f50936a045e4080"
+    },
+    {
+      "path": "observations/prepare-increment009-six-ready-packets-v2.py",
+      "bytes": 62665,
+      "sha256": "1b653cacd96c17b3aed6ba3a92e2dae65286b7611a34cab8370979d660599450"
+    },
+    {
+      "path": "observations/increment009-six-ready-packet-preparation-v2/RESULT.json",
+      "bytes": 4643,
+      "sha256": "f5f4dbb16e3953c0f13cb2b9839d498e335a2ed0def6b6d77875771ff67a4da6"
+    },
+    {
+      "path": "observations/increment009-six-ready-packet-preparation-v2/NEW_SOURCE_OBSERVATIONS.json",
+      "bytes": 7753,
+      "sha256": "2a7dac787ed50e6bb7d7bb6ec9de361e88d9186756df662f825e040fd200f13c"
+    },
+    {
+      "path": "observations/increment009-six-ready-packet-preparation-v2/METADATA-BUDGET.json",
+      "bytes": 14966,
+      "sha256": "8c3ddfd22bb5153784b571b8ada8ac501a7433ca50d9f98b812e6fe8703f3734"
+    },
+    {
+      "path": "observations/increment009-six-ready-packet-preparation-v2/EXACT_INPUT_WHITELIST.json",
+      "bytes": 21333,
+      "sha256": "9eec957c074f30397254c04682d90dbae8ab98c03c7bd23a63a1f45bca2b0a33"
+    },
+    {
+      "path": "observations/increment009-six-ready-packet-preparation-v2/SUPPLEMENTARY_METADATA_SCOPE.json",
+      "bytes": 684,
+      "sha256": "986f73eb29a7e108d95e03fda3e94bda55c5a66d4316462e688dff891a2a842d"
+    },
+    {
+      "path": "observations/increment009-six-ready-packet-preparation-v2/INPUTS_AFTER.json",
+      "bytes": 19354,
+      "sha256": "79f391bf14cd453c2f8f2b7bcbdf85f24d2411d0228d94da6a40021f6a910ced"
+    },
+    {
+      "path": "observations/increment009-six-ready-packet-preparation-v2/READ_ONLY_COMMANDS.json",
+      "bytes": 8722,
+      "sha256": "a57e28a76b271bda2568b1d7df044d78f92a23e0d1e45ca2fcfbfafcd3d53057"
+    },
+    {
+      "path": "observations/increment009-appender-independent-candidate-review-v1.json",
+      "bytes": 6540,
+      "sha256": "5c8cded2617c89406819a7d62ae8e6dbf4f3be79332c62aaa3f36efb768ec012"
+    },
+    {
+      "path": "observations/increment009-actual-inputs-independent-candidate-review-v1/RESULT.json",
+      "bytes": 60179,
+      "sha256": "17f13f1076fc381269f79c3263fc5f032168fce47ff942efcac9b1c402ca2b17"
+    },
+    {
+      "path": "observations/read-increment009-actual-inputs-independent-candidate-v1.py",
+      "bytes": 16962,
+      "sha256": "392b685395b87d6a3e46f3347a9fb020fe13109285051c3ce0f3e46208b7b4a2"
+    },
+    {
+      "path": "observations/publish-evidence-increment-009-v1.py",
+      "bytes": 52918,
+      "sha256": "a3b2813942f8a35b3d1566ec0b918e4ea7bd675698aef4eb58cb63ad0765b58e"
+    },
+    {
+      "path": "observations/check-increment009-publisher-preparation-v1.py",
+      "bytes": 18444,
+      "sha256": "da5986206012c9674018f894df4a60cc98b88eef8e340d80d54b2117ffd36969"
+    },
+    {
+      "path": "observations/increment009-publisher-preparation-v1/CHECKS.json",
+      "bytes": 3762,
+      "sha256": "2debff8f6adb0e24b9091bbe1d7bb108fbfcef49d4d4480f24b1599250540d31"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-009a-launch-v1/REQUEST.json",
+      "bytes": 1714,
+      "sha256": "a093f14fd0c31a552df22808c92bc6a4a9f9b1c6e67e65fb94acaba9c73119fb"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-009a-launch-v1/RESULT.json",
+      "bytes": 1922,
+      "sha256": "93fc3be0eda38e4b86b591c6ac275241292cfce4535447a1c0c8dd4a92873c09"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-009a-launch-v1/stdout",
+      "bytes": 9326,
+      "sha256": "ec49fc649ea6e71c940136256bfc900fa158f85bbfa15ad6303b2fe15d792e1b"
+    },
+    {
+      "path": "observations/evidence-addendum-increment-009a-launch-v1/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observations/increment009-publication-draft-v1/README_PREPARATION.json",
+      "bytes": 1271,
+      "sha256": "7558392d76499f08018dbe6893938c5ec77072d996b64b0ee407114bedf7b65b"
+    },
+    {
+      "path": "observations/increment009-publication-draft-v1/readme-check.stdout",
+      "bytes": 23,
+      "sha256": "ebe82dad128d5e5d8936334ceac09492f3c60bd9e0b4a16cc7fd7075513b33de"
+    },
+    {
+      "path": "observations/increment009-publication-draft-v1/readme-check.stderr",
+      "bytes": 165,
+      "sha256": "1c3024b103287c406fa34c4d59c90392fdaf99d20a2669849fb3fffb948c5adf"
+    },
+    {
+      "path": "observations/increment009-publication-draft-v1/SUPPLEMENTARY_WHITESPACE.json",
+      "bytes": 7945,
+      "sha256": "addc690faff2ccd67a45e510048ae73f506b1f8cf42d855045c7b8d1f991544b"
+    },
+    {
+      "path": "observations/evidence-increment009-final-README.md",
+      "bytes": 98659,
+      "sha256": "d637132e252fdd72a1fc3600c5a269ad9dd4f7b8dd5d1361e27c51e608cf7ade"
+    },
+    {
+      "path": "observations/increment009-readme-final-preparation-v2/RESULT.json",
+      "bytes": 1582,
+      "sha256": "6881416dfb067d450e8db23ef0047e92174ac77e710792099e17d3e56ed072f4"
+    },
+    {
+      "path": "observations/increment009-readme-final-preparation-v2/commands.json",
+      "bytes": 3680,
+      "sha256": "1d1437498e7b0141c7efdeee162d1517470bf7a1984339577738c411fd7da735"
     }
   ]
 }

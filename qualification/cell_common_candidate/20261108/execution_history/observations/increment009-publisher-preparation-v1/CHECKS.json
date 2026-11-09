@@ -1,0 +1,145 @@
+{
+  "status": "STATIC_AND_PURE_NEGATIVE_CONTROLS_PASSED",
+  "started_at": "2026-11-09T12:16:03.811205+00:00",
+  "finished_at": "2026-11-09T12:16:06.915875+00:00",
+  "publisher": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/publish-evidence-increment-009-v1.py",
+    "bytes": 52918,
+    "sha256": "a3b2813942f8a35b3d1566ec0b918e4ea7bd675698aef4eb58cb63ad0765b58e"
+  },
+  "base": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/publish-evidence-increment-008-v1.py",
+    "bytes": 48175,
+    "sha256": "6efcf1bd3ca88e4334fcd273ec6adee8126512ac27b906b7e3b93e725fe89271"
+  },
+  "checker": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/check-increment009-publisher-preparation-v1.py",
+    "bytes": 18444,
+    "sha256": "da5986206012c9674018f894df4a60cc98b88eef8e340d80d54b2117ffd36969"
+  },
+  "cases": [
+    {
+      "case": "exact_six_actual_source_observations_accepted",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "retained_common_source_change_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "strict_nonzero_phase_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "app_failure_mislabeled_pass_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "app_original_overall_false_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "one_shared_app_root_cause_not_invented",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "root_child_summary_not_additional_acceptance",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "posthoc_native_execution_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "source_actions_zero_not_ci_pass",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "quiet_source_not_common_advance",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "native_integer_count_not_boolean",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "typed_integer_and_nanosecond_rounding_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "python_targeting_uses_script_argument_not_wrapper_text",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "sixteen_original_identity_transport_and_blob_guard_functions_ast_identical",
+      "passed": true,
+      "detail": [
+        "write",
+        "run",
+        "git",
+        "api",
+        "common_clean",
+        "safe_regular",
+        "blob",
+        "inventory",
+        "tree_map",
+        "index_map",
+        "git_projection",
+        "exact_changes",
+        "verify_blobs",
+        "unchanged_old",
+        "inspect_new_objects",
+        "fresh_transport_admission"
+      ]
+    },
+    {
+      "case": "unlisted_new_git_index_path_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "same_size_wrong_blob_bytes_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "historical_blob_mode_change_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "single_normal_push_and_only_exact_verifier_log_force_add",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "exact46_appender_paths_49_observations_19_supplemental_and_no_new_exemption",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "actual_pending_tree_matches46_added_paths_and_1348_baseline",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "case_count": 20,
+  "publisher_main_invoked": false,
+  "git_commands_read_only": true,
+  "new_native_tests": 0,
+  "appender_not_reexecuted": true,
+  "commit_or_push_invoked": false
+}

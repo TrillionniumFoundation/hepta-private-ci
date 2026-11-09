@@ -1,0 +1,84 @@
+[
+  {
+    "label": "find-config",
+    "argv": [
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e/node_modules/.bin/prettier",
+      "--find-config-path",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e/qualification/cell_common_candidate/20261108/execution_history/README.md"
+    ],
+    "returncode": 0,
+    "stdin_sha256": null,
+    "stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment009-readme-final-preparation-v2/find-config.stdout",
+      "bytes": 17,
+      "sha256": "695646db211464c67a788f6b88c4878f28f7944988ab846f73a2c09cb80497c3"
+    },
+    "stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment009-readme-final-preparation-v2/find-config.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "label": "format",
+    "argv": [
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e/node_modules/.bin/prettier",
+      "--stdin-filepath",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e/qualification/cell_common_candidate/20261108/execution_history/README.md"
+    ],
+    "returncode": 0,
+    "stdin_sha256": "039cc7c3969b2c36d522b1fed11c457eba84dcbc7f3946126fce3abe1b781387",
+    "stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment009-readme-final-preparation-v2/format.stdout",
+      "bytes": 98814,
+      "sha256": "861d0499bf3252f843b275fef782dc6dc5dc2aeeae612fbd3e77c57a3eaeb1a0"
+    },
+    "stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment009-readme-final-preparation-v2/format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "label": "idempotence",
+    "argv": [
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e/node_modules/.bin/prettier",
+      "--stdin-filepath",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e/qualification/cell_common_candidate/20261108/execution_history/README.md"
+    ],
+    "returncode": 0,
+    "stdin_sha256": "861d0499bf3252f843b275fef782dc6dc5dc2aeeae612fbd3e77c57a3eaeb1a0",
+    "stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment009-readme-final-preparation-v2/idempotence.stdout",
+      "bytes": 98814,
+      "sha256": "861d0499bf3252f843b275fef782dc6dc5dc2aeeae612fbd3e77c57a3eaeb1a0"
+    },
+    "stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment009-readme-final-preparation-v2/idempotence.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "label": "check",
+    "argv": [
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e/node_modules/.bin/prettier",
+      "--config",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e/.prettierrc.toml",
+      "--check",
+      "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-increment009-final-README-v2.md"
+    ],
+    "returncode": 0,
+    "stdin_sha256": null,
+    "stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment009-readme-final-preparation-v2/check.stdout",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    "stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment009-readme-final-preparation-v2/check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+]

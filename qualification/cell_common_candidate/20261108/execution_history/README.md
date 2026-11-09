@@ -1,3 +1,64 @@
+# Increment 009 — completed desktop owner records and quiet-source publication
+
+This increment preserves six completed evidence packages for frozen source **6ec5993fec3dcd6a3c569498a1d5b4c277f1c142**, tree **b0ddbe6b6f83dc42657260b266774f79c9d1ed90**, parent **45a50bffd1631d502889069fc3f713b8a5e775d8**. It extends the published 008 checkpoint at **8ca3f19c69f2f14a42aa5fbe3ff72af807c65ff2** from **87 to 93 packets**, retaining all original packet entries and bytes. The resulting **11,108 archive-member entries** include repeated provenance, receipts and readbacks. They are not unique tests or source files.
+
+The common PR head remains **bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d**, tree **f7b65a747a1d2f585be38a4665ab2b4f1b07efb6**. Its complete repository CI remains failed. The formal CURRENT remains **c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4**. S0–S5 remain **HOLD**; physical and complete-history costs remain **null**.
+
+Six packages add **1,004 member entries** and **8,125,656 compressed archive bytes**. These are storage quantities with overlap, not transfer measurements or full execution cost. Git file counts are established by the actual staged-index and committed-blob closure, not by adding archive member counts.
+
+## Completed scopes and preserved outcomes
+
+| Retained scope                            | Actual outcome                                                                                                                       | Boundary                                                                                                                                                       |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Desktop dependency and strict preparation | Nine original preparation/strict steps returned 0; original 15,010-file source inventory unchanged.                                  | Execution cutoff **09:37:11 UTC**; zero native cases in this package. Earlier desktop artifact HTTP504 and incomplete/superseded transfer observations remain. |
+| Core owning package                       | **3,827 unique PASS**,9 original ignored,0 retries/leaks/explicit early-return markers. Four required regression cases are a subset. | Completed **09:58:20 UTC**. Does not establish workspace success or the historical bf42 race mechanism.                                                        |
+| App Server owning package                 | **1,345 PASS +3 exit101 FAIL =1,348 selected**,2 original ignored,0 retries/observed leaks.                                          | Native driver/just-test/collector remain **1/100/1**. Five required cases passed individually; the original overall gate remains false.                        |
+| Agentd default owning package             | **781 unique PASS**,71 original ignored,0 retries/leaks/explicit early-return markers. Thirteen checkpoint components are a subset.  | Completed **10:39:34 UTC**. One SLOW progress classification and later output repetition do not add executions.                                                |
+| Separate Root checkpoint fixture          | **One original ignored parent case executed and passed**, four phases, real Root service and the same registered non-Root consumer.  | Completed **10:47:17 UTC**. Two libtest summaries count as one acceptance parent; this is not an ordinary-daemon learning loop.                                |
+| Posthoc diagnostics/readbacks             | Bounded original records captured/compared; observer failures and narrow corrections preserved.                                      | Zero new native executions. Existing Core, Agentd and Root counts are not added again.                                                                         |
+| Frozen source publication                 | One normal push of existing 6ec to its independent review branch, followed by Git/API source/tree/parent readback.                   | Completed **11:23:34 UTC**. Actions query returned 0 runs at that observation, neither CI success nor a future-absence claim.                                  |
+
+Host-only retention sets are **14 Core copies / 3,037,089,672 bytes**, **16 App Server copies / 2,874,949,592 bytes**, and **29 Agentd copies / 3,760,364,392 bytes**. Only metadata and original receipts are included. Executable bytes were not read or rehashed by this increment's preparation. Helper copies overlap between sets and are not unique compiled-program counts.
+
+## Exact package inventory
+
+| Packet                                                                   | Members | Compressed bytes | Original-record boundary                                                           |
+| ------------------------------------------------------------------------ | ------: | ---------------: | ---------------------------------------------------------------------------------- |
+| core-output-6ec5993-desktop-dependency-strict-history-v1                 |     198 |        1,305,748 | 184 terminal originals plus 14 capture/generated metadata members.                 |
+| core-output-6ec5993-desktop-core-native-retention-history-v1             |      64 |        1,860,496 | 46 originals plus 12 capture records and 6 generated metadata members.             |
+| core-output-6ec5993-desktop-appserver-failed-native-retention-history-v1 |      86 |        1,941,672 | Failed-owner records, 15 extracted failure payload files and retention metadata.   |
+| core-output-6ec5993-desktop-agentd-root-native-retention-history-v1      |     100 |        1,223,632 | 81 originals plus 13 preparation/capture records and 6 generated metadata members. |
+| core-output-6ec5993-desktop-posthoc-diagnostics-readback-history-v1      |     117 |          247,008 | 112 explicit originals plus 5 generated metadata members.                          |
+| core-output-6ec5993-quiet-source-publication-history-v1                  |     439 |        1,547,100 | 433 explicit terminal originals plus 6 generated metadata members.                 |
+
+Every archive has a whole-file SHA256 pin, exact member roster, size/hash/mode checks and independent member readback. Full original JSON bindings use recursive type equality; numeric zero is not silently interchangeable with false. Compact input serialization preserves complete typed objects while meeting the publication-file bound. Original member bytes and JSON formatting remain in the archives.
+
+## Failure and observation history
+
+App Server retains three actual failures: the OAuth localhost:1455 connection failure and two managed automatic-review cases whose expected wiremock counts were unmet. Bounded posthoc comparisons do not prove one shared environmental cause and do not relabel the run. The diagnostic packet includes original managed-review captures, the OAuth collector's first cardinality-assumption failure, corrected capture and both summary versions. The original JavaScript-derived timestamp rounding remains historical; the Python lossless successor preserves original nanoseconds **1794219243183664456**.
+
+Posthoc Core evidence includes the actual independent reader RESULT and execution receipt, not that reader's entire preparation/raw prefix. Agentd/Root audit records and preparation files are explicitly listed. The first archive reader's rejection of an original Summary containing "(1 slow)" remains beside its corrected readback; native cases were not rerun.
+
+The Root driver's 53 bound input references are not a claim that all 53 external files were copied into this package. Its 81-original whitelist and member roster identify retained bytes. No active /run directory, executable, whole PTY or shared target was read by sealing.
+
+Source-publication history preserves the first admission controller's integer-zero schema rejection and successor, exact final admission, all 93 command records and their stdout/stderr, 17 copied validation observations, and seven Root H/GitHub captures. It retains **13 NUL-delimited Git stdout files** only where archived commands.json supplies the same Git -z argv, size and SHA256. The discovery guard's first rejection of those valid original bytes is retained. A later independent reader initially tested a literal backslash-zero instead of a NUL byte; that observer failure, exact correction and successful successor are separate supplementary records. Neither correction executed native code or changed the archive.
+
+## Quiet source is published; common is unchanged
+
+The independent source ref is **refs/heads/codex/cell-s0-core-output-20261109-898e**, pointing to frozen **6ec5993fec3dcd6a3c569498a1d5b4c277f1c142** with the exact tree and parent above. Publication created no source commit, used one normal push and preserved source inventory/index, common head and formal CURRENT. Admission contains App Server FAIL and the first workspace controller's pre-native FAIL. That controller attempted no Cargo command or native case. Workspace-v2 outcome was not read or inferred by admission, publisher, sealers or this increment.
+
+Separate source diffs affect 19, 6 and 1 paths; the last path overlaps an earlier change. Their union relative to common is **25 paths**, not 26. Publication makes the repair directly reviewable without promoting it into common or transferring passes across source revisions.
+
+PR5397 status009-v6 is a separate metadata observation: one body PATCH, exact 9,876-byte body SHA256 **9fd94488525dfc61aecbf8fd7b0cc94d461107d7d2a413ec95232ee15698d5d0**, and before/after API captures. The PR remains open/draft at common bf42. Its **11:23:34 UTC** narrative cutoff is preserved; later metadata capture is not presented as earlier execution.
+
+## Additive evidence and exclusions
+
+Nineteen supplementary originals retain six independent packet readbacks; prior 008 publication/readback RESULT/commands pairs; the PR body observation; and source-publication sealer/reader failure-and-correction records. Prior 008 RESULT/commands links are retained, not the entire stdout/stderr directories. Hash references identify omitted raw files without claiming their bytes were copied here. Every new observation requires exact staged-index and committed-blob verification at publication, including original log/diff paths ignored by generic Git defaults.
+
+This increment excludes workspace-v2 outcomes, any d274 negative-control outcome, new Windows/Bazel execution and unprovided production learning registration/owner inputs. At input freeze (11:56:21 UTC), workspace-v2 was still running and d274 had not been executed; those states are historical observations, not assertions about publication time. It does not read active targets, execute archives, repeat native cases or change assertions, budgets, retry settings, authorities or production refusals. Earlier bf42,45a and 6ec attempts remain under immutable packet entries. The original 008 README follows byte-for-byte as historical context.
+
+---
+
 # Increment 008: retained core failure and blocked timer history
 
 This checkpoint adds four completed historical packets to the 83 packets in evidence commit `e781fbebad63968adf18cce97dd04657b3854917`. The result is **87 packets and 10,104 file-member entries, including overlaps**. Those entries are archive contents, not unique tests, tasks, experiments, improvements, or cost observations. All four archives, every enumerated file member, and 27 selected original JSON objects are bound by bytes and SHA-256. The prior 83 packet entries and bytes remain unchanged.

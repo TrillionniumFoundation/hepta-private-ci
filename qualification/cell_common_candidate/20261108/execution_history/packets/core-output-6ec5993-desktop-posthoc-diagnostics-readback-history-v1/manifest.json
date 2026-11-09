@@ -1,0 +1,1315 @@
+{
+  "packet_id": "core-output-6ec5993-desktop-posthoc-diagnostics-readback-history-v1",
+  "scope": "Posthoc managed/OAuth diagnostic and independent records-reader history, including observer failures and lossless timestamp correction; zero native execution",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-posthoc-diagnostics-readback-history-v1/core-output-6ec5993-desktop-posthoc-diagnostics-readback-history-v1.tar.xz",
+  "bytes": 247008,
+  "sha256": "bc76222d16adcfeaab2d3a745fd8bfeb67164c82b5ef28bf3f8963896c3eed03",
+  "file_member_count": 117,
+  "required_json_members": [
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 14358,
+      "sha256": "a3421d5496b84bbaaa59e3dc349b2ce82efcc26b58d0d82acf6117ab8c3a981c",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "active_workspace_and_source_publication_excluded": true,
+            "agentd_Root_independent_audit_full_explicit10output_plus5preparation_closure": true,
+            "agentd_Root_readback_v1_rejection_preserved": "Exact text expected781passed without actual1slow annotation; whole member verification had already succeeded; no native failure inferred",
+            "agentd_Root_readback_v2_change": "Only exact known Summary text plus fresh outputprefix; no extra native execution",
+            "all_appserver_failures_assigned_one_environment_cause": false,
+            "complete_execution_history": false,
+            "complete_history_cost_known": false,
+            "core_and_agentd_and_Root_counts_not_added_again": true,
+            "core_independent_subset_boundary": "Only original RESULT and EXECUTION JSON included; not claimed as entire core reader preparation/raw history",
+            "exact_original_paths": [
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_1_approved.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_10_app_reviewer_noncanonical_id.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_11_app_reviewer_spoofed_id.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_12_app_reviewer_spoofed_action.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_13_app_reviewer_missing_call_id.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_14_app_default_reviewer_user.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_15_persistent.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_2_approve_for_me.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_3_never.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_4_full_access.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_5_three_denials_interrupt.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_6_guardian_disabled.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_7_managed_guardian_disabled.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_8_managed_reviewer_forbidden.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_9_app_reviewer_user.log",
+              "core-output-6ec-appserver-managed-review-comparison-v1/config-build.stderr",
+              "core-output-6ec-appserver-managed-review-comparison-v1/config-build.stdout",
+              "core-output-6ec-appserver-managed-review-comparison-v1/initialize-owner.stderr",
+              "core-output-6ec-appserver-managed-review-comparison-v1/initialize-owner.stdout",
+              "core-output-6ec-appserver-managed-review-comparison-v1/RAW_CASE_BLOCKS.json",
+              "core-output-6ec-appserver-managed-review-comparison-v1/RESULT.json",
+              "core-output-6ec-appserver-managed-review-comparison-v1/review-config.stderr",
+              "core-output-6ec-appserver-managed-review-comparison-v1/review-config.stdout",
+              "core-output-6ec-appserver-managed-review-comparison-v1/STRICT_REVIEW_CASES.json",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/mcp_server_elicitation.rs",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-00.log",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-01.log",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-02.log",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-03.log",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-04.log",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-05.log",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-06.log",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-07.log",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-08.log",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-09.log",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/RESULT.json",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/test_case_7_managed_guardian_disabled.json",
+              "core-output-6ec-appserver-managed-review-diagnosis-v1/test_case_8_managed_reviewer_forbidden.json",
+              "core-output-6ec5993-desktop-agentd-root-history-independent-verification-v1/H_PTY_READ_ORIGINAL.json",
+              "core-output-6ec5993-desktop-agentd-root-history-independent-verification-v1/RESULT.json",
+              "core-output-6ec5993-desktop-agentd-root-history-independent-verification-v1/v1-to-v2.patch",
+              "core-output-6ec5993-desktop-agentd-root-history-independent-verification-v2/RESULT.json",
+              "core-output-6ec5993-desktop-agentd-root-independent-v1/H_LAUNCH_ORIGINAL.json",
+              "core-output-6ec5993-desktop-agentd-root-independent-v1/H_LOG_READ_ORIGINAL.json",
+              "core-output-6ec5993-desktop-agentd-root-independent-v1/H_STATUS_ORIGINAL.json",
+              "core-output-6ec5993-desktop-agentd-root-independent-v1/JUNIT_CASES.json",
+              "core-output-6ec5993-desktop-agentd-root-independent-v1/LEAK_AND_EXPLICIT_SKIP.json",
+              "core-output-6ec5993-desktop-agentd-root-independent-v1/NONPASS_CASES.json",
+              "core-output-6ec5993-desktop-agentd-root-independent-v1/RAW_EXECUTED_CASES.json",
+              "core-output-6ec5993-desktop-agentd-root-independent-v1/RESULT.json",
+              "core-output-6ec5993-desktop-agentd-root-independent-v1/RETENTION_LAUNCH_READBACK.json",
+              "core-output-6ec5993-desktop-agentd-root-independent-v1/ROOT_FIXTURE_READBACK.json",
+              "core-output-6ec5993-desktop-terminal-independent-outer-v1/EXECUTION.json",
+              "core-output-6ec5993-desktop-terminal-independent-v1/RESULT.json",
+              "desktop-6ec-agentd-root-history-seal-outer-v1/REQUEST.json",
+              "desktop-6ec-agentd-root-history-seal-outer-v1/RESULT.json",
+              "desktop-6ec-agentd-root-history-seal-outer-v1/stderr.log",
+              "desktop-6ec-agentd-root-history-seal-outer-v1/stdout.log",
+              "desktop-6ec-agentd-root-readback-request-v1.json",
+              "desktop-6ec-agentd-root-reader-independent-candidate-review-v1.json",
+              "desktop-6ec-oauth-serial-bounded-diagnosis-v1.json",
+              "desktop-6ec-oauth-serial-bounded-diagnosis-v2.json",
+              "desktop-6ec-oauth-serial-capture-v1-h-process-status-original.json",
+              "desktop-6ec-oauth-serial-capture-v2-h-process-status-original.json",
+              "desktop-6ec-oauth-serial-readonly-v1/RESULT.json",
+              "desktop-6ec-oauth-serial-readonly-v1/source/codex-rs/.config/nextest.toml",
+              "desktop-6ec-oauth-serial-readonly-v1/source/codex-rs/app-server/tests/suite/v2/account.rs",
+              "desktop-6ec-oauth-serial-readonly-v1/source/codex-rs/Cargo.lock",
+              "desktop-6ec-oauth-serial-readonly-v1/source/codex-rs/login/src/server.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/case-observation-candidates.json",
+              "desktop-6ec-oauth-serial-readonly-v2/cases/login_account_chatgpt_includes_forced_workspace_allowlist_query_param.json",
+              "desktop-6ec-oauth-serial-readonly-v2/cases/login_account_chatgpt_includes_forced_workspace_query_param.json",
+              "desktop-6ec-oauth-serial-readonly-v2/cases/login_account_chatgpt_redirects_to_hosted_success_page.json",
+              "desktop-6ec-oauth-serial-readonly-v2/cases/login_account_chatgpt_start_can_be_cancelled.json",
+              "desktop-6ec-oauth-serial-readonly-v2/cases/login_account_chatgpt_uses_debug_oauth_overrides.json",
+              "desktop-6ec-oauth-serial-readonly-v2/cases/set_auth_token_cancels_active_chatgpt_login.json",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test_derive-3.5.0/.cargo_vcs_info.json",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test_derive-3.5.0/Cargo.toml",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test_derive-3.5.0/Cargo.toml.orig",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test_derive-3.5.0/README.md",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test_derive-3.5.0/src/lib.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/.cargo_vcs_info.json",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/Cargo.toml",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/Cargo.toml.orig",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/README.md",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/code_lock.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/file_lock.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/lib.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/parallel_code_lock.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/parallel_file_lock.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/rwlock.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/serial_code_lock.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/serial_file_lock.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/tests/tests.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/native-result-original.json",
+              "desktop-6ec-oauth-serial-readonly-v2/prior-capture-failure-original.json",
+              "desktop-6ec-oauth-serial-readonly-v2/raw-observation-candidates.json",
+              "desktop-6ec-oauth-serial-readonly-v2/registry-search.stderr",
+              "desktop-6ec-oauth-serial-readonly-v2/registry-search.stdout",
+              "desktop-6ec-oauth-serial-readonly-v2/RESULT.json",
+              "desktop-6ec-oauth-serial-readonly-v2/source/codex-rs/.config/nextest.toml",
+              "desktop-6ec-oauth-serial-readonly-v2/source/codex-rs/app-server/tests/suite/v2/account.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/source/codex-rs/Cargo.lock",
+              "desktop-6ec-oauth-serial-readonly-v2/source/codex-rs/login/src/server.rs",
+              "desktop-6ec-oauth-serial-readonly-v2/tests-execution-original.json",
+              "read-desktop-6ec-agentd-root-terminal-core-delta-v1.patch",
+              "read-desktop-6ec-agentd-root-terminal-static-v1.json",
+              "read-desktop-6ec-agentd-root-terminal-v1.py",
+              "read-desktop-6ec-oauth-serial-evidence-v1.py",
+              "read-desktop-6ec-oauth-serial-evidence-v2.py",
+              "verify-desktop-6ec-agentd-root-sealed-history-v1.py",
+              "verify-desktop-6ec-agentd-root-sealed-history-v2.py"
+            ],
+            "full_history_cost": null,
+            "groups": {
+              "agentd_Root_archive_readback_two_versions_and_failure": 6,
+              "agentd_Root_independent_audit_outputs": 10,
+              "agentd_Root_independent_audit_preparation_and_review": 5,
+              "agentd_Root_seal_outer_records": 4,
+              "managed_diagnosis_and_comparison_original_prefixes": 38,
+              "oauth_original_capture_v1_and_v2_prefixes": 41,
+              "original_candidate_standalone_refs": 8
+            },
+            "host": "desktop",
+            "kind": "explicit_posthoc_diagnostics_readback_and_retained_observer_errors",
+            "managed_case_count15_is_comparison_rows_not15new_tests": true,
+            "managed_root_cause_proven": false,
+            "new_tests_or_builds_executed_by_sealer": 0,
+            "no_product_success_inferred_from_archiving_or_observation_success": true,
+            "no_source_common_CURRENT_or_evidence_branch_changes": true,
+            "no_source_target_executable_or_whole_PTY_reads": true,
+            "oauth_capture_v1_failure_preserved": "Read-only cardinality assumption failed, not a native test failure",
+            "oauth_derived_v1_integer_precision_issue_preserved": "Derived JSON Number rounding did not change originals; v2 uses Python to preserve original typed refs",
+            "oauth_lossless_v2_conclusion": {
+              "actual_http_cancel_observed": false,
+              "actual_listener_close_cause": "unknown",
+              "actual_listener_pid": "unknown",
+              "exact_socket_resolution_or_disconnect_trace": "not recorded",
+              "not_claimed": [
+                "No production login defect proven by this bounded evidence.",
+                "No new passing run, root cause reproduction, port change, config change, or lock change.",
+                "No implication for the other two app-server failures."
+              ],
+              "safe_claim": "The local-profile fixture serialization premise is false across Nextest test processes. Overlap plus the existing cancel-on-bind-conflict path explains a plausible mechanism for the observed refusal but does not prove which listener closed or that /cancel caused this failure.",
+              "specific_cancelling_case": "unknown",
+              "static_fixture_isolation_gap_confirmed": true
+            },
+            "old_failed_native_and_failed_observers_not_rewritten": true,
+            "original_agentd_Root_native_status_remains_PASS": true,
+            "original_appserver_counts": {
+              "failed": 3,
+              "ignored": 2,
+              "passed": 1345,
+              "selected": 1348
+            },
+            "original_appserver_native_status_remains_FAIL": true,
+            "original_core_native_status_remains_PASS": true,
+            "original_file_count": 112,
+            "original_native_records_and_execution_scope_live_in_separate_packets": true,
+            "overlap": "Original diagnostic excerpts, recorded source-text copies, summaries and independent readers overlap existing native packets. They add zero test executions and do not establish complete cost.",
+            "packet_id": "core-output-6ec5993-desktop-posthoc-diagnostics-readback-history-v1",
+            "physical_cost": null,
+            "root_parent_one_child_summary_not_additional": true,
+            "schema_version": 1,
+            "scientific_acceptance": false,
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_text_copies_are_existing_completed_diagnostic_inputs_only": true,
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "stages": {
+              "S0": "HOLD",
+              "S1": "HOLD",
+              "S2": "HOLD",
+              "S3": "HOLD",
+              "S4": "HOLD",
+              "S5": "HOLD"
+            },
+            "started_at": "2026-11-09T11:24:27.167974+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-independent-v1/ROOT_FIXTURE_READBACK.json",
+      "bytes": 6233,
+      "sha256": "99e0802e2c64f17b438c39b1da2a19de79712c1fd6fee3a5ad789485600990d1",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "status": "ROOT_ORIGINAL_RECORDS_INDEPENDENTLY_VERIFIED",
+            "original_result_status": "PASS",
+            "original_test_exit": 0,
+            "original_wrapper_exit": 0,
+            "original_outer_exit": 0,
+            "actual_parent_cases": 1,
+            "raw_libtest_summary_count": 2,
+            "child_summaries_are_additional_acceptance_cases": false,
+            "wrapper_observed_two_is_not_acceptance_count": true,
+            "identity_markers": {
+              "python_root_runner_pid": 697940,
+              "python_root_runner_uid": 0,
+              "native_root_pid": 697951,
+              "native_root_uid": 0,
+              "registered_consumer_pid": 697953,
+              "registered_consumer_uid": 60001,
+              "source": "original fixture assertions and exact original-test.log identity markers",
+              "parent_cases_counted": 1,
+              "child_libtest_summaries_counted_as_extra_cases": false
+            },
+            "actual_logged_phases": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "test_owned_mount_and_cleanup": {
+              "mount_created": true,
+              "unmounted": true,
+              "cleanup_complete": true,
+              "mount_exit": 0,
+              "umount_exit": 0,
+              "bind_identity": {
+                "device": 28,
+                "inode": 4484231
+              }
+            },
+            "owning_membership": {
+              "status": "VERIFIED_MEMBERSHIP_ONLY",
+              "whole_agentd_selected_count": 781,
+              "whole_agentd_original_ignored_count": 71,
+              "whole_agentd_unselected_count": 0,
+              "fresh_xml_executed_count": 781,
+              "fresh_xml_original_ignored_count": 0,
+              "checkpoint_components": [
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::profile_tests::both_no_update_paths_keep_the_frozen_profile_and_full_parent_after_cold_reopen",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::profile_tests::changed_frozen_profile_cannot_restore_or_replace_the_original_checkpoint",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::profile_tests::previous_codec_version_is_refused_without_repair_or_append",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::tests::each_checkpoint_reopens_and_exact_retry_performs_no_second_cas",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::tests::foreign_owner_request_skipped_stage_and_divergent_successor_leave_current_unchanged",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::tests::malformed_counts_strings_tags_and_truncated_checkpoints_are_rejected",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::tests::maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::tests::valid_json_with_corrupt_protected_record_metadata_is_never_restored",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::tests::write_failure_and_lost_ack_reconcile_original_record_without_reexecution",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::transport::tests::before_send_contention_does_not_claim_commit_or_break_the_inflight_call",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::transport::tests::maximum_snapshots_fit_complete_frames_and_wrong_scope_never_changes_cas",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::transport::tests::missing_or_foreign_ack_closes_the_client_without_an_automatic_retry",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::transport::tests::oversize_malformed_and_unknown_scope_fields_leave_original_cas_bytes_unchanged",
+                  "result": "PASS"
+                }
+              ],
+              "checkpoint_components_are_subset_not_new_executions": true,
+              "root_case_discovered_ignored": {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack"
+              },
+              "root_case_was_executed_by_default_owning_run": false,
+              "lib_binary": {
+                "binary_id": "codex-hepta-agentd",
+                "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/target-ci-test-6ec5993-fresh/ci-test/deps/codex_hepta_agentd-086aa0f6fbbc4f00",
+                "bytes": 247442464,
+                "sha256": "7e4a2646f586339f7afd918ef803ce0425faf17ae948e985b326bed367de7d04",
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/codex-rs/hepta-agentd",
+                "package_id": "path+file:///home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0"
+              }
+            },
+            "bound_original_records_count": 53,
+            "scope": "test-only registered Root/non-Root checkpoint transport; four logged phases",
+            "source_files_sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+            "native_binary_metadata": {
+              "binary_id": "codex-hepta-agentd",
+              "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/target-ci-test-6ec5993-fresh/ci-test/deps/codex_hepta_agentd-086aa0f6fbbc4f00",
+              "bytes": 247442464,
+              "sha256": "7e4a2646f586339f7afd918ef803ce0425faf17ae948e985b326bed367de7d04",
+              "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/codex-rs/hepta-agentd",
+              "package_id": "path+file:///home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0"
+            },
+            "binary_or_live_root_directory_opened_by_reader": false,
+            "production_registration": false,
+            "ordinary_daemon": false,
+            "scientific_acceptance": false,
+            "full_history_cost": null,
+            "physical_cost": null,
+            "all_final_input_records_unchanged": true
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-bounded-diagnosis-v2.json",
+      "bytes": 15004,
+      "sha256": "61bfa4bd044a2545dcb4bc8c88e93ffc7f77722fd72218c5e5e35ae069998a2c",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "schema_version": 1,
+            "status": "BOUNDED_READONLY_DIAGNOSIS_COMPLETE",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "tests_executed": false,
+            "native_commands_executed": 0,
+            "target_or_native_executable_read": false,
+            "source_modified": false,
+            "native_execution_status": "FAIL",
+            "native_driver_returncode": 1,
+            "native_test_returncode": 100,
+            "capture": {
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-oauth-serial-readonly-v2/RESULT.json",
+              "bytes": 32987,
+              "sha256": "0a089fb3753ec0d0938ef4694d63085d018d1e3dfeb596bc39cd3cc169d80bd9",
+              "job_id": "1a1bfe18791-5e21-79b",
+              "exit_code": 0,
+              "source_and_inputs_unchanged": true
+            },
+            "prior_capture_failure": {
+              "pin": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-oauth-serial-readonly-v1/RESULT.json",
+                "bytes": 2631,
+                "sha256": "acbc9274a3b6989a11d132c04d39e50cb585dbf22470fce2d66d59a1be3b3ae9",
+                "device": 2050,
+                "inode": 6867472,
+                "mode": 384,
+                "mtime_ns": 1794220321263215910,
+                "ctime_ns": 1794220321263215910
+              },
+              "cause": "Capture v1 incorrectly assumed exactly three serial(login_port) attributes in the full account.rs; actual exact source has six. Failure occurred before raw/XML/dependency reads. No native command was run."
+            },
+            "exact_original_refs": {
+              "execution": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-appserver-owning-v1/tests.json",
+                "bytes": 1940,
+                "sha256": "a40a8ccabebe852d6c8c96afff519ec46d29f7dd954d57d578e299593b819ba4",
+                "device": 2050,
+                "inode": 6218174,
+                "mode": 384,
+                "mtime_ns": 1794219243492396197,
+                "ctime_ns": 1794219243496655765
+              },
+              "raw": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-appserver-owning-v1/tests.json.e7a9926632e54aa4933eabd664c044ab.log",
+                "bytes": 17874160,
+                "sha256": "660a217001be92a589b4f970e858562bd420d218229eee18420263dda885a358",
+                "device": 2050,
+                "inode": 6217968,
+                "mode": 384,
+                "mtime_ns": 1794219243183664456,
+                "ctime_ns": 1794219243183664456
+              },
+              "xml": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-appserver-owning-v1/original-fresh-junit.xml",
+                "bytes": 309339,
+                "sha256": "e5f468288c35dfdad4a16143c0ca062b09e98ce0aceadcb017d42de1574a590e",
+                "device": 2050,
+                "inode": 6217967,
+                "mode": 384,
+                "mtime_ns": 1794219251727257167,
+                "ctime_ns": 1794219251727257167
+              },
+              "native_result": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-appserver-owning-v1/RESULT.json",
+                "bytes": 15846,
+                "sha256": "13b3cccf9810909254acf5f42616c2dd47eaf8a1d06ef820f60a5fe35ba6f7a8",
+                "device": 2050,
+                "inode": 6218196,
+                "mode": 384,
+                "mtime_ns": 1794219259349529649,
+                "ctime_ns": 1794219259349529649
+              }
+            },
+            "verified_static_findings": [
+              {
+                "id": "S1",
+                "finding": "serial_test 3.5.0 #[serial(login_port)] serializes through an in-process lock table, not an interprocess lock.",
+                "source": [
+                  {
+                    "path": "dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test_derive-3.5.0/src/lib.rs",
+                    "sha256": "999fb7c3fe4c0bf633a13b822ae50019abe5045704cf314524ec1c0667139d27",
+                    "lines": [
+                      107,
+                      108,
+                      424,
+                      430,
+                      541,
+                      556
+                    ],
+                    "explanation": "serial delegates to local prefix; an async Result function is wrapped in local_async_serial_core_with_return."
+                  },
+                  {
+                    "path": "dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/serial_code_lock.rs",
+                    "sha256": "dd42f561fed2b3c9cdc25bacb6a5781a7aa81d768146c684d1327c2ad80c73ab",
+                    "lines": [
+                      3,
+                      20,
+                      40,
+                      48
+                    ],
+                    "explanation": "Acquire locks from global_locks and hold guards across future."
+                  },
+                  {
+                    "path": "dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/code_lock.rs",
+                    "sha256": "857ad5973cc2c71d09a83dfc61dcb8a92223b36db9d0ca8c2d9698addb3cddb6",
+                    "lines": [
+                      16,
+                      24,
+                      83,
+                      89
+                    ],
+                    "explanation": "static OnceCell<LockMap> backed by a Mutex<HashMap>; no file locking on this path."
+                  },
+                  {
+                    "path": "dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/lib.rs",
+                    "sha256": "028220a919afee6947bc4d3a14d4afa06a04f35177dae638be18334bdb98e707",
+                    "lines": [
+                      34,
+                      37
+                    ],
+                    "explanation": "Dependency docs explicitly distinguish file_serial for separate processes."
+                  }
+                ]
+              },
+              {
+                "id": "S2",
+                "finding": "The six fixed-port account fixtures rely on serial(login_port), while the actual selected local Nextest profile allows four app-server integration cases concurrently. This does not supply the intended cross-process fixture exclusion.",
+                "source": [
+                  {
+                    "path": "codex-rs/app-server/tests/suite/v2/account.rs",
+                    "sha256": "382a74c3cc7decd4c2299772ab52766b84d00bf19585cf3b15a060e7ebdf9d8b",
+                    "attribute_lines": [
+                      2281,
+                      2341,
+                      2384,
+                      2485,
+                      2544,
+                      2576
+                    ]
+                  },
+                  {
+                    "path": "codex-rs/.config/nextest.toml",
+                    "sha256": "63f832eabf890a5f3cd7c0e4ee1856b1ca99d4db8952de71b81282265668dc8c",
+                    "lines": [
+                      23,
+                      29,
+                      53,
+                      63
+                    ],
+                    "explanation": "Default integration group max1; local override selects separate max4 group. Original executed command used --profile local --test-threads 4."
+                  }
+                ]
+              },
+              {
+                "id": "S3",
+                "finding": "The callback URL is built after a successful bind. On AddrInUse, bind_server may send HTTP GET /cancel to the existing preferred port before retrying; the server handles /cancel by exiting. This is a possible interference path, not proof it occurred in this run.",
+                "source": [
+                  {
+                    "path": "codex-rs/login/src/server.rs",
+                    "sha256": "59ea616627e40ba9682eab03b4c3d57ecbdc66557f188d354fbf6dee0ec1d6ea",
+                    "lines": [
+                      159,
+                      184,
+                      247,
+                      261,
+                      286,
+                      305,
+                      520,
+                      527,
+                      620,
+                      695
+                    ],
+                    "explanation": "DEFAULT=1455; FALLBACK=1457; initial cancellation precedes fallback. Only failed cancellation sends have an explicit eprintln at663."
+                  }
+                ]
+              }
+            ],
+            "original_execution_observations": {
+              "case_intervals": {
+                "login_account_chatgpt_start_can_be_cancelled": {
+                  "attributes": {
+                    "name": "suite::v2::account::login_account_chatgpt_start_can_be_cancelled",
+                    "classname": "codex-app-server::all",
+                    "timestamp": "2026-11-09T05:07:26.258-05:00",
+                    "time": "1.437"
+                  },
+                  "start_utc": "2026-11-09T10:07:26.258000+00:00",
+                  "end_utc": "2026-11-09T10:07:27.695000+00:00",
+                  "failed": false
+                },
+                "login_account_chatgpt_uses_debug_oauth_overrides": {
+                  "attributes": {
+                    "name": "suite::v2::account::login_account_chatgpt_uses_debug_oauth_overrides",
+                    "classname": "codex-app-server::all",
+                    "timestamp": "2026-11-09T05:07:26.802-05:00",
+                    "time": "0.594"
+                  },
+                  "start_utc": "2026-11-09T10:07:26.802000+00:00",
+                  "end_utc": "2026-11-09T10:07:27.396000+00:00",
+                  "failed": false
+                },
+                "login_account_chatgpt_redirects_to_hosted_success_page": {
+                  "attributes": {
+                    "name": "suite::v2::account::login_account_chatgpt_redirects_to_hosted_success_page",
+                    "classname": "codex-app-server::all",
+                    "timestamp": "2026-11-09T05:07:26.201-05:00",
+                    "time": "0.823"
+                  },
+                  "start_utc": "2026-11-09T10:07:26.201000+00:00",
+                  "end_utc": "2026-11-09T10:07:27.024000+00:00",
+                  "failed": true
+                },
+                "set_auth_token_cancels_active_chatgpt_login": {
+                  "attributes": {
+                    "name": "suite::v2::account::set_auth_token_cancels_active_chatgpt_login",
+                    "classname": "codex-app-server::all",
+                    "timestamp": "2026-11-09T05:07:29.915-05:00",
+                    "time": "0.872"
+                  },
+                  "start_utc": "2026-11-09T10:07:29.915000+00:00",
+                  "end_utc": "2026-11-09T10:07:30.787000+00:00",
+                  "failed": false
+                },
+                "login_account_chatgpt_includes_forced_workspace_query_param": {
+                  "attributes": {
+                    "name": "suite::v2::account::login_account_chatgpt_includes_forced_workspace_query_param",
+                    "classname": "codex-app-server::all",
+                    "timestamp": "2026-11-09T05:07:26.102-05:00",
+                    "time": "0.699"
+                  },
+                  "start_utc": "2026-11-09T10:07:26.102000+00:00",
+                  "end_utc": "2026-11-09T10:07:26.801000+00:00",
+                  "failed": false
+                },
+                "login_account_chatgpt_includes_forced_workspace_allowlist_query_param": {
+                  "attributes": {
+                    "name": "suite::v2::account::login_account_chatgpt_includes_forced_workspace_allowlist_query_param",
+                    "classname": "codex-app-server::all",
+                    "timestamp": "2026-11-09T05:07:25.711-05:00",
+                    "time": "0.547"
+                  },
+                  "start_utc": "2026-11-09T10:07:25.711000+00:00",
+                  "end_utc": "2026-11-09T10:07:26.258000+00:00",
+                  "failed": false
+                }
+              },
+              "interval_semantics": "XML timestamps retain their -05:00 offset and are normalized to UTC; end is timestamp + reported rounded duration. These are case/process execution intervals, not measured lock-holding or listener lifetimes.",
+              "exact_overlap": "The failed hosted-success case overlaps four other marked cases: start_can_be_cancelled, uses_debug_oauth_overrides, includes_forced_workspace_query_param, includes_forced_workspace_allowlist_query_param. set_auth_token_cancels_active_chatgpt_login starts later and does not overlap.",
+              "failed_case_evidence": {
+                "path": "cases/login_account_chatgpt_redirects_to_hosted_success_page.json",
+                "bytes": 3944,
+                "sha256": "d6c4f988e68d73ade98dca01ab29e74798223fb779ce4510134ef05ba3c45f68",
+                "failure_type": "test failure with exit code 101",
+                "observed": [
+                  "account/login/start returned authUrl with redirect_uri=http://localhost:1455/auth/callback.",
+                  "The subsequent direct callback request failed with Connect -> tcp connect error -> Connection refused (os error 111)."
+                ],
+                "source_lines": [
+                  2411,
+                  2443
+                ],
+                "later_assertions_reached": false
+              },
+              "raw_search": {
+                "whole_raw_bytes": 17874160,
+                "whole_raw_sha256": "660a217001be92a589b4f970e858562bd420d218229eee18420263dda885a358",
+                "cancel_substring_hits": 4,
+                "cancel_hit_lines": [
+                  5653,
+                  5784,
+                  5807,
+                  6160
+                ],
+                "cancel_interpretation": "All four hits are JSON-RPC account/login/cancel writes from test clients; none records an HTTP GET /cancel. No 'Failed to cancel previous login server' or 'Login cancelled' line was present.",
+                "pid_pattern_hits": 21,
+                "pid_interpretation": "All 21 pattern hits are test names containing process_id/process_ids; none identifies an OAuth test/server PID or listener owner.",
+                "listener_interpretation": "The bounded full-raw listener/bind search has no login listener identity, successful bind/cancel trace, or 1457 fallback message; unrelated thread/listener test and trace messages do not establish OAuth causation.",
+                "per_case_xml_interpretation": "The six exact XML nodes contain no cancellation, listener, or PID markers. Passing case XML does not retain its successful output here; the full merged raw was separately searched."
+              }
+            },
+            "conclusion": {
+              "static_fixture_isolation_gap_confirmed": true,
+              "actual_http_cancel_observed": false,
+              "actual_listener_close_cause": "unknown",
+              "specific_cancelling_case": "unknown",
+              "actual_listener_pid": "unknown",
+              "exact_socket_resolution_or_disconnect_trace": "not recorded",
+              "safe_claim": "The local-profile fixture serialization premise is false across Nextest test processes. Overlap plus the existing cancel-on-bind-conflict path explains a plausible mechanism for the observed refusal but does not prove which listener closed or that /cancel caused this failure.",
+              "not_claimed": [
+                "No production login defect proven by this bounded evidence.",
+                "No new passing run, root cause reproduction, port change, config change, or lock change.",
+                "No implication for the other two app-server failures."
+              ]
+            },
+            "primary_documentation": [
+              {
+                "url": "https://docs.rs/serial_test/3.5.0/serial_test/",
+                "claim": "Versioned docs separate in-process serial from file_serial for separate processes."
+              },
+              {
+                "url": "https://nexte.st/docs/design/how-it-works/",
+                "claim": "Nextest executes each selected test in a separate process."
+              },
+              {
+                "url": "https://nexte.st/docs/configuration/test-groups/",
+                "claim": "Process-per-test execution cannot share in-process mutexes; test groups can constrain concurrency."
+              }
+            ],
+            "full_history_cost": null,
+            "scientific_acceptance": false,
+            "all_stages_remain_hold": true,
+            "metadata_precision_correction": {
+              "prior_summary_preserved": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-oauth-serial-bounded-diagnosis-v1.json",
+                "bytes": 13714,
+                "sha256": "5d1b3560191924e62a157b0a69992c6cdd2db4d9bb9984a02e8e37b522682858",
+                "device": 2050,
+                "inode": 4907366,
+                "mode": 384,
+                "mtime_ns": 1794220803468648349,
+                "ctime_ns": 1794220803569252992
+              },
+              "issue": "Derived v1 was serialized through JavaScript Number and rounded nanosecond integer fields. The original capture bytes did not change.",
+              "method": "Python json.loads of the pinned original capture, direct replacement of the two copied pin subobjects, and json.dumps without a JavaScript Number round-trip.",
+              "conclusions_unchanged": true,
+              "raw_source_native_or_dependency_reads_performed_by_correction": false,
+              "original_capture": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-oauth-serial-readonly-v2/RESULT.json",
+                "bytes": 32987,
+                "sha256": "0a089fb3753ec0d0938ef4694d63085d018d1e3dfeb596bc39cd3cc169d80bd9",
+                "device": 2050,
+                "inode": 5827636,
+                "mode": 384,
+                "mtime_ns": 1794220598311082874,
+                "ctime_ns": 1794220598311082874
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "nul_delimited_git_stdout": [],
+  "file_members": [
+    {
+      "path": "metadata/INPUTS_AFTER_BEFORE_ARCHIVE.json",
+      "bytes": 46018,
+      "sha256": "d7991b8b10b5d741716caad6d0d05099cd9813f477ab56df4329ace7dcb062b3"
+    },
+    {
+      "path": "metadata/INPUTS_BEFORE.json",
+      "bytes": 46018,
+      "sha256": "d7991b8b10b5d741716caad6d0d05099cd9813f477ab56df4329ace7dcb062b3"
+    },
+    {
+      "path": "metadata/OBSERVATIONS.json",
+      "bytes": 27509,
+      "sha256": "186828ac5cd7db617ded2c90fc220d4addee393717bb9aa703001ba75437841c"
+    },
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 14358,
+      "sha256": "a3421d5496b84bbaaa59e3dc349b2ce82efcc26b58d0d82acf6117ab8c3a981c"
+    },
+    {
+      "path": "metadata/sealer.py",
+      "bytes": 42515,
+      "sha256": "d98af81522588a19e9c80040ca69717953d05377e8d67db53c272147f55c288e"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/RAW_CASE_BLOCKS.json",
+      "bytes": 434136,
+      "sha256": "67dd1bad2a6fc8b9ecc93e5d4ce53145b460d9272555bff35baec5c7325dd037"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/RESULT.json",
+      "bytes": 10681,
+      "sha256": "894a99d0b507db02c9a83f93899c96716efb8a9753d23401eb964d0003a8f6f8"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/STRICT_REVIEW_CASES.json",
+      "bytes": 9366,
+      "sha256": "45f279df0be405e7644554a73cfebf1c3799a19ec995644432d89bb663efcc07"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_10_app_reviewer_noncanonical_id.log",
+      "bytes": 23919,
+      "sha256": "ae6c3f582a03e36afbdbad8962b86c37c943cd1349b74f80f8ad53592904b6d1"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_11_app_reviewer_spoofed_id.log",
+      "bytes": 23909,
+      "sha256": "bc9c385fcdea980b0e426bd0184d6ee7a037e5469be7521e18203f7ae58a489a"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_12_app_reviewer_spoofed_action.log",
+      "bytes": 23865,
+      "sha256": "0b7297d4c2aa57a4e5dbaf6e993214257079cd66eaa3790697fec3fa24bac555"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_13_app_reviewer_missing_call_id.log",
+      "bytes": 23867,
+      "sha256": "276e79d5bb281baae13354a32b5a67f13e98c3772bc096ab9a0158b8dd16ea85"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_14_app_default_reviewer_user.log",
+      "bytes": 23913,
+      "sha256": "5b0989d0168cab7e114fdb5874aa038794e24397d66db26d449b49f963efea31"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_15_persistent.log",
+      "bytes": 23831,
+      "sha256": "b3187f350c8decb5f3d8616dbd63eb159b4f1257c7e16ef58f4fc6123134be1b"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_1_approved.log",
+      "bytes": 43843,
+      "sha256": "713d0c81d31a52ff029b39e362cf7ce1383c1853bd841aedc7e5fd0e155baf14"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_2_approve_for_me.log",
+      "bytes": 29647,
+      "sha256": "28e00c5a3f82f0d7768d5b524504657e82f0fdfbfed8a262dd0129572527423b"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_3_never.log",
+      "bytes": 27732,
+      "sha256": "7019a5d1292545a0f912c4afdcbe90f64ee53ce1266772bd1173a87decc8d609"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_4_full_access.log",
+      "bytes": 27749,
+      "sha256": "76554f7c5038da82d03d1a3fcdb1d5dcfbaf5a13b196c9fdd4df813fb752cbc6"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_5_three_denials_interrupt.log",
+      "bytes": 36553,
+      "sha256": "f7bbdc672013ca978477072465067c9ed73e86ffcece29842aec0f385bc81aa3"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_6_guardian_disabled.log",
+      "bytes": 23844,
+      "sha256": "fedeb14aff5c90603f33db2e1d4bcd81b6e3d219379f51bb5e3cc83848abe13b"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_7_managed_guardian_disabled.log",
+      "bytes": 1588,
+      "sha256": "3eb4d9505e4a96aa1ca8540d58109e25c4e81c564d10aa8b2a8ddb7625d7f0a0"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_8_managed_reviewer_forbidden.log",
+      "bytes": 1673,
+      "sha256": "6bfa8bbe5d7b232426bdd6e3d51f5b42eeca7e4714423d1e4815369753022e88"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/case-test_case_9_app_reviewer_user.log",
+      "bytes": 23896,
+      "sha256": "5385c43f516881693b8f5907ac1b8d033e0ef90e643b1002b387731c6252ca81"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/config-build.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/config-build.stdout",
+      "bytes": 3500,
+      "sha256": "1116567697452b36acc4c848f5081871092b3141e1404fbdbc088cc4c764363e"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/initialize-owner.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/initialize-owner.stdout",
+      "bytes": 9634,
+      "sha256": "429f4cae07556821817db317b8221332c31adb3c68590162f88d61b48fb155ce"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/review-config.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-comparison-v1/review-config.stdout",
+      "bytes": 31422,
+      "sha256": "0ad2914e6ee049f5bf058b55c884b0488ca848fcfff4a952da9927a5aebb4034"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/RESULT.json",
+      "bytes": 6233,
+      "sha256": "6ddb9927a44d354e72691da67cc7916f191f4462ff7fe2d2465cf28ab411330f"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/mcp_server_elicitation.rs",
+      "bytes": 54462,
+      "sha256": "31fd39df12b867ca1f8882bc361af2dda283ed9ac2134f3eedfee03b23ab14f9"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-00.log",
+      "bytes": 2312,
+      "sha256": "d019493fe64165f601855730a2ba99a353cb3336e05a4cb534d0330a2bff9728"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-01.log",
+      "bytes": 2349,
+      "sha256": "7b7f469861c54548210bc729f6545383d921cc90a1778ccc8483a948d8afb3c3"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-02.log",
+      "bytes": 672,
+      "sha256": "ee5b9469ca9ae708c2d93739e8b8688575c684aeb8adc882c6962f8ae7096ec1"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-03.log",
+      "bytes": 1059,
+      "sha256": "1e54c3f27759163ca668aade41df2b6e0521d2b0b91d8979ce0a3094e2cf7b05"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-04.log",
+      "bytes": 1146,
+      "sha256": "244df52eef5e229323956c74eb6c48e93a53977a9c2fb9afd4dcf96e70d145f7"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-05.log",
+      "bytes": 1197,
+      "sha256": "d94f240884275d1b5518b56a8e4f7b4a184e78d0d9e7141205e020e2ee10aa64"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-06.log",
+      "bytes": 694,
+      "sha256": "048c084ebf1c1a627fca784ff01f38d5395875f5cc5187f1aa83dee233b9fb93"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-07.log",
+      "bytes": 1062,
+      "sha256": "2b71c3305b332ea09658f260bbc23b2008ee3adb13c0e3c1b7769de08caeccbf"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-08.log",
+      "bytes": 1148,
+      "sha256": "2c7b38fe6b3c6ccbdb47ee4c97a19e51b9b73d7e9d9c3d650e40e3b828a31cec"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/raw-context-09.log",
+      "bytes": 1107,
+      "sha256": "c9ea18d680c1bf0121379eee4302b743dd0fad1c83d127fb4b2d7fbc72b419f5"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/test_case_7_managed_guardian_disabled.json",
+      "bytes": 2751,
+      "sha256": "17cc44d766ca29780fda4a64316cc8bcb84d3096031df43d7e960a19b2157c0a"
+    },
+    {
+      "path": "originals/core-output-6ec-appserver-managed-review-diagnosis-v1/test_case_8_managed_reviewer_forbidden.json",
+      "bytes": 2757,
+      "sha256": "9baef33ff305e6754cee3a60f7bb6078a7d0316bcdfa7dd94604d52f9773f7eb"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-history-independent-verification-v1/H_PTY_READ_ORIGINAL.json",
+      "bytes": 2835,
+      "sha256": "14781ac095facc2be29ce5d5bbffdc281bfe869f76dbd29128f288a24e8ad536"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-history-independent-verification-v1/RESULT.json",
+      "bytes": 662,
+      "sha256": "24270942f4bfdf64a40b51d5e93c4e3e6d2e3fa16f97dc2bfdd2f1bef6b82bda"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-history-independent-verification-v1/v1-to-v2.patch",
+      "bytes": 1315,
+      "sha256": "0ea603deb68cadda77ef917178647721dcd219635acb12b437568a90ecbe7166"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-history-independent-verification-v2/RESULT.json",
+      "bytes": 2568,
+      "sha256": "dea8199f05ec4ac23757c74c2ea9c26d43415f988e819a5af83fb1d95e4ad5f6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-independent-v1/H_LAUNCH_ORIGINAL.json",
+      "bytes": 1966,
+      "sha256": "c6b566c1943d0fe8028a988c80b73e109602569fa49739732b9f9d3468d0a51f"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-independent-v1/H_LOG_READ_ORIGINAL.json",
+      "bytes": 3101,
+      "sha256": "9b5bad9677b4f858d4ed949fb3bab5eace28035c256e58473713b31d586bea5a"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-independent-v1/H_STATUS_ORIGINAL.json",
+      "bytes": 728,
+      "sha256": "fb8cac30389967b4391eef417583129399abfbd01cacf07d5bffb385cea07afc"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-independent-v1/JUNIT_CASES.json",
+      "bytes": 199899,
+      "sha256": "9c27e8c1677fabd9adcf9fc4cd1c69fb076dc53ff00bb6fe9a30e2920b3fae5b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-independent-v1/LEAK_AND_EXPLICIT_SKIP.json",
+      "bytes": 56,
+      "sha256": "68e5bdca06314add77ba2b7a31e2f98a71f7b1c125952d5ab972e454c6605228"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-independent-v1/NONPASS_CASES.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-independent-v1/RAW_EXECUTED_CASES.json",
+      "bytes": 259279,
+      "sha256": "a51199ac6b61d839fab02edd3e6b61203e8a22e2ffabdb6d7574c58eba33374d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-independent-v1/RESULT.json",
+      "bytes": 122428,
+      "sha256": "d2fd36542a22fb117c45d174ed469502eeb8fca2e2826a4d2d3dd1b89a8eb9fc"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-independent-v1/RETENTION_LAUNCH_READBACK.json",
+      "bytes": 366,
+      "sha256": "d2b80c12a9d3e408ec1a35decfa3ef904b206ea88fc8b6b5903e60a94483aa52"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-root-independent-v1/ROOT_FIXTURE_READBACK.json",
+      "bytes": 6233,
+      "sha256": "99e0802e2c64f17b438c39b1da2a19de79712c1fd6fee3a5ad789485600990d1"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-terminal-independent-outer-v1/EXECUTION.json",
+      "bytes": 2738,
+      "sha256": "24dda90a79cb5f11e8f32593e0f936c1049d157c10efd72ae0baeb8ad5aae7ff"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-terminal-independent-v1/RESULT.json",
+      "bytes": 50673,
+      "sha256": "15df99ab10ddfcc7efc0444c7a8458827cb258c948ca57a723ffe1c3e7e5621e"
+    },
+    {
+      "path": "originals/desktop-6ec-agentd-root-history-seal-outer-v1/REQUEST.json",
+      "bytes": 493,
+      "sha256": "22f2b76aab5f68223ac5533be6b43e91933d3eec8f74a4c90de84550dd42555f"
+    },
+    {
+      "path": "originals/desktop-6ec-agentd-root-history-seal-outer-v1/RESULT.json",
+      "bytes": 1261,
+      "sha256": "7cd5528d4df2b30e74736e7a2247701f2843a3b034d2346bfe2268beb84958d0"
+    },
+    {
+      "path": "originals/desktop-6ec-agentd-root-history-seal-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/desktop-6ec-agentd-root-history-seal-outer-v1/stdout.log",
+      "bytes": 2457,
+      "sha256": "ae164ac3c6d0d08426f75df511a3701242007d1bd0761a4aa9245420f95cb8fe"
+    },
+    {
+      "path": "originals/desktop-6ec-agentd-root-readback-request-v1.json",
+      "bytes": 1676,
+      "sha256": "1e5836f7ece9fab61e6fe5e3a71d4b9c172fb3f56f35c5939bbb4e22ea4f6eb5"
+    },
+    {
+      "path": "originals/desktop-6ec-agentd-root-reader-independent-candidate-review-v1.json",
+      "bytes": 3163,
+      "sha256": "8e3ab0a9363ed50bffd41064f7595bd6cabbb8335ce23e6309e1c139829970c0"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-bounded-diagnosis-v1.json",
+      "bytes": 13714,
+      "sha256": "5d1b3560191924e62a157b0a69992c6cdd2db4d9bb9984a02e8e37b522682858"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-bounded-diagnosis-v2.json",
+      "bytes": 15004,
+      "sha256": "61bfa4bd044a2545dcb4bc8c88e93ffc7f77722fd72218c5e5e35ae069998a2c"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-capture-v1-h-process-status-original.json",
+      "bytes": 725,
+      "sha256": "68d0d5b653b3e01021e6437a164a49651ddf36480ddf73612e0a6dde8af88061"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-capture-v2-h-process-status-original.json",
+      "bytes": 730,
+      "sha256": "39942e0cc10163ecbf87f6109d5d9433bb4814f562e2c9e5fe863e8f36517ab2"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v1/RESULT.json",
+      "bytes": 2631,
+      "sha256": "acbc9274a3b6989a11d132c04d39e50cb585dbf22470fce2d66d59a1be3b3ae9"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v1/source/codex-rs/.config/nextest.toml",
+      "bytes": 5987,
+      "sha256": "63f832eabf890a5f3cd7c0e4ee1856b1ca99d4db8952de71b81282265668dc8c"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v1/source/codex-rs/Cargo.lock",
+      "bytes": 421501,
+      "sha256": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v1/source/codex-rs/app-server/tests/suite/v2/account.rs",
+      "bytes": 107427,
+      "sha256": "382a74c3cc7decd4c2299772ab52766b84d00bf19585cf3b15a060e7ebdf9d8b"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v1/source/codex-rs/login/src/server.rs",
+      "bytes": 48361,
+      "sha256": "59ea616627e40ba9682eab03b4c3d57ecbdc66557f188d354fbf6dee0ec1d6ea"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/RESULT.json",
+      "bytes": 32987,
+      "sha256": "0a089fb3753ec0d0938ef4694d63085d018d1e3dfeb596bc39cd3cc169d80bd9"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/case-observation-candidates.json",
+      "bytes": 2332,
+      "sha256": "bdbd91be7205fbd1ece54bf0cd9c5d3a472ce2a6854475774c22c56167eeaca8"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/cases/login_account_chatgpt_includes_forced_workspace_allowlist_query_param.json",
+      "bytes": 358,
+      "sha256": "4403486ec66142bcc15baafd98aa8d1565dbcb460e259c765c8c8a0cae52a8b6"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/cases/login_account_chatgpt_includes_forced_workspace_query_param.json",
+      "bytes": 348,
+      "sha256": "1138a8ed67c7608f53d9593c887b3f958aabb8ba288016d987cccd6d41bfc5e6"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/cases/login_account_chatgpt_redirects_to_hosted_success_page.json",
+      "bytes": 3944,
+      "sha256": "d6c4f988e68d73ade98dca01ab29e74798223fb779ce4510134ef05ba3c45f68"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/cases/login_account_chatgpt_start_can_be_cancelled.json",
+      "bytes": 333,
+      "sha256": "ffc03d3f9acbe0af72dd18aa8096f0e17610c8e6ebead7975fae74a5f5bf2393"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/cases/login_account_chatgpt_uses_debug_oauth_overrides.json",
+      "bytes": 337,
+      "sha256": "4a36c4178bf81600ae62bef7b58bb96e14cba4bbb1572fffa90f789c01d8a4b6"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/cases/set_auth_token_cancels_active_chatgpt_login.json",
+      "bytes": 332,
+      "sha256": "d53c6b852d99ce3e0d89ebb85c4ff7aae159cef9929c34ff745355d105c6bbcb"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/.cargo_vcs_info.json",
+      "bytes": 105,
+      "sha256": "0f7f7edf472da67feccf04bceba3f35d54ff1b7518ac3a8a3a812bef3a4427a8"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/Cargo.toml",
+      "bytes": 2471,
+      "sha256": "12b942d2e96eb463e364610660117193a25e3aad6bb9b7e98809a6cc2708dfeb"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/Cargo.toml.orig",
+      "bytes": 2062,
+      "sha256": "418792e53acd36aa7b628f83ef55895bb109da863eced9e41b48c56338add1da"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/README.md",
+      "bytes": 2872,
+      "sha256": "f2c45c74c939294a5801bc8b6c903a74740cd3dce7523fc80b43b074fffbb4c6"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/code_lock.rs",
+      "bytes": 6083,
+      "sha256": "857ad5973cc2c71d09a83dfc61dcb8a92223b36db9d0ca8c2d9698addb3cddb6"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/file_lock.rs",
+      "bytes": 9709,
+      "sha256": "b2aecbc093c64c09dd16655658805659dbc72c668049a24c345f5391321e1af4"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/lib.rs",
+      "bytes": 5177,
+      "sha256": "028220a919afee6947bc4d3a14d4afa06a04f35177dae638be18334bdb98e707"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/parallel_code_lock.rs",
+      "bytes": 5408,
+      "sha256": "f1d412db88ba7fad2cde7eec7a18445423878797eaa6543b30b9e7b864e2251d"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/parallel_file_lock.rs",
+      "bytes": 4944,
+      "sha256": "58155838b5fc8c164fda2c330404b363bcad81c163296ee009d96ebb9d43e243"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/rwlock.rs",
+      "bytes": 4292,
+      "sha256": "216dbaf62a58a43ebcc45ae9663f107ad7a4c41eb4756753a2fbb00a6c2b2cec"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/serial_code_lock.rs",
+      "bytes": 3348,
+      "sha256": "dd42f561fed2b3c9cdc25bacb6a5781a7aa81d768146c684d1327c2ad80c73ab"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/src/serial_file_lock.rs",
+      "bytes": 2499,
+      "sha256": "13d338cb98e59a3434ad657c926196bc9b62474710d3418259ed25d5c27dbc7a"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test-3.5.0/tests/tests.rs",
+      "bytes": 157,
+      "sha256": "76ed1916b07416be281e407bd078c323f64c0830cc5c24898631a51a065bd8d9"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test_derive-3.5.0/.cargo_vcs_info.json",
+      "bytes": 112,
+      "sha256": "20d553d1f466d55872a88648614d7bd09ecc7d8e29f270bde55b476775401e40"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test_derive-3.5.0/Cargo.toml",
+      "bytes": 1489,
+      "sha256": "433af16df290ea722299bae1bc3deeddf5f1b5dd0ea4dade4314a67a37445a0b"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test_derive-3.5.0/Cargo.toml.orig",
+      "bytes": 885,
+      "sha256": "58d8741b65ca3a6737f459b38161f2df8de73d92d4f0eedccea89ef78113da4c"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test_derive-3.5.0/README.md",
+      "bytes": 2872,
+      "sha256": "f2c45c74c939294a5801bc8b6c903a74740cd3dce7523fc80b43b074fffbb4c6"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/dependency-source/index.crates.io-1949cf8c6b5b557f/serial_test_derive-3.5.0/src/lib.rs",
+      "bytes": 43530,
+      "sha256": "999fb7c3fe4c0bf633a13b822ae50019abe5045704cf314524ec1c0667139d27"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/native-result-original.json",
+      "bytes": 15846,
+      "sha256": "13b3cccf9810909254acf5f42616c2dd47eaf8a1d06ef820f60a5fe35ba6f7a8"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/prior-capture-failure-original.json",
+      "bytes": 2631,
+      "sha256": "acbc9274a3b6989a11d132c04d39e50cb585dbf22470fce2d66d59a1be3b3ae9"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/raw-observation-candidates.json",
+      "bytes": 39101,
+      "sha256": "dda088d7bb8d5207c2cd4abe5bdb576e5470f03cfbaffda1cf347b12c1c1c478"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/registry-search.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/registry-search.stdout",
+      "bytes": 2455,
+      "sha256": "a68dd7ef3971e02a6860898b7eb809436054a3f23ba0c174ffe570729f868483"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/source/codex-rs/.config/nextest.toml",
+      "bytes": 5987,
+      "sha256": "63f832eabf890a5f3cd7c0e4ee1856b1ca99d4db8952de71b81282265668dc8c"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/source/codex-rs/Cargo.lock",
+      "bytes": 421501,
+      "sha256": "a5c5da643f74ade12665cca802bb50bd2b87901d219ae31f5aac125f396a53e4"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/source/codex-rs/app-server/tests/suite/v2/account.rs",
+      "bytes": 107427,
+      "sha256": "382a74c3cc7decd4c2299772ab52766b84d00bf19585cf3b15a060e7ebdf9d8b"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/source/codex-rs/login/src/server.rs",
+      "bytes": 48361,
+      "sha256": "59ea616627e40ba9682eab03b4c3d57ecbdc66557f188d354fbf6dee0ec1d6ea"
+    },
+    {
+      "path": "originals/desktop-6ec-oauth-serial-readonly-v2/tests-execution-original.json",
+      "bytes": 1940,
+      "sha256": "a40a8ccabebe852d6c8c96afff519ec46d29f7dd954d57d578e299593b819ba4"
+    },
+    {
+      "path": "originals/read-desktop-6ec-agentd-root-terminal-core-delta-v1.patch",
+      "bytes": 40457,
+      "sha256": "7c3626da1d16482888c10e6594fbbfaa520e6fc3b82bc4845d35cd57f3258072"
+    },
+    {
+      "path": "originals/read-desktop-6ec-agentd-root-terminal-static-v1.json",
+      "bytes": 2048,
+      "sha256": "df3c4d2ef883c1e767e5c055e27862cf0cf2223cc5b707bfeca02d00b7347484"
+    },
+    {
+      "path": "originals/read-desktop-6ec-agentd-root-terminal-v1.py",
+      "bytes": 67096,
+      "sha256": "d921dbcf10a95dec8ed74aaec3f4996f99fc34708d92c936306a80bbe4d5fa70"
+    },
+    {
+      "path": "originals/read-desktop-6ec-oauth-serial-evidence-v1.py",
+      "bytes": 7866,
+      "sha256": "0e6cca8d458eaba9fbd20caaa64510057a2af061603370721b8a23cf9fabbb1d"
+    },
+    {
+      "path": "originals/read-desktop-6ec-oauth-serial-evidence-v2.py",
+      "bytes": 9512,
+      "sha256": "800af6aa921800c084dcabe21592f45ed62d7dafe5581a3a52dc2a694b7efb5f"
+    },
+    {
+      "path": "originals/verify-desktop-6ec-agentd-root-sealed-history-v1.py",
+      "bytes": 11129,
+      "sha256": "baa67b075fb7533dbefa00b8ab3fb1838b631f5b3f8d2400706ed8dded3179ea"
+    },
+    {
+      "path": "originals/verify-desktop-6ec-agentd-root-sealed-history-v2.py",
+      "bytes": 11138,
+      "sha256": "ae4b1e45337f05411a8d03c6dac55867e9dbaee3ee0e16a9b46a97d4c1dec21b"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/core-output-6ec5993-desktop-posthoc-diagnostics-readback-history-v1/archive.part001",
+      "offset": 0,
+      "bytes": 247008,
+      "sha256": "bc76222d16adcfeaab2d3a745fd8bfeb67164c82b5ef28bf3f8963896c3eed03"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

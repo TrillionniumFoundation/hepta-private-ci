@@ -1,0 +1,27 @@
+--- a/verify-desktop-6ec-source-publication-history-v1.py
++++ b/verify-desktop-6ec-source-publication-history-v2.py
+@@ -7,7 +7,7 @@
+ R=Path("/home/qian-qi/work/hepta-cell-s0-records-20261108-898e")
+ PACKET="core-output-6ec5993-quiet-source-publication-history-v1"
+ P=R/PACKET
+-OUT=R/"core-output-6ec5993-source-publication-history-independent-verification-v1"
++OUT=R/"core-output-6ec5993-source-publication-history-independent-verification-v2"
+ def sha(b):return hashlib.sha256(b).hexdigest()
+ def capture(p):
+     assert p.resolve()==p and p.is_relative_to(R)
+@@ -67,13 +67,13 @@
+     assert len(nul)==scope["raw_git_stdout_with_NUL_preserved"]==13
+     for rel,row in nul.items():
+         b=contents["originals/"+rel];p=row["nul_delimited_git_producer"]
+-        assert b"\\0" in b and b.endswith(b"\\0") and p["argv"][0]=="git" and "-z" in p["argv"]
++        assert b"\0" in b and b.endswith(b"\0") and p["argv"][0]=="git" and "-z" in p["argv"]
+         assert p["stdout"]=={"bytes":len(b),"sha256":sha(b)}
+         commands_rel=str(Path(p["commands_path"]).relative_to(R))
+         original_cmds=json.loads(contents["originals/"+commands_rel])
+         matches=[c for c in original_cmds if c["label"]==p["command_label"]]
+         assert len(matches)==1 and matches[0]["argv"]==p["argv"] and matches[0]["stdout"]==p["stdout"]
+-    assert {rel.removeprefix("originals/") for rel,b in contents.items() if b"\\0" in b}==set(nul)
++    assert {rel.removeprefix("originals/") for rel,b in contents.items() if b"\0" in b}==set(nul)
+     assert all(v=="HOLD" for v in scope["stages"].values())
+     assert scope["full_history_cost"] is scope["physical_cost"] is None and scope["scientific_acceptance"] is False
+     for path,pin in inputs.items():assert capture(Path(path))[1]==pin

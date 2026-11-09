@@ -1,0 +1,1356 @@
+[
+  {
+    "label": "evidence-head-before",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:38.541584+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:38.545523+00:00",
+    "elapsed_seconds": 0.003745035966858268,
+    "stdout_bytes": 41,
+    "stdout_sha256": "6291e53ee83bae9f12e42444b680a0c2ed2b65fab3b618905b0c436904783367",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-tree-before",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD^{tree}"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:38.545844+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:38.562687+00:00",
+    "elapsed_seconds": 0.004733070032671094,
+    "stdout_bytes": 41,
+    "stdout_sha256": "2bd7f2fcfcb2e03ce4d738f8354411cfc7c6756c41d45f910dc8c3a7c9609ab2",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-branch-before",
+    "argv": [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:38.562982+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:38.565889+00:00",
+    "elapsed_seconds": 0.0027021230198442936,
+    "stdout_bytes": 37,
+    "stdout_sha256": "f05fde2bf756079061d4032a9dcdfe8d149a1cbe71e0e27cc907da1173c71216",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-staged-before",
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--name-only"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:38.566305+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:38.576075+00:00",
+    "elapsed_seconds": 0.009538403013721108,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-head",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:24:38.576398+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:38.578867+00:00",
+    "elapsed_seconds": 0.00222755316644907,
+    "stdout_bytes": 41,
+    "stdout_sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-tree",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD^{tree}"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:24:38.579174+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:38.582765+00:00",
+    "elapsed_seconds": 0.0033290740102529526,
+    "stdout_bytes": 41,
+    "stdout_sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-branch",
+    "argv": [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:24:38.583334+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:38.586416+00:00",
+    "elapsed_seconds": 0.002755064982920885,
+    "stdout_bytes": 35,
+    "stdout_sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-status",
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:24:38.586845+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:38.645405+00:00",
+    "elapsed_seconds": 0.058225760934874415,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-publish-endpoint",
+    "argv": [
+      "git",
+      "remote",
+      "get-url",
+      "publish"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:38.645984+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:38.649264+00:00",
+    "elapsed_seconds": 0.0029691089875996113,
+    "stdout_bytes": 63,
+    "stdout_sha256": "5658277e105c40f27aee579ae3112d570c7dc42bf3fb99fa6e8fdf1b098653e1",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-remote-before",
+    "argv": [
+      "git",
+      "ls-remote",
+      "publish",
+      "refs/heads/codex/cell-s0-evidence-20261108-898e"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:38.649659+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:45.082361+00:00",
+    "elapsed_seconds": 6.432364956010133,
+    "stdout_bytes": 89,
+    "stdout_sha256": "bf815cbf076716845b65e2d63d6da06bbbbb2a47e7ae8913e3512c0e33a7e32b",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-ref-api-before",
+    "argv": [
+      "gh",
+      "api",
+      "--method",
+      "GET",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/cell-s0-evidence-20261108-898e"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:45.083381+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:47.108146+00:00",
+    "elapsed_seconds": 2.0241182879544795,
+    "stdout_bytes": 485,
+    "stdout_sha256": "42f9b255d8b40f674c51e29c3238950531122bf309f39b9ffc6d6ac885ab7622",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "preceding-evidence-ci",
+    "argv": [
+      "gh",
+      "api",
+      "--method",
+      "GET",
+      "repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=e781fbebad63968adf18cce97dd04657b3854917&per_page=100"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:47.109217+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:48.909483+00:00",
+    "elapsed_seconds": 1.7880602139048278,
+    "stdout_bytes": 36,
+    "stdout_sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "parent-root-tree",
+    "argv": [
+      "git",
+      "ls-tree",
+      "-r",
+      "-z",
+      "e781fbebad63968adf18cce97dd04657b3854917",
+      "--",
+      "qualification/cell_common_candidate/20261108/execution_history"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:48.910447+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:48.936253+00:00",
+    "elapsed_seconds": 0.013710813131183386,
+    "stdout_bytes": 241387,
+    "stdout_sha256": "975235c282b516baf55e7eee3126ffa0f83497b309fa8a3070ee62b40dad92bb",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "previous-index",
+    "argv": [
+      "git",
+      "show",
+      "e781fbebad63968adf18cce97dd04657b3854917:qualification/cell_common_candidate/20261108/execution_history/manifest.json"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:51.619967+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:51.627032+00:00",
+    "elapsed_seconds": 0.006553734187036753,
+    "stdout_bytes": 124006,
+    "stdout_sha256": "6a1a7c2ed7cf55f72b0e9beff24b01be09c326a7097fdd32af6ab09352b89aed",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "previous-readme",
+    "argv": [
+      "git",
+      "show",
+      "e781fbebad63968adf18cce97dd04657b3854917:qualification/cell_common_candidate/20261108/execution_history/README.md"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:51.632770+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:51.638045+00:00",
+    "elapsed_seconds": 0.0048789940774440765,
+    "stdout_bytes": 70726,
+    "stdout_sha256": "d41ee5d23ed72fa35b4f3303ec65c26fb4f2ef3cd91da97db15fd9eddbe52df9",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "tracked-changes-before",
+    "argv": [
+      "git",
+      "diff",
+      "--no-renames",
+      "--name-status",
+      "-z",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:51.647515+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:51.663791+00:00",
+    "elapsed_seconds": 0.01586935599334538,
+    "stdout_bytes": 79,
+    "stdout_sha256": "5362b9ea4d1dfafac8081af8e5936443414efad8a262b5164de1b30e72bba940",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "untracked-before",
+    "argv": [
+      "git",
+      "ls-files",
+      "--others",
+      "--exclude-standard",
+      "-z"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:51.752258+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:51.804589+00:00",
+    "elapsed_seconds": 0.05181678314693272,
+    "stdout_bytes": 4887,
+    "stdout_sha256": "335cefb3faa86abe083e4b001c78475eb5a13fbb816d2a7c9e443fcd2aa29fa4",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-copy-head",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:24:54.204292+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:54.208146+00:00",
+    "elapsed_seconds": 0.003291110973805189,
+    "stdout_bytes": 41,
+    "stdout_sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-copy-tree",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD^{tree}"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:24:54.208592+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:54.212176+00:00",
+    "elapsed_seconds": 0.0031029600650072098,
+    "stdout_bytes": 41,
+    "stdout_sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-copy-branch",
+    "argv": [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:24:54.212772+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:54.215813+00:00",
+    "elapsed_seconds": 0.0025773230008780956,
+    "stdout_bytes": 35,
+    "stdout_sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-copy-status",
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:24:54.216355+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:54.273596+00:00",
+    "elapsed_seconds": 0.05672971997410059,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "canonical-readme-format-check",
+    "argv": [
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e/node_modules/.bin/prettier",
+      "--check",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e/qualification/cell_common_candidate/20261108/execution_history/README.md"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:54.283289+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:24:54.821482+00:00",
+    "elapsed_seconds": 0.5376816028729081,
+    "stdout_bytes": 66,
+    "stdout_sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "verify-all-original-packets",
+    "argv": [
+      "python3",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e/qualification/cell_common_candidate/20261108/execution_history/verify_packets.py"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:24:54.822491+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:34.608229+00:00",
+    "elapsed_seconds": 39.77361487899907,
+    "stdout_bytes": 6733,
+    "stdout_sha256": "70f8781712635528536c471d807f90d479fdbd48eb309e47d50ef51473b9cfe9",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "tracked-whitespace-check",
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:37.032581+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:37.052353+00:00",
+    "elapsed_seconds": 0.019129915162920952,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "stage-explicit-file-set",
+    "argv": [
+      "git",
+      "add",
+      "--",
+      "qualification/cell_common_candidate/20261108/execution_history/README.md",
+      "qualification/cell_common_candidate/20261108/execution_history/increment-008a-inputs.json",
+      "qualification/cell_common_candidate/20261108/execution_history/increment-008a-pattern-review.json",
+      "qualification/cell_common_candidate/20261108/execution_history/increment008-metadata.json",
+      "qualification/cell_common_candidate/20261108/execution_history/increment008-publication-pattern-review.json",
+      "qualification/cell_common_candidate/20261108/execution_history/manifest.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/append-evidence-increment-008-draft-v1.py",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/build-increment008a-inputs-v1.py",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/core-output-45a50bf-packets-independent-verification-v1/RESULT.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/core-output-6ec5993-ai-history-desktop-readback-v1/RESULT.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/core-output-6ec5993-desktop-history-independent-readback-v1/RESULT.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-008a-launch-v1/REQUEST.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-008a-launch-v1/RESULT.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-008a-launch-v1/stderr",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-008a-launch-v1/stdout",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-008a/PATTERN_REVIEW.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-008a/RESULT.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-increment007-independent-readback-v1/RESULT.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-increment007-independent-readback-v1/commands.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-increment007-publication-v1/RESULT.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-increment007-publication-v1/commands.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-appender-independent-stage-review-v1.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-input-preparation-execution-v1/RESULT.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-input-preparation-execution-v1/stderr",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-input-preparation-execution-v1/stdout",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-preparation-v1/ARCHIVE_INPUTS_BEFORE_AFTER.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-preparation-v1/INDEPENDENT_READBACK_INPUTS_BEFORE_AFTER.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-preparation-v1/INDEPENDENT_READBACK_PINS.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-preparation-v1/INPUT_PREPARATION.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-preparation-v1/ORIGINAL_PATCH_WHITESPACE.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-preparation-v1/REQUIRED_JSON_PINS.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-preparation-v1/REVERSE_REVIEW.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-preparation-v1/SUPPLEMENTARY_INPUTS_BEFORE_AFTER.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-preparation-v1/SUPPLEMENTARY_OBSERVATION_SCOPE.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008-publication-draft-v1/CHECKS.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/increment008a-inputs.json",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/publish-evidence-increment-008-v1.py",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/review-increment008a-inputs-v1.py",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-ai-failed-owning-history-v1/archive.part001",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-ai-failed-owning-history-v1/archive.part002",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-ai-failed-owning-history-v1/archive.part003",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-ai-failed-owning-history-v1/archive.part004",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-ai-failed-owning-history-v1/archive.part005",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-ai-failed-owning-history-v1/archive.part006",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-ai-failed-owning-history-v1/archive.part007",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-ai-failed-owning-history-v1/archive.part008",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-ai-failed-owning-history-v1/manifest.json",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-desktop-preparation-caller-history-v3/archive.part001",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-desktop-preparation-caller-history-v3/archive.part002",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-desktop-preparation-caller-history-v3/archive.part003",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-desktop-preparation-caller-history-v3/archive.part004",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-desktop-preparation-caller-history-v3/archive.part005",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-desktop-preparation-caller-history-v3/archive.part006",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-45a50bf-desktop-preparation-caller-history-v3/manifest.json",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-6ec5993-ai-two-checksum-failures-environment-history-v2/archive.part001",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-6ec5993-ai-two-checksum-failures-environment-history-v2/archive.part002",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-6ec5993-ai-two-checksum-failures-environment-history-v2/archive.part003",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-6ec5993-ai-two-checksum-failures-environment-history-v2/manifest.json",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/archive.part001",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/archive.part002",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/archive.part003",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/archive.part004",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/archive.part005",
+      "qualification/cell_common_candidate/20261108/execution_history/packets/core-output-6ec5993-desktop-source-caller-and-unexecuted-control-preparation-v1/manifest.json",
+      "qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch",
+      "qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-frozen.patch",
+      "qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-reviewed.patch"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:37.052992+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:37.550645+00:00",
+    "elapsed_seconds": 0.49715172802098095,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "stage-only-explicit-verifier-log",
+    "argv": [
+      "git",
+      "add",
+      "-f",
+      "--",
+      "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-008a/VERIFY.log"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:37.552263+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:37.581045+00:00",
+    "elapsed_seconds": 0.027852379018440843,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "staged-initial-closed-set",
+    "argv": [
+      "git",
+      "diff",
+      "--no-renames",
+      "--name-status",
+      "-z",
+      "--cached",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:37.581978+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:37.594959+00:00",
+    "elapsed_seconds": 0.010647207032889128,
+    "stdout_bytes": 9098,
+    "stdout_sha256": "f6d48e78b2de73f1180865e7a4d43331017ea3cab2abe8fb0d9203fb6840f1d3",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "staged-initial-all-file-identities",
+    "argv": [
+      "git",
+      "ls-files",
+      "--stage",
+      "-z",
+      "--",
+      "qualification/cell_common_candidate/20261108/execution_history"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:37.595909+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:37.603681+00:00",
+    "elapsed_seconds": 0.007192062912508845,
+    "stdout_bytes": 249656,
+    "stdout_sha256": "f1ae9dc75d81c849c228e812c0cff203bbb305605a7e9394cf2c072de882b0e8",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "index-initial-raw-blob-closure",
+    "argv": [
+      "git",
+      "cat-file",
+      "--batch"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:37.608484+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "stdin_bytes": 9030,
+    "stdin_sha256": "d36a562ec7e7a1953cc75a839894950d6433915ba2d4ab64169f90cbf760ca30",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:37.659727+00:00",
+    "elapsed_seconds": 0.05057744309306145,
+    "stdout_bytes": 11616259,
+    "stdout_sha256": "3fd0e240313fec08b0a5b52b69f4e966a38e4eb146dcec509282495fb6ce060e",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "stage-runtime-index-audit-only",
+    "argv": [
+      "git",
+      "add",
+      "--",
+      "qualification/cell_common_candidate/20261108/execution_history/increment008-publication-index-closure.json"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:37.741602+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:37.775908+00:00",
+    "elapsed_seconds": 0.03358457307331264,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "staged-final-closed-set",
+    "argv": [
+      "git",
+      "diff",
+      "--no-renames",
+      "--name-status",
+      "-z",
+      "--cached",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.206306+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.217814+00:00",
+    "elapsed_seconds": 0.010688206879422069,
+    "stdout_bytes": 9207,
+    "stdout_sha256": "397dbcc0c93eb4e2408d52ec5cacc860578c51f6c33fe626ed1b904a2bea7597",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "staged-final-all-file-identities",
+    "argv": [
+      "git",
+      "ls-files",
+      "--stage",
+      "-z",
+      "--",
+      "qualification/cell_common_candidate/20261108/execution_history"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.218816+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.226932+00:00",
+    "elapsed_seconds": 0.007484020898118615,
+    "stdout_bytes": 249813,
+    "stdout_sha256": "8e7d42fa9cdb49ad3063f28b4dbe970f2953d7e3f49a7ed3647d32e1a81f5f6d",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "index-audit-raw-bytes",
+    "argv": [
+      "git",
+      "cat-file",
+      "--batch"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.231344+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "stdin_bytes": 108,
+    "stdin_sha256": "88e5553f7befde0f2a6fac3e9a21d43b4486830a0595976fdff3e65ebe432766",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.241230+00:00",
+    "elapsed_seconds": 0.009197572944685817,
+    "stdout_bytes": 34526,
+    "stdout_sha256": "b5c858102acea4bacb7473c83a70a16d2c49671adc8ae25f595e67f34b1f959d",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-commit-head",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.242376+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.245728+00:00",
+    "elapsed_seconds": 0.002650924026966095,
+    "stdout_bytes": 41,
+    "stdout_sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-commit-tree",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD^{tree}"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.246446+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.250246+00:00",
+    "elapsed_seconds": 0.0030942780431360006,
+    "stdout_bytes": 41,
+    "stdout_sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-commit-branch",
+    "argv": [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.251013+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.253882+00:00",
+    "elapsed_seconds": 0.002170956926420331,
+    "stdout_bytes": 35,
+    "stdout_sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-commit-status",
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.254626+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.312761+00:00",
+    "elapsed_seconds": 0.05742271896451712,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-head-before-commit",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.314016+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.317749+00:00",
+    "elapsed_seconds": 0.002988294931128621,
+    "stdout_bytes": 41,
+    "stdout_sha256": "6291e53ee83bae9f12e42444b680a0c2ed2b65fab3b618905b0c436904783367",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "staged-whitespace-check",
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      ".",
+      ":(exclude)qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/core-output-45a-reviewed.patch",
+      ":(exclude)qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-frozen.patch",
+      ":(exclude)qualification/cell_common_candidate/20261108/execution_history/reviewed_changes/remote-timer-6ec-reviewed.patch"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.321010+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.345332+00:00",
+    "elapsed_seconds": 0.023533890955150127,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "staged-stat",
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--stat"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.346498+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.371592+00:00",
+    "elapsed_seconds": 0.024294385919347405,
+    "stdout_bytes": 4689,
+    "stdout_sha256": "6855d5cadf3e95d4874dc866b86e0fea9b73669bc58741e20b1f85dd8191d9f5",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "commit-evidence",
+    "argv": [
+      "git",
+      "commit",
+      "-m",
+      "docs: retain original core failures and blocked timer history"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.372758+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.476959+00:00",
+    "elapsed_seconds": 0.10343770310282707,
+    "stdout_bytes": 10426,
+    "stdout_sha256": "0b31d12e31f2fee7e48516747519800474df1ab764853eedc0c99eaec6f903d5",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-head-after",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.479201+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.484716+00:00",
+    "elapsed_seconds": 0.0037939059548079967,
+    "stdout_bytes": 41,
+    "stdout_sha256": "54a995a1e641e35e5a2ec81bafc4f7dd6b88a02cf1f62ecad324b465674a12e9",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-tree-after",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD^{tree}"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.486661+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.492946+00:00",
+    "elapsed_seconds": 0.004522289149463177,
+    "stdout_bytes": 41,
+    "stdout_sha256": "eae8bf4c57d963411fec89b857cf9040fbc4f2e5eb481d5238d8650935e56905",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-parent-after",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD^"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.494941+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.502462+00:00",
+    "elapsed_seconds": 0.005469396011903882,
+    "stdout_bytes": 41,
+    "stdout_sha256": "6291e53ee83bae9f12e42444b680a0c2ed2b65fab3b618905b0c436904783367",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-status-after",
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.504745+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.571034+00:00",
+    "elapsed_seconds": 0.06420994899235666,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "committed-final-closed-set",
+    "argv": [
+      "git",
+      "diff",
+      "--no-renames",
+      "--name-status",
+      "-z",
+      "e781fbebad63968adf18cce97dd04657b3854917",
+      "8ca3f19c69f2f14a42aa5fbe3ff72af807c65ff2"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.573238+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.582446+00:00",
+    "elapsed_seconds": 0.007364691002294421,
+    "stdout_bytes": 9207,
+    "stdout_sha256": "397dbcc0c93eb4e2408d52ec5cacc860578c51f6c33fe626ed1b904a2bea7597",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "committed-root-file-identities",
+    "argv": [
+      "git",
+      "ls-tree",
+      "-r",
+      "-z",
+      "8ca3f19c69f2f14a42aa5fbe3ff72af807c65ff2",
+      "--",
+      "qualification/cell_common_candidate/20261108/execution_history"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.584954+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.600682+00:00",
+    "elapsed_seconds": 0.01384857902303338,
+    "stdout_bytes": 253857,
+    "stdout_sha256": "44d134cfeb9462283370f136a48b723f605e6ad5ddafc4526d0489e1c7e61c5d",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "committed-raw-blob-closure",
+    "argv": [
+      "git",
+      "cat-file",
+      "--batch"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:40.609805+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "stdin_bytes": 11898,
+    "stdin_sha256": "69d0cb1d46fb2ee4853eebd4ef25e88ee8bc785718da2c89bd614706846ad2b6",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:40.677424+00:00",
+    "elapsed_seconds": 0.0655286549590528,
+    "stdout_bytes": 11650785,
+    "stdout_sha256": "b459a9b13f7b9705b4892781242315c2199d85ca7599a70105b014571fffd915",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-push-head",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:25:43.343238+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:43.347896+00:00",
+    "elapsed_seconds": 0.0035618729889392853,
+    "stdout_bytes": 41,
+    "stdout_sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-push-tree",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD^{tree}"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:25:43.356710+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:43.362441+00:00",
+    "elapsed_seconds": 0.004811015911400318,
+    "stdout_bytes": 41,
+    "stdout_sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-push-branch",
+    "argv": [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:25:43.363424+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:43.366929+00:00",
+    "elapsed_seconds": 0.0025813758838921785,
+    "stdout_bytes": 35,
+    "stdout_sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-before-push-status",
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:25:43.368062+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:43.427022+00:00",
+    "elapsed_seconds": 0.05792662501335144,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-remote-final-check",
+    "argv": [
+      "git",
+      "ls-remote",
+      "publish",
+      "refs/heads/codex/cell-s0-evidence-20261108-898e"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:43.428652+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:57.830343+00:00",
+    "elapsed_seconds": 14.400632611010224,
+    "stdout_bytes": 89,
+    "stdout_sha256": "bf815cbf076716845b65e2d63d6da06bbbbb2a47e7ae8913e3512c0e33a7e32b",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-ref-api-final-check",
+    "argv": [
+      "gh",
+      "api",
+      "--method",
+      "GET",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/cell-s0-evidence-20261108-898e"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:57.832197+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:59.838636+00:00",
+    "elapsed_seconds": 2.005308364983648,
+    "stdout_bytes": 485,
+    "stdout_sha256": "42f9b255d8b40f674c51e29c3238950531122bf309f39b9ffc6d6ac885ab7622",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "new-reachable-object-ids",
+    "argv": [
+      "git",
+      "rev-list",
+      "--objects",
+      "--no-object-names",
+      "8ca3f19c69f2f14a42aa5fbe3ff72af807c65ff2",
+      "^e781fbebad63968adf18cce97dd04657b3854917"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:59.841048+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:59.886385+00:00",
+    "elapsed_seconds": 0.0330277350731194,
+    "stdout_bytes": 3608,
+    "stdout_sha256": "2eb9ae59323d69e28924d8542e7017ed80bf8f6adef9fc014eaa2534446c87ce",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "new-reachable-object-sizes",
+    "argv": [
+      "git",
+      "cat-file",
+      "--batch-check=%(objectname) %(objecttype) %(objectsize)"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:59.889258+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "stdin_bytes": 3608,
+    "stdin_sha256": "2eb9ae59323d69e28924d8542e7017ed80bf8f6adef9fc014eaa2534446c87ce",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:25:59.899628+00:00",
+    "elapsed_seconds": 0.007662018993869424,
+    "stdout_bytes": 4529,
+    "stdout_sha256": "e6c4ba9c8ec3be3c257cf8cecbc95a0c3f0e6110fa5cfe0526f7e2737331eada",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "push-evidence",
+    "argv": [
+      "git",
+      "-c",
+      "http.version=HTTP/1.1",
+      "-c",
+      "http.postBuffer=268435456",
+      "push",
+      "--progress",
+      "publish",
+      "HEAD:refs/heads/codex/cell-s0-evidence-20261108-898e"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:25:59.950582+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:26:43.504482+00:00",
+    "elapsed_seconds": 43.55204403796233,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 10180,
+    "stderr_sha256": "124324d1dba7fec7429a05e730f34ccb8334f3e676f9518d5e8d328da63397d7"
+  },
+  {
+    "label": "evidence-remote-after",
+    "argv": [
+      "git",
+      "ls-remote",
+      "publish",
+      "refs/heads/codex/cell-s0-evidence-20261108-898e"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:26:43.506478+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:26:56.971067+00:00",
+    "elapsed_seconds": 13.46317215100862,
+    "stdout_bytes": 89,
+    "stdout_sha256": "95094ff19c3919ed51db83d79d1a02ff01cb719d007bff2f2900591047284698",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-ref-api-after",
+    "argv": [
+      "gh",
+      "api",
+      "--method",
+      "GET",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/cell-s0-evidence-20261108-898e"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:26:56.973871+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:26:59.054356+00:00",
+    "elapsed_seconds": 2.077818908030167,
+    "stdout_bytes": 485,
+    "stdout_sha256": "2a85a162fb1b8b061586d77fe3a965bcfc022284fdcd1e6f66f68d6cbc37008f",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-commit-api-after",
+    "argv": [
+      "gh",
+      "api",
+      "--method",
+      "GET",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/commits/8ca3f19c69f2f14a42aa5fbe3ff72af807c65ff2"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:26:59.057234+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:27:01.104687+00:00",
+    "elapsed_seconds": 2.0449712141416967,
+    "stdout_bytes": 1249,
+    "stdout_sha256": "09ecddcc4e03abc7f6d02816ab86e94dad44625c6f981d45ab48b3d621f27aa7",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-remote-after",
+    "argv": [
+      "git",
+      "ls-remote",
+      "publish",
+      "refs/heads/codex/cell-s0-common-20261108-898e"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:27:01.107642+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:27:19.528445+00:00",
+    "elapsed_seconds": 18.41849110997282,
+    "stdout_bytes": 87,
+    "stdout_sha256": "348c758a1d487b5bda1e5e869e42e40ca6be29ff1d6f3518862d77a4975bb8fd",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-local-head-final",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:27:19.531414+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:27:19.537143+00:00",
+    "elapsed_seconds": 0.003358931979164481,
+    "stdout_bytes": 41,
+    "stdout_sha256": "54a995a1e641e35e5a2ec81bafc4f7dd6b88a02cf1f62ecad324b465674a12e9",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "evidence-local-status-final",
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+    "started_at": "2026-11-09T09:27:19.539640+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:27:19.603285+00:00",
+    "elapsed_seconds": 0.061285986099392176,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-final-head",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:27:19.605788+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:27:19.610934+00:00",
+    "elapsed_seconds": 0.0027372699696570635,
+    "stdout_bytes": 41,
+    "stdout_sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-final-tree",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD^{tree}"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:27:19.613533+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:27:19.619395+00:00",
+    "elapsed_seconds": 0.003439023857936263,
+    "stdout_bytes": 41,
+    "stdout_sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-final-branch",
+    "argv": [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:27:19.621946+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:27:19.627042+00:00",
+    "elapsed_seconds": 0.0026452771853655577,
+    "stdout_bytes": 35,
+    "stdout_sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "label": "common-final-status",
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+    "started_at": "2026-11-09T09:27:19.629639+00:00",
+    "output_mode": "file_backed_no_subprocess_kill_timeout",
+    "exit_code": 0,
+    "finished_at": "2026-11-09T09:27:19.686726+00:00",
+    "elapsed_seconds": 0.05461128102615476,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

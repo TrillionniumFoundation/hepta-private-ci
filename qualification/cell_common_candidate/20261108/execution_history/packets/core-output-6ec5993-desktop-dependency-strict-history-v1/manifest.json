@@ -1,0 +1,3007 @@
+{
+  "packet_id": "core-output-6ec5993-desktop-dependency-strict-history-v1",
+  "scope": "Completed desktop V8 dependency failure/recovery, exact tool import and nine-stage strict preparation; execution cutoff 09:37:11 UTC; no native cases",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-dependency-strict-history-v1/core-output-6ec5993-desktop-dependency-strict-history-v1.tar.xz",
+  "bytes": 1305748,
+  "sha256": "367a522060ce8270a64663b42e523a062adda630628c051597cf9bbadf88239f",
+  "file_member_count": 198,
+  "required_json_members": [
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 10646,
+      "sha256": "ef91651c1f672ba1fc3a4c0aeabe3312dc7327cb10c9698c70b28e6c5f59868c",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "V8_artifact_and_tool_archive_bytes_excluded": true,
+            "active_target_not_read": true,
+            "all_executable_bytes_excluded": true,
+            "archive_preparation_and_readback_happened_after_cutoff": true,
+            "archive_started_at": "2026-11-09T10:00:45.797230+00:00",
+            "capture_metadata_after_execution_cutoff": [
+              "desktop-6ec-dependency-strict-history-discovery-v1/FILES.json",
+              "desktop-6ec-dependency-strict-history-discovery-v1/STATIC_PREPARATIONS.json",
+              "desktop-6ec-dependency-strict-history-whitelist-v1/WHITELIST.json",
+              "desktop-6ec-dependency-strict-history-whitelist-v1/RESULT.json",
+              "desktop-6ec-dependency-strict-history-whitelist-v1/driver.py",
+              "desktop-6ec-dependency-strict-history-whitelist-launch-v1/RESULT.json",
+              "desktop-6ec-dependency-strict-history-whitelist-launch-v1/stdout.log",
+              "desktop-6ec-dependency-strict-history-whitelist-launch-v1/stderr.log"
+            ],
+            "complete_execution_history": false,
+            "complete_historical_cost_known": false,
+            "earlier_AI_and_caller_large_archives_not_duplicated": true,
+            "evidence_branch_mutated": false,
+            "full_history_cost": null,
+            "host": "desktop",
+            "host_only_helper_metadata_from_original_manifest_only": true,
+            "kind": "completed_desktop_dependency_recovery_and_strict_preparation_only",
+            "known_exclusions": [
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 0,
+                "path": "core-output-6ec5993-cross-host-v8-staging-v1/.hepta-lock-1e461681d886c25095611e20",
+                "reason": "Runtime coordination or partial upload object; retained host-side and represented by explicit partial transfer records"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 0,
+                "path": "core-output-6ec5993-cross-host-v8-staging-v1/.hepta-lock-21a80cd917e4ac1d06d561cd",
+                "reason": "Runtime coordination or partial upload object; retained host-side and represented by explicit partial transfer records"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 0,
+                "path": "core-output-6ec5993-cross-host-v8-staging-v1/.hepta-lock-5526bccec8f298dd1660897a",
+                "reason": "Runtime coordination or partial upload object; retained host-side and represented by explicit partial transfer records"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 0,
+                "path": "core-output-6ec5993-cross-host-v8-staging-v1/.hepta-lock-749faa202f600d0e6025b4d0",
+                "reason": "Runtime coordination or partial upload object; retained host-side and represented by explicit partial transfer records"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 0,
+                "path": "core-output-6ec5993-cross-host-v8-staging-v1/.hepta-lock-8afb98e77f10495038d2bd06",
+                "reason": "Runtime coordination or partial upload object; retained host-side and represented by explicit partial transfer records"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 0,
+                "path": "core-output-6ec5993-cross-host-v8-staging-v1/.hepta-lock-8d47256a19381d02782d021c",
+                "reason": "Runtime coordination or partial upload object; retained host-side and represented by explicit partial transfer records"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 0,
+                "path": "core-output-6ec5993-cross-host-v8-staging-v1/.hepta-lock-d41b1877e2318f24f373530d",
+                "reason": "Runtime coordination or partial upload object; retained host-side and represented by explicit partial transfer records"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 0,
+                "path": "core-output-6ec5993-cross-host-v8-staging-v1/.hepta-lock-e5e998e02e715698af1bb6f5",
+                "reason": "Runtime coordination or partial upload object; retained host-side and represented by explicit partial transfer records"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 3145728,
+                "path": "core-output-6ec5993-cross-host-v8-staging-v1/.hepta-upload-29bfe0e7dcb2f3ce72e9e084cc57213f6585e542c701aed2f44a851e681214f4",
+                "reason": "Runtime coordination or partial upload object; retained host-side and represented by explicit partial transfer records"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 127,
+                "path": "core-output-6ec5993-cross-host-v8-staging-v1/.hepta-upload-29bfe0e7dcb2f3ce72e9e084cc57213f6585e542c701aed2f44a851e681214f4.json",
+                "reason": "Runtime coordination or partial upload object; retained host-side and represented by explicit partial transfer records"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 411,
+                "path": "core-output-6ec5993-cross-host-v8-staging-v1/.hepta-upload-e2c243602763a4aad9dc2a15792ab86d784f33e0830fab7d4e4220968052acdf.json",
+                "reason": "Runtime coordination or partial upload object; retained host-side and represented by explicit partial transfer records"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 39884,
+                "path": "core-output-6ec5993-cross-host-v8-staging-v1/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+                "reason": "V8 artifact bytes excluded; exact original transport/resolver metadata retained"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 29366352,
+                "path": "core-output-6ec5993-local-v8-staging-v1/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+                "reason": "V8 artifact bytes excluded; exact original transport/resolver metadata retained"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 39884,
+                "path": "core-output-6ec5993-local-v8-staging-v1/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+                "reason": "V8 artifact bytes excluded; exact original transport/resolver metadata retained"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 559044352,
+                "path": "core-output-6ec5993-desktop-strict-v1/helpers/bin/codex",
+                "reason": "Host-only helper executable; bytes and current executable not read by packet builder"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 447844856,
+                "path": "core-output-6ec5993-desktop-strict-v1/helpers/bin/codex-app-server",
+                "reason": "Host-only helper executable; bytes and current executable not read by packet builder"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 117474680,
+                "path": "core-output-6ec5993-desktop-strict-v1/helpers/bin/codex-code-mode-host",
+                "reason": "Host-only helper executable; bytes and current executable not read by packet builder"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 428897624,
+                "path": "core-output-6ec5993-desktop-strict-v1/helpers/bin/codex-exec",
+                "reason": "Host-only helper executable; bytes and current executable not read by packet builder"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 42233760,
+                "path": "core-output-6ec5993-desktop-strict-v1/helpers/bin/codex-execve-wrapper",
+                "reason": "Host-only helper executable; bytes and current executable not read by packet builder"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 45226984,
+                "path": "core-output-6ec5993-desktop-strict-v1/helpers/bin/codex-linux-sandbox",
+                "reason": "Host-only helper executable; bytes and current executable not read by packet builder"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 120976864,
+                "path": "core-output-6ec5993-desktop-strict-v1/helpers/bin/exec-server",
+                "reason": "Host-only helper executable; bytes and current executable not read by packet builder"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 1439920,
+                "path": "core-output-6ec5993-desktop-strict-v1/helpers/bin/hepta-joint-propose",
+                "reason": "Host-only helper executable; bytes and current executable not read by packet builder"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 11102488,
+                "path": "core-output-6ec5993-desktop-strict-v1/helpers/bin/test_stdio_server",
+                "reason": "Host-only helper executable; bytes and current executable not read by packet builder"
+              },
+              {
+                "bytes_read": false,
+                "discovery_stat_bytes": 19336440,
+                "path": "core-output-6ec5993-desktop-strict-v1/helpers/bin/test_streamable_http_server",
+                "reason": "Host-only helper executable; bytes and current executable not read by packet builder"
+              }
+            ],
+            "member_counts_and_duplicate_driver_copies_are_not_unique_tasks": true,
+            "native_cases": 0,
+            "new_desktop_scope_was_not_in_increment008": true,
+            "new_tests_or_builds_executed_by_sealer": false,
+            "only_original_source_inventory_metadata_archived": true,
+            "original_desktop_artifact_HTTP504_preserved": true,
+            "original_execution_cutoff": "2026-11-09T09:37:11.142579+00:00",
+            "original_files": 184,
+            "original_raw_bytes_with_overlap": 19744259,
+            "original_whitelist": {
+              "bytes": 70311,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-dependency-strict-history-whitelist-v1/WHITELIST.json",
+              "sha256": "c65284009f10b1a150b3f94294a23caf9b8c37b6890d57afba1363537663551f"
+            },
+            "packet_id": "core-output-6ec5993-desktop-dependency-strict-history-v1",
+            "partial_cross_host_transfer_not_upgraded_to_complete": true,
+            "physical_cost": null,
+            "prior_tool_archive_launch_unknown_preserved": true,
+            "reused_verified_builder_pattern": {
+              "adaptation": "Replace recursive roots with pinned explicit text-record whitelist; no Git/source/binary reads; add closed original semantic checks.",
+              "sha_and_check_file_functions_copied_verbatim": true,
+              "source_record": "seal-bf42-native-and-bazel-attempt2-v1.py",
+              "source_sha256": "f84cb87d5336876093193bb8b8cc2629925980d1f330e2e8ddc0067e70cd692f"
+            },
+            "schema_version": 1,
+            "scientific_acceptance": false,
+            "shared_SSH_import_record_mentions_old_packet_transport_only": "Its original combined import metadata remains; no prior packet archive bytes or test counts are duplicated here.",
+            "source_currently_active_native_not_inspected": true,
+            "source_or_common_or_CURRENT_mutated": false,
+            "source_parent": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "source_tree_full_bytes_archived": false,
+            "stages": {
+              "S0": "HOLD",
+              "S1": "HOLD",
+              "S2": "HOLD",
+              "S3": "HOLD",
+              "S4": "HOLD",
+              "S5": "HOLD"
+            },
+            "static_preparation_failures_preserved": true,
+            "static_runner_preparations_are_not_native_results": true,
+            "strict_phase_count": 9,
+            "strict_preparation_passed": true
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/RESULT.json",
+      "bytes": 5372,
+      "sha256": "9c288a21a692d92f5c382043d043e6d550737249dbc257836b6007b80285efed",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "status": "READ_ONLY_TOOL_OBSERVATION",
+            "observed_at": "2026-11-09T08:18:06.763910+00:00",
+            "host": "desktop",
+            "RUSTUP_TOOLCHAIN": "1.96.0",
+            "commands": [
+              {
+                "argv": [
+                  "rustc",
+                  "-vV"
+                ],
+                "returncode": 0,
+                "stdout": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+                "stderr": "",
+                "stdout_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "argv": [
+                  "cargo",
+                  "--version"
+                ],
+                "returncode": 0,
+                "stdout": "cargo 1.96.0 (30a34c682 2026-05-25)\n",
+                "stderr": "",
+                "stdout_sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "argv": [
+                  "just",
+                  "--version"
+                ],
+                "returncode": 0,
+                "stdout": "just 1.51.0\n",
+                "stderr": "",
+                "stdout_sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "argv": [
+                  "cargo",
+                  "nextest",
+                  "--version"
+                ],
+                "returncode": 0,
+                "stdout": "cargo-nextest 0.9.137 (75ddba7e9 2026-05-26)\nrelease: 0.9.137\ncommit-hash: 75ddba7e911b44c5c0700dac0415d824403de9bd\ncommit-date: 2026-05-26\nhost: x86_64-unknown-linux-gnu\n",
+                "stderr": "",
+                "stdout_sha256": "f9bbf8f98ffb4c662e103de86c7afbec7f846fb9eb4b8cb7e5d5e9c05a06ee8e",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "argv": [
+                  "clang",
+                  "-print-resource-dir"
+                ],
+                "returncode": 0,
+                "stdout": "/usr/lib/llvm-18/lib/clang/18\n",
+                "stderr": "",
+                "stdout_sha256": "cb5cc056207569d14e7d36292504dce89204505b88dff2378bcc9ca66e323877",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "argv": [
+                  "pkg-config",
+                  "--modversion",
+                  "openssl"
+                ],
+                "returncode": 0,
+                "stdout": "3.0.13\n",
+                "stderr": "",
+                "stdout_sha256": "69cb5b2652867269b790b5c613ff9e0141f3b4103558c7f19a42240e85b97d03",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ],
+            "tools": {
+              "just": {
+                "lookup": "/home/qian-qi/.cargo/bin/just",
+                "resolved": "/home/qian-qi/.cargo/bin/just",
+                "bytes": 5347728,
+                "sha256": "b73359690704c2aaa0cdfb5b262e6fbf819a8be8cdea2d87565dd441dc7b3f8d"
+              },
+              "cargo-nextest": {
+                "lookup": "/home/qian-qi/.cargo/bin/cargo-nextest",
+                "resolved": "/home/qian-qi/.cargo/bin/cargo-nextest",
+                "bytes": 27799800,
+                "sha256": "c30eb94a67e43308fafce4c755fe65f23798e0a4182111013dd5274ef1150b7a"
+              },
+              "rustc": {
+                "lookup": "/home/qian-qi/.cargo/bin/rustc",
+                "resolved": "/home/qian-qi/.cargo/bin/rustup",
+                "bytes": 21139856,
+                "sha256": "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4"
+              },
+              "cargo": {
+                "lookup": "/home/qian-qi/.cargo/bin/cargo",
+                "resolved": "/home/qian-qi/.cargo/bin/rustup",
+                "bytes": 21139856,
+                "sha256": "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4"
+              },
+              "clang": {
+                "lookup": "/usr/bin/clang",
+                "resolved": "/usr/lib/llvm-18/bin/clang",
+                "bytes": 140592,
+                "sha256": "8ef402d453d1ba4902e4ee0f0f847f6cfa01400c95aa43c24e97818b9c0e3f45"
+              },
+              "pkg-config": {
+                "lookup": "/usr/bin/pkg-config",
+                "resolved": "/usr/bin/pkgconf",
+                "bytes": 45168,
+                "sha256": "7e8152db1b0c7e49d47b4b82a70dc9997b557951c5d4d938b0e7f208ce9eb10b"
+              }
+            },
+            "clang_libraries": [
+              {
+                "path": "/usr/lib/x86_64-linux-gnu/libclang-18.so.1",
+                "resolved": "/usr/lib/x86_64-linux-gnu/libclang-18.so.18",
+                "bytes": 34551120
+              },
+              {
+                "path": "/usr/lib/x86_64-linux-gnu/libclang-18.so.18",
+                "resolved": "/usr/lib/x86_64-linux-gnu/libclang-18.so.18",
+                "bytes": 34551120
+              },
+              {
+                "path": "/usr/lib/x86_64-linux-gnu/libclang-cpp.so.18",
+                "resolved": "/usr/lib/llvm-18/lib/libclang-cpp.so.18.1",
+                "bytes": 64796088
+              },
+              {
+                "path": "/usr/lib/x86_64-linux-gnu/libclang-cpp.so.18.1",
+                "resolved": "/usr/lib/llvm-18/lib/libclang-cpp.so.18.1",
+                "bytes": 64796088
+              },
+              {
+                "path": "/usr/lib/llvm-18/lib/libclang-18.so.1",
+                "resolved": "/usr/lib/x86_64-linux-gnu/libclang-18.so.18",
+                "bytes": 34551120
+              },
+              {
+                "path": "/usr/lib/llvm-18/lib/libclang-18.so.18",
+                "resolved": "/usr/lib/x86_64-linux-gnu/libclang-18.so.18",
+                "bytes": 34551120
+              },
+              {
+                "path": "/usr/lib/llvm-18/lib/libclang-cpp.so.18.1",
+                "resolved": "/usr/lib/llvm-18/lib/libclang-cpp.so.18.1",
+                "bytes": 64796088
+              },
+              {
+                "path": "/usr/lib/llvm-18/lib/libclang.so.1",
+                "resolved": "/usr/lib/x86_64-linux-gnu/libclang-18.so.18",
+                "bytes": 34551120
+              }
+            ],
+            "builds_started": 0,
+            "native_tests_started": 0,
+            "qualification": false
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/RESULT.json",
+      "bytes": 17040,
+      "sha256": "db44ee48cc91da3fdf5eab1cf460ef5dada26510912b114b13f3a5f03d8ea5c0",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "status": "DESKTOP_SAME_SOURCE_STRICT_PASSED_NOT_NATIVE",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "parent_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "host": "desktop",
+            "started_at": "2026-11-09T08:48:25.964859+00:00",
+            "native_tests_executed": false,
+            "old_failures_relabelled": false,
+            "original_nine_strict_phases_and_budgets_unchanged": true,
+            "signals_sent_to_Rust": false,
+            "full_history_cost": null,
+            "scientific_acceptance": false,
+            "steps": [
+              {
+                "name": "create-detached-source",
+                "argv": [
+                  "git",
+                  "--no-optional-locks",
+                  "worktree",
+                  "add",
+                  "--detach",
+                  "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e",
+                  "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+                "started_at": "2026-11-09T08:48:30.553376+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "wall_seconds_not_full_cost": 1.7254051780328155,
+                "finished_at": "2026-11-09T08:48:32.278783+00:00",
+                "stdout": {
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-admission-v1/create-detached-source.stdout",
+                  "bytes": 89,
+                  "sha256": "6c97927e992e2cc355eae72c04d9e676de5dfbe41c348f2af470e6caa111450a",
+                  "mode": 384,
+                  "device": 2050,
+                  "inode": 7120622,
+                  "mtime_ns": "1794214112268903034",
+                  "ctime_ns": "1794214112268903034"
+                },
+                "stderr": {
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-admission-v1/create-detached-source.stderr",
+                  "bytes": 1841,
+                  "sha256": "8537a75bc8ef3b42e87fc4a3b0e49cb1e4538e95ca0f8262b3d137899e9ecbc7",
+                  "mode": 384,
+                  "device": 2050,
+                  "inode": 7120623,
+                  "mtime_ns": "1794214112243659900",
+                  "ctime_ns": "1794214112243659900"
+                }
+              },
+              {
+                "name": "just-version",
+                "argv": [
+                  "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/just-1.58.0/just",
+                  "--version"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e",
+                "started_at": "2026-11-09T08:48:32.566393+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "wall_seconds_not_full_cost": 0.0038241660222411156,
+                "finished_at": "2026-11-09T08:48:32.570213+00:00",
+                "stdout": {
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-admission-v1/just-version.stdout",
+                  "bytes": 12,
+                  "sha256": "5f61500d03d8e5947e434b80f148a9d93c09293ab3186fd5fc5138e6ff8c03ea",
+                  "mode": 384,
+                  "device": 2050,
+                  "inode": 7120624,
+                  "mtime_ns": "1794214112569190123",
+                  "ctime_ns": "1794214112569190123"
+                },
+                "stderr": {
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-admission-v1/just-version.stderr",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "mode": 384,
+                  "device": 2050,
+                  "inode": 7120625,
+                  "mtime_ns": "1794214112567102350",
+                  "ctime_ns": "1794214112567102350"
+                }
+              },
+              {
+                "name": "nextest-version",
+                "argv": [
+                  "cargo",
+                  "nextest",
+                  "--version"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e",
+                "started_at": "2026-11-09T08:48:32.571588+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "wall_seconds_not_full_cost": 0.030048968037590384,
+                "finished_at": "2026-11-09T08:48:32.601636+00:00",
+                "stdout": {
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-admission-v1/nextest-version.stdout",
+                  "bytes": 171,
+                  "sha256": "13fae229b3f8485e0d02d80bf3c77e6cd38a2a2f1227d3e70a880cfb49365f61",
+                  "mode": 384,
+                  "device": 2050,
+                  "inode": 7120626,
+                  "mtime_ns": "1794214112600189180",
+                  "ctime_ns": "1794214112600189180"
+                },
+                "stderr": {
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-admission-v1/nextest-version.stderr",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "mode": 384,
+                  "device": 2050,
+                  "inode": 7120627,
+                  "mtime_ns": "1794214112572270848",
+                  "ctime_ns": "1794214112572270848"
+                }
+              },
+              {
+                "name": "uv-version",
+                "argv": [
+                  "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/uv-0.13.5/uv",
+                  "--version"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e",
+                "started_at": "2026-11-09T08:48:32.602851+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "wall_seconds_not_full_cost": 0.008026981959119439,
+                "finished_at": "2026-11-09T08:48:32.610878+00:00",
+                "stdout": {
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-admission-v1/uv-version.stdout",
+                  "bytes": 37,
+                  "sha256": "4d139bd1c36e7f70d98f148097e7394c1d02439732cdd0a7bec4c1fdb434e342",
+                  "mode": 384,
+                  "device": 2050,
+                  "inode": 7120628,
+                  "mtime_ns": "1794214112609188906",
+                  "ctime_ns": "1794214112609188906"
+                },
+                "stderr": {
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-admission-v1/uv-version.stderr",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "mode": 384,
+                  "device": 2050,
+                  "inode": 7120629,
+                  "mtime_ns": "1794214112603279031",
+                  "ctime_ns": "1794214112603279031"
+                }
+              },
+              {
+                "name": "strict",
+                "argv": [
+                  "/usr/bin/python3",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/prepare-output-summary-successor-strict-desktop-v1.py",
+                  "--repo",
+                  "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e",
+                  "--source-sha",
+                  "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+                  "--source-tree",
+                  "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+                  "--base-sha",
+                  "45a50bffd1631d502889069fc3f713b8a5e775d8",
+                  "--records",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1",
+                  "--target",
+                  "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/target-ci-test-6ec5993-fresh",
+                  "--execute"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e",
+                "started_at": "2026-11-09T08:48:32.612049+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "wall_seconds_not_full_cost": 2917.681889120955,
+                "finished_at": "2026-11-09T09:37:10.293946+00:00",
+                "stdout": {
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-admission-v1/strict.stdout",
+                  "bytes": 174936,
+                  "sha256": "47cf38f1bc0d21e4d593cb03e609e1a7fd0fafa3fb09ae3ccc7f60d8a340274b",
+                  "mode": 384,
+                  "device": 2050,
+                  "inode": 7120630,
+                  "mtime_ns": "1794217030276660829",
+                  "ctime_ns": "1794217030276660829"
+                },
+                "stderr": {
+                  "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-admission-v1/strict.stderr",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "mode": 384,
+                  "device": 2050,
+                  "inode": 7120631,
+                  "mtime_ns": "1794214112612572310",
+                  "ctime_ns": "1794214112612572310"
+                }
+              }
+            ],
+            "original_source_before": {
+              "sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "dirty": "",
+              "current": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+              "index": "760781e90cd434c0aa1122fc62ab73bc0104b47b653bb499a23b886e601e3123"
+            },
+            "inputs_before": {
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec-exact-tools-import-v2.tar.xz": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec-exact-tools-import-v2.tar.xz",
+                "bytes": 19341876,
+                "sha256": "b9ee945908be25a43b4c5d753fd21a3e79c7499211566aeb9cc95f908c08ce5e",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6730473,
+                "mtime_ns": "1794213991283878514",
+                "ctime_ns": "1794213991747417343"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-recovery-v1/RESULT.json": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-recovery-v1/RESULT.json",
+                "bytes": 15762,
+                "sha256": "f6db0e514ef3d08f7241cc025028f8bef3ee3a9af903a5bae539ab33474d6612",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6730458,
+                "mtime_ns": "1794213763064811450",
+                "ctime_ns": "1794213763064811450"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/prepare-output-summary-successor-strict-desktop-v1.py": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/prepare-output-summary-successor-strict-desktop-v1.py",
+                "bytes": 18350,
+                "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7",
+                "mode": 384,
+                "device": 2050,
+                "inode": 4907058,
+                "mtime_ns": "1794212646867467282",
+                "ctime_ns": "1794212646880291779"
+              }
+            },
+            "temporary_before": {
+              "identity": {
+                "path": "/var/tmp/h898e-d1",
+                "device": 2050,
+                "inode": 56800647,
+                "uid": 1000,
+                "gid": 1000,
+                "mode": 448
+              },
+              "available_bytes": 137176797184,
+              "available_inodes": 47838032
+            },
+            "clang_library": {
+              "path": "/usr/lib/x86_64-linux-gnu/libclang-18.so.18",
+              "bytes": 34551120,
+              "sha256": "d7c54213dbeb95deb5bfee76cf3e32e425cbaf8ccbd2900345414fb57476458b",
+              "mode": 420,
+              "device": 2050,
+              "inode": 36451018,
+              "mtime_ns": "1716798380000000000",
+              "ctime_ns": "1775979477099344670"
+            },
+            "clang_resource_header": {
+              "path": "/usr/lib/llvm-18/lib/clang/18/include/stddef.h",
+              "bytes": 4727,
+              "sha256": "23b9e2c5d397e05164b24bb46466bf14d951b8caec2d8e1a67a95b14f9a38625",
+              "mode": 420,
+              "device": 2050,
+              "inode": 37239128,
+              "mtime_ns": "1701595000000000000",
+              "ctime_ns": "1780478687574236903"
+            },
+            "installed_tools_before": {
+              "just": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/just-1.58.0/just",
+                "bytes": 6382872,
+                "sha256": "3ad66571feae522db2cad31b9613bf21035b8a06d2738d6fc8fe6089856f2042",
+                "mode": 493,
+                "device": 2050,
+                "inode": 53871898,
+                "mtime_ns": "1794214108311110451",
+                "ctime_ns": "1794214108339318793"
+              },
+              "cargo-nextest": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/nextest-0.9.103/cargo-nextest",
+                "bytes": 24038232,
+                "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1",
+                "mode": 493,
+                "device": 2050,
+                "inode": 53871900,
+                "mtime_ns": "1794214108984776020",
+                "ctime_ns": "1794214109057296953"
+              },
+              "uv": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/uv-0.13.5/uv",
+                "bytes": 37597160,
+                "sha256": "8a70db72685b7138121bfcda71fa1a00cb709ed9f1fdc4ecf1dd871e8e167e52",
+                "mode": 493,
+                "device": 2050,
+                "inode": 53871904,
+                "mtime_ns": "1794214110314491738",
+                "ctime_ns": "1794214110416255614"
+              }
+            },
+            "isolated_source_before": {
+              "sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "dirty": "",
+              "current": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+              "index": "760781e90cd434c0aa1122fc62ab73bc0104b47b653bb499a23b886e601e3123"
+            },
+            "tool_version_outputs": {
+              "just": "just 1.58.0\n",
+              "uv": "uv 0.13.5 (x86_64-unknown-linux-gnu)\n",
+              "cargo-nextest": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu\n"
+            },
+            "strict_returncode": 0,
+            "strict_preparation": {
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/preparation.json",
+              "bytes": 20468,
+              "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6",
+              "mode": 384,
+              "device": 2050,
+              "inode": 7120690,
+              "mtime_ns": "1794217030276135343",
+              "ctime_ns": "1794217030276135343"
+            },
+            "original_source_after": {
+              "sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "dirty": "",
+              "current": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+              "index": "760781e90cd434c0aa1122fc62ab73bc0104b47b653bb499a23b886e601e3123"
+            },
+            "isolated_source_after": {
+              "sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "dirty": "",
+              "current": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+              "index": "760781e90cd434c0aa1122fc62ab73bc0104b47b653bb499a23b886e601e3123"
+            },
+            "inputs_after": {
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec-exact-tools-import-v2.tar.xz": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec-exact-tools-import-v2.tar.xz",
+                "bytes": 19341876,
+                "sha256": "b9ee945908be25a43b4c5d753fd21a3e79c7499211566aeb9cc95f908c08ce5e",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6730473,
+                "mtime_ns": "1794213991283878514",
+                "ctime_ns": "1794213991747417343"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-recovery-v1/RESULT.json": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-recovery-v1/RESULT.json",
+                "bytes": 15762,
+                "sha256": "f6db0e514ef3d08f7241cc025028f8bef3ee3a9af903a5bae539ab33474d6612",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6730458,
+                "mtime_ns": "1794213763064811450",
+                "ctime_ns": "1794213763064811450"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/prepare-output-summary-successor-strict-desktop-v1.py": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/prepare-output-summary-successor-strict-desktop-v1.py",
+                "bytes": 18350,
+                "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7",
+                "mode": 384,
+                "device": 2050,
+                "inode": 4907058,
+                "mtime_ns": "1794212646867467282",
+                "ctime_ns": "1794212646880291779"
+              }
+            },
+            "installed_tools_after": {
+              "just": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/just-1.58.0/just",
+                "bytes": 6382872,
+                "sha256": "3ad66571feae522db2cad31b9613bf21035b8a06d2738d6fc8fe6089856f2042",
+                "mode": 493,
+                "device": 2050,
+                "inode": 53871898,
+                "mtime_ns": "1794214108311110451",
+                "ctime_ns": "1794214108339318793"
+              },
+              "cargo-nextest": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/nextest-0.9.103/cargo-nextest",
+                "bytes": 24038232,
+                "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1",
+                "mode": 493,
+                "device": 2050,
+                "inode": 53871900,
+                "mtime_ns": "1794214108984776020",
+                "ctime_ns": "1794214109057296953"
+              },
+              "uv": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/uv-0.13.5/uv",
+                "bytes": 37597160,
+                "sha256": "8a70db72685b7138121bfcda71fa1a00cb709ed9f1fdc4ecf1dd871e8e167e52",
+                "mode": 493,
+                "device": 2050,
+                "inode": 53871904,
+                "mtime_ns": "1794214110314491738",
+                "ctime_ns": "1794214110416255614"
+              }
+            },
+            "temporary_after": {
+              "identity": {
+                "path": "/var/tmp/h898e-d1",
+                "device": 2050,
+                "inode": 56800647,
+                "uid": 1000,
+                "gid": 1000,
+                "mode": 448
+              },
+              "available_bytes": 118950109184,
+              "available_inodes": 47786965
+            },
+            "final_guards_passed": true,
+            "returncode": 0,
+            "finished_at": "2026-11-09T09:37:11.120778+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-outer-v1/EXECUTION.json",
+      "bytes": 1663,
+      "sha256": "079917be009bb658b6189af5afb0e48e5e62555e8c085812262804241ed3ed89",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "status": "NATURALLY_COMPLETED",
+            "argv": [
+              "/usr/bin/python3",
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/admit-core-output-6ec-desktop-strict-v1.py",
+              "--recovery-sha256",
+              "f6db0e514ef3d08f7241cc025028f8bef3ee3a9af903a5bae539ab33474d6612",
+              "--execute"
+            ],
+            "cwd": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e",
+            "driver_before": {
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/admit-core-output-6ec-desktop-strict-v1.py",
+              "bytes": 10305,
+              "sha256": "1e31bbff2da34bceed3219b6bce5415e8dea3e0adc89050515d2053ad11ecaf7"
+            },
+            "started_at": "2026-11-09T08:48:25.901839+00:00",
+            "native_test_cases_started": 0,
+            "strict_builds_and_lints_may_run": true,
+            "extra_timeout_or_signals": false,
+            "full_cost": null,
+            "child_returncode": 0,
+            "driver_after": {
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/admit-core-output-6ec-desktop-strict-v1.py",
+              "bytes": 10305,
+              "sha256": "1e31bbff2da34bceed3219b6bce5415e8dea3e0adc89050515d2053ad11ecaf7"
+            },
+            "returncode": 0,
+            "finished_at": "2026-11-09T09:37:11.142579+00:00",
+            "wall_seconds_not_full_cost": 2925.2405509010423,
+            "stdout": {
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-outer-v1/stdout.log",
+              "bytes": 311,
+              "sha256": "cce708399cb711a78381ac564071d4af04b151a22ec4584fcb79b25bbf6c98dd"
+            },
+            "stderr": {
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-outer-v1/stderr.log",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/preparation.json",
+      "bytes": 20468,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "scope": "same_source_core_appserver_agentd_lint_and_complete_helper_preparation",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "base_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "commands": [
+              [
+                "core-owning-strict-fix",
+                [
+                  "just",
+                  "fix",
+                  "--locked",
+                  "-p",
+                  "codex-core",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "core-owning-readonly-strict-clippy",
+                [
+                  "cargo",
+                  "clippy",
+                  "--tests",
+                  "--locked",
+                  "-p",
+                  "codex-core",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "appserver-owning-strict-fix",
+                [
+                  "just",
+                  "fix",
+                  "--locked",
+                  "-p",
+                  "codex-app-server",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "appserver-owning-readonly-strict-clippy",
+                [
+                  "cargo",
+                  "clippy",
+                  "--tests",
+                  "--locked",
+                  "-p",
+                  "codex-app-server",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "agentd-owning-strict-fix",
+                [
+                  "just",
+                  "fix",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ],
+              [
+                "agentd-owning-readonly-strict-clippy",
+                [
+                  "cargo",
+                  "clippy",
+                  "--tests",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--",
+                  "-D",
+                  "warnings"
+                ]
+              ]
+            ],
+            "formatting": "root already ran canonical just fmt before freezing this exact source; no repeat",
+            "helper_packages": [
+              "codex-cli",
+              "codex-exec",
+              "codex-app-server",
+              "codex-code-mode-host",
+              "codex-rmcp-client",
+              "codex-linux-sandbox",
+              "codex-shell-escalation",
+              "codex-hepta-infer-worker-host"
+            ],
+            "helper_scope": "all ten original CI helper binaries, rebuilt and pinned to this exact source",
+            "owning_package_lints": [
+              "codex-core",
+              "codex-app-server",
+              "codex-hepta-agentd"
+            ],
+            "owning_package_features": [],
+            "canonical_fix_followed_by_nonmutating_strict_clippy": true,
+            "prior_lint_results_not_relabelled_to_this_source": true,
+            "tests_run": false,
+            "scientific_qualification_performed": false,
+            "full_workspace_lint_performed": false,
+            "full_cost": null,
+            "minimum_free_bytes_before_build": 4294967296,
+            "minimum_task_temp_available_bytes_before_child": 4294967296,
+            "minimum_task_temp_available_inodes_before_child": 100000,
+            "explicit_task_tmpdir": "/var/tmp/h898e-d1",
+            "temporary_environment_change_from_failed_45a": true,
+            "old_45a_failure_is_not_relabelled": true,
+            "cargo_profile": "dev",
+            "build_jobs": 6,
+            "status": "prepared_clean",
+            "started_at": "2026-11-09T08:48:32.920260+00:00",
+            "steps": [
+              {
+                "name": "v8",
+                "argv": [
+                  "python3",
+                  "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/scripts/hepta_ci_v8.py"
+                ],
+                "free_bytes_before": 136855531520,
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 136855531520,
+                  "free_bytes": 156853805056,
+                  "user_available_inodes": 47820965,
+                  "free_inodes": 47820965,
+                  "observed_at": "2026-11-09T08:48:35.660873+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "observed_at": "2026-11-09T08:48:35.660896+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "free_bytes_after": 136855506944,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 136855506944,
+                  "free_bytes": 156853780480,
+                  "user_available_inodes": 47820963,
+                  "free_inodes": 47820963,
+                  "observed_at": "2026-11-09T08:48:41.199784+00:00",
+                  "not_a_historical_resource_attribution": true
+                }
+              },
+              {
+                "name": "helper-build",
+                "argv": [
+                  "python3",
+                  "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/scripts/hepta_cell_test_helpers.py",
+                  "--output-dir",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helpers"
+                ],
+                "free_bytes_before": 136855506944,
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 136855506944,
+                  "free_bytes": 156853780480,
+                  "user_available_inodes": 47820963,
+                  "free_inodes": 47820963,
+                  "observed_at": "2026-11-09T08:48:41.201177+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "observed_at": "2026-11-09T08:48:41.201203+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "free_bytes_after": 120228061184,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 120228061184,
+                  "free_bytes": 140226334720,
+                  "user_available_inodes": 47796507,
+                  "free_inodes": 47796507,
+                  "observed_at": "2026-11-09T09:12:06.198753+00:00",
+                  "not_a_historical_resource_attribution": true
+                }
+              },
+              {
+                "name": "helper-verify",
+                "argv": [
+                  "python3",
+                  "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/scripts/hepta_cell_test_helpers.py",
+                  "--output-dir",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helpers",
+                  "--verify-only"
+                ],
+                "free_bytes_before": 120228057088,
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 120228057088,
+                  "free_bytes": 140226330624,
+                  "user_available_inodes": 47796507,
+                  "free_inodes": 47796507,
+                  "observed_at": "2026-11-09T09:12:06.200498+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "observed_at": "2026-11-09T09:12:06.200521+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "free_bytes_after": 120228069376,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 120228069376,
+                  "free_bytes": 140226342912,
+                  "user_available_inodes": 47796495,
+                  "free_inodes": 47796495,
+                  "observed_at": "2026-11-09T09:12:13.382678+00:00",
+                  "not_a_historical_resource_attribution": true
+                }
+              },
+              {
+                "name": "core-owning-strict-fix",
+                "argv": [
+                  "just",
+                  "fix",
+                  "--locked",
+                  "-p",
+                  "codex-core",
+                  "--",
+                  "-D",
+                  "warnings"
+                ],
+                "free_bytes_before": 120227979264,
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 120227979264,
+                  "free_bytes": 140226252800,
+                  "user_available_inodes": 47796499,
+                  "free_inodes": 47796499,
+                  "observed_at": "2026-11-09T09:12:13.623482+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "observed_at": "2026-11-09T09:12:13.623511+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "free_bytes_after": 119568515072,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 119568515072,
+                  "free_bytes": 139566788608,
+                  "user_available_inodes": 47790254,
+                  "free_inodes": 47790254,
+                  "observed_at": "2026-11-09T09:17:29.494061+00:00",
+                  "not_a_historical_resource_attribution": true
+                }
+              },
+              {
+                "name": "core-owning-readonly-strict-clippy",
+                "argv": [
+                  "cargo",
+                  "clippy",
+                  "--tests",
+                  "--locked",
+                  "-p",
+                  "codex-core",
+                  "--",
+                  "-D",
+                  "warnings"
+                ],
+                "free_bytes_before": 119568494592,
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 119568494592,
+                  "free_bytes": 139566768128,
+                  "user_available_inodes": 47790250,
+                  "free_inodes": 47790250,
+                  "observed_at": "2026-11-09T09:17:29.743082+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "observed_at": "2026-11-09T09:17:29.743113+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "free_bytes_after": 119514005504,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 119514005504,
+                  "free_bytes": 139512279040,
+                  "user_available_inodes": 47789632,
+                  "free_inodes": 47789632,
+                  "observed_at": "2026-11-09T09:21:30.391318+00:00",
+                  "not_a_historical_resource_attribution": true
+                }
+              },
+              {
+                "name": "appserver-owning-strict-fix",
+                "argv": [
+                  "just",
+                  "fix",
+                  "--locked",
+                  "-p",
+                  "codex-app-server",
+                  "--",
+                  "-D",
+                  "warnings"
+                ],
+                "free_bytes_before": 119514005504,
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 119514005504,
+                  "free_bytes": 139512279040,
+                  "user_available_inodes": 47789632,
+                  "free_inodes": 47789632,
+                  "observed_at": "2026-11-09T09:21:30.659745+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "observed_at": "2026-11-09T09:21:30.659796+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "free_bytes_after": 119197384704,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 119197384704,
+                  "free_bytes": 139195658240,
+                  "user_available_inodes": 47788301,
+                  "free_inodes": 47788301,
+                  "observed_at": "2026-11-09T09:25:34.809602+00:00",
+                  "not_a_historical_resource_attribution": true
+                }
+              },
+              {
+                "name": "appserver-owning-readonly-strict-clippy",
+                "argv": [
+                  "cargo",
+                  "clippy",
+                  "--tests",
+                  "--locked",
+                  "-p",
+                  "codex-app-server",
+                  "--",
+                  "-D",
+                  "warnings"
+                ],
+                "free_bytes_before": 119197384704,
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 119197384704,
+                  "free_bytes": 139195658240,
+                  "user_available_inodes": 47788301,
+                  "free_inodes": 47788301,
+                  "observed_at": "2026-11-09T09:25:35.063732+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "observed_at": "2026-11-09T09:25:35.063764+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "free_bytes_after": 119123357696,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 119123357696,
+                  "free_bytes": 139121631232,
+                  "user_available_inodes": 47787644,
+                  "free_inodes": 47787644,
+                  "observed_at": "2026-11-09T09:29:12.908237+00:00",
+                  "not_a_historical_resource_attribution": true
+                }
+              },
+              {
+                "name": "agentd-owning-strict-fix",
+                "argv": [
+                  "just",
+                  "fix",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--",
+                  "-D",
+                  "warnings"
+                ],
+                "free_bytes_before": 119123357696,
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 119123357696,
+                  "free_bytes": 139121631232,
+                  "user_available_inodes": 47787644,
+                  "free_inodes": 47787644,
+                  "observed_at": "2026-11-09T09:29:13.124028+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "observed_at": "2026-11-09T09:29:13.124059+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "free_bytes_after": 118990532608,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 118990532608,
+                  "free_bytes": 138988806144,
+                  "user_available_inodes": 47787022,
+                  "free_inodes": 47787022,
+                  "observed_at": "2026-11-09T09:32:53.167912+00:00",
+                  "not_a_historical_resource_attribution": true
+                }
+              },
+              {
+                "name": "agentd-owning-readonly-strict-clippy",
+                "argv": [
+                  "cargo",
+                  "clippy",
+                  "--tests",
+                  "--locked",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--",
+                  "-D",
+                  "warnings"
+                ],
+                "free_bytes_before": 118990532608,
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 118990532608,
+                  "free_bytes": 138988806144,
+                  "user_available_inodes": 47787022,
+                  "free_inodes": 47787022,
+                  "observed_at": "2026-11-09T09:32:53.413864+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "observed_at": "2026-11-09T09:32:53.413895+00:00",
+                "status": "finished",
+                "returncode": 0,
+                "free_bytes_after": 118955806720,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 118955806720,
+                  "free_bytes": 138954080256,
+                  "user_available_inodes": 47786969,
+                  "free_inodes": 47786969,
+                  "observed_at": "2026-11-09T09:37:05.454382+00:00",
+                  "not_a_historical_resource_attribution": true
+                }
+              }
+            ],
+            "preparation_returncode": 0,
+            "driver_sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7",
+            "tool_files": {
+              "just": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/just-1.58.0/just",
+                "sha256": "3ad66571feae522db2cad31b9613bf21035b8a06d2738d6fc8fe6089856f2042"
+              },
+              "cargo-nextest": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/nextest-0.9.103/cargo-nextest",
+                "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+              }
+            },
+            "selected_environment": {
+              "PATH": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/just-1.58.0:/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/nextest-0.9.103:/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/uv-0.13.5:/home/qian-qi/.cargo/bin:/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/just-1.58.0:/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/nextest-0.9.103:/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/uv-0.13.5:/home/qian-qi/.cargo/bin:/home/qian-qi/.elan/bin:/home/qian-qi/.local/bin:/home/qian-qi/.elan/bin:/home/qian-qi/.local/bin:/home/qian-qi/.elan/bin:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/opt/gradle/current/bin:/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/build-tools/35.0.1:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "RUSTUP_TOOLCHAIN": "1.96.0",
+              "CARGO_TARGET_DIR": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/target-ci-test-6ec5993-fresh",
+              "CARGO_BUILD_JOBS": "6",
+              "CARGO_PROFILE_DEV_DEBUG": "0",
+              "CARGO_PROFILE_TEST_DEBUG": "0",
+              "CARGO_INCREMENTAL": "0",
+              "LIBCLANG_PATH": "/usr/lib/x86_64-linux-gnu",
+              "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/usr/lib/llvm-18/lib/clang/18",
+              "TMPDIR": "/var/tmp/h898e-d1"
+            },
+            "source_before": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": "",
+              "files_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/source-before.files.json",
+              "files_sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+              "files_count": 15010,
+              "regular_file_bytes": 200422945,
+              "untracked_count": 0,
+              "diff_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/source-before.diff.patch",
+              "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "identity_stable_during_capture": true,
+              "capture_elapsed_seconds": 2.621653975220397,
+              "observed_at": "2026-11-09T08:48:35.652458+00:00",
+              "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+            },
+            "identity_after_core-owning-strict-fix": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": ""
+            },
+            "identity_after_core-owning-readonly-strict-clippy": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": ""
+            },
+            "identity_after_appserver-owning-strict-fix": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": ""
+            },
+            "identity_after_appserver-owning-readonly-strict-clippy": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": ""
+            },
+            "identity_after_agentd-owning-strict-fix": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": ""
+            },
+            "identity_after_agentd-owning-readonly-strict-clippy": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": ""
+            },
+            "source_after": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": "",
+              "files_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/source-after.files.json",
+              "files_sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+              "files_count": 15010,
+              "regular_file_bytes": 200422945,
+              "untracked_count": 0,
+              "diff_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/source-after.diff.patch",
+              "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "identity_stable_during_capture": true,
+              "capture_elapsed_seconds": 4.5667477960232645,
+              "observed_at": "2026-11-09T09:37:10.267200+00:00",
+              "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+            },
+            "source_unchanged": true,
+            "returncode": 0,
+            "finished_at": "2026-11-09T09:37:10.275083+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-preflight-v1/RESULT.json",
+      "bytes": 3340,
+      "sha256": "22c05ec4e9cc56f64ac44a2910e8949af31d310f95d6dfd37caedd91b3b435c8",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "status": "ALTERNATE_HOST_PREFLIGHT_FAILED",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "base_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "host": "desktop",
+            "started_at": "2026-11-09T08:08:42.873871+00:00",
+            "scope": "Alternate-host original V8 resolver readiness only",
+            "native_test_executions": 0,
+            "helper_builds": 0,
+            "lint_commands": 0,
+            "prior_ai_failures_unchanged": true,
+            "automatic_retry": false,
+            "dependency_validation_bypassed": false,
+            "scientific_acceptance": false,
+            "physical_cost": null,
+            "full_history_cost": null,
+            "source_before": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "dirty": ""
+            },
+            "temporary_before": {
+              "path": "/var/tmp/h898e-d1",
+              "device": 2050,
+              "inode": 56800647,
+              "uid": 1000,
+              "gid": 1000,
+              "mode": 448,
+              "available_bytes": 138467323904,
+              "available_inodes": 47861310
+            },
+            "explicit_environment": {
+              "SOURCE_SHA": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "TESTED_SHA": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "BASE_SHA": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+              "HEPTA_CI_LANE": "source-head",
+              "CODEX_REPO_ROOT": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+              "PYTHONPATH": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e/scripts",
+              "PYTHONDONTWRITEBYTECODE": "1",
+              "RUSTUP_TOOLCHAIN": "1.96.0",
+              "TMPDIR": "/var/tmp/h898e-d1",
+              "GITHUB_ENV": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.env"
+            },
+            "command": [
+              "/usr/bin/python3",
+              "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e/scripts/hepta_ci_exec.py",
+              "--timeout-seconds",
+              "7200",
+              "--minimum-tests",
+              "0",
+              "--output",
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.json",
+              "--",
+              "python3",
+              "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e/scripts/hepta_ci_v8.py"
+            ],
+            "returncode_original_wrapper": 1,
+            "wall_seconds_not_full_cost": 25.886619669850916,
+            "original_receipt": {
+              "bytes": 1506,
+              "sha256": "fadaf3e61302cac2e351f51a3ee02b8810b3abdd4b9f1933c2a99e72df56a5e9"
+            },
+            "original_raw": {
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.json.1f43a08a10954c0e92172b9cdd20b383.log",
+              "bytes": 2682,
+              "sha256": "5172605fc065e020a12cd0187547e5b2bbdcae6ecdbad4806bdb0d0652c25fd1"
+            },
+            "error": "AssertionError: ",
+            "source_after": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "dirty": ""
+            },
+            "source_unchanged": true,
+            "temporary_after": {
+              "path": "/var/tmp/h898e-d1",
+              "device": 2050,
+              "inode": 56800647,
+              "uid": 1000,
+              "gid": 1000,
+              "mode": 448,
+              "available_bytes": 138470866944,
+              "available_inodes": 47861301
+            },
+            "returncode": 1,
+            "finished_at": "2026-11-09T08:09:08.896242+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-recovery-v1/RESULT.json",
+      "bytes": 15762,
+      "sha256": "f6db0e514ef3d08f7241cc025028f8bef3ee3a9af903a5bae539ab33474d6612",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "status": "ORIGINAL_DESKTOP_V8_RECOVERED_NOT_NATIVE",
+            "host": "desktop",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "base_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "started_at": "2026-11-09T08:42:37.261997+00:00",
+            "explicit_recovery_attempt": 1,
+            "automatic_retry_loop": false,
+            "prior_desktop_preflight_status": "FAIL",
+            "prior_AI_two_failures_relabelled": false,
+            "checksums_copied": false,
+            "V8_overrides_preseeded": false,
+            "original_resolver_fresh_checksum_required": true,
+            "original_budgets_unchanged": true,
+            "helper_builds": 0,
+            "lint_commands": 0,
+            "native_test_cases": 0,
+            "scientific_acceptance": false,
+            "full_history_cost": null,
+            "physical_cost": null,
+            "original_inputs_before": {
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/RESULT.json": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/RESULT.json",
+                "bytes": 3340,
+                "sha256": "22c05ec4e9cc56f64ac44a2910e8949af31d310f95d6dfd37caedd91b3b435c8",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216991,
+                "mtime_ns": 1794211748896622292,
+                "ctime_ns": 1794211748896622292
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/driver.py": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/driver.py",
+                "bytes": 5751,
+                "sha256": "80244d06ab0c56158e8191f9fb23750ab3ddbb1cf6bda926c83e3671d29f857d",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216986,
+                "mtime_ns": 1794211722873827486,
+                "ctime_ns": 1794211722873827486
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.env": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.env",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216987,
+                "mtime_ns": 1794211722942668449,
+                "ctime_ns": 1794211722942668449
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.json": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.json",
+                "bytes": 1506,
+                "sha256": "fadaf3e61302cac2e351f51a3ee02b8810b3abdd4b9f1933c2a99e72df56a5e9",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216993,
+                "mtime_ns": 1794211748785462050,
+                "ctime_ns": 1794211748814857946
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.json.1f43a08a10954c0e92172b9cdd20b383.log": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.json.1f43a08a10954c0e92172b9cdd20b383.log",
+                "bytes": 2682,
+                "sha256": "5172605fc065e020a12cd0187547e5b2bbdcae6ecdbad4806bdb0d0652c25fd1",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216992,
+                "mtime_ns": 1794211748635863552,
+                "ctime_ns": 1794211748635863552
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/wrapper.stderr": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/wrapper.stderr",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216990,
+                "mtime_ns": 1794211722942990734,
+                "ctime_ns": 1794211722942990734
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/wrapper.stdout": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/wrapper.stdout",
+                "bytes": 4056,
+                "sha256": "1918bdf42251b668704157f9ced92d2eaea216bc0bcbab67619b30dc5aa13d13",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216989,
+                "mtime_ns": 1794211748814857946,
+                "ctime_ns": 1794211748814857946
+              }
+            },
+            "source_before": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "dirty": "",
+              "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+              "index_sha256": "760781e90cd434c0aa1122fc62ab73bc0104b47b653bb499a23b886e601e3123"
+            },
+            "temporary_before": {
+              "identity": {
+                "path": "/var/tmp/h898e-d1",
+                "device": 2050,
+                "inode": 56800647,
+                "uid": 1000,
+                "gid": 1000,
+                "mode": 448
+              },
+              "available_bytes": 137256214528,
+              "available_inodes": 47838285
+            },
+            "checksum_before": {
+              "path": "/var/tmp/h898e-d1/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+              "bytes": 262,
+              "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be",
+              "mode": 384,
+              "device": 2050,
+              "inode": 58619687,
+              "mtime_ns": 1794211736432147009,
+              "ctime_ns": 1794211736432147009
+            },
+            "staged_inputs_before": {
+              "librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-local-v8-staging-v1/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+                "bytes": 29366352,
+                "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6730447,
+                "mtime_ns": 1794213595539891959,
+                "ctime_ns": 1794213595597890202
+              },
+              "src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-local-v8-staging-v1/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+                "bytes": 39884,
+                "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6730448,
+                "mtime_ns": 1794213595723886384,
+                "ctime_ns": 1794213595725886324
+              }
+            },
+            "cache_copies": {
+              "librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz": {
+                "path": "/var/tmp/h898e-d1/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+                "bytes": 29366352,
+                "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+                "mode": 384,
+                "device": 2050,
+                "inode": 58619705,
+                "mtime_ns": 1794213759095931911,
+                "ctime_ns": 1794213759147930333
+              },
+              "src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs": {
+                "path": "/var/tmp/h898e-d1/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+                "bytes": 39884,
+                "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+                "mode": 384,
+                "device": 2050,
+                "inode": 58619706,
+                "mtime_ns": 1794213759261376752,
+                "ctime_ns": 1794213759269926630
+              }
+            },
+            "explicit_environment": {
+              "SOURCE_SHA": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "TESTED_SHA": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "BASE_SHA": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+              "HEPTA_CI_LANE": "source-head",
+              "CODEX_REPO_ROOT": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e",
+              "PYTHONPATH": "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e/scripts",
+              "PYTHONDONTWRITEBYTECODE": "1",
+              "RUSTUP_TOOLCHAIN": "1.96.0",
+              "TMPDIR": "/var/tmp/h898e-d1",
+              "GITHUB_ENV": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-recovery-v1/v8.env"
+            },
+            "command": [
+              "/usr/bin/python3",
+              "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e/scripts/hepta_ci_exec.py",
+              "--timeout-seconds",
+              "7200",
+              "--minimum-tests",
+              "0",
+              "--output",
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-recovery-v1/v8.json",
+              "--",
+              "python3",
+              "/home/qian-qi/worktrees/hepta-core-output-clock-oracle-45a-20261109-898e/scripts/hepta_ci_v8.py"
+            ],
+            "wrapper_returncode": 0,
+            "wall_seconds_not_full_cost": 3.453353540971875,
+            "original_resolver_receipt": {
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-recovery-v1/v8.json",
+              "bytes": 1502,
+              "sha256": "8cef00fef271a030dd97f7b18aae7dcdbfcda236c91d72a44ba3e5019eaee1af",
+              "mode": 384,
+              "device": 2050,
+              "inode": 6730460,
+              "mtime_ns": 1794213762704611679,
+              "ctime_ns": 1794213762704822376
+            },
+            "original_raw": {
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-recovery-v1/v8.json.d78b9d391f4348d5a69ac4f8d6574637.log",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "mode": 384,
+              "device": 2050,
+              "inode": 6730459,
+              "mtime_ns": 1794213759404922533,
+              "ctime_ns": 1794213759404922533
+            },
+            "resolver_outputs": {
+              "RUSTY_V8_ARCHIVE": "/var/tmp/h898e-d1/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+              "RUSTY_V8_SRC_BINDING_PATH": "/var/tmp/h898e-d1/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"
+            },
+            "fresh_checksum_after": {
+              "path": "/var/tmp/h898e-d1/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+              "bytes": 262,
+              "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be",
+              "mode": 384,
+              "device": 2050,
+              "inode": 58619707,
+              "mtime_ns": 1794213762457633893,
+              "ctime_ns": 1794213762457633893
+            },
+            "source_after": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "parents": [
+                "45a50bffd1631d502889069fc3f713b8a5e775d8"
+              ],
+              "dirty": "",
+              "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+              "index_sha256": "760781e90cd434c0aa1122fc62ab73bc0104b47b653bb499a23b886e601e3123"
+            },
+            "temporary_after": {
+              "identity": {
+                "path": "/var/tmp/h898e-d1",
+                "device": 2050,
+                "inode": 56800647,
+                "uid": 1000,
+                "gid": 1000,
+                "mode": 448
+              },
+              "available_bytes": 137226735616,
+              "available_inodes": 47838277
+            },
+            "original_inputs_after": {
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/RESULT.json": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/RESULT.json",
+                "bytes": 3340,
+                "sha256": "22c05ec4e9cc56f64ac44a2910e8949af31d310f95d6dfd37caedd91b3b435c8",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216991,
+                "mtime_ns": 1794211748896622292,
+                "ctime_ns": 1794211748896622292
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/driver.py": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/driver.py",
+                "bytes": 5751,
+                "sha256": "80244d06ab0c56158e8191f9fb23750ab3ddbb1cf6bda926c83e3671d29f857d",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216986,
+                "mtime_ns": 1794211722873827486,
+                "ctime_ns": 1794211722873827486
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.env": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.env",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216987,
+                "mtime_ns": 1794211722942668449,
+                "ctime_ns": 1794211722942668449
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.json": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.json",
+                "bytes": 1506,
+                "sha256": "fadaf3e61302cac2e351f51a3ee02b8810b3abdd4b9f1933c2a99e72df56a5e9",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216993,
+                "mtime_ns": 1794211748785462050,
+                "ctime_ns": 1794211748814857946
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.json.1f43a08a10954c0e92172b9cdd20b383.log": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/v8.json.1f43a08a10954c0e92172b9cdd20b383.log",
+                "bytes": 2682,
+                "sha256": "5172605fc065e020a12cd0187547e5b2bbdcae6ecdbad4806bdb0d0652c25fd1",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216992,
+                "mtime_ns": 1794211748635863552,
+                "ctime_ns": 1794211748635863552
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/wrapper.stderr": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/wrapper.stderr",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216990,
+                "mtime_ns": 1794211722942990734,
+                "ctime_ns": 1794211722942990734
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/wrapper.stdout": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-preflight-v1/wrapper.stdout",
+                "bytes": 4056,
+                "sha256": "1918bdf42251b668704157f9ced92d2eaea216bc0bcbab67619b30dc5aa13d13",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6216989,
+                "mtime_ns": 1794211748814857946,
+                "ctime_ns": 1794211748814857946
+              }
+            },
+            "staged_inputs_after": {
+              "librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-local-v8-staging-v1/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+                "bytes": 29366352,
+                "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6730447,
+                "mtime_ns": 1794213595539891959,
+                "ctime_ns": 1794213595597890202
+              },
+              "src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-local-v8-staging-v1/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+                "bytes": 39884,
+                "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+                "mode": 384,
+                "device": 2050,
+                "inode": 6730448,
+                "mtime_ns": 1794213595723886384,
+                "ctime_ns": 1794213595725886324
+              }
+            },
+            "source_and_originals_unchanged": true,
+            "returncode": 0,
+            "finished_at": "2026-11-09T08:42:43.065093+00:00"
+          }
+        }
+      ]
+    }
+  ],
+  "nul_delimited_git_stdout": [],
+  "file_members": [
+    {
+      "path": "capture/desktop-6ec-dependency-strict-history-discovery-v1/FILES.json",
+      "bytes": 56998,
+      "sha256": "ad5ebda834254d4c6e04bfc65f1b43face592a5f5cbe5ee8ca9f2b6eeddfa033"
+    },
+    {
+      "path": "capture/desktop-6ec-dependency-strict-history-discovery-v1/STATIC_PREPARATIONS.json",
+      "bytes": 2722,
+      "sha256": "c55b798f63eff992cd55050e411d05b46ae5674c5fef22b13953d4a9bbe1c5b8"
+    },
+    {
+      "path": "capture/desktop-6ec-dependency-strict-history-whitelist-launch-v1/RESULT.json",
+      "bytes": 370,
+      "sha256": "7b4b39915410dbd7ce264d7fb03ea2573c5794ead0408ab8015db2047670179d"
+    },
+    {
+      "path": "capture/desktop-6ec-dependency-strict-history-whitelist-launch-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "capture/desktop-6ec-dependency-strict-history-whitelist-launch-v1/stdout.log",
+      "bytes": 445,
+      "sha256": "51b52727bc8a117b2abd007d21c1c0ce30d4747122361d05620f65a5b8214769"
+    },
+    {
+      "path": "capture/desktop-6ec-dependency-strict-history-whitelist-v1/RESULT.json",
+      "bytes": 477,
+      "sha256": "0e805a7429b4b799d2d29372e67dff7d336e7f7cca89c8610c9045792d90c059"
+    },
+    {
+      "path": "capture/desktop-6ec-dependency-strict-history-whitelist-v1/WHITELIST.json",
+      "bytes": 70311,
+      "sha256": "c65284009f10b1a150b3f94294a23caf9b8c37b6890d57afba1363537663551f"
+    },
+    {
+      "path": "capture/desktop-6ec-dependency-strict-history-whitelist-v1/driver.py",
+      "bytes": 23863,
+      "sha256": "9bdee006adc7121dbe9e344c3a8432ffd65893f69a629161133595c67b4d8c20"
+    },
+    {
+      "path": "metadata/CAPTURE_INPUTS_BEFORE.json",
+      "bytes": 2592,
+      "sha256": "7e088201689168a53a297cbe75de6361e737454ded4f4102bdfd6319cd8e7ee5"
+    },
+    {
+      "path": "metadata/INPUTS_AFTER_BEFORE_ARCHIVE.json",
+      "bytes": 58379,
+      "sha256": "939bf31d2885c0b0f5ba65315f413d0ee70dfd2755e73f2512d9792a81d7eb93"
+    },
+    {
+      "path": "metadata/INPUTS_BEFORE.json",
+      "bytes": 58379,
+      "sha256": "939bf31d2885c0b0f5ba65315f413d0ee70dfd2755e73f2512d9792a81d7eb93"
+    },
+    {
+      "path": "metadata/OBSERVATIONS.json",
+      "bytes": 71954,
+      "sha256": "1a090e9528e34dcd5651947392f27f00427d91f52080792c5e72b5c164d14a29"
+    },
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 10646,
+      "sha256": "ef91651c1f672ba1fc3a4c0aeabe3312dc7327cb10c9698c70b28e6c5f59868c"
+    },
+    {
+      "path": "metadata/sealer.py",
+      "bytes": 24318,
+      "sha256": "1b15e3dd66e0a628e16a3a69f3f092ef81802dfcb5f3ce5eb97c677f2743379e"
+    },
+    {
+      "path": "originals/admit-core-output-6ec-desktop-strict-v1.py",
+      "bytes": 10305,
+      "sha256": "1e31bbff2da34bceed3219b6bce5415e8dea3e0adc89050515d2053ad11ecaf7"
+    },
+    {
+      "path": "originals/copy-core-output-6ec-ai-sealed-files-over-existing-ssh-v1.py",
+      "bytes": 9515,
+      "sha256": "0d6dd6c2a8709a4b600d10d0fa0a3f3320154e05b4f1cb4bd3f7937f1a6886b1"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/INPUTS.json",
+      "bytes": 1139,
+      "sha256": "2dae3b7778f8483bf4d138532bfcb0101afebb376e5fbd583bb35a9c1b48901d"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/RESULT.json",
+      "bytes": 19857,
+      "sha256": "b54a1db4d86b3c855e3a9c938b503ef35a9987fd83e07da1cabe0e7ea8ef3b03"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/driver.py",
+      "bytes": 9515,
+      "sha256": "0d6dd6c2a8709a4b600d10d0fa0a3f3320154e05b4f1cb4bd3f7937f1a6886b1"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/endpoint-exact-tools-before.json",
+      "bytes": 1750,
+      "sha256": "5ad50f68e1381f1350557dcf649bcd6e6affcabd6b7dc4f277aa528c85e16fe7"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/endpoint-exact-tools-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/endpoint-exact-tools-before.stdout",
+      "bytes": 379,
+      "sha256": "ec0c402962e9cee128240a7ebf02e53d26d6c55fb189a0f42819565336a53f61"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/exact-tools-after.json",
+      "bytes": 1749,
+      "sha256": "e91f06e5560b3d4e0b88378561fc0ee4dfa26b03c2758aa92d3e7e0febc8e656"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/exact-tools-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/exact-tools-after.stdout",
+      "bytes": 379,
+      "sha256": "ec0c402962e9cee128240a7ebf02e53d26d6c55fb189a0f42819565336a53f61"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/exact-tools-final.json",
+      "bytes": 1750,
+      "sha256": "323cfdcc5bb55965dc6dd9ceded8bddf4a0e720bcf7c2a6252ffa300e7449e4a"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/exact-tools-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/exact-tools-final.stdout",
+      "bytes": 379,
+      "sha256": "ec0c402962e9cee128240a7ebf02e53d26d6c55fb189a0f42819565336a53f61"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/exact-tools-scp.json",
+      "bytes": 934,
+      "sha256": "8e2d86caf7184e4ccf2ac8a5278940e2c6cfdf4e018fca55c4f71e53e51be85c"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/exact-tools-scp.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/exact-tools-scp.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/sixec-history-after.json",
+      "bytes": 1799,
+      "sha256": "4c95268aa9e1f4e75fc9a4000f26b517ffad670f45d10080f43dded3982b48a9"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/sixec-history-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/sixec-history-after.stdout",
+      "bytes": 428,
+      "sha256": "e654ce902cb66ab0d6fd2c11325756fa38ab96b4523eeb5fe482b38f0f4a7a8d"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/sixec-history-before.json",
+      "bytes": 1800,
+      "sha256": "64dcace00eeb625faa804fb0b9bda8411c4d1991415bd3b026fcf1d7560f7996"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/sixec-history-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/sixec-history-before.stdout",
+      "bytes": 428,
+      "sha256": "e654ce902cb66ab0d6fd2c11325756fa38ab96b4523eeb5fe482b38f0f4a7a8d"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/sixec-history-final.json",
+      "bytes": 1800,
+      "sha256": "f8bdc00214db1cc4e1154eeff5290ef8b5651de0292d32c1d6cd668db2fe892f"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/sixec-history-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/sixec-history-final.stdout",
+      "bytes": 428,
+      "sha256": "e654ce902cb66ab0d6fd2c11325756fa38ab96b4523eeb5fe482b38f0f4a7a8d"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/sixec-history-scp.json",
+      "bytes": 986,
+      "sha256": "d304257e56d48a1853e7a3c4059c02cb75698db854fbe734348b1da9013419dc"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/sixec-history-scp.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-ai-ssh-import-v1/sixec-history-scp.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-local-v8-staging-console-v1.log",
+      "bytes": 329,
+      "sha256": "e78619495e26b3e94eb7e81a5709383168c71365164276a5399ba46756c404ee"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-local-v8-staging-execution-v1.json",
+      "bytes": 784,
+      "sha256": "96396371692d46b654d1593d9fc7085e3423aa95495259ad9ed8577b6f2e2c1f"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-native-readiness-v1.json",
+      "bytes": 1652,
+      "sha256": "b98155fd7c91671e9792d42398e91d16366a042acdcf0f2a3d8e50620ff969ae"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/0.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/0.stdout",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/1.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/1.stdout",
+      "bytes": 36,
+      "sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/2.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/2.stdout",
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/3.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/3.stdout",
+      "bytes": 171,
+      "sha256": "f9bbf8f98ffb4c662e103de86c7afbec7f846fb9eb4b8cb7e5d5e9c05a06ee8e"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/4.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/4.stdout",
+      "bytes": 30,
+      "sha256": "cb5cc056207569d14e7d36292504dce89204505b88dff2378bcc9ca66e323877"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/5.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/5.stdout",
+      "bytes": 7,
+      "sha256": "69cb5b2652867269b790b5c613ff9e0141f3b4103558c7f19a42240e85b97d03"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/RESULT.json",
+      "bytes": 5372,
+      "sha256": "9c288a21a692d92f5c382043d043e6d550737249dbc257836b6007b80285efed"
+    },
+    {
+      "path": "originals/core-output-6ec-desktop-tool-readiness-v1/driver.py",
+      "bytes": 2065,
+      "sha256": "b2503b191322c1d65f4bdb2b03e6f83daca4075fcaaaf34e66c36971c189d63a"
+    },
+    {
+      "path": "originals/core-output-6ec-exact-tools-import-v2-original-result.json",
+      "bytes": 3413,
+      "sha256": "ba048c47d1c548be5aeb73ac304343505f774b13c47a5d3693ba52d4f72f7823"
+    },
+    {
+      "path": "originals/core-output-6ec-v8-cross-host-transfer-inputs-v1.json",
+      "bytes": 2032,
+      "sha256": "c58309a899a75a0908a541895280ee0a2f50e64be0c325e8bda62317f194165f"
+    },
+    {
+      "path": "originals/core-output-6ec-v8-cross-host-transfer-inputs-v2.json",
+      "bytes": 2036,
+      "sha256": "65ca65e2dff9c3321f0ae5f068c57a85fd666a14d6bd07d5a337d3d54d9df432"
+    },
+    {
+      "path": "originals/core-output-6ec-v8-transfer-v1-v2.patch",
+      "bytes": 6478,
+      "sha256": "3f81b1d567010c28b1bdfe21d5ef5046d94ab4b476ad8a7056c8d3cf4d1d758d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-cross-host-v8-staging-v1/ADMISSION.json",
+      "bytes": 2399,
+      "sha256": "cfad82f0b431226fcd5362f95d54341f24683444ac88c210fca9082728552079"
+    },
+    {
+      "path": "originals/core-output-6ec5993-cross-host-v8-staging-v1/BLOCK-archive-00000000.json",
+      "bytes": 9092,
+      "sha256": "6a82e96257c2ac186bf2121b16b206918893b204e7f477b4e2f9184e6bbb4ba0"
+    },
+    {
+      "path": "originals/core-output-6ec5993-cross-host-v8-staging-v1/BLOCK-archive-01048576.json",
+      "bytes": 9146,
+      "sha256": "19d8f1ed1f65f064eacaa4e2f28efed70b97092f752d3b45b14841127a3c36b6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-cross-host-v8-staging-v1/BLOCK-archive-02097152.json",
+      "bytes": 9144,
+      "sha256": "5bd19641e8daecd4810a7a3eb1cf0dbcdc56cefc6b3fd5a23638bbed3e481064"
+    },
+    {
+      "path": "originals/core-output-6ec5993-cross-host-v8-staging-v1/BLOCK-binding-00000000.json",
+      "bytes": 1477,
+      "sha256": "0185f68d3f3556797ac89f1862fb2d3b2e879befaf50b616ed55f3f00ee134c0"
+    },
+    {
+      "path": "originals/core-output-6ec5993-cross-host-v8-staging-v1/FILE-binding.json",
+      "bytes": 3640,
+      "sha256": "34a3846ac17f1d3c0594d676304127b2a7d26d7490f52526a561787db8d764ba"
+    },
+    {
+      "path": "originals/core-output-6ec5993-cross-host-v8-staging-v1/PARTIAL_SUPERSEDED.json",
+      "bytes": 4688,
+      "sha256": "c35e9d34c924161fb5c22d83d6b577b33d8b06226ed6c9150c22c6f0c38f69c8"
+    },
+    {
+      "path": "originals/core-output-6ec5993-cross-host-v8-staging-v1/staging-verifier.py",
+      "bytes": 5607,
+      "sha256": "57d73781958ceb3f5d7ff249b3a12da0b15903cac5b26b3a8c4b43b8edd1c1c5"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/RESULT.json",
+      "bytes": 17040,
+      "sha256": "db44ee48cc91da3fdf5eab1cf460ef5dada26510912b114b13f3a5f03d8ea5c0"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/create-detached-source.stderr",
+      "bytes": 1841,
+      "sha256": "8537a75bc8ef3b42e87fc4a3b0e49cb1e4538e95ca0f8262b3d137899e9ecbc7"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/create-detached-source.stdout",
+      "bytes": 89,
+      "sha256": "6c97927e992e2cc355eae72c04d9e676de5dfbe41c348f2af470e6caa111450a"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/driver.py",
+      "bytes": 10305,
+      "sha256": "1e31bbff2da34bceed3219b6bce5415e8dea3e0adc89050515d2053ad11ecaf7"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/just-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/just-version.stdout",
+      "bytes": 12,
+      "sha256": "5f61500d03d8e5947e434b80f148a9d93c09293ab3186fd5fc5138e6ff8c03ea"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/nextest-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/nextest-version.stdout",
+      "bytes": 171,
+      "sha256": "13fae229b3f8485e0d02d80bf3c77e6cd38a2a2f1227d3e70a880cfb49365f61"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/strict.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/strict.stdout",
+      "bytes": 174936,
+      "sha256": "47cf38f1bc0d21e4d593cb03e609e1a7fd0fafa3fb09ae3ccc7f60d8a340274b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/uv-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-admission-v1/uv-version.stdout",
+      "bytes": 37,
+      "sha256": "4d139bd1c36e7f70d98f148097e7394c1d02439732cdd0a7bec4c1fdb434e342"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-outer-v1/COMMAND.json",
+      "bytes": 779,
+      "sha256": "fa7b96e1b55d6ed3b6777a008e3179b9e97690900a817ab5fb0dd5cebd7d9e6a"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-outer-v1/EXECUTION.json",
+      "bytes": 1663,
+      "sha256": "079917be009bb658b6189af5afb0e48e5e62555e8c085812262804241ed3ed89"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-outer-v1/admission-driver-original.py",
+      "bytes": 10305,
+      "sha256": "1e31bbff2da34bceed3219b6bce5415e8dea3e0adc89050515d2053ad11ecaf7"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-outer-v1/launcher.py",
+      "bytes": 2266,
+      "sha256": "b30d0e2a2002fbeb6aeb4b7ab0b832252c72ad7672b9484f568487fa828822bf"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-outer-v1/stdout.log",
+      "bytes": 311,
+      "sha256": "cce708399cb711a78381ac564071d4af04b151a22ec4584fcb79b25bbf6c98dd"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/agentd-owning-readonly-strict-clippy.json",
+      "bytes": 1556,
+      "sha256": "7e9fb25deb66c2a2cd5c80c0cf631261639b566d43efbaa3f88f274116e6fdfc"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/agentd-owning-readonly-strict-clippy.json.49cbcc4f23414a21bf14f2f41935c39f.log",
+      "bytes": 22167,
+      "sha256": "5e4e1858e0ed152b2b14781bb471d40781985900e706bf5e0f37d978ab2df71f"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/agentd-owning-strict-fix.json",
+      "bytes": 1525,
+      "sha256": "d7a6aef12710b5fbcb15baf6290e6ae3b42e1c0d3fedaf4714582f44279b0a58"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/agentd-owning-strict-fix.json.65d6d05ffbaf40a583c26d6dfe689e41.log",
+      "bytes": 22225,
+      "sha256": "49fcda854fd2547dcc72673a75dac9ee27c8aacf93f4c9b7c22f88b133d5e184"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/appserver-owning-readonly-strict-clippy.json",
+      "bytes": 1556,
+      "sha256": "8b56ce1e9bc4ec5d745d2c4c83977aa85e8ad058396203703cff37bae220f0f1"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/appserver-owning-readonly-strict-clippy.json.ec7d1ddab32a4c3eba170fbb5daeaca8.log",
+      "bytes": 18637,
+      "sha256": "92bc3c3e8e76694ef78461e8f39beae4b8b2609c7edf148dfbd00bb01823583f"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/appserver-owning-strict-fix.json",
+      "bytes": 1525,
+      "sha256": "05d23601efee0a0ec1a207d173d783a88af5418c971117692c790638de319dd9"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/appserver-owning-strict-fix.json.69336a6f10c04b11a5bfa5b040bf442a.log",
+      "bytes": 21072,
+      "sha256": "0e67403513eccad87926ddbbe52e0910174ac63d3cef8c261b9f7cdc95213370"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/core-owning-readonly-strict-clippy.json",
+      "bytes": 1546,
+      "sha256": "e157018e71db83c8a71dd5fc6387b7740d7e7c5908b8c62ab0910ef24e80ce8f"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/core-owning-readonly-strict-clippy.json.1c0d578d7d7e4d47b094e0b35bd354cf.log",
+      "bytes": 13740,
+      "sha256": "2c7bf0840f01b680df1827810d6639062ad82d8f145a80bdffa3c7efb28405ac"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/core-owning-strict-fix.json",
+      "bytes": 1515,
+      "sha256": "8959fd2668cb5e33d2dd70ace51d1c867f165f99056db5e84b648482c6e1e8a2"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/core-owning-strict-fix.json.2fd7dfb6ae8e4fc29dfaf155dc441412.log",
+      "bytes": 38874,
+      "sha256": "3f0215b19919a048827a9cf9ecb81a3abb8e3b1c5f3d05a541f0f096592b0bba"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/driver.py",
+      "bytes": 18350,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helper-build.json",
+      "bytes": 1643,
+      "sha256": "ad1d8e657255f8b6ef95f418c5f1b8bc6d4d809e3945d0a1baa44ce22664a918"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helper-build.json.edae1784eea14475820b2533a07641b1.log",
+      "bytes": 499,
+      "sha256": "9f0cb280a67ba0888b0073c3a3fc893c6ae7c20bc0f9516bfcd3d54441fd428f"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helper-verify.json",
+      "bytes": 1666,
+      "sha256": "873f04492d2dabd07fe9d68f2c3b6004531d339c89c2c5ddbb2e22758376c358"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helper-verify.json.7ff62f73f8684c8a97278877cfdbe3b1.log",
+      "bytes": 5839,
+      "sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-app-server.jsonl",
+      "bytes": 1126071,
+      "sha256": "1d3aa4cb85cba4c4ac8c903807ef44de14c2c9828529f040243f63fbd1a2e2e4"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-app-server.stderr.log",
+      "bytes": 13985,
+      "sha256": "c8f2a81027a496c86cd001926cafa8ae2a59621f06e98c2c16d9b063d2527af8"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-cli.jsonl",
+      "bytes": 1226895,
+      "sha256": "0835c7aea4662eeca77749f642af5c26e1b6f1ba02563b78cdd6900cd8ffcdbc"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-cli.stderr.log",
+      "bytes": 53448,
+      "sha256": "7e261332901c31de7c34f7b578a68f69c7f30b1daf220d63327481aa6bb3e678"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-code-mode-host.jsonl",
+      "bytes": 602760,
+      "sha256": "be41758b8e37c5309a1fe85df4f350df2e304226919df712f59bfeb8003aaed7"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-code-mode-host.stderr.log",
+      "bytes": 10807,
+      "sha256": "5e246347257adc0651fa7f034b8f080126c9488b44b622898eb9cb691d2a4af7"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-exec.jsonl",
+      "bytes": 1137536,
+      "sha256": "920f3c570a98470620339784f78c233ff3c9aa63503ecabf6a8fc4f6c31a37ab"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-exec.stderr.log",
+      "bytes": 24309,
+      "sha256": "3b3ab43d626e6fd307fab31fe362bdf7571e458fd295961d89952745e84a52ff"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1151042,
+      "sha256": "bae7af0c8d9e3a92192c759e7aa90d741c2b4804d2f637746406eb9ca7054771"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 5244,
+      "sha256": "f908b9440b22da95bd41c640b9712f9e66c7b059c92d607467aa49b44793a6a9"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-linux-sandbox.jsonl",
+      "bytes": 601148,
+      "sha256": "15b6b43884f2a8fd97df22dfd03bdb4d50ecb212a02f92af34c8544d5bb56a5d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-linux-sandbox.stderr.log",
+      "bytes": 6271,
+      "sha256": "d34f8056482c6b5f7baf026739f4e167bd977998412450bdd20ea7cde20e5ebf"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-rmcp-client.jsonl",
+      "bytes": 791386,
+      "sha256": "51cbcb860bb8854771b046542eb887aa8db36b14cd163fb6c4b3ca7d9bc065d6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-rmcp-client.stderr.log",
+      "bytes": 13172,
+      "sha256": "386ad74dbcea447a84168d8746bc06814fe298ae6113d5fc76cb4fe02cd5e7aa"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-shell-escalation.jsonl",
+      "bytes": 539832,
+      "sha256": "4e0c7153ea5b519b7e16f0281d358015577b121704940309f5fb3828ee229e22"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/codex-shell-escalation.stderr.log",
+      "bytes": 2645,
+      "sha256": "dcc14ae78fd65b43d6e13190333f1b2c44152e3969de37bfcbfec69e9b3a5ec0"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/env.json",
+      "bytes": 2754,
+      "sha256": "76b9a5a60f9f1fb33e2bdff36702d78988361cedd95928751a9b2676eca10004"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/manifest.json",
+      "bytes": 14234,
+      "sha256": "8a7d194f148d3a2cd458eb8fe56fd9e70b62b3016c09e7562f2e35b58948539b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/preparation.json",
+      "bytes": 20468,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/source-after.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/source-after.json",
+      "bytes": 868,
+      "sha256": "73202abd517516f722f3502ab2310eabab24d2b460ed8c96cf242980404b54f2"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/source-before.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/source-before.json",
+      "bytes": 869,
+      "sha256": "57e4cb019b7b7126ed22c93d50a4241fa3975240ccdcedb38e3e03f84c969bc2"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/v8.env",
+      "bytes": 321,
+      "sha256": "0056da193f536ec14bfa9d7562ba89d748f1e33b7bb1d9b17f2b966917b3296d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/v8.json",
+      "bytes": 1490,
+      "sha256": "eaa5f676e051170746700f4d6015e505a4315e509fce952963a50f20186e75d0"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/v8.json.ba7bc020377e49849ff84b6cda8be458.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-preflight-v1/RESULT.json",
+      "bytes": 3340,
+      "sha256": "22c05ec4e9cc56f64ac44a2910e8949af31d310f95d6dfd37caedd91b3b435c8"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-preflight-v1/driver.py",
+      "bytes": 5751,
+      "sha256": "80244d06ab0c56158e8191f9fb23750ab3ddbb1cf6bda926c83e3671d29f857d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-preflight-v1/v8.env",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-preflight-v1/v8.json",
+      "bytes": 1506,
+      "sha256": "fadaf3e61302cac2e351f51a3ee02b8810b3abdd4b9f1933c2a99e72df56a5e9"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-preflight-v1/v8.json.1f43a08a10954c0e92172b9cdd20b383.log",
+      "bytes": 2682,
+      "sha256": "5172605fc065e020a12cd0187547e5b2bbdcae6ecdbad4806bdb0d0652c25fd1"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-preflight-v1/wrapper.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-preflight-v1/wrapper.stdout",
+      "bytes": 4056,
+      "sha256": "1918bdf42251b668704157f9ced92d2eaea216bc0bcbab67619b30dc5aa13d13"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-recovery-outer-v1/EXECUTION.json",
+      "bytes": 900,
+      "sha256": "c3a4db3496c0808a250855555ac562f1e66a66b9979d43ebf219fb6f02831007"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-recovery-outer-v1/console.log",
+      "bytes": 323,
+      "sha256": "ffedd267d0f5039023f7946a80f95fd6db153508c52f2128a99f150361742cd8"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-recovery-v1/RESULT.json",
+      "bytes": 15762,
+      "sha256": "f6db0e514ef3d08f7241cc025028f8bef3ee3a9af903a5bae539ab33474d6612"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-recovery-v1/driver.py",
+      "bytes": 9003,
+      "sha256": "82741da8a18bb9c32f9874f330cd54af9ca60b8e34d36cdeaf8a67cb072bf8aa"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-recovery-v1/v8.env",
+      "bytes": 321,
+      "sha256": "0056da193f536ec14bfa9d7562ba89d748f1e33b7bb1d9b17f2b966917b3296d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-recovery-v1/v8.json",
+      "bytes": 1502,
+      "sha256": "8cef00fef271a030dd97f7b18aae7dcdbfcda236c91d72a44ba3e5019eaee1af"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-recovery-v1/v8.json.d78b9d391f4348d5a69ac4f8d6574637.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-recovery-v1/wrapper.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-recovery-v1/wrapper.stdout",
+      "bytes": 1370,
+      "sha256": "7eea425c84ebba5aef68dd8fc60ef528b7d61a4aefa4c648bcae2020016a2890"
+    },
+    {
+      "path": "originals/core-output-6ec5993-local-v8-staging-v1/FINAL_READBACK.json",
+      "bytes": 4775,
+      "sha256": "bdd9c55f2d7c9cd847c24361e606ab7bca0a3e251718fbd248256931ca9b3ab4"
+    },
+    {
+      "path": "originals/core-output-6ec5993-local-v8-staging-v1/driver.py",
+      "bytes": 4295,
+      "sha256": "a9146a714c1d5c70f1bd7c9811f32bc6556c5019a3e4467be0b0c28cea6bf18a"
+    },
+    {
+      "path": "originals/desktop-6ec-appserver-agentd-owning-preparation-v1/RESULT.json",
+      "bytes": 1599,
+      "sha256": "642dc334ae0d921caab9955e7f4e4a3b89c4f22a353ff4ed6ce22097f0b70a5c"
+    },
+    {
+      "path": "originals/desktop-6ec-appserver-agentd-owning-preparation-v2/RESULT.json",
+      "bytes": 6951,
+      "sha256": "61163d170c361f639423cdaffa20282013848509555a0238b877eafd31df5aee"
+    },
+    {
+      "path": "originals/desktop-6ec-appserver-agentd-owning-preparation-v2/agentd.patch",
+      "bytes": 3986,
+      "sha256": "137411abea09ab8e790c1a2d040182a80ba4b810555d5a460f967b8f9ba74f31"
+    },
+    {
+      "path": "originals/desktop-6ec-appserver-agentd-owning-preparation-v2/appserver.patch",
+      "bytes": 5058,
+      "sha256": "df3228c38a58c3d392646c023ecea5040a0b4e6c33b8cbf34d9111ceaa6fc490"
+    },
+    {
+      "path": "originals/desktop-6ec-appserver-agentd-owning-preparation-v2/desktop-owners.patch",
+      "bytes": 9044,
+      "sha256": "a1c25fa3690488bebc5ae43d3a967db6778208a721ac7fda2c63422a874cd734"
+    },
+    {
+      "path": "originals/desktop-6ec-baseline-agentd-components.py",
+      "bytes": 23737,
+      "sha256": "7dd5225d7792e114e3e8e64895ba8707f1c90b8d31dff9e5ac9c11fd637dfcff"
+    },
+    {
+      "path": "originals/desktop-6ec-baseline-agentd-owning-native.py",
+      "bytes": 22064,
+      "sha256": "fad3abfabd3d170e4bbd2203655314a53032f6cfe1b985f358b1a69e9f8e29b3"
+    },
+    {
+      "path": "originals/desktop-6ec-baseline-appserver-owning-native.py",
+      "bytes": 20719,
+      "sha256": "1ea8579a554d5302d942ae7124b823a08c74088051a2f1b46e494db89b33e27a"
+    },
+    {
+      "path": "originals/desktop-6ec-baseline-checkpoint-root-runner.py",
+      "bytes": 7004,
+      "sha256": "c218dadbfa09f29c928c14a44e2539f0f8a4f43543b64fa1383f0fc4c933520f"
+    },
+    {
+      "path": "originals/desktop-6ec-baseline-root-registration-outer.py",
+      "bytes": 9135,
+      "sha256": "175806d69bfd7c53759638bba1b8ee932b4054ec455b537b3f8fab39fda22c14"
+    },
+    {
+      "path": "originals/desktop-6ec-binary-retention-preparation-v1/RESULT.json",
+      "bytes": 5228,
+      "sha256": "84ef40034d7f379baaa56d39043bbb95317da765b80b70939d1e6ad1fe8985d4"
+    },
+    {
+      "path": "originals/desktop-6ec-binary-retention-preparation-v1/baseline-to-desktop.patch",
+      "bytes": 23840,
+      "sha256": "e3e4e5ceebc73c2f2e94ad9658af53e0a592e88bf2a2e4da8a75219f5b9568c6"
+    },
+    {
+      "path": "originals/desktop-6ec-owning-wrappers-independent-stage-review-v1.json",
+      "bytes": 2613,
+      "sha256": "d384a287829fb01e7e29ad678bb1db3572192ca1b96cd1c0f56243e81e2a96bb"
+    },
+    {
+      "path": "originals/desktop-6ec-retention-45a-baseline.py",
+      "bytes": 4359,
+      "sha256": "0a96aa9a9e6a89c8f9562b7c07c685c791e03fdf34600bb0064ad6f3f4a18122"
+    },
+    {
+      "path": "originals/desktop-6ec-retention-helper-source.py",
+      "bytes": 18658,
+      "sha256": "43802e867f91225efcef9ea4763567c0aeabd5a07b6c03000eb033501b4eb9ae"
+    },
+    {
+      "path": "originals/desktop-6ec-root-outer-historical-schema-review-v1.json",
+      "bytes": 3974,
+      "sha256": "16eda2bc5963141c61d42cb38171611f480a5f9537f0b65e81089cdb50ed5c59"
+    },
+    {
+      "path": "originals/desktop-6ec-root-outer-independent-review-v1.json",
+      "bytes": 3652,
+      "sha256": "f9b1d8ac8c7c6334b6306f5d025a50de274801ee82bb2bcd6264b9bac521445f"
+    },
+    {
+      "path": "originals/desktop-6ec-root-wrapper-preparation-v1/PLAN.json",
+      "bytes": 2273,
+      "sha256": "185676b87f804a51cdd02ce7273ce94411b831cf35f65b02a47d942967a5af63"
+    },
+    {
+      "path": "originals/desktop-6ec-root-wrapper-preparation-v1/PURE_CHECKS.json",
+      "bytes": 3280,
+      "sha256": "f30bf492b4ff20b78db7244df1a2898d6fbe70694cbf2ed47c2c58f4ddaccd6a"
+    },
+    {
+      "path": "originals/desktop-6ec-root-wrapper-preparation-v1/RESULT.json",
+      "bytes": 2892,
+      "sha256": "5492140cf2332f4dd8e7a855448174bd42e12e69b7bd2b2bfa964b101da1bc55"
+    },
+    {
+      "path": "originals/desktop-6ec-root-wrapper-preparation-v1/baseline-to-desktop.patch",
+      "bytes": 36806,
+      "sha256": "061b79f38a4b61d864e3ffeafad1c172476f406318f80e4ee821e592de53b19a"
+    },
+    {
+      "path": "originals/desktop-6ec-strict-independent-review-v1/RESULT.json",
+      "bytes": 2409,
+      "sha256": "1256a839e116cc64e1f04ea4e39316889c0068124b0867fc1fc25fbbf7c27e72"
+    },
+    {
+      "path": "originals/launch-core-output-6ec-desktop-agentd-owning-v1.py",
+      "bytes": 5867,
+      "sha256": "f98c1e6387f47b7605bc1fd018b185ad7d0cab528c9fbf426217e4e4b849b660"
+    },
+    {
+      "path": "originals/launch-core-output-6ec-desktop-appserver-owning-v1.py",
+      "bytes": 5886,
+      "sha256": "7970b1595eba24aa614ca2878afb3e2a9593f9bc92c87b870398443025f0bb8c"
+    },
+    {
+      "path": "originals/launch-core-output-6ec-desktop-owning-v1.py",
+      "bytes": 5848,
+      "sha256": "19d61dca1f4b2da31d202447287283bb5e4138fecdd925bd191c91279fabe855"
+    },
+    {
+      "path": "originals/launch-core-output-6ec-desktop-strict-v1.py",
+      "bytes": 2266,
+      "sha256": "b30d0e2a2002fbeb6aeb4b7ab0b832252c72ad7672b9484f568487fa828822bf"
+    },
+    {
+      "path": "originals/preflight-core-output-6ec5993-desktop-v8-v1.py",
+      "bytes": 5751,
+      "sha256": "80244d06ab0c56158e8191f9fb23750ab3ddbb1cf6bda926c83e3671d29f857d"
+    },
+    {
+      "path": "originals/prepare-core-output-6ec-desktop-local-v8-staging-v1.py",
+      "bytes": 4295,
+      "sha256": "a9146a714c1d5c70f1bd7c9811f32bc6556c5019a3e4467be0b0c28cea6bf18a"
+    },
+    {
+      "path": "originals/prepare-desktop-6ec-appserver-agentd-owning-runners-v1.py",
+      "bytes": 10725,
+      "sha256": "637b9bff2521389a6efe5b07b39ba844f272312dbd660138a447ec2c3959f796"
+    },
+    {
+      "path": "originals/prepare-desktop-6ec-appserver-agentd-owning-runners-v2.py",
+      "bytes": 11188,
+      "sha256": "aad849c7a774e53f7088bf786bb321052ebbe462845fd8c78643108b9eff2368"
+    },
+    {
+      "path": "originals/prepare-desktop-6ec-binary-retention-v1.py",
+      "bytes": 8268,
+      "sha256": "450e2b780e38a567e66027ad19f7c6ac0222b20f37aaa180ee13aa215f29a052"
+    },
+    {
+      "path": "originals/prepare-desktop-6ec-checkpoint-root-wrapper-v1.py",
+      "bytes": 17143,
+      "sha256": "656a904b15e0d4dcada2bcf7518ba5155a29f048ec320994281b1f1fb762f80e"
+    },
+    {
+      "path": "originals/prepare-output-summary-successor-strict-desktop-v1.py",
+      "bytes": 18350,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7"
+    },
+    {
+      "path": "originals/prepare-verify-core-v8-desktop-staging-v1.py",
+      "bytes": 5443,
+      "sha256": "9e446e2a121a6206aeb1409e472a29b5b99e2bb02d7b20eefa1b7ce7a7ee5829"
+    },
+    {
+      "path": "originals/prepare-verify-core-v8-desktop-staging-v2.py",
+      "bytes": 5607,
+      "sha256": "57d73781958ceb3f5d7ff249b3a12da0b15903cac5b26b3a8c4b43b8edd1c1c5"
+    },
+    {
+      "path": "originals/read-core-output-6ec-desktop-tools-v1.py",
+      "bytes": 2065,
+      "sha256": "b2503b191322c1d65f4bdb2b03e6f83daca4075fcaaaf34e66c36971c189d63a"
+    },
+    {
+      "path": "originals/recover-core-output-6ec5993-desktop-v8-v1.py",
+      "bytes": 8922,
+      "sha256": "017a811f6fb556418d22760caa0ca01c291c50d145dbef49a4b88f71c1321ab6"
+    },
+    {
+      "path": "originals/recover-core-output-6ec5993-desktop-v8-v2.py",
+      "bytes": 9003,
+      "sha256": "82741da8a18bb9c32f9874f330cd54af9ca60b8e34d36cdeaf8a67cb072bf8aa"
+    },
+    {
+      "path": "originals/retain-desktop-6ec-native-and-helper-binaries-v1.py",
+      "bytes": 19491,
+      "sha256": "57a763b5528d508b6d96ef047af95d8f9f31069bd79c459c2777a1323b716079"
+    },
+    {
+      "path": "originals/run-agentd-owning-desktop-6ec-v1.py",
+      "bytes": 24162,
+      "sha256": "a06e7e117ed92ab1ee1eca69d508d075f5c575b3701e7d429da295fc16a7b07c"
+    },
+    {
+      "path": "originals/run-appserver-owning-desktop-6ec-v1.py",
+      "bytes": 22784,
+      "sha256": "52e19d677ae7f33caecd9a3c7619e31614cc1ab798355a0a04785d8758aa09c7"
+    },
+    {
+      "path": "originals/run-core-output-owning-desktop-v1.py",
+      "bytes": 22453,
+      "sha256": "475dc64cdb012c777512a8debb3c5ea211014a2688bba4a6461b466885b48e78"
+    },
+    {
+      "path": "originals/run-desktop-6ec-checkpoint-root-v1.py",
+      "bytes": 31208,
+      "sha256": "e4f1c748a7125620697a591777a0975246c6954063e5cccd4f485fc984e5f4dd"
+    },
+    {
+      "path": "originals/transfer-core-v8-ai-desktop-one-block-v1.js",
+      "bytes": 15010,
+      "sha256": "439d71d8b4516423d0e94648523f8b2ddb817bfd6f5b367b7023dee994901451"
+    },
+    {
+      "path": "originals/transfer-core-v8-ai-desktop-one-block-v2.js",
+      "bytes": 15014,
+      "sha256": "f146d1b64de55a2604c3b322960caf9d831e7fce70698e96265618d3b3af5be9"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/core-output-6ec5993-desktop-dependency-strict-history-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "20ad3ac849305a977de886772d9524c82de169e7e85e2f5b6ac718e49d5dbd83"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/core-output-6ec5993-desktop-dependency-strict-history-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "2dbed04ed0703c69fa517a0b88f172d665ac0b9914895eca15702a240dfa2c71"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/core-output-6ec5993-desktop-dependency-strict-history-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 325748,
+      "sha256": "613d2582ff1b9bd0d62fb0e6433c5c1c5e5aa13a23e060a14d0171ba16fc87a9"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

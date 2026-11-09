@@ -1,0 +1,208 @@
+{
+  "phase": "increment-009a",
+  "status": "appended_verified_not_committed",
+  "prior_head": "8ca3f19c69f2f14a42aa5fbe3ff72af807c65ff2",
+  "packet_count": 93,
+  "added_packets": [
+    {
+      "packet_id": "core-output-6ec5993-desktop-dependency-strict-history-v1",
+      "scope": "Completed desktop V8 dependency failure/recovery, exact tool import and nine-stage strict preparation; execution cutoff 09:37:11 UTC; no native cases",
+      "archive_bytes": 1305748,
+      "archive_sha256": "367a522060ce8270a64663b42e523a062adda630628c051597cf9bbadf88239f",
+      "file_member_count": 198,
+      "manifest_path": "packets/core-output-6ec5993-desktop-dependency-strict-history-v1/manifest.json",
+      "manifest_sha256": "8d5b910315f63250d697727bfbd9125bc68419b0ec54b6e1b895d34252e634b5"
+    },
+    {
+      "packet_id": "core-output-6ec5993-desktop-core-native-retention-history-v1",
+      "scope": "Desktop codex-core owning native 3827 PASS plus9 ignored and metadata-only retention; not workspace",
+      "archive_bytes": 1860496,
+      "archive_sha256": "4cf21a3b17a142c293890d4dd106e8b9ca6cb57fd4a79d401dcabccd63973140",
+      "file_member_count": 64,
+      "manifest_path": "packets/core-output-6ec5993-desktop-core-native-retention-history-v1/manifest.json",
+      "manifest_sha256": "9c2d3a3337c5be94f99d9c75ecad039ec5bedd433878e5351242e71bfc7e3012"
+    },
+    {
+      "packet_id": "core-output-6ec5993-desktop-appserver-failed-native-retention-history-v1",
+      "scope": "Desktop codex-app-server owning native FAIL:1345 PASS+3 exit101,2 ignored; retention does not change failure",
+      "archive_bytes": 1941672,
+      "archive_sha256": "61b1ed43544123461865e26a9617f094abb5eb6f00c2606a18d8b7fa4fb5d440",
+      "file_member_count": 86,
+      "manifest_path": "packets/core-output-6ec5993-desktop-appserver-failed-native-retention-history-v1/manifest.json",
+      "manifest_sha256": "ad01af6b5c9958e79a2536547bca0aa5bd6b16f2b39198310a75485f5bc9e3e8"
+    },
+    {
+      "packet_id": "core-output-6ec5993-desktop-agentd-root-native-retention-history-v1",
+      "scope": "Desktop agentd default781 PASS/71 ignored and separate Root parent1 PASS; metadata-only29 binary retention, not workspace or ordinary daemon",
+      "archive_bytes": 1223632,
+      "archive_sha256": "767da1f5ba1d3f047239a45ea979a61e6d4cd2ad1040cdff0bfdbc01da5a2f76",
+      "file_member_count": 100,
+      "manifest_path": "packets/core-output-6ec5993-desktop-agentd-root-native-retention-history-v1/manifest.json",
+      "manifest_sha256": "143dac072b9863b838bcc9499fda0d9c117baef3486765e9f3a03241d691f494"
+    },
+    {
+      "packet_id": "core-output-6ec5993-desktop-posthoc-diagnostics-readback-history-v1",
+      "scope": "Posthoc managed/OAuth diagnostic and independent records-reader history, including observer failures and lossless timestamp correction; zero native execution",
+      "archive_bytes": 247008,
+      "archive_sha256": "bc76222d16adcfeaab2d3a745fd8bfeb67164c82b5ef28bf3f8963896c3eed03",
+      "file_member_count": 117,
+      "manifest_path": "packets/core-output-6ec5993-desktop-posthoc-diagnostics-readback-history-v1/manifest.json",
+      "manifest_sha256": "e0f4cec3bb4ac12fc46b20dec46ef6343b15f869f2e10bcc762de6547143c633"
+    },
+    {
+      "packet_id": "core-output-6ec5993-quiet-source-publication-history-v1",
+      "scope": "Completed one normal quiet-source publication of frozen6ec,17 retained validation observations,93 commands and Actions0 readback; source reviewability only",
+      "archive_bytes": 1547100,
+      "archive_sha256": "e11d190b31472cbc00582a4728a6073dfeda4d5a235b39527d6524df7c23699d",
+      "file_member_count": 439,
+      "manifest_path": "packets/core-output-6ec5993-quiet-source-publication-history-v1/manifest.json",
+      "manifest_sha256": "5e98567e721f6308af0526fa06c4ffb2f2e340806c6279cce22127587c175289"
+    }
+  ],
+  "prior_packet_bytes_unchanged": true,
+  "manifest_sha256": "c8351b7d4bb6071ff594432a5ba2b318204475c3561f77665340b43310e38f19",
+  "pattern_review": {
+    "phase": "increment-009a",
+    "input_sha256": "6cda57d0cd1dc1ec4c25248285c1c55549ab7c6511d8b0d7a8040e15ef782f77",
+    "inspected_member_count_with_overlap": 1023,
+    "patterns": [
+      "github_token_shape",
+      "openai_token_shape",
+      "private_key_block",
+      "aws_access_key_shape"
+    ],
+    "findings": [],
+    "not_a_complete_secret_detection_claim": true
+  },
+  "original_87_packet_index_entries_unchanged": true,
+  "common_before": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "branch": "codex/cell-s0-common-20261108-898e",
+    "status": "",
+    "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+  },
+  "common_after": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "branch": "codex/cell-s0-common-20261108-898e",
+    "status": "",
+    "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+  },
+  "required_json_bindings_verified": true,
+  "original_87_packet_and_all_existing_nonmanifest_file_bytes_unchanged": true,
+  "supplementary_observations": [
+    {
+      "path": "observations/core-output-6ec5993-desktop-dependency-strict-independent-verification-v1/RESULT.json",
+      "bytes": 5913,
+      "sha256": "ebaf19ad7e6261d30cd49a3cd8258cdc0e271dd9cca0997036e526d4cdf758ed"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-core-history-independent-verification-v1/RESULT.json",
+      "bytes": 3995,
+      "sha256": "401fc50e6421b81641c0ded4d192e6c551aefbbf6f47fca8fa5cdc088ce287ea"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-appserver-failed-history-independent-verification-v1/RESULT.json",
+      "bytes": 11001,
+      "sha256": "776e58bec33a9d99696931064679bec2194271dda35ff5dd4be4ba0e96a8fc63"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-agentd-root-history-independent-verification-v2/RESULT.json",
+      "bytes": 2568,
+      "sha256": "dea8199f05ec4ac23757c74c2ea9c26d43415f988e819a5af83fb1d95e4ad5f6"
+    },
+    {
+      "path": "observations/core-output-6ec5993-desktop-posthoc-history-independent-verification-v1/RESULT.json",
+      "bytes": 1918,
+      "sha256": "c9b2ddfc2aeb133775e18094b06bfe17bb9b51af56c8590ff563bbfd5ca09168"
+    },
+    {
+      "path": "observations/core-output-6ec5993-source-publication-history-independent-verification-v2/RESULT.json",
+      "bytes": 1946,
+      "sha256": "0f24ddaf16e47d3ce4dc44ad720da1a43d7d8d383fecf1ae725801d912b6332c"
+    },
+    {
+      "path": "observations/evidence-increment008-publication-v1/RESULT.json",
+      "bytes": 23048,
+      "sha256": "4a81a52fd8e105bd28ed668cc30dafae3852149496faa93ae225335b14906e3a"
+    },
+    {
+      "path": "observations/evidence-increment008-publication-v1/commands.json",
+      "bytes": 57080,
+      "sha256": "f7ab0e9777ffcee5e2d3d6f99a25be492dedc64cda1fe7cfacb403796cc49a4b"
+    },
+    {
+      "path": "observations/evidence-increment008-independent-readback-v1/RESULT.json",
+      "bytes": 3139,
+      "sha256": "83e8d642a25e64b0d21acf94e4a1a76fd976176e71c74489e3829d10dc92f3fb"
+    },
+    {
+      "path": "observations/evidence-increment008-independent-readback-v1/commands.json",
+      "bytes": 130728,
+      "sha256": "41d5910eca439bcbb9e40f76b68920e5ee287c7d1189acaa385570e773a628be"
+    },
+    {
+      "path": "observations/pr5397-status009-v6-publication-observation-v1.json",
+      "bytes": 87275,
+      "sha256": "3c31fbcb0493488deac4916bf880bd8811384cdce485eb5f9afd25e2e36d2f06"
+    },
+    {
+      "path": "observations/core-output-6ec5993-source-publication-history-independent-verification-v1/RESULT.json",
+      "bytes": 373,
+      "sha256": "6bc9c7e179701dc90dbff2d0c20f61e134f34b5071fdc4086a8473e696668c41"
+    },
+    {
+      "path": "observations/core-output-6ec5993-source-publication-history-independent-verification-v1/H_PTY_READ_ORIGINAL.json",
+      "bytes": 4365,
+      "sha256": "a6549e162b6e28f2084b3cc3df8b551d6122162b3840fc0f7a8af8a81bb3d8cf"
+    },
+    {
+      "path": "observations/core-output-6ec5993-source-publication-history-independent-verification-v1/v1-to-v2.patch",
+      "bytes": 1779,
+      "sha256": "0e9d209edde22a404c2999ecdb6ac1249791d030e6da930a231d1474a251eca7"
+    },
+    {
+      "path": "observations/verify-desktop-6ec-source-publication-history-v1.py",
+      "bytes": 7606,
+      "sha256": "d445ec705132ae2b26cdf15dccd4ce76b4ecce0b995bbe8cc7ee6ba486bd5483"
+    },
+    {
+      "path": "observations/verify-desktop-6ec-source-publication-history-v2.py",
+      "bytes": 7603,
+      "sha256": "625993a9081d5ec78e127b385a2996d104e7846ee35c1c1f4c6fe77c4a9edb4d"
+    },
+    {
+      "path": "observations/desktop-6ec-source-publication-history-seal-launch-v1/RESULT.json",
+      "bytes": 882,
+      "sha256": "b7965b43bec7b61346bc142cfa4911b653edf731f84b211a192a02e2f9bfb562"
+    },
+    {
+      "path": "observations/desktop-6ec-source-publication-history-seal-launch-v1/stdout",
+      "bytes": 1937,
+      "sha256": "a6c37602f2ef72e8f085f34ff8c63d4e81f506db0dcf7db5fd0706412f015c52"
+    },
+    {
+      "path": "observations/desktop-6ec-source-publication-history-seal-launch-v1/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "supplementary_observation_scope": {
+    "source_commit": "8ca3f19c69f2f14a42aa5fbe3ff72af807c65ff2",
+    "source_tree": "2e734a7f4bf5a24b9876f44b303e96e36a8cd5ec",
+    "files_included": "Six independent archive RESULTs, prior008 publication/readback RESULT+commands pairs, PRv6 actual observation, exact source-publication sealer and reader failure/correction records.",
+    "complete_stdout_stderr_prefixes_archived_here": false,
+    "prior008_full_stdout_stderr_prefixes_included": false,
+    "source_publication_original433_records_are_in_separate_packet": true,
+    "exact19_supplementary_files": true,
+    "hash_references_not_claimed_as_archived_raw": true,
+    "no_new_native_execution": true,
+    "costs_are_not_complete": true
+  },
+  "supplementary_original_result_commands_links_verified": true,
+  "new_metadata_still_requires_index_and_commit_blob_verification_at_publication": true,
+  "new_tests_executed": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false
+}

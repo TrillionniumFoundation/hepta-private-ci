@@ -1,0 +1,29 @@
+{
+  "request_id": "898e-qualification-append-exact-increment009a-v1-once",
+  "scope": "single reviewed evidence append; no commit, push, source change or native execution",
+  "root_authorization": "Root actual六包INPUTS及appender已终审通过，因此可现在按exact26623/02b+400760/6cda、phase increment-009a、expected-index e2cf…、--require-clean 执行一次追加（既有授权内、无native）；保留完整实际receipt并给新manifest/Git闭集。publisher可随后绑定实际append结果再发最小delta供审，暂不push未经审的publisher。不要为等预测final manifest再空转。若Candidate仍在input只读审，让其用records副本，不改输入。",
+  "script": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/append-evidence-increment-009-draft-v1.py",
+    "bytes": 26623,
+    "sha256": "02b05621f874c64dd39831f1ec252a9f53ccdb3d2c153b140f50936a045e4080"
+  },
+  "inputs": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment009-six-ready-packet-preparation-v2/DRAFT_INPUTS.json",
+    "bytes": 400760,
+    "sha256": "6cda57d0cd1dc1ec4c25248285c1c55549ab7c6511d8b0d7a8040e15ef782f77"
+  },
+  "argv": [
+    "python3",
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/append-evidence-increment-009-draft-v1.py",
+    "--inputs",
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment009-six-ready-packet-preparation-v2/DRAFT_INPUTS.json",
+    "--phase",
+    "increment-009a",
+    "--expected-index",
+    "e2cf90360430c0db3dde19f3ef1e00466469b363f23b338e1f9db24a114edd7b",
+    "--require-clean"
+  ],
+  "automatic_retry": false,
+  "launch_count": 1,
+  "started_at": "2026-11-09T12:05:15.627422+00:00"
+}

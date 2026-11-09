@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.increment009.appender-independent-static-review.v1",
+  "reviewer": "candidate_audit",
+  "status": "NO_NEW_STATIC_BLOCKER",
+  "scope": "Complete new and baseline appender source, exact unified delta, original preparation result; imported pinned helper scan inspected for the NUL change. Actual final INPUTS and packet payloads were not independently audited in this review.",
+  "input_reads": [
+    {
+      "role": "old",
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/append-evidence-increment-008-draft-v1.py",
+      "bytes": 21989,
+      "sha256": "5cd48d4e5cf34dcd75a362f03377a5f7671d5dedf8e1775a5d7ee38d400568bc",
+      "immutable_read_version": "2050:4907050:21989:1794212456738638624:1794212456738638624",
+      "offset": 0,
+      "eof": true
+    },
+    {
+      "role": "new",
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/append-evidence-increment-009-draft-v1.py",
+      "bytes": 26623,
+      "sha256": "02b05621f874c64dd39831f1ec252a9f53ccdb3d2c153b140f50936a045e4080",
+      "immutable_read_version": "2050:4907462:26623:1794224921265248148:1794224921265248148",
+      "offset": 0,
+      "eof": true
+    },
+    {
+      "role": "delta",
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment009-appender-preparation-v1/008-to-009.patch",
+      "bytes": 22877,
+      "sha256": "34e9e48c7fe10120e7176b36c23c3196dacc50cba06400c7e2b9d159149fca66",
+      "immutable_read_version": "2050:5434800:22877:1794224921266924344:1794224921266924344",
+      "offset": 0,
+      "eof": true
+    },
+    {
+      "role": "result",
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment009-appender-preparation-v1/RESULT.json",
+      "bytes": 1061,
+      "sha256": "a42926446c65ba9efe4b27c99813adf73a0e847ca8ff2734390b3a235ed41cd3",
+      "immutable_read_version": "2050:5434801:1061:1794224921267554448:1794224921267554448",
+      "offset": 0,
+      "eof": true
+    },
+    {
+      "role": "helper",
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/append-evidence-increment-002-v1.py",
+      "bytes": 7237,
+      "sha256": "3282737cc2d660a95a157ea43c222922a3753e3dd6ed5a39456d7ea36615f660",
+      "immutable_read_version": "2050:4905705:7237:1794178744812300559:1794178744824759161",
+      "offset": 0,
+      "eof": true
+    }
+  ],
+  "exact_delta_check": {
+    "hunks": 11,
+    "inserted_lines": 116,
+    "removed_lines": 63,
+    "reconstructed_exact": true,
+    "new_chars": 26623,
+    "appender_executed": false
+  },
+  "independently_executed_python_ast_or_appender": false,
+  "preparation_reported_AST": "PASS (original RESULT claim; not relabeled as an independent execution)",
+  "reviewed_contracts": [
+    {
+      "area": "Checkpoint and common identity",
+      "source_lines": "30-75",
+      "finding": "Actual increment008 HEAD/index, original 87 packet prefixes and current common bf42/tree/CURRENT are explicitly bound. Original existing nonmanifest bytes are snapshotted and checked before writes, after writes and after verifier."
+    },
+    {
+      "area": "Original typed observations",
+      "source_lines": "76-101",
+      "finding": "Exactly six new separate-source keys are removed from a Python JSON copy, then the entire remaining current_common_validation is compared recursively by exact type and value to the committed original. Python json.loads/json.dumps retain integer precision; bool and int remain distinct."
+    },
+    {
+      "area": "New result boundaries",
+      "source_lines": "102-129",
+      "finding": "Strict9 remains 0 native cases; core3827/9ignored/4subset; app1345+3fail and required subset5 preserve original overallfalse and collector1; agentd781/71ignored/13subset plus a distinct Root parent1; retention is metadata only. Source publication and Actions0 are not CI success or common advancement. Cost remains null."
+    },
+    {
+      "area": "NUL delimited original Git stdout",
+      "source_lines": "178-220",
+      "finding": "Exactly13 NUL bindings are permitted only for core-output-6ec5993-quiet-source-publication-history-v1, zero for all other packets. Every actual NUL file must be bound by bytes/SHA, a git argv containing -z and matching stdout digest; all declared bindings must actually be seen. Each producer uniquely matches the label, argv and stdout in an archived commands member. Every file still enters the original pinned scan. Exact names and hashes remain inputs to inspect in the forthcoming final spec."
+    },
+    {
+      "area": "Archive and JSON closure",
+      "source_lines": "169-224",
+      "finding": "Archive whole bytes/SHA, safe unique regular-file/directory members, exact member count, all required JSON binding presence, recursively typed values, six additions and1004 additional member entries are required. This gives87->93 packets and10104+1004=11108 overlapping entries when bound to the original checkpoint."
+    },
+    {
+      "area": "Supplementary observations",
+      "source_lines": "130-158,225-269",
+      "finding": "Exactly19 unique allowed metadata paths; explicit record sources, regular non-symlink singlelink files, bytes/SHA and512000byte cap, create-only destinations. Prior008 publication/result/commands/readback hashes and87packets/1348Gitfiles are cross-bound. Original sourcepub verifier failure1 and successor0 are preserved; actual PR body9876/9fd is pinned. UTF8 text originals disallow NUL."
+    },
+    {
+      "area": "Finalization and non-promotion",
+      "source_lines": "275-370",
+      "finding": "New chunks/metadata are create-only; original bytes and pinned verifier0 are required. Final source/input/HEAD and old-file checks precede verified-pending-publication status. No commit/push/native call is added. Common full-repository green can only remain false or null; stagesS0-S5 remainHOLD, complete history false and fullcostnull."
+    }
+  ],
+  "new_blockers": [],
+  "remaining_boundary": "This static review does not authorize execution by itself and does not replace final actual input/packet review, original-member verification, or later index/commit blob readback. The append status is not native qualification or complete-cost accounting.",
+  "operations": {
+    "appender_executed": false,
+    "append_or_commit_or_push": false,
+    "native_executed": false,
+    "active_target_read": false,
+    "source_modified": false,
+    "records_only_review_receipt_created": true
+  },
+  "scientific_acceptance": false,
+  "stage_advancement_claimed": false,
+  "full_history_cost": null
+}

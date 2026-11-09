@@ -1,0 +1,250 @@
+{
+  "actual_failed_exit101": 3,
+  "actual_original_unique_executed": 1348,
+  "actual_original_unique_passed": 1345,
+  "all_archive_bytes_mode_sha_verified": true,
+  "append_commit_push": false,
+  "appserver_FAILURE_not_qualification_or_full_workspace": true,
+  "archive": {
+    "bytes": 1941672,
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-appserver-failed-native-retention-history-v1/core-output-6ec5993-desktop-appserver-failed-native-retention-history-v1.tar.xz",
+    "sha256": "61b1ed43544123461865e26a9617f094abb5eb6f00c2606a18d8b7fa4fb5d440"
+  },
+  "attempts": 1348,
+  "executable_bytes_read_or_reverified_by_this_reader": false,
+  "failure_payloads_verified": [
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-01.failure.txt",
+      "bytes": 285,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::account::login_account_chatgpt_redirects_to_hosted_success_page"
+      },
+      "role": "decoded_xml_failure",
+      "sha256": "da90232d0e8cb4ec1b61ed40044d702370cc393b64ebcb9c574f74cc005248ee"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-01.stderr.txt",
+      "bytes": 2393,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::account::login_account_chatgpt_redirects_to_hosted_success_page"
+      },
+      "role": "decoded_xml_stderr",
+      "sha256": "87059bb76f8935f524b5e0879ce4b5efb3f186cf85d806186ded824c0f2da334"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-01.stdout.txt",
+      "bytes": 311,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::account::login_account_chatgpt_redirects_to_hosted_success_page"
+      },
+      "role": "decoded_xml_stdout",
+      "sha256": "5fd61d9492b737eac4e3f12c81c839afa8affbf0e570a07e8a3d3bcdcf559bcd"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-01.raw-final-block.log",
+      "bytes": 2937,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::account::login_account_chatgpt_redirects_to_hosted_success_page"
+      },
+      "role": "original_raw_final_display_block",
+      "sha256": "00b85cfa37bdbcc5e6815518465992a746efc6c306971943f317fcfa1e193f67"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-01.junit-testcase.xml",
+      "bytes": 3993,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::account::login_account_chatgpt_redirects_to_hosted_success_page"
+      },
+      "role": "original_xml_testcase_fragment",
+      "sha256": "de6baf0e38f76a9ddbea710ca722728160816986c2a16bedd03051ac184637a9"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-02.failure.txt",
+      "bytes": 499,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_7_managed_guardian_disabled"
+      },
+      "role": "decoded_xml_failure",
+      "sha256": "014ca9678e0bf9dc91ec8aa69c02d4534b0b1071b9b35846a4ebb04800965856"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-02.stderr.txt",
+      "bytes": 972,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_7_managed_guardian_disabled"
+      },
+      "role": "decoded_xml_stderr",
+      "sha256": "8ba9bf6349260c36484b3d0a9bc9cf975d4d4adb962246b36d16ef2aa324dadc"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-02.stdout.txt",
+      "bytes": 370,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_7_managed_guardian_disabled"
+      },
+      "role": "decoded_xml_stdout",
+      "sha256": "b7d7e9000395818ba6cefa609dc1208e614d39faeca7ac55c683903051b3b35b"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-02.raw-final-block.log",
+      "bytes": 1588,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_7_managed_guardian_disabled"
+      },
+      "role": "original_raw_final_display_block",
+      "sha256": "3eb4d9505e4a96aa1ca8540d58109e25c4e81c564d10aa8b2a8ddb7625d7f0a0"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-02.junit-testcase.xml",
+      "bytes": 2656,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_7_managed_guardian_disabled"
+      },
+      "role": "original_xml_testcase_fragment",
+      "sha256": "1907ea130735532e5547450ee7759afba7485e66f6e785bef2590fca867d2be9"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-03.failure.txt",
+      "bytes": 500,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_8_managed_reviewer_forbidden"
+      },
+      "role": "decoded_xml_failure",
+      "sha256": "b9815003f018d3c05353d259af426ea3ad30d97f3f254d5fbe08233f44a5ce60"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-03.stderr.txt",
+      "bytes": 973,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_8_managed_reviewer_forbidden"
+      },
+      "role": "decoded_xml_stderr",
+      "sha256": "33966031bd4f9b9895da9d3495ee11019b5d893e2a80e3bc82fb35749d901c76"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-03.stdout.txt",
+      "bytes": 372,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_8_managed_reviewer_forbidden"
+      },
+      "role": "decoded_xml_stdout",
+      "sha256": "364daa0423a723e144c3b572faeb165d1fd33c047b3177f6d96a5d469e9471d3"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-03.raw-final-block.log",
+      "bytes": 1673,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_8_managed_reviewer_forbidden"
+      },
+      "role": "original_raw_final_display_block",
+      "sha256": "6bfa8bbe5d7b232426bdd6e3d51f5b42eeca7e4714423d1e4815369753022e88"
+    },
+    {
+      "archive_member": "capture/desktop-6ec-appserver-failure-mapper-v1/case-03.junit-testcase.xml",
+      "bytes": 2662,
+      "case": {
+        "binary_id": "codex-app-server::all",
+        "name": "suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::test_case_8_managed_reviewer_forbidden"
+      },
+      "role": "original_xml_testcase_fragment",
+      "sha256": "7928aaed4b9f7bec4406414f6bedcddf8b5149d6b61875dfe56a39c299085cf1"
+    }
+  ],
+  "file_members": 86,
+  "finished_at": "2026-11-09T10:37:56.865871+00:00",
+  "full_history_cost": null,
+  "ignored_not_executed": 2,
+  "initial_raw_PASS_and_FAIL_union_equals_selected_equals_JUnit": true,
+  "manifest": {
+    "bytes": 19791,
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-appserver-failed-native-retention-history-v1/MANIFEST.json",
+    "sha256": "773e74a297d08c24940226f332202229553c2859c3ddec8fd0f046d7fca5155a"
+  },
+  "manifest_external": true,
+  "metadata_retained_binary_bytes": 2874949592,
+  "metadata_retained_binary_count": 16,
+  "named_ignored_source": "Actual discovery; original raw has zero per-name SKIP lines; Summary skipped=2",
+  "new_native_tests_executed": 0,
+  "no_LEAK_or_three_skip_markers": true,
+  "no_current_source_or_target_or_active_execution_reads": true,
+  "original_and_capture_and_generated_records_unchanged": true,
+  "original_collect_returncode": 1,
+  "original_driver_returncode": 1,
+  "original_execution_records": [
+    {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "receipt_sha256": "7cfc94cc3f26611d8925867a7003beb39a9dfbf409acac9c6be22ef93f88c45b",
+      "returncode": 0,
+      "step": "v8"
+    },
+    {
+      "raw_sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0",
+      "receipt_sha256": "0575d9a980167c561a2c9e2d819948f3c6cd3346532d54058aee26d02a3da082",
+      "returncode": 0,
+      "step": "helpers-before"
+    },
+    {
+      "raw_sha256": "723f0fdb29bb6bb824b92eb11b1faa45b8df254d0a1625f1fe4ef182dfac1859",
+      "receipt_sha256": "ffdc82e4b4028c0a84823ad0a7e471d687eb29ed401e8bde4949db3694aea1c6",
+      "returncode": 0,
+      "step": "discovery"
+    },
+    {
+      "raw_sha256": "660a217001be92a589b4f970e858562bd420d218229eee18420263dda885a358",
+      "receipt_sha256": "a40a8ccabebe852d6c8c96afff519ec46d29f7dd954d57d578e299593b819ba4",
+      "returncode": 100,
+      "step": "tests"
+    },
+    {
+      "raw_sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0",
+      "receipt_sha256": "f2c6e062d2f78a87209dcd6440c61c84e9baad9774e0042aa6d62a712aa63f3b",
+      "returncode": 0,
+      "step": "helpers-after"
+    },
+    {
+      "raw_sha256": "19fce9d344f1f49d3a5ef24d508ac7ff2a63c0c4cd760a3e47734110c7730525",
+      "receipt_sha256": "a103dbf615c62f0d61d6c01b0fb30d7be9d5c88ff89c1aa7f2c2a4d838049df2",
+      "returncode": 1,
+      "step": "collect-junit"
+    }
+  ],
+  "original_files": 46,
+  "original_native_status": "FAIL",
+  "original_required_five_overall_field": false,
+  "original_test_returncode": 100,
+  "packet_id": "core-output-6ec5993-desktop-appserver-failed-native-retention-history-v1",
+  "packet_result": {
+    "bytes": 2614,
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-appserver-failed-native-retention-history-v1/RESULT.json",
+    "sha256": "422d918da853288175f1db11a173062aa24c0952af8364f4d92fadf6144fe46d"
+  },
+  "physical_cost": null,
+  "raw_final_PASS_repetitions_not_added": true,
+  "required_five_actual_passed_subset": true,
+  "retainer_direct_child_OS_exit_observed": false,
+  "retainer_program_reported_exit": 0,
+  "retention_success_does_not_relabel_native_failure": true,
+  "retries": 0,
+  "returncode": 0,
+  "root_cause_all_failures": null,
+  "scientific_acceptance": false,
+  "source_inventory_entries": 15010,
+  "source_inventory_sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+  "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+  "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+  "status": "INDEPENDENT_ARCHIVE_AND_ORIGINAL_RECORDS_VERIFIED"
+}

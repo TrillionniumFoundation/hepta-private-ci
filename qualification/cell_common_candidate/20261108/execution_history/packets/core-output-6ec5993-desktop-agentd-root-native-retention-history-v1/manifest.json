@@ -1,0 +1,3054 @@
+{
+  "packet_id": "core-output-6ec5993-desktop-agentd-root-native-retention-history-v1",
+  "scope": "Desktop agentd default781 PASS/71 ignored and separate Root parent1 PASS; metadata-only29 binary retention, not workspace or ordinary daemon",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-root-native-retention-history-v1/core-output-6ec5993-desktop-agentd-root-native-retention-history-v1.tar.xz",
+  "bytes": 1223632,
+  "sha256": "767da1f5ba1d3f047239a45ea979a61e6d4cd2ad1040cdff0bfdbc01da5a2f76",
+  "file_member_count": 100,
+  "required_json_members": [
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 34222,
+      "sha256": "042b9c1c3b3c2824a6bf33cbb7032ea86b9470923cf2cf99fc15c0acdc79bd4a",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "Root_counts": {
+              "default_ignored_parent_is_not_added_to_default781": true,
+              "fixture_child_summaries_are_additional_acceptance": false,
+              "original_ignored_parent_executed_separately": 1,
+              "parent_passed": 1,
+              "raw_libtest_summaries": 2
+            },
+            "Root_fixture_four_phases": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "Root_fixture_records": 25,
+            "Root_outer_records": 10,
+            "Root_parent_case": "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+            "active_workspace_prefix_and_target_excluded": true,
+            "agentd_counts": {
+              "attempts": 781,
+              "default_original_ignored_not_executed": 71,
+              "discovered": 852,
+              "failed": 0,
+              "passed_unique": 781,
+              "required_checkpoint_passed_subset": 13,
+              "retries": 0,
+              "selected_executed_unique": 781,
+              "timeouts": 0,
+              "unselected": 0
+            },
+            "agentd_default_and_Root_counts_are_distinct_scopes": true,
+            "agentd_execution_finished_at": "2026-11-09T10:39:34.313091+00:00",
+            "agentd_outer_finished_at": "2026-11-09T10:39:34.332334+00:00",
+            "agentd_outer_records": 7,
+            "agentd_owning_records": 31,
+            "all_executable_bytes_excluded": true,
+            "archive_preparation_and_readback_after_execution": true,
+            "archive_started_at": "2026-11-09T11:14:50.406934+00:00",
+            "builder_provenance": {
+              "archive_engine_source": "seal-desktop-6ec-appserver-failed-native-retention-history-v1.py",
+              "archive_engine_source_sha256": "c6541381df593f3443ddc18e43779da6f88da3feed39a25e00146a55e1cdb6a0",
+              "pure_Root_membership_and_identity_source": "read-desktop-6ec-agentd-root-terminal-v1.py",
+              "pure_parser_source_sha256": "d921dbcf10a95dec8ed74aaec3f4996f99fc34708d92c936306a80bbe4d5fa70"
+            },
+            "capture_metadata_after_execution": [
+              "desktop-6ec-agentd-root-history-discovery-v1/DISCOVERY.json",
+              "desktop-6ec-agentd-root-history-discovery-v1/discovery-command.py",
+              "desktop-6ec-agentd-root-history-whitelist-v1/WHITELIST.json",
+              "desktop-6ec-agentd-root-history-whitelist-v1/RESULT.json",
+              "desktop-6ec-agentd-root-history-whitelist-v1/INPUTS_AFTER.json",
+              "desktop-6ec-agentd-root-history-whitelist-v1/driver.py",
+              "desktop-6ec-agentd-root-whitelist-launch-v1/REQUEST.json",
+              "desktop-6ec-agentd-root-whitelist-launch-v1/RESULT.json",
+              "desktop-6ec-agentd-root-whitelist-launch-v1/stdout.log",
+              "desktop-6ec-agentd-root-whitelist-launch-v1/stderr.log",
+              "desktop-6ec-agentd-root-sealer-preflight-v1/RESULT.json",
+              "seal-desktop-6ec-agentd-root-native-retention-history-v1.py",
+              "desktop-6ec-agentd-root-sealer-preflight-v2/RESULT.json"
+            ],
+            "complete_execution_history": false,
+            "complete_historical_cost_known": false,
+            "current_source_tree_not_reopened": true,
+            "evidence_branch_mutated": false,
+            "exact_PTY_capture_range_only": "1715585..1716021",
+            "full_history_cost": null,
+            "full_workspace_executed": false,
+            "host": "desktop",
+            "host_only_binary_bytes": 3760364392,
+            "host_only_binary_count": 29,
+            "host_only_metadata_origin": "Original retention receipt and roster; no current binary read or rehash",
+            "ignored_roster_source": "Actual discovery, validated against Summary71 skipped; no synthetic per-name rawSKIP rows",
+            "increment008_did_not_include_this_new_desktop_scope": true,
+            "kind": "terminal_agentd_default_and_separate_Root_parent_records_only",
+            "known_exclusions": [
+              {
+                "bytes": 247442464,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/7e4a2646f586339f7afd918ef803ce0425faf17ae948e985b326bed367de7d04/codex_hepta_agentd-086aa0f6fbbc4f00",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "7e4a2646f586339f7afd918ef803ce0425faf17ae948e985b326bed367de7d04"
+              },
+              {
+                "bytes": 128457888,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/2828607f74e2827b5fe6fc1f3949bcad1ff964ae12417da4a2754f0110922f6e/authbus_text_product-0f61ba268cefb347",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "2828607f74e2827b5fe6fc1f3949bcad1ff964ae12417da4a2754f0110922f6e"
+              },
+              {
+                "bytes": 127362368,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/728f0246b92ef9987b9e671ec76e1c71b3166cf956e24fb68e5d2301a063a7af/cognitive_product_e2e-ed4e15fd967abf9e",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "728f0246b92ef9987b9e671ec76e1c71b3166cf956e24fb68e5d2301a063a7af"
+              },
+              {
+                "bytes": 78390216,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/a70d6dcf960f4b98ee4175b9018d729cca37f3c4836d79711303c22940722c3f/cognitive_store_product_writer-e15798a027112082",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "a70d6dcf960f4b98ee4175b9018d729cca37f3c4836d79711303c22940722c3f"
+              },
+              {
+                "bytes": 117895768,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/9e466b845fb7c4716d237e29e5316dcbfb52856f2065c711e1d2216d4f9b3bd4/five_agent_rolling_upgrade-505d30adf42f74cd",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "9e466b845fb7c4716d237e29e5316dcbfb52856f2065c711e1d2216d4f9b3bd4"
+              },
+              {
+                "bytes": 74577008,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/d9900191f8b2dc007d459abbbefd71abd71143af84327df787cb106b4304bdf3/fleet_harness_diagnostics-d1f9587858eb0e82",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "d9900191f8b2dc007d459abbbefd71abd71143af84327df787cb106b4304bdf3"
+              },
+              {
+                "bytes": 63507016,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/439ba9f03dc7c92fc4f5abce72c726662df535b38f0463f3f933b69e5a7c37ee/intuition_policy_product-15677c26bce01dc3",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "439ba9f03dc7c92fc4f5abce72c726662df535b38f0463f3f933b69e5a7c37ee"
+              },
+              {
+                "bytes": 100646008,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/2b5d7b3dacd3c1a5c27b6bf3d915e0a393f69e03dba0a878ed17ba9702e71f92/kernel_evidence_product-53c581e4a13cd95a",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "2b5d7b3dacd3c1a5c27b6bf3d915e0a393f69e03dba0a878ed17ba9702e71f92"
+              },
+              {
+                "bytes": 76775992,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/94809721bc8cf5cb0acadb0e2ecb7bbf19a6c23db307c8992ef904194f603883/neuron_generation_process_e2e-f85df80102434bca",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "94809721bc8cf5cb0acadb0e2ecb7bbf19a6c23db307c8992ef904194f603883"
+              },
+              {
+                "bytes": 73809880,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/33fad01ba0c95765ea40203c5163e668a20d2762e0bee3fb15ef200ea6c80186/optional_module_restart-a313773a7b165033",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "33fad01ba0c95765ea40203c5163e668a20d2762e0bee3fb15ef200ea6c80186"
+              },
+              {
+                "bytes": 76837008,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/7c4db59e8f9b13dbdde29caa76215518214f543f69c8a75a9c28eddc2f286d3a/plasticity_process_e2e-0ba423e71aea68a7",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "7c4db59e8f9b13dbdde29caa76215518214f543f69c8a75a9c28eddc2f286d3a"
+              },
+              {
+                "bytes": 116693120,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/67a0b87ebb20ab2eceea91f2f62b46ac7793aebcd05047d06cc4456ac6edfcda/queue_capacity_product-41f790d8b75655c1",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "67a0b87ebb20ab2eceea91f2f62b46ac7793aebcd05047d06cc4456ac6edfcda"
+              },
+              {
+                "bytes": 120169384,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/600d1d620792ef4f882ce41f963e04fd78df13d3be5b4fcf6337c3409b0aff96/runtime_codex_product_e2e-3666baeac9a36a29",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "600d1d620792ef4f882ce41f963e04fd78df13d3be5b4fcf6337c3409b0aff96"
+              },
+              {
+                "bytes": 65530768,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/e3cb00f1f5f6d50e81fb23189a7e66d2a39a2dd0a7372cb777628bd8e1be2aec/runtime_shutdown_outcomes-aa53d7f0269d04b1",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "e3cb00f1f5f6d50e81fb23189a7e66d2a39a2dd0a7372cb777628bd8e1be2aec"
+              },
+              {
+                "bytes": 108815024,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/66786cd3a1a3c17a4d3d630b14f5b961553e4536449b257421c7ddbb915a47da/supervised_two_agents-bf078adbe8674a45",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "66786cd3a1a3c17a4d3d630b14f5b961553e4536449b257421c7ddbb915a47da"
+              },
+              {
+                "bytes": 96067592,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/f26d0fad9737eed2bf54f1f0d120d301ca9ddd36c6290196fa10a0ece47d0a76/supervisord_product_e2e-3087942d070e7540",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "f26d0fad9737eed2bf54f1f0d120d301ca9ddd36c6290196fa10a0ece47d0a76"
+              },
+              {
+                "bytes": 76799312,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/1de8ef28d4e05d78d5f88f2eb37f41dee5a537e29cf3b7429c9f565c916456c2/terminal_cell_owner-5ef42bb4bcab57b1",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "1de8ef28d4e05d78d5f88f2eb37f41dee5a537e29cf3b7429c9f565c916456c2"
+              },
+              {
+                "bytes": 117351608,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/fb4a17845bc7634abcfa693c8c5033dd38163e721a4db13f218f329be16e8192/two_agent_turn_recovery-225e4a31c0aa8957",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "fb4a17845bc7634abcfa693c8c5033dd38163e721a4db13f218f329be16e8192"
+              },
+              {
+                "bytes": 99658000,
+                "kind": "native",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/d2636e16b2473eecfb0dd8a17980f87b492483e7eb4e35e1c93070eebdd6299d/verify1_kernel_evidence_product-9af69d227e14d1ac",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "d2636e16b2473eecfb0dd8a17980f87b492483e7eb4e35e1c93070eebdd6299d"
+              },
+              {
+                "bytes": 559044352,
+                "kind": "helper",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/39833d367e91ded7314dcfd76646dab6add810f4a9d15711dccd788a6e0d4759/codex",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "39833d367e91ded7314dcfd76646dab6add810f4a9d15711dccd788a6e0d4759"
+              },
+              {
+                "bytes": 428897624,
+                "kind": "helper",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/0651efc56d3e7637fd61d9f17fb609f0293193682b908aa5163315d8a23a73ac/codex-exec",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "0651efc56d3e7637fd61d9f17fb609f0293193682b908aa5163315d8a23a73ac"
+              },
+              {
+                "bytes": 447844856,
+                "kind": "helper",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/85ab54ef7a84a25b60e1a6263180280dac764bfa7fac192904a738f0ff7fb83d/codex-app-server",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "85ab54ef7a84a25b60e1a6263180280dac764bfa7fac192904a738f0ff7fb83d"
+              },
+              {
+                "bytes": 120976864,
+                "kind": "helper",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/b42423bbc75d87a6f751bfed725eab152d0ea8ebe4d7a64dc3b6edce9ea71daa/exec-server",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "b42423bbc75d87a6f751bfed725eab152d0ea8ebe4d7a64dc3b6edce9ea71daa"
+              },
+              {
+                "bytes": 117474680,
+                "kind": "helper",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/73f542a8936d1bd8447db4b73b6cdc96e616a633ceda127395ab67e6b2e8f4ec/codex-code-mode-host",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "73f542a8936d1bd8447db4b73b6cdc96e616a633ceda127395ab67e6b2e8f4ec"
+              },
+              {
+                "bytes": 11102488,
+                "kind": "helper",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/12b5c14198e9fec5db19b08b80efc29ac6c510dce40dd3e4cc26ef6b1714683f/test_stdio_server",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "12b5c14198e9fec5db19b08b80efc29ac6c510dce40dd3e4cc26ef6b1714683f"
+              },
+              {
+                "bytes": 19336440,
+                "kind": "helper",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/36b1fd41d6252e7c8eb6ac35edcd924821f4d60418cd03cb90ca4ddb9c0c2bb3/test_streamable_http_server",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "36b1fd41d6252e7c8eb6ac35edcd924821f4d60418cd03cb90ca4ddb9c0c2bb3"
+              },
+              {
+                "bytes": 45226984,
+                "kind": "helper",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/3393f8975450a4827e1f31b76a6013bb97e1efb5bc213b1449e0207baaeb8cce/codex-linux-sandbox",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "3393f8975450a4827e1f31b76a6013bb97e1efb5bc213b1449e0207baaeb8cce"
+              },
+              {
+                "bytes": 42233760,
+                "kind": "helper",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/d2cb636c91f725cef192ac83837fbec0a7134de4ff189d8c18bc4afb9cef9897/codex-execve-wrapper",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "d2cb636c91f725cef192ac83837fbec0a7134de4ff189d8c18bc4afb9cef9897"
+              },
+              {
+                "bytes": 1439920,
+                "kind": "helper",
+                "path": "core-output-6ec5993-desktop-agentd-retained-binaries-v1/bda94ab9e0e0aea770fbf9c884a5e988330f450b01fd2456191b13d27a02dddf/hepta-joint-propose",
+                "reason": "Host-only executable bytes; derived exclusively from the original terminal retention metadata, never opened/stat'ed by this whitelist freezer",
+                "sha256": "bda94ab9e0e0aea770fbf9c884a5e988330f450b01fd2456191b13d27a02dddf"
+              }
+            ],
+            "launch_capture_recorded_at": "2026-11-09 10:48:06 UTC",
+            "live_run_fixture_directories_excluded": true,
+            "new_tests_or_builds_executed": false,
+            "ordinary_daemon_bootstrap": false,
+            "original_45a_and_appserver_failed_executions_unchanged": true,
+            "original_files": 81,
+            "original_native_driver_test_collector_and_outer_returncodes": 0,
+            "original_raw_bytes_with_overlap": 25951290,
+            "original_whitelist": {
+              "bytes": 43073,
+              "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-agentd-root-history-whitelist-v1/WHITELIST.json",
+              "sha256": "38d78e3a23b4540bf929a5a0913cdc440e6a44c0c5bd7f69ac12d9def2a058b3"
+            },
+            "overlap": "Strict lineage, helper metadata, shared retainer, source-inventory copies and child summaries are not new tests or additive full cost.",
+            "packet_id": "core-output-6ec5993-desktop-agentd-root-native-retention-history-v1",
+            "physical_cost": null,
+            "post_execution_launch_capture": 1,
+            "production_registration": false,
+            "retainer_child_OS_exit_directly_observed": false,
+            "retainer_driver": 1,
+            "retainer_program_reported_returncode": 0,
+            "retention_finished_at": "2026-11-09T10:45:02.518965+00:00",
+            "retention_metadata": 6,
+            "root_execution_finished_at": "2026-11-09T10:47:17.647268+00:00",
+            "root_fixture_identites": {
+              "child_libtest_summaries_counted_as_extra_cases": false,
+              "native_root_pid": 697951,
+              "native_root_uid": 0,
+              "parent_cases_counted": 1,
+              "python_root_runner_pid": 697940,
+              "python_root_runner_uid": 0,
+              "registered_consumer_pid": 697953,
+              "registered_consumer_uid": 60001,
+              "source": "original fixture assertions and exact original-test.log identity markers"
+            },
+            "root_original53_metadata_references_not_claimed_as53_archived_file_bytes": true,
+            "root_original_bound_records_not_all_archived": [
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 31208,
+                  "ctime_ns": 1794215176617541352,
+                  "device": 2050,
+                  "inode": 4907135,
+                  "mode": 384,
+                  "mtime_ns": 1794215176611833093,
+                  "sha256": "e4f1c748a7125620697a591777a0975246c6954063e5cccd4f485fc984e5f4dd"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/run-desktop-6ec-checkpoint-root-v1.py"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 7004,
+                  "ctime_ns": 1794214336869364014,
+                  "device": 2050,
+                  "inode": 4907121,
+                  "mode": 384,
+                  "mtime_ns": 1794214336852864176,
+                  "sha256": "c218dadbfa09f29c928c14a44e2539f0f8a4f43543b64fa1383f0fc4c933520f"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-baseline-checkpoint-root-runner.py"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 18350,
+                  "ctime_ns": 1794214112920202133,
+                  "device": 2050,
+                  "inode": 7120633,
+                  "mode": 384,
+                  "mtime_ns": 1794214112920202133,
+                  "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/driver.py"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 20468,
+                  "ctime_ns": 1794217030276135343,
+                  "device": 2050,
+                  "inode": 7120690,
+                  "mode": 384,
+                  "mtime_ns": 1794217030276135343,
+                  "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/preparation.json"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 5658136,
+                  "ctime_ns": 1794214115179110729,
+                  "device": 2050,
+                  "inode": 7120635,
+                  "mode": 384,
+                  "mtime_ns": 1794214115179110729,
+                  "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/source-before.files.json"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 0,
+                  "ctime_ns": 1794214115385104463,
+                  "device": 2050,
+                  "inode": 7120636,
+                  "mode": 384,
+                  "mtime_ns": 1794214115385104463,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/source-before.diff.patch"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 5658136,
+                  "ctime_ns": 1794217029810814682,
+                  "device": 2050,
+                  "inode": 7120638,
+                  "mode": 384,
+                  "mtime_ns": 1794217029810814682,
+                  "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/source-after.files.json"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 0,
+                  "ctime_ns": 1794217030002670120,
+                  "device": 2050,
+                  "inode": 7120688,
+                  "mode": 384,
+                  "mtime_ns": 1794217030002670120,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/source-after.diff.patch"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 1490,
+                  "ctime_ns": 1794214121179928181,
+                  "device": 2050,
+                  "inode": 7120641,
+                  "mode": 384,
+                  "mtime_ns": 1794214121165928607,
+                  "sha256": "eaa5f676e051170746700f4d6015e505a4315e509fce952963a50f20186e75d0"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/v8.json"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 0,
+                  "ctime_ns": 1794214115985086211,
+                  "device": 2050,
+                  "inode": 7120640,
+                  "mode": 384,
+                  "mtime_ns": 1794214115985086211,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/v8.json.ba7bc020377e49849ff84b6cda8be458.log"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 1643,
+                  "ctime_ns": 1794215526180704529,
+                  "device": 2050,
+                  "inode": 7120667,
+                  "mode": 384,
+                  "mtime_ns": 1794215526163705096,
+                  "sha256": "ad1d8e657255f8b6ef95f418c5f1b8bc6d4d809e3945d0a1baa44ce22664a918"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helper-build.json"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 499,
+                  "ctime_ns": 1794215525907713628,
+                  "device": 2050,
+                  "inode": 7120642,
+                  "mode": 384,
+                  "mtime_ns": 1794215525907713628,
+                  "sha256": "9f0cb280a67ba0888b0073c3a3fc893c6ae7c20bc0f9516bfcd3d54441fd428f"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helper-build.json.edae1784eea14475820b2533a07641b1.log"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 1666,
+                  "ctime_ns": 1794215533363465193,
+                  "device": 2050,
+                  "inode": 7120675,
+                  "mode": 384,
+                  "mtime_ns": 1794215533358457623,
+                  "sha256": "873f04492d2dabd07fe9d68f2c3b6004531d339c89c2c5ddbb2e22758376c358"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helper-verify.json"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 5839,
+                  "ctime_ns": 1794215533096474087,
+                  "device": 2050,
+                  "inode": 7120674,
+                  "mode": 384,
+                  "mtime_ns": 1794215533096474087,
+                  "sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helper-verify.json.7ff62f73f8684c8a97278877cfdbe3b1.log"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 1515,
+                  "ctime_ns": 1794215849472031786,
+                  "device": 2050,
+                  "inode": 7120677,
+                  "mode": 384,
+                  "mtime_ns": 1794215849421033457,
+                  "sha256": "8959fd2668cb5e33d2dd70ace51d1c867f165f99056db5e84b648482c6e1e8a2"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/core-owning-strict-fix.json"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 38874,
+                  "ctime_ns": 1794215849167041776,
+                  "device": 2050,
+                  "inode": 7120676,
+                  "mode": 384,
+                  "mtime_ns": 1794215849167041776,
+                  "sha256": "3f0215b19919a048827a9cf9ecb81a3abb8e3b1c5f3d05a541f0f096592b0bba"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/core-owning-strict-fix.json.2fd7dfb6ae8e4fc29dfaf155dc441412.log"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 1546,
+                  "ctime_ns": 1794216090372172573,
+                  "device": 2050,
+                  "inode": 7120679,
+                  "mode": 384,
+                  "mtime_ns": 1794216090359172996,
+                  "sha256": "e157018e71db83c8a71dd5fc6387b7740d7e7c5908b8c62ab0910ef24e80ce8f"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/core-owning-readonly-strict-clippy.json"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 13740,
+                  "ctime_ns": 1794216090067182489,
+                  "device": 2050,
+                  "inode": 7120678,
+                  "mode": 384,
+                  "mtime_ns": 1794216090067182489,
+                  "sha256": "2c7bf0840f01b680df1827810d6639062ad82d8f145a80bdffa3c7efb28405ac"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/core-owning-readonly-strict-clippy.json.1c0d578d7d7e4d47b094e0b35bd354cf.log"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 1525,
+                  "ctime_ns": 1794216334790246470,
+                  "device": 2050,
+                  "inode": 7120681,
+                  "mode": 384,
+                  "mtime_ns": 1794216334776246924,
+                  "sha256": "05d23601efee0a0ec1a207d173d783a88af5418c971117692c790638de319dd9"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/appserver-owning-strict-fix.json"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 21072,
+                  "ctime_ns": 1794216334511255498,
+                  "device": 2050,
+                  "inode": 7120680,
+                  "mode": 384,
+                  "mtime_ns": 1794216334511255498,
+                  "sha256": "0e67403513eccad87926ddbbe52e0910174ac63d3cef8c261b9f7cdc95213370"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/appserver-owning-strict-fix.json.69336a6f10c04b11a5bfa5b040bf442a.log"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 1556,
+                  "ctime_ns": 1794216552887199622,
+                  "device": 2050,
+                  "inode": 7120683,
+                  "mode": 384,
+                  "mtime_ns": 1794216552886511358,
+                  "sha256": "8b56ce1e9bc4ec5d745d2c4c83977aa85e8ad058396203703cff37bae220f0f1"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/appserver-owning-readonly-strict-clippy.json"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 18637,
+                  "ctime_ns": 1794216552634207786,
+                  "device": 2050,
+                  "inode": 7120682,
+                  "mode": 384,
+                  "mtime_ns": 1794216552634207786,
+                  "sha256": "92bc3c3e8e76694ef78461e8f39beae4b8b2609c7edf148dfbd00bb01823583f"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/appserver-owning-readonly-strict-clippy.json.ec7d1ddab32a4c3eba170fbb5daeaca8.log"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 1525,
+                  "ctime_ns": 1794216773147486997,
+                  "device": 2050,
+                  "inode": 7120685,
+                  "mode": 384,
+                  "mtime_ns": 1794216773134487450,
+                  "sha256": "d7a6aef12710b5fbcb15baf6290e6ae3b42e1c0d3fedaf4714582f44279b0a58"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/agentd-owning-strict-fix.json"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 22225,
+                  "ctime_ns": 1794216772878496362,
+                  "device": 2050,
+                  "inode": 7120684,
+                  "mode": 384,
+                  "mtime_ns": 1794216772878496362,
+                  "sha256": "49fcda854fd2547dcc72673a75dac9ee27c8aacf93f4c9b7c22f88b133d5e184"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/agentd-owning-strict-fix.json.65d6d05ffbaf40a583c26d6dfe689e41.log"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 1556,
+                  "ctime_ns": 1794217025432825122,
+                  "device": 2050,
+                  "inode": 7120687,
+                  "mode": 384,
+                  "mtime_ns": 1794217025419825562,
+                  "sha256": "7e9fb25deb66c2a2cd5c80c0cf631261639b566d43efbaa3f88f274116e6fdfc"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/agentd-owning-readonly-strict-clippy.json"
+              },
+              {
+                "bytes_in_this_archive": false,
+                "current_file_read_by_sealer": false,
+                "original_recorded_pin": {
+                  "bytes": 22167,
+                  "ctime_ns": 1794217025151834654,
+                  "device": 2050,
+                  "inode": 7120686,
+                  "mode": 384,
+                  "mtime_ns": 1794217025151834654,
+                  "sha256": "5e4e1858e0ed152b2b14781bb471d40781985900e706bf5e0f37d978ab2df71f"
+                },
+                "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/agentd-owning-readonly-strict-clippy.json.49cbcc4f23414a21bf14f2f41935c39f.log"
+              }
+            ],
+            "root_outer_finished_at": "2026-11-09T10:47:17.671249+00:00",
+            "schema_version": 1,
+            "scientific_acceptance": false,
+            "separate_stage_records_only_independent_readback_not_in_this_archive": true,
+            "source_common_CURRENT_mutated": false,
+            "source_full_bytes_archived": false,
+            "source_inventory_metadata_only": true,
+            "source_parent": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "stages": {
+              "S0": "HOLD",
+              "S1": "HOLD",
+              "S2": "HOLD",
+              "S3": "HOLD",
+              "S4": "HOLD",
+              "S5": "HOLD"
+            },
+            "test_owned_root_bind_cleanup": {
+              "bind_identity": {
+                "device": 28,
+                "inode": 4484231
+              },
+              "cleanup_complete": true,
+              "mount_created": true,
+              "mount_exit": 0,
+              "umount_exit": 0,
+              "unmounted": true
+            },
+            "thirteen_checkpoint_cases_are_subset": true,
+            "whole_Root_PTY_not_read_or_archived": true
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/RESULT.json",
+      "bytes": 35999,
+      "sha256": "05f6b71c09a6c322b1af70b107f212d71bfb63fed2c1974f5f085f1d72fc0082",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "status": "PASS",
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "base_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "mode": "owning",
+            "cargo_profile": "ci-test",
+            "nextest_profile": "local",
+            "test_threads": 4,
+            "build_jobs": 6,
+            "retries": 0,
+            "original_per_case_budgets_unchanged": true,
+            "outer_command_timeout_seconds": 4200,
+            "owning_strict_qualification": true,
+            "preparation_sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6",
+            "explicit_task_tmpdir": "/var/tmp/h898e-d1",
+            "temporary_environment_change_from_failed_45a": true,
+            "old_45a_failure_is_not_relabelled": true,
+            "minimum_task_temp_available_bytes_before_child": 4294967296,
+            "minimum_task_temp_available_inodes_before_child": 100000,
+            "counterfactual_expected_failures_are_not_product_passes": false,
+            "full_workspace_executed": false,
+            "windows_bazel_qualification": false,
+            "scientific_acceptance": false,
+            "physical_cost": null,
+            "full_history_cost": null,
+            "steps": [
+              {
+                "name": "v8",
+                "argv": [
+                  "python3",
+                  "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/scripts/hepta_ci_v8.py"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e",
+                "execution_record": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/v8.json",
+                "started_at": "2026-11-09T10:30:39.162119+00:00",
+                "status": "finished",
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 101088243712,
+                  "free_bytes": 121086517248,
+                  "user_available_inodes": 47728928,
+                  "free_inodes": 47728928,
+                  "observed_at": "2026-11-09T10:30:39.162016+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "returncode": 0,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 101087940608,
+                  "free_bytes": 121086214144,
+                  "user_available_inodes": 47728926,
+                  "free_inodes": 47728926,
+                  "observed_at": "2026-11-09T10:30:44.018726+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "wrapper_wall_seconds_not_full_cost": 4.856265763984993
+              },
+              {
+                "name": "helpers-before",
+                "argv": [
+                  "python3",
+                  "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/scripts/hepta_cell_test_helpers.py",
+                  "--output-dir",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helpers",
+                  "--verify-only"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e",
+                "execution_record": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/helpers-before.json",
+                "started_at": "2026-11-09T10:30:44.019850+00:00",
+                "status": "finished",
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 101087936512,
+                  "free_bytes": 121086210048,
+                  "user_available_inodes": 47728926,
+                  "free_inodes": 47728926,
+                  "observed_at": "2026-11-09T10:30:44.019768+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "returncode": 0,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 101087809536,
+                  "free_bytes": 121086083072,
+                  "user_available_inodes": 47728913,
+                  "free_inodes": 47728913,
+                  "observed_at": "2026-11-09T10:30:51.591211+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "wrapper_wall_seconds_not_full_cost": 7.571075781947002
+              },
+              {
+                "name": "discovery",
+                "argv": [
+                  "cargo",
+                  "nextest",
+                  "list",
+                  "--locked",
+                  "--cargo-profile",
+                  "ci-test",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--profile",
+                  "local",
+                  "--tool-config-file",
+                  "hepta-agentd-native:/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/nextest.toml",
+                  "--message-format",
+                  "json"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/codex-rs",
+                "execution_record": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/discovery.json",
+                "started_at": "2026-11-09T10:30:51.592962+00:00",
+                "status": "finished",
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 101087805440,
+                  "free_bytes": 121086078976,
+                  "user_available_inodes": 47728912,
+                  "free_inodes": 47728912,
+                  "observed_at": "2026-11-09T10:30:51.592857+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "returncode": 0,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 95739469824,
+                  "free_bytes": 115737743360,
+                  "user_available_inodes": 47728164,
+                  "free_inodes": 47728164,
+                  "observed_at": "2026-11-09T10:35:41.583857+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "wrapper_wall_seconds_not_full_cost": 289.9904842961114
+              },
+              {
+                "name": "tests",
+                "argv": [
+                  "just",
+                  "test",
+                  "--locked",
+                  "--cargo-profile",
+                  "ci-test",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--profile",
+                  "local",
+                  "--tool-config-file",
+                  "hepta-agentd-native:/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/nextest.toml",
+                  "--test-threads",
+                  "4",
+                  "--retries",
+                  "0",
+                  "--no-tests",
+                  "fail",
+                  "--success-output",
+                  "final",
+                  "--failure-output",
+                  "final"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/codex-rs",
+                "execution_record": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/tests.json",
+                "started_at": "2026-11-09T10:35:47.927919+00:00",
+                "status": "finished",
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 95738601472,
+                  "free_bytes": 115736875008,
+                  "user_available_inodes": 47728157,
+                  "free_inodes": 47728157,
+                  "observed_at": "2026-11-09T10:35:47.927793+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "returncode": 0,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 95383703552,
+                  "free_bytes": 115381977088,
+                  "user_available_inodes": 47724603,
+                  "free_inodes": 47724603,
+                  "observed_at": "2026-11-09T10:39:17.739418+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "wrapper_wall_seconds_not_full_cost": 209.8108948180452
+              },
+              {
+                "name": "helpers-after",
+                "argv": [
+                  "python3",
+                  "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/scripts/hepta_cell_test_helpers.py",
+                  "--output-dir",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helpers",
+                  "--verify-only"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e",
+                "execution_record": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/helpers-after.json",
+                "started_at": "2026-11-09T10:39:17.740854+00:00",
+                "status": "finished",
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 95383703552,
+                  "free_bytes": 115381977088,
+                  "user_available_inodes": 47724603,
+                  "free_inodes": 47724603,
+                  "observed_at": "2026-11-09T10:39:17.740764+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "returncode": 0,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 95375273984,
+                  "free_bytes": 115373547520,
+                  "user_available_inodes": 47724601,
+                  "free_inodes": 47724601,
+                  "observed_at": "2026-11-09T10:39:24.904439+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "wrapper_wall_seconds_not_full_cost": 7.163099918048829
+              },
+              {
+                "name": "collect-junit",
+                "argv": [
+                  "python3",
+                  "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/scripts/hepta_ci_junit.py",
+                  "--execution",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/tests.json",
+                  "--junit",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/nextest-store/local/junit.xml",
+                  "--output",
+                  "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/tests-junit.xml"
+                ],
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e",
+                "execution_record": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/collect-junit.json",
+                "started_at": "2026-11-09T10:39:24.906647+00:00",
+                "status": "finished",
+                "task_temporary_capacity_before": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 95375273984,
+                  "free_bytes": 115373547520,
+                  "user_available_inodes": 47724601,
+                  "free_inodes": 47724601,
+                  "observed_at": "2026-11-09T10:39:24.906503+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "returncode": 0,
+                "task_temporary_capacity_after": {
+                  "path": "/var/tmp/h898e-d1",
+                  "device": 2050,
+                  "inode": 56800647,
+                  "uid": 1000,
+                  "gid": 1000,
+                  "mode": 448,
+                  "user_available_bytes": 95374827520,
+                  "free_bytes": 115373101056,
+                  "user_available_inodes": 47724597,
+                  "free_inodes": 47724597,
+                  "observed_at": "2026-11-09T10:39:25.227801+00:00",
+                  "not_a_historical_resource_attribution": true
+                },
+                "wrapper_wall_seconds_not_full_cost": 0.3203452571760863
+              }
+            ],
+            "started_at": "2026-11-09T10:30:36.335522+00:00",
+            "source_before": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": "",
+              "files_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/source-before.files.json",
+              "files_sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+              "files_count": 15010,
+              "regular_file_bytes": 200422945,
+              "untracked_count": 0,
+              "diff_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/source-before.diff.patch",
+              "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "identity_stable_during_capture": true,
+              "capture_elapsed_seconds": 2.7142925260122865,
+              "observed_at": "2026-11-09T10:30:39.050272+00:00",
+              "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+            },
+            "tools": {
+              "just": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/just-1.58.0/just",
+                "sha256": "3ad66571feae522db2cad31b9613bf21035b8a06d2738d6fc8fe6089856f2042"
+              },
+              "cargo-nextest": {
+                "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/tools/nextest-0.9.103/cargo-nextest",
+                "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+              }
+            },
+            "task_temporary_identity_bound_to_strict": {
+              "path": "/var/tmp/h898e-d1",
+              "device": 2050,
+              "inode": 56800647,
+              "uid": 1000,
+              "gid": 1000,
+              "mode": 448
+            },
+            "nextest_store_only_config_sha256": "b0e2f289b95543fc88a69c0fa7aa84ad03b372d80f7452db75731ca6fafdfb7c",
+            "selection_sha256": "268ef67da3a8e8ff90db778c1c2974f5cea22fac6b6234674d6446e1d365a091",
+            "discovered_counts": {
+              "selected_count": 781,
+              "ignored_count": 71,
+              "unselected_count": 0
+            },
+            "test_returncode": 0,
+            "collect_returncode": 0,
+            "explicit_skip_markers": [],
+            "leak_markers": [],
+            "summary_lines": [
+              "     Summary [ 204.870s] 781 tests run: 781 passed (1 slow), 71 skipped"
+            ],
+            "observed_passed_tests": 781,
+            "observed_failed_tests": 0,
+            "exact_fresh_unique_executed_set": true,
+            "discovery_binary_bytes_unchanged": true,
+            "original_fresh_junit_sha256": "01eca5b3d1792705fd82c83afbbc5c8ed47ca3e017ffca7badbe06ad178c2f99",
+            "original_ignored_cases_not_counted_as_executed": [
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_bootstrap_seal::tests::original_writer::root_native_writer_purpose_cannot_pass_the_unchanged_original_two_rights_receiver",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_bootstrap_seal::tests::original_writer::root_writer_transfer_consumes_sender_and_releases_original_lock_after_recipient_closes",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_bootstrap_seal::tests::root_descriptor_is_unlinked_sealed_and_never_mutable",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::physical_material::adopted_current_before_uid_release_cannot_be_adopted_again_or_reinitialized",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::physical_material::interrupted_install_resumes_same_original_current_cas_without_republication",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::physical_material::physical_current_survives_live_source_loss_and_refuses_corrupt_retained_image",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::physical_material::physical_material_never_promotes_actual_dirty_current_predecessor",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::physical_material::physical_recovery_requires_actual_old_exit_and_old_lease_expiry_before_installation",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::root_current_adoption_without_any_retained_old_pidfd_preserves_exact_cut",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::root_current_handoff_never_promotes_actual_dirty_publishing_or_fenced",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::root_current_handoff_post_cas_clock_failure_is_unknown_not_definite_conflict",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::root_current_handoff_post_cas_expiry_is_unknown_but_new_head_is_reconciled",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::root_current_handoff_refuses_changed_cut_phase_generation_and_dead_successor",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::root_current_handoff_requires_actual_exit_and_preserves_cut_and_counter",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::root_current_handoff_two_real_cas_handles_choose_one_successor",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::root_retired_adoption_never_promotes_dirty_publishing_or_fenced",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::root_retired_adoption_post_cas_clock_error_is_unknown_and_exactly_reconciled",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::root_retirement_observation_refuses_live_lifetime_uid_change_and_other_boot",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::adoption::tests::root_retirement_proof_cannot_replace_protected_predecessor_lifetime",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::fresh_tests::root_fresh_publication_binds_original_exclusive_owner_and_checkpoint_client",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::tests::root_cycle_is_durable_exact_and_never_implicitly_reinitialized",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::tests::root_expiry_after_actual_cas_returns_unknown_and_permanently_closes_object",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::tests::root_invalid_bindings_and_late_request_ids_leave_exact_head_unchanged",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::tests::root_read_ids_do_not_advance_mutation_highwater_or_revive_fenced_state",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::tests::root_trusted_successor_keeps_global_counter_separate_from_publisher_sequence",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::tests::root_two_independent_handles_cannot_both_win_the_same_original_cas",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_checkpoint::tests::root_unavailable_read_permanently_fences_even_after_original_file_returns",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_consumer_frontier::tests::root_forged_epoch_revision_namespace_and_replayed_transport_ids_do_not_mutate",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_consumer_frontier::tests::root_post_cas_expiry_returns_no_ack_and_never_revives_the_uncertain_object",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_consumer_frontier::tests::root_storage_disappearance_and_restoration_does_not_revive_a_lane",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_consumer_frontier::tests::root_two_original_stores_are_isolated_and_exact_cas_survives_reopen",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_consumer_frontier::tests::root_two_real_handles_race_one_durable_cas_and_refuse_the_other",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_runtime::listeners::tests::all_original_listeners_precede_the_one_shot_handoff_and_failure_cleans_up",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_runtime::process_tests::original_owner_process_rejects_same_uid_with_different_gid",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_runtime::session::filesystem::tests::original_registry_reader_child",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_runtime::session::filesystem::tests::original_root_filesystem_preserves_registry_reads_and_denies_control_writes",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_runtime::session::filesystem::tests::original_root_filesystem_rejects_aliases_and_existing_workspace_before_ownership_change",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_runtime::session::notes_startup::tests::original_root_seals_only_empty_private_deployment_and_readonly_consumer_observes_it",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_service::learning_checkpoint::tests::unprivileged_checkpoint_child",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_service::logind::tests::original_held_physical_login_matches_actual_logind_and_wrong_birth_or_uid_refuses",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_service::tests::root::protected_service_client",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_service::tests::root::root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_service::writer::fresh::tests::original_fresh_state_retains_writer_lock_and_refuses_nonempty_or_changed_registry",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "automation_effect_host::hcsn_pq::tests::real_worker::pq_host_real_worker_cancel_cold_recovery",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "config::root_handoff::tests::original_root_preparation_releases_same_lock_for_fresh_owner_without_changing_registry",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "deployment_issuer::notes::tests::deployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distinct_payloads",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "deployment_issuer::root::tests::deployment_protected_root_factory_retains_original_key_head_counter_and_lease",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "native_g2_socket_publication::tests::configured_inode_is_published_and_accepts_the_dedicated_role",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "native_g2_socket_publication::tests::existing_final_is_not_replaced_and_own_pending_is_removed",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "native_g2_socket_publication::tests::final_replacement_inode_survives_listener_drop",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "native_g2_socket_publication::tests::pending_collision_is_preserved_without_publishing",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "native_g2_socket_publication::tests::pending_replacement_inode_survives_failed_publication_cleanup",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "native_g2_socket_publication::tests::preexisting_same_inode_alias_is_rejected_without_removing_final",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::process_tests::durable_native_job_child_readback",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "plasticity_runtime::lifetime_tests::terminal_learning_tests::durable_tests::process_tests::durable_native_job_with_original_host_cas",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "production_composition::tests::owner_custody::root_preparation_does_not_unlock_a_retained_uninstalled_original_writer",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "root_bound_socket::tests::original_root_bound_listener_child",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "root_bound_socket::tests::original_root_bound_listener_preserves_peer_identity_and_path_custody",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "runtime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests::notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "runtime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests::notes_actual_app_legacy_checkpoint_original_owner_reopen_and_helper_ack_restart",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "runtime::hos2_recovery_tests::notes_tests::gui_tests::notes_actual_ui_original_owner_roundtrip",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "state::notes_objective::lock_tests::notes_objective_drain_child",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "text_session::provider::tests::fifo_reader_child",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd",
+                "name": "text_session::provider::tests::root_configuration_fifo_is_rejected_before_read",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+                "name": "real_agentd_external_gpt53_spark_read_only_smoke",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+                "name": "real_agentd_loopback_provider_read_only_smoke",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+                "name": "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+                "name": "two_real_agentd_app_servers_never_cross_recall",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd::optional_module_restart",
+                "name": "optional_module_process_entrypoint",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              },
+              {
+                "binary_id": "codex-hepta-agentd::terminal_cell_owner",
+                "name": "durable_owner_history_and_concurrent_training_profile",
+                "ignored": true,
+                "filter_match": {
+                  "status": "mismatch",
+                  "reason": "ignored"
+                }
+              }
+            ],
+            "required_thirteen_checkpoint_cases_passed": true,
+            "source_after": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": "",
+              "files_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/source-after.files.json",
+              "files_sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+              "files_count": 15010,
+              "regular_file_bytes": 200422945,
+              "untracked_count": 0,
+              "diff_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/source-after.diff.patch",
+              "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "identity_stable_during_capture": true,
+              "capture_elapsed_seconds": 2.7177839300129563,
+              "observed_at": "2026-11-09T10:39:34.241946+00:00",
+              "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+            },
+            "source_unchanged": true,
+            "returncode": 0,
+            "finished_at": "2026-11-09T10:39:34.313091+00:00"
+          }
+        }
+      ]
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/RESULT.json",
+      "bytes": 32902,
+      "sha256": "b399c7112fb9895d9f78f878a0d6733804953dda26f4b03dbf9a2768cf229d09",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+            "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+            "source_parent": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "preparation_records": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1",
+            "owning_records": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1",
+            "root_runner_sha256": "c218dadbfa09f29c928c14a44e2539f0f8a4f43543b64fa1383f0fc4c933520f",
+            "exact_parent_case": "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+            "scope": "test-only registered Root/non-Root checkpoint transport",
+            "status": "PASS",
+            "native_execution_started": true,
+            "parent_case_pass_count": 1,
+            "fixture_child_is_additional_acceptance_case": false,
+            "component_tests_reexecuted_by_wrapper": false,
+            "full_agentd_tests_reexecuted_by_wrapper": false,
+            "root_environment_excludes_user_temp_variables": [
+              "TMPDIR",
+              "TMP",
+              "TEMP"
+            ],
+            "ordinary_daemon_bootstrap_performed": false,
+            "physical_cost": null,
+            "full_history_cost": null,
+            "scientific_qualification_performed": false,
+            "production_registration_performed": false,
+            "started_at": "2026-11-09T10:47:06.980802+00:00",
+            "base_sha": "45a50bffd1631d502889069fc3f713b8a5e775d8",
+            "owning_result_sha256": "05f6b71c09a6c322b1af70b107f212d71bfb63fed2c1974f5f085f1d72fc0082",
+            "strict_preparation_sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6",
+            "compiled_binary": {
+              "binary_id": "codex-hepta-agentd",
+              "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/target-ci-test-6ec5993-fresh/ci-test/deps/codex_hepta_agentd-086aa0f6fbbc4f00",
+              "bytes": 247442464,
+              "sha256": "7e4a2646f586339f7afd918ef803ce0425faf17ae948e985b326bed367de7d04",
+              "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/codex-rs/hepta-agentd",
+              "package_id": "path+file:///home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0"
+            },
+            "owning_membership": {
+              "status": "VERIFIED_MEMBERSHIP_ONLY",
+              "whole_agentd_selected_count": 781,
+              "whole_agentd_original_ignored_count": 71,
+              "whole_agentd_unselected_count": 0,
+              "fresh_xml_executed_count": 781,
+              "fresh_xml_original_ignored_count": 0,
+              "checkpoint_components": [
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::profile_tests::both_no_update_paths_keep_the_frozen_profile_and_full_parent_after_cold_reopen",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::profile_tests::changed_frozen_profile_cannot_restore_or_replace_the_original_checkpoint",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::profile_tests::previous_codec_version_is_refused_without_repair_or_append",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::tests::each_checkpoint_reopens_and_exact_retry_performs_no_second_cas",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::tests::foreign_owner_request_skipped_stage_and_divergent_successor_leave_current_unchanged",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::tests::malformed_counts_strings_tags_and_truncated_checkpoints_are_rejected",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::tests::maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::tests::valid_json_with_corrupt_protected_record_metadata_is_never_restored",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::tests::write_failure_and_lost_ack_reconcile_original_record_without_reexecution",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::transport::tests::before_send_contention_does_not_claim_commit_or_break_the_inflight_call",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::transport::tests::maximum_snapshots_fit_complete_frames_and_wrong_scope_never_changes_cas",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::transport::tests::missing_or_foreign_ack_closes_the_client_without_an_automatic_retry",
+                  "result": "PASS"
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "learning_iteration_checkpoint::transport::tests::oversize_malformed_and_unknown_scope_fields_leave_original_cas_bytes_unchanged",
+                  "result": "PASS"
+                }
+              ],
+              "checkpoint_components_are_subset_not_new_executions": true,
+              "root_case_discovered_ignored": {
+                "binary_id": "codex-hepta-agentd",
+                "name": "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack"
+              },
+              "root_case_was_executed_by_default_owning_run": false,
+              "lib_binary": {
+                "binary_id": "codex-hepta-agentd",
+                "path": "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/target-ci-test-6ec5993-fresh/ci-test/deps/codex_hepta_agentd-086aa0f6fbbc4f00",
+                "bytes": 247442464,
+                "sha256": "7e4a2646f586339f7afd918ef803ce0425faf17ae948e985b326bed367de7d04",
+                "cwd": "/home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/codex-rs/hepta-agentd",
+                "package_id": "path+file:///home/qian-qi/worktrees/hepta-core-output-native-6ec-20261109-898e/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0"
+              }
+            },
+            "bound_file_snapshots_at_first_read": {
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/run-desktop-6ec-checkpoint-root-v1.py": {
+                "device": 2050,
+                "inode": 4907135,
+                "mode": 384,
+                "bytes": 31208,
+                "mtime_ns": 1794215176611833093,
+                "ctime_ns": 1794215176617541352,
+                "sha256": "e4f1c748a7125620697a591777a0975246c6954063e5cccd4f485fc984e5f4dd"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-baseline-checkpoint-root-runner.py": {
+                "device": 2050,
+                "inode": 4907121,
+                "mode": 384,
+                "bytes": 7004,
+                "mtime_ns": 1794214336852864176,
+                "ctime_ns": 1794214336869364014,
+                "sha256": "c218dadbfa09f29c928c14a44e2539f0f8a4f43543b64fa1383f0fc4c933520f"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/driver.py": {
+                "device": 2050,
+                "inode": 7120633,
+                "mode": 384,
+                "bytes": 18350,
+                "mtime_ns": 1794214112920202133,
+                "ctime_ns": 1794214112920202133,
+                "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/driver.py": {
+                "device": 2050,
+                "inode": 6731162,
+                "mode": 384,
+                "bytes": 24162,
+                "mtime_ns": 1794220236335007521,
+                "ctime_ns": 1794220236335007521,
+                "sha256": "a06e7e117ed92ab1ee1eca69d508d075f5c575b3701e7d429da295fc16a7b07c"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/snapshot_helper.py": {
+                "device": 2050,
+                "inode": 6731172,
+                "mode": 384,
+                "bytes": 18350,
+                "mtime_ns": 1794220236335167364,
+                "ctime_ns": 1794220236335167364,
+                "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/preparation.json": {
+                "device": 2050,
+                "inode": 7120690,
+                "mode": 384,
+                "bytes": 20468,
+                "mtime_ns": 1794217030276135343,
+                "ctime_ns": 1794217030276135343,
+                "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/RESULT.json": {
+                "device": 2050,
+                "inode": 6731201,
+                "mode": 384,
+                "bytes": 35999,
+                "mtime_ns": 1794220774314570785,
+                "ctime_ns": 1794220774314570785,
+                "sha256": "05f6b71c09a6c322b1af70b107f212d71bfb63fed2c1974f5f085f1d72fc0082"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/preparation-lineage.json": {
+                "device": 2050,
+                "inode": 6731173,
+                "mode": 384,
+                "bytes": 20468,
+                "mtime_ns": 1794220236335308140,
+                "ctime_ns": 1794220236335308140,
+                "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/source-before.files.json": {
+                "device": 2050,
+                "inode": 7120635,
+                "mode": 384,
+                "bytes": 5658136,
+                "mtime_ns": 1794214115179110729,
+                "ctime_ns": 1794214115179110729,
+                "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/source-before.diff.patch": {
+                "device": 2050,
+                "inode": 7120636,
+                "mode": 384,
+                "bytes": 0,
+                "mtime_ns": 1794214115385104463,
+                "ctime_ns": 1794214115385104463,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/source-after.files.json": {
+                "device": 2050,
+                "inode": 7120638,
+                "mode": 384,
+                "bytes": 5658136,
+                "mtime_ns": 1794217029810814682,
+                "ctime_ns": 1794217029810814682,
+                "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/source-after.diff.patch": {
+                "device": 2050,
+                "inode": 7120688,
+                "mode": 384,
+                "bytes": 0,
+                "mtime_ns": 1794217030002670120,
+                "ctime_ns": 1794217030002670120,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/source-before.files.json": {
+                "device": 2050,
+                "inode": 6731175,
+                "mode": 384,
+                "bytes": 5658136,
+                "mtime_ns": 1794220238955621083,
+                "ctime_ns": 1794220238955621083,
+                "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/source-before.diff.patch": {
+                "device": 2050,
+                "inode": 6731176,
+                "mode": 384,
+                "bytes": 0,
+                "mtime_ns": 1794220238972384902,
+                "ctime_ns": 1794220238972384902,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/source-after.files.json": {
+                "device": 2050,
+                "inode": 6731198,
+                "mode": 384,
+                "bytes": 5658136,
+                "mtime_ns": 1794220774119019401,
+                "ctime_ns": 1794220774119019401,
+                "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/source-after.diff.patch": {
+                "device": 2050,
+                "inode": 6731199,
+                "mode": 384,
+                "bytes": 0,
+                "mtime_ns": 1794220774166344656,
+                "ctime_ns": 1794220774166344656,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/v8.json": {
+                "device": 2050,
+                "inode": 7120641,
+                "mode": 384,
+                "bytes": 1490,
+                "mtime_ns": 1794214121165928607,
+                "ctime_ns": 1794214121179928181,
+                "sha256": "eaa5f676e051170746700f4d6015e505a4315e509fce952963a50f20186e75d0"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/v8.json.ba7bc020377e49849ff84b6cda8be458.log": {
+                "device": 2050,
+                "inode": 7120640,
+                "mode": 384,
+                "bytes": 0,
+                "mtime_ns": 1794214115985086211,
+                "ctime_ns": 1794214115985086211,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helper-build.json": {
+                "device": 2050,
+                "inode": 7120667,
+                "mode": 384,
+                "bytes": 1643,
+                "mtime_ns": 1794215526163705096,
+                "ctime_ns": 1794215526180704529,
+                "sha256": "ad1d8e657255f8b6ef95f418c5f1b8bc6d4d809e3945d0a1baa44ce22664a918"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helper-build.json.edae1784eea14475820b2533a07641b1.log": {
+                "device": 2050,
+                "inode": 7120642,
+                "mode": 384,
+                "bytes": 499,
+                "mtime_ns": 1794215525907713628,
+                "ctime_ns": 1794215525907713628,
+                "sha256": "9f0cb280a67ba0888b0073c3a3fc893c6ae7c20bc0f9516bfcd3d54441fd428f"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helper-verify.json": {
+                "device": 2050,
+                "inode": 7120675,
+                "mode": 384,
+                "bytes": 1666,
+                "mtime_ns": 1794215533358457623,
+                "ctime_ns": 1794215533363465193,
+                "sha256": "873f04492d2dabd07fe9d68f2c3b6004531d339c89c2c5ddbb2e22758376c358"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helper-verify.json.7ff62f73f8684c8a97278877cfdbe3b1.log": {
+                "device": 2050,
+                "inode": 7120674,
+                "mode": 384,
+                "bytes": 5839,
+                "mtime_ns": 1794215533096474087,
+                "ctime_ns": 1794215533096474087,
+                "sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/core-owning-strict-fix.json": {
+                "device": 2050,
+                "inode": 7120677,
+                "mode": 384,
+                "bytes": 1515,
+                "mtime_ns": 1794215849421033457,
+                "ctime_ns": 1794215849472031786,
+                "sha256": "8959fd2668cb5e33d2dd70ace51d1c867f165f99056db5e84b648482c6e1e8a2"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/core-owning-strict-fix.json.2fd7dfb6ae8e4fc29dfaf155dc441412.log": {
+                "device": 2050,
+                "inode": 7120676,
+                "mode": 384,
+                "bytes": 38874,
+                "mtime_ns": 1794215849167041776,
+                "ctime_ns": 1794215849167041776,
+                "sha256": "3f0215b19919a048827a9cf9ecb81a3abb8e3b1c5f3d05a541f0f096592b0bba"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/core-owning-readonly-strict-clippy.json": {
+                "device": 2050,
+                "inode": 7120679,
+                "mode": 384,
+                "bytes": 1546,
+                "mtime_ns": 1794216090359172996,
+                "ctime_ns": 1794216090372172573,
+                "sha256": "e157018e71db83c8a71dd5fc6387b7740d7e7c5908b8c62ab0910ef24e80ce8f"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/core-owning-readonly-strict-clippy.json.1c0d578d7d7e4d47b094e0b35bd354cf.log": {
+                "device": 2050,
+                "inode": 7120678,
+                "mode": 384,
+                "bytes": 13740,
+                "mtime_ns": 1794216090067182489,
+                "ctime_ns": 1794216090067182489,
+                "sha256": "2c7bf0840f01b680df1827810d6639062ad82d8f145a80bdffa3c7efb28405ac"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/appserver-owning-strict-fix.json": {
+                "device": 2050,
+                "inode": 7120681,
+                "mode": 384,
+                "bytes": 1525,
+                "mtime_ns": 1794216334776246924,
+                "ctime_ns": 1794216334790246470,
+                "sha256": "05d23601efee0a0ec1a207d173d783a88af5418c971117692c790638de319dd9"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/appserver-owning-strict-fix.json.69336a6f10c04b11a5bfa5b040bf442a.log": {
+                "device": 2050,
+                "inode": 7120680,
+                "mode": 384,
+                "bytes": 21072,
+                "mtime_ns": 1794216334511255498,
+                "ctime_ns": 1794216334511255498,
+                "sha256": "0e67403513eccad87926ddbbe52e0910174ac63d3cef8c261b9f7cdc95213370"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/appserver-owning-readonly-strict-clippy.json": {
+                "device": 2050,
+                "inode": 7120683,
+                "mode": 384,
+                "bytes": 1556,
+                "mtime_ns": 1794216552886511358,
+                "ctime_ns": 1794216552887199622,
+                "sha256": "8b56ce1e9bc4ec5d745d2c4c83977aa85e8ad058396203703cff37bae220f0f1"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/appserver-owning-readonly-strict-clippy.json.ec7d1ddab32a4c3eba170fbb5daeaca8.log": {
+                "device": 2050,
+                "inode": 7120682,
+                "mode": 384,
+                "bytes": 18637,
+                "mtime_ns": 1794216552634207786,
+                "ctime_ns": 1794216552634207786,
+                "sha256": "92bc3c3e8e76694ef78461e8f39beae4b8b2609c7edf148dfbd00bb01823583f"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/agentd-owning-strict-fix.json": {
+                "device": 2050,
+                "inode": 7120685,
+                "mode": 384,
+                "bytes": 1525,
+                "mtime_ns": 1794216773134487450,
+                "ctime_ns": 1794216773147486997,
+                "sha256": "d7a6aef12710b5fbcb15baf6290e6ae3b42e1c0d3fedaf4714582f44279b0a58"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/agentd-owning-strict-fix.json.65d6d05ffbaf40a583c26d6dfe689e41.log": {
+                "device": 2050,
+                "inode": 7120684,
+                "mode": 384,
+                "bytes": 22225,
+                "mtime_ns": 1794216772878496362,
+                "ctime_ns": 1794216772878496362,
+                "sha256": "49fcda854fd2547dcc72673a75dac9ee27c8aacf93f4c9b7c22f88b133d5e184"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/agentd-owning-readonly-strict-clippy.json": {
+                "device": 2050,
+                "inode": 7120687,
+                "mode": 384,
+                "bytes": 1556,
+                "mtime_ns": 1794217025419825562,
+                "ctime_ns": 1794217025432825122,
+                "sha256": "7e9fb25deb66c2a2cd5c80c0cf631261639b566d43efbaa3f88f274116e6fdfc"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/agentd-owning-readonly-strict-clippy.json.49cbcc4f23414a21bf14f2f41935c39f.log": {
+                "device": 2050,
+                "inode": 7120686,
+                "mode": 384,
+                "bytes": 22167,
+                "mtime_ns": 1794217025151834654,
+                "ctime_ns": 1794217025151834654,
+                "sha256": "5e4e1858e0ed152b2b14781bb471d40781985900e706bf5e0f37d978ab2df71f"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/v8.json": {
+                "device": 2050,
+                "inode": 6731181,
+                "mode": 384,
+                "bytes": 1491,
+                "mtime_ns": 1794220244002232622,
+                "ctime_ns": 1794220244005232531,
+                "sha256": "6af9ff4837aefeceb1a9680155102467c7e7bb284e220afb5f576cccdf211455"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/v8.json.102957e91522475f945166899a97c83d.log": {
+                "device": 2050,
+                "inode": 6731180,
+                "mode": 384,
+                "bytes": 0,
+                "mtime_ns": 1794220239288375336,
+                "ctime_ns": 1794220239288375336,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/helpers-before.json": {
+                "device": 2050,
+                "inode": 6731183,
+                "mode": 384,
+                "bytes": 1666,
+                "mtime_ns": 1794220251564514529,
+                "ctime_ns": 1794220251572003408,
+                "sha256": "8e56b1b81ccf61b8d4e4b4bb9c163bcaf4524b1352bdbc5720780770d571f36b"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/helpers-before.json.e78456ca567e4f1f9f4db0a2927b78c8.log": {
+                "device": 2050,
+                "inode": 6731182,
+                "mode": 384,
+                "bytes": 5839,
+                "mtime_ns": 1794220251455006951,
+                "ctime_ns": 1794220251455006951,
+                "sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/discovery.json": {
+                "device": 2050,
+                "inode": 6731186,
+                "mode": 384,
+                "bytes": 1761,
+                "mtime_ns": 1794220541561456119,
+                "ctime_ns": 1794220541562193616,
+                "sha256": "9a4cbe7fbcbfce376f268e4e96950de2b8c7eb3da1115df058c96f06411177a8"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/discovery.json.33a458dd929042259b26cdc19a05db7a.log": {
+                "device": 2050,
+                "inode": 6731185,
+                "mode": 384,
+                "bytes": 160048,
+                "mtime_ns": 1794220541458196784,
+                "ctime_ns": 1794220541458196784,
+                "sha256": "e399078f0e2ebab5fe8eb6db9440a107b41de2dada5223e30b924a8519ec2097"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/tests.json": {
+                "device": 2050,
+                "inode": 6731190,
+                "mode": 384,
+                "bytes": 1871,
+                "mtime_ns": 1794220757707959910,
+                "ctime_ns": 1794220757712959722,
+                "sha256": "de5db90dc49d7c41b4cdb8379f47c882d94473b84ccef90609385d2d9ec9d206"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/tests.json.516256d8512f4313af0f630611c4fb68.log": {
+                "device": 2050,
+                "inode": 6731189,
+                "mode": 384,
+                "bytes": 594725,
+                "mtime_ns": 1794220757560965419,
+                "ctime_ns": 1794220757560965419,
+                "sha256": "c423c07e139b14d2fa4a0a6204b48045a41176052b82edbfa2e1f8b5a5f00296"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/helpers-after.json": {
+                "device": 2050,
+                "inode": 6731192,
+                "mode": 384,
+                "bytes": 1664,
+                "mtime_ns": 1794220764887458928,
+                "ctime_ns": 1794220764890691023,
+                "sha256": "98b263a15f03e5c1fc4f8042ebbe8fd59ee66ebbb19325f1814061eff0f33709"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/helpers-after.json.41782fa1d1814790bd174d593c96ea57.log": {
+                "device": 2050,
+                "inode": 6731191,
+                "mode": 384,
+                "bytes": 5839,
+                "mtime_ns": 1794220764800694388,
+                "ctime_ns": 1794220764800694388,
+                "sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/collect-junit.json": {
+                "device": 2050,
+                "inode": 6731196,
+                "mode": 384,
+                "bytes": 1937,
+                "mtime_ns": 1794220765210679058,
+                "ctime_ns": 1794220765214678908,
+                "sha256": "365454cc4ffa557638b85936c96007cc311390d237cbde5f744527ad596db7ef"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/collect-junit.json.15fab8be7ba043e69c81e49118d95876.log": {
+                "device": 2050,
+                "inode": 6731193,
+                "mode": 384,
+                "bytes": 1131,
+                "mtime_ns": 1794220765125682236,
+                "ctime_ns": 1794220765125682236,
+                "sha256": "b5c50f4577321eaf99237232431c5333e786d57632a43633575709611fea5cd9"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/discovered-tests.json": {
+                "device": 2050,
+                "inode": 6731184,
+                "mode": 384,
+                "bytes": 149740,
+                "mtime_ns": 1794220541591955712,
+                "ctime_ns": 1794220541591955712,
+                "sha256": "03e631d5102e827be70e30c5b782979132279e29ec6393ba2971f562072336aa"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/selection.json": {
+                "device": 2050,
+                "inode": 6731187,
+                "mode": 384,
+                "bytes": 235859,
+                "mtime_ns": 1794220547867919156,
+                "ctime_ns": 1794220547867919156,
+                "sha256": "268ef67da3a8e8ff90db778c1c2974f5cea22fac6b6234674d6446e1d365a091"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/original-fresh-junit.xml": {
+                "device": 2050,
+                "inode": 6731188,
+                "mode": 384,
+                "bytes": 186201,
+                "mtime_ns": 1794220765262986725,
+                "ctime_ns": 1794220765262986725,
+                "sha256": "01eca5b3d1792705fd82c83afbbc5c8ed47ca3e017ffca7badbe06ad178c2f99"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/tests-junit.xml": {
+                "device": 2050,
+                "inode": 6731195,
+                "mode": 384,
+                "bytes": 186201,
+                "mtime_ns": 1794220765116784966,
+                "ctime_ns": 1794220765116784966,
+                "sha256": "01eca5b3d1792705fd82c83afbbc5c8ed47ca3e017ffca7badbe06ad178c2f99"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-agentd-owning-v1/tests-junit.summary.json": {
+                "device": 2050,
+                "inode": 6731194,
+                "mode": 384,
+                "bytes": 1259,
+                "mtime_ns": 1794220765116784966,
+                "ctime_ns": 1794220765116784966,
+                "sha256": "6a3137598493e8623b7e862d57106a3750976fc9337c7981a03aea79a859f752"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-checkpoint-root-v1/root-execution.json": {
+                "device": 2050,
+                "inode": 6867513,
+                "mode": 384,
+                "bytes": 2159,
+                "mtime_ns": 1794221233896097458,
+                "ctime_ns": 1794221233898097390,
+                "sha256": "be30d17f90efd18ad91f585db9756d2557aab143bda8818c321d9f75ffc7d972"
+              },
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-checkpoint-root-v1/root-execution.json.5b693674e6f34f2f969b33c5598637e4.log": {
+                "device": 2050,
+                "inode": 6867512,
+                "mode": 384,
+                "bytes": 749,
+                "mtime_ns": 1794221233830099695,
+                "ctime_ns": 1794221233830099695,
+                "sha256": "8d4d720c0981f27852c7a76bfea953669a827238e03a71f6bb9b0963c4015cc5"
+              }
+            },
+            "source_before": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": "",
+              "files_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-checkpoint-root-v1/source-before.files.json",
+              "files_sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+              "files_count": 15010,
+              "regular_file_bytes": 200422945,
+              "untracked_count": 0,
+              "diff_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-checkpoint-root-v1/source-before.diff.patch",
+              "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "identity_stable_during_capture": true,
+              "capture_elapsed_seconds": 2.947709261905402,
+              "observed_at": "2026-11-09T10:47:11.334110+00:00",
+              "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+            },
+            "command": [
+              "sudo",
+              "-n",
+              "--",
+              "python3",
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-checkpoint-root-v1/root-runner.py",
+              "--records",
+              "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-checkpoint-root-v1/root-fixture",
+              "--binary-sha256",
+              "7e4a2646f586339f7afd918ef803ce0425faf17ae948e985b326bed367de7d04",
+              "--",
+              "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/target-ci-test-6ec5993-fresh/ci-test/deps/codex_hepta_agentd-086aa0f6fbbc4f00",
+              "--exact",
+              "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+              "--ignored",
+              "--nocapture",
+              "--test-threads=1"
+            ],
+            "root_command_launched": true,
+            "wrapper_exit": 0,
+            "execution_record": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-checkpoint-root-v1/root-execution.json",
+            "execution_record_sha256": "be30d17f90efd18ad91f585db9756d2557aab143bda8818c321d9f75ffc7d972",
+            "root_fixture_result": {
+              "started_at": "2026-11-09T10:47:12.403247+00:00",
+              "uid": 0,
+              "euid": 0,
+              "pid": 697940,
+              "command": [
+                "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/target-ci-test-6ec5993-fresh/ci-test/deps/codex_hepta_agentd-086aa0f6fbbc4f00",
+                "--exact",
+                "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+                "--ignored",
+                "--nocapture",
+                "--test-threads=1"
+              ],
+              "binary_sha256_before": "7e4a2646f586339f7afd918ef803ce0425faf17ae948e985b326bed367de7d04",
+              "native_execution_started": true,
+              "command_exit": 0,
+              "mount_created": true,
+              "unmounted": true,
+              "cleanup_complete": true,
+              "full_history_cost": null,
+              "physical_cost": null,
+              "scientific_acceptance": false,
+              "scope": "test-only Root bind and exact original test binary",
+              "test_root": "/run/hepta-learning-checkpoint-898e-man3gf2x",
+              "source": "/run/hepta-learning-checkpoint-898e-man3gf2x/source",
+              "mountpoint": "/run/hepta-learning-checkpoint-898e-man3gf2x/mount",
+              "mount_exit": 0,
+              "bind_identity": {
+                "device": 28,
+                "inode": 4484231
+              },
+              "command_wall_seconds": 0.4866038409527391,
+              "observed_libtest_summaries": [
+                [
+                  "ok",
+                  "1",
+                  "0",
+                  "0",
+                  "0",
+                  "797"
+                ],
+                [
+                  "ok",
+                  "1",
+                  "0",
+                  "0",
+                  "0",
+                  "797"
+                ]
+              ],
+              "original_parent_case_executed": true,
+              "original_parent_pass_count": 1,
+              "fixture_child_summaries_are_additional_acceptance_cases": false,
+              "binary_sha256_after": "7e4a2646f586339f7afd918ef803ce0425faf17ae948e985b326bed367de7d04",
+              "umount_exit": 0,
+              "runner_wall_seconds": 1.4144521008711308,
+              "finished_at": "2026-11-09T10:47:13.817737+00:00",
+              "runner_exit": 0
+            },
+            "root_fixture_result_sha256": "88c732d7f289529da0704d136de5372f6b9bfccd90910aaaa0f5f6ed0150fde3",
+            "root_fixture_original_log_sha256": "8d4d720c0981f27852c7a76bfea953669a827238e03a71f6bb9b0963c4015cc5",
+            "root_fixture_original_log_bytes": 749,
+            "observed_original_parent_case_pass_count": 1,
+            "wrapper_observed_passed_tests_not_acceptance_count": 2,
+            "process_identities": {
+              "python_root_runner_pid": 697940,
+              "python_root_runner_uid": 0,
+              "native_root_pid": 697951,
+              "native_root_uid": 0,
+              "registered_consumer_pid": 697953,
+              "registered_consumer_uid": 60001,
+              "source": "original fixture assertions and exact original-test.log identity markers",
+              "parent_cases_counted": 1,
+              "child_libtest_summaries_counted_as_extra_cases": false
+            },
+            "binary_unchanged": true,
+            "input_files_unchanged": true,
+            "source_after": {
+              "commit": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+              "tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+              "status": "",
+              "files_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-checkpoint-root-v1/source-after.files.json",
+              "files_sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+              "files_count": 15010,
+              "regular_file_bytes": 200422945,
+              "untracked_count": 0,
+              "diff_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-checkpoint-root-v1/source-after.diff.patch",
+              "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "identity_stable_during_capture": true,
+              "capture_elapsed_seconds": 1.9498590070288628,
+              "observed_at": "2026-11-09T10:47:17.574198+00:00",
+              "scope": "all_git_tracked_and_nonignored_untracked_source_entries"
+            },
+            "source_unchanged": true,
+            "returncode": 0,
+            "finished_at": "2026-11-09T10:47:17.647268+00:00"
+          }
+        }
+      ]
+    }
+  ],
+  "nul_delimited_git_stdout": [],
+  "file_members": [
+    {
+      "path": "capture/desktop-6ec-agentd-root-history-discovery-v1/DISCOVERY.json",
+      "bytes": 29175,
+      "sha256": "ec0027995aa5beed01c0fca55773b265bd89212579013fa54e6e5946f309c8e8"
+    },
+    {
+      "path": "capture/desktop-6ec-agentd-root-history-discovery-v1/discovery-command.py",
+      "bytes": 3877,
+      "sha256": "72b38285f47aed278f2ede1762e2c9257f663f71c6759448738f8b6fcc0a1b70"
+    },
+    {
+      "path": "capture/desktop-6ec-agentd-root-history-whitelist-v1/INPUTS_AFTER.json",
+      "bytes": 26661,
+      "sha256": "3616bb4af4a52242dc042763b468d01673c14b9c9ea58ca974851508f523b6e6"
+    },
+    {
+      "path": "capture/desktop-6ec-agentd-root-history-whitelist-v1/RESULT.json",
+      "bytes": 606,
+      "sha256": "3eecc292d100b63d53a10d927721fc31db92ee1e7c87000ee697302f8fe30734"
+    },
+    {
+      "path": "capture/desktop-6ec-agentd-root-history-whitelist-v1/WHITELIST.json",
+      "bytes": 43073,
+      "sha256": "38d78e3a23b4540bf929a5a0913cdc440e6a44c0c5bd7f69ac12d9def2a058b3"
+    },
+    {
+      "path": "capture/desktop-6ec-agentd-root-history-whitelist-v1/driver.py",
+      "bytes": 11795,
+      "sha256": "033b8bf8e72dbaea2c9751215a141e38600eda5d33d7782736a7ec746f540646"
+    },
+    {
+      "path": "capture/desktop-6ec-agentd-root-sealer-preflight-v1/RESULT.json",
+      "bytes": 859,
+      "sha256": "70e5c6e26ced6aadacebe94320da7f46fbfe4e51d1604abd28a0df64e978caba"
+    },
+    {
+      "path": "capture/desktop-6ec-agentd-root-sealer-preflight-v2/RESULT.json",
+      "bytes": 736,
+      "sha256": "635714f0e3e9a6382c0816d4886e84324749f487fd350d6bd31e40a3a2e13444"
+    },
+    {
+      "path": "capture/desktop-6ec-agentd-root-whitelist-launch-v1/REQUEST.json",
+      "bytes": 438,
+      "sha256": "1d30cf1fd79f9a9ed05c0f2e1cec10ef6d6b0ee183278b9ad21d132a1a981775"
+    },
+    {
+      "path": "capture/desktop-6ec-agentd-root-whitelist-launch-v1/RESULT.json",
+      "bytes": 1104,
+      "sha256": "2867646e5c8438ae65b8700f5343123e92f1e38992bc182cb20eddd55e7c04c5"
+    },
+    {
+      "path": "capture/desktop-6ec-agentd-root-whitelist-launch-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "capture/desktop-6ec-agentd-root-whitelist-launch-v1/stdout.log",
+      "bytes": 797,
+      "sha256": "e2c3223ae545709b4c5f82afd250f448881704b87af10729eb784d4619b6feb7"
+    },
+    {
+      "path": "capture/seal-desktop-6ec-agentd-root-native-retention-history-v1.py",
+      "bytes": 60508,
+      "sha256": "47b94661e6c57f1bb2eb00be420bf713bc3eca09453ccbd4b4f1d7dc49381e0f"
+    },
+    {
+      "path": "metadata/CAPTURE_INPUTS_BEFORE.json",
+      "bytes": 4097,
+      "sha256": "511f7ee8cde1e9b6087ace005184281aa1a65cfe7639f68c27fa172a77f93d58"
+    },
+    {
+      "path": "metadata/INPUTS_AFTER_BEFORE_ARCHIVE.json",
+      "bytes": 26661,
+      "sha256": "d4f9026cc828a5b77f80743d7203792cee7c5565efdadfae2e84cf5503567bf4"
+    },
+    {
+      "path": "metadata/INPUTS_BEFORE.json",
+      "bytes": 26661,
+      "sha256": "d4f9026cc828a5b77f80743d7203792cee7c5565efdadfae2e84cf5503567bf4"
+    },
+    {
+      "path": "metadata/OBSERVATIONS.json",
+      "bytes": 78366,
+      "sha256": "53fccce670d4efe18d1b80e2c4bb79941fd952e50e96d1b0c1c748bc5a5df07b"
+    },
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 34222,
+      "sha256": "042b9c1c3b3c2824a6bf33cbb7032ea86b9470923cf2cf99fc15c0acdc79bd4a"
+    },
+    {
+      "path": "metadata/sealer.py",
+      "bytes": 60633,
+      "sha256": "d0bc43a684071039cca1f53cb71129afe9e29a5f5e24bfd12ec7153370f70860"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-outer-v1/COMMAND.json",
+      "bytes": 2149,
+      "sha256": "b0859d8d60a279b88b6d17c8bff85ea6fcca0b674f7dab8ddf88474d2b0031c5"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-outer-v1/EXECUTION.json",
+      "bytes": 3873,
+      "sha256": "afb8056f9d829c6ed3181da300d13d74f9e054118b51eaa4e8397a1b0bcdc3dc"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-outer-v1/launcher.py",
+      "bytes": 5867,
+      "sha256": "f98c1e6387f47b7605bc1fd018b185ad7d0cab528c9fbf426217e4e4b849b660"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-outer-v1/native-driver-original.py",
+      "bytes": 24162,
+      "sha256": "a06e7e117ed92ab1ee1eca69d508d075f5c575b3701e7d429da295fc16a7b07c"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-outer-v1/stdout.log",
+      "bytes": 777306,
+      "sha256": "86bd6c14a6c553642bb8773886cbd4936a3437bef8547eea2cbec58469182574"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-outer-v1/strict-preparation-original.json",
+      "bytes": 20468,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/RESULT.json",
+      "bytes": 35999,
+      "sha256": "05f6b71c09a6c322b1af70b107f212d71bfb63fed2c1974f5f085f1d72fc0082"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/collect-junit.json",
+      "bytes": 1937,
+      "sha256": "365454cc4ffa557638b85936c96007cc311390d237cbde5f744527ad596db7ef"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/collect-junit.json.15fab8be7ba043e69c81e49118d95876.log",
+      "bytes": 1131,
+      "sha256": "b5c50f4577321eaf99237232431c5333e786d57632a43633575709611fea5cd9"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/discovered-tests.json",
+      "bytes": 149740,
+      "sha256": "03e631d5102e827be70e30c5b782979132279e29ec6393ba2971f562072336aa"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/discovery.json",
+      "bytes": 1761,
+      "sha256": "9a4cbe7fbcbfce376f268e4e96950de2b8c7eb3da1115df058c96f06411177a8"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/discovery.json.33a458dd929042259b26cdc19a05db7a.log",
+      "bytes": 160048,
+      "sha256": "e399078f0e2ebab5fe8eb6db9440a107b41de2dada5223e30b924a8519ec2097"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/driver.py",
+      "bytes": 24162,
+      "sha256": "a06e7e117ed92ab1ee1eca69d508d075f5c575b3701e7d429da295fc16a7b07c"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/helpers-after.json",
+      "bytes": 1664,
+      "sha256": "98b263a15f03e5c1fc4f8042ebbe8fd59ee66ebbb19325f1814061eff0f33709"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/helpers-after.json.41782fa1d1814790bd174d593c96ea57.log",
+      "bytes": 5839,
+      "sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/helpers-before.json",
+      "bytes": 1666,
+      "sha256": "8e56b1b81ccf61b8d4e4b4bb9c163bcaf4524b1352bdbc5720780770d571f36b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/helpers-before.json.e78456ca567e4f1f9f4db0a2927b78c8.log",
+      "bytes": 5839,
+      "sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/junit-case-audit.json",
+      "bytes": 199118,
+      "sha256": "fe35015c461d15f82105f70ab5c5a20cdf862f45867135010d7ccf9d5cf07a88"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/nextest-store/local/junit.xml",
+      "bytes": 186201,
+      "sha256": "01eca5b3d1792705fd82c83afbbc5c8ed47ca3e017ffca7badbe06ad178c2f99"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/nextest.toml",
+      "bytes": 130,
+      "sha256": "b0e2f289b95543fc88a69c0fa7aa84ad03b372d80f7452db75731ca6fafdfb7c"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/original-fresh-junit.xml",
+      "bytes": 186201,
+      "sha256": "01eca5b3d1792705fd82c83afbbc5c8ed47ca3e017ffca7badbe06ad178c2f99"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/preparation-lineage.json",
+      "bytes": 20468,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/selection.json",
+      "bytes": 235859,
+      "sha256": "268ef67da3a8e8ff90db778c1c2974f5cea22fac6b6234674d6446e1d365a091"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/snapshot_helper.py",
+      "bytes": 18350,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/source-after.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/source-after.json",
+      "bytes": 882,
+      "sha256": "aeb75f55dc54032b9058ce101f676c88803a470ca98b36945a4344c4cb642d77"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/source-before.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/source-before.json",
+      "bytes": 884,
+      "sha256": "e36e87686ec521f5f1f1d7e8b765a4cf9d6dc7087b1709cc9ac8c799c188cd1d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/tests-junit.summary.json",
+      "bytes": 1259,
+      "sha256": "6a3137598493e8623b7e862d57106a3750976fc9337c7981a03aea79a859f752"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/tests-junit.xml",
+      "bytes": 186201,
+      "sha256": "01eca5b3d1792705fd82c83afbbc5c8ed47ca3e017ffca7badbe06ad178c2f99"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/tests.json",
+      "bytes": 1871,
+      "sha256": "de5db90dc49d7c41b4cdb8379f47c882d94473b84ccef90609385d2d9ec9d206"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/tests.json.516256d8512f4313af0f630611c4fb68.log",
+      "bytes": 594725,
+      "sha256": "c423c07e139b14d2fa4a0a6204b48045a41176052b82edbfa2e1f8b5a5f00296"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/v8.env",
+      "bytes": 321,
+      "sha256": "0056da193f536ec14bfa9d7562ba89d748f1e33b7bb1d9b17f2b966917b3296d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/v8.json",
+      "bytes": 1491,
+      "sha256": "6af9ff4837aefeceb1a9680155102467c7e7bb284e220afb5f576cccdf211455"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-owning-v1/v8.json.102957e91522475f945166899a97c83d.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-retained-binaries-v1/RESULT.json",
+      "bytes": 67532,
+      "sha256": "0b06db57fffcf1493f1e07200b3578c7ea0a212e8534baf672af0d8a90c81198"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-retained-binaries-v1/expected-binaries.json",
+      "bytes": 16365,
+      "sha256": "0e3f07f3f48f37b1a41ab5facc2b2d43e417c5d0127a97f26cb1e460edfc25a1"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-retained-binaries-v1/helper-env-original.json",
+      "bytes": 2754,
+      "sha256": "76b9a5a60f9f1fb33e2bdff36702d78988361cedd95928751a9b2676eca10004"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-retained-binaries-v1/helper-manifest-original.json",
+      "bytes": 14234,
+      "sha256": "8a7d194f148d3a2cd458eb8fe56fd9e70b62b3016c09e7562f2e35b58948539b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-retained-binaries-v1/native-result-original.json",
+      "bytes": 35999,
+      "sha256": "05f6b71c09a6c322b1af70b107f212d71bfb63fed2c1974f5f085f1d72fc0082"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-retained-binaries-v1/strict-preparation-original.json",
+      "bytes": 20468,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-agentd-retention-launch-observation-v1.json",
+      "bytes": 5497,
+      "sha256": "c0db0d6a06e888d50a6c26ddcb833870c0b653ee5398f9806217887f8761c2db"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-outer-v1/COMMAND.json",
+      "bytes": 2666,
+      "sha256": "060daa1d5bf3de8fecdbe5aa6a45a12ed2daaa52beaa536b179a7deeabb0b2bc"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-outer-v1/EXECUTION.json",
+      "bytes": 4927,
+      "sha256": "a390eb3c6b93ff4a9a0b9a83edfa9c6fa79ae51e233281c78ab0ee84208ac45f"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-outer-v1/agentd-outer-original.json",
+      "bytes": 3873,
+      "sha256": "afb8056f9d829c6ed3181da300d13d74f9e054118b51eaa4e8397a1b0bcdc3dc"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-outer-v1/agentd-result-original.json",
+      "bytes": 35999,
+      "sha256": "05f6b71c09a6c322b1af70b107f212d71bfb63fed2c1974f5f085f1d72fc0082"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-outer-v1/fixture-driver-original.py",
+      "bytes": 31208,
+      "sha256": "e4f1c748a7125620697a591777a0975246c6954063e5cccd4f485fc984e5f4dd"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-outer-v1/launcher.py",
+      "bytes": 6521,
+      "sha256": "329b8fe83105fd676939d31858cc4936a737fd4460f308a7e23035e5c689d80a"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-outer-v1/root-runner-original.py",
+      "bytes": 7004,
+      "sha256": "c218dadbfa09f29c928c14a44e2539f0f8a4f43543b64fa1383f0fc4c933520f"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-outer-v1/stdout.log",
+      "bytes": 2720,
+      "sha256": "2a493394fa9ef5f3548adcafaa5a921c18eecb61f7aa9004508793d5f7953560"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-outer-v1/strict-preparation-original.json",
+      "bytes": 20468,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/RESULT.json",
+      "bytes": 32902,
+      "sha256": "b399c7112fb9895d9f78f878a0d6733804953dda26f4b03dbf9a2768cf229d09"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/driver.py",
+      "bytes": 31208,
+      "sha256": "e4f1c748a7125620697a591777a0975246c6954063e5cccd4f485fc984e5f4dd"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/owning-membership.json",
+      "bytes": 3899,
+      "sha256": "94c9801170e4970ab72c0feb8e93fbb5afced7f129f7a273c4c8663dc7b62d2d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/owning-result-original.json",
+      "bytes": 35999,
+      "sha256": "05f6b71c09a6c322b1af70b107f212d71bfb63fed2c1974f5f085f1d72fc0082"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-execution.json",
+      "bytes": 2159,
+      "sha256": "be30d17f90efd18ad91f585db9756d2557aab143bda8818c321d9f75ffc7d972"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-execution.json.5b693674e6f34f2f969b33c5598637e4.log",
+      "bytes": 749,
+      "sha256": "8d4d720c0981f27852c7a76bfea953669a827238e03a71f6bb9b0963c4015cc5"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-fixture-original-test.log",
+      "bytes": 749,
+      "sha256": "8d4d720c0981f27852c7a76bfea953669a827238e03a71f6bb9b0963c4015cc5"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-fixture-result-original.json",
+      "bytes": 1750,
+      "sha256": "88c732d7f289529da0704d136de5372f6b9bfccd90910aaaa0f5f6ed0150fde3"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-fixture/RESULT.json",
+      "bytes": 1750,
+      "sha256": "88c732d7f289529da0704d136de5372f6b9bfccd90910aaaa0f5f6ed0150fde3"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-fixture/mount.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-fixture/mount.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-fixture/mountinfo-after.txt",
+      "bytes": 7363,
+      "sha256": "233f9964735a345ae894e70808bd1bfccaca23d17ef8bac22a9c22572cbd694d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-fixture/mountinfo-before.txt",
+      "bytes": 7363,
+      "sha256": "233f9964735a345ae894e70808bd1bfccaca23d17ef8bac22a9c22572cbd694d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-fixture/mountinfo-created.txt",
+      "bytes": 7563,
+      "sha256": "b6f902094bfdf350988e7ebbb32509e9c8338f70996209be82b847f899d56a9c"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-fixture/original-test.log",
+      "bytes": 749,
+      "sha256": "8d4d720c0981f27852c7a76bfea953669a827238e03a71f6bb9b0963c4015cc5"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-fixture/umount.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-fixture/umount.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/root-runner.py",
+      "bytes": 7004,
+      "sha256": "c218dadbfa09f29c928c14a44e2539f0f8a4f43543b64fa1383f0fc4c933520f"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/source-after.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/source-after.json",
+      "bytes": 886,
+      "sha256": "d5cedeffaa8be21530aeb4567e64defcafe763b160d053d4133aa2a01420bb1c"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/source-before.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/source-before.json",
+      "bytes": 887,
+      "sha256": "2cb8a53ff3b3334c50616a10f0fcefe02f37baf9b004f3568e7a94f3eece771a"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-checkpoint-root-v1/strict-preparation-original.json",
+      "bytes": 20468,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+    },
+    {
+      "path": "originals/retain-desktop-6ec-native-and-helper-binaries-v1.py",
+      "bytes": 19491,
+      "sha256": "57a763b5528d508b6d96ef047af95d8f9f31069bd79c459c2777a1323b716079"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/core-output-6ec5993-desktop-agentd-root-native-retention-history-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "acc0e82db6e36107f8aea58cf9a226307533e4f332813caccb3f6d10145b6efe"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/core-output-6ec5993-desktop-agentd-root-native-retention-history-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "bb88978d79ba5e2ffac2ce2d9dda3d2a95c3c2b4e5dfdbee03f8c350c679d8d3"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/core-output-6ec5993-desktop-agentd-root-native-retention-history-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 243632,
+      "sha256": "cab70c536ae0ba1e88bca76faa440949346a63f6b21526635bbb74c0d0006062"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}
