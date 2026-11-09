@@ -22,6 +22,8 @@ AGENT = "codex-rs/hepta-agentd/src/"
 MEMORY = "codex-rs/hepta-memory/src/"
 CONTRACTS = "codex-rs/hepta-contracts/src/"
 DISPATCH = "codex-rs/hepta-operations/src/durable_dispatch.rs"
+ACTION_DRIVER = "codex-rs/hepta-automation/src/action_skill_driver.rs"
+ASYNC_EFFECT_OWNER = "codex-rs/hepta-automation/src/authorized_effect.rs"
 
 
 class CurrentCallerMigrationTests(unittest.TestCase):
@@ -268,6 +270,95 @@ class CurrentCallerMigrationTests(unittest.TestCase):
             ".with_original_notes_thread_seed(*seed)?",
             "",
         )
+
+
+    def test_action_skill_bridge_caller_set_stays_closed(self):
+        boundary = self.boundaries["automation_taskflow_provider_effect_bridge"]
+        code = PROOF._strip_cfg_test_items(
+            PROOF._strip_rust_non_code((ROOT / ACTION_DRIVER).read_text())
+        )
+        sources = {ACTION_DRIVER: code}
+        PROOF._verify_boundary(ROOT, boundary, sources, ())
+        with self.subTest(mutation="remove_registration"):
+            with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+                PROOF._verify_boundary(
+                    ROOT, replace(boundary, product_callers=()), sources, ()
+                )
+        sources["codex-rs/unregistered/src/lib.rs"] = (
+            "fn extra() { ProviderEffectTaskFlowDriver::new(scope, adapter); }"
+        )
+        with self.subTest(mutation="add_unregistered_caller"):
+            with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+                PROOF._verify_boundary(ROOT, boundary, sources, ())
+
+    def test_action_skill_constructor_keeps_contract_and_observer_binding(self):
+        for original in (
+            "contract.digest()?",
+            "observer.observer_id() != contract.observer_id",
+            "ProviderEffectTaskFlowDriver::new(contract.destination_id.clone(), adapter)",
+        ):
+            with self.subTest(guard=original):
+                self.rejects(ACTION_DRIVER, original, "unchecked")
+
+    def test_action_skill_invocation_keeps_original_wire_and_contract_binding(self):
+        for original in (
+            "wire_payload.len() > self.contract.budget.max_wire_bytes as usize",
+            "provider_intent.validate().is_err()",
+            "Sha256Digest::parse(effect_intent_digest.as_str()).is_err()",
+            "Sha256Digest::for_bytes(wire_payload) != provider_intent.payload_sha256",
+            "invocation.schema_version != ACTION_SKILL_SCHEMA_VERSION",
+            "invocation.contract_digest != self.contract_digest",
+            "invocation.destination_id != self.contract.destination_id",
+        ):
+            with self.subTest(guard=original):
+                self.rejects(ACTION_DRIVER, original, "false")
+
+    def test_action_skill_dispatch_keeps_precontact_checks(self):
+        for original in (
+            "request.intent.destination_id != self.contract.destination_id",
+            "self.provider.adapter().capability()",
+            "self.observer.check_initiation(&binding, &invocation.body)",
+            "initiation.binding != binding",
+            "initiation.observer_id != self.contract.observer_id",
+            "initiation.condition != ActionConditionV1::Met",
+            "Sha256Digest::parse(initiation.evidence_digest.as_str()).is_err()",
+        ):
+            with self.subTest(guard=original):
+                self.rejects(ACTION_DRIVER, original, "false")
+
+    def test_action_skill_guard_comment_cannot_replace_executed_code(self):
+        guard = "initiation.binding != binding"
+        self.rejects(ACTION_DRIVER, guard, "/* " + guard + " */ false")
+
+    def test_action_skill_owner_keeps_original_step_and_final_use_binding(self):
+        for original in (
+            "provider_effect_intent(intent, wire_payload)?",
+            "current.state != TaskFlowStepState::Claimed",
+            "expected_binding.scope_sha256 != digest_bytes(&intent.final_use_scope_digest)?",
+            "expected_binding.payload_sha256 != digest_bytes(payload_digest)?",
+        ):
+            with self.subTest(guard=original):
+                self.rejects(ASYNC_EFFECT_OWNER, original, "unchecked", count=2 if original.startswith(("current.state", "expected_binding.")) else 1, occurrence=1 if original.startswith(("current.state", "expected_binding.")) else 0)
+
+    def test_action_skill_dispatch_cannot_move_after_final_use_guard_returns(self):
+        original = (
+            "let provider = match authority\n"
+            "            .with_verified_use_async(token, expected_binding, || driver.dispatch(request))\n"
+            "            .await\n"
+            "        {"
+        )
+        replacement = (
+            "let admitted = authority\n"
+            "            .with_verified_use_async(token, expected_binding, || async {})\n"
+            "            .await;\n"
+            "        let provider = match admitted {\n"
+            "            Ok(()) => Ok(driver.dispatch(request).await),\n"
+            "            Err(error) => Err(error),\n"
+            "        };\n"
+            "        let provider = match provider {"
+        )
+        self.rejects(ASYNC_EFFECT_OWNER, original, replacement)
+
 
 
 if __name__ == "__main__":

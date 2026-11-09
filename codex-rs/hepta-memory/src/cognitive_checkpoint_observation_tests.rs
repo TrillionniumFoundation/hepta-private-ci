@@ -208,7 +208,8 @@ mod crash {
                 let receipt = fixture.peer.receipt.lock().unwrap().clone();
                 // The harness retains the protocol peer's Current receipt before
                 // any polling. It never derives a replacement cut from SQLite.
-                let evidence = (fixture._temp.path().join("fleet"), receipt);
+                let fleet = fixture._temp.path().join("fleet").canonicalize().unwrap();
+                let evidence = (fleet, receipt);
                 let receipt_path = root.join("test-host-current.json");
                 std::fs::write(&receipt_path, serde_json::to_vec(&evidence).unwrap()).unwrap();
                 File::open(&receipt_path).unwrap().sync_all().unwrap();

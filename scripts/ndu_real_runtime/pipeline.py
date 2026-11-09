@@ -176,6 +176,10 @@ def run_grid(root, records):
     root = Path(root)
     plan, _ = verify_plan(root)
     design, config = plan["design"], plan["execution"]
+    if design["training"].get("observation_policy") == "matched_episodes":
+        from .causal_b import run_matched_grid
+
+        return run_matched_grid(root, records, design, config)
     training = design["training"]
     grid = fit_grid(
         str(records),
@@ -268,6 +272,9 @@ def run_grid(root, records):
         row = {
             "core": job["core"],
             "seed": job["seed"],
+            "memory_mode": job["memory_mode"],
+            "observation_policy": job["observation_policy"],
+            "paired_memory_group": job["paired_memory_group"],
             "directory": job["output"],
             "status": result["status"],
             "weights_sha256": result.get("weights_sha256"),
@@ -304,7 +311,9 @@ def execute(config, design_path, root):
             {
                 "control": design["controller"],
                 "episode_wall_seconds": design["budgets"]["episode_wall_seconds"],
-                "fixed_schedule": design["fixed_schedule_candidates"][1],
+                "fixed_schedule": design["fixed_schedule_candidates"][
+                    min(1, len(design["fixed_schedule_candidates"]) - 1)
+                ],
                 "seed": design["behavior_collector_seed"],
             },
         )

@@ -128,3 +128,13 @@ filter = 'package(codex-hepta-operations) & test(growing_history_keeps_early_ide
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# These scenarios install and verify real release binaries, then run multiple
+# separately bounded lifecycle phases. Serialize the complete scenarios and
+# bound their total workload independently of each original operation deadline.
+# A killed lifecycle owns child processes and must never retry automatically.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-supervisor) & (test(=five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash) | test(=two_real_pairs_restart_one_without_peer_pid_churn))'
+test-group = "hepta_durable_capacity"
+slow-timeout = { period = "30s", terminate-after = 12 }
+retries = 0

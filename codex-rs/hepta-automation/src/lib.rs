@@ -12,11 +12,17 @@
 #[cfg(test)]
 mod effect_executor;
 
+mod action_skill;
+mod action_skill_driver;
+#[cfg(test)]
+#[path = "action_skill_tests.rs"]
+mod action_skill_tests;
 mod authorized_effect;
 mod automation_taskflow;
 mod circuit_admission;
 mod circuit_budget;
 mod circuit_compute;
+mod circuit_drain;
 mod circuit_history;
 mod circuit_join;
 mod circuit_journal;
@@ -25,6 +31,7 @@ mod circuit_progress;
 mod circuit_runtime;
 mod circuit_state;
 mod circuit_store;
+mod circuit_task_readback;
 mod dispatch_recovery;
 mod effect_dispatch_ledger;
 mod lifecycle;
@@ -42,6 +49,21 @@ mod taskflow_recovery;
 mod taskflow_step;
 mod timer_lifecycle;
 
+pub use action_skill::ACTION_SKILL_SCHEMA_VERSION;
+pub use action_skill::ActionCancellationStateV1;
+pub use action_skill::ActionConditionV1;
+pub use action_skill::ActionExecutionStateV1;
+pub use action_skill::ActionGoalStateV1;
+pub use action_skill::ActionInitiationObservationV1;
+pub use action_skill::ActionSkillBindingV1;
+pub use action_skill::ActionSkillBudgetV1;
+pub use action_skill::ActionSkillContractV1;
+pub use action_skill::ActionSkillError;
+pub use action_skill::ActionSkillInvocationV1;
+pub use action_skill::ActionSkillObservationV1;
+pub use action_skill::ActionSkillObserver;
+pub use action_skill::ActionSkillRecoveryV1;
+pub use action_skill_driver::GoalCheckedActionSkillDriver;
 pub use authorized_effect::AsyncAuthorizedEffectDriver;
 pub use authorized_effect::AuthorizedEffectDependency;
 pub use authorized_effect::AuthorizedEffectDispatchRequest;
@@ -65,6 +87,7 @@ pub use circuit_admission::CircuitComputationAdmissionV2;
 pub use circuit_admission::CircuitComputationClaimV2;
 pub use circuit_budget::CircuitBudgetV2;
 pub use circuit_history::CircuitLeaseClaimV2;
+pub use circuit_history::CircuitRecoverySettlementV2;
 pub use circuit_join::CircuitJoinEnvelopeV2;
 pub use circuit_join::circuit_join_output_schema_v2;
 pub use circuit_profile::BoundedCircuitDefinitionV2;
@@ -81,6 +104,7 @@ pub use circuit_state::CircuitActivationV2;
 pub use circuit_state::CircuitCommandReceiptV2;
 pub use circuit_state::CircuitCommandStatusV2;
 pub use circuit_state::CircuitCommandV2;
+pub use circuit_state::CircuitCommittedTraceV2;
 pub use circuit_state::CircuitCompletionV2;
 pub use circuit_state::CircuitDispatchV2;
 pub use circuit_state::CircuitEventV2;

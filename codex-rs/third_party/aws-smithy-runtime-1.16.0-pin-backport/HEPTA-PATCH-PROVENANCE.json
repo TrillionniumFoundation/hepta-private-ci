@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.current-smithy-pin-backport.v1",
+  "crate": "aws-smithy-runtime",
+  "version": "1.16.0",
+  "original_registry_checksum": "d6e302ac1d88b99652489df31abdec6ac42a2ab2ac3982ad0ac49f64dfaf28ba",
+  "official_archive_url": "https://static.crates.io/crates/aws-smithy-runtime/aws-smithy-runtime-1.16.0.crate",
+  "official_source_commit": "9a67dfe11f42cafab121082f4e0d87d278418d1d",
+  "upstream_fix_reference": "https://github.com/smithy-lang/smithy-rs/pull/2410",
+  "reason": "Remove the unmaintained pin-utils parent dependency while retaining the current Smithy schema compatibility line",
+  "license_sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+  "edits": [
+    {
+      "path": "Cargo.toml",
+      "before_sha256": "540a2b03a14b4c6ff49ecd895fde9b38d3bafe4b91d5abb8310b9e9189a9f443",
+      "after_sha256": "d3c2f4bde65caccfdc2abecb932848e6b34b04123aa162f5f8c0f56c113937af"
+    },
+    {
+      "path": "Cargo.toml.orig",
+      "before_sha256": "c67eff730723034494a40911c851e44b276672a7170a7479d7063d75d84dd66c",
+      "after_sha256": "4b4588d965a1299405632b8265fc8a36cca482c1ed988c40c68bd1b927c841bb"
+    },
+    {
+      "path": "src/client/orchestrator/http.rs",
+      "before_sha256": "301ede6c67e6c7fe303f3fe67574926e3508c2349c5e9345f8c48e37952b4b65",
+      "after_sha256": "f3e54cef26b18eac0f970578e9152ec31aafe9e899c059603767f2f1ab9e9ad4"
+    },
+    {
+      "path": "tests/stalled_stream_common.rs",
+      "before_sha256": "75e3e2bd51ff0646224b8ba322d8426f18493ca7788ee50522201e080b4130e3",
+      "after_sha256": "b6cc52ff6f9045162944bd24b13cdda94b09e2f9cff821954ae2bc423f575864"
+    },
+    {
+      "path": "tests/stalled_stream_download.rs",
+      "before_sha256": "0e1b6e63a64abc5480ef7e3710b8268112c62559fe7b04c9ccff91e2bf5ea510",
+      "after_sha256": "57d5d8447dd146d5f4a9342144040b73aa90b0e8092b6c3f076df8bd2327e18a"
+    },
+    {
+      "path": "tests/stalled_stream_upload.rs",
+      "before_sha256": "bbc989028f97e942fce1cda766f1b74c12f3817162cef723b3dc4aa678f79f53",
+      "after_sha256": "d03e435c6b0ada2e892d937be728f05ea90bcf6db2101144c5129cd7f9fcb22b"
+    }
+  ],
+  "minimal_patch_sha256": "a14497d90100a0ad77d84acbdf1c9b8ce1bc33bf870bb6b78179f1fe2025ac90",
+  "all_other_archive_files_unchanged": true,
+  "historical_vendor_lock_is_not_workspace_dependency_authority": true,
+  "formatting": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "9a67dfe11f42cafab121082f4e0d87d278418d1d"
+    ],
+    "base": "9a67dfe11f42cafab121082f4e0d87d278418d1d",
+    "formatter_only_files": [
+      "src/client/orchestrator/http.rs",
+      "tests/stalled_stream_common.rs"
+    ]
+  }
+}

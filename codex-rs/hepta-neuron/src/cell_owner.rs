@@ -74,11 +74,41 @@ impl CellPartitionOwnerV1 {
         Ok(())
     }
 
-    pub(crate) fn pending_count(&self) -> usize {
+    pub(crate) fn pending_record_reservations(&self) -> usize {
         self.partitions
             .iter()
-            .filter(|p| p.pending.is_some())
-            .count()
+            .filter_map(|p| p.pending.as_ref())
+            .map(|pending| 1 + usize::from(pending.host_queue_age_micros.is_none()))
+            .sum()
+    }
+
+    pub(crate) fn check_host_queue_age(
+        &self,
+        scope: &CellScopeV1,
+        operation_id: &StableId,
+        request_digest: Digest32,
+        host_queue_age_micros: u64,
+    ) -> Result<Option<u64>, CellExecutionError> {
+        let partition = self
+            .partitions
+            .iter()
+            .find(|p| &p.snapshot.scope == scope)
+            .ok_or(CellExecutionError::ScopeMismatch)?;
+        let pending = partition
+            .pending
+            .as_ref()
+            .ok_or(CellExecutionError::InferenceNotAdmitted)?;
+        let expected = neuron_feature_request_digest_v1(&feature_request(&pending.model_request))
+            .map_err(|_| CellExecutionError::InvalidInput)?;
+        if &pending.operation_id != operation_id
+            || expected != request_digest
+            || pending
+                .host_queue_age_micros
+                .is_some_and(|age| age != host_queue_age_micros)
+        {
+            return Err(CellExecutionError::OperationConflict);
+        }
+        Ok(pending.host_queue_age_micros)
     }
 
     pub(crate) fn check_admission(
@@ -257,6 +287,24 @@ impl CellStateOwnerV1 for CellPartitionOwnerV1 {
             .find(|p| &p.snapshot.scope == scope)
             .map(|p| p.pending.clone())
             .ok_or(CellExecutionError::ScopeMismatch)
+    }
+
+    fn record_host_queue_age(
+        &mut self,
+        scope: &CellScopeV1,
+        operation_id: &StableId,
+        request_digest: Digest32,
+        host_queue_age_micros: u64,
+    ) -> Result<(), CellExecutionError> {
+        self.check_host_queue_age(scope, operation_id, request_digest, host_queue_age_micros)?;
+        let pending = self
+            .partitions
+            .iter_mut()
+            .find(|p| &p.snapshot.scope == scope)
+            .and_then(|p| p.pending.as_mut())
+            .ok_or(CellExecutionError::InferenceNotAdmitted)?;
+        pending.host_queue_age_micros = Some(host_queue_age_micros);
+        Ok(())
     }
 
     fn lookup(

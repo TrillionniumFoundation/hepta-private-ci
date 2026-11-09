@@ -16,11 +16,13 @@ use crate::TaskFlowError;
 use crate::TaskFlowFence;
 use crate::circuit_history::CircuitFenceIdentityV2;
 use crate::circuit_history::CircuitLedgerEventV2;
+use crate::circuit_history::CircuitRecoverySettlementV2;
 use crate::circuit_journal;
 use crate::circuit_journal::encode;
 use crate::circuit_journal::unavailable;
 use crate::circuit_profile::hash;
 use crate::circuit_profile::text;
+use crate::circuit_state::CircuitCommittedTraceV2;
 
 impl AutomationStore {
     /// Register immutable bytes under the new explicit profile. Old versions
@@ -138,6 +140,25 @@ impl AutomationStore {
             .await
     }
 
+    /// Stop an expired run and settle one original receipt in the same event.
+    /// A higher fence enters settlement-only mode; subsequent receipts may use
+    /// that exact fence. No lease or dispatch is issued, and the event consumes
+    /// a reserved receipt slot even when recovery lease renewals are exhausted.
+    pub async fn reconcile_expired_circuit_computation(
+        &self,
+        request: &CircuitRecoverySettlementV2,
+    ) -> Result<CircuitCommandReceiptV2, TaskFlowError> {
+        let event = CircuitLedgerEventV2::RecoverySettled {
+            fence: self.circuit_fence_identity(&request.fence)?,
+            expected_revision: request.expected_revision,
+            now_ms: request.now_ms,
+            execution_request_digest: request.execution_request_digest.clone(),
+            completion: request.completion.clone(),
+        };
+        self.apply_circuit_ledger(&request.run_id, &request.command_id, &event)
+            .await
+    }
+
     /// Recover from canonical events in one consistent read transaction. A
     /// projection is compared against replay; it is never deserialized as trusted
     /// runtime state. This observation alone cannot reissue computation/effects.
@@ -150,6 +171,23 @@ impl AutomationStore {
         let history = circuit_journal::load(&mut tx, self.owner_agent_id(), run_id).await?;
         tx.commit().await.map_err(unavailable)?;
         Ok(history.map(|history| history.run))
+    }
+
+    /// Read the complete consumed computation receipts and their replayed run
+    /// under the same SQLite snapshot. This never admits or repeats work.
+    pub async fn bounded_circuit_committed_trace(
+        &self,
+        run_id: &str,
+    ) -> Result<Option<CircuitCommittedTraceV2>, TaskFlowError> {
+        text(run_id)?;
+        let mut tx = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let history = circuit_journal::load(&mut tx, self.owner_agent_id(), run_id).await?;
+        tx.commit().await.map_err(unavailable)?;
+        Ok(history.map(|history| CircuitCommittedTraceV2 {
+            run: history.run,
+            completions: history.completions,
+            history_digest: history.last_digest,
+        }))
     }
 
     fn circuit_fence_identity(

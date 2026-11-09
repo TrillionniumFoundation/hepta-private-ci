@@ -222,6 +222,7 @@ class ResultAdmissionTests(unittest.TestCase):
             ("controller", "ndu"),
             ("regime", "joint"),
             ("lr", 0.01),
+            ("observation_policy", "matched_episodes"),
         ):
             with self.subTest(indexed_field=field):
                 self.job[field] = wrong
@@ -240,6 +241,44 @@ class ResultAdmissionTests(unittest.TestCase):
         self.assertEqual(result["status"], "failed")
         self.assertIsNone(result["admission_sha256"])
         self.assertGreaterEqual(result["wall_seconds"], 0)
+
+    def test_grid_source_memory_and_observation_bound_before_dispatch(self):
+        self.job["command"]["args"] += [
+            "--observation-policy",
+            "matched_episodes",
+        ]
+        self.job.update(
+            observation_policy="matched_episodes",
+            memory_mode="reset",
+            source_pins=bridge._source_pins(),
+        )
+        admission = self.admission()
+        self.assertEqual(
+            admission["expected_receipt"]["observation_policy"], "matched_episodes"
+        )
+        self.assertEqual(
+            admission["expected_started"]["observation_policy"], "matched_episodes"
+        )
+        for field, wrong in (
+            ("source_pins", {}),
+            ("memory_mode", "persistent"),
+            ("observation_policy", "legacy"),
+        ):
+            with self.subTest(field=field):
+                original = self.job[field]
+                self.job[field] = wrong
+                with patch.object(
+                    pipeline,
+                    "run_logged",
+                    side_effect=AssertionError("invalid identity must not launch"),
+                ) as launch:
+                    result = pipeline.run_training_job(
+                        self.job, self.config, self.root / ("jobs-" + field)
+                    )
+                    launch.assert_not_called()
+                self.assertEqual(result["status"], "failed")
+                self.assertIsNone(result["admission_sha256"])
+                self.job[field] = original
 
     def test_verification_time_is_charged_before_completed_status(self):
         def child(*args, **kwargs):
@@ -332,6 +371,7 @@ class ResultAdmissionTests(unittest.TestCase):
         for field, value in (
             ("source_pins", {}),
             ("memory_mode", "persistent"),
+            ("observation_policy", "matched_episodes"),
             ("schema", "foreign"),
             ("controller", "ndu"),
             ("config", {}),
@@ -347,6 +387,14 @@ class ResultAdmissionTests(unittest.TestCase):
                         admission, exit_code=0, supervisor_wall_seconds=1
                     )
         (self.root / "output/receipt.json").write_text(original)
+        started = self.root / "output/started.json"
+        original_started = started.read_text()
+        changed_started = json.loads(original_started)
+        changed_started["observation_policy"] = "matched_episodes"
+        started.write_text(json.dumps(changed_started))
+        with self.assertRaisesRegex(ValueError, "Started identity"):
+            bridge.validate_output(admission, exit_code=0, supervisor_wall_seconds=1)
+        started.write_text(original_started)
         profile = self.root / "output/deployment-profile.json"
         bad = json.loads(profile.read_text())
         bad["memory_mode"] = "persistent"
@@ -390,6 +438,14 @@ class ResultAdmissionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "dependency differs"):
             self.admission()
         del self.job["depends_on"]
+        previous_path = self.root / "output/receipt.json"
+        original_previous = previous_path.read_text()
+        previous = json.loads(original_previous)
+        previous["observation_policy"] = "matched_episodes"
+        previous_path.write_text(json.dumps(previous))
+        with self.assertRaisesRegex(ValueError, "Pretrained lineage"):
+            self.admission()
+        previous_path.write_text(original_previous)
         (self.root / "output/weights.pt").write_bytes(b"changed despite same receipt")
         with self.assertRaisesRegex(ValueError, "Pretrained lineage"):
             self.admission()

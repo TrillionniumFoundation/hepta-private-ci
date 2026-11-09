@@ -1,0 +1,58 @@
+{
+  "agents_sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+  "base_commit": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+  "base_tree": "491eace326f335498334fb051c9e8f298ca7a04c",
+  "binding_kind": "exact base commit plus local uncommitted overlay",
+  "candidate_identity_in_agentd_test": "ephemeral fixture candidate, not the eventual publication commit",
+  "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+  "clippy_source_bytes_unchanged": true,
+  "dependency_changes": false,
+  "final_fix_fmt_job": "1a1bb0ca068-13c47-39",
+  "final_format_note": "Only repository formatting changed the tested bytes after successful scoped tests; the exact diff is retained.",
+  "final_formatted_source_sha256": {
+    "codex-rs/hepta-agentd/tests/verify1_kernel_evidence_product.rs": "19f343364c6ddb3f5fc73713463fb3e2f6f4d11e84b2b53ca4e0b39077ea37b3",
+    "codex-rs/hepta-evidence/examples/verify1_fixture_check.rs": "2aa0234fb7c72a139fc8fa86924bb3683dd1f5a029e60203f9b8e3c8c162b996",
+    "codex-rs/hepta-evidence/src/lib.rs": "db88c09b3650d1522572e1bc10ad1f13e1d2449090f0ad998c6eb1f397a7e72e",
+    "codex-rs/hepta-evidence/src/qualification.rs": "40fb1f84cedc023d28362f37f161804d268c98ea29a9072f8e042dd236031739",
+    "codex-rs/hepta-evidence/src/verify1_checker.rs": "d32f181cd9e2f4385d25330601c2f6343d3abe1e9980c9db3de9fcc5827f5eae",
+    "codex-rs/hepta-evidence/src/verify1_checker_tests.rs": "817cf249cb8dd0cfe3258c820a4bf1da811cb55d9669a9d7c3abfe983e413982",
+    "codex-rs/hepta-evidence/src/verify1_report.rs": "d57340509ae8798c2f08357d5148030144af4f82def12a399e52aa9756cecd7b",
+    "codex-rs/hepta-evidence/src/verify1_report_tests.rs": "2c6d7ef9a0dda079b99a67b6ff24591980376c069970547e0689fb31d4fc90de"
+  },
+  "final_source_capsule_sha256": "2304732d668f8be2f620913f98823ff3e87a558cb14452310ca52872ac3b9b0a",
+  "format_diff_sha256": "4057c0201323943ad673550e6f5fbc344417bcd5cb60611d36f9d3dd1a464c24",
+  "historical_cycles_retained": [
+    "missing nextest",
+    "download timeout",
+    "arbitrary_precision parser failures",
+    "first passing tests",
+    "first clippy SQLite warnings",
+    "material SQLite shim and prefix property correction"
+  ],
+  "log_archive_files": 128,
+  "log_archive_sha256": "4f4b4e5576b7a0a6a7b40be0b31cec47c76303e509944cd906dcfc94345551ec",
+  "native_test_job": "1a1bb096553-13c47-21",
+  "observed_resource_limits": {
+    "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1bb096553-13c47-21.service",
+    "cpu_max": [
+      "200000",
+      "100000"
+    ],
+    "memory_max": "4294967296",
+    "nice": 10
+  },
+  "published_commit": null,
+  "schema_version": 1,
+  "source_unchanged_during_tests": true,
+  "tested_source_sha256": {
+    "codex-rs/hepta-agentd/tests/verify1_kernel_evidence_product.rs": "b770e7e1956182c4d6dac332c0da7802b47031215b203e84f0c618d7903537ba",
+    "codex-rs/hepta-evidence/examples/verify1_fixture_check.rs": "2aa0234fb7c72a139fc8fa86924bb3683dd1f5a029e60203f9b8e3c8c162b996",
+    "codex-rs/hepta-evidence/src/lib.rs": "db88c09b3650d1522572e1bc10ad1f13e1d2449090f0ad998c6eb1f397a7e72e",
+    "codex-rs/hepta-evidence/src/qualification.rs": "40fb1f84cedc023d28362f37f161804d268c98ea29a9072f8e042dd236031739",
+    "codex-rs/hepta-evidence/src/verify1_checker.rs": "0b9985f2b6f08148abf83e28162b23a4462a600fa44130789d0d9c76dd2f9fd5",
+    "codex-rs/hepta-evidence/src/verify1_checker_tests.rs": "bf6d262b41d7f3a5f7907c760302bc8dc7bbb5208c5642b7b92edcfe99ea7a72",
+    "codex-rs/hepta-evidence/src/verify1_report.rs": "d57340509ae8798c2f08357d5148030144af4f82def12a399e52aa9756cecd7b",
+    "codex-rs/hepta-evidence/src/verify1_report_tests.rs": "2c6d7ef9a0dda079b99a67b6ff24591980376c069970547e0689fb31d4fc90de"
+  },
+  "tests_rerun_after_final_fix_or_fmt": false
+}

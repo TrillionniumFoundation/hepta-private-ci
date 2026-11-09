@@ -4,6 +4,9 @@ use super::super::native::NativeRequest;
 use super::super::native::NativeRunOutput;
 use super::*;
 use std::fs;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::io::Write;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
@@ -31,6 +34,20 @@ impl Drop for Fixture {
     fn drop(&mut self) {
         let _ = fs::remove_dir_all(&self.0);
     }
+}
+
+// Windows excludes separately opened handles from the locked byte range.
+// Inspect the owner's original handle and restore its cursor before continuing.
+fn locked_bytes(control: &DurableInferenceControl) -> Result<Vec<u8>, Error> {
+    let mut file = &control.file;
+    let position = file.stream_position()?;
+    file.rewind()?;
+    let mut bytes = Vec::new();
+    let read = file.read_to_end(&mut bytes);
+    let restore = file.seek(SeekFrom::Start(position));
+    read?;
+    restore?;
+    Ok(bytes)
 }
 
 fn binding(id: &str) -> GenerationBindingV1 {
@@ -82,7 +99,7 @@ fn original_result_and_cancel_survive_reopen_without_redispatch() -> Result<(), 
     assert!(token.is_none());
     let cancelled = control.cancel_generation(&request)?;
     assert!(cancelled.result.is_none());
-    let before = fs::read(fixture.path())?;
+    let before = locked_bytes(&control)?;
     assert_eq!(control.cancel_generation(&request)?, cancelled);
     assert_eq!(
         control
@@ -90,7 +107,7 @@ fn original_result_and_cancel_survive_reopen_without_redispatch() -> Result<(), 
             .0,
         cancelled
     );
-    assert_eq!(fs::read(fixture.path())?, before);
+    assert_eq!(locked_bytes(&control)?, before);
     drop(control);
     let mut control = DurableInferenceControl::open(fixture.path(), /*capacity*/ 8)?;
     let (restored, token) =
@@ -100,18 +117,18 @@ fn original_result_and_cancel_survive_reopen_without_redispatch() -> Result<(), 
     let bytes = b"actual late proposal; cpu and energy unknown".to_vec();
     let settled = control.settle_generation(&request, bytes.clone())?;
     assert!(!control.generation_has_unresolved()?);
-    let before = fs::read(fixture.path())?;
+    let before = locked_bytes(&control)?;
     assert_eq!(control.settle_generation(&request, bytes)?, settled);
     assert_eq!(
         control.settle_generation(&request, b"different result".to_vec()),
         Err(Error::Conflict)
     );
-    assert_eq!(fs::read(fixture.path())?, before);
+    assert_eq!(locked_bytes(&control)?, before);
     drop(control);
     let control = DurableInferenceControl::open(fixture.path(), /*capacity*/ 8)?;
     assert_eq!(control.generation_record(&request)?, Some(&settled));
     assert_eq!(control.generation_record(&binding("absent"))?, None);
-    assert_eq!(fs::read(fixture.path())?, before);
+    assert_eq!(locked_bytes(&control)?, before);
     Ok(())
 }
 
@@ -209,7 +226,7 @@ fn exact_binding_payload_deadline_and_size_fail_without_writing() -> Result<(), 
     ));
     let (_, mut token) =
         control.admit_generation(/*now_micros*/ 10, request.clone(), PAYLOAD)?;
-    let before = fs::read(fixture.path())?;
+    let before = locked_bytes(&control)?;
     let changes: [fn(&mut GenerationBindingV1); 9] = [
         |b| b.principal_id = "principal.2".into(),
         |b| b.worker_generation += 1,
@@ -236,9 +253,9 @@ fn exact_binding_payload_deadline_and_size_fail_without_writing() -> Result<(), 
         Err(Error::InvalidTime)
     );
     assert!(token.is_some());
-    assert_eq!(fs::read(fixture.path())?, before);
+    assert_eq!(locked_bytes(&control)?, before);
     control.dispatch_generation(/*now_micros*/ 11, &mut token)?;
-    let before = fs::read(fixture.path())?;
+    let before = locked_bytes(&control)?;
     assert_eq!(
         control.settle_generation(&request, vec![1; 4097]),
         Err(Error::CapacityExceeded)
@@ -247,7 +264,7 @@ fn exact_binding_payload_deadline_and_size_fail_without_writing() -> Result<(), 
         control.settle_generation(&request, Vec::new()),
         Err(Error::CapacityExceeded)
     );
-    assert_eq!(fs::read(fixture.path())?, before);
+    assert_eq!(locked_bytes(&control)?, before);
     Ok(())
 }
 

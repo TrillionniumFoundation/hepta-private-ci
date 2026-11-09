@@ -21,6 +21,9 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
+    # CI runs TestRunner against original system OpenSSH on the native host.
+    # Keep host-specific results out of remote reuse without moving compilation.
+    tags = ["no-remote-cache"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",

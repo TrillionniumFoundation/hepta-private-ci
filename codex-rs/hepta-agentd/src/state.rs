@@ -38,6 +38,10 @@ pub use desktop_objective::AgentdDesktopObjectiveConfig;
 #[path = "state_control.rs"]
 mod control;
 
+#[path = "state_circuit_task.rs"]
+mod circuit_task;
+pub use circuit_task::AgentdCircuitTaskInvocationProviderV1;
+
 #[path = "notes_organ_state.rs"]
 mod notes_organ;
 
@@ -53,6 +57,10 @@ pub(crate) struct AgentdState {
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
         std::sync::OnceLock<Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
+    pub(crate) circuit_task: std::sync::OnceLock<crate::CircuitTaskHandleV1>,
+    pub(crate) circuit_task_invocation:
+        std::sync::OnceLock<Arc<dyn AgentdCircuitTaskInvocationProviderV1>>,
+    circuit_task_admissions: Arc<std::sync::atomic::AtomicUsize>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) cognitive_retrieval_context:
         std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
@@ -92,6 +100,7 @@ struct RuntimeState {
     revocation_ready: bool,
     required_ports_ready: bool,
     admission_open: bool,
+    drain_requested: bool,
     fenced: bool,
 }
 
@@ -156,6 +165,9 @@ impl AgentdState {
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
+            circuit_task: std::sync::OnceLock::new(),
+            circuit_task_invocation: std::sync::OnceLock::new(),
+            circuit_task_admissions: Arc::new(std::sync::atomic::AtomicUsize::new(0)),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
             objective_runtime: std::sync::OnceLock::new(),
@@ -175,6 +187,7 @@ impl AgentdState {
                 revocation_ready: false,
                 required_ports_ready: false,
                 admission_open: false,
+                drain_requested: false,
                 fenced: false,
             }),
             identity,
@@ -399,12 +412,14 @@ impl AgentdState {
                 runtime.app_server_ready = false;
                 runtime.notes_organ_ready = false;
                 runtime.required_ports_ready = false;
+                runtime.drain_requested = true;
             }
             if runtime.lifecycle == AgentLifecycle::Running
                 && (runtime.app_server_ready || runtime.notes_organ_ready)
                 && runtime.critical_stores_ready
                 && runtime.revocation_ready
                 && runtime.required_ports_ready
+                && !runtime.drain_requested
                 && !runtime.fenced
             {
                 runtime.admission_open = true;
@@ -470,6 +485,9 @@ impl AgentdState {
 
     pub(crate) fn mark_app_server_ready(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        if runtime.drain_requested {
+            return Ok(());
+        }
         if !runtime.app_server_ready {
             runtime.app_server_ready = true;
             #[cfg(target_os = "linux")]
@@ -513,6 +531,7 @@ impl AgentdState {
 
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        runtime.drain_requested = true;
         runtime.app_server_ready = false;
         runtime.notes_organ_ready = false;
         runtime.required_ports_ready = false;
@@ -555,6 +574,9 @@ impl AgentdState {
             Some(store) => store.drain_blockers().await?,
             None => 1,
         };
+        let automation_blockers = automation_blockers
+            .checked_add(self.circuit_task_drain_blockers().await?)
+            .ok_or_else(|| AgentdError::Protocol("drain blocker count overflow".into()))?;
         self.drain_snapshot(automation_blockers)
     }
 
@@ -578,6 +600,7 @@ impl AgentdState {
                 && self.app_server_drain.drained()
                 && running_turns == 0
                 && automation_blockers == 0
+                && self.circuit_task_pending_count() == 0
                 && generation_blockers == 0,
             lifecycle: runtime.lifecycle,
             fenced: runtime.fenced,
@@ -767,7 +790,10 @@ impl AgentdState {
             .map_err(run_error)
     }
 
-    fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
+    pub(crate) fn require_current_run_start(
+        &self,
+        record: &RunStartRecordV1,
+    ) -> Result<u64, AgentdError> {
         crate::authbus_ingress::require_objective_ready(self)?;
         let now_ms = crate::authbus_ingress::now_ms()?;
         let current_generation = self

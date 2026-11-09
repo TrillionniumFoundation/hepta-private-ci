@@ -283,6 +283,18 @@ jobs:
           if [[ "$result" -ne 0 ]]; then exit "$result"; fi
           if [[ "$helper_result" -ne 0 ]]; then exit "$helper_result"; fi
           exit "$junit_result"
+      - name: Retain scoped evidence before the complete workspace
+        if: always() && matrix.owner == 'agentd-composition'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          # Preserve completed scoped results even if the runner stops during
+          # the longer workspace phase. The final artifact remains separate.
+          name: cell-framework-scoped-${{ matrix.owner }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/cell-framework-records
+            !${{ runner.temp }}/cell-framework-records/helpers/bin/**
+          if-no-files-found: error
+          retention-days: 14
       - name: Run the complete default workspace after the Core suite
         if: matrix.owner == 'agentd-composition'
         shell: bash

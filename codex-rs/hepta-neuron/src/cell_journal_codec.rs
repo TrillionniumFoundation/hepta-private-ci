@@ -84,7 +84,10 @@ pub(crate) fn encode_commit(
 }
 
 pub(crate) fn encode_admission(index: usize, admission: &CellInferenceAdmissionV1) -> Vec<u8> {
-    let mut bytes = vec![2];
+    // Old tag 2 remains readable with an unknown host measurement. Every new
+    // admission uses tag 3, including None, so old binaries refuse new pending
+    // batches instead of recovering them with omitted host queue cost.
+    let mut bytes = vec![3];
     put_u64(&mut bytes, index as u64);
     put_u64(&mut bytes, admission.snapshot.revision);
     put_u64(&mut bytes, admission.snapshot.writer_epoch);
@@ -122,6 +125,24 @@ pub(crate) fn encode_admission(index: usize, admission: &CellInferenceAdmissionV
         bytes.extend_from_slice(&value.to_be_bytes());
     }
     put_u64(&mut bytes, r.expected_output_width as u64);
+    bytes.push(u8::from(admission.host_queue_age_micros.is_some()));
+    if let Some(age) = admission.host_queue_age_micros {
+        put_u64(&mut bytes, age);
+    }
+    bytes
+}
+
+pub(crate) fn encode_host_queue_age(
+    index: usize,
+    operation_id: &StableId,
+    request_digest: Digest32,
+    host_queue_age_micros: u64,
+) -> Vec<u8> {
+    let mut bytes = vec![4];
+    put_u64(&mut bytes, index as u64);
+    put_id(&mut bytes, operation_id);
+    put_digest(&mut bytes, request_digest);
+    put_u64(&mut bytes, host_queue_age_micros);
     bytes
 }
 
@@ -169,7 +190,19 @@ pub(crate) fn apply_record(
         read.finish()?;
         return owner.reset_at_frontier(&spec.scope, frontier, epoch);
     }
-    if tag == 2 {
+    if tag == 4 {
+        let operation_id = read.id()?;
+        let request_digest = read.digest()?;
+        let host_queue_age_micros = read.u64()?;
+        read.finish()?;
+        return owner.record_host_queue_age(
+            &spec.scope,
+            &operation_id,
+            request_digest,
+            host_queue_age_micros,
+        );
+    }
+    if tag == 2 || tag == 3 {
         let snapshot = owner.snapshot(&spec.scope)?;
         if read.u64()? != snapshot.revision
             || read.u64()? != snapshot.writer_epoch
@@ -201,6 +234,11 @@ pub(crate) fn apply_record(
             feature_vector_q24: read.q24(/*bound*/ 512)?,
             expected_output_width: read.usize()?,
         };
+        let host_queue_age_micros = if tag == 3 && read.boolean()? {
+            Some(read.u64()?)
+        } else {
+            None
+        };
         read.finish()?;
         validate_admission_model(&spec.definition, &model_request)
             .map_err(|_| CellExecutionError::JournalCorrupt)?;
@@ -211,6 +249,7 @@ pub(crate) fn apply_record(
             model_request,
             deadline_micros,
             admitted_at_micros,
+            host_queue_age_micros,
         });
     }
     if tag != 0 {

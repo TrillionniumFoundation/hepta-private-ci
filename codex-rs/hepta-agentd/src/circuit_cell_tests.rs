@@ -15,7 +15,7 @@ use crate::circuit_cell_route_policy_digest_v1;
 use crate::circuit_cell_scope_digest_v1;
 
 #[path = "circuit_cell_test_support.rs"]
-mod support;
+pub(crate) mod support;
 use support::Encoder;
 use support::Model;
 use support::checked;
@@ -24,6 +24,11 @@ use support::definition as cell_definition;
 use support::id;
 use support::input;
 use support::scope;
+
+#[path = "circuit_cell_clock_tests.rs"]
+mod clock_tests;
+#[path = "circuit_credit_tests.rs"]
+mod credit_tests;
 
 fn fence() -> TaskFlowFence {
     checked(TaskFlowFence::new(
@@ -35,7 +40,7 @@ fn fence() -> TaskFlowFence {
     ))
 }
 
-fn configuration() -> (BoundedCircuitDefinitionV2, Vec<CircuitCellBindingV1>) {
+pub(crate) fn configuration() -> (BoundedCircuitDefinitionV2, Vec<CircuitCellBindingV1>) {
     let cell = cell_definition();
     let bindings = vec![CircuitCellBindingV1 {
         program_id: "root".to_string(),
@@ -131,7 +136,8 @@ async fn create_run(
     definition: &BoundedCircuitDefinitionV2,
 ) -> (tempfile::TempDir, AutomationStore, CircuitDispatchV2) {
     let directory = tempfile::tempdir().expect("private owner fixture");
-    let layout = checked(HeptaFleetRoot::parse(directory.path().join("fleet")))
+    let root = checked(directory.path().canonicalize());
+    let layout = checked(HeptaFleetRoot::parse(root.join("fleet")))
         .layout()
         .agent(&fence().owner_agent_id);
     let store = checked(AutomationStore::open(&layout).await);
@@ -888,3 +894,6 @@ async fn all_join_materializes_frozen_reference_bytes_for_the_next_native_cell()
     assert_eq!(exited.run.outcome(), Some(CircuitExitV2::Succeeded));
     store.close().await;
 }
+
+#[path = "circuit_cell_batch_tests.rs"]
+mod batch_tests;

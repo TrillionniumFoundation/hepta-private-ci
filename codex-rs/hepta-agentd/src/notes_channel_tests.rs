@@ -110,6 +110,44 @@ fn inherited_socketpair_preserves_exact_frame_bytes() -> TestResult {
 }
 
 #[test]
+fn closed_peer_buffered_frame_remains_readable() -> TestResult {
+    let (mut owner, mut application) = UnixStream::pair()?;
+    application.write_all(&3_u32.to_be_bytes())?;
+    application.write_all(b"ack")?;
+    drop(application);
+
+    let deadline = Instant::now() + Duration::from_secs(2);
+    let mut prefix = [0; 4];
+    read_before(&mut owner, &mut prefix, deadline)?;
+    assert_eq!(u32::from_be_bytes(prefix), 3);
+    let mut response = [0; 3];
+    read_before(&mut owner, &mut response, deadline)?;
+    assert_eq!(&response, b"ack");
+    Ok(())
+}
+
+#[test]
+fn closed_peer_partial_frame_still_returns_unexpected_eof() -> TestResult {
+    let (mut owner, mut application) = UnixStream::pair()?;
+    application.write_all(&3_u32.to_be_bytes())?;
+    application.write_all(b"ac")?;
+    drop(application);
+
+    let deadline = Instant::now() + Duration::from_secs(2);
+    let mut prefix = [0; 4];
+    read_before(&mut owner, &mut prefix, deadline)?;
+    assert_eq!(u32::from_be_bytes(prefix), 3);
+    let mut response = [0; 3];
+    assert_eq!(
+        read_before(&mut owner, &mut response, deadline)
+            .expect_err("a partial response cannot be accepted")
+            .kind(),
+        io::ErrorKind::UnexpectedEof
+    );
+    Ok(())
+}
+
+#[test]
 fn named_socket_is_not_a_bootstrap_channel() -> TestResult {
     let directory = tempfile::tempdir()?;
     let path = directory.path().join("not-private.sock");

@@ -127,6 +127,7 @@ def admit(job, config, started_at):
         "Self-reported runtime job identity differs",
     )
     stage = "bootstrap" if args.bootstrap else "content" if args.content_only else "fit"
+    # Observation policy selects the training inventory; bind it before launch.
     indexed = {
         "seed": args.seed,
         "core": args.core,
@@ -134,6 +135,7 @@ def admit(job, config, started_at):
         "regime": args.regime,
         "controller": args.controller,
         "lr": args.lr,
+        "observation_policy": args.observation_policy,
     }
     require(
         all(job[k] == v for k, v in indexed.items() if k in job),
@@ -148,6 +150,7 @@ def admit(job, config, started_at):
         "regime": args.regime,
         "controller": args.controller,
         "seed": args.seed,
+        "observation_policy": args.observation_policy,
         "config": asdict(fit),
         "source_pins": _source_pins(),
         "replicate_role": "collector" if stage == "bootstrap" else args.replicate_role,
@@ -155,6 +158,10 @@ def admit(job, config, started_at):
         "scientific_admission": "HOLD",
         "learning_disposition": "not_decided_by_trainer",
     }
+    require(
+        "source_pins" not in job or job["source_pins"] == expected["source_pins"],
+        "Indexed source pins differ from admitted source",
+    )
     inputs = {
         str(root / name): bounded(root / name)[1] for name in expected["source_pins"]
     }
@@ -186,7 +193,8 @@ def admit(job, config, started_at):
         )
     require(
         plan.latency_weight == fit.latency_weight
-        and args.memory_mode in (None, plan.memory_mode),
+        and args.memory_mode in (None, plan.memory_mode)
+        and job.get("memory_mode", plan.memory_mode) == plan.memory_mode,
         "Training/control memory or utility differs",
     )
     expected.update(
@@ -207,6 +215,7 @@ def admit(job, config, started_at):
             "regime",
             "controller",
             "seed",
+            "observation_policy",
             "config",
             "source_pins",
             "replicate_role",
@@ -271,6 +280,8 @@ def admit(job, config, started_at):
             and previous.get("stage") == "content"
             and previous.get("weights_sha256") == weights_pin["sha256"]
             and previous.get("records", {}).get("sha256") == records["sha256"]
+            and previous.get("observation_policy", "legacy")
+            == expected["observation_policy"]
             and all(
                 previous.get(k) == expected[k]
                 for k in (

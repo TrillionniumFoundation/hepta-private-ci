@@ -247,17 +247,22 @@ fn independent_worker_does_not_block_durable_cancellation_or_exact_readback() {
             .iter()
             .all(|entry| entry.metrics.cpu_micros.is_none())
     );
-    let bytes = checked(fs::read(fixture.path()));
-    assert_eq!(
-        port.read_generation(&fixture.request),
-        Ok(Some(proposal.clone()))
-    );
-    assert_eq!(
-        port.read_generation(&fixture.request),
-        Ok(Some(proposal.clone()))
-    );
-    assert_eq!(checked(fs::read(fixture.path())), bytes);
+    // Windows also excludes reads through another handle while the owner is locked.
+    // Observe release, then check exact read-only replay through the same journal.
     checked(port.shutdown());
+    let bytes = checked(fs::read(fixture.path()));
+    let mut port = fixture.port(Arc::clone(&worker), Arc::new(|| 20));
+    assert_eq!(
+        port.read_generation(&fixture.request),
+        Ok(Some(proposal.clone()))
+    );
+    assert_eq!(
+        port.read_generation(&fixture.request),
+        Ok(Some(proposal.clone()))
+    );
+    checked(port.shutdown());
+    assert_eq!(checked(fs::read(fixture.path())), bytes);
+    assert_eq!(worker.calls.load(Ordering::Acquire), 1);
     let control = checked(DurableInferenceControl::open(
         fixture.path(),
         /*capacity*/ 32,
@@ -299,8 +304,8 @@ fn terminal_control_reopen_reads_original_bytes_without_running_another_worker()
         Ok(proposal)
     );
     assert_eq!(worker.calls.load(Ordering::Acquire), 1);
-    assert_eq!(checked(fs::read(fixture.path())), bytes);
     checked(reopened.shutdown());
+    assert_eq!(checked(fs::read(fixture.path())), bytes);
 }
 
 #[test]
@@ -342,7 +347,9 @@ fn lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch() {
         port.execute_generation(&fixture.config.manifest, &fixture.request),
         Ok(proposal)
     );
+    checked(port.shutdown());
     let bytes = checked(fs::read(fixture.path()));
+    let mut port = fixture.port(Arc::clone(&worker), Arc::new(|| 20));
     let mut changed = fixture.request.clone();
     changed.input.push(8);
     assert_eq!(
@@ -354,8 +361,8 @@ fn lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch() {
         Err(CellGenerationErrorV2::Conflict)
     );
     assert_eq!(worker.calls.load(Ordering::Acquire), 1);
-    assert_eq!(checked(fs::read(fixture.path())), bytes);
     checked(port.shutdown());
+    assert_eq!(checked(fs::read(fixture.path())), bytes);
 }
 
 #[test]
@@ -436,7 +443,7 @@ fn invalid_scope_and_invalid_worker_proposals_never_become_terminal_records() {
             port.execute_generation(&fixture.config.manifest, &wrong),
             Err(CellGenerationErrorV2::InvalidBinding)
         );
-        assert_eq!(checked(fs::read(fixture.path())), Vec::<u8>::new());
+        assert_eq!(checked(fs::metadata(fixture.path())).len(), 0);
         assert_eq!(worker.calls.load(Ordering::Acquire), 0);
         assert_eq!(
             port.execute_generation(&fixture.config.manifest, &fixture.request),

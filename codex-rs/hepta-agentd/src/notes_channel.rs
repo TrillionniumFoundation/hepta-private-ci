@@ -350,8 +350,21 @@ fn write_before(stream: &mut UnixStream, mut bytes: &[u8], deadline: Instant) ->
 
 fn read_before(stream: &mut UnixStream, mut bytes: &mut [u8], deadline: Instant) -> io::Result<()> {
     while !bytes.is_empty() {
-        stream.set_read_timeout(Some(remaining(deadline)?))?;
-        match stream.read(bytes) {
+        let read = match stream.set_read_timeout(Some(remaining(deadline)?)) {
+            Ok(()) => stream.read(bytes),
+            #[cfg(target_os = "macos")]
+            Err(error) if error.kind() == io::ErrorKind::InvalidInput => {
+                // Darwin can reject SO_RCVTIMEO after peer close while the
+                // final response remains buffered. Read only what is ready,
+                // preserving the original total deadline and blocking mode.
+                stream.set_nonblocking(true)?;
+                let result = stream.read(bytes);
+                stream.set_nonblocking(false)?;
+                result
+            }
+            Err(error) => return Err(error),
+        };
+        match read {
             Ok(0) => return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "Notes read")),
             Ok(count) => bytes = &mut bytes[count..],
             Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,

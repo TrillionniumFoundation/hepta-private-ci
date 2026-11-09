@@ -182,6 +182,10 @@ common:ci-linux --config=ci-bazel
 common:ci-linux --build_metadata=TAG_os=linux
 common:ci-linux --platforms=//:rbe
 
+# Tests requiring system OpenSSH run in a dedicated native TestRunner
+# invocation in bazel.yml. Keep compilation remote on every host; rule-wide
+# no-remote-exec tags would also move cross-host Rustc/Clippy actions locally.
+
 # On mac, we can run all the build actions remotely but test actions locally.
 common:ci-macos --config=ci-bazel
 common:ci-macos --build_metadata=TAG_os=macos

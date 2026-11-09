@@ -1,0 +1,186 @@
+{
+  "schema": "hepta.platform-fixture-qualification.v1",
+  "base": "f49128e503b24bb52ccdb32a860939e6392c8e08",
+  "code_commit": "083636159a1c2cf2570dfe6443c6210338fc5277",
+  "formatted_tree": "8638fda7abffb4589fddad339e3905c5e1d6f660",
+  "initial_test_tree": "dfb184209480f67b36838fb6e39708e987343b94",
+  "complete_lifecycle_test_tree": "7bbdf48705a64e295f7bea7ae653bd6f98a7a408",
+  "selected_library_tests": 13,
+  "selected_lifecycle_parent_tests": 2,
+  "full_suite_or_cross_platform_pass": false,
+  "linux_native_only": true,
+  "earlier_default_watchdog_timeouts_retained": 3,
+  "lifecycle_seconds": {
+    "five_pairs": 144.359,
+    "two_pairs": 48.0
+  },
+  "harness_watchdog_seconds": 360,
+  "production_deadlines_changed": false,
+  "automatic_lifecycle_retry": false,
+  "new_training_runs": 0,
+  "scientific_admission": "HOLD",
+  "archive": {
+    "path": "native-and-ci-evidence.tar.gz",
+    "bytes": 2896268,
+    "sha256": "11ba543a46a6150bbd89c2ac5513bea56660c69358ddb348122b4bae57533fe7",
+    "member_count": 28
+  },
+  "members": [
+    {
+      "path": "native/CANDIDATE.json",
+      "bytes": 1685,
+      "sha256": "ef2dadb4a36dff59a633ec4474d929e897c8740864a1426974256bf169e9eb7a"
+    },
+    {
+      "path": "native/ENVIRONMENT_SCOPE.json",
+      "bytes": 597,
+      "sha256": "4ddf437efd12c348ab386f20a9e3a8a261ad0c38f49355a70d58369d13e875c2"
+    },
+    {
+      "path": "native/FORMATTING.json",
+      "bytes": 1922,
+      "sha256": "420983c0c2acf06b5ea6f15bcb63b51279fa99c4a2b13ec60a8dae42a2cfaa23"
+    },
+    {
+      "path": "native/PROCESS_STATUSES.json",
+      "bytes": 3749,
+      "sha256": "a199ecee8a6a24f322cbad65de17ccbd7a616a7e437d8818ab61423ddae7020a"
+    },
+    {
+      "path": "native/TEST_RESULTS.json",
+      "bytes": 10893,
+      "sha256": "f82dead01b67ba21d6454e1da87f71b1a4ca5c92298ce3cf63d8fb3dfe0de054"
+    },
+    {
+      "path": "native/bounded-lifecycle/CANDIDATE.json",
+      "bytes": 574,
+      "sha256": "f4f23d8d1ad31a6ef64f46719b1e488612a36196ac200c028bc4e868d8cffe29"
+    },
+    {
+      "path": "native/bounded-lifecycle/RESULT.json",
+      "bytes": 9202,
+      "sha256": "ffe7e90d98d6898d5e8655e6ea9ac8fab2414b47cd2721da765032433b49cbad"
+    },
+    {
+      "path": "native/bounded-lifecycle/candidate.patch",
+      "bytes": 8144,
+      "sha256": "c5e485431ef4f2d15fd3e5250dea51b9c5bdd7444a0c8ff040e35478a25397d0"
+    },
+    {
+      "path": "native/bounded-lifecycle/stderr",
+      "bytes": 12442,
+      "sha256": "84b922a1ad473e0b5337a8af9417524fc36c4fa49b6e53adeebb2f1bd3ea3455"
+    },
+    {
+      "path": "native/bounded-lifecycle/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/format.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/platform-fixture.patch",
+      "bytes": 5369,
+      "sha256": "412d6c5ef4b8fd2f107ed800a4e65ef2fd1f51696a8849b91ba3299ee87ffce2"
+    },
+    {
+      "path": "native/serial-followup/TEST_RESULTS.json",
+      "bytes": 6131,
+      "sha256": "4559879cd0dcacdf726ab58fa09b1cd7fde3277a266c8180b80269e5294f7c06"
+    },
+    {
+      "path": "native/serial-followup/test-1.stderr",
+      "bytes": 12310,
+      "sha256": "cb868df1d7b7c03070a60177f766155c1436bf3bcbe2c6ca9bfd0353b7f4b697"
+    },
+    {
+      "path": "native/serial-followup/test-1.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/test-1.stderr",
+      "bytes": 49007,
+      "sha256": "21b6bf7bb2ebb38b70933e57a02a68b19fe1c0f83010410f3ee9aaa5620e11aa"
+    },
+    {
+      "path": "native/test-1.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/test-2.stderr",
+      "bytes": 27599,
+      "sha256": "8325106f7043fdd78216ca1214c82895a01cd1f8f40d7f2fe82efb666ee10614"
+    },
+    {
+      "path": "native/test-2.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "original-ci/128811451556.log",
+      "bytes": 19628174,
+      "sha256": "7efaf6baefca1690abe4a890fc928533392af29b51a8a6bff4289531597b75e8"
+    },
+    {
+      "path": "original-ci/128811451947.log",
+      "bytes": 1547387,
+      "sha256": "8cebeb4540c25d922437cf34564353f55aa2a4a00cded0f98e8e0431e5d45d3f"
+    },
+    {
+      "path": "original-ci/128811451969.log",
+      "bytes": 1023245,
+      "sha256": "6fab32b2fd319f6d9e1572df557e6d055b0b73489ae8c74a9852492acfd482d1"
+    },
+    {
+      "path": "original-ci/128811451987.log",
+      "bytes": 771369,
+      "sha256": "9109b43c76775dbd42180ae6fe7ee9217151ccb318381debce0afca7d85ca709"
+    },
+    {
+      "path": "original-ci/128811451998.log",
+      "bytes": 3803852,
+      "sha256": "87f7b6de1e1ac0cd5496f64fe50585da947dea346138b542891de95cf6dad09f"
+    },
+    {
+      "path": "original-ci/128811452010.log",
+      "bytes": 499151,
+      "sha256": "3d5d7c82abaeacfff1ab0c218f1585e1440ce4fc12be1c24d40bb2d199b846d8"
+    },
+    {
+      "path": "original-ci/128811452036.log",
+      "bytes": 418052,
+      "sha256": "8e36cd57e4aad44d4d99b2714d951d0458b84a2da6757279b28b9bac9c54d332"
+    },
+    {
+      "path": "original-ci/RESULT.json",
+      "bytes": 106309,
+      "sha256": "961eb82d94ace0d87a97627c00b011425cab7356cb7aeb34770896d7f127e840"
+    }
+  ],
+  "selected_unique_tests_across_recorded_runs": 15,
+  "independent_static_review": {
+    "reviewed_tree": "7bbdf48705a64e295f7bea7ae653bd6f98a7a408",
+    "blocking_findings": 0,
+    "scope": "exact paired-parent nextest selection, serial group, original phase deadlines and assertions, five filesystem fixtures",
+    "execution_claim": false,
+    "formatted_code_comparison": {
+      "commit": "083636159a1c2cf2570dfe6443c6210338fc5277",
+      "tree": "8638fda7abffb4589fddad339e3905c5e1d6f660",
+      "changed_files": [
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "codex-rs/hepta-supervisor/tests/paired_process_product.rs"
+      ],
+      "conclusion": "line wrapping only; no tests after formatting"
+    }
+  }
+}

@@ -119,7 +119,10 @@ impl CellBatchQueueV1 {
             let prepared = queued.prepared;
             let result = queue_age_at(&prepared, queued.enqueued_at_micros, admitted_at_micros)
                 .and_then(|_| admission_for_step(&prepared, admitted_at_micros))
-                .and_then(|admission| owner.admit_inference(admission));
+                .and_then(|mut admission| {
+                    admission.host_queue_age_micros = None;
+                    owner.admit_inference(admission)
+                });
             match result {
                 Ok(()) => admitted.push((prepared, queued.enqueued_at_micros)),
                 Err(error) => completed.push(CellBatchResultV1 {
@@ -160,67 +163,74 @@ impl CellBatchQueueV1 {
             .iter()
             .map(|(p, _)| feature_request(&p.model_request))
             .collect();
-        match model.execute_feature_batch(&requests) {
-            Err(error) => {
-                for (prepared, _) in ready {
-                    completed.push(CellBatchResultV1 {
-                        scope: prepared.input.scope,
-                        operation_id: prepared.input.operation_id,
-                        result: Err(CellExecutionError::Backend(error)),
-                    });
-                }
-            }
-            Ok(mut results) => {
-                let valid_membership = results.len() == requests.len()
-                    && requests.iter().all(|request| {
-                        results
-                            .iter()
-                            .filter(|r| {
-                                Some(r.request_digest)
-                                    == neuron_feature_request_digest_v1(request).ok()
-                            })
-                            .count()
-                            == 1
-                    });
-                for (prepared, queue_age) in ready {
-                    let scope = prepared.input.scope.clone();
-                    let operation_id = prepared.input.operation_id.clone();
-                    let expected =
-                        neuron_feature_request_digest_v1(&feature_request(&prepared.model_request))
-                            .ok();
-                    let result = if !valid_membership {
-                        Err(CellExecutionError::ModelBindingMismatch)
-                    } else if let Some(index) = results
+        let mut results = model.execute_feature_batch(&requests);
+        let valid_membership = results.as_ref().is_ok_and(|results| {
+            results.len() == requests.len()
+                && requests.iter().all(|request| {
+                    results
                         .iter()
-                        .position(|r| Some(r.request_digest) == expected)
-                    {
-                        let mut port = ReceiptPort(results.remove(index));
-                        match InferenceControlModelPort::new(&mut port)
-                            .execute(&prepared.model_request)
-                        {
-                            Err(error) => Err(CellExecutionError::Backend(error)),
-                            Ok(mut output) => {
-                                output.queue_age_micros =
-                                    output.queue_age_micros.saturating_add(queue_age);
-                                validate_model_output(&prepared.definition.runtime, &output)
-                                    .map_err(|_| CellExecutionError::ModelBindingMismatch)
-                                    .map(|()| InferredCellStepV1 {
-                                        prepared,
-                                        output,
-                                        not_before_micros: dispatch_at_micros,
-                                    })
-                            }
-                        }
-                    } else {
-                        Err(CellExecutionError::ModelBindingMismatch)
-                    };
-                    completed.push(CellBatchResultV1 {
-                        scope,
-                        operation_id,
-                        result,
-                    });
+                        .filter(|r| {
+                            Some(r.request_digest) == neuron_feature_request_digest_v1(request).ok()
+                        })
+                        .count()
+                        == 1
+                })
+        });
+        for (prepared, queue_age) in ready {
+            let scope = prepared.input.scope.clone();
+            let operation_id = prepared.input.operation_id.clone();
+            let result = (|| {
+                let expected =
+                    neuron_feature_request_digest_v1(&feature_request(&prepared.model_request))
+                        .map_err(|_| CellExecutionError::InvalidInput)?;
+                // Preserve the pre-dispatch sample, including admission fsync.
+                // Record it even on native errors or malformed receipts: later
+                // readback may resolve that exact request. A crash before this
+                // record leaves None/HOLD, never a guessed zero or a refund.
+                owner.record_host_queue_age(&scope, &operation_id, expected, queue_age)?;
+                let pending = owner
+                    .pending_inference(&scope)?
+                    .ok_or(CellExecutionError::InferenceNotAdmitted)?;
+                if pending.operation_id != operation_id
+                    || pending.model_request != prepared.model_request
+                    || pending.host_queue_age_micros != Some(queue_age)
+                {
+                    return Err(CellExecutionError::OperationConflict);
                 }
-            }
+                let host_queue_age_micros = pending
+                    .host_queue_age_micros
+                    .ok_or(CellExecutionError::UnmeasuredQueueCost)?;
+                let receipts = results
+                    .as_mut()
+                    .map_err(|error| CellExecutionError::Backend(*error))?;
+                if !valid_membership {
+                    return Err(CellExecutionError::ModelBindingMismatch);
+                }
+                let index = receipts
+                    .iter()
+                    .position(|r| r.request_digest == expected)
+                    .ok_or(CellExecutionError::ModelBindingMismatch)?;
+                let mut port = ReceiptPort(receipts.remove(index));
+                let mut output = InferenceControlModelPort::new(&mut port)
+                    .execute(&prepared.model_request)
+                    .map_err(CellExecutionError::Backend)?;
+                output.queue_age_micros = output
+                    .queue_age_micros
+                    .checked_add(host_queue_age_micros)
+                    .ok_or(CellExecutionError::CapacityExceeded)?;
+                validate_model_output(&prepared.definition.runtime, &output)
+                    .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
+                Ok(InferredCellStepV1 {
+                    prepared,
+                    output,
+                    not_before_micros: dispatch_at_micros,
+                })
+            })();
+            completed.push(CellBatchResultV1 {
+                scope,
+                operation_id,
+                result,
+            });
         }
         completed
     }

@@ -1,0 +1,78 @@
+{
+  "schema": "ctrl1.native-preparation-index.v1",
+  "host": "mac",
+  "repo": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+  "branch": "research/ctrl1-decision-cell-20261108",
+  "base_sha": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+  "core_code_head": "472c825a87220574acc5338afe59558e1ad2038f",
+  "current_head": "368ef32be4388d47f3faddf0ac78806e33d680cd",
+  "current_tree": "69a0af67501f43d637e840ddbc6f223f1547f6c9",
+  "pushed": false,
+  "scope": "Native environment preparation, source validation and publication preparation; formal experiment campaign records are separate.",
+  "receipts": [
+    {
+      "stage": "original_import_and_formatter_bootstrap",
+      "job_id": "1a1bacb065d-12894-1d4f",
+      "idempotency_key": "ctrl1-mac-source-import-format-test-commit-20261108-v1",
+      "receipt": "/workspace/scratch/839e1cbe28dd/ctrl1-native-formatted-original/original-failed-validation-v1.json",
+      "sha256": "2fba4dace850043c743bce88f5056dab366b3e8438595a2479130de8a280fe52",
+      "bytes": 9573,
+      "interpretation": "import completed; first formatter bootstrap timed out; no scientific trials"
+    },
+    {
+      "stage": "owned_child_cleanup",
+      "job_id": "1a1bad8e33c-12894-1db8",
+      "idempotency_key": "ctrl1-mac-owned-cleanup-snapshot-dependencies-20261108-v1",
+      "receipt": "/workspace/scratch/839e1cbe28dd/ctrl1-native-formatted-original/owned-child-cleanup-v1.json",
+      "sha256": "701ae2211dc176730de80d4db4f49bccda5ff76c68e96b04c172d40fb483808f",
+      "bytes": 766,
+      "interpretation": "owned UV terminated; Python formatter exited during ps query; later original process group verified empty"
+    },
+    {
+      "stage": "correction_and_bounded_download",
+      "job_id": "1a1badffd31-12894-1df2",
+      "idempotency_key": "ctrl1-mac-corrected-source-format-test-commit-20261108-v2",
+      "receipt": "/workspace/scratch/839e1cbe28dd/ctrl1-native-formatted-original/native-finalize-source-v2.json",
+      "sha256": "2bc9f6bff8cf37174fbccf20bd7e6a566a858a0b2c609c5c92adf8428773939e",
+      "bytes": 1741,
+      "interpretation": "exact correction applied; bounded initial wheel transfer retained 1 MiB prefix"
+    },
+    {
+      "stage": "range_resume_and_real_format",
+      "job_id": "1a1bae96921-12894-1e47",
+      "idempotency_key": "ctrl1-mac-range-resume-final-source-20261108-v3",
+      "receipt": "/workspace/scratch/839e1cbe28dd/ctrl1-native-formatted-original/native-finalize-source-v3.json",
+      "sha256": "465412a566569fb5dce7fce1abc31a89fd5260ea8905b2ba93c062617b031539",
+      "bytes": 8939,
+      "interpretation": "wheel SHA verified; real just fmt and locked Ruff passed; strict AST guard identified genuine docstring whitespace"
+    },
+    {
+      "stage": "final_source_validation_and_ten_commits",
+      "job_id": "1a1baf2247f-12894-1e92",
+      "idempotency_key": "ctrl1-mac-classify-ast-export-test-commit-20261108-v4",
+      "receipt": "/workspace/scratch/839e1cbe28dd/ctrl1-native-formatted-original/native-source-final-v4.json",
+      "sha256": "9be4428422357b0df4e3ffb8bb127f6ffa10e8c4eadd2881123cc34e8a5263a8",
+      "bytes": 55133,
+      "interpretation": "executable AST and cleandoc equivalence verified; 61 tests passed; 10 local commits"
+    },
+    {
+      "stage": "auditor_first_format_and_lint",
+      "job_id": "1a1baf849d9-12894-1ec0",
+      "idempotency_key": "ctrl1-mac-independent-audit-helpers-format-commit-20261108-v1",
+      "receipt": "/workspace/scratch/839e1cbe28dd/ctrl1-native-formatted-original/native-audit-helpers-v1.json",
+      "sha256": "2474ef2a5c98a70b64d36e0852f0edfd00fafb7d61e146c16ee38298d089f285",
+      "bytes": 11920,
+      "interpretation": "format passed; lint identified intentional bootstrap E402 and one unused import"
+    },
+    {
+      "stage": "auditor_minimal_fix_and_commit",
+      "job_id": "1a1baff2267-12894-1ef4",
+      "idempotency_key": "ctrl1-mac-audit-helper-minimal-lint-fix-commit-20261108-v2",
+      "receipt": "/workspace/scratch/839e1cbe28dd/ctrl1-native-auditors/native-audit-helpers-v2.json",
+      "sha256": "2854646c7d81c54b372e5f58d9b8a38362cbdf2cc3583443a1a2670897377927",
+      "bytes": 13301,
+      "interpretation": "approved import-only lint change; format/lint/help checks passed; source manifest unchanged; stage11 committed"
+    }
+  ],
+  "pending": "Await root sealed qualification package and explicit continuation before push; core package is frozen."
+}
