@@ -5,6 +5,9 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
+#[path = "cell_batch_scope_tests.rs"]
+mod batch_scope;
+
 #[test]
 fn complete_native_path_commits_policy_and_state_only_at_owner_boundary() {
     let mut owner = owner(&["run1"]);
