@@ -1,14 +1,18 @@
 use super::TERMINATION_NOT_OBSERVED;
 use super::UnifiedExecProcess;
+use crate::unified_exec::UNIFIED_EXEC_OUTPUT_MAX_BYTES;
 use crate::unified_exec::UnifiedExecError;
+use crate::unified_exec::UnifiedExecProcessManager;
 use crate::unified_exec::process_state::ProcessState;
 use anyhow::Result;
+use codex_exec_server::ExecOutputStream;
 use codex_exec_server::ExecProcess;
 use codex_exec_server::ExecProcessEvent;
 use codex_exec_server::ExecProcessEventReceiver;
 use codex_exec_server::ExecProcessFuture;
 use codex_exec_server::ExecServerError;
 use codex_exec_server::ProcessId;
+use codex_exec_server::ProcessOutputChunk;
 use codex_exec_server::ProcessSignal;
 use codex_exec_server::ReadResponse;
 use codex_exec_server::StartedExecProcess;
@@ -300,5 +304,131 @@ async fn logical_failure_before_native_exit_preserves_first_failure() -> Result<
         fixture.process.failure_message(),
         Some("first policy failure".to_string())
     );
+    Ok(())
+}
+
+#[tokio::test]
+async fn remote_transcript_records_accepted_output_once_without_treating_exit_as_eof() -> Result<()>
+{
+    let fixture = RemoteFixture::new(WriteStatus::Accepted).await?;
+    let mut published = fixture.process.output_receiver();
+    let first = ProcessOutputChunk {
+        seq: 1,
+        stream: ExecOutputStream::Stdout,
+        chunk: b"HEAD\n".to_vec().into(),
+    };
+    fixture
+        .remote
+        .events
+        .send(ExecProcessEvent::Output(first.clone()))?;
+    assert_eq!(published.recv().await?, b"HEAD\n");
+
+    let body = b"token token \n".repeat(100_000);
+    let last = ProcessOutputChunk {
+        seq: 3,
+        stream: ExecOutputStream::Stdout,
+        chunk: b"TAIL\n".to_vec().into(),
+    };
+    *fixture.remote.read_response.lock().await = ReadResponse {
+        // Recovery includes seq 1 again; only the newly accepted suffix may
+        // affect either buffer or its byte count.
+        chunks: vec![
+            first,
+            ProcessOutputChunk {
+                seq: 2,
+                stream: ExecOutputStream::Stdout,
+                chunk: body.clone().into(),
+            },
+            last.clone(),
+        ],
+        next_seq: 4,
+        exited: false,
+        exit_code: None,
+        closed: false,
+        failure: None,
+        sandbox_denied: false,
+    };
+    fixture.remote.events.send(ExecProcessEvent::Output(last))?;
+    assert_eq!(published.recv().await?, body);
+    assert_eq!(published.recv().await?, b"TAIL\n");
+    fixture.remote.events.send(ExecProcessEvent::Exited {
+        seq: 4,
+        exit_code: 0,
+        sandbox_denied: Some(false),
+    })?;
+    fixture.wait_for_state(|state| state.has_exited).await?;
+
+    let handles = fixture.process.output_handles();
+    assert!(
+        !handles
+            .output_closed
+            .load(std::sync::atomic::Ordering::Acquire)
+    );
+    assert!(!handles.cancellation_token.is_cancelled());
+    let collected = UnifiedExecProcessManager::collect_output_until_deadline(
+        handles,
+        /*pause_state*/ None,
+        tokio::time::Instant::now(),
+    )
+    .await;
+    let total_bytes = b"HEAD\n".len() + body.len() + b"TAIL\n".len();
+    let transcript = fixture.process.output_transcript();
+    let recorded = {
+        let output = transcript.lock().await;
+        (
+            output.total_bytes(),
+            output.retained_bytes(),
+            output.omitted_bytes(),
+            output.to_bytes_with_omission_marker(),
+        )
+    };
+    assert_eq!(
+        recorded,
+        (
+            total_bytes,
+            UNIFIED_EXEC_OUTPUT_MAX_BYTES,
+            total_bytes - UNIFIED_EXEC_OUTPUT_MAX_BYTES,
+            collected.to_bytes_with_omission_marker(),
+        )
+    );
+
+    // A native exit does not close a remote pipe. The existing polling deadline
+    // must still bound an empty read; no new terminal wait is introduced.
+    tokio::time::pause();
+    let start = tokio::time::Instant::now();
+    let budget = Duration::from_millis(20);
+    let empty = UnifiedExecProcessManager::collect_output_until_deadline(
+        handles,
+        /*pause_state*/ None,
+        start + budget,
+    )
+    .await;
+    let elapsed = tokio::time::Instant::now().saturating_duration_since(start);
+    tokio::time::resume();
+    assert_eq!((empty.total_bytes(), elapsed), (0, budget));
+    assert!(
+        !handles
+            .output_closed
+            .load(std::sync::atomic::Ordering::Acquire)
+    );
+    fixture
+        .remote
+        .events
+        .send(ExecProcessEvent::Closed { seq: 5 })?;
+    tokio::time::timeout(Duration::from_secs(2), async {
+        loop {
+            let closed = handles.output_closed_notify.notified();
+            tokio::pin!(closed);
+            closed.as_mut().enable();
+            if handles
+                .output_closed
+                .load(std::sync::atomic::Ordering::Acquire)
+            {
+                break;
+            }
+            closed.await;
+        }
+    })
+    .await?;
     Ok(())
 }

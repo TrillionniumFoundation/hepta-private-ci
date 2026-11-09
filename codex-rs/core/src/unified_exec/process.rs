@@ -6,6 +6,7 @@ use std::sync::atomic::Ordering;
 use tokio::sync::Mutex;
 use tokio::sync::Notify;
 use tokio::sync::broadcast;
+use tokio::sync::mpsc;
 use tokio::sync::oneshot::error::TryRecvError;
 use tokio::sync::watch;
 use tokio::task::JoinHandle;
@@ -95,6 +96,9 @@ pub(crate) struct UnifiedExecProcess {
     process_handle: ProcessHandle,
     output_tx: broadcast::Sender<Vec<u8>>,
     output: OutputHandles,
+    // The single output producer owns the bounded lifetime summary. Event
+    // subscribers may attach late or lag without changing the recorded bytes.
+    output_transcript: Arc<Mutex<HeadTailBuffer>>,
     output_drained: Arc<Notify>,
     interaction_lock: Arc<Mutex<()>>,
     state_tx: watch::Sender<ProcessState>,
@@ -135,6 +139,7 @@ impl UnifiedExecProcess {
             process_handle,
             output_tx,
             output,
+            output_transcript: Arc::new(Mutex::new(HeadTailBuffer::default())),
             output_drained,
             interaction_lock: Arc::new(Mutex::new(())),
             state_tx,
@@ -180,6 +185,10 @@ impl UnifiedExecProcess {
 
     pub(super) fn output_handles(&self) -> &OutputHandles {
         &self.output
+    }
+
+    pub(super) fn output_transcript(&self) -> Arc<Mutex<HeadTailBuffer>> {
+        Arc::clone(&self.output_transcript)
     }
 
     pub(super) fn output_receiver(&self) -> tokio::sync::broadcast::Receiver<Vec<u8>> {
@@ -379,15 +388,16 @@ impl UnifiedExecProcess {
             stderr_rx,
             mut exit_rx,
         } = spawned;
-        let output_rx = codex_utils_pty::combine_output_receivers(stdout_rx, stderr_rx);
         let mut managed = Self::new(
             ProcessHandle::Local(Box::new(process_handle)),
             sandbox_type,
             Some(spawn_lifecycle),
         );
         managed.output_task = Some(Self::spawn_local_output_task(
-            output_rx,
+            stdout_rx,
+            stderr_rx,
             managed.output_handles().clone(),
+            managed.output_transcript(),
             managed.output_tx.clone(),
         ));
 
@@ -450,6 +460,7 @@ impl UnifiedExecProcess {
         managed.output_task = Some(Self::spawn_exec_server_output_task(
             started,
             output_handles,
+            managed.output_transcript(),
             managed.output_tx.clone(),
             managed.state_tx.clone(),
         ));
@@ -478,6 +489,7 @@ impl UnifiedExecProcess {
     fn spawn_exec_server_output_task(
         started: StartedExecProcess,
         output_handles: OutputHandles,
+        transcript: Arc<Mutex<HeadTailBuffer>>,
         output_tx: broadcast::Sender<Vec<u8>>,
         state_tx: watch::Sender<ProcessState>,
     ) -> JoinHandle<()> {
@@ -560,6 +572,7 @@ impl UnifiedExecProcess {
                     } = response;
                     for chunk in chunks.into_iter().filter(|chunk| chunk.seq > last_seq) {
                         let bytes = chunk.chunk.into_inner();
+                        transcript.lock().await.push_chunk(&bytes);
                         let mut guard = output_buffer.lock().await;
                         guard.push_chunk(&bytes);
                         drop(guard);
@@ -602,6 +615,7 @@ impl UnifiedExecProcess {
                         }
                         last_seq = chunk.seq;
                         let bytes = chunk.chunk.into_inner();
+                        transcript.lock().await.push_chunk(&bytes);
                         let mut guard = output_buffer.lock().await;
                         guard.push_chunk(&bytes);
                         drop(guard);
@@ -646,8 +660,10 @@ impl UnifiedExecProcess {
     }
 
     fn spawn_local_output_task(
-        mut receiver: tokio::sync::broadcast::Receiver<Vec<u8>>,
+        mut stdout: mpsc::Receiver<Vec<u8>>,
+        mut stderr: mpsc::Receiver<Vec<u8>>,
         output_handles: OutputHandles,
+        transcript: Arc<Mutex<HeadTailBuffer>>,
         output_tx: broadcast::Sender<Vec<u8>>,
     ) -> JoinHandle<()> {
         let OutputHandles {
@@ -662,22 +678,38 @@ impl UnifiedExecProcess {
                 output_closed: Arc::clone(&output_closed),
                 output_closed_notify: Arc::clone(&output_closed_notify),
             };
-            loop {
-                match receiver.recv().await {
-                    Ok(chunk) => {
-                        let mut guard = output_buffer.lock().await;
-                        guard.push_chunk(&chunk);
-                        drop(guard);
-                        let _ = output_tx.send(chunk);
-                        output_notify.notify_waiters();
+            let mut stdout_open = true;
+            let mut stderr_open = true;
+            while stdout_open || stderr_open {
+                // Preserve the bounded pipe receivers' backpressure. An
+                // intermediate broadcast could discard bytes before either
+                // authoritative buffer had observed them.
+                let chunk = tokio::select! {
+                    chunk = stdout.recv(), if stdout_open => {
+                        match chunk {
+                            Some(chunk) => chunk,
+                            None => {
+                                stdout_open = false;
+                                continue;
+                            }
+                        }
                     }
-                    Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => continue,
-                    Err(tokio::sync::broadcast::error::RecvError::Closed) => {
-                        output_closed.store(true, Ordering::Release);
-                        output_closed_notify.notify_waiters();
-                        break;
+                    chunk = stderr.recv(), if stderr_open => {
+                        match chunk {
+                            Some(chunk) => chunk,
+                            None => {
+                                stderr_open = false;
+                                continue;
+                            }
+                        }
                     }
                 };
+                // Recording precedes both polling visibility and publication.
+                // Never hold either buffer's lock while awaiting the other.
+                transcript.lock().await.push_chunk(&chunk);
+                output_buffer.lock().await.push_chunk(&chunk);
+                let _ = output_tx.send(chunk);
+                output_notify.notify_waiters();
             }
         })
     }

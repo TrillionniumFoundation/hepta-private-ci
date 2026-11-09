@@ -3,11 +3,14 @@ use std::sync::Arc;
 use super::Buffer;
 use super::Emitter;
 use super::TRAILING_OUTPUT_GRACE;
+use super::emit_exec_end_for_unified_exec;
 use super::spawn_exit_watcher;
 use super::start_streaming_output;
 use super::utf8_boundary;
 use crate::session::tests::make_session_and_context_with_rx;
+use crate::unified_exec::UNIFIED_EXEC_OUTPUT_MAX_BYTES;
 use crate::unified_exec::UnifiedExecContext;
+use crate::unified_exec::UnifiedExecProcessManager;
 use crate::unified_exec::head_tail_buffer::HeadTailBuffer;
 use crate::unified_exec::process::NoopSpawnLifecycle;
 use crate::unified_exec::process::UnifiedExecProcess;
@@ -32,7 +35,19 @@ struct StreamingOutputHarness {
     rx_event: async_channel::Receiver<Event>,
 }
 
+impl StreamingOutputHarness {
+    fn start_streaming(&self) {
+        start_streaming_output(&self.process, &self.context);
+    }
+}
+
 async fn streaming_output_harness() -> anyhow::Result<StreamingOutputHarness> {
+    let harness = streaming_output_harness_without_consumer().await?;
+    harness.start_streaming();
+    Ok(harness)
+}
+
+async fn streaming_output_harness_without_consumer() -> anyhow::Result<StreamingOutputHarness> {
     let (writer_tx, _writer_rx) = tokio::sync::mpsc::channel::<Vec<u8>>(1);
     let (stdout_tx, stdout_rx) = tokio::sync::broadcast::channel::<Vec<u8>>(8);
     let (exit_tx, exit_rx) = tokio::sync::oneshot::channel::<i32>();
@@ -58,8 +73,7 @@ async fn streaming_output_harness() -> anyhow::Result<StreamingOutputHarness> {
         tokio_util::sync::CancellationToken::new(),
         "streaming-output-test".to_string(),
     );
-    let transcript = Arc::new(tokio::sync::Mutex::new(HeadTailBuffer::default()));
-    start_streaming_output(&process, &context, Arc::clone(&transcript));
+    let transcript = process.output_transcript();
 
     Ok(StreamingOutputHarness {
         process,
@@ -69,6 +83,89 @@ async fn streaming_output_harness() -> anyhow::Result<StreamingOutputHarness> {
         context,
         rx_event,
     })
+}
+
+#[tokio::test]
+async fn terminal_summary_retains_output_published_before_streaming_subscribes()
+-> anyhow::Result<()> {
+    let harness = streaming_output_harness_without_consumer().await?;
+    // This independent receiver acknowledges actual producer publication. The
+    // presentation streamer deliberately does not exist for the prefix.
+    let mut published = harness.process.output_receiver();
+    let mut prefix = b"HEAD\n".to_vec();
+    prefix.extend(b"token token \n".repeat(100_000));
+    let total_bytes = prefix.len() + b"TAIL\n".len();
+    harness.stdout_tx.send(prefix.clone())?;
+    assert_eq!(published.recv().await?, prefix);
+    drop(published);
+
+    harness.start_streaming();
+    let StreamingOutputHarness {
+        process,
+        stdout_tx,
+        exit_tx,
+        transcript,
+        context,
+        rx_event,
+    } = harness;
+    let output_drained = process.output_drained_notify();
+    stdout_tx.send(b"TAIL\n".to_vec())?;
+    drop(stdout_tx);
+    exit_tx.send(0).expect("send actual exit");
+    output_drained.notified().await;
+
+    let collected = UnifiedExecProcessManager::collect_output_until_deadline(
+        process.output_handles(),
+        /*pause_state*/ None,
+        Instant::now(),
+    )
+    .await;
+    assert_eq!(
+        (
+            collected.total_bytes(),
+            collected.retained_bytes(),
+            collected.omitted_bytes(),
+        ),
+        (
+            total_bytes,
+            UNIFIED_EXEC_OUTPUT_MAX_BYTES,
+            total_bytes - UNIFIED_EXEC_OUTPUT_MAX_BYTES,
+        )
+    );
+    let fallback = String::from_utf8(collected.to_bytes_with_omission_marker())?;
+    #[allow(deprecated)]
+    let cwd = context.step_context.turn.cwd.clone().into();
+    emit_exec_end_for_unified_exec(
+        Arc::clone(&context.session),
+        Arc::clone(&context.step_context.turn),
+        context.call_id,
+        vec!["proof".to_string()],
+        cwd,
+        /*process_id*/ None,
+        /*plugin_attribution*/ None,
+        transcript,
+        fallback,
+        /*exit_code*/ 0,
+        Duration::ZERO,
+    )
+    .await;
+    loop {
+        let event = rx_event.recv().await?;
+        if let EventMsg::ItemCompleted(completed) = event.msg {
+            let TurnItem::CommandExecution(item) = completed.item else {
+                panic!("expected CommandExecution");
+            };
+            assert_eq!(item.status, CommandExecutionStatus::Completed);
+            assert_eq!(item.exit_code, Some(0));
+            let output = item.aggregated_output.expect("complete output");
+            assert!(output.starts_with("HEAD\n"));
+            assert!(output.ends_with("TAIL\n"));
+            let omitted = total_bytes - UNIFIED_EXEC_OUTPUT_MAX_BYTES;
+            assert!(output.contains(&format!("... {omitted} bytes omitted ...")));
+            break;
+        }
+    }
+    Ok(())
 }
 
 #[tokio::test]
@@ -300,25 +397,36 @@ fn utf8_boundary_batches_malformed_output() {
 }
 
 #[tokio::test]
-async fn streaming_output_bounds_invalid_bytes_and_keeps_the_full_transcript() {
-    let (session, turn, rx_event) = make_session_and_context_with_rx().await;
-    let transcript = Arc::new(tokio::sync::Mutex::new(HeadTailBuffer::default()));
+async fn streaming_output_bounds_invalid_bytes_and_keeps_the_full_transcript() -> anyhow::Result<()>
+{
+    let StreamingOutputHarness {
+        process,
+        stdout_tx,
+        exit_tx,
+        transcript,
+        context,
+        rx_event,
+    } = streaming_output_harness_without_consumer().await?;
+    let mut published = process.output_receiver();
     let mut output = Buffer::<8> {
         pending: Vec::new(),
-        transcript: Arc::clone(&transcript),
         emitter: Emitter {
             remaining_deltas: 2,
-            session,
-            turn,
+            session: Arc::clone(&context.session),
+            turn: Arc::clone(&context.step_context.turn),
             call_id: "bounded-output-test".to_string(),
         },
     };
 
     // The first frame splits 😀; the last allowed frame leaves é incomplete.
     let bytes = b"\xff\xff\xff\xff\xff\xff\xf0\x9f\x98\x80\xff\xff\xff\xc3\xa9";
-    output.push(bytes.to_vec()).await;
-    output.push(vec![0xfe, 0xfe]).await;
+    stdout_tx.send(bytes.to_vec())?;
+    output.push(published.recv().await?).await;
+    stdout_tx.send(vec![0xfe, 0xfe])?;
+    output.push(published.recv().await?).await;
     output.finish().await;
+    drop(stdout_tx);
+    exit_tx.send(0).expect("send exit");
 
     let mut chunks = Vec::new();
     while let Ok(event) = rx_event.try_recv() {
@@ -341,4 +449,5 @@ async fn streaming_output_bounds_invalid_bytes_and_keeps_the_full_transcript() {
         transcript.lock().await.to_bytes_with_omission_marker(),
         expected_transcript
     );
+    Ok(())
 }

@@ -1,6 +1,7 @@
 use super::EXIT_OBSERVATION_LOST;
 use super::NoopSpawnLifecycle;
 use super::UnifiedExecProcess;
+use crate::unified_exec::UNIFIED_EXEC_OUTPUT_MAX_BYTES;
 use crate::unified_exec::UnifiedExecError;
 use anyhow::Result;
 use codex_sandboxing::SandboxType;
@@ -151,5 +152,85 @@ async fn observed_driver_exit_keeps_its_actual_code() -> Result<()> {
     assert!(process.has_exited());
     assert_eq!(process.exit_code(), Some(23));
     assert_eq!(process.failure_message(), None);
+    Ok(())
+}
+
+#[tokio::test]
+async fn native_output_keeps_both_prefilled_streams_through_eof() -> Result<()> {
+    const CHUNKS_PER_STREAM: usize = 257;
+    const CHUNK_BYTES: usize = 4096;
+    let DriverFixture {
+        spawned,
+        exit_tx,
+        stdout_tx: driver_stdout,
+        ..
+    } = driver_fixture();
+    let SpawnedPty {
+        session, exit_rx, ..
+    } = spawned;
+    drop(driver_stdout);
+    // Exercise the native mpsc ingress directly, without an upstream driver's
+    // own broadcast or a presentation consumer. Both closed queues contain more
+    // messages than the old intermediate ring could retain.
+    let (stdout_tx, stdout_rx) = mpsc::channel(CHUNKS_PER_STREAM);
+    let (stderr_tx, stderr_rx) = mpsc::channel(CHUNKS_PER_STREAM);
+    for _ in 0..CHUNKS_PER_STREAM {
+        stdout_tx.try_send(vec![b'x'; CHUNK_BYTES])?;
+        stderr_tx.try_send(vec![b'x'; CHUNK_BYTES])?;
+    }
+    drop(stdout_tx);
+    drop(stderr_tx);
+    exit_tx.send(0).expect("send actual exit");
+    let process = UnifiedExecProcess::from_spawned(
+        SpawnedPty {
+            session,
+            stdout_rx,
+            stderr_rx,
+            exit_rx,
+        },
+        SandboxType::None,
+        Box::new(NoopSpawnLifecycle),
+    )
+    .await?;
+    let handles = process.output_handles();
+    tokio::time::timeout(Duration::from_secs(2), async {
+        loop {
+            let closed = handles.output_closed_notify.notified();
+            tokio::pin!(closed);
+            closed.as_mut().enable();
+            if handles.output_closed.load(Ordering::Acquire) {
+                break;
+            }
+            closed.await;
+        }
+    })
+    .await?;
+
+    let total_bytes = 2 * CHUNKS_PER_STREAM * CHUNK_BYTES;
+    let expected = (
+        total_bytes,
+        UNIFIED_EXEC_OUTPUT_MAX_BYTES,
+        total_bytes - UNIFIED_EXEC_OUTPUT_MAX_BYTES,
+    );
+    let polled = {
+        let output = handles.output_buffer.lock().await;
+        (
+            output.total_bytes(),
+            output.retained_bytes(),
+            output.omitted_bytes(),
+        )
+    };
+    let transcript = process.output_transcript();
+    let recorded = {
+        let output = transcript.lock().await;
+        (
+            output.total_bytes(),
+            output.retained_bytes(),
+            output.omitted_bytes(),
+        )
+    };
+    assert_eq!((polled, recorded), (expected, expected));
+    assert!(process.has_exited());
+    assert_eq!(process.exit_code(), Some(0));
     Ok(())
 }
