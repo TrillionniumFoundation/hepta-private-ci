@@ -313,6 +313,8 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
     };
     let reply_loss = Arc::new(NotesReplyLossProbe::default());
     let channel_probe = reply_loss.clone();
+    let observation_channel = Arc::new(Mutex::new(None));
+    let retained_channel = Arc::clone(&observation_channel);
     let (operations, identity) = operations
         .with_notes_from_session_test_channel(
             &config,
@@ -320,13 +322,16 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
             parent,
             final_use,
             move |effect, recovery| {
-                Ok(
-                    Arc::new(NotesLocalChannel::new(effect, recovery, channel_probe)?)
-                        as Arc<dyn NotesPrivateChannel>,
-                )
+                let channel = Arc::new(NotesLocalChannel::new(effect, recovery, channel_probe)?);
+                *retained_channel.lock().map_err(|_| std::io::Error::other("fixture observation channel lock"))? = Some(Arc::clone(&channel));
+                Ok(channel as Arc<dyn NotesPrivateChannel>)
             },
         )
         .await?;
+    let channel = observation_channel.lock().map_err(|error| error.to_string())?
+        .take().ok_or("missing actual Notes observation channel")?;
+    let observer = crate::AgentdNotesDocumentObserver::new(
+        codex_hepta_memory::ProductionNotesTarget::new(identity.clone(), channel)?.document_observer());
     session.instance = Some(identity.session_instance.clone());
     let (host, _) = operations.attach(Arc::new(host)).await?;
     // Private attachment precedes the App's first event-loop iteration. Wait
@@ -549,12 +554,29 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
         Sha256Digest::for_bytes(&recovered_bytes).as_str()
     );
     assert_eq!(primary_device.installs.load(Ordering::SeqCst), 0);
+    let original = host.writer().retained_operation(&third_queued.occurrence_key).await?
+        .ok_or("missing original actual Notes operation")?;
+    let terminal = host.writer().retained_notes_terminal_receipt(&third_queued.occurrence_key).await?;
+    let current = observer.observe_document()?;
+    assert_eq!(current, codex_hepta_memory::NotesDocumentState {
+        target: identity.clone(), revision: 3,
+        text_sha256: Sha256Digest::for_bytes(third_text.as_bytes()), receipt_pending: false,
+    });
+    let act2 = crate::notes_action_observer::original_notes_status(
+        &original, terminal.as_deref(), Some(&current), /*request_sha256*/ None,
+        serde_json::json!({"kind":"fixture_owner_actual_notes_application"}), /*sender_observation_retained*/ None,
+    )?;
+    assert_eq!(act2["action_observation"]["runtime_state"],
+        serde_json::json!({"state":"terminal","outcome":"succeeded"}));
+    assert_eq!((reply_loss.effect_attempts.load(Ordering::SeqCst), issuer.requests.load(Ordering::SeqCst)),
+        (3, grants_before_reconciliation));
     let evidence = serde_json::json!({
         "schema_version":1,"profile":"test-issuer-original-owner-real-session-notes",
         "production_authority":false,"native_kernel_qualified":false,"pixels_qualified":false,
         "session_sha256":session_sha256.as_str(),"app_sha256":app_sha256.as_str(),
         "ui_first_frame_unix_ms":first_frame_unix_ms,
         "source_state":receipt.state,"application_receipt":application,
+        "act2_original_owner_current_observation":act2,
         "second_application_receipt":second_application,"receipt_capacity_reused_after_durable_ack":true,
         "bootstrap_schema_version":2,"recovery_transport":"private_unix_datagram",
         "lost_reply_initial_source_state":lost_reply.state,
@@ -577,3 +599,4 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
     session.cancel_notes()?;
     Ok(())
 }
+

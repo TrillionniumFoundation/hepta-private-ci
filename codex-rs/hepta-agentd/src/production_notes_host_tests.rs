@@ -335,10 +335,22 @@ async fn notes_recovered_writer_persists_lost_reply_and_retires_without_replay()
                     .map_err(|error| error.to_string())?;
             }
         }
+        // ACT-2 current goal readback travels on the original recovery lane.
+        // This peer remains an explicit application model, not a real GUI.
+        let mut bytes = [0_u8; 8192];
+        let length = recovery_application.recv(&mut bytes).map_err(|error| error.to_string())?;
+        let query: serde_json::Value = serde_json::from_slice(&bytes[..length]).map_err(|error| error.to_string())?;
+        assert_eq!(query["action"], "read_document_state");
+        assert_eq!(query["target"], serde_json::to_value(&peer_identity).unwrap());
+        let current = serde_json::json!({"schema_version":1,"action":"document_state",
+            "target":peer_identity,"request_id":query["request_id"],"revision":2,
+            "text_sha256":Sha256Digest::for_bytes(applied[1].as_bytes()),"receipt_pending":false});
+        recovery_application.send(&serde_json::to_vec(&current).map_err(|error| error.to_string())?)
+            .map_err(|error| error.to_string())?;
         Ok(applied)
     });
-    let (operations, registered_identity) = operations
-        .with_notes_from_session(&config, &host, owner_bootstrap, final_use)
+    let (operations, registered_identity, observer) = operations
+        .with_notes_from_session_with_observer(&config, &host, owner_bootstrap, final_use)
         .await?;
     let (host, _) = operations.attach(Arc::new(host)).await?;
     assert_eq!(registered_identity, identity);
@@ -396,6 +408,19 @@ async fn notes_recovered_writer_persists_lost_reply_and_retires_without_replay()
         LocalOutcomeState::Committed
     );
     host.reconcile(32).await?;
+    let original = host.writer().retained_operation("notes-host-1").await?.ok_or("original operation missing")?;
+    let terminal = host.writer().retained_notes_terminal_receipt("notes-host-1").await?;
+    let current = observer.observe_document()?;
+    let result = crate::notes_action_observer::original_notes_status(
+        &original, terminal.as_deref(), Some(&current), /*request_sha256*/ None,
+        serde_json::json!({"kind":"fixture_original_owner"}), /*sender_observation_retained*/ None,
+    )?;
+    assert_eq!(result["state"], "Committed");
+    assert_eq!(result["operation_id"], "notes-host-1");
+    assert_eq!(result["current_document"]["revision"], 2);
+    assert_eq!(result["action_observation"]["runtime_state"],
+        serde_json::json!({"state":"terminal","outcome":"succeeded"}));
+    assert_eq!(result["action_observation"]["historical_effect"], "applied");
     assert_eq!(
         peer.join().expect("application model thread")?,
         vec![
@@ -403,6 +428,17 @@ async fn notes_recovered_writer_persists_lost_reply_and_retires_without_replay()
             "authorized model revision 2".to_string()
         ]
     );
+    let unavailable = observer.observe_document().ok();
+    assert!(unavailable.is_none());
+    let lost = crate::notes_action_observer::original_notes_status(
+        &original, terminal.as_deref(), unavailable.as_ref(), /*request_sha256*/ None,
+        serde_json::json!({"kind":"fixture_original_owner"}), /*sender_observation_retained*/ None,
+    )?;
+    assert_eq!(lost["current_document_readback_available"], false);
+    assert_eq!(lost["action_observation"]["runtime_state"], serde_json::json!({"state":"unknown"}));
+    assert_eq!(lost["action_observation"]["current_goal"], "unknown");
+    assert_eq!(lost["action_observation"]["historical_effect"], "applied");
+    assert_eq!(lost["receipt_utf8"], result["receipt_utf8"]);
     assert_eq!(host.reauthorize_pending(32).await?, 0);
     assert_eq!(
         host.writer().status("notes-host-1").await?,
@@ -416,3 +452,4 @@ async fn notes_recovered_writer_persists_lost_reply_and_retires_without_replay()
 
 #[path = "production_notes_gui_tests.rs"]
 mod gui_tests;
+

@@ -353,6 +353,8 @@ mod notes_bootstrap;
 #[cfg(unix)]
 mod notes_channel;
 #[cfg(target_os = "linux")]
+mod notes_action_observer;
+#[cfg(target_os = "linux")]
 mod notes_document_observer;
 #[cfg(target_os = "linux")]
 mod notes_launch_mode;
@@ -971,3 +973,4 @@ pub use terminal_learning_types::TerminalLearningErrorV1;
 pub use terminal_learning_types::TerminalLearningReceiptV1;
 pub use terminal_learning_types::TerminalLearningRequestV1;
 pub use terminal_learning_types::TerminalLearningSourceLineageV1;
+

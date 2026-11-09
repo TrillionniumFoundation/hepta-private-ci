@@ -33,7 +33,9 @@ pub enum ActionRuntimeStateV1 {
     Unknown,
 }
 
-/// One fresh driver observation with all its original identity and evidence.
+/// One newly requested driver observation with its original identity and evidence.
+/// The trusted destination observer owns freshness; this view does not add a
+/// timestamp, sequence fence or proof against replaying old destination state.
 /// Partial effect takes precedence in the summary; `observation.execution`
 /// still preserves simultaneous waiting or running facts. A later UNKNOWN view
 /// does not erase a historical durable receipt or authorize a second dispatch.

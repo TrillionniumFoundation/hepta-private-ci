@@ -7,6 +7,7 @@ use std::time::Instant;
 
 use codex_app_server_protocol::DynamicToolFunctionSpec;
 use codex_app_server_protocol::DynamicToolSpec;
+use codex_hepta_memory::NotesDocumentState;
 use serde::Deserialize;
 use serde_json::Value;
 use serde_json::json;
@@ -17,6 +18,8 @@ use crate::AgentdNotesLiteralAdapter;
 use crate::AgentdNotesLiteralBindings;
 use crate::AgentdNotesPreparedObjective;
 use crate::AgentdRootProductionAttachment;
+use crate::notes_action_observer::NotesActionDocumentV1;
+use crate::notes_action_observer::original_notes_status;
 use crate::notes_literal_adapter::NotesAdapterProfile;
 use crate::notes_literal_adapter::invalid;
 use crate::text_session::AgentdTextSessionConfig;
@@ -192,7 +195,7 @@ impl AgentdNotesThreadToolRuntime {
         self.adapter.check_available()
     }
 
-    async fn observe_document(&self) -> Result<Value, AgentdError> {
+    async fn observe_document(&self) -> Result<NotesDocumentState, AgentdError> {
         self.adapter.check_available()?;
         let permit = Arc::clone(&self.adapter.blocking)
             .try_acquire_owned()
@@ -209,9 +212,7 @@ impl AgentdNotesThreadToolRuntime {
         .map_err(|_| invalid("original Notes observation timed out"))?
         .map_err(|_| invalid("original Notes observation worker failed"))??;
         self.adapter.check_available()?;
-        Ok(
-            json!({"target":state.target,"revision":state.revision,"text_sha256":state.text_sha256.as_str(),"receipt_pending":state.receipt_pending}),
-        )
+        Ok(state)
     }
 
     fn provenance(&self, call: &OriginalNotesThreadItem) -> Value {
@@ -234,7 +235,7 @@ impl AgentdNotesThreadToolRuntime {
     ) -> Result<Value, AgentdError> {
         if call.tool() == READ_TOOL {
             return Ok(
-                json!({"provenance":self.provenance(call),"document":self.observe_document().await?}),
+                json!({"provenance":self.provenance(call),"document":NotesActionDocumentV1::from(&self.observe_document().await?)}),
             );
         }
         if call.tool() != REPLACE_TOOL {
@@ -362,18 +363,14 @@ impl AgentdNotesThreadToolRuntime {
         // Losing the application or its readback cannot erase an already
         // verified immutable source receipt. Report freshness separately.
         let document = self.observe_document().await.ok();
-        Ok(json!({
-            "source_domain":provenance["kind"], "provenance":provenance, "operation_id":run_id,
-            "semantic_sha256":original.operation.semantic_digest().to_string(),
-            "exact_request_sha256":request_sha256,
-            "sender_observation_retained":sender_observation_retained,
-            "state":format!("{:?}",original.state), "receipt_utf8":receipt,
-            "original_target":original_target,
-            "current_document_readback_available":document.is_some(), "current_document":document,
-        }))
+        original_notes_status(
+            &original, receipt.as_deref(), document.as_ref(), request_sha256.as_deref(),
+            provenance, sender_observation_retained,
+        )
     }
 }
 
 #[cfg(test)]
 #[path = "notes_thread_tool_tests.rs"]
 mod tests;
+

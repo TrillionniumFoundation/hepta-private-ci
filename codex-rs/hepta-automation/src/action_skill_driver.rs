@@ -135,7 +135,8 @@ impl<A: ProviderEffectAdapter, O: ActionSkillObserver> GoalCheckedActionSkillDri
 
     /// Query the original operation once and retain the independent provider,
     /// execution, goal and cancellation facts alongside their five-state view.
-    /// An observation error means UNKNOWN, never failure or permission to retry.
+    /// Treat an observation error as unresolved/UNKNOWN, never failure or
+    /// permission to retry; an error returns no observation or runtime view.
     /// This method neither settles the attempt nor dispatches another effect.
     pub async fn observe_pending_state(
         &self,
