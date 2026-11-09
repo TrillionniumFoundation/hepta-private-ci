@@ -73,10 +73,16 @@ jobs:
           cache-scope: bazel-test
 
       - name: Discover and execute the original complete operator wrapper
-        shell: pwsh
+        shell: bash
         run: |
-          python "$env:OBSERVER_ROOT/.github/scripts/windows_operator_bazel.py" --mode run --root "$env:GITHUB_WORKSPACE" --observer "$env:OBSERVER_ROOT" --output "$env:RUNNER_TEMP/operator-bazel-evidence" --source-sha "$env:SOURCE_SHA" --tested-sha "$env:TESTED_SHA" --source-tree "$env:SOURCE_TREE" --observer-sha "$env:OBSERVER_SHA"
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          set -euo pipefail
+          observer_bash_path="$BASH"
+          if [[ "$observer_bash_path" != *.[eE][xX][eE] ]]; then
+            observer_bash_path="${observer_bash_path}.exe"
+          fi
+          [[ "$BASH" -ef "$observer_bash_path" ]]
+          observer_bash="$(cygpath -am "$observer_bash_path")"
+          python "$OBSERVER_ROOT/.github/scripts/windows_operator_bazel.py" --mode run --root "$GITHUB_WORKSPACE" --observer "$OBSERVER_ROOT" --output "$RUNNER_TEMP/operator-bazel-evidence" --source-sha "$SOURCE_SHA" --tested-sha "$TESTED_SHA" --source-tree "$SOURCE_TREE" --observer-sha "$OBSERVER_SHA" --bash-executable "$observer_bash"
 
       - name: Preserve original outputs and every attempt, including failure
         if: always()

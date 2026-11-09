@@ -276,9 +276,22 @@ def binary_files(output_base):
     return files
 
 
-def bazel_command(source_sha, directory, mode):
+def original_bash(value):
+    if value is None:
+        raise ValueError("the original workflow Bash executable is required")
+    path = Path(value)
+    if not path.is_absolute() or path.name.lower() != "bash.exe":
+        raise ValueError(
+            "the original workflow must provide an absolute Bash executable"
+        )
+    path = path.resolve(strict=True)
+    bounded(path)
+    return path
+
+
+def bazel_command(source_sha, directory, mode, bash_executable):
     command = [
-        "bash",
+        str(bash_executable),
         "./.github/scripts/run-bazel-ci.sh",
         "--print-failed-action-summary",
         "--print-failed-test-logs",
@@ -314,6 +327,7 @@ def finalize_status(receipt, source_unchanged):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", choices=("admit", "run"), required=True)
+    parser.add_argument("--bash-executable")
     for name in (
         "root",
         "observer",
@@ -410,6 +424,8 @@ def main():
         },
     }
     baseline = None
+    bash_executable = None
+    bash_before = None
     try:
         baseline = json.loads(
             (output / "SOURCE_BEFORE.json").read_text(encoding="utf-8")
@@ -422,6 +438,21 @@ def main():
                 raise ValueError("source changed since admission")
 
         check("after-prepare")
+        bash_executable = original_bash(args.bash_executable)
+        bash_before = fingerprint(bash_executable)
+        write(output / "ORIGINAL_BASH_BEFORE.json", bash_before)
+        preserved_shell = output / "launch-shell"
+        preserved_shell.mkdir(exist_ok=False)
+        shutil.copyfile(bash_executable, preserved_shell / "bash.exe")
+        if fingerprint(preserved_shell / "bash.exe")["sha256"] != bash_before["sha256"]:
+            raise ValueError("original Bash executable transport changed its bytes")
+        shell_version = capture(
+            output, "original-bash-version", [str(bash_executable), "--version"], root
+        )
+        receipt["originalBashVersionCommand"] = shell_version
+        if shell_version["exitCode"] != 0:
+            raise ValueError("the original workflow Bash version query failed")
+        check("after-shell-identification")
         scope = json.loads(
             (root / ".github/fixtures/windows-current-ci-scope.json").read_text(
                 encoding="utf-8"
@@ -489,7 +520,7 @@ def main():
             check(mode + "-before")
             directory = output / mode
             directory.mkdir(exist_ok=False)
-            command = bazel_command(args.source_sha, directory, mode)
+            command = bazel_command(args.source_sha, directory, mode, bash_executable)
             receipt[
                 "discoveryExecution" if mode == "discovery" else "nativeExecution"
             ] = "command_launched_case_execution_unverified"
@@ -574,6 +605,19 @@ def main():
         (output / "exception.txt").write_text(traceback.format_exc(), encoding="utf-8")
         receipt["passed"] = False
     finally:
+        try:
+            bash_after = (
+                fingerprint(bash_executable) if bash_executable is not None else None
+            )
+            write(output / "ORIGINAL_BASH_AFTER.json", bash_after)
+            receipt["originalBashUnchanged"] = (
+                bash_before is not None and bash_before == bash_after
+            )
+        except Exception as error:
+            receipt["originalBashUnchanged"] = False
+            receipt["originalBashAfterError"] = str(error)
+        if not receipt["originalBashUnchanged"]:
+            receipt["passed"] = False
         try:
             final = identities()
             write(output / "SOURCE_AFTER.json", final)

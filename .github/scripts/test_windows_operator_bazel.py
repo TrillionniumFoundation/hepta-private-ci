@@ -181,7 +181,11 @@ class Accounting(unittest.TestCase):
 
     def test_only_discovery_receives_list_flags_and_target_is_never_inner(self):
         for mode in ("discovery", "execution"):
-            command = observer.bazel_command("a" * 40, Path("records") / mode, mode)
+            shell = Path("C:/Original Git/bin/bash.exe")
+            command = observer.bazel_command(
+                "a" * 40, Path("records") / mode, mode, shell
+            )
+            self.assertEqual(command[0], str(shell))
             self.assertEqual(command[-1], observer.TARGET)
             self.assertIn("--nocache_test_results", command)
             self.assertEqual("--test_arg=--list" in command, mode == "discovery")
@@ -201,6 +205,15 @@ class Accounting(unittest.TestCase):
                     for arg in command
                 )
             )
+
+    def test_bare_or_missing_bash_never_falls_back_to_path_search(self):
+        for value in (None, "bash", "bash.exe", "relative/bash.exe"):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                observer.original_bash(value)
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary).resolve() / "bash.exe"
+            path.write_bytes(b"observer path fixture, never executed")
+            self.assertEqual(observer.original_bash(str(path)), path)
 
 
 if __name__ == "__main__":
