@@ -55,6 +55,7 @@ mod notes_successor;
 mod learning_checkpoint;
 pub use learning_checkpoint::PreparedRootLearningCheckpointV1;
 pub use learning_checkpoint::RootLearningCheckpointProfileV1;
+pub(crate) use learning_checkpoint::receive_learning_checkpoint_before;
 pub use learning_checkpoint::receive_learning_checkpoint_handoff_v1;
 
 /// A lane is fixed by its private listener, never selected by a wire request.

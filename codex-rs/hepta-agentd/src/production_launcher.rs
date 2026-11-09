@@ -49,6 +49,7 @@ struct RootStartup {
     lifetime: Duration,
     deadline: Instant,
     inputs: RuntimeInputs,
+    learning_checkpoint: Option<UnixDatagram>,
 }
 
 /// Construct only in the original arg0 single-thread preflight. This retains
@@ -60,6 +61,7 @@ pub struct AgentdProductionStartup(Startup);
 pub struct AgentdProductionLaunch {
     root: AgentdRootProductionInputs,
     inputs: RuntimeInputs,
+    learning_checkpoint: Option<crate::AgentdLearningCheckpointClientV1>,
 }
 
 struct RuntimeInputs {
@@ -91,6 +93,7 @@ impl AgentdProductionStartup {
                     notes,
                     notes_ui,
                     lifetime,
+                    learning_checkpoint,
                 } = inputs;
                 let config = config.prepare_root_handoff(uid, gid)?.drop_to_owner()?;
                 // Root grants the original home/data access before capturing
@@ -115,6 +118,7 @@ impl AgentdProductionStartup {
                     lifetime,
                     deadline: bootstrap_deadline,
                     inputs,
+                    learning_checkpoint,
                 }))
             }
         };
@@ -145,7 +149,13 @@ impl AgentdProductionStartup {
                     lifetime,
                     deadline,
                     inputs,
+                    learning_checkpoint,
                 } = *root;
+                // Only the explicitly selected learning path retains this extra
+                // pin. It must stay live across both original Root admissions.
+                let learning_checkpoint = learning_checkpoint
+                    .map(|handoff| root_pidfd.try_clone().map(|pin| (handoff, pin)))
+                    .transpose()?;
                 let root = crate::receive_root_production_inputs(
                     bootstrap,
                     root_pidfd,
@@ -157,7 +167,43 @@ impl AgentdProductionStartup {
                 let config = config
                     .finish(&root)?
                     .with_root_bound_sockets(control, app_server)?;
-                Ok((config, Some(AgentdProductionLaunch { root, inputs })))
+                // The original five-lane barrier and writer authentication must
+                // complete before the separate learning owner's fresh restore.
+                let learning_checkpoint = match learning_checkpoint {
+                    Some((handoff, root_pin)) => {
+                        let peer = crate::root_production_handoff::root_pair(
+                            &handoff,
+                            remaining(deadline)?,
+                        )?;
+                        if peer.pid as u32 != root.bootstrap.root.pid {
+                            return Err(AgentdError::Invalid(
+                                "learning carrier differs from the original Root".into(),
+                            ));
+                        }
+                        crate::root_observation_stream::check_lifetime(&root_pin)
+                            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+                        let client =
+                            crate::authority_host_service::receive_learning_checkpoint_before(
+                                handoff,
+                                config.identity().clone(),
+                                deadline,
+                            )
+                            .await?;
+                        crate::root_observation_stream::check_lifetime(&root_pin)
+                            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+                        remaining(deadline)?;
+                        Some(client)
+                    }
+                    None => None,
+                };
+                Ok((
+                    config,
+                    Some(AgentdProductionLaunch {
+                        root,
+                        inputs,
+                        learning_checkpoint,
+                    }),
+                ))
             }
         }
     }
@@ -173,6 +219,15 @@ impl AgentdProductionLaunch {
         mut config: AgentdConfig,
         arg0_paths: Arg0DispatchPaths,
     ) -> Result<(), AgentdError> {
+        // Checkpoint delivery supplies protected data, not the missing complete
+        // stage/proposal/attestation profile. Refusal drops this client and all
+        // original Root channels before starting any Runtime or MCP work.
+        if self.learning_checkpoint.is_some() {
+            return Err(AgentdError::Invalid(
+                "learning checkpoint delivered but no complete production learning profile is configured"
+                    .into(),
+            ));
+        }
         let RuntimeInputs {
             primary,
             notes,

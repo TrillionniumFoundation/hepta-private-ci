@@ -16,6 +16,7 @@ use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
 use std::fs::File;
 use std::io::Read;
 use std::io::Seek;
+use std::net::Shutdown;
 use std::os::unix::net::UnixDatagram;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -26,6 +27,10 @@ const BOOTSTRAP_DOMAIN: &str = "runtime.agentd.learning_checkpoint.bootstrap.v1"
 #[cfg(test)]
 #[path = "authority_host_learning_checkpoint_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "authority_host_learning_admission_tests.rs"]
+mod admission_tests;
 
 /// An explicit trusted-launcher input, separate from the existing five lanes.
 /// Neither this description nor a writer identity creates checkpoint authority.
@@ -238,8 +243,96 @@ pub async fn receive_learning_checkpoint_handoff_v1(
     expected: AgentdIdentity,
     timeout: Duration,
 ) -> io::Result<AgentdLearningCheckpointClientV1> {
+    receive_with_budget(handoff, expected, timeout, AdmissionBudget::HandoffOnly).await
+}
+
+/// The ordinary launch shares its existing absolute startup deadline across
+/// carrier receive, connect and fresh restore. A deadline closes only the
+/// privately held socket and joins its blocking worker before returning.
+pub(crate) async fn receive_learning_checkpoint_before(
+    handoff: UnixDatagram,
+    expected: AgentdIdentity,
+    deadline: Instant,
+) -> io::Result<AgentdLearningCheckpointClientV1> {
+    let budget = AdmissionBudget::Before(deadline);
+    let timeout = budget.timeout(Duration::from_secs(30))?;
+    receive_with_budget(handoff, expected, timeout, budget).await
+}
+
+#[derive(Clone, Copy)]
+enum AdmissionBudget {
+    HandoffOnly,
+    Before(Instant),
+}
+
+impl AdmissionBudget {
+    fn timeout(self, maximum: Duration) -> io::Result<Duration> {
+        match self {
+            Self::HandoffOnly => Ok(maximum),
+            Self::Before(end) => end
+                .checked_duration_since(Instant::now())
+                .filter(|left| !left.is_zero())
+                .map(|left| maximum.min(left))
+                .ok_or_else(|| {
+                    io::Error::new(
+                        io::ErrorKind::TimedOut,
+                        "learning admission deadline elapsed",
+                    )
+                }),
+        }
+    }
+
+    fn check(self) -> io::Result<()> {
+        self.timeout(Duration::MAX)?;
+        Ok(())
+    }
+
+    async fn complete<T>(
+        self,
+        mut worker: tokio::task::JoinHandle<io::Result<T>>,
+        shutdown: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<T> {
+        let result = match self {
+            Self::HandoffOnly => worker.await,
+            Self::Before(end) => {
+                match tokio::time::timeout_at(tokio::time::Instant::from_std(end), &mut worker)
+                    .await
+                {
+                    Ok(result) => result,
+                    Err(_) => {
+                        // A Tokio timeout alone cannot stop spawn_blocking.
+                        // Shutdown interrupts this same socket's pending I/O;
+                        // await the original worker and discard any late value.
+                        let closed = shutdown();
+                        drop(worker.await);
+                        closed?;
+                        return Err(io::Error::new(
+                            io::ErrorKind::TimedOut,
+                            "learning admission deadline elapsed",
+                        ));
+                    }
+                }
+            }
+        };
+        self.check()?;
+        result.map_err(io::Error::other)?
+    }
+}
+
+async fn receive_with_budget(
+    handoff: UnixDatagram,
+    expected: AgentdIdentity,
+    timeout: Duration,
+    budget: AdmissionBudget,
+) -> io::Result<AgentdLearningCheckpointClientV1> {
     let started = Instant::now();
-    let (bundle, initial, root_pidfd) = tokio::task::spawn_blocking(move || {
+    let cancel_handoff = match budget {
+        AdmissionBudget::HandoffOnly => None,
+        AdmissionBudget::Before(_) => Some(handoff.try_clone()?),
+    };
+    let worker = tokio::task::spawn_blocking(move || {
+        budget.check()?;
+        let timeout = budget.timeout(timeout)?;
         let (mut file, root_pidfd) =
             crate::receive_root_production_handoff(handoff, timeout).map_err(io::Error::other)?;
         let length = file.metadata()?.len();
@@ -287,20 +380,36 @@ pub async fn receive_learning_checkpoint_handoff_v1(
         {
             return Err(io::Error::other("learning Root incarnation differs"));
         }
+        budget.check()?;
         Ok((bundle, initial, root_pidfd))
-    })
-    .await
-    .map_err(io::Error::other)??;
+    });
+    let (bundle, initial, root_pidfd) = budget
+        .complete(worker, move || match cancel_handoff {
+            Some(socket) => socket.shutdown(Shutdown::Both),
+            None => Ok(()),
+        })
+        .await?;
     let end = started + Duration::from_millis(bundle.profile.lifetime_ms);
-    let timeout = Duration::from_millis(bundle.profile.timeout_ms).min(remaining(end)?);
-    let stream = tokio::time::timeout(
-        timeout,
+    let timeout =
+        budget.timeout(Duration::from_millis(bundle.profile.timeout_ms).min(remaining(end)?))?;
+    let connect_end = match budget {
+        AdmissionBudget::HandoffOnly => Instant::now() + timeout,
+        AdmissionBudget::Before(deadline) => deadline.min(Instant::now() + timeout),
+    };
+    let stream = tokio::time::timeout_at(
+        tokio::time::Instant::from_std(connect_end),
         tokio::net::UnixStream::connect(&bundle.profile.endpoint),
     )
     .await
     .map_err(io::Error::other)??
     .into_std()?;
-    tokio::task::spawn_blocking(move || {
+    budget.check()?;
+    let cancel_stream = match budget {
+        AdmissionBudget::HandoffOnly => None,
+        AdmissionBudget::Before(_) => Some(stream.try_clone()?),
+    };
+    let worker = tokio::task::spawn_blocking(move || {
+        budget.check()?;
         let channel = HostAuthorityPeerChannel::from_stream(
             stream,
             HostAuthorityPeerPolicy {
@@ -308,7 +417,7 @@ pub async fn receive_learning_checkpoint_handoff_v1(
                     uid: 0,
                     pid: bundle.root.pid,
                 },
-                timeout,
+                timeout: budget.timeout(timeout)?,
                 lifetime: remaining(end)?,
                 request_bound: FRAME_LIMIT,
                 response_bound: FRAME_LIMIT,
@@ -322,10 +431,15 @@ pub async fn receive_learning_checkpoint_handoff_v1(
             initial.clone(),
         );
         client.restore(&initial.request).map_err(io::Error::other)?;
+        budget.check()?;
         Ok(client)
-    })
-    .await
-    .map_err(io::Error::other)?
+    });
+    budget
+        .complete(worker, move || match cancel_stream {
+            Some(socket) => socket.shutdown(Shutdown::Both),
+            None => Ok(()),
+        })
+        .await
 }
 
 fn require_root() -> io::Result<()> {

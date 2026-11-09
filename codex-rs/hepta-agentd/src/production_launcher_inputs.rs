@@ -15,7 +15,7 @@ use std::time::Instant;
 use crate::AgentdError;
 use crate::calculator_deadline::Deadline;
 
-const FLAGS: [&str; 18] = [
+const FLAGS: [&str; 19] = [
     "--root-production-profile",
     "--root-production-handoff-fd",
     "--root-production-uid",
@@ -34,6 +34,7 @@ const FLAGS: [&str; 18] = [
     "--desktop-production-handoff-fd",
     "--desktop-thread-deployment-fd",
     "--desktop-session-pidfd",
+    "--root-learning-checkpoint-handoff-fd",
 ];
 
 #[derive(Clone, Copy, Eq, PartialEq)]
@@ -54,6 +55,7 @@ pub(super) struct LaunchInputs {
     pub(super) notes: Option<UnixDatagram>,
     pub(super) notes_ui: Option<NotesUiInputs>,
     pub(super) lifetime: Duration,
+    pub(super) learning_checkpoint: Option<UnixDatagram>,
 }
 
 pub(super) enum PrimaryInputs {
@@ -101,6 +103,13 @@ pub(super) fn parse(
     }
     if selected.is_empty() {
         return Ok((None, ordinary));
+    }
+    if selected.contains_key("--root-learning-checkpoint-handoff-fd")
+        && !selected.contains_key("--root-production-profile")
+    {
+        return Err(invalid(
+            "learning checkpoint delivery requires an explicit original production profile",
+        ));
     }
     let profile = selected
         .remove("--root-production-profile")
@@ -202,6 +211,10 @@ pub(super) fn parse(
             "Desktop and legacy Notes inputs cannot be combined",
         ));
     }
+    let learning_checkpoint = selected
+        .remove("--root-learning-checkpoint-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
     let lifetime = selected
         .remove("--root-production-lifetime-ms")
         .map(|value| number::<u64>(value, "original Root lifetime"))
@@ -228,6 +241,7 @@ pub(super) fn parse(
         desktop_handoff,
         desktop_deployment,
         desktop_session,
+        learning_checkpoint,
     ]
     .into_iter()
     .flatten()
@@ -290,6 +304,10 @@ pub(super) fn parse(
             })
         })
         .transpose()?;
+    let learning_checkpoint = learning_checkpoint
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
     Ok((
         Some(LaunchInputs {
             handoff,
@@ -302,6 +320,7 @@ pub(super) fn parse(
             notes,
             notes_ui,
             lifetime: Duration::from_millis(lifetime),
+            learning_checkpoint,
         }),
         ordinary,
     ))

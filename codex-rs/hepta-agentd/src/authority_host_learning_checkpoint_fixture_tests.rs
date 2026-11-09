@@ -27,6 +27,7 @@ pub(super) struct Fixture {
     pub(super) lanes: PathBuf,
     pub(super) binary: PathBuf,
     pub(super) private_path: PathBuf,
+    pub(super) config_path: PathBuf,
     _state: tempfile::TempDir,
     _runtime: tempfile::TempDir,
     _executable: tempfile::TempDir,
@@ -190,6 +191,7 @@ impl Fixture {
             lanes,
             binary,
             private_path,
+            config_path,
             _state: state,
             _runtime: runtime,
             _executable: executable,
@@ -207,7 +209,7 @@ impl Fixture {
     }
 }
 
-fn write_json(path: &std::path::Path, value: &impl Serialize) -> io::Result<()> {
+pub(super) fn write_json(path: &std::path::Path, value: &impl Serialize) -> io::Result<()> {
     let mut file = std::fs::OpenOptions::new()
         .write(true)
         .create_new(true)

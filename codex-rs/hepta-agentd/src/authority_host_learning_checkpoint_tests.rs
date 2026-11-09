@@ -19,6 +19,9 @@ use std::process::Stdio;
 #[path = "authority_host_learning_checkpoint_fixture_tests.rs"]
 mod fixture;
 
+#[path = "authority_host_learning_delivery_tests.rs"]
+mod delivery;
+
 const CHILD: &str =
     "authority_host_service::learning_checkpoint::tests::unprivileged_checkpoint_child";
 

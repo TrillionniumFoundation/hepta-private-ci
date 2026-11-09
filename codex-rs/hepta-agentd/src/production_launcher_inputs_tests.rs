@@ -261,3 +261,61 @@ fn partial_mixed_and_alias_desktop_inputs_refuse_before_taking_rights() -> anyho
     fixture.assert_retained();
     Ok(())
 }
+
+#[test]
+fn learning_delivery_requires_explicit_profile_and_distinct_inherited_rights() -> anyhow::Result<()>
+{
+    let mut fixture = DesktopDescriptors::new()?;
+    let (learning, peer) = UnixDatagram::pair()?;
+    let number = learning.as_raw_fd();
+    let mut incomplete = fixture
+        .arguments()
+        .chunks_exact(2)
+        .filter(|pair| pair[0] != "--root-production-profile")
+        .flatten()
+        .cloned()
+        .collect::<Vec<_>>();
+    incomplete.extend([
+        "--root-learning-checkpoint-handoff-fd".into(),
+        number.to_string().into(),
+    ]);
+    assert!(parse(incomplete).is_err());
+    fixture.assert_retained();
+    for alias in fixture
+        .descriptors
+        .iter()
+        .map(AsRawFd::as_raw_fd)
+        .chain([1])
+    {
+        let mut arguments = fixture.arguments();
+        arguments.extend([
+            "--root-learning-checkpoint-handoff-fd".into(),
+            alias.to_string().into(),
+        ]);
+        assert!(parse(arguments).is_err());
+        fixture.assert_retained();
+    }
+    let mut arguments = fixture.arguments();
+    arguments.extend([
+        "--root-learning-checkpoint-handoff-fd".into(),
+        learning.into_raw_fd().to_string().into(),
+    ]);
+    for descriptor in fixture.descriptors.drain(..) {
+        let _ = descriptor.into_raw_fd();
+    }
+    let (inputs, ordinary) = parse(arguments)?;
+    let inputs = inputs.ok_or_else(|| anyhow::anyhow!("explicit launch was not selected"))?;
+    assert!(ordinary.is_empty());
+    let delivered = inputs
+        .learning_checkpoint
+        .as_ref()
+        .ok_or_else(|| anyhow::anyhow!("learning carrier was lost"))?;
+    assert_eq!(delivered.as_raw_fd(), number);
+    // SAFETY: this only observes the descriptor now owned by the parsed input.
+    let flags = unsafe { libc::fcntl(number, libc::F_GETFD) };
+    assert!(flags >= 0);
+    assert!(flags & libc::FD_CLOEXEC != 0);
+    drop(inputs);
+    assert!(peer.send(b"after-owner-drop").is_err());
+    Ok(())
+}
