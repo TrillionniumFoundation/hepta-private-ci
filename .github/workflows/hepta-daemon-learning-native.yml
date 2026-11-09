@@ -1,0 +1,308 @@
+name: Hepta daemon learning native
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-learning-artifacts/**"
+      - ".github/workflows/hepta-daemon-learning-native.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  HEPTA_CI_LANE: source-head
+  # Include the entire reviewed stack when formatting a clean PR checkout.
+  FORMAT_BASE_SHA: b8e8c6e82abc1479c573f61a5e17d28d581e6cad
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare source-bound evidence driver
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-daemon-learning-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/daemon-learning-records" "$CARGO_TARGET_DIR"
+          printf 'CARGO_TARGET_DIR=%s\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
+          cat > "$RUNNER_TEMP/daemon-learning-driver.py" <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import sys
+          import xml.etree.ElementTree as ET
+
+          repo = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          records = Path(os.environ["RUNNER_TEMP"]) / "daemon-learning-records"
+          target = Path(os.environ["CARGO_TARGET_DIR"])
+          os.chdir(repo)
+          sys.path.insert(0, str(repo / "scripts"))
+          from hepta_ci_exec import execute_logged
+          from hepta_ci_junit import collect
+
+          parents = [
+              "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+              "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+              "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+              "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+              "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+              "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+          ]
+          packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts"]
+          helpers = ["python3", "scripts/hepta_cell_test_helpers.py", "--package",
+                     "codex-hepta-infer-worker-host", "--output-dir", str(records / "helpers")]
+          root_dir = Path("/run") / ("hepta-daemon-learning-" + os.environ["GITHUB_RUN_ID"]
+                                    + "-" + os.environ["GITHUB_RUN_ATTEMPT"])
+
+          def git(*args):
+              return subprocess.check_output(["git", *args], cwd=repo)
+
+          def save(name, value):
+              (records / name).write_text(json.dumps(value, sort_keys=True, indent=2) + "\n")
+
+          def snapshot(label):
+              names = git("ls-files", "-z") + git("ls-files", "--others", "--exclude-standard", "-z")
+              rows = []
+              for raw in sorted(set(names.split(b"\0")) - {b""}):
+                  path = os.fsdecode(raw)
+                  source = repo / path
+                  if not source.exists() and not source.is_symlink():
+                      rows.append({"path": path, "missing": True})
+                      continue
+                  data = os.fsencode(os.readlink(source)) if source.is_symlink() else source.read_bytes()
+                  mode = "120000" if source.is_symlink() else (
+                      "100755" if source.stat().st_mode & 0o111 else "100644")
+                  rows.append({"path": path, "mode": mode, "bytes": len(data),
+                               "sha256": hashlib.sha256(data).hexdigest(),
+                               "blob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()})
+              encoded = json.dumps(rows, sort_keys=True, separators=(",", ":")).encode()
+              with gzip.open(records / (label + ".files.json.gz"), "wb") as output:
+                  output.write(encoded)
+              result = {"commit": git("rev-parse", "HEAD").decode().strip(),
+                        "tree": git("rev-parse", "HEAD^{tree}").decode().strip(),
+                        "status": git("status", "--porcelain=v1", "--untracked-files=all").decode(),
+                        "files": len(rows), "inventory_sha256": hashlib.sha256(encoded).hexdigest()}
+              save(label + ".json", result)
+              print(json.dumps({"source_snapshot": label, **result}), flush=True)
+              return result
+
+          def stage(name, command, timeout=7200):
+              result = execute_logged(command, records / (name + ".log"), timeout_seconds=timeout)
+              save(name + ".json", {"command": command, **result})
+              if result["returncode"] or result["timed_out"] or result["output_limit_exceeded"]:
+                  raise RuntimeError(name + " failed; retained raw log and execution record")
+
+          def restore_ownership():
+              subprocess.run(["sudo", "-n", "chown", "-R", f"{os.getuid()}:{os.getgid()}",
+                              str(target), str(records)], check=True)
+
+          def test(name, arguments, root=False):
+              report = target / "nextest/local/junit.xml"
+              if report.exists():
+                  report.rename(records / (name + "-prior-junit-excluded.xml"))
+              command = ["python3", "scripts/hepta_ci_exec.py", "--timeout-seconds", "7200",
+                         "--minimum-tests", "1", "--output", str(records / (name + ".json")),
+                         "--", "just", "test", "--locked", "--offline", *arguments,
+                         "--retries", "0", "--success-output", "final", "--failure-output", "final"]
+              if root:
+                  names = ("PATH", "SOURCE_SHA", "TESTED_SHA", "HEPTA_CI_LANE",
+                           "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_JOB",
+                           "PYTHONDONTWRITEBYTECODE", "CARGO_INCREMENTAL", "CARGO_BUILD_JOBS",
+                           "CARGO_PROFILE_TEST_DEBUG", "CARGO_PROFILE_DEV_DEBUG", "CARGO_TARGET_DIR",
+                           "RUSTY_V8_ARCHIVE", "RUSTY_V8_SRC_BINDING_PATH", "LIBCLANG_PATH")
+                  environment = {key: os.environ[key] for key in names if key in os.environ}
+                  environment.update(CARGO_HOME=os.environ.get("CARGO_HOME", str(Path.home() / ".cargo")),
+                                     RUSTUP_HOME=os.environ.get("RUSTUP_HOME", str(Path.home() / ".rustup")),
+                                     GIT_CONFIG_COUNT="1", GIT_CONFIG_KEY_0="safe.directory",
+                                     GIT_CONFIG_VALUE_0=str(repo),
+                                     HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=str(root_dir / "bind"),
+                                     HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=str(root_dir / "source"),
+                                     HEPTA_CHECKPOINT_TEST_ROOT=str(root_dir / "checkpoints"))
+                  environment.update(json.loads((records / "helpers/env.json").read_text()))
+                  # sudo is outside the recorder: its observed command remains real just test.
+                  check_uid = "import os,runpy,sys; assert os.geteuid()==0; print('Root test uid=0',flush=True); runpy.run_path(sys.argv.pop(1),run_name='__main__')"
+                  command = ["sudo", "-n", "env", "-i",
+                             *(key + "=" + value for key, value in sorted(environment.items())),
+                             "python3", "-c", check_uid, *command[1:]]
+              save(name + "-launch.json", {"command": command, "required_euid": 0 if root else os.geteuid()})
+              result = subprocess.run(command, check=False).returncode
+              if root:
+                  restore_ownership()
+              retained = collect(records / (name + ".json"), report, records / (name + ".xml"))
+              if root and retained == 0:
+                  cases = list(ET.parse(records / (name + ".xml")).iter("testcase"))
+                  observed = [case.attrib["name"] for case in cases if case.find("skipped") is None]
+                  save("root-parent-coverage.json", {"expected": parents, "observed": observed})
+                  if sorted(observed) != sorted(parents):
+                      raise RuntimeError("Root JUnit does not contain exactly the requested parents")
+              if result or retained:
+                  raise RuntimeError(name + " failed; retained execution and fresh JUnit observations")
+
+          def postimages(complete):
+              (records / "maintenance.patch").write_bytes(git("diff", "--binary", "HEAD", "--"))
+              changed = git("diff", "--name-only", "--no-renames", "-z", "HEAD", "--")
+              if git("ls-files", "--others", "--exclude-standard", "-z"):
+                  raise RuntimeError("maintenance created unexpected untracked source")
+              outputs = []
+              for raw in changed.split(b"\0"):
+                  if not raw:
+                      continue
+                  path = os.fsdecode(raw)
+                  if not path.endswith(".rs") or not path.startswith(
+                      ("codex-rs/hepta-agentd/", "codex-rs/hepta-learning-artifacts/")):
+                      raise RuntimeError("maintenance changed a path outside its Rust owners: " + path)
+                  source = repo / path
+                  if source.is_symlink() or not source.is_file():
+                      raise RuntimeError("maintenance changed file kind: " + path)
+                  data = source.read_bytes()
+                  if len(data) > 256 * 1024:
+                      raise RuntimeError("maintenance postimage exceeds per-file log bound")
+                  header = {"path": path, "source_sha": os.environ["SOURCE_SHA"],
+                            "complete": complete, "bytes": len(data),
+                            "mode": "100755" if source.stat().st_mode & 0o111 else "100644",
+                            "sha256": hashlib.sha256(data).hexdigest(),
+                            "blob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest(),
+                            "chunks": (len(data) + 3071) // 3072}
+                  outputs.append((header, data))
+              if len(outputs) > 64 or sum(len(data) for _, data in outputs) > 1024 * 1024:
+                  raise RuntimeError("maintenance postimages exceed bounded log transport")
+              with (records / "maintenance-postimages.jsonl").open("w") as output:
+                  for header, data in outputs:
+                      lines = ["HEPTA_MAINTAINED_FILE " + json.dumps(header, sort_keys=True)]
+                      lines += ["HEPTA_MAINTAINED_CHUNK " + json.dumps(
+                          {"path": header["path"], "index": i // 3072,
+                           "base64": base64.b64encode(data[i:i + 3072]).decode()}, sort_keys=True)
+                                for i in range(0, len(data), 3072)]
+                      for line in lines:
+                          print(line, flush=True)
+                          output.write(line + "\n")
+              save("maintenance-summary.json", {"source_sha": os.environ["SOURCE_SHA"],
+                   "complete": complete, "files": [header for header, _ in outputs]})
+
+          if sys.argv[1] == "snapshot":
+              initial = snapshot("checkout")
+              assert re.fullmatch("[0-9a-f]{40}", os.environ["SOURCE_SHA"])
+              assert initial["commit"] == os.environ["SOURCE_SHA"] and not initial["status"]
+              subprocess.run(["git", "merge-base", "--is-ancestor", os.environ["FORMAT_BASE_SHA"], "HEAD"], check=True)
+              raise SystemExit(0)
+
+          failed = False
+          maintenance_started = maintenance_complete = False
+          try:
+              assert os.geteuid() != 0, "ordinary suite must run as the normal runner"
+              before = snapshot("before-tests")
+              test("ordinary", [*packages, "--lib", "--test-threads", "2"])
+              setup = ("import os,subprocess,sys; from pathlib import Path; "
+                       "p=Path(sys.argv[1]); p.mkdir(mode=0o700); "
+                       "[ (p/n).mkdir(mode=0o700) for n in ('source','bind','checkpoints') ]; "
+                       "subprocess.run(['mount','--bind',str(p/'source'),str(p/'bind')],check=True); "
+                       "print('Root fixture uid='+str(os.geteuid())+' path='+str(p),flush=True)")
+              stage("root-setup", ["sudo", "-n", "python3", "-c", setup, str(root_dir)], 60)
+              test("root", ["-p", "codex-hepta-agentd", "--lib", "--run-ignored", "only",
+                           "-E", " | ".join("test(=" + name + ")" for name in parents),
+                           "--test-threads", "1"], root=True)
+              stage("helper-verification", [*helpers, "--verify-only"], 120)
+              after = snapshot("after-tests")
+              assert before == after, "source changed during tests"
+              maintenance_started = True
+              stage("fix", ["just", "fix", "--locked", "--offline", *packages])
+              stage("fmt", ["just", "fmt", "--base", os.environ["FORMAT_BASE_SHA"]], 600)
+              maintenance_complete = True
+              maintained = snapshot("after-maintenance")
+              # No behavior tests after fix/fmt; this is compile-only binary validation.
+              os.chdir(repo / "codex-rs")
+              stage("bins-check", ["cargo", "check", "--locked", "--offline", *packages, "--bins"])
+              os.chdir(repo)
+              assert maintained == snapshot("after-bins"), "binary check changed source"
+          except Exception as error:
+              failed = True
+              save("driver-error.json", {"error": str(error)})
+              print("Native qualification failed: " + str(error), flush=True)
+          finally:
+              os.chdir(repo)
+              try:
+                  restore_ownership()
+                  if subprocess.run(["sudo", "-n", "mountpoint", "-q", str(root_dir / "bind")]).returncode == 0:
+                      stage("root-unmount", ["sudo", "-n", "umount", str(root_dir / "bind")], 60)
+                  snapshot("final")
+                  if maintenance_started:
+                      postimages(maintenance_complete)
+                  save("qualification-status.json", {"source_sha": os.environ["SOURCE_SHA"],
+                       "failed": failed, "maintenance_started": maintenance_started,
+                       "maintenance_complete": maintenance_complete})
+              except Exception as error:
+                  failed = True
+                  save("retention-error.json", {"error": str(error)})
+              raise SystemExit(1 if failed else 0)
+          PY
+          python3 "$RUNNER_TEMP/daemon-learning-driver.py" snapshot
+      - name: Install native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if [[ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]]; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Resolve the repository-verified V8 pair
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Record toolchain and fetch locked native dependencies
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          {
+            rustup show active-toolchain
+            rustc --version --verbose
+            cargo --version
+            just --version
+            cargo nextest --version
+            cargo fetch --locked --target x86_64-unknown-linux-gnu
+          } 2>&1 | tee "$RUNNER_TEMP/daemon-learning-records/toolchain-and-fetch.log"
+      - name: Build and pin the same-source joint proposal helper
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 3600 \
+            --output "$RUNNER_TEMP/daemon-learning-records/helper-build.json" \
+            -- python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/daemon-learning-records/helpers" --github-env "$GITHUB_ENV"
+      - name: Run ordinary and Root suites then scoped maintenance
+        run: python3 "$RUNNER_TEMP/daemon-learning-driver.py" run
+      - name: Retain raw evidence and recoverable maintenance
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: daemon-learning-native-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/daemon-learning-records
+            !${{ runner.temp }}/daemon-learning-records/helpers/bin/**
+          if-no-files-found: error
+          retention-days: 14
