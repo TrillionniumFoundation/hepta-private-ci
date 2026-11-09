@@ -263,6 +263,7 @@ mod calculator_observer;
 mod calculator_recovery_process;
 #[cfg(target_os = "linux")]
 mod calculator_recovery_selection;
+mod cell_composed_q24;
 mod circuit_cell;
 mod circuit_cell_binding;
 mod circuit_cell_dispatch;
@@ -312,6 +313,9 @@ mod learning_iteration_checkpoint;
 mod learning_iteration_ports;
 mod learning_iteration_proposal;
 mod neuron_cell_evaluation;
+pub use cell_composed_q24::CellQ24GenerationWorkerV1;
+pub use cell_composed_q24::CellQ24ModelFilesV1;
+pub use cell_composed_q24::LoadedCellQ24ModelV1;
 mod neuron_generation;
 #[cfg(unix)]
 mod neuron_generation_current;
