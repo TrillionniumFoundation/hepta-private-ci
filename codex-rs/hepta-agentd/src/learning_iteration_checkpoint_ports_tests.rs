@@ -4,6 +4,7 @@
 use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use pretty_assertions::assert_eq;
 
 use super::*;
 use crate::LearningIterationOwnerFutureV1;
