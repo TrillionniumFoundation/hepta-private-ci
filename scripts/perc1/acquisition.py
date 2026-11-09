@@ -31,13 +31,12 @@ def features(value):
         type(latent) is list and len(latent) <= 64, "invalid acquired latent summary"
     )
     require(
-        type(receipts) is list
-        and len(receipts) <= 128
-        and len(set(receipts)) == len(receipts),
+        type(receipts) is list and len(receipts) <= 128,
         "invalid acquired receipts",
     )
     for receipt in receipts:
         digest(receipt)
+    require(len(set(receipts)) == len(receipts), "duplicate acquired receipts")
     require(not latent or receipts, "latent summary lacks an acquired receipt")
     return (
         [real(x, -1e6, 1e6) for x in goal]
@@ -378,7 +377,8 @@ def choose(head, candidates, *, mode="active", seed=0):
         require(identifier(candidate["id"]) not in ids, "duplicate candidate")
         ids.add(candidate["id"])
         f = candidate["features"]
-        prediction = predict(head, f)
+        features(f)
+        prediction = predict(head, f) if mode == "active" else None
         prefixes.add(
             sha(
                 {
@@ -393,8 +393,12 @@ def choose(head, candidates, *, mode="active", seed=0):
         )
         upper = integer(candidate["upper_cost"], 1)
         net = (
-            prediction["expected_gain"]
-            - head["cost_value"] * prediction["expected_cost"]
+            (
+                prediction["expected_gain"]
+                - head["cost_value"] * prediction["expected_cost"]
+            )
+            if prediction
+            else None
         )
         if upper <= f["remaining_budget"] and (
             mode != "active" or net > head["threshold"]
