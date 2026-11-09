@@ -27,6 +27,9 @@ pub(crate) use sockets::AgentdSocketInputs;
 #[path = "config_root_handoff.rs"]
 mod root_handoff;
 #[cfg(target_os = "linux")]
+#[path = "config_root_learning.rs"]
+mod root_learning;
+#[cfg(target_os = "linux")]
 pub use root_handoff::PreparedRootAgentdConfig;
 #[cfg(target_os = "linux")]
 pub use root_handoff::drop_root_native_owner_credentials;
@@ -122,6 +125,8 @@ pub struct AgentdConfig {
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
     learning_iteration_bootstrap: Option<crate::LearningIterationRuntimeBootstrapV1>,
+    #[cfg(target_os = "linux")]
+    root_learning_inputs: Option<crate::AgentdRootLearningInputsV1>,
     terminal_learning_bootstrap: Option<crate::TerminalLearningRuntimeBootstrapV1>,
     neuron_generation_bootstrap: Option<crate::NeuronGenerationRuntimeBootstrapV2>,
     circuit_task_bootstrap: Option<crate::CircuitTaskRuntimeBootstrapV1>,
@@ -289,6 +294,8 @@ impl AgentdConfig {
             cognitive_retrieval_learning: None,
             plasticity_bootstrap: None,
             learning_iteration_bootstrap: None,
+            #[cfg(target_os = "linux")]
+            root_learning_inputs: None,
             terminal_learning_bootstrap: None,
             neuron_generation_bootstrap: None,
             circuit_task_bootstrap: None,
@@ -735,6 +742,8 @@ impl AgentdConfig {
         mut self,
         bootstrap: crate::LearningIterationRuntimeBootstrapV1,
     ) -> Result<Self, AgentdError> {
+        #[cfg(target_os = "linux")]
+        self.require_root_learning_assembled()?;
         bootstrap.require_identity(&self.identity)?;
         if self.learning_iteration_bootstrap.is_some() {
             return Err(AgentdError::Invalid(

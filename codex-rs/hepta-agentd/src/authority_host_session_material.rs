@@ -32,6 +32,11 @@ impl PreparedHostAuthoritySession {
     /// Root can concurrently serialize its actual material observations. This
     /// creates no second authority owner and retains all original lane checks.
     pub fn serve_retained(&self) -> io::Result<()> {
+        if self.learning.is_some() {
+            return Err(io::Error::other(
+                "registered learning requires the consuming original session serve scope",
+            ));
+        }
         if self.root_admin.is_none() {
             return listeners::serve_lanes(
                 &self.service,
@@ -121,6 +126,7 @@ impl PreparedHostAuthoritySession {
             service,
             fresh_filesystem: false,
             root_admin: None,
+            learning: None,
         })
     }
 
@@ -151,6 +157,7 @@ impl PreparedHostAuthoritySession {
             service,
             fresh_filesystem: true,
             root_admin: None,
+            learning: None,
         })
     }
 
@@ -177,6 +184,7 @@ impl PreparedHostAuthoritySession {
             service,
             fresh_filesystem: false,
             root_admin: None,
+            learning: None,
         })
     }
 }

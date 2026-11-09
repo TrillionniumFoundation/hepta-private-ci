@@ -157,6 +157,8 @@ pub use authority_host_runtime::initialize_host_authority;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::prepare_host_issuer_lease_renewal;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::register_host_learning_checkpoint;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::register_host_writer_authorization;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::rotate_host_writer_authorization;
@@ -169,6 +171,8 @@ pub use authority_host_service::FreshHostCognitiveState;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityLearningRegistrationV1;
+#[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityTextUiRegistration;
@@ -177,9 +181,13 @@ mod root_authority_session;
 #[cfg(target_os = "linux")]
 mod root_production_inputs;
 #[cfg(target_os = "linux")]
+mod root_production_learning_inputs;
+#[cfg(target_os = "linux")]
 pub use root_production_inputs::AgentdRootProductionInputs;
 #[cfg(target_os = "linux")]
 pub use root_production_inputs::receive_root_production_inputs;
+#[cfg(target_os = "linux")]
+pub use root_production_learning_inputs::AgentdRootLearningInputsV1;
 #[cfg(target_os = "linux")]
 mod root_production_handoff;
 #[cfg(target_os = "linux")]
@@ -187,11 +195,17 @@ pub use config::PreparedRootAgentdConfig;
 #[cfg(target_os = "linux")]
 pub use config::drop_root_native_owner_credentials;
 #[cfg(target_os = "linux")]
+pub use root_production_handoff::RootLearningHandoffV1;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::RootProductionWriterDescriptor;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::receive_root_learning_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_writer_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_learning_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_production_handoff;
 #[cfg(target_os = "linux")]
@@ -685,6 +699,12 @@ pub use learning_iteration::learning_iteration_channel_scoped_v2;
 pub use learning_iteration::learning_iteration_channel_v1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_checkpoint::AgentdLearningCheckpointClientV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_checkpoint::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_checkpoint::HostAuthorityLearningBootstrapV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_checkpoint::HostAuthorityLearningProfileV1;
 #[cfg(unix)]
 pub use learning_iteration_checkpoint::LearningIterationCheckpointErrorV1;
 #[cfg(unix)]

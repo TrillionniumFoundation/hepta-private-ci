@@ -15,9 +15,10 @@ use std::time::Instant;
 use crate::AgentdError;
 use crate::calculator_deadline::Deadline;
 
-const FLAGS: [&str; 18] = [
+const FLAGS: [&str; 19] = [
     "--root-production-profile",
     "--root-production-handoff-fd",
+    "--root-learning-handoff-fd",
     "--root-production-uid",
     "--root-production-gid",
     "--root-production-control-fd",
@@ -45,6 +46,7 @@ enum Profile {
 
 pub(super) struct LaunchInputs {
     pub(super) handoff: UnixDatagram,
+    pub(super) learning_handoff: Option<UnixDatagram>,
     pub(super) uid: u32,
     pub(super) gid: u32,
     pub(super) control: OwnedFd,
@@ -142,6 +144,10 @@ pub(super) fn parse(
     } else {
         None
     };
+    let learning_handoff = selected
+        .remove("--root-learning-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
     let notes = selected
         .remove("--notes-production-handoff-fd")
         .map(descriptor_number)
@@ -218,6 +224,7 @@ pub(super) fn parse(
     let payload = android.as_ref().map(|(_, _, payload, _)| *payload);
     let numbers = [
         Some(handoff),
+        learning_handoff,
         Some(control),
         Some(app_server),
         payload,
@@ -251,6 +258,10 @@ pub(super) fn parse(
     // All numeric and pairing checks precede ownership transfer. CLOEXEC keeps
     // inherited authority out of unrelated App Server helper re-executions.
     let handoff = UnixDatagram::from(take_descriptor(handoff)?);
+    let learning_handoff = learning_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
     let control = take_descriptor(control)?;
     let app_server = take_descriptor(app_server)?;
     let primary = match profile {
@@ -293,6 +304,7 @@ pub(super) fn parse(
     Ok((
         Some(LaunchInputs {
             handoff,
+            learning_handoff,
             uid,
             gid,
             control,

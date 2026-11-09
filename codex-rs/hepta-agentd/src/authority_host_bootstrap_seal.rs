@@ -49,7 +49,7 @@ fn require_root() -> io::Result<()> {
     Ok(())
 }
 
-fn seal_bytes(bytes: &[u8]) -> io::Result<File> {
+pub(crate) fn seal_bytes(bytes: &[u8]) -> io::Result<File> {
     require_root()?;
     if bytes.is_empty() || bytes.len() > HOST_AUTHORITY_BOOTSTRAP_BOUND {
         return Err(io::Error::new(
