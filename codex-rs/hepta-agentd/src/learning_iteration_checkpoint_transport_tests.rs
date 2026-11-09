@@ -167,6 +167,58 @@ fn before_send_contention_does_not_claim_commit_or_break_the_inflight_call() -> 
 }
 
 #[test]
+fn oversize_malformed_and_unknown_scope_fields_leave_original_cas_bytes_unchanged()
+-> anyhow::Result<()> {
+    let states = support::snapshots(support::Decision::Update)?;
+    let initial = &states[0];
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("frontier");
+    let store = Arc::new(support::FileCas::create(
+        &path,
+        &LearningIterationCheckpointRecordV1::vacant(
+            initial.request.clone(),
+            initial.owners.clone(),
+        )?,
+    )?);
+    let before = std::fs::read(&path)?;
+    let mut unknown = serde_json::to_value(Request {
+        schema_version: 1,
+        operation: DOMAIN.into(),
+        sequence: 1,
+        command: Command::Checkpoint {
+            expected_head: Digest32::ZERO.to_string(),
+            snapshot: encode_snapshot(initial)?,
+        },
+    })?;
+    unknown["owner_id"] = serde_json::json!("unregistered-owner");
+    let malformed_snapshot = encode_frame(&Request {
+        schema_version: 1,
+        operation: DOMAIN.into(),
+        sequence: 1,
+        command: Command::Checkpoint {
+            expected_head: Digest32::ZERO.to_string(),
+            snapshot: "!".into(),
+        },
+    })?;
+    for bytes in [
+        Vec::new(),
+        vec![b'x'; FRAME_LIMIT + 1],
+        b"{".to_vec(),
+        serde_json::to_vec(&unknown)?,
+        malformed_snapshot,
+    ] {
+        let mut backend = LearningCheckpointBackend::new(support::owner(store.clone(), initial));
+        if let Ok(response) = backend.exchange(&bytes) {
+            let response: Response = serde_json::from_slice(&response)?;
+            assert!(matches!(response.outcome, Outcome::Refused));
+        }
+        assert_eq!(std::fs::read(&path)?, before);
+        assert_eq!(store.commits.load(std::sync::atomic::Ordering::SeqCst), 0);
+    }
+    Ok(())
+}
+
+#[test]
 fn missing_or_foreign_ack_closes_the_client_without_an_automatic_retry() -> anyhow::Result<()> {
     let initial = test_data::snapshots()?.remove(0);
     for foreign in [false, true] {

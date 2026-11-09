@@ -54,7 +54,7 @@ fn unprivileged_checkpoint_child() -> anyhow::Result<()> {
     let identity: crate::HostAuthorityRegisteredIdentity =
         serde_json::from_str(&std::env::var("LCP_IDENTITY")?)?;
     let fds: Vec<i32> = serde_json::from_str(&std::env::var("LCP_HANDOFF_FDS")?)?;
-    assert_eq!(fds.len(), 3);
+    assert_eq!(fds.len(), 5);
     let states = data::snapshots()?;
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
@@ -66,11 +66,21 @@ fn unprivileged_checkpoint_child() -> anyhow::Result<()> {
         // SAFETY: the Root test launcher passed exactly these owned anonymous
         // sockets through exec. Each descriptor is consumed exactly once.
         let handoff = unsafe { UnixDatagram::from_raw_fd(fd) };
-        let client = runtime.block_on(receive_learning_checkpoint_handoff_v1(
+        let admitted = runtime.block_on(receive_learning_checkpoint_handoff_v1(
             handoff,
             identity.identity()?,
             Duration::from_secs(5),
-        ))?;
+        ));
+        if phase == 4 {
+            assert!(
+                admitted.is_err(),
+                "revoked writer must fail a fresh authenticated restore"
+            );
+            std::io::stdin().read_exact(&mut signal)?;
+            assert_eq!(signal, [2]);
+            continue;
+        }
+        let client = admitted?;
         if phase == 0 {
             assert_eq!(client.restore(&states[0].request)?, None);
             assert_eq!(
@@ -106,13 +116,24 @@ fn unprivileged_checkpoint_child() -> anyhow::Result<()> {
                 client.restore(&states[0].request),
                 Err(CheckpointError::Store(AuthorityTrustError::Unavailable))
             );
-        } else {
+        } else if phase == 2 {
             assert_eq!(client.restore(&states[0].request)?, Some(states[2].clone()));
             assert_eq!(
                 client.checkpoint(states[0].head_digest, &states[1]),
                 Err(CheckpointError::Conflict)
             );
             assert_eq!(client.restore(&states[0].request)?, Some(states[2].clone()));
+        } else {
+            assert_eq!(
+                client.checkpoint(states[2].head_digest, &states[3]),
+                Err(CheckpointError::CommitUncertain(
+                    AuthorityTrustError::Unavailable
+                ))
+            );
+            assert_eq!(
+                client.restore(&states[0].request),
+                Err(CheckpointError::Store(AuthorityTrustError::Unavailable))
+            );
         }
         drop(client);
         println!(
@@ -134,7 +155,7 @@ fn registered_root_cross_process_restore_conflict_and_committed_lost_ack() -> an
     let states = data::snapshots()?;
     let mut senders = Vec::new();
     let mut receivers = Vec::new();
-    for _ in 0..3 {
+    for _ in 0..5 {
         let (sender, receiver) = UnixDatagram::pair()?;
         senders.push(sender);
         receivers.push(receiver);
@@ -243,9 +264,10 @@ fn registered_root_cross_process_restore_conflict_and_committed_lost_ack() -> an
                 Err(error) => return Err(error.into()),
             }
         };
-        if phase == 1 {
-            // A deterministic test-only ACK-loss point AFTER the real Root CAS
-            // and writer postcheck. The same ordinary process remains alive.
+        if phase == 1 || phase == 3 {
+            // Test-only control around the original authenticated writer path:
+            // phase 1 loses ACK after commit; phase 3 revokes after admission.
+            // The same ordinary process remains alive throughout both.
             let mut channel = HostAuthorityPeerChannel::from_stream(
                 stream,
                 HostAuthorityPeerPolicy {
@@ -260,11 +282,9 @@ fn registered_root_cross_process_restore_conflict_and_committed_lost_ack() -> an
                 },
                 consumer.try_clone()?,
             )?;
-            let mut committed = false;
-            loop {
-                let result = channel.exchange(|bytes| {
-                    let value: serde_json::Value = serde_json::from_slice(bytes).unwrap();
-                    let response = prepared
+            if phase == 3 {
+                assert!(channel.exchange(|bytes| {
+                    prepared
                         .service
                         .writer
                         .as_ref()
@@ -274,22 +294,69 @@ fn registered_root_cross_process_restore_conflict_and_committed_lost_ack() -> an
                             &prepared.service.clock,
                             &mut prepared.backend,
                             bytes,
-                        )?;
-                    if value["command"]["command"] == "checkpoint" {
-                        let ack: serde_json::Value = serde_json::from_slice(&response).unwrap();
-                        assert_eq!(ack["outcome"]["status"], "committed");
-                        committed = true;
-                        return Err(HostIssuerTransportError::Unavailable);
-                    }
-                    Ok(response)
+                        )
+                })?);
+                // A real original registry revocation after successful fresh
+                // admission must fence the next otherwise-valid append.
+                let writer = &prepared.service.writer.as_ref().unwrap().registration;
+                prepared.service.root_registry.as_ref().unwrap().revoke(
+                    &writer.authority_lease.lease_id,
+                    writer.authority_lease.revision,
+                    [9; 32],
+                )?;
+                let result = channel.exchange(|bytes| {
+                    let value: serde_json::Value = serde_json::from_slice(bytes).unwrap();
+                    assert_eq!(value["command"]["command"], "checkpoint");
+                    prepared
+                        .service
+                        .writer
+                        .as_ref()
+                        .unwrap()
+                        .exchange_learning_checkpoint(
+                            &prepared.service.issuer,
+                            &prepared.service.clock,
+                            &mut prepared.backend,
+                            bytes,
+                        )
                 });
-                if !matches!(result, Ok(true)) {
-                    break;
+                assert!(matches!(result, Err(HostIssuerTransportError::Unavailable)));
+            } else {
+                let mut committed = false;
+                loop {
+                    let result = channel.exchange(|bytes| {
+                        let value: serde_json::Value = serde_json::from_slice(bytes).unwrap();
+                        let response = prepared
+                            .service
+                            .writer
+                            .as_ref()
+                            .unwrap()
+                            .exchange_learning_checkpoint(
+                                &prepared.service.issuer,
+                                &prepared.service.clock,
+                                &mut prepared.backend,
+                                bytes,
+                            )?;
+                        if value["command"]["command"] == "checkpoint" {
+                            let ack: serde_json::Value = serde_json::from_slice(&response).unwrap();
+                            assert_eq!(ack["outcome"]["status"], "committed");
+                            committed = true;
+                            return Err(HostIssuerTransportError::Unavailable);
+                        }
+                        Ok(response)
+                    });
+                    if !matches!(result, Ok(true)) {
+                        break;
+                    }
                 }
+                assert!(committed);
             }
-            assert!(committed);
             drop(channel);
             drop(prepared);
+        } else if phase == 4 {
+            assert!(matches!(
+                prepared.serve(stream),
+                Err(HostIssuerTransportError::Unavailable)
+            ));
         } else {
             prepared.serve(stream)?;
         }

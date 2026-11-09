@@ -76,5 +76,29 @@ pub(crate) fn snapshots() -> anyhow::Result<Vec<LearningIterationSnapshotV1>> {
         )?;
         states.push(coordinator.snapshot().clone());
     }
+    let mut candidate = coordinator.snapshot().request.selected_bundle.clone();
+    let source_bundle = candidate.digest()?;
+    candidate.artifact_id = id("fixture-candidate")?;
+    candidate.generation = candidate.generation.next()?;
+    candidate.rollback_predecessor = Some(source_bundle);
+    candidate.training_lineage = Some(CellTrainingLineageV1 {
+        source_bundle,
+        dataset: d("dataset"),
+        update_rule: d("fixture-rule"),
+        evaluation_profile: coordinator.snapshot().request.evaluation_profile,
+    });
+    coordinator.record(
+        crate::neuron_generation_update_bootstrap::learning_test_receipt(
+            &coordinator,
+            LearningIterationObservationV1::Training {
+                candidate: Box::new(candidate),
+                steps: 1,
+                milliseconds: 1,
+                artifact_bytes: 1,
+            },
+        ),
+        20,
+    )?;
+    states.push(coordinator.snapshot().clone());
     Ok(states)
 }
