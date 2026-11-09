@@ -31,7 +31,11 @@ def digest(value):
 def read_bound(path, limit=LIMIT):
     path = Path(path)
     require(not path.is_symlink(), "symlink input")
-    fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    # Nonblocking open ensures a FIFO cannot hang before the regular-file check.
+    fd = os.open(
+        path,
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0),
+    )
     with os.fdopen(fd, "rb") as stream:
         before = os.fstat(stream.fileno())
         require(

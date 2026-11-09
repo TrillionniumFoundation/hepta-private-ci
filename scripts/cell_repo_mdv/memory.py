@@ -43,7 +43,7 @@ def initial_state(corpus):
         "updates": 0,
         "parent_sha256": None,
         "last_feedback_sha256": None,
-        "production_update": "NoUpdate",
+        "production_update": "not_requested",
         "fitting_scope": "development",
     }
 

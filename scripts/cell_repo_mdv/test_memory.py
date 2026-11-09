@@ -1,7 +1,10 @@
 """Contract/learning control tests, never independent repository task results."""
 
 import copy
+import os
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -34,6 +37,7 @@ class MemoryControls(unittest.TestCase):
     def test_actual_update_is_consumed_after_serialization(self):
         bank, query = corpus(), "compiler repair"
         before = initial_state(bank)
+        self.assertEqual(before["production_update"], "not_requested")
         feedback = {
             "split": "development",
             "terminal": "proved",
@@ -147,6 +151,31 @@ class MemoryControls(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "oversize"):
                     read_bound(path)
             self.assertEqual([x.read_calls for x in opened], [0])
+
+    @unittest.skipUnless(hasattr(os, "mkfifo"), "FIFO requires POSIX")
+    def test_fifo_rejected_without_waiting_for_writer(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "input.fifo"
+            os.mkfifo(path)
+            code = (
+                "import sys\n"
+                "from cell_repo_mdv.contracts import read_bound\n"
+                "try:\n"
+                "    read_bound(sys.argv[1])\n"
+                "except ValueError as error:\n"
+                "    assert 'nonregular' in str(error)\n"
+                "else:\n"
+                "    raise AssertionError('FIFO was admitted')\n"
+            )
+            env = dict(os.environ)
+            env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+            result = subprocess.run(
+                [sys.executable, "-B", "-c", code, str(path)],
+                env=env,
+                capture_output=True,
+                timeout=5,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr.decode())
 
     def test_duplicate_keys_and_symlinks_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
