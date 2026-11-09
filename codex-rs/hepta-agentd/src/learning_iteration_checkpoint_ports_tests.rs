@@ -38,7 +38,9 @@ impl LearningIterationStageOwnerPortsV1 for StageOwners {
         Box::pin(async move {
             self.recoveries.fetch_add(/*val*/ 1, Ordering::SeqCst);
             if self.unavailable.load(Ordering::SeqCst) || !self.snapshots.contains(snapshot) {
-                return Err(LearningIterationRuntimeErrorV1::OwnerUnavailable("recovery"));
+                return Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+                    "recovery",
+                ));
             }
             Ok(())
         })
@@ -64,7 +66,11 @@ impl LearningIterationStageOwnerPortsV1 for StageOwners {
         &'a self,
         _snapshot: &'a LearningIterationSnapshotV1,
     ) -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1> {
-        Box::pin(async { Err(LearningIterationRuntimeErrorV1::OwnerUnavailable("proposal")) })
+        Box::pin(async {
+            Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+                "proposal",
+            ))
+        })
     }
 
     fn receipt_attestation<'a>(
@@ -73,7 +79,11 @@ impl LearningIterationStageOwnerPortsV1 for StageOwners {
         _receipt: &'a LearningIterationReceiptV1,
         _now_unix_seconds: u64,
     ) -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1> {
-        Box::pin(async { Err(LearningIterationRuntimeErrorV1::OwnerUnavailable("attestation")) })
+        Box::pin(async {
+            Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+                "attestation",
+            ))
+        })
     }
 }
 
@@ -99,50 +109,67 @@ async fn registered_checkpoint_ports_reopen_every_stage_and_preserve_owner_error
     );
     drop(ports);
     for pair in snapshots.windows(/*size*/ 2) {
-        let ports = owner(Arc::new(FileCas::reopen(&path)?), initial)
-            .with_stage_owners(stages.clone());
-        assert_eq!(ports.restore(&initial.request).await?, Some(pair[0].clone()));
+        let ports =
+            owner(Arc::new(FileCas::reopen(&path)?), initial).with_stage_owners(stages.clone());
+        assert_eq!(
+            ports.restore(&initial.request).await?,
+            Some(pair[0].clone())
+        );
         let receipt = pair[1].receipts.last().unwrap();
         assert_eq!(
-            ports.execute_stage(&pair[0], receipt.observation.stage()).await?,
+            ports
+                .execute_stage(&pair[0], receipt.observation.stage())
+                .await?,
             *receipt
         );
         // Persistence does not fabricate a missing owner signature/proposal.
         assert!(matches!(
-            ports.receipt_attestation(&pair[0], receipt, /*now_unix_seconds*/ 20).await,
-            Err(LearningIterationRuntimeErrorV1::OwnerUnavailable("attestation"))
+            ports
+                .receipt_attestation(&pair[0], receipt, /*now_unix_seconds*/ 20)
+                .await,
+            Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+                "attestation"
+            ))
         ));
         assert!(matches!(
             ports.prepare_proposal(&pair[0]).await,
-            Err(LearningIterationRuntimeErrorV1::OwnerUnavailable("proposal"))
+            Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+                "proposal"
+            ))
         ));
         assert_eq!(
             ports.checkpoint(pair[0].head_digest, &pair[1]).await?,
             pair[1].head_digest
         );
     }
-    let ports = owner(Arc::new(FileCas::reopen(&path)?), initial)
-        .with_stage_owners(stages.clone());
-    assert_eq!(ports.restore(&initial.request).await?, snapshots.last().cloned());
+    let ports = owner(Arc::new(FileCas::reopen(&path)?), initial).with_stage_owners(stages.clone());
+    assert_eq!(
+        ports.restore(&initial.request).await?,
+        snapshots.last().cloned()
+    );
     assert_eq!(stages.calls.load(Ordering::SeqCst), snapshots.len() - 1);
     assert_eq!(stages.recoveries.load(Ordering::SeqCst), snapshots.len());
     stages.unavailable.store(/*val*/ true, Ordering::SeqCst);
     assert!(matches!(
         ports.restore(&initial.request).await,
-        Err(LearningIterationRuntimeErrorV1::OwnerUnavailable("recovery"))
+        Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+            "recovery"
+        ))
     ));
     let mut foreign = initial.request.clone();
     foreign.operation_id = codex_hepta_types::StableId::new("other-operation")?;
     assert!(matches!(
         ports.restore(&foreign).await,
-        Err(LearningIterationRuntimeErrorV1::Checkpoint(Error::WrongScope))
+        Err(LearningIterationRuntimeErrorV1::Checkpoint(
+            Error::WrongScope
+        ))
     ));
     Ok(())
 }
 
 #[tokio::test]
-async fn checkpoint_ports_reconcile_lost_commit_ack_without_repeating_write()
--> anyhow::Result<()> {
+async fn checkpoint_ports_reconcile_lost_commit_ack_without_repeating_write() -> anyhow::Result<()>
+{
     let snapshots = snapshots(Decision::EvaluatedNoUpdate)?;
     let initial = &snapshots[0];
     let directory = tempfile::tempdir()?;
@@ -158,7 +185,9 @@ async fn checkpoint_ports_reconcile_lost_commit_ack_without_repeating_write()
     stages.unavailable.store(/*val*/ true, Ordering::SeqCst);
     assert!(matches!(
         ports.restore(&initial.request).await,
-        Err(LearningIterationRuntimeErrorV1::OwnerUnavailable("recovery"))
+        Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+            "recovery"
+        ))
     ));
     stages.unavailable.store(/*val*/ false, Ordering::SeqCst);
     store.failure.store(/*val*/ 2, Ordering::SeqCst);
@@ -166,7 +195,10 @@ async fn checkpoint_ports_reconcile_lost_commit_ack_without_repeating_write()
         ports.checkpoint(initial.head_digest, &snapshots[1]).await,
         Err(LearningIterationRuntimeErrorV1::CommitUncertain)
     ));
-    assert_eq!(ports.restore(&initial.request).await?, Some(snapshots[1].clone()));
+    assert_eq!(
+        ports.restore(&initial.request).await?,
+        Some(snapshots[1].clone())
+    );
     assert_eq!(
         ports.checkpoint(initial.head_digest, &snapshots[1]).await?,
         snapshots[1].head_digest
@@ -180,19 +212,26 @@ async fn checkpoint_ports_reconcile_lost_commit_ack_without_repeating_write()
 }
 
 #[tokio::test]
-async fn cancelled_checkpoint_waiter_keeps_the_original_persistence_lane()
--> anyhow::Result<()> {
-    type Gate = (tokio::sync::oneshot::Sender<()>, std::sync::mpsc::Receiver<()>);
+async fn cancelled_checkpoint_waiter_keeps_the_original_persistence_lane() -> anyhow::Result<()> {
+    type Gate = (
+        tokio::sync::oneshot::Sender<()>,
+        std::sync::mpsc::Receiver<()>,
+    );
     struct GatedStore {
         store: Arc<FileCas>,
         gate: std::sync::Mutex<Option<Gate>>,
     }
     impl AuthorityFrontierStore<LearningIterationCheckpointRecordV1> for GatedStore {
-        fn load(&self, owner: &str) -> Result<LearningIterationCheckpointRecordV1, AuthorityTrustError> {
+        fn load(
+            &self,
+            owner: &str,
+        ) -> Result<LearningIterationCheckpointRecordV1, AuthorityTrustError> {
             let gate = self.gate.lock().unwrap().take();
             if let Some((entered, release)) = gate {
                 let _ = entered.send(());
-                release.recv().map_err(|_| AuthorityTrustError::Unavailable)?;
+                release
+                    .recv()
+                    .map_err(|_| AuthorityTrustError::Unavailable)?;
             }
             self.store.load(owner)
         }
@@ -212,7 +251,10 @@ async fn cancelled_checkpoint_waiter_keeps_the_original_persistence_lane()
         initial.request.clone(),
         initial.owners.clone(),
     )?;
-    let store = Arc::new(FileCas::create(&directory.path().join("original-frontier"), &vacant)?);
+    let store = Arc::new(FileCas::create(
+        &directory.path().join("original-frontier"),
+        &vacant,
+    )?);
     let (entered, waiting) = tokio::sync::oneshot::channel();
     let (release, blocked) = std::sync::mpsc::channel();
     let checkpoint = LearningIterationCheckpointOwnerV1 {
@@ -241,13 +283,19 @@ async fn cancelled_checkpoint_waiter_keeps_the_original_persistence_lane()
     let restored = tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 2), async {
         loop {
             match ports.restore(&initial.request).await {
-                Err(LearningIterationRuntimeErrorV1::CommitUncertain) => tokio::task::yield_now().await,
+                Err(LearningIterationRuntimeErrorV1::CommitUncertain) => {
+                    tokio::task::yield_now().await
+                }
                 result => return result,
             }
         }
-    }).await??;
+    })
+    .await??;
     assert_eq!(restored, Some(initial.clone()));
-    assert_eq!(ports.checkpoint(Digest32::ZERO, &initial).await?, initial.head_digest);
+    assert_eq!(
+        ports.checkpoint(Digest32::ZERO, &initial).await?,
+        initial.head_digest
+    );
     assert_eq!(store.commits.load(Ordering::SeqCst), 1);
     Ok(())
 }
