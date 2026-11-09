@@ -21,6 +21,7 @@ from PIL import Image
 
 from ndu_real_materials.common import read_bound, strict_json
 from ndu_real_materials.isolate import run_actor
+from .action_effects import action_effect, public_actions, public_content
 from .controllers import ACTIONS, ControlPlan
 from .metering import Meter, atomic_json, canonical_sha, file_sha
 from .interval_costs import actor_receipts, close_observer_tail, reconcile
@@ -258,25 +259,10 @@ class EpisodeHost:
             raise ValueError(
                 "Deployment/training feature disclosure differs from the locked phase"
             )
+        legal = public_actions(self.packet, self.last_public)
         if self.training:
-            legal = [
-                action
-                for action in ACTIONS
-                if not (action == "READ_ROI" and self.prepared is None)
-                and not (
-                    action == "WRITE_TEXT"
-                    and self.packet["initial_delivery"]["text"] is not None
-                )
-                and not (
-                    action == "RENDER_IMAGE"
-                    and (
-                        not self.packet["requirements"]["image"]
-                        or self.packet["initial_delivery"]["image"] is not None
-                    )
-                )
-            ]
             if (
-                value.get("legal_actions") != legal
+                value.get("legal_actions") != list(legal)
                 or value.get("remaining_seconds")
                 != self.last_public["remaining_seconds"]
             ):
@@ -290,6 +276,8 @@ class EpisodeHost:
         name, arguments = action["action"], action["arguments"]
         if name not in ACTIONS or not isinstance(arguments, dict):
             raise ValueError("Unknown action")
+        if name not in legal:
+            raise ValueError("Action has no executable effect in the public support")
         expected = (
             {"text"}
             if name == "WRITE_TEXT"
@@ -299,6 +287,7 @@ class EpisodeHost:
         )
         if set(arguments) != expected:
             raise ValueError("Action contains unexpected arguments")
+        before = public_content(self.prepared, self.observation, self.delivery)
         with self.meter.stage("codec", "execute real " + name):
             if name in {"PREPARE_ROI", "RENDER_IMAGE"}:
                 box = arguments["bbox"]
@@ -342,6 +331,11 @@ class EpisodeHost:
                 self.delivery["text"] = text
             else:
                 self.stopped = True
+        value["action_effect"] = action_effect(
+            name,
+            before,
+            public_content(self.prepared, self.observation, self.delivery),
+        )
         self.steps.append(value)
         with self.meter.stage("sync", "persist actual delivery snapshot"):
             self.snapshot()

@@ -17,7 +17,8 @@ import sys
 import numpy as np
 import torch
 
-from .controllers import ACTIONS, ControlPlan, Controller, PublicState
+from .action_effects import observation_key, public_actions
+from .controllers import ControlPlan, Controller, PublicState
 from .metering import Meter, atomic_json, file_sha, transport_receipt, canonical_sha
 from .neural import FittedPredictor, ReceiptPortfolioModel
 from .objective import utility_profile
@@ -258,7 +259,7 @@ def run():
     ):
         raise ValueError("Decision window exceeds the frozen episode bound")
     baseline_parameters = parameter_sha(model)
-    cache, memory = {}, None
+    cache, ocr_cache, memory = {}, {}, None
     binding, pending, ocr_pins = None, None, {}
     if args.checkpoint_dir is not None or args.resume_checkpoint is not None:
         binding = checkpoint_binding(
@@ -393,7 +394,8 @@ def run():
         with meter.stage("codec", "current image binding"):
             if file_sha(image_path) != observed["sha256"]:
                 raise ValueError("Current image bytes changed")
-        if observed["sha256"] not in cache:
+        content_key = observation_key(packet, observed)
+        if observed["sha256"] not in ocr_cache:
             with meter.stage("encoder", "actual pixel OCR"):
                 lines, ocr_record = extract_ocr(
                     image_path,
@@ -403,6 +405,9 @@ def run():
                     evidence_dir=Path.cwd(),
                     evidence_prefix=f"ocr-{sequence:02d}",
                 )
+            ocr_cache[observed["sha256"]] = (lines, ocr_record)
+        if content_key not in cache:
+            lines, ocr_record = ocr_cache[observed["sha256"]]
             with meter.stage("encoder", "public content features"):
                 candidates, features = candidate_features(
                     lines,
@@ -415,19 +420,19 @@ def run():
                     observation_bbox=observed["bbox"],
                     public_text=packet["public_text"],
                 )
-            cache[observed["sha256"]] = (candidates, features, len(lines), ocr_record)
+            cache[content_key] = (candidates, features, len(lines), ocr_record)
             if binding is not None:
                 with meter.stage("codec", "verify reconstructed OCR content"):
                     content_pin = canonical_sha(
                         [candidates, features.tolist(), len(lines)]
                     )
-                    previous_pin = ocr_pins.get(observed["sha256"])
+                    previous_pin = ocr_pins.get(content_key)
                     if previous_pin is not None and previous_pin != content_pin:
                         raise ValueError(
                             "Recomputed OCR differs from checkpoint content"
                         )
-                    ocr_pins[observed["sha256"]] = content_pin
-        candidates, features, line_count, ocr_record = cache[observed["sha256"]]
+                    ocr_pins[content_key] = content_pin
+        candidates, features, line_count, ocr_record = cache[content_key]
         state["ocr_line_count"] = line_count
         meta = metadata(packet, state, plan_json["episode_wall_seconds"])
         with torch.inference_mode():
@@ -439,19 +444,7 @@ def run():
                 meter=meter,
             )
             selected_index = int(logits.argmax().item())
-        legal = tuple(
-            action
-            for action in ACTIONS
-            if not (action == "READ_ROI" and state["prepared_roi"] is None)
-            and not (action == "WRITE_TEXT" and state["text_committed"])
-            and not (
-                action == "RENDER_IMAGE"
-                and (
-                    not packet["requirements"]["image"]
-                    or packet["initial_delivery"]["image"] is not None
-                )
-            )
-        )
+        legal = public_actions(packet, state)
         public_state = PublicState(
             tuple(float(v) for v in public.tolist()),
             state["remaining_seconds"],
