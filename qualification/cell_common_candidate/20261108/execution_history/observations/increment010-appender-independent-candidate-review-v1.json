@@ -1,0 +1,57 @@
+{
+  "actual_inputs_reviewed": false,
+  "archive_or_target_or_executable_read": false,
+  "checks": {
+    "all_existing_nonmanifest_bytes_checked_before_and_after": true,
+    "all_stages_HOLD_and_full_cost_null_retained": true,
+    "binary_exception_still_scanned": true,
+    "both_new_source_identities_fixed_separately": true,
+    "common_bf42_CURRENT_c8b2_unchanged": true,
+    "compile_in_memory": true,
+    "counterfactual_success_not_native_PASS": true,
+    "current_validation_previous_typed_object_preserved": true,
+    "index_verified_status_only_after_verifier_and_final_guards": true,
+    "negative_original_0_PASS_1_FAIL_retained": true,
+    "original_93_packet_entries_preserved": true,
+    "other_members_require_UTF8_and_no_NUL": true,
+    "prior_publication_and_outer_request_stdout_stderr_result_pins_linked": true,
+    "publication_file_512000_bound_retained": true,
+    "single_bundle_exception_exact_packet_path_size_and_sha": true,
+    "supplementary_26_exact_path_roster": true,
+    "timeout_missing_closure_not_zero_native_or_complete_count": true,
+    "timeout_original_FAIL_retained": true,
+    "unchanged_nested_function_ast": [
+      "common_identity",
+      "same_typed"
+    ],
+    "whole_member_and_archive_pins_required": true
+  },
+  "evidence_worktree_modified": false,
+  "findings": [],
+  "inputs": {
+    "baseline": {
+      "bytes": 26623,
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/base/append-evidence-increment-009-draft-v1.py",
+      "sha256": "02b05621f874c64dd39831f1ec252a9f53ccdb3d2c153b140f50936a045e4080"
+    },
+    "candidate": {
+      "bytes": 29488,
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/append-evidence-increment-010-draft-v1.py",
+      "sha256": "ebaacb24c9e6b8f8eff6f6abd3d9f9cea3eac33b455a1b2c1121087dd05257dd"
+    },
+    "delta": {
+      "bytes": 29201,
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/append-009-to-010-v1.patch",
+      "sha256": "85894f821bfb3db7b7102437ce4e6012883881ea419d88138cd44bb154c2aab7"
+    }
+  },
+  "limits": [
+    "This is preparation/source review only; actual INPUTS still need the already planned exact typed original bindings.",
+    "Archive and supplementary metadata verification success does not alter original workspace timeout, failed forensic retention, or the d274 failing native assertion."
+  ],
+  "native_or_script_main_executed": false,
+  "qualification_claimed": false,
+  "read_scope": "Complete 29488-byte candidate source and actual baseline-to-candidate delta; original pinned helper and future actual inputs were not re-executed or re-audited.",
+  "schema": 1,
+  "status": "NO_NEW_STATIC_BLOCKER_WITHIN_REVIEWED_CODE_SCOPE"
+}

@@ -1,0 +1,136 @@
+{
+  "desktop_6ec_workspace_timeout_and_artifact_availability_history": {
+    "host": "desktop",
+    "common_source_advanced": false,
+    "full_workspace_qualified": false,
+    "scientific_acceptance": false,
+    "physical_cost": null,
+    "full_history_cost": null,
+    "new_native_executions_by_transaction": 0,
+    "packet_id": "desktop-6ec-workspace-timeout-and-artifact-availability-history-v1",
+    "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+    "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+    "status": "FAIL",
+    "case_closure_verified": false,
+    "verified_counts": null,
+    "count_bindings": {
+      "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+      "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+      "workspace_v1_controller": {
+        "returncode": 1,
+        "native_command_invoked": false,
+        "native_test_count": 0
+      },
+      "workspace_v2": {
+        "driver_returncode": 1,
+        "test_wrapper_exit": 124,
+        "test_child_exit": -9,
+        "timed_out": true,
+        "collector_returncode": 1,
+        "outer_returncode": 1,
+        "verified_complete_counts": null,
+        "case_closure_verified": false,
+        "raw_native_activity_observed": true,
+        "fresh_native_junit_available": false
+      },
+      "partial_readback": {
+        "returncode": 0,
+        "raw_pass_shaped_unique_keys": 6821,
+        "raw_terminal_summary_count": 0,
+        "these_are_not_complete_run_counts": true,
+        "declared_start_counts_are_not_verified_roster_counts": true
+      },
+      "forensic_retainer": {
+        "returncode": 1,
+        "copied_paths": 0,
+        "copied_payload_bytes": 0,
+        "full_source_after_verification_completed": false,
+        "original_record_inputs_unchanged": true
+      },
+      "retained_core_and_tools_readonly_preflight": {
+        "returncode": 0,
+        "retained_paths": 14,
+        "retained_native_paths": 4,
+        "retained_helper_paths": 10,
+        "retained_bytes": 3037089672,
+        "tool_paths": 2,
+        "executable_invocations": 0,
+        "native_executions": 0
+      },
+      "new_native_executions_by_archiver": 0,
+      "full_workspace_passed": false,
+      "scientific_acceptance": false,
+      "full_history_cost": null,
+      "physical_cost": null
+    },
+    "original_execution_cutoff": "2026-11-09T12:14:50.253882+00:00",
+    "seal_finished_at": "2026-11-09T13:27:05.235711+00:00",
+    "independent_finished_at": "2026-11-09T14:16:13.318043+00:00",
+    "negative_native_outcome_excluded_from_this_original_packet": true,
+    "retainer_failure_not_upgraded_by_later_preflight": true,
+    "missing_target_cause_or_actor_established": false,
+    "bounded_proc_observation_is_global_absence": false
+  },
+  "d274_counterfactual_negative_native_retention_history": {
+    "host": "desktop",
+    "common_source_advanced": false,
+    "full_workspace_qualified": false,
+    "scientific_acceptance": false,
+    "physical_cost": null,
+    "full_history_cost": null,
+    "new_native_executions_by_transaction": 0,
+    "packet_id": "d274-negative-native-retention-history-v1",
+    "source_sha": "d27431b69195a2a6331a77d19e22ebeb4cf910c7",
+    "source_tree": "b1cf50c33f5ec9101217ae3f6a7ff987e3aba973",
+    "source_parent": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+    "status": "FAIL",
+    "original_native_returncode": 1,
+    "count_bindings": {
+      "source_sha": "d27431b69195a2a6331a77d19e22ebeb4cf910c7",
+      "source_tree": "b1cf50c33f5ec9101217ae3f6a7ff987e3aba973",
+      "original_native": {
+        "status": "FAIL",
+        "driver_returncode": 1,
+        "test_returncode": 100,
+        "collector_returncode": 1,
+        "unique_executed": 1,
+        "passed": 0,
+        "failed": 1,
+        "failure_exit_code": 101,
+        "filtered_outside_selection": 2447,
+        "selected_ignored": 0,
+        "retries": 0
+      },
+      "counterfactual_HEAD_assertion_failure_observed": true,
+      "expected_failure_does_not_change_test_outcome_to_PASS": true,
+      "retention": {
+        "returncode": 0,
+        "copied_paths": 1,
+        "host_only_payload_bytes": 453757728,
+        "copied_executables_in_archive": 0
+      },
+      "independent_readback": {
+        "returncode": 0,
+        "original_records": 68,
+        "new_native_executions": 0
+      },
+      "archive_new_native_executions": 0,
+      "full_workspace_passed": false,
+      "scientific_acceptance": false,
+      "full_history_cost": null,
+      "physical_cost": null
+    },
+    "counterfactual_assertion_observed_does_not_turn_FAIL_into_PASS": true,
+    "original_bf42_large_output_race_mechanism_established": false,
+    "seal_finished_at": "2026-11-09T14:44:17.740007+00:00",
+    "independent_finished_at": "2026-11-09T14:51:17.696594+00:00",
+    "original_68_inputs_included": true,
+    "host_only_ELF_payload_in_archive": false,
+    "sole_nontext_original": {
+      "packet_id": "d274-negative-native-retention-history-v1",
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-increment-original.bundle",
+      "bytes": 1800,
+      "sha256": "0e753e10409b9619c7ddff22cd36f00bcfb74f248f5bbb09dadbc989222a6f5e"
+    }
+  }
+}

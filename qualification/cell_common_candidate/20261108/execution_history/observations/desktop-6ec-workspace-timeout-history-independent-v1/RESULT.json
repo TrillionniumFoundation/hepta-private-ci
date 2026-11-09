@@ -1,0 +1,2946 @@
+{
+  "schema": 1,
+  "status": "ALL_146_ORIGINAL_MEMBERS_VERIFIED_TIMEOUT_FAIL_PRESERVED",
+  "returncode": 0,
+  "started_at": "2026-11-09T14:16:12.001455+00:00",
+  "packet_id": "desktop-6ec-workspace-timeout-and-artifact-availability-history-v1",
+  "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+  "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+  "native_tests_executed": 0,
+  "executable_payload_access": false,
+  "source_checkout_access": false,
+  "target_access": false,
+  "append_commit_push": false,
+  "original_workspace_passed": false,
+  "case_closure_verified": false,
+  "verified_counts": null,
+  "scientific_acceptance": false,
+  "full_history_cost": null,
+  "physical_cost": null,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "member_count": 146,
+  "payload_member_count": 145,
+  "original_record_file_count": 140,
+  "original_record_bytes": 36523086,
+  "all_members_bytes_mode_sha_verified": true,
+  "original_text_records_equal_archive": true,
+  "original_timeout_and_missing_target_failure_preserved": true,
+  "negative_native_terminal_outcome_excluded": true,
+  "count_bindings": {
+    "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+    "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+    "workspace_v1_controller": {
+      "returncode": 1,
+      "native_command_invoked": false,
+      "native_test_count": 0
+    },
+    "workspace_v2": {
+      "driver_returncode": 1,
+      "test_wrapper_exit": 124,
+      "test_child_exit": -9,
+      "timed_out": true,
+      "collector_returncode": 1,
+      "outer_returncode": 1,
+      "verified_complete_counts": null,
+      "case_closure_verified": false,
+      "raw_native_activity_observed": true,
+      "fresh_native_junit_available": false
+    },
+    "partial_readback": {
+      "returncode": 0,
+      "raw_pass_shaped_unique_keys": 6821,
+      "raw_terminal_summary_count": 0,
+      "these_are_not_complete_run_counts": true,
+      "declared_start_counts_are_not_verified_roster_counts": true
+    },
+    "forensic_retainer": {
+      "returncode": 1,
+      "copied_paths": 0,
+      "copied_payload_bytes": 0,
+      "full_source_after_verification_completed": false,
+      "original_record_inputs_unchanged": true
+    },
+    "retained_core_and_tools_readonly_preflight": {
+      "returncode": 0,
+      "retained_paths": 14,
+      "retained_native_paths": 4,
+      "retained_helper_paths": 10,
+      "retained_bytes": 3037089672,
+      "tool_paths": 2,
+      "executable_invocations": 0,
+      "native_executions": 0
+    },
+    "new_native_executions_by_archiver": 0,
+    "full_workspace_passed": false,
+    "scientific_acceptance": false,
+    "full_history_cost": null,
+    "physical_cost": null
+  },
+  "archive_sha256": "b7c25e516550fa01423137c66bef6b6bf5099f1b4aff426d3a941534791e8d95",
+  "verified_members": [
+    {
+      "path": "metadata/ARCHIVER.py",
+      "bytes": 29251,
+      "mode": 420,
+      "sha256": "4669c582e1d96fc9e755fb8ee26699a3027174fc3875e939d6ec7f1fca304f9a"
+    },
+    {
+      "path": "metadata/ARCHIVER_PREPARATION.json",
+      "bytes": 1424,
+      "mode": 420,
+      "sha256": "0aa66dff2febf28213fd325849583514968a8f2cbc3a1d5b76cb647310e4da7a"
+    },
+    {
+      "path": "metadata/COUNT_BINDINGS.json",
+      "bytes": 1485,
+      "mode": 420,
+      "sha256": "fc6940643f657ab70bae07b61864792675a06844ed1aaaf3f7879c2a1405e1ad"
+    },
+    {
+      "path": "metadata/INPUTS.json",
+      "bytes": 82501,
+      "mode": 420,
+      "sha256": "32c09e1c22c65bbe36a3200271ff9a3505d01a382ff4db6c8f59dc758496b7e3"
+    },
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 42761,
+      "mode": 420,
+      "sha256": "e9556d9f84e5e431ece41b36bc0fc283d21bd8d6f53834df4ee5b99178bd9922"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-appserver-owning-v1/RESULT.json",
+      "bytes": 15846,
+      "mode": 384,
+      "sha256": "13b3cccf9810909254acf5f42616c2dd47eaf8a1d06ef820f60a5fe35ba6f7a8"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-appserver-owning-v1/tests-junit.xml",
+      "bytes": 309339,
+      "mode": 384,
+      "sha256": "e5f468288c35dfdad4a16143c0ca062b09e98ce0aceadcb017d42de1574a590e"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-core-retained-binaries-v1/RESULT.json",
+      "bytes": 35292,
+      "mode": 384,
+      "sha256": "dad59749b2c7dc6e20f76986ccd4233fa529e550c8794dc71cf308aa376e9102"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/driver.py",
+      "bytes": 18350,
+      "mode": 384,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/env.json",
+      "bytes": 2754,
+      "mode": 384,
+      "sha256": "76b9a5a60f9f1fb33e2bdff36702d78988361cedd95928751a9b2676eca10004"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/helpers/manifest.json",
+      "bytes": 14234,
+      "mode": 384,
+      "sha256": "8a7d194f148d3a2cd458eb8fe56fd9e70b62b3016c09e7562f2e35b58948539b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-strict-v1/preparation.json",
+      "bytes": 20468,
+      "mode": 384,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-v8-recovery-v1/RESULT.json",
+      "bytes": 15762,
+      "mode": 384,
+      "sha256": "f6db0e514ef3d08f7241cc025028f8bef3ee3a9af903a5bae539ab33474d6612"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v1/COMMAND.json",
+      "bytes": 1583,
+      "mode": 384,
+      "sha256": "aefa4364b19a2a504f03ac07eaed38c9a424d9a90a6945fb1aa70fad1cca4cda"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v1/EXECUTION.json",
+      "bytes": 3298,
+      "mode": 384,
+      "sha256": "f12daf83fb4d3c4b98ed7ddfe8a0b001770bd648ac8d512de8991f31a3059a46"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v1/launcher.py",
+      "bytes": 6016,
+      "mode": 384,
+      "sha256": "6d9c8989f69678a6916c7a48670b8427b8476a327e4288ea4311447a64a61c40"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v1/native-driver-original.py",
+      "bytes": 62690,
+      "mode": 384,
+      "sha256": "6514e6c19b323e6eb133ff0ba8d0c43d9d25258c0a7ddc6947f5ba8f6f428a81"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v1/stderr.log",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v1/stdout.log",
+      "bytes": 308,
+      "mode": 384,
+      "sha256": "a69608d3111309d66a9a4f72fd6dafc40235d42b54501737fb8f52bc84e547d6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v1/strict-preparation-original.json",
+      "bytes": 20468,
+      "mode": 384,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v2/COMMAND.json",
+      "bytes": 1583,
+      "mode": 384,
+      "sha256": "cd2eaccb8164b57ac1150e97e16c244a7fd23a7d0d38976211baf6c4b889a996"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v2/EXECUTION.json",
+      "bytes": 3298,
+      "mode": 384,
+      "sha256": "0873d2a97f59f13a1accb840637907ea7fb85aa5551b51dd339687ea0348cd1b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v2/launcher.py",
+      "bytes": 6016,
+      "mode": 384,
+      "sha256": "f6c7a80fccee4cb682c61e43d5167ebb9c307da0a9486834b2b29499f331eb2e"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v2/native-driver-original.py",
+      "bytes": 62752,
+      "mode": 384,
+      "sha256": "080cb431a2c46a43e359cb5a47c729920849bfd93249684ac17c6dd9cee23ca3"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v2/stderr.log",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v2/stdout.log",
+      "bytes": 1134,
+      "mode": 384,
+      "sha256": "dce51bd338bc9f8df9a3738d142460dd9d3cf76e8ce9eca852e635a146f54592"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-outer-v2/strict-preparation-original.json",
+      "bytes": 20468,
+      "mode": 384,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-related-process-snapshot-v1/RESULT.json",
+      "bytes": 2805,
+      "mode": 384,
+      "sha256": "3e076569d42a8d57e420b688402eba5379a39c6911716ae655648b080436e517"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/EXECUTION.json",
+      "bytes": 1313,
+      "mode": 384,
+      "sha256": "0dbe66742420e16dea71930b30c3f7611695f2ce73332e569ddb726679b1cfd6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/H_TOOL_RESPONSES.json",
+      "bytes": 9741,
+      "mode": 384,
+      "sha256": "9a766663a104f69456a7ed2e3d6621935469cf467a1fa4ec1f1f3b14640e8b67"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/REQUEST.json",
+      "bytes": 558,
+      "mode": 384,
+      "sha256": "5b7c717073f6ad113d22b47ccfa4808afc250dd69bbe0e18c409cb95ff435857"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/SHELL_REQUEST.txt",
+      "bytes": 2848,
+      "mode": 384,
+      "sha256": "1834ffe9006d9930b4e2e394354ee420e0f43d4c0fc9cb8eb29800d7ee4ffbee"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/stderr.log",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/stdout.log",
+      "bytes": 235,
+      "mode": 384,
+      "sha256": "db13f53ee7f26cc3bfda99fe66338f30a881f92bd9fa42b4afcae8f0bf62c9bc"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-target-metadata-observation-v1/RESULT.json",
+      "bytes": 22700,
+      "mode": 384,
+      "sha256": "92586b7f0e0e45bee76ba2c832fac950b5f7b05e641e1d478587688d3ddeac06"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/EXECUTION.json",
+      "bytes": 1946,
+      "mode": 384,
+      "sha256": "e9399cb12d0731c90cd0204a8ed7f7dfe87d3a07f32d213a0262caf2ae9063bc"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/H_TOOL_RESPONSES.json",
+      "bytes": 8837,
+      "mode": 384,
+      "sha256": "c486ccf85e1bbbe1e315721371c90b5213612254e32893d8f384a996921e4b0b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/REQUEST.json",
+      "bytes": 1177,
+      "mode": 384,
+      "sha256": "033a05ef6feed93e1bc3859a980be44d6b8f7b8b29a66056258cfe327d857a50"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/SHELL_REQUEST.txt",
+      "bytes": 4159,
+      "mode": 384,
+      "sha256": "048aa53bc546ae518c1523207bd4e700d59879b1238c97c6f506845db902ae7b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/stderr.log",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/stdout.log",
+      "bytes": 401,
+      "mode": 384,
+      "sha256": "17ac080c2c6e60fc192663a15dc53c063d413f2154c327146151612418a2e489"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/RESULT.json",
+      "bytes": 49405,
+      "mode": 384,
+      "sha256": "f85647d0a8ecd69165d608f0d491797123f92ec27d509e3ceaaf992e2a62982a"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/copies.json",
+      "bytes": 3,
+      "mode": 384,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/driver.py",
+      "bytes": 61752,
+      "mode": 384,
+      "sha256": "a515b08677479c2a53bc7cfedac2ce8b5b5185a310a874f68d4b23f689cc2507"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/process-after-copy.json",
+      "bytes": 2805,
+      "mode": 384,
+      "sha256": "e7ae39bbec3e66384b0671809fb76db2a8730ecfc5bbfdeca7590e2755f5d9c3"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/process-before.json",
+      "bytes": 2805,
+      "mode": 384,
+      "sha256": "2a8e660900d4be484257974b6c54d2bf4f47003d2fe15fce77b5ea52ffab313d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/process-final.json",
+      "bytes": 2805,
+      "mode": 384,
+      "sha256": "a4b8e78c379f86d369f7008efeccd8b2346a0d5d23da3d099acaf95b9a6e99e3"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/source-before.files.json",
+      "bytes": 5658136,
+      "mode": 384,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-readback-v1/PARTIAL_RAW_STATUS_RECORDS.json",
+      "bytes": 4371555,
+      "mode": 384,
+      "sha256": "78c400d1f718ddec8e3873b4882ef1d94e5fd78e65f4e2a12adbe04af1425bb9"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-readback-v1/RESULT.json",
+      "bytes": 34404,
+      "mode": 384,
+      "sha256": "1adb441373e9067af9bbae3a5b808be60aad87475e7e3a1d14327c13ac1fc65d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/EXECUTION.json",
+      "bytes": 1828,
+      "mode": 384,
+      "sha256": "b2fedf0194ce2bcaf48380b1d22e8cb410cc180d5c18528253f846baec085ac8"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/EXECUTION.started.json",
+      "bytes": 700,
+      "mode": 384,
+      "sha256": "e344360fd7b065529e1cb570b2ad330f99faf146b1f4b7e1e270a6c69946b02c"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/stderr.log",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/stdout.log",
+      "bytes": 322,
+      "mode": 384,
+      "sha256": "03ef529f13e7358edc286e636e956066efd7a39d735b62d35c04562eabedabfa"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v1/RESULT.json",
+      "bytes": 30036,
+      "mode": 384,
+      "sha256": "726945118c6761d5953f41b0eecc6f9fd0d91794f1df1d64f666450048eb9eb2"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v1/driver.py",
+      "bytes": 62690,
+      "mode": 384,
+      "sha256": "6514e6c19b323e6eb133ff0ba8d0c43d9d25258c0a7ddc6947f5ba8f6f428a81"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v1/helper-env-original.json",
+      "bytes": 2754,
+      "mode": 384,
+      "sha256": "76b9a5a60f9f1fb33e2bdff36702d78988361cedd95928751a9b2676eca10004"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v1/helper-manifest-original.json",
+      "bytes": 14234,
+      "mode": 384,
+      "sha256": "8a7d194f148d3a2cd458eb8fe56fd9e70b62b3016c09e7562f2e35b58948539b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v1/preparation-lineage.json",
+      "bytes": 20468,
+      "mode": 384,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v1/snapshot-helper-original.py",
+      "bytes": 18350,
+      "mode": 384,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v1/source-after.diff.patch",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v1/source-after.files.json",
+      "bytes": 5658136,
+      "mode": 384,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v1/source-after.json",
+      "bytes": 874,
+      "mode": 384,
+      "sha256": "96b5c06beaf3d7ddcb1d5e14c26c51c2007f8df501f8cdbd440ef7bcdc9a7129"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v1/source-before.diff.patch",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v1/source-before.files.json",
+      "bytes": 5658136,
+      "mode": 384,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v1/source-before.json",
+      "bytes": 876,
+      "mode": 384,
+      "sha256": "6139ddbf34ed9203951b7675a86a1b4d956b63f9905fef580a0250bcc9abff33"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/RESULT.json",
+      "bytes": 52313,
+      "mode": 384,
+      "sha256": "0edd92cd4dc4bc919633ef5c12c723acd4c4b95cebbb8bf5c8de684baabcb45b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.json",
+      "bytes": 1929,
+      "mode": 384,
+      "sha256": "15ee6a42cf96c4fc91113b3ae2c29f3c76e20c6718cf4535f6964abefb5a68be"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.json.bbaf596565bb482fbca18ec3d990b6c2.log",
+      "bytes": 700,
+      "mode": 384,
+      "sha256": "95f3837810b67d07c221b78574e0d6a12e3f5ff258e2b02fa402162f93eda55d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.wrapper.stderr",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.wrapper.stdout",
+      "bytes": 2473,
+      "mode": 384,
+      "sha256": "292cd62db5431d04ab922b1b3b76fb9963767fd8e64617d3d4c6eed43dabb007"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/driver.py",
+      "bytes": 62752,
+      "mode": 384,
+      "sha256": "080cb431a2c46a43e359cb5a47c729920849bfd93249684ac17c6dd9cee23ca3"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/helper-env-original.json",
+      "bytes": 2754,
+      "mode": 384,
+      "sha256": "76b9a5a60f9f1fb33e2bdff36702d78988361cedd95928751a9b2676eca10004"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/helper-manifest-original.json",
+      "bytes": 14234,
+      "mode": 384,
+      "sha256": "8a7d194f148d3a2cd458eb8fe56fd9e70b62b3016c09e7562f2e35b58948539b"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.json",
+      "bytes": 1675,
+      "mode": 384,
+      "sha256": "c5935019aab056b8f8ab4df4ec13c18b026d722e30b47ee9c1ce58ea2b1eefa7"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.json.de9e7d92c01a474c8271ccc94f6c0020.log",
+      "bytes": 5839,
+      "mode": 384,
+      "sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.wrapper.stderr",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.wrapper.stdout",
+      "bytes": 7370,
+      "mode": 384,
+      "sha256": "574f5c8a272de46ae58ba11c03b6296dbad69e26d77a8139252012a110ac2c89"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.json",
+      "bytes": 1676,
+      "mode": 384,
+      "sha256": "66b06eb742e5920df3baadab6b75bda8efa217ed4b592f81e59a69097b9df81d"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.json.47880a2735984a31b619cea53c309b9b.log",
+      "bytes": 5839,
+      "mode": 384,
+      "sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.wrapper.stderr",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.wrapper.stdout",
+      "bytes": 7371,
+      "mode": 384,
+      "sha256": "de0bf69b2ec8ef7bb0375a2d30bdcb424a5b5d2457760f95c70ef118b0ff7ce1"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/junit-workspace.summary.json",
+      "bytes": 744,
+      "mode": 384,
+      "sha256": "d7c6f2421227ce2bbb51a66942a36e2c34f55562ec42477b1012ab7862333ca7"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/preparation-lineage.json",
+      "bytes": 20468,
+      "mode": 384,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/snapshot-helper-original.py",
+      "bytes": 18350,
+      "mode": 384,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/source-after.diff.patch",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/source-after.files.json",
+      "bytes": 5658136,
+      "mode": 384,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/source-after.json",
+      "bytes": 873,
+      "mode": 384,
+      "sha256": "39681046710814c2daf50842a742e86f3618ddc8dbbf42252472dfbaacf68b37"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/source-before.diff.patch",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/source-before.files.json",
+      "bytes": 5658136,
+      "mode": 384,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/source-before.json",
+      "bytes": 875,
+      "mode": 384,
+      "sha256": "0baa7e03372c384cdcc911a259429ad4bbf697b4843c5f1500ecbfd75392d357"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/workspace-tests.json",
+      "bytes": 1439,
+      "mode": 384,
+      "sha256": "e15e29e73a9da06500b747effe7fa66c24e77057f59cd5ddf0cb5069457acc3c"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/workspace-tests.json.a36f513e781147cfb0a194d2b5936cd9.log",
+      "bytes": 881609,
+      "mode": 384,
+      "sha256": "d00a0a226a56c81d11d8def8b439ac5815dc8a3a4efbc7203272d339857241e4"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/workspace-tests.wrapper.stderr",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-v2/workspace-tests.wrapper.stdout",
+      "bytes": 882912,
+      "mode": 384,
+      "sha256": "e3b8214a0340186cff56c9ec83213c547f37aa24b2dfa640b32594adb33cb45e"
+    },
+    {
+      "path": "originals/core-output-d27431b-independent-target-outer-preparation-v3/CHECKS.json",
+      "bytes": 1448,
+      "mode": 384,
+      "sha256": "726b3d5427e69f99ac7cc4de0029ba513b33ad66a395702e1e522835c2c2387c"
+    },
+    {
+      "path": "originals/core-output-d27431b-independent-target-outer-preparation-v3/FINAL_REVIEWED_PREPARATION.json",
+      "bytes": 1418,
+      "mode": 384,
+      "sha256": "6113d6c5b09da7b0d749a4469f450a22909167312aefa0b6f026227bee723269"
+    },
+    {
+      "path": "originals/core-output-d27431b-independent-target-outer-preparation-v3/RESULT.json",
+      "bytes": 5113,
+      "mode": 384,
+      "sha256": "63b7b73c72b4246ce2eeb4586ea7485526d8474ccb4f975bce0d73ca9603aeae"
+    },
+    {
+      "path": "originals/core-output-d27431b-independent-target-outer-preparation-v3/REUSE_PROOF.json",
+      "bytes": 1123,
+      "mode": 384,
+      "sha256": "1a3ce44fe748679c91d79e0ca62f5bab41f742ab277bbec68057058913a02e40"
+    },
+    {
+      "path": "originals/core-output-d27431b-independent-target-outer-preparation-v3/outer-v2-to-v3-reviewed.patch",
+      "bytes": 16102,
+      "mode": 384,
+      "sha256": "8c3d4decd5b2e904906b07b052510ff389891d14a68613855a860771e4e6323f"
+    },
+    {
+      "path": "originals/core-output-d27431b-independent-target-outer-preparation-v3/outer-v2-to-v3.patch",
+      "bytes": 16093,
+      "mode": 384,
+      "sha256": "adb5ceba05d1393d54759347740934603f3a9a1de23c5d6ebbdf0f7dc3f0b60b"
+    },
+    {
+      "path": "originals/core-output-d27431b-independent-target-outer-preparation-v3/outer-v3-to-reviewed-state-order.patch",
+      "bytes": 944,
+      "mode": 384,
+      "sha256": "98dc24af7950dc504432417bf8f902a3d832ef764482ee011285fd10d3e52f42"
+    },
+    {
+      "path": "originals/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/EXECUTION.json",
+      "bytes": 1298,
+      "mode": 384,
+      "sha256": "307e3d8df1a0b18b96eb12c483d87be7cbec97345f2bff76c760ac7a513598bf"
+    },
+    {
+      "path": "originals/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/H_TOOL_RESPONSES.json",
+      "bytes": 7185,
+      "mode": 384,
+      "sha256": "9ac2cfe19201ef9103d015fd21d6f559b22786990076478285c0fe4faf7a081a"
+    },
+    {
+      "path": "originals/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/REQUEST.json",
+      "bytes": 564,
+      "mode": 384,
+      "sha256": "d778561897ca3055e1eca02c700c2fc5bfc797791c510dc8061f47497db735db"
+    },
+    {
+      "path": "originals/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/SHELL_REQUEST.txt",
+      "bytes": 2890,
+      "mode": 384,
+      "sha256": "6e722cf92e9ee9eec66152c94195baf31c757dc5adeacfd30073a16766844e15"
+    },
+    {
+      "path": "originals/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/stderr.log",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/stdout.log",
+      "bytes": 312,
+      "mode": 384,
+      "sha256": "8cc930496f36d7245987787faa3dc93f0cd3330d4d266abd19ab3163ea486983"
+    },
+    {
+      "path": "originals/core-output-d27431b-retained-copies-and-tools-preflight-v1/RESULT.json",
+      "bytes": 30844,
+      "mode": 384,
+      "sha256": "fafa1afaba622967c72351d3d858c443160ba8c706b35c1582bd4e4108a12398"
+    },
+    {
+      "path": "originals/desktop-6ec-workspace-timeout-history-input-discovery-v1/RESULT.json",
+      "bytes": 71714,
+      "mode": 384,
+      "sha256": "84f74e6549a1147c75f97387d0c3102a3c93bd07136fe7b5b9293c9e61553289"
+    },
+    {
+      "path": "originals/desktop-workspace-just-original-version-observation-v2/RESULT.json",
+      "bytes": 1836,
+      "mode": 384,
+      "sha256": "e42db597a1ffe8ec60b769f88af869d072c1dac73ff256cd22cf05b68d1ea495"
+    },
+    {
+      "path": "originals/launch-core-output-6ec-desktop-workspace-v2.py",
+      "bytes": 6016,
+      "mode": 384,
+      "sha256": "f6c7a80fccee4cb682c61e43d5167ebb9c307da0a9486834b2b29499f331eb2e"
+    },
+    {
+      "path": "originals/launch-core-output-negative-d27431b-desktop-v2.py",
+      "bytes": 6507,
+      "mode": 384,
+      "sha256": "431fe23a69e466bdda2d635bcbd12b53813e74fa62546e3892e98509292cfb88"
+    },
+    {
+      "path": "originals/launch-core-output-negative-d27431b-desktop-v3-reviewed.py",
+      "bytes": 18359,
+      "mode": 384,
+      "sha256": "3c07b5c24909cf80fd78278d247ad3ab673ea994d83ceb82b6fe06c54ed3bd63"
+    },
+    {
+      "path": "originals/launch-core-output-negative-d27431b-desktop-v3.py",
+      "bytes": 18359,
+      "mode": 384,
+      "sha256": "8626a3ad61c71f87468433da8c0d365fa58e671580dcdbd69a961f085ad8b4b4"
+    },
+    {
+      "path": "originals/observe-desktop-6ec-timeout-fixed-paths-v1.py",
+      "bytes": 4705,
+      "mode": 384,
+      "sha256": "195046043aba916fe656ae32460696aa260d53b6f559d7977daff3aefd56fb82"
+    },
+    {
+      "path": "originals/observe-desktop-6ec-workspace-related-processes-v1.py",
+      "bytes": 10538,
+      "mode": 384,
+      "sha256": "b240eaea9a8f19307041eb9021a4caa090828e6768a6f3a0d15ec5b32e85cdb5"
+    },
+    {
+      "path": "originals/pr5397-status-v7-final-body.md",
+      "bytes": 12101,
+      "mode": 384,
+      "sha256": "1b22cef1f9c7e81817cba058c706c0518ff4fd7647484744fc84d3b3556b6b7f"
+    },
+    {
+      "path": "originals/pr5397-status-v7-publication-observation-v1.json",
+      "bytes": 62984,
+      "mode": 384,
+      "sha256": "165fd3a6de8592c5906132ef365d39f4d5553143ed4b49ecd5dc385a53860df6"
+    },
+    {
+      "path": "originals/read-desktop-6ec-workspace-timeout-v1.py",
+      "bytes": 26981,
+      "mode": 384,
+      "sha256": "4f5cdda47fa693c36c83407c86409d2b08022e3253e6b489a7e17d91bd47f6c8"
+    },
+    {
+      "path": "originals/retain-desktop-6ec-workspace-and-helper-binaries-v2.py",
+      "bytes": 44042,
+      "mode": 384,
+      "sha256": "b7390330799f7134485b8be0b9bf1796e1721ef98aaa316d025cb9d34a4c3420"
+    },
+    {
+      "path": "originals/retain-desktop-6ec-workspace-timeout-artifacts-v1.py",
+      "bytes": 61752,
+      "mode": 384,
+      "sha256": "a515b08677479c2a53bc7cfedac2ce8b5b5185a310a874f68d4b23f689cc2507"
+    },
+    {
+      "path": "originals/root-evidence-increment009-publication-observation-v1.json",
+      "bytes": 36338,
+      "mode": 384,
+      "sha256": "79f69df0d1e38faa6759d2a2a91e3081c423a246bc9525fd6973ca05754febfc"
+    },
+    {
+      "path": "originals/root-evidence-increment009-publication-observation-v2.json",
+      "bytes": 36918,
+      "mode": 384,
+      "sha256": "bd1dda20050d3d4528109f4d3ed7c57f80599aa080201fd65d977e2d8ece71f5"
+    },
+    {
+      "path": "originals/run-core-output-negative-d27431b-desktop-v1.py",
+      "bytes": 41862,
+      "mode": 384,
+      "sha256": "d36f68d6c7d378cbaf6e0f4172540ab52a38c095fcab5e393c35f2b1f3f7df92"
+    },
+    {
+      "path": "originals/run-desktop-6ec-original-workspace-v1.py",
+      "bytes": 62690,
+      "mode": 384,
+      "sha256": "6514e6c19b323e6eb133ff0ba8d0c43d9d25258c0a7ddc6947f5ba8f6f428a81"
+    },
+    {
+      "path": "originals/run-desktop-6ec-original-workspace-v2.py",
+      "bytes": 62752,
+      "mode": 384,
+      "sha256": "080cb431a2c46a43e359cb5a47c729920849bfd93249684ac17c6dd9cee23ca3"
+    },
+    {
+      "path": "originals/verify-d274-retained-core-copies-and-tools-v1.py",
+      "bytes": 9954,
+      "mode": 384,
+      "sha256": "8956e0fc23a16123aba5a7df53ec627a245693d8e4eb5451176c734d0aa92648"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/CHECKS.json",
+      "bytes": 5354,
+      "mode": 384,
+      "sha256": "56dbb9c72d3ecbfc35fcda5a58aa961c9acd864294be708c8446a6c1d7790bf7"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/RESULT.json",
+      "bytes": 2237,
+      "mode": 384,
+      "sha256": "7435f963dd426d010176191780ffa3f8b50f21b19c6f5b85d0e6cd7267d43aa5"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/REUSE_PROOF.json",
+      "bytes": 2164,
+      "mode": 384,
+      "sha256": "f765e33844c9c77dfe51fd9e9abae709d42d961269d68f4c1878f07bb2f5813b"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/builder.stderr",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/builder.stdout",
+      "bytes": 720,
+      "mode": 384,
+      "sha256": "f1cfcc1ac5703ba06db916380a7ca117741f9b183c7eaa7438e76d8eb5adc0e0"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/copy-pattern-adaptation.patch",
+      "bytes": 4326,
+      "mode": 384,
+      "sha256": "887f3c43d3862ba0332dd082c2da282369d0bf672da337c1868feabdc09e3670"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/custom-final.txt",
+      "bytes": 19662,
+      "mode": 384,
+      "sha256": "707383d5837a0c52ea9a7d4f647d9aee0fab7f4dff55c4b8791e9c2fba3c8554"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/main-final.txt",
+      "bytes": 19190,
+      "mode": 384,
+      "sha256": "936f5b73a7aa17bdf12d681a7b5e7d5fc091913321a557fdb1d44b25b9cc6d36"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/process-scanner-extraction.patch",
+      "bytes": 12491,
+      "mode": 384,
+      "sha256": "4ba32c56d2636ccc118bf69ff835fbfc1d2646fa83e54e771d6f2bf3b13989e0"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/retainer-draft.py",
+      "bytes": 61752,
+      "mode": 384,
+      "sha256": "a515b08677479c2a53bc7cfedac2ce8b5b5185a310a874f68d4b23f689cc2507"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_custom.txt",
+      "bytes": 19197,
+      "mode": 384,
+      "sha256": "7a003d4ba1799f2c3a5c6a3b6dfcda0d47ac878aee67b1ace44cea00fcff0146"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_custom_reviewed.txt",
+      "bytes": 19540,
+      "mode": 384,
+      "sha256": "f3997d2a49fb1b412fb3dcdee21ef82f54416147af6fa9179631e1e64723e494"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_header.txt",
+      "bytes": 2581,
+      "mode": 384,
+      "sha256": "064af2bf6fbc55803e0553984132758a640a0b979ab3a805ffeb2d45f20a67a7"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_helpers.txt",
+      "bytes": 2948,
+      "mode": 384,
+      "sha256": "57adb713bd6ce7567f24076069c5326a0ebe893b46b040062cf22bc5ae9bf573"
+    },
+    {
+      "path": "originals/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_main.txt",
+      "bytes": 18772,
+      "mode": 384,
+      "sha256": "3bab68c87806afe0066e65dbb1a29efcd97c328af2b3d61197ce981cb0bd5284"
+    },
+    {
+      "path": "originals/workspace-timeout-hepta-ci-exec-original-v1.py",
+      "bytes": 12863,
+      "mode": 384,
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+    },
+    {
+      "path": "originals/workspace-timeout-two-readonly-operations-v1.json",
+      "bytes": 15627,
+      "mode": 384,
+      "sha256": "4c88541a565872e6ff4850dc34d28c95c6c427abb0f511ccd63822d9bec3e704"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 115069,
+      "mode": 420,
+      "sha256": "e6c9f07efc6c706b9287f84f25f2e588eff1ed10a746f1c48082d3af119c81d3"
+    }
+  ],
+  "inputs_before_after_unchanged": true,
+  "finished_at": "2026-11-09T14:16:13.318043+00:00",
+  "input_count": 152,
+  "input_pins": {
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-and-availability-history-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-and-availability-history-v1/RESULT.json",
+      "relative": "desktop-6ec-workspace-timeout-and-availability-history-v1/RESULT.json",
+      "bytes": 3811,
+      "sha256": "9ae60f97bce3d7e0a9aa2504122bd1eb6e4c04cb800da8f1ac248003bf13bce4",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9885702,
+      "nlink": 1,
+      "mtime_ns": 1794230825235955838,
+      "ctime_ns": 1794230825235955838,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-and-availability-history-v1/MANIFEST.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-and-availability-history-v1/MANIFEST.json",
+      "relative": "desktop-6ec-workspace-timeout-and-availability-history-v1/MANIFEST.json",
+      "bytes": 115069,
+      "sha256": "e6c9f07efc6c706b9287f84f25f2e588eff1ed10a746f1c48082d3af119c81d3",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9885700,
+      "nlink": 1,
+      "mtime_ns": 1794230809585751420,
+      "ctime_ns": 1794230809585751420,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-and-availability-history-v1/SCOPE.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-and-availability-history-v1/SCOPE.json",
+      "relative": "desktop-6ec-workspace-timeout-and-availability-history-v1/SCOPE.json",
+      "bytes": 42761,
+      "sha256": "e9556d9f84e5e431ece41b36bc0fc283d21bd8d6f53834df4ee5b99178bd9922",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9885698,
+      "nlink": 1,
+      "mtime_ns": 1794230809569153771,
+      "ctime_ns": 1794230809569153771,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-and-availability-history-v1/COUNT_BINDINGS.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-and-availability-history-v1/COUNT_BINDINGS.json",
+      "relative": "desktop-6ec-workspace-timeout-and-availability-history-v1/COUNT_BINDINGS.json",
+      "bytes": 1485,
+      "sha256": "fc6940643f657ab70bae07b61864792675a06844ed1aaaf3f7879c2a1405e1ad",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9885699,
+      "nlink": 1,
+      "mtime_ns": 1794230809584182474,
+      "ctime_ns": 1794230809584182474,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-and-availability-history-v1/desktop-6ec-workspace-timeout-and-availability-history.tar.xz": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-and-availability-history-v1/desktop-6ec-workspace-timeout-and-availability-history.tar.xz",
+      "relative": "desktop-6ec-workspace-timeout-and-availability-history-v1/desktop-6ec-workspace-timeout-and-availability-history.tar.xz",
+      "bytes": 2599580,
+      "sha256": "b7c25e516550fa01423137c66bef6b6bf5099f1b4aff426d3a941534791e8d95",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9885701,
+      "nlink": 1,
+      "mtime_ns": 1794230824332690398,
+      "ctime_ns": 1794230824332690398,
+      "nul_count": 10123
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-preparation-v1/INPUTS.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-preparation-v1/INPUTS.json",
+      "relative": "desktop-6ec-workspace-timeout-history-preparation-v1/INPUTS.json",
+      "bytes": 82501,
+      "sha256": "32c09e1c22c65bbe36a3200271ff9a3505d01a382ff4db6c8f59dc758496b7e3",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089978,
+      "nlink": 1,
+      "mtime_ns": 1794230491217644132,
+      "ctime_ns": 1794230491217644132,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-preparation-v1/ARCHIVER_PREPARATION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-preparation-v1/ARCHIVER_PREPARATION.json",
+      "relative": "desktop-6ec-workspace-timeout-history-preparation-v1/ARCHIVER_PREPARATION.json",
+      "bytes": 1424,
+      "sha256": "0aa66dff2febf28213fd325849583514968a8f2cbc3a1d5b76cb647310e4da7a",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101112,
+      "nlink": 1,
+      "mtime_ns": 1794230745995149814,
+      "ctime_ns": 1794230745995149814,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/archive-desktop-6ec-workspace-timeout-history-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/archive-desktop-6ec-workspace-timeout-history-v1.py",
+      "relative": "archive-desktop-6ec-workspace-timeout-history-v1.py",
+      "bytes": 29251,
+      "sha256": "4669c582e1d96fc9e755fb8ee26699a3027174fc3875e939d6ec7f1fca304f9a",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907561,
+      "nlink": 1,
+      "mtime_ns": 1794230745954143190,
+      "ctime_ns": 1794230745954143190,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-seal-outer-v1/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-seal-outer-v1/EXECUTION.json",
+      "relative": "desktop-6ec-workspace-timeout-history-seal-outer-v1/EXECUTION.json",
+      "bytes": 1289,
+      "sha256": "55e8aaf7d73ee77f2833557c1ee630f7deff4751fbe2cba19269b66dc3b96f22",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9885703,
+      "nlink": 1,
+      "mtime_ns": 1794230825314020719,
+      "ctime_ns": 1794230825314020719,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-seal-outer-v1/REQUEST.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-seal-outer-v1/REQUEST.json",
+      "relative": "desktop-6ec-workspace-timeout-history-seal-outer-v1/REQUEST.json",
+      "bytes": 1203,
+      "sha256": "1b2839330f20ec3ad63870efc2685461c608f6dda37d4f0225d6cdb89243fc94",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9885694,
+      "nlink": 1,
+      "mtime_ns": 1794230809119167895,
+      "ctime_ns": 1794230809119167895,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-seal-outer-v1/stdout.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-seal-outer-v1/stdout.log",
+      "relative": "desktop-6ec-workspace-timeout-history-seal-outer-v1/stdout.log",
+      "bytes": 637,
+      "sha256": "567c8c2416120dd6c1ba6acc80cc8a66ae11cfb49ca6ca80d0e0832aaf0db6ee",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9885695,
+      "nlink": 1,
+      "mtime_ns": 1794230825249661620,
+      "ctime_ns": 1794230825249661620,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-seal-outer-v1/stderr.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-seal-outer-v1/stderr.log",
+      "relative": "desktop-6ec-workspace-timeout-history-seal-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9885696,
+      "nlink": 1,
+      "mtime_ns": 1794230809133167456,
+      "ctime_ns": 1794230809133167456,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-appserver-owning-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-appserver-owning-v1/RESULT.json",
+      "relative": "core-output-6ec5993-desktop-appserver-owning-v1/RESULT.json",
+      "bytes": 15846,
+      "sha256": "13b3cccf9810909254acf5f42616c2dd47eaf8a1d06ef820f60a5fe35ba6f7a8",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6218196,
+      "nlink": 1,
+      "mtime_ns": 1794219259349529649,
+      "ctime_ns": 1794219259349529649,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-appserver-owning-v1/tests-junit.xml": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-appserver-owning-v1/tests-junit.xml",
+      "relative": "core-output-6ec5993-desktop-appserver-owning-v1/tests-junit.xml",
+      "bytes": 309339,
+      "sha256": "e5f468288c35dfdad4a16143c0ca062b09e98ce0aceadcb017d42de1574a590e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6218180,
+      "nlink": 1,
+      "mtime_ns": 1794219250729571571,
+      "ctime_ns": 1794219250729571571,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-core-retained-binaries-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-core-retained-binaries-v1/RESULT.json",
+      "relative": "core-output-6ec5993-desktop-core-retained-binaries-v1/RESULT.json",
+      "bytes": 35292,
+      "sha256": "dad59749b2c7dc6e20f76986ccd4233fa529e550c8794dc71cf308aa376e9102",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5038457,
+      "nlink": 1,
+      "mtime_ns": 1794218424801639694,
+      "ctime_ns": 1794218424801639694,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/driver.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/driver.py",
+      "relative": "core-output-6ec5993-desktop-strict-v1/driver.py",
+      "bytes": 18350,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7",
+      "mode": 384,
+      "device": 2050,
+      "inode": 7120633,
+      "nlink": 1,
+      "mtime_ns": 1794214112920202133,
+      "ctime_ns": 1794214112920202133,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helpers/env.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helpers/env.json",
+      "relative": "core-output-6ec5993-desktop-strict-v1/helpers/env.json",
+      "bytes": 2754,
+      "sha256": "76b9a5a60f9f1fb33e2bdff36702d78988361cedd95928751a9b2676eca10004",
+      "mode": 384,
+      "device": 2050,
+      "inode": 7120670,
+      "nlink": 1,
+      "mtime_ns": 1794215525890029464,
+      "ctime_ns": 1794215525890029464,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helpers/manifest.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/helpers/manifest.json",
+      "relative": "core-output-6ec5993-desktop-strict-v1/helpers/manifest.json",
+      "bytes": 14234,
+      "sha256": "8a7d194f148d3a2cd458eb8fe56fd9e70b62b3016c09e7562f2e35b58948539b",
+      "mode": 384,
+      "device": 2050,
+      "inode": 7120673,
+      "nlink": 1,
+      "mtime_ns": 1794215525891155599,
+      "ctime_ns": 1794215525891155599,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/preparation.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-strict-v1/preparation.json",
+      "relative": "core-output-6ec5993-desktop-strict-v1/preparation.json",
+      "bytes": 20468,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6",
+      "mode": 384,
+      "device": 2050,
+      "inode": 7120690,
+      "nlink": 1,
+      "mtime_ns": 1794217030276135343,
+      "ctime_ns": 1794217030276135343,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-recovery-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-v8-recovery-v1/RESULT.json",
+      "relative": "core-output-6ec5993-desktop-v8-recovery-v1/RESULT.json",
+      "bytes": 15762,
+      "sha256": "f6db0e514ef3d08f7241cc025028f8bef3ee3a9af903a5bae539ab33474d6612",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6730458,
+      "nlink": 1,
+      "mtime_ns": 1794213763064811450,
+      "ctime_ns": 1794213763064811450,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/COMMAND.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/COMMAND.json",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v1/COMMAND.json",
+      "bytes": 1583,
+      "sha256": "aefa4364b19a2a504f03ac07eaed38c9a424d9a90a6945fb1aa70fad1cca4cda",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5827641,
+      "nlink": 1,
+      "mtime_ns": 1794221416384236568,
+      "ctime_ns": 1794221416384236568,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/EXECUTION.json",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v1/EXECUTION.json",
+      "bytes": 3298,
+      "sha256": "f12daf83fb4d3c4b98ed7ddfe8a0b001770bd648ac8d512de8991f31a3059a46",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5827644,
+      "nlink": 1,
+      "mtime_ns": 1794221436057327342,
+      "ctime_ns": 1794221436057327342,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/launcher.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/launcher.py",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v1/launcher.py",
+      "bytes": 6016,
+      "sha256": "6d9c8989f69678a6916c7a48670b8427b8476a327e4288ea4311447a64a61c40",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5827638,
+      "nlink": 1,
+      "mtime_ns": 1794221416383559742,
+      "ctime_ns": 1794221416383559742,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/native-driver-original.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/native-driver-original.py",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v1/native-driver-original.py",
+      "bytes": 62690,
+      "sha256": "6514e6c19b323e6eb133ff0ba8d0c43d9d25258c0a7ddc6947f5ba8f6f428a81",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5827639,
+      "nlink": 1,
+      "mtime_ns": 1794221416383702508,
+      "ctime_ns": 1794221416383702508,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/stderr.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/stderr.log",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5827643,
+      "nlink": 1,
+      "mtime_ns": 1794221416384236568,
+      "ctime_ns": 1794221416384236568,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/stdout.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/stdout.log",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v1/stdout.log",
+      "bytes": 308,
+      "sha256": "a69608d3111309d66a9a4f72fd6dafc40235d42b54501737fb8f52bc84e547d6",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5827642,
+      "nlink": 1,
+      "mtime_ns": 1794221436042062536,
+      "ctime_ns": 1794221436042062536,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/strict-preparation-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v1/strict-preparation-original.json",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v1/strict-preparation-original.json",
+      "bytes": 20468,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5827640,
+      "nlink": 1,
+      "mtime_ns": 1794221416383875975,
+      "ctime_ns": 1794221416383875975,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/COMMAND.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/COMMAND.json",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v2/COMMAND.json",
+      "bytes": 1583,
+      "sha256": "cd2eaccb8164b57ac1150e97e16c244a7fd23a7d0d38976211baf6c4b889a996",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083758,
+      "nlink": 1,
+      "mtime_ns": 1794222254102957045,
+      "ctime_ns": 1794222254102957045,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/EXECUTION.json",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v2/EXECUTION.json",
+      "bytes": 3298,
+      "sha256": "0873d2a97f59f13a1accb840637907ea7fb85aa5551b51dd339687ea0348cd1b",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088555,
+      "nlink": 1,
+      "mtime_ns": 1794226490254372444,
+      "ctime_ns": 1794226490254372444,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/launcher.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/launcher.py",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v2/launcher.py",
+      "bytes": 6016,
+      "sha256": "f6c7a80fccee4cb682c61e43d5167ebb9c307da0a9486834b2b29499f331eb2e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083754,
+      "nlink": 1,
+      "mtime_ns": 1794222254102301400,
+      "ctime_ns": 1794222254102301400,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/native-driver-original.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/native-driver-original.py",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v2/native-driver-original.py",
+      "bytes": 62752,
+      "sha256": "080cb431a2c46a43e359cb5a47c729920849bfd93249684ac17c6dd9cee23ca3",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083756,
+      "nlink": 1,
+      "mtime_ns": 1794222254102434301,
+      "ctime_ns": 1794222254102434301,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/stderr.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/stderr.log",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v2/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083760,
+      "nlink": 1,
+      "mtime_ns": 1794222254102957045,
+      "ctime_ns": 1794222254102957045,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/stdout.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/stdout.log",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v2/stdout.log",
+      "bytes": 1134,
+      "sha256": "dce51bd338bc9f8df9a3738d142460dd9d3cf76e8ce9eca852e635a146f54592",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083759,
+      "nlink": 1,
+      "mtime_ns": 1794226490235846378,
+      "ctime_ns": 1794226490235846378,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/strict-preparation-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-outer-v2/strict-preparation-original.json",
+      "relative": "core-output-6ec5993-desktop-workspace-outer-v2/strict-preparation-original.json",
+      "bytes": 20468,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083757,
+      "nlink": 1,
+      "mtime_ns": 1794222254102589757,
+      "ctime_ns": 1794222254102589757,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-related-process-snapshot-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-related-process-snapshot-v1/RESULT.json",
+      "relative": "core-output-6ec5993-desktop-workspace-related-process-snapshot-v1/RESULT.json",
+      "bytes": 2805,
+      "sha256": "3e076569d42a8d57e420b688402eba5379a39c6911716ae655648b080436e517",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9087161,
+      "nlink": 1,
+      "mtime_ns": 1794227817681333048,
+      "ctime_ns": 1794227817681333048,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/EXECUTION.json",
+      "relative": "core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/EXECUTION.json",
+      "bytes": 1313,
+      "sha256": "0dbe66742420e16dea71930b30c3f7611695f2ce73332e569ddb726679b1cfd6",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089421,
+      "nlink": 1,
+      "mtime_ns": 1794229102584121576,
+      "ctime_ns": 1794229102584121576,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/H_TOOL_RESPONSES.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/H_TOOL_RESPONSES.json",
+      "relative": "core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/H_TOOL_RESPONSES.json",
+      "bytes": 9741,
+      "sha256": "9a766663a104f69456a7ed2e3d6621935469cf467a1fa4ec1f1f3b14640e8b67",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089773,
+      "nlink": 1,
+      "mtime_ns": 1794230100956534899,
+      "ctime_ns": 1794230100956534899,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/REQUEST.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/REQUEST.json",
+      "relative": "core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/REQUEST.json",
+      "bytes": 558,
+      "sha256": "5b7c717073f6ad113d22b47ccfa4808afc250dd69bbe0e18c409cb95ff435857",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089416,
+      "nlink": 1,
+      "mtime_ns": 1794229102408399903,
+      "ctime_ns": 1794229102408399903,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/SHELL_REQUEST.txt": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/SHELL_REQUEST.txt",
+      "relative": "core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/SHELL_REQUEST.txt",
+      "bytes": 2848,
+      "sha256": "1834ffe9006d9930b4e2e394354ee420e0f43d4c0fc9cb8eb29800d7ee4ffbee",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089772,
+      "nlink": 1,
+      "mtime_ns": 1794230100954901891,
+      "ctime_ns": 1794230100954901891,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/stderr.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/stderr.log",
+      "relative": "core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089418,
+      "nlink": 1,
+      "mtime_ns": 1794229102415411113,
+      "ctime_ns": 1794229102415411113,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/stdout.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/stdout.log",
+      "relative": "core-output-6ec5993-desktop-workspace-target-metadata-observation-outer-v1/stdout.log",
+      "bytes": 235,
+      "sha256": "db13f53ee7f26cc3bfda99fe66338f30a881f92bd9fa42b4afcae8f0bf62c9bc",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089417,
+      "nlink": 1,
+      "mtime_ns": 1794229102527407180,
+      "ctime_ns": 1794229102527407180,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-v1/RESULT.json",
+      "relative": "core-output-6ec5993-desktop-workspace-target-metadata-observation-v1/RESULT.json",
+      "bytes": 22700,
+      "sha256": "92586b7f0e0e45bee76ba2c832fac950b5f7b05e641e1d478587688d3ddeac06",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089420,
+      "nlink": 1,
+      "mtime_ns": 1794229102473293795,
+      "ctime_ns": 1794229102473293795,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/EXECUTION.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/EXECUTION.json",
+      "bytes": 1946,
+      "sha256": "e9399cb12d0731c90cd0204a8ed7f7dfe87d3a07f32d213a0262caf2ae9063bc",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089339,
+      "nlink": 1,
+      "mtime_ns": 1794228795522494237,
+      "ctime_ns": 1794228795522494237,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/H_TOOL_RESPONSES.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/H_TOOL_RESPONSES.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/H_TOOL_RESPONSES.json",
+      "bytes": 8837,
+      "sha256": "c486ccf85e1bbbe1e315721371c90b5213612254e32893d8f384a996921e4b0b",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089372,
+      "nlink": 1,
+      "mtime_ns": 1794228930183897663,
+      "ctime_ns": 1794228930183897663,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/REQUEST.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/REQUEST.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/REQUEST.json",
+      "bytes": 1177,
+      "sha256": "033a05ef6feed93e1bc3859a980be44d6b8f7b8b29a66056258cfe327d857a50",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089328,
+      "nlink": 1,
+      "mtime_ns": 1794228789802354831,
+      "ctime_ns": 1794228789802354831,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/SHELL_REQUEST.txt": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/SHELL_REQUEST.txt",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/SHELL_REQUEST.txt",
+      "bytes": 4159,
+      "sha256": "048aa53bc546ae518c1523207bd4e700d59879b1238c97c6f506845db902ae7b",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089371,
+      "nlink": 1,
+      "mtime_ns": 1794228930076745725,
+      "ctime_ns": 1794228930076745725,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/stderr.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/stderr.log",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089330,
+      "nlink": 1,
+      "mtime_ns": 1794228789937150781,
+      "ctime_ns": 1794228789937150781,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/stdout.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/stdout.log",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-outer-v1/stdout.log",
+      "bytes": 401,
+      "sha256": "17ac080c2c6e60fc192663a15dc53c063d413f2154c327146151612418a2e489",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089329,
+      "nlink": 1,
+      "mtime_ns": 1794228795457983701,
+      "ctime_ns": 1794228795457983701,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/RESULT.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/RESULT.json",
+      "bytes": 49405,
+      "sha256": "f85647d0a8ecd69165d608f0d491797123f92ec27d509e3ceaaf992e2a62982a",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089338,
+      "nlink": 1,
+      "mtime_ns": 1794228795457853662,
+      "ctime_ns": 1794228795457853662,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/copies.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/copies.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/copies.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089337,
+      "nlink": 1,
+      "mtime_ns": 1794228795454555132,
+      "ctime_ns": 1794228795454555132,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/driver.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/driver.py",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/driver.py",
+      "bytes": 61752,
+      "sha256": "a515b08677479c2a53bc7cfedac2ce8b5b5185a310a874f68d4b23f689cc2507",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089332,
+      "nlink": 1,
+      "mtime_ns": 1794228790013529706,
+      "ctime_ns": 1794228790013529706,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/process-after-copy.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/process-after-copy.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/process-after-copy.json",
+      "bytes": 2805,
+      "sha256": "e7ae39bbec3e66384b0671809fb76db2a8730ecfc5bbfdeca7590e2755f5d9c3",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089335,
+      "nlink": 1,
+      "mtime_ns": 1794228795234049751,
+      "ctime_ns": 1794228795234049751,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/process-before.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/process-before.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/process-before.json",
+      "bytes": 2805,
+      "sha256": "2a8e660900d4be484257974b6c54d2bf4f47003d2fe15fce77b5ea52ffab313d",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089333,
+      "nlink": 1,
+      "mtime_ns": 1794228790649943693,
+      "ctime_ns": 1794228790649943693,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/process-final.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/process-final.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/process-final.json",
+      "bytes": 2805,
+      "sha256": "a4b8e78c379f86d369f7008efeccd8b2346a0d5d23da3d099acaf95b9a6e99e3",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089336,
+      "nlink": 1,
+      "mtime_ns": 1794228795369845230,
+      "ctime_ns": 1794228795369845230,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/source-before.files.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/source-before.files.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/source-before.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089334,
+      "nlink": 1,
+      "mtime_ns": 1794228795113255023,
+      "ctime_ns": 1794228795113255023,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-readback-v1/PARTIAL_RAW_STATUS_RECORDS.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-readback-v1/PARTIAL_RAW_STATUS_RECORDS.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-readback-v1/PARTIAL_RAW_STATUS_RECORDS.json",
+      "bytes": 4371555,
+      "sha256": "78c400d1f718ddec8e3873b4882ef1d94e5fd78e65f4e2a12adbe04af1425bb9",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9087168,
+      "nlink": 1,
+      "mtime_ns": 1794227959504439402,
+      "ctime_ns": 1794227959504439402,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-readback-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-readback-v1/RESULT.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-readback-v1/RESULT.json",
+      "bytes": 34404,
+      "sha256": "1adb441373e9067af9bbae3a5b808be60aad87475e7e3a1d14327c13ac1fc65d",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9087169,
+      "nlink": 1,
+      "mtime_ns": 1794227959631442977,
+      "ctime_ns": 1794227959631442977,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/EXECUTION.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/EXECUTION.json",
+      "bytes": 1828,
+      "sha256": "b2fedf0194ce2bcaf48380b1d22e8cb410cc180d5c18528253f846baec085ac8",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9087170,
+      "nlink": 1,
+      "mtime_ns": 1794227959679434017,
+      "ctime_ns": 1794227959679434017,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/EXECUTION.started.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/EXECUTION.started.json",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/EXECUTION.started.json",
+      "bytes": 700,
+      "sha256": "e344360fd7b065529e1cb570b2ad330f99faf146b1f4b7e1e270a6c69946b02c",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9087164,
+      "nlink": 1,
+      "mtime_ns": 1794227959045369880,
+      "ctime_ns": 1794227959045369880,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/stderr.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/stderr.log",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9087166,
+      "nlink": 1,
+      "mtime_ns": 1794227959045369880,
+      "ctime_ns": 1794227959045369880,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/stdout.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/stdout.log",
+      "relative": "core-output-6ec5993-desktop-workspace-timeout-reader-launch-v1/stdout.log",
+      "bytes": 322,
+      "sha256": "03ef529f13e7358edc286e636e956066efd7a39d735b62d35c04562eabedabfa",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9087165,
+      "nlink": 1,
+      "mtime_ns": 1794227959667434387,
+      "ctime_ns": 1794227959667434387,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/RESULT.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v1/RESULT.json",
+      "bytes": 30036,
+      "sha256": "726945118c6761d5953f41b0eecc6f9fd0d91794f1df1d64f666450048eb9eb2",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087954,
+      "nlink": 1,
+      "mtime_ns": 1794221436042062536,
+      "ctime_ns": 1794221436042062536,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/driver.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/driver.py",
+      "relative": "core-output-6ec5993-desktop-workspace-v1/driver.py",
+      "bytes": 62690,
+      "sha256": "6514e6c19b323e6eb133ff0ba8d0c43d9d25258c0a7ddc6947f5ba8f6f428a81",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087942,
+      "nlink": 1,
+      "mtime_ns": 1794221416467535169,
+      "ctime_ns": 1794221416467535169,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/helper-env-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/helper-env-original.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v1/helper-env-original.json",
+      "bytes": 2754,
+      "sha256": "76b9a5a60f9f1fb33e2bdff36702d78988361cedd95928751a9b2676eca10004",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087950,
+      "nlink": 1,
+      "mtime_ns": 1794221426021449154,
+      "ctime_ns": 1794221426021449154,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/helper-manifest-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/helper-manifest-original.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v1/helper-manifest-original.json",
+      "bytes": 14234,
+      "sha256": "8a7d194f148d3a2cd458eb8fe56fd9e70b62b3016c09e7562f2e35b58948539b",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087949,
+      "nlink": 1,
+      "mtime_ns": 1794221426019748020,
+      "ctime_ns": 1794221426019748020,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/preparation-lineage.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/preparation-lineage.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v1/preparation-lineage.json",
+      "bytes": 20468,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087947,
+      "nlink": 1,
+      "mtime_ns": 1794221418647657181,
+      "ctime_ns": 1794221418647657181,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/snapshot-helper-original.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/snapshot-helper-original.py",
+      "relative": "core-output-6ec5993-desktop-workspace-v1/snapshot-helper-original.py",
+      "bytes": 18350,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087948,
+      "nlink": 1,
+      "mtime_ns": 1794221418730360192,
+      "ctime_ns": 1794221418730360192,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/source-after.diff.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/source-after.diff.patch",
+      "relative": "core-output-6ec5993-desktop-workspace-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087952,
+      "nlink": 1,
+      "mtime_ns": 1794221428989561597,
+      "ctime_ns": 1794221428989561597,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/source-after.files.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/source-after.files.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v1/source-after.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087951,
+      "nlink": 1,
+      "mtime_ns": 1794221428946266563,
+      "ctime_ns": 1794221428946266563,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/source-after.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/source-after.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v1/source-after.json",
+      "bytes": 874,
+      "sha256": "96b5c06beaf3d7ddcb1d5e14c26c51c2007f8df501f8cdbd440ef7bcdc9a7129",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087953,
+      "nlink": 1,
+      "mtime_ns": 1794221429071196532,
+      "ctime_ns": 1794221429071196532,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/source-before.diff.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/source-before.diff.patch",
+      "relative": "core-output-6ec5993-desktop-workspace-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087945,
+      "nlink": 1,
+      "mtime_ns": 1794221418557907631,
+      "ctime_ns": 1794221418557907631,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/source-before.files.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/source-before.files.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v1/source-before.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087944,
+      "nlink": 1,
+      "mtime_ns": 1794221418541877923,
+      "ctime_ns": 1794221418541877923,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/source-before.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v1/source-before.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v1/source-before.json",
+      "bytes": 876,
+      "sha256": "6139ddbf34ed9203951b7675a86a1b4d956b63f9905fef580a0250bcc9abff33",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087946,
+      "nlink": 1,
+      "mtime_ns": 1794221418639188151,
+      "ctime_ns": 1794221418639188151,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/RESULT.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/RESULT.json",
+      "bytes": 52313,
+      "sha256": "0edd92cd4dc4bc919633ef5c12c723acd4c4b95cebbb8bf5c8de684baabcb45b",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088561,
+      "nlink": 1,
+      "mtime_ns": 1794226490235846378,
+      "ctime_ns": 1794226490235846378,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.json",
+      "bytes": 1929,
+      "sha256": "15ee6a42cf96c4fc91113b3ae2c29f3c76e20c6718cf4535f6964abefb5a68be",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088558,
+      "nlink": 1,
+      "mtime_ns": 1794226479368640143,
+      "ctime_ns": 1794226479372336297,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.json.bbaf596565bb482fbca18ec3d990b6c2.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.json.bbaf596565bb482fbca18ec3d990b6c2.log",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.json.bbaf596565bb482fbca18ec3d990b6c2.log",
+      "bytes": 700,
+      "sha256": "95f3837810b67d07c221b78574e0d6a12e3f5ff258e2b02fa402162f93eda55d",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088556,
+      "nlink": 1,
+      "mtime_ns": 1794226479296338495,
+      "ctime_ns": 1794226479296338495,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.wrapper.stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.wrapper.stderr",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.wrapper.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088554,
+      "nlink": 1,
+      "mtime_ns": 1794226479080523581,
+      "ctime_ns": 1794226479080523581,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.wrapper.stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.wrapper.stdout",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/collect-workspace-junit.wrapper.stdout",
+      "bytes": 2473,
+      "sha256": "292cd62db5431d04ab922b1b3b76fb9963767fd8e64617d3d4c6eed43dabb007",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088551,
+      "nlink": 1,
+      "mtime_ns": 1794226479373336268,
+      "ctime_ns": 1794226479373336268,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/driver.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/driver.py",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/driver.py",
+      "bytes": 62752,
+      "sha256": "080cb431a2c46a43e359cb5a47c729920849bfd93249684ac17c6dd9cee23ca3",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083762,
+      "nlink": 1,
+      "mtime_ns": 1794222254183403672,
+      "ctime_ns": 1794222254183403672,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helper-env-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helper-env-original.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/helper-env-original.json",
+      "bytes": 2754,
+      "sha256": "76b9a5a60f9f1fb33e2bdff36702d78988361cedd95928751a9b2676eca10004",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083770,
+      "nlink": 1,
+      "mtime_ns": 1794222264363540101,
+      "ctime_ns": 1794222264363540101,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helper-manifest-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helper-manifest-original.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/helper-manifest-original.json",
+      "bytes": 14234,
+      "sha256": "8a7d194f148d3a2cd458eb8fe56fd9e70b62b3016c09e7562f2e35b58948539b",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083769,
+      "nlink": 1,
+      "mtime_ns": 1794222264359385661,
+      "ctime_ns": 1794222264359385661,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.json",
+      "bytes": 1675,
+      "sha256": "c5935019aab056b8f8ab4df4ec13c18b026d722e30b47ee9c1ce58ea2b1eefa7",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088553,
+      "nlink": 1,
+      "mtime_ns": 1794226478842351619,
+      "ctime_ns": 1794226478846351504,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.json.de9e7d92c01a474c8271ccc94f6c0020.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.json.de9e7d92c01a474c8271ccc94f6c0020.log",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.json.de9e7d92c01a474c8271ccc94f6c0020.log",
+      "bytes": 5839,
+      "sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088552,
+      "nlink": 1,
+      "mtime_ns": 1794226478757354076,
+      "ctime_ns": 1794226478757354076,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.wrapper.stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.wrapper.stderr",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.wrapper.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088550,
+      "nlink": 1,
+      "mtime_ns": 1794226471490564153,
+      "ctime_ns": 1794226471490564153,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.wrapper.stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.wrapper.stdout",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/helpers-after-workspace.wrapper.stdout",
+      "bytes": 7370,
+      "sha256": "574f5c8a272de46ae58ba11c03b6296dbad69e26d77a8139252012a110ac2c89",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083773,
+      "nlink": 1,
+      "mtime_ns": 1794226478847351475,
+      "ctime_ns": 1794226478847351475,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.json",
+      "bytes": 1676,
+      "sha256": "66b06eb742e5920df3baadab6b75bda8efa217ed4b592f81e59a69097b9df81d",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083775,
+      "nlink": 1,
+      "mtime_ns": 1794222270731307611,
+      "ctime_ns": 1794222270732336266,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.json.47880a2735984a31b619cea53c309b9b.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.json.47880a2735984a31b619cea53c309b9b.log",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.json.47880a2735984a31b619cea53c309b9b.log",
+      "bytes": 5839,
+      "sha256": "5d72ff5bcc817a84ee9b69427d0d656d1154d795fa528201f121ed6ae29a10b0",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083774,
+      "nlink": 1,
+      "mtime_ns": 1794222270635339357,
+      "ctime_ns": 1794222270635339357,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.wrapper.stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.wrapper.stderr",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.wrapper.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083772,
+      "nlink": 1,
+      "mtime_ns": 1794222264589091583,
+      "ctime_ns": 1794222264589091583,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.wrapper.stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.wrapper.stdout",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/helpers-before-workspace.wrapper.stdout",
+      "bytes": 7371,
+      "sha256": "de0bf69b2ec8ef7bb0375a2d30bdcb424a5b5d2457760f95c70ef118b0ff7ce1",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083763,
+      "nlink": 1,
+      "mtime_ns": 1794222270732336266,
+      "ctime_ns": 1794222270732336266,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/junit-workspace.summary.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/junit-workspace.summary.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/junit-workspace.summary.json",
+      "bytes": 744,
+      "sha256": "d7c6f2421227ce2bbb51a66942a36e2c34f55562ec42477b1012ab7862333ca7",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088557,
+      "nlink": 1,
+      "mtime_ns": 1794226479288338726,
+      "ctime_ns": 1794226479288338726,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/preparation-lineage.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/preparation-lineage.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/preparation-lineage.json",
+      "bytes": 20468,
+      "sha256": "3c4112bc73b10fb7ef164394cc2ec37dd98fb7d3ddeaa16ac6f40a4428c01ee6",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083767,
+      "nlink": 1,
+      "mtime_ns": 1794222257253044504,
+      "ctime_ns": 1794222257253044504,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/snapshot-helper-original.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/snapshot-helper-original.py",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/snapshot-helper-original.py",
+      "bytes": 18350,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083768,
+      "nlink": 1,
+      "mtime_ns": 1794222257267233966,
+      "ctime_ns": 1794222257267233966,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/source-after.diff.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/source-after.diff.patch",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088559,
+      "nlink": 1,
+      "mtime_ns": 1794226483787208660,
+      "ctime_ns": 1794226483787208660,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/source-after.files.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/source-after.files.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/source-after.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083777,
+      "nlink": 1,
+      "mtime_ns": 1794226483768018674,
+      "ctime_ns": 1794226483768018674,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/source-after.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/source-after.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/source-after.json",
+      "bytes": 873,
+      "sha256": "39681046710814c2daf50842a742e86f3618ddc8dbbf42252472dfbaacf68b37",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088560,
+      "nlink": 1,
+      "mtime_ns": 1794226483871859267,
+      "ctime_ns": 1794226483871859267,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/source-before.diff.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/source-before.diff.patch",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083765,
+      "nlink": 1,
+      "mtime_ns": 1794222257161768821,
+      "ctime_ns": 1794222257161768821,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/source-before.files.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/source-before.files.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/source-before.files.json",
+      "bytes": 5658136,
+      "sha256": "beb1e1e8c4dfdc3f2238bc999edf3ff837611f1b651105a2f5957b083fd87e17",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083764,
+      "nlink": 1,
+      "mtime_ns": 1794222257143910511,
+      "ctime_ns": 1794222257143910511,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/source-before.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/source-before.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/source-before.json",
+      "bytes": 875,
+      "sha256": "0baa7e03372c384cdcc911a259429ad4bbf697b4843c5f1500ecbfd75392d357",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083766,
+      "nlink": 1,
+      "mtime_ns": 1794222257247266700,
+      "ctime_ns": 1794222257247266700,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/workspace-tests.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/workspace-tests.json",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/workspace-tests.json",
+      "bytes": 1439,
+      "sha256": "e15e29e73a9da06500b747effe7fa66c24e77057f59cd5ddf0cb5069457acc3c",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088549,
+      "nlink": 1,
+      "mtime_ns": 1794226471220299510,
+      "ctime_ns": 1794226471228571726,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/workspace-tests.json.a36f513e781147cfb0a194d2b5936cd9.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/workspace-tests.json.a36f513e781147cfb0a194d2b5936cd9.log",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/workspace-tests.json.a36f513e781147cfb0a194d2b5936cd9.log",
+      "bytes": 881609,
+      "sha256": "d00a0a226a56c81d11d8def8b439ac5815dc8a3a4efbc7203272d339857241e4",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083779,
+      "nlink": 1,
+      "mtime_ns": 1794226471122574791,
+      "ctime_ns": 1794226471122574791,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/workspace-tests.wrapper.stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/workspace-tests.wrapper.stderr",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/workspace-tests.wrapper.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083776,
+      "nlink": 1,
+      "mtime_ns": 1794222270969429720,
+      "ctime_ns": 1794222270969429720,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/workspace-tests.wrapper.stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-v2/workspace-tests.wrapper.stdout",
+      "relative": "core-output-6ec5993-desktop-workspace-v2/workspace-tests.wrapper.stdout",
+      "bytes": 882912,
+      "sha256": "e3b8214a0340186cff56c9ec83213c547f37aa24b2dfa640b32594adb33cb45e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9083771,
+      "nlink": 1,
+      "mtime_ns": 1794226471228571726,
+      "ctime_ns": 1794226471228571726,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/CHECKS.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/CHECKS.json",
+      "relative": "core-output-d27431b-independent-target-outer-preparation-v3/CHECKS.json",
+      "bytes": 1448,
+      "sha256": "726b3d5427e69f99ac7cc4de0029ba513b33ad66a395702e1e522835c2c2387c",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089768,
+      "nlink": 1,
+      "mtime_ns": 1794230100948159060,
+      "ctime_ns": 1794230100948159060,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/FINAL_REVIEWED_PREPARATION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/FINAL_REVIEWED_PREPARATION.json",
+      "relative": "core-output-d27431b-independent-target-outer-preparation-v3/FINAL_REVIEWED_PREPARATION.json",
+      "bytes": 1418,
+      "sha256": "6113d6c5b09da7b0d749a4469f450a22909167312aefa0b6f026227bee723269",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089786,
+      "nlink": 1,
+      "mtime_ns": 1794230175328128724,
+      "ctime_ns": 1794230175328128724,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/RESULT.json",
+      "relative": "core-output-d27431b-independent-target-outer-preparation-v3/RESULT.json",
+      "bytes": 5113,
+      "sha256": "63b7b73c72b4246ce2eeb4586ea7485526d8474ccb4f975bce0d73ca9603aeae",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089774,
+      "nlink": 1,
+      "mtime_ns": 1794230100958968894,
+      "ctime_ns": 1794230100958968894,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/REUSE_PROOF.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/REUSE_PROOF.json",
+      "relative": "core-output-d27431b-independent-target-outer-preparation-v3/REUSE_PROOF.json",
+      "bytes": 1123,
+      "sha256": "1a3ce44fe748679c91d79e0ca62f5bab41f742ab277bbec68057058913a02e40",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089769,
+      "nlink": 1,
+      "mtime_ns": 1794230100950005432,
+      "ctime_ns": 1794230100950005432,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/outer-v2-to-v3-reviewed.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/outer-v2-to-v3-reviewed.patch",
+      "relative": "core-output-d27431b-independent-target-outer-preparation-v3/outer-v2-to-v3-reviewed.patch",
+      "bytes": 16102,
+      "sha256": "8c3d4decd5b2e904906b07b052510ff389891d14a68613855a860771e4e6323f",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089785,
+      "nlink": 1,
+      "mtime_ns": 1794230175326520384,
+      "ctime_ns": 1794230175326520384,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/outer-v2-to-v3.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/outer-v2-to-v3.patch",
+      "relative": "core-output-d27431b-independent-target-outer-preparation-v3/outer-v2-to-v3.patch",
+      "bytes": 16093,
+      "sha256": "adb5ceba05d1393d54759347740934603f3a9a1de23c5d6ebbdf0f7dc3f0b60b",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089767,
+      "nlink": 1,
+      "mtime_ns": 1794230100946515272,
+      "ctime_ns": 1794230100946515272,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/outer-v3-to-reviewed-state-order.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-independent-target-outer-preparation-v3/outer-v3-to-reviewed-state-order.patch",
+      "relative": "core-output-d27431b-independent-target-outer-preparation-v3/outer-v3-to-reviewed-state-order.patch",
+      "bytes": 944,
+      "sha256": "98dc24af7950dc504432417bf8f902a3d832ef764482ee011285fd10d3e52f42",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089784,
+      "nlink": 1,
+      "mtime_ns": 1794230175324359115,
+      "ctime_ns": 1794230175324359115,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/EXECUTION.json",
+      "relative": "core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/EXECUTION.json",
+      "bytes": 1298,
+      "sha256": "307e3d8df1a0b18b96eb12c483d87be7cbec97345f2bff76c760ac7a513598bf",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089508,
+      "nlink": 1,
+      "mtime_ns": 1794229635705361969,
+      "ctime_ns": 1794229635705361969,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/H_TOOL_RESPONSES.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/H_TOOL_RESPONSES.json",
+      "relative": "core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/H_TOOL_RESPONSES.json",
+      "bytes": 7185,
+      "sha256": "9ac2cfe19201ef9103d015fd21d6f559b22786990076478285c0fe4faf7a081a",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089771,
+      "nlink": 1,
+      "mtime_ns": 1794230100953249721,
+      "ctime_ns": 1794230100953249721,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/REQUEST.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/REQUEST.json",
+      "relative": "core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/REQUEST.json",
+      "bytes": 564,
+      "sha256": "d778561897ca3055e1eca02c700c2fc5bfc797791c510dc8061f47497db735db",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089503,
+      "nlink": 1,
+      "mtime_ns": 1794229613488975004,
+      "ctime_ns": 1794229613488975004,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/SHELL_REQUEST.txt": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/SHELL_REQUEST.txt",
+      "relative": "core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/SHELL_REQUEST.txt",
+      "bytes": 2890,
+      "sha256": "6e722cf92e9ee9eec66152c94195baf31c757dc5adeacfd30073a16766844e15",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089770,
+      "nlink": 1,
+      "mtime_ns": 1794230100951461954,
+      "ctime_ns": 1794230100951461954,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/stderr.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/stderr.log",
+      "relative": "core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089505,
+      "nlink": 1,
+      "mtime_ns": 1794229613495190004,
+      "ctime_ns": 1794229613495190004,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/stdout.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/stdout.log",
+      "relative": "core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/stdout.log",
+      "bytes": 312,
+      "sha256": "8cc930496f36d7245987787faa3dc93f0cd3330d4d266abd19ab3163ea486983",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089504,
+      "nlink": 1,
+      "mtime_ns": 1794229635650466769,
+      "ctime_ns": 1794229635650466769,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-v1/RESULT.json",
+      "relative": "core-output-d27431b-retained-copies-and-tools-preflight-v1/RESULT.json",
+      "bytes": 30844,
+      "sha256": "fafa1afaba622967c72351d3d858c443160ba8c706b35c1582bd4e4108a12398",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089507,
+      "nlink": 1,
+      "mtime_ns": 1794229635649121843,
+      "ctime_ns": 1794229635649121843,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-input-discovery-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-6ec-workspace-timeout-history-input-discovery-v1/RESULT.json",
+      "relative": "desktop-6ec-workspace-timeout-history-input-discovery-v1/RESULT.json",
+      "bytes": 71714,
+      "sha256": "84f74e6549a1147c75f97387d0c3102a3c93bd07136fe7b5b9293c9e61553289",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089813,
+      "nlink": 1,
+      "mtime_ns": 1794230314111856927,
+      "ctime_ns": 1794230314111856927,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-workspace-just-original-version-observation-v2/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/desktop-workspace-just-original-version-observation-v2/RESULT.json",
+      "relative": "desktop-workspace-just-original-version-observation-v2/RESULT.json",
+      "bytes": 1836,
+      "sha256": "e42db597a1ffe8ec60b769f88af869d072c1dac73ff256cd22cf05b68d1ea495",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6087856,
+      "nlink": 1,
+      "mtime_ns": 1794218401277434913,
+      "ctime_ns": 1794218401277434913,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-core-output-6ec-desktop-workspace-v2.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-core-output-6ec-desktop-workspace-v2.py",
+      "relative": "launch-core-output-6ec-desktop-workspace-v2.py",
+      "bytes": 6016,
+      "sha256": "f6c7a80fccee4cb682c61e43d5167ebb9c307da0a9486834b2b29499f331eb2e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907398,
+      "nlink": 1,
+      "mtime_ns": 1794221826666512509,
+      "ctime_ns": 1794221826666512509,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-core-output-negative-d27431b-desktop-v2.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-core-output-negative-d27431b-desktop-v2.py",
+      "relative": "launch-core-output-negative-d27431b-desktop-v2.py",
+      "bytes": 6507,
+      "sha256": "431fe23a69e466bdda2d635bcbd12b53813e74fa62546e3892e98509292cfb88",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907368,
+      "nlink": 1,
+      "mtime_ns": 1794220956774310261,
+      "ctime_ns": 1794220956789701077,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-core-output-negative-d27431b-desktop-v3-reviewed.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-core-output-negative-d27431b-desktop-v3-reviewed.py",
+      "relative": "launch-core-output-negative-d27431b-desktop-v3-reviewed.py",
+      "bytes": 18359,
+      "sha256": "3c07b5c24909cf80fd78278d247ad3ab673ea994d83ceb82b6fe06c54ed3bd63",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907551,
+      "nlink": 1,
+      "mtime_ns": 1794230175321779671,
+      "ctime_ns": 1794230175321779671,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-core-output-negative-d27431b-desktop-v3.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-core-output-negative-d27431b-desktop-v3.py",
+      "relative": "launch-core-output-negative-d27431b-desktop-v3.py",
+      "bytes": 18359,
+      "sha256": "8626a3ad61c71f87468433da8c0d365fa58e671580dcdbd69a961f085ad8b4b4",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907550,
+      "nlink": 1,
+      "mtime_ns": 1794230100943509466,
+      "ctime_ns": 1794230100943509466,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/observe-desktop-6ec-timeout-fixed-paths-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/observe-desktop-6ec-timeout-fixed-paths-v1.py",
+      "relative": "observe-desktop-6ec-timeout-fixed-paths-v1.py",
+      "bytes": 4705,
+      "sha256": "195046043aba916fe656ae32460696aa260d53b6f559d7977daff3aefd56fb82",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907527,
+      "nlink": 1,
+      "mtime_ns": 1794229037221717281,
+      "ctime_ns": 1794229037221717281,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/observe-desktop-6ec-workspace-related-processes-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/observe-desktop-6ec-workspace-related-processes-v1.py",
+      "relative": "observe-desktop-6ec-workspace-related-processes-v1.py",
+      "bytes": 10538,
+      "sha256": "b240eaea9a8f19307041eb9021a4caa090828e6768a6f3a0d15ec5b32e85cdb5",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907489,
+      "nlink": 1,
+      "mtime_ns": 1794227256731575430,
+      "ctime_ns": 1794227256736575267,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/pr5397-status-v7-final-body.md": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/pr5397-status-v7-final-body.md",
+      "relative": "pr5397-status-v7-final-body.md",
+      "bytes": 12101,
+      "sha256": "1b22cef1f9c7e81817cba058c706c0518ff4fd7647484744fc84d3b3556b6b7f",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907518,
+      "nlink": 1,
+      "mtime_ns": 1794228154319353548,
+      "ctime_ns": 1794228154322465192,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/pr5397-status-v7-publication-observation-v1.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/pr5397-status-v7-publication-observation-v1.json",
+      "relative": "pr5397-status-v7-publication-observation-v1.json",
+      "bytes": 62984,
+      "sha256": "165fd3a6de8592c5906132ef365d39f4d5553143ed4b49ecd5dc385a53860df6",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907520,
+      "nlink": 1,
+      "mtime_ns": 1794228183731985655,
+      "ctime_ns": 1794228183842563072,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/read-desktop-6ec-workspace-timeout-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/read-desktop-6ec-workspace-timeout-v1.py",
+      "relative": "read-desktop-6ec-workspace-timeout-v1.py",
+      "bytes": 26981,
+      "sha256": "4f5cdda47fa693c36c83407c86409d2b08022e3253e6b489a7e17d91bd47f6c8",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907487,
+      "nlink": 1,
+      "mtime_ns": 1794227255213295865,
+      "ctime_ns": 1794227255217624849,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/retain-desktop-6ec-workspace-and-helper-binaries-v2.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/retain-desktop-6ec-workspace-and-helper-binaries-v2.py",
+      "relative": "retain-desktop-6ec-workspace-and-helper-binaries-v2.py",
+      "bytes": 44042,
+      "sha256": "b7390330799f7134485b8be0b9bf1796e1721ef98aaa316d025cb9d34a4c3420",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907399,
+      "nlink": 1,
+      "mtime_ns": 1794221826667793287,
+      "ctime_ns": 1794221826667793287,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/retain-desktop-6ec-workspace-timeout-artifacts-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/retain-desktop-6ec-workspace-timeout-artifacts-v1.py",
+      "relative": "retain-desktop-6ec-workspace-timeout-artifacts-v1.py",
+      "bytes": 61752,
+      "sha256": "a515b08677479c2a53bc7cfedac2ce8b5b5185a310a874f68d4b23f689cc2507",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907524,
+      "nlink": 1,
+      "mtime_ns": 1794228343847551324,
+      "ctime_ns": 1794228343847551324,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/root-evidence-increment009-publication-observation-v1.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/root-evidence-increment009-publication-observation-v1.json",
+      "relative": "root-evidence-increment009-publication-observation-v1.json",
+      "bytes": 36338,
+      "sha256": "79f69df0d1e38faa6759d2a2a91e3081c423a246bc9525fd6973ca05754febfc",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907500,
+      "nlink": 1,
+      "mtime_ns": 1794227834575159868,
+      "ctime_ns": 1794227834615292983,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/root-evidence-increment009-publication-observation-v2.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/root-evidence-increment009-publication-observation-v2.json",
+      "relative": "root-evidence-increment009-publication-observation-v2.json",
+      "bytes": 36918,
+      "sha256": "bd1dda20050d3d4528109f4d3ed7c57f80599aa080201fd65d977e2d8ece71f5",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907502,
+      "nlink": 1,
+      "mtime_ns": 1794227875549187241,
+      "ctime_ns": 1794227875550027463,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/run-core-output-negative-d27431b-desktop-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/run-core-output-negative-d27431b-desktop-v1.py",
+      "relative": "run-core-output-negative-d27431b-desktop-v1.py",
+      "bytes": 41862,
+      "sha256": "d36f68d6c7d378cbaf6e0f4172540ab52a38c095fcab5e393c35f2b1f3f7df92",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907165,
+      "nlink": 1,
+      "mtime_ns": 1794216457522357727,
+      "ctime_ns": 1794216457524278541,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/run-desktop-6ec-original-workspace-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/run-desktop-6ec-original-workspace-v1.py",
+      "relative": "run-desktop-6ec-original-workspace-v1.py",
+      "bytes": 62690,
+      "sha256": "6514e6c19b323e6eb133ff0ba8d0c43d9d25258c0a7ddc6947f5ba8f6f428a81",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907335,
+      "nlink": 1,
+      "mtime_ns": 1794219760221747247,
+      "ctime_ns": 1794219760221747247,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/run-desktop-6ec-original-workspace-v2.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/run-desktop-6ec-original-workspace-v2.py",
+      "relative": "run-desktop-6ec-original-workspace-v2.py",
+      "bytes": 62752,
+      "sha256": "080cb431a2c46a43e359cb5a47c729920849bfd93249684ac17c6dd9cee23ca3",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907397,
+      "nlink": 1,
+      "mtime_ns": 1794221826664989990,
+      "ctime_ns": 1794221826664989990,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/verify-d274-retained-core-copies-and-tools-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/verify-d274-retained-core-copies-and-tools-v1.py",
+      "relative": "verify-d274-retained-core-copies-and-tools-v1.py",
+      "bytes": 9954,
+      "sha256": "8956e0fc23a16123aba5a7df53ec627a245693d8e4eb5451176c734d0aa92648",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907535,
+      "nlink": 1,
+      "mtime_ns": 1794229549240845547,
+      "ctime_ns": 1794229549240845547,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/CHECKS.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/CHECKS.json",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/CHECKS.json",
+      "bytes": 5354,
+      "sha256": "56dbb9c72d3ecbfc35fcda5a58aa961c9acd864294be708c8446a6c1d7790bf7",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088608,
+      "nlink": 1,
+      "mtime_ns": 1794228343694023937,
+      "ctime_ns": 1794228343694023937,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/RESULT.json",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/RESULT.json",
+      "bytes": 2237,
+      "sha256": "7435f963dd426d010176191780ffa3f8b50f21b19c6f5b85d0e6cd7267d43aa5",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088610,
+      "nlink": 1,
+      "mtime_ns": 1794228343961167802,
+      "ctime_ns": 1794228343961167802,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/REUSE_PROOF.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/REUSE_PROOF.json",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/REUSE_PROOF.json",
+      "bytes": 2164,
+      "sha256": "f765e33844c9c77dfe51fd9e9abae709d42d961269d68f4c1878f07bb2f5813b",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088609,
+      "nlink": 1,
+      "mtime_ns": 1794228343793312395,
+      "ctime_ns": 1794228343793312395,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/builder.stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/builder.stderr",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/builder.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088604,
+      "nlink": 1,
+      "mtime_ns": 1794228343190704535,
+      "ctime_ns": 1794228343190704535,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/builder.stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/builder.stdout",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/builder.stdout",
+      "bytes": 720,
+      "sha256": "f1cfcc1ac5703ba06db916380a7ca117741f9b183c7eaa7438e76d8eb5adc0e0",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088570,
+      "nlink": 1,
+      "mtime_ns": 1794228344006679698,
+      "ctime_ns": 1794228344006679698,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/copy-pattern-adaptation.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/copy-pattern-adaptation.patch",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/copy-pattern-adaptation.patch",
+      "bytes": 4326,
+      "sha256": "887f3c43d3862ba0332dd082c2da282369d0bf672da337c1868feabdc09e3670",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088607,
+      "nlink": 1,
+      "mtime_ns": 1794228343622266567,
+      "ctime_ns": 1794228343622266567,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/custom-final.txt": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/custom-final.txt",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/custom-final.txt",
+      "bytes": 19662,
+      "sha256": "707383d5837a0c52ea9a7d4f647d9aee0fab7f4dff55c4b8791e9c2fba3c8554",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088197,
+      "nlink": 1,
+      "mtime_ns": 1794228267655234505,
+      "ctime_ns": 1794228267655234505,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/main-final.txt": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/main-final.txt",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/main-final.txt",
+      "bytes": 19190,
+      "sha256": "936f5b73a7aa17bdf12d681a7b5e7d5fc091913321a557fdb1d44b25b9cc6d36",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088474,
+      "nlink": 1,
+      "mtime_ns": 1794228267655574470,
+      "ctime_ns": 1794228267655574470,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/process-scanner-extraction.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/process-scanner-extraction.patch",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/process-scanner-extraction.patch",
+      "bytes": 12491,
+      "sha256": "4ba32c56d2636ccc118bf69ff835fbfc1d2646fa83e54e771d6f2bf3b13989e0",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088606,
+      "nlink": 1,
+      "mtime_ns": 1794228343577836137,
+      "ctime_ns": 1794228343577836137,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/retainer-draft.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/retainer-draft.py",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/retainer-draft.py",
+      "bytes": 61752,
+      "sha256": "a515b08677479c2a53bc7cfedac2ce8b5b5185a310a874f68d4b23f689cc2507",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088605,
+      "nlink": 1,
+      "mtime_ns": 1794228343448644683,
+      "ctime_ns": 1794228343448644683,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_custom.txt": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_custom.txt",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_custom.txt",
+      "bytes": 19197,
+      "sha256": "7a003d4ba1799f2c3a5c6a3b6dfcda0d47ac878aee67b1ace44cea00fcff0146",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9087704,
+      "nlink": 1,
+      "mtime_ns": 1794228112570969115,
+      "ctime_ns": 1794228112570969115,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_custom_reviewed.txt": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_custom_reviewed.txt",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_custom_reviewed.txt",
+      "bytes": 19540,
+      "sha256": "f3997d2a49fb1b412fb3dcdee21ef82f54416147af6fa9179631e1e64723e494",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9088168,
+      "nlink": 1,
+      "mtime_ns": 1794228165200082487,
+      "ctime_ns": 1794228165200082487,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_header.txt": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_header.txt",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_header.txt",
+      "bytes": 2581,
+      "sha256": "064af2bf6fbc55803e0553984132758a640a0b979ab3a805ffeb2d45f20a67a7",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9087703,
+      "nlink": 1,
+      "mtime_ns": 1794228112570654316,
+      "ctime_ns": 1794228112570654316,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_helpers.txt": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_helpers.txt",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_helpers.txt",
+      "bytes": 2948,
+      "sha256": "57adb713bd6ce7567f24076069c5326a0ebe893b46b040062cf22bc5ae9bf573",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9087705,
+      "nlink": 1,
+      "mtime_ns": 1794228112571202431,
+      "ctime_ns": 1794228112571202431,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_main.txt": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_main.txt",
+      "relative": "workspace-timeout-forensic-retainer-preparation-v1/timeout_retainer_main.txt",
+      "bytes": 18772,
+      "sha256": "3bab68c87806afe0066e65dbb1a29efcd97c328af2b3d61197ce981cb0bd5284",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9087706,
+      "nlink": 1,
+      "mtime_ns": 1794228112571426816,
+      "ctime_ns": 1794228112571426816,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-hepta-ci-exec-original-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-hepta-ci-exec-original-v1.py",
+      "relative": "workspace-timeout-hepta-ci-exec-original-v1.py",
+      "bytes": 12863,
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907491,
+      "nlink": 1,
+      "mtime_ns": 1794227259383488892,
+      "ctime_ns": 1794227259400488338,
+      "nul_count": 0
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-two-readonly-operations-v1.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/workspace-timeout-two-readonly-operations-v1.json",
+      "relative": "workspace-timeout-two-readonly-operations-v1.json",
+      "bytes": 15627,
+      "sha256": "4c88541a565872e6ff4850dc34d28c95c6c427abb0f511ccd63822d9bec3e704",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907508,
+      "nlink": 1,
+      "mtime_ns": 1794228059520042644,
+      "ctime_ns": 1794228059522367441,
+      "nul_count": 0
+    }
+  }
+}

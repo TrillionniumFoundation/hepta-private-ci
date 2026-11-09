@@ -1,0 +1,131 @@
+{
+  "status": "ACTUAL_INPUT_TYPED_REVIEW_NO_NEW_BLOCKER",
+  "reviewed_at": "2026-11-09T15:15:18.025892+00:00",
+  "inputs_before": [
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/actual-v2/DRAFT_INPUTS.json",
+      "bytes": 386917,
+      "sha256": "0fc8f813c9d06f759aec536265aeb571246eaeda737f736075998d2e186f4dec",
+      "device": 27,
+      "inode": 1480268,
+      "mtime_ns": 1794237172065602441,
+      "ctime_ns": 1794237172065602441
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/actual-v2/NEW_SOURCE_OBSERVATIONS.json",
+      "bytes": 5182,
+      "sha256": "28af97b5ad04139d2626c7dee3b45c3f16f1018760ffcea27d862a3de344f90d",
+      "device": 27,
+      "inode": 1480013,
+      "mtime_ns": 1794236979639859392,
+      "ctime_ns": 1794236979639859392
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/actual-v2/RESULT.json",
+      "bytes": 3987,
+      "sha256": "72629fb7b7a369a2178a7e7fad12a3622bd4ef3e407e2178ead382f3979c5cd2",
+      "device": 27,
+      "inode": 1480011,
+      "mtime_ns": 1794236979371860902,
+      "ctime_ns": 1794236979371860902
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/actual-v2/METADATA-BUDGET.json",
+      "bytes": 5490,
+      "sha256": "4bd206007e7cfd08c08491a3509814fc32834ea262ccdbf3c13479152c319058",
+      "device": 27,
+      "inode": 1480012,
+      "mtime_ns": 1794236979495860203,
+      "ctime_ns": 1794236979495860203
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/base/prior009-manifest.json",
+      "bytes": 172379,
+      "sha256": "0cf1005179c11c185da89843f4bd23d41ce61428de620783bf9f87a5642fc2de",
+      "device": 27,
+      "inode": 1479917,
+      "mtime_ns": 1794236214595485432,
+      "ctime_ns": 1794236214595485432
+    }
+  ],
+  "inputs_after": [
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/actual-v2/DRAFT_INPUTS.json",
+      "bytes": 386917,
+      "sha256": "0fc8f813c9d06f759aec536265aeb571246eaeda737f736075998d2e186f4dec",
+      "device": 27,
+      "inode": 1480268,
+      "mtime_ns": 1794237172065602441,
+      "ctime_ns": 1794237172065602441
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/actual-v2/NEW_SOURCE_OBSERVATIONS.json",
+      "bytes": 5182,
+      "sha256": "28af97b5ad04139d2626c7dee3b45c3f16f1018760ffcea27d862a3de344f90d",
+      "device": 27,
+      "inode": 1480013,
+      "mtime_ns": 1794236979639859392,
+      "ctime_ns": 1794236979639859392
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/actual-v2/RESULT.json",
+      "bytes": 3987,
+      "sha256": "72629fb7b7a369a2178a7e7fad12a3622bd4ef3e407e2178ead382f3979c5cd2",
+      "device": 27,
+      "inode": 1480011,
+      "mtime_ns": 1794236979371860902,
+      "ctime_ns": 1794236979371860902
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/actual-v2/METADATA-BUDGET.json",
+      "bytes": 5490,
+      "sha256": "4bd206007e7cfd08c08491a3509814fc32834ea262ccdbf3c13479152c319058",
+      "device": 27,
+      "inode": 1480012,
+      "mtime_ns": 1794236979495860203,
+      "ctime_ns": 1794236979495860203
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/base/prior009-manifest.json",
+      "bytes": 172379,
+      "sha256": "0cf1005179c11c185da89843f4bd23d41ce61428de620783bf9f87a5642fc2de",
+      "device": 27,
+      "inode": 1479917,
+      "mtime_ns": 1794236214595485432,
+      "ctime_ns": 1794236214595485432
+    }
+  ],
+  "input_identities_unchanged": true,
+  "checked": {
+    "all_old_current_fields_retained_exact_recursive_types": true,
+    "old_parent_packet_count": 93,
+    "new_packet_count": 2,
+    "planned_packet_count": 95,
+    "planned_overlapping_member_count": 11384,
+    "new_archive_members": 276,
+    "whole_JSON_object_bindings": 13,
+    "supplementary_metadata_files": 26,
+    "old_93_entry_objects_source": "unchanged exact pinned prior009 manifest; transaction carries only two new packet rows",
+    "new_scope_keys": [
+      "desktop_6ec_workspace_timeout_and_artifact_availability_history",
+      "d274_counterfactual_negative_native_retention_history"
+    ],
+    "one_exact_source_bundle_nontext_exception": {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-increment-original.bundle",
+      "bytes": 1800,
+      "sha256": "0e753e10409b9619c7ddff22cd36f00bcfb74f248f5bbb09dadbc989222a6f5e"
+    },
+    "timeout": "original v1 pre-native FAIL and v2 timeout FAIL preserved; 6821 is partial raw PASS-shaped keys, not full counts",
+    "negative": "original 0 PASS + 1 FAIL and driver1/test100/collector1 preserved; expected counterfactual does not make PASS",
+    "all_HOLD_common_bf42_CURRENT_cost_null_preserved": true,
+    "per_file_metadata_and_input_size_bounds_checked": true
+  },
+  "limits": [
+    "Read-only local exact JSON inputs and parent manifest.",
+    "No archive re-extraction, byte-member revalidation, remote worktree read, appender/native/main execution, or target/executable access.",
+    "The 13 bound complete original_json objects and their stored byte/SHA descriptors were inspected; raw originals are enforced later by the separately reviewed appender.",
+    "This is input review, not append or publication success."
+  ],
+  "full_history_cost": null,
+  "physical_cost": null
+}

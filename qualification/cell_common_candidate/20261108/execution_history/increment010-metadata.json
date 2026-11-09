@@ -1,0 +1,888 @@
+{
+  "schema_version": 1,
+  "status": "REVIEWABLE_INCREMENT_010_ACTUAL_APPEND_BOUND_PUBLICATION_METADATA",
+  "prepared_at": "2026-11-09T15:30:17.866275+00:00",
+  "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+  "parent_evidence_commit": "6e162bab21438b857179a22c6207552feda9331b",
+  "parent_evidence_tree": "db1528464ed0369f3be4b7a8a7b4d8df6d9abde0",
+  "packet_count": 95,
+  "member_entries_with_overlap": 11384,
+  "new_tests_executed": false,
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "physical_cost": null,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "stage_advancement_claimed": false,
+  "append_result": {
+    "phase": "increment-010a",
+    "status": "appended_verified_not_committed",
+    "prior_head": "6e162bab21438b857179a22c6207552feda9331b",
+    "packet_count": 95,
+    "added_packets": [
+      {
+        "packet_id": "desktop-6ec-workspace-timeout-and-artifact-availability-history-v1",
+        "scope": "Original 6ec workspace timeout with incomplete case closure, bounded partial readback, missing-target forensic-copy failure and later retained-copy availability preflight; no executable payload.",
+        "archive_bytes": 2599580,
+        "archive_sha256": "b7c25e516550fa01423137c66bef6b6bf5099f1b4aff426d3a941534791e8d95",
+        "file_member_count": 146,
+        "manifest_path": "packets/desktop-6ec-workspace-timeout-and-artifact-availability-history-v1/manifest.json",
+        "manifest_sha256": "25624731f81a13d540449648f461272abc92da408e94ea6b5bd6692005f148cb"
+      },
+      {
+        "packet_id": "d274-negative-native-retention-history-v1",
+        "scope": "Exact d274 counterfactual HEAD assertion FAIL; one independently retained host-only test binary and 68-input readback; all original FAIL outcomes preserved; one exact small source bundle, no executable payload.",
+        "archive_bytes": 1342472,
+        "archive_sha256": "bde9c3428f6261268f02c82e3383ca85a1e476498941d655343d7a25ddd90700",
+        "file_member_count": 130,
+        "manifest_path": "packets/d274-negative-native-retention-history-v1/manifest.json",
+        "manifest_sha256": "5ad42d216ddcdf0c786aeba4acedcce1bfccfd12d28f88ac7542e5a68e131d8b"
+      }
+    ],
+    "prior_packet_bytes_unchanged": true,
+    "manifest_sha256": "7f69e54376094f4db412936f99d8342fe5c2217ff7f81a2b1ef2a0879231a9e6",
+    "pattern_review": {
+      "phase": "increment-010a",
+      "input_sha256": "0fc8f813c9d06f759aec536265aeb571246eaeda737f736075998d2e186f4dec",
+      "inspected_member_count_with_overlap": 302,
+      "patterns": [
+        "github_token_shape",
+        "openai_token_shape",
+        "private_key_block",
+        "aws_access_key_shape"
+      ],
+      "findings": [],
+      "not_a_complete_secret_detection_claim": true
+    },
+    "original_93_packet_index_entries_unchanged": true,
+    "common_before": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "branch": "codex/cell-s0-common-20261108-898e",
+      "status": "",
+      "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+    },
+    "common_after": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "branch": "codex/cell-s0-common-20261108-898e",
+      "status": "",
+      "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+    },
+    "required_json_bindings_verified": true,
+    "original_93_packet_and_all_existing_nonmanifest_file_bytes_unchanged": true,
+    "supplementary_observations": [
+      {
+        "path": "observations/evidence-increment009-publication-v1/RESULT.json",
+        "bytes": 28240,
+        "sha256": "dfae641fdc153236cc6ac85d02920f0a3b1ba5d167b56aa96041762452fd6d5a"
+      },
+      {
+        "path": "observations/evidence-increment009-publication-v1/commands.json",
+        "bytes": 59285,
+        "sha256": "01e2b31594c4a26ff133cbc0157098e3e19ebd30a126694dadf78f9b155c10f3"
+      },
+      {
+        "path": "observations/evidence-increment009-independent-readback-v1/RESULT.json",
+        "bytes": 3136,
+        "sha256": "09282d4f6aeb9ec28163005bf74f45d781f4bf31730bf38dfd23dba93e05c489"
+      },
+      {
+        "path": "observations/evidence-increment009-independent-readback-v1/commands.json",
+        "bytes": 153735,
+        "sha256": "d2b4448c1e32cb518934633a4d0a082d6e7c08e0f96fa51ceb23f657b5420d89"
+      },
+      {
+        "path": "observations/desktop-6ec-workspace-timeout-and-availability-history-v1/RESULT.json",
+        "bytes": 3811,
+        "sha256": "9ae60f97bce3d7e0a9aa2504122bd1eb6e4c04cb800da8f1ac248003bf13bce4"
+      },
+      {
+        "path": "observations/desktop-6ec-workspace-timeout-history-seal-outer-v1/EXECUTION.json",
+        "bytes": 1289,
+        "sha256": "55e8aaf7d73ee77f2833557c1ee630f7deff4751fbe2cba19269b66dc3b96f22"
+      },
+      {
+        "path": "observations/desktop-6ec-workspace-timeout-history-seal-outer-v1/REQUEST.json",
+        "bytes": 1203,
+        "sha256": "1b2839330f20ec3ad63870efc2685461c608f6dda37d4f0225d6cdb89243fc94"
+      },
+      {
+        "path": "observations/desktop-6ec-workspace-timeout-history-seal-outer-v1/stdout.log",
+        "bytes": 637,
+        "sha256": "567c8c2416120dd6c1ba6acc80cc8a66ae11cfb49ca6ca80d0e0832aaf0db6ee"
+      },
+      {
+        "path": "observations/desktop-6ec-workspace-timeout-history-seal-outer-v1/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "observations/desktop-6ec-workspace-timeout-history-independent-v1/RESULT.json",
+        "bytes": 137550,
+        "sha256": "019b4c0e4451fe046df0580f5791fd80325ada50a83b6dafcc26de98290efd4c"
+      },
+      {
+        "path": "observations/desktop-6ec-workspace-timeout-history-independent-outer-v1/EXECUTION.json",
+        "bytes": 1585,
+        "sha256": "594ea7c7f5e1b1fee8283c85617ab1091d1fc81c119fcb5cd1b4403571fb4e71"
+      },
+      {
+        "path": "observations/desktop-6ec-workspace-timeout-history-independent-outer-v1/REQUEST.json",
+        "bytes": 711,
+        "sha256": "6abcbc66daae156dde82beb5a0606e33ea9a4344e01ce7892ddb6e33ca05509f"
+      },
+      {
+        "path": "observations/desktop-6ec-workspace-timeout-history-independent-outer-v1/stdout.log",
+        "bytes": 347,
+        "sha256": "0bbaad55311bbf7c77b5102edb14afdc266e08362d6c31d9eac61a0e4ad45c98"
+      },
+      {
+        "path": "observations/desktop-6ec-workspace-timeout-history-independent-outer-v1/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "observations/verify-desktop-6ec-workspace-timeout-sealed-packet-v1.py",
+        "bytes": 12220,
+        "sha256": "7b0ee2f5b1254d384793a394f6f7d25e69b343ba5d3eb736a4e1139fcb31e2ac"
+      },
+      {
+        "path": "observations/d274-negative-native-retention-history-v1/RESULT.json",
+        "bytes": 3566,
+        "sha256": "d48e94bc28aac4d4186db502bf16ef0eb217459522ff771426a0575c4bfb4a1d"
+      },
+      {
+        "path": "observations/d274-negative-native-history-seal-outer-v1/EXECUTION.json",
+        "bytes": 1520,
+        "sha256": "cc68349f0a4828ee57625e673513353fbc57fc9fbd02367cee59fda90ec51825"
+      },
+      {
+        "path": "observations/d274-negative-native-history-seal-outer-v1/REQUEST.json",
+        "bytes": 699,
+        "sha256": "9520d636c4e01eac61e687a9e9e3dc9fae9d0d59fe02db8a1696d9fe7f942efe"
+      },
+      {
+        "path": "observations/d274-negative-native-history-seal-outer-v1/stdout.log",
+        "bytes": 595,
+        "sha256": "0448221c89055b86a4399626e18c8ebbfd8614a0c2344cb23d30e16fc2ae733c"
+      },
+      {
+        "path": "observations/d274-negative-native-history-seal-outer-v1/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "observations/d274-negative-native-history-independent-v1/RESULT.json",
+        "bytes": 111190,
+        "sha256": "dd3760e736c70b6209e2cadd04a9ddae695a9ca0f2374b700c3d609256aa4b14"
+      },
+      {
+        "path": "observations/d274-negative-native-history-independent-outer-v1/EXECUTION.json",
+        "bytes": 1534,
+        "sha256": "fe19e897692266064adcc1621037ccaf6b7eead2cc63698d24f48e4a4c05c9ff"
+      },
+      {
+        "path": "observations/d274-negative-native-history-independent-outer-v1/REQUEST.json",
+        "bytes": 679,
+        "sha256": "d498404bdab015befaa5440f3cc1b49e1f07a57cf4108644a1a673e3398d5236"
+      },
+      {
+        "path": "observations/d274-negative-native-history-independent-outer-v1/stdout.log",
+        "bytes": 339,
+        "sha256": "60ebac0099f7dc37993e77d8c455dbcc79d47a411f2435904a72a25001d79799"
+      },
+      {
+        "path": "observations/d274-negative-native-history-independent-outer-v1/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "observations/verify-d274-negative-sealed-history-v1.py",
+        "bytes": 17183,
+        "sha256": "1b67dbcbc9e05eee044d50e794ea19657d18534fe3fd15f003ceb26899512031"
+      }
+    ],
+    "supplementary_observation_scope": {
+      "source_commit": "6e162bab21438b857179a22c6207552feda9331b",
+      "source_tree": "db1528464ed0369f3be4b7a8a7b4d8df6d9abde0",
+      "exact_supplementary_files": 26,
+      "files_included": "Prior009 publication/readback RESULT+commands pairs; each packet seal RESULT and complete four-file outer; each independent RESULT and complete four-file outer plus its exact verifier.",
+      "complete_stdout_stderr_prefixes_archived_here": false,
+      "complete_four_file_seal_and_independent_outers_included": true,
+      "prior009_full_stdout_stderr_prefixes_included": false,
+      "hash_references_not_claimed_as_archived_raw": true,
+      "no_new_native_execution": true,
+      "costs_are_not_complete": true
+    },
+    "supplementary_original_result_commands_links_verified": true,
+    "new_metadata_still_requires_index_and_commit_blob_verification_at_publication": true,
+    "sole_exact_nontext_source_bundle_verified": true,
+    "new_tests_executed": false,
+    "full_history_cost": null,
+    "stage_advancement_claimed": false
+  },
+  "append_result_original": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/evidence-addendum-increment-010a/RESULT.json",
+    "bytes": 9305,
+    "sha256": "893fb6dc4230f8358340f02c903e2867a8cbbb2e77ab3cf818ddeadc6450432d"
+  },
+  "inputs": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment010-two-ready-packet-preparation-v2/DRAFT_INPUTS.json",
+    "bytes": 386917,
+    "sha256": "0fc8f813c9d06f759aec536265aeb571246eaeda737f736075998d2e186f4dec"
+  },
+  "publisher": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/publish-evidence-increment-010-v1.py",
+    "bytes": 58780,
+    "sha256": "ee64fc6da971f04b5a3819d343d0f68be10db74827a37e4b07efb4c66c46bbe5"
+  },
+  "readme_sha256": "2877ffe95f09d801dc3abcd1a2845ce11e05150b9764c71463a4f2cb285b4bab",
+  "supplementary_observation_scope": {
+    "source_commit": "6e162bab21438b857179a22c6207552feda9331b",
+    "source_tree": "db1528464ed0369f3be4b7a8a7b4d8df6d9abde0",
+    "exact_supplementary_files": 26,
+    "files_included": "Prior009 publication/readback RESULT+commands pairs; each packet seal RESULT and complete four-file outer; each independent RESULT and complete four-file outer plus its exact verifier.",
+    "complete_stdout_stderr_prefixes_archived_here": false,
+    "complete_four_file_seal_and_independent_outers_included": true,
+    "prior009_full_stdout_stderr_prefixes_included": false,
+    "hash_references_not_claimed_as_archived_raw": true,
+    "no_new_native_execution": true,
+    "costs_are_not_complete": true
+  },
+  "new_observations_index_and_commit_blob_verification_required": true,
+  "observations": [
+    {
+      "relative_path": "evidence-increment009-publication-v1/RESULT.json",
+      "bytes": 28240,
+      "sha256": "dfae641fdc153236cc6ac85d02920f0a3b1ba5d167b56aa96041762452fd6d5a"
+    },
+    {
+      "relative_path": "evidence-increment009-publication-v1/commands.json",
+      "bytes": 59285,
+      "sha256": "01e2b31594c4a26ff133cbc0157098e3e19ebd30a126694dadf78f9b155c10f3"
+    },
+    {
+      "relative_path": "evidence-increment009-independent-readback-v1/RESULT.json",
+      "bytes": 3136,
+      "sha256": "09282d4f6aeb9ec28163005bf74f45d781f4bf31730bf38dfd23dba93e05c489"
+    },
+    {
+      "relative_path": "evidence-increment009-independent-readback-v1/commands.json",
+      "bytes": 153735,
+      "sha256": "d2b4448c1e32cb518934633a4d0a082d6e7c08e0f96fa51ceb23f657b5420d89"
+    },
+    {
+      "relative_path": "desktop-6ec-workspace-timeout-and-availability-history-v1/RESULT.json",
+      "bytes": 3811,
+      "sha256": "9ae60f97bce3d7e0a9aa2504122bd1eb6e4c04cb800da8f1ac248003bf13bce4"
+    },
+    {
+      "relative_path": "desktop-6ec-workspace-timeout-history-seal-outer-v1/EXECUTION.json",
+      "bytes": 1289,
+      "sha256": "55e8aaf7d73ee77f2833557c1ee630f7deff4751fbe2cba19269b66dc3b96f22"
+    },
+    {
+      "relative_path": "desktop-6ec-workspace-timeout-history-seal-outer-v1/REQUEST.json",
+      "bytes": 1203,
+      "sha256": "1b2839330f20ec3ad63870efc2685461c608f6dda37d4f0225d6cdb89243fc94"
+    },
+    {
+      "relative_path": "desktop-6ec-workspace-timeout-history-seal-outer-v1/stdout.log",
+      "bytes": 637,
+      "sha256": "567c8c2416120dd6c1ba6acc80cc8a66ae11cfb49ca6ca80d0e0832aaf0db6ee"
+    },
+    {
+      "relative_path": "desktop-6ec-workspace-timeout-history-seal-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "desktop-6ec-workspace-timeout-history-independent-v1/RESULT.json",
+      "bytes": 137550,
+      "sha256": "019b4c0e4451fe046df0580f5791fd80325ada50a83b6dafcc26de98290efd4c"
+    },
+    {
+      "relative_path": "desktop-6ec-workspace-timeout-history-independent-outer-v1/EXECUTION.json",
+      "bytes": 1585,
+      "sha256": "594ea7c7f5e1b1fee8283c85617ab1091d1fc81c119fcb5cd1b4403571fb4e71"
+    },
+    {
+      "relative_path": "desktop-6ec-workspace-timeout-history-independent-outer-v1/REQUEST.json",
+      "bytes": 711,
+      "sha256": "6abcbc66daae156dde82beb5a0606e33ea9a4344e01ce7892ddb6e33ca05509f"
+    },
+    {
+      "relative_path": "desktop-6ec-workspace-timeout-history-independent-outer-v1/stdout.log",
+      "bytes": 347,
+      "sha256": "0bbaad55311bbf7c77b5102edb14afdc266e08362d6c31d9eac61a0e4ad45c98"
+    },
+    {
+      "relative_path": "desktop-6ec-workspace-timeout-history-independent-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "verify-desktop-6ec-workspace-timeout-sealed-packet-v1.py",
+      "bytes": 12220,
+      "sha256": "7b0ee2f5b1254d384793a394f6f7d25e69b343ba5d3eb736a4e1139fcb31e2ac"
+    },
+    {
+      "relative_path": "d274-negative-native-retention-history-v1/RESULT.json",
+      "bytes": 3566,
+      "sha256": "d48e94bc28aac4d4186db502bf16ef0eb217459522ff771426a0575c4bfb4a1d"
+    },
+    {
+      "relative_path": "d274-negative-native-history-seal-outer-v1/EXECUTION.json",
+      "bytes": 1520,
+      "sha256": "cc68349f0a4828ee57625e673513353fbc57fc9fbd02367cee59fda90ec51825"
+    },
+    {
+      "relative_path": "d274-negative-native-history-seal-outer-v1/REQUEST.json",
+      "bytes": 699,
+      "sha256": "9520d636c4e01eac61e687a9e9e3dc9fae9d0d59fe02db8a1696d9fe7f942efe"
+    },
+    {
+      "relative_path": "d274-negative-native-history-seal-outer-v1/stdout.log",
+      "bytes": 595,
+      "sha256": "0448221c89055b86a4399626e18c8ebbfd8614a0c2344cb23d30e16fc2ae733c"
+    },
+    {
+      "relative_path": "d274-negative-native-history-seal-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "d274-negative-native-history-independent-v1/RESULT.json",
+      "bytes": 111190,
+      "sha256": "dd3760e736c70b6209e2cadd04a9ddae695a9ca0f2374b700c3d609256aa4b14"
+    },
+    {
+      "relative_path": "d274-negative-native-history-independent-outer-v1/EXECUTION.json",
+      "bytes": 1534,
+      "sha256": "fe19e897692266064adcc1621037ccaf6b7eead2cc63698d24f48e4a4c05c9ff"
+    },
+    {
+      "relative_path": "d274-negative-native-history-independent-outer-v1/REQUEST.json",
+      "bytes": 679,
+      "sha256": "d498404bdab015befaa5440f3cc1b49e1f07a57cf4108644a1a673e3398d5236"
+    },
+    {
+      "relative_path": "d274-negative-native-history-independent-outer-v1/stdout.log",
+      "bytes": 339,
+      "sha256": "60ebac0099f7dc37993e77d8c455dbcc79d47a411f2435904a72a25001d79799"
+    },
+    {
+      "relative_path": "d274-negative-native-history-independent-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "verify-d274-negative-sealed-history-v1.py",
+      "bytes": 17183,
+      "sha256": "1b67dbcbc9e05eee044d50e794ea19657d18534fe3fd15f003ceb26899512031"
+    },
+    {
+      "relative_path": "evidence-addendum-increment-010a/RESULT.json",
+      "bytes": 9305,
+      "sha256": "893fb6dc4230f8358340f02c903e2867a8cbbb2e77ab3cf818ddeadc6450432d"
+    },
+    {
+      "relative_path": "evidence-addendum-increment-010a/PATTERN_REVIEW.json",
+      "bytes": 356,
+      "sha256": "708f50d7f97c45b4b9a38cc5a44232ec6cb57f9699940496dee81af3f360d3c9"
+    },
+    {
+      "relative_path": "evidence-addendum-increment-010a/VERIFY.log",
+      "bytes": 7511,
+      "sha256": "d3b43baaa28b69da75d68f2b26893018abdf3a53ff749b05f9c4b7c994e8e1ee"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-v2/DRAFT_INPUTS.json",
+      "bytes": 386917,
+      "sha256": "0fc8f813c9d06f759aec536265aeb571246eaeda737f736075998d2e186f4dec"
+    },
+    {
+      "relative_path": "append-evidence-increment-010-draft-v1.py",
+      "bytes": 29488,
+      "sha256": "ebaacb24c9e6b8f8eff6f6abd3d9f9cea3eac33b455a1b2c1121087dd05257dd"
+    },
+    {
+      "relative_path": "append-evidence-increment-010-draft-v2.py",
+      "bytes": 29890,
+      "sha256": "ae6d82fba105ec66a13ee7f5a952bca6c448ad1352f46ee6d078318477d9ec2f"
+    },
+    {
+      "relative_path": "prepare-increment010-two-ready-packets-v1.py",
+      "bytes": 47117,
+      "sha256": "cfbe41cf57ca7efaf506d89b02146fd38c13fff7665194340d3b55a6c303b94d"
+    },
+    {
+      "relative_path": "prepare-increment010-two-ready-packets-v2.py",
+      "bytes": 47480,
+      "sha256": "c769e7fc92fdfcb8fd4018af1a4ff0617901bea4617aabb53047bfea9f7851db"
+    },
+    {
+      "relative_path": "increment010-schema-adapter-preparation-v2.json",
+      "bytes": 1459,
+      "sha256": "663435aaca02525f5febd9bb43e2c9a535983545b2a8476a631dc25eb62e95e5"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-v1/FAILED.json",
+      "bytes": 225,
+      "sha256": "7382a2f8e710d0387e468194053de956af589cc1464ec9a530d6f907d3ffda28"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-outer-v1/REQUEST.json",
+      "bytes": 695,
+      "sha256": "9d8f262ba576e676ba3dfa75fd2e3bddee55bfec192d8b2071c662ae5a2fe1ef"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-outer-v1/EXECUTION.json",
+      "bytes": 1293,
+      "sha256": "508fc3a62d95da68e06a189e77113cdf67f7c4a8afdb1a4108d8cc4393efd04b"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-outer-v1/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-outer-v1/stderr.log",
+      "bytes": 481,
+      "sha256": "40eaa3242849e123aa877f2df9a0553967f7312d0082e6a903b6f69445f12d0e"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-v2/RESULT.json",
+      "bytes": 3987,
+      "sha256": "72629fb7b7a369a2178a7e7fad12a3622bd4ef3e407e2178ead382f3979c5cd2"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-v2/NEW_SOURCE_OBSERVATIONS.json",
+      "bytes": 5182,
+      "sha256": "28af97b5ad04139d2626c7dee3b45c3f16f1018760ffcea27d862a3de344f90d"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-v2/METADATA-BUDGET.json",
+      "bytes": 5490,
+      "sha256": "4bd206007e7cfd08c08491a3509814fc32834ea262ccdbf3c13479152c319058"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-v2/EXACT_INPUT_WHITELIST.json",
+      "bytes": 14386,
+      "sha256": "31b3a311d94737e686a39f4131596cc302f2db7335ac93d8487002a66f0f8436"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-v2/SUPPLEMENTARY_METADATA_SCOPE.json",
+      "bytes": 677,
+      "sha256": "57a54f304ac752105e0fc4e948a9d3db2624b45ddd3fa0bfb3b2c6fe98b27043"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-v2/INPUTS_AFTER.json",
+      "bytes": 12788,
+      "sha256": "99ff55616d44d96685855e2c4860b42405c02fe05d82a10538071c7784cde825"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-v2/READ_ONLY_COMMANDS.json",
+      "bytes": 8722,
+      "sha256": "e1ad671caae426d657259e1e4f99f454de92db051f63ad4b4b84aafd1fc994e6"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-outer-v2/REQUEST.json",
+      "bytes": 695,
+      "sha256": "3d2f743c9cf245a5076fa5c0951dbfcc501adea63d73058052eb47da6d340fd4"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-outer-v2/EXECUTION.json",
+      "bytes": 1540,
+      "sha256": "ddb7e77ef2baf3be2d28411ade30b2ca46a4513ea3ee3d70205799459d21ca53"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-outer-v2/stdout.log",
+      "bytes": 3727,
+      "sha256": "4698992c60fc41de9b49a5821e8754afd9ddd9105ef509811c09da407e63bbb1"
+    },
+    {
+      "relative_path": "increment010-two-ready-packet-preparation-outer-v2/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "increment010-appender-independent-candidate-review-v1.json",
+      "bytes": 2701,
+      "sha256": "09ad060ba6ce6a9928b7bcd3501b48664429f5869832f366556a28bfadaa3f4f"
+    },
+    {
+      "relative_path": "increment010-appender-independent-candidate-review-v2.json",
+      "bytes": 2246,
+      "sha256": "97492a0091d53032e0ad82c4c15fd51b0fa7c5ee0bb25af18b55138e54e32dd1"
+    },
+    {
+      "relative_path": "increment010-actual-inputs-independent-candidate-review-v1.json",
+      "bytes": 5391,
+      "sha256": "761d5cce12f415c3e817147be314b846f15415d10756cd352f74cf2102cde6a1"
+    },
+    {
+      "relative_path": "increment010-root-actual-inputs-review-v1.json",
+      "bytes": 5720,
+      "sha256": "4c48ee32ebc9afbbcbc7b22a3e59cfdd0e36c3ccb9719b24d0c95036a9fb2358"
+    },
+    {
+      "relative_path": "increment010-staging-paths-readonly-v1/REQUEST.json",
+      "bytes": 5392,
+      "sha256": "e9bb68a13513977b35253a5200eb38a09b6a403f9a74d2bfa955fd679181d909"
+    },
+    {
+      "relative_path": "increment010-staging-paths-readonly-v1/RESULT.json",
+      "bytes": 2508,
+      "sha256": "d54a14aef331d6de3038161f9ec3f9028a8bc1e1d160e473248910190952272c"
+    },
+    {
+      "relative_path": "publish-evidence-increment-010-v1.py",
+      "bytes": 58780,
+      "sha256": "ee64fc6da971f04b5a3819d343d0f68be10db74827a37e4b07efb4c66c46bbe5"
+    },
+    {
+      "relative_path": "check-increment010-publisher-preparation-v1.py",
+      "bytes": 20717,
+      "sha256": "70d600287f933cbf5bfc60377a76767de98f0e78a2c094233c774abe8835d99b"
+    },
+    {
+      "relative_path": "increment010-publisher-preparation-v1/CHECKS.json",
+      "bytes": 4310,
+      "sha256": "a21abc1f83f5a5ee7c21413ea4a02e39e1fe34fb004f8c8a40bcb9a4d4318134"
+    },
+    {
+      "relative_path": "launch-evidence-increment-010a-v1.py",
+      "bytes": 3447,
+      "sha256": "081389c1c5c450a67857399c13127bb923a521e6cc069fb5722d4221b5466855"
+    },
+    {
+      "relative_path": "evidence-addendum-increment-010a-launch-v1/REQUEST.json",
+      "bytes": 1484,
+      "sha256": "6293ada7f7189322a62afc0e5145e2b4f12ff1270d3c5c31982fe75e94da6bab"
+    },
+    {
+      "relative_path": "evidence-addendum-increment-010a-launch-v1/RESULT.json",
+      "bytes": 1518,
+      "sha256": "cc84d63b044b7b479e61ff2310a27706c55a8b2ded1ea7b40a6f6631faa2ee91"
+    },
+    {
+      "relative_path": "evidence-addendum-increment-010a-launch-v1/stdout",
+      "bytes": 8271,
+      "sha256": "7ac4d2ad74586e313fbff51ddda3fc245e8b25d19a093b020fd863fd98699276"
+    },
+    {
+      "relative_path": "evidence-addendum-increment-010a-launch-v1/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "increment010-readme-final-preparation-v1/RESULT.json",
+      "bytes": 2407,
+      "sha256": "333e3e2ab5c4beb7d4cbc29d8d44b3d4a49c6d616ac533b0529c7e49c861d19e"
+    },
+    {
+      "relative_path": "increment010-readme-final-preparation-v1/commands.json",
+      "bytes": 69886,
+      "sha256": "8c857c4e5e825e66639ac3940f62e30d950ab56a403384e3e1b562233e34f4ca"
+    },
+    {
+      "relative_path": "increment010-readme-final-preparation-v1/SUPPLEMENTARY_WHITESPACE.json",
+      "bytes": 17325,
+      "sha256": "041df4712cd98c8ab2c3c95790be95fd5bf808037307336a115be974a5b8cdbf"
+    },
+    {
+      "relative_path": "increment010-readme-final-preparation-v1/readme-check.stdout",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "relative_path": "increment010-readme-final-preparation-v1/readme-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "evidence-increment010-final-README.md",
+      "bytes": 108975,
+      "sha256": "2877ffe95f09d801dc3abcd1a2845ce11e05150b9764c71463a4f2cb285b4bab"
+    }
+  ],
+  "old_93_packet_and_all_old_1427_git_blob_mode_protection_required": true,
+  "only_old_paths_permitted_to_change": [
+    "qualification/cell_common_candidate/20261108/execution_history/manifest.json",
+    "qualification/cell_common_candidate/20261108/execution_history/README.md"
+  ],
+  "old_README_suffix_byte_exact": true,
+  "exact_file_plan": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment010-publisher-preparation-v1/CLOSED_FILE_PLAN.json",
+    "bytes": 35077,
+    "sha256": "68732b3680e3e72bfff3f197a79ef7daef491bd9df8daf00ed4ff0fc2eb3b8c6"
+  },
+  "static_and_pure_checks": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment010-publisher-preparation-v1/CHECKS.json",
+    "bytes": 4310,
+    "sha256": "a21abc1f83f5a5ee7c21413ea4a02e39e1fe34fb004f8c8a40bcb9a4d4318134"
+  },
+  "planned_new_paths": 87,
+  "planned_modified_paths": 2,
+  "expected_committed_files_requires_actual_index_and_commit_closure": 1514,
+  "force_add_exact_original_log_pins": {
+    "qualification/cell_common_candidate/20261108/execution_history/observations/desktop-6ec-workspace-timeout-history-seal-outer-v1/stdout.log": {
+      "bytes": 637,
+      "sha256": "567c8c2416120dd6c1ba6acc80cc8a66ae11cfb49ca6ca80d0e0832aaf0db6ee",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    },
+    "qualification/cell_common_candidate/20261108/execution_history/observations/desktop-6ec-workspace-timeout-history-seal-outer-v1/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    },
+    "qualification/cell_common_candidate/20261108/execution_history/observations/desktop-6ec-workspace-timeout-history-independent-outer-v1/stdout.log": {
+      "bytes": 347,
+      "sha256": "0bbaad55311bbf7c77b5102edb14afdc266e08362d6c31d9eac61a0e4ad45c98",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    },
+    "qualification/cell_common_candidate/20261108/execution_history/observations/desktop-6ec-workspace-timeout-history-independent-outer-v1/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    },
+    "qualification/cell_common_candidate/20261108/execution_history/observations/d274-negative-native-history-seal-outer-v1/stdout.log": {
+      "bytes": 595,
+      "sha256": "0448221c89055b86a4399626e18c8ebbfd8614a0c2344cb23d30e16fc2ae733c",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    },
+    "qualification/cell_common_candidate/20261108/execution_history/observations/d274-negative-native-history-seal-outer-v1/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    },
+    "qualification/cell_common_candidate/20261108/execution_history/observations/d274-negative-native-history-independent-outer-v1/stdout.log": {
+      "bytes": 339,
+      "sha256": "60ebac0099f7dc37993e77d8c455dbcc79d47a411f2435904a72a25001d79799",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    },
+    "qualification/cell_common_candidate/20261108/execution_history/observations/d274-negative-native-history-independent-outer-v1/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    },
+    "qualification/cell_common_candidate/20261108/execution_history/observations/increment010-two-ready-packet-preparation-outer-v1/stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    },
+    "qualification/cell_common_candidate/20261108/execution_history/observations/increment010-two-ready-packet-preparation-outer-v1/stderr.log": {
+      "bytes": 481,
+      "sha256": "40eaa3242849e123aa877f2df9a0553967f7312d0082e6a903b6f69445f12d0e",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    },
+    "qualification/cell_common_candidate/20261108/execution_history/observations/increment010-two-ready-packet-preparation-outer-v2/stdout.log": {
+      "bytes": 3727,
+      "sha256": "4698992c60fc41de9b49a5821e8754afd9ddd9105ef509811c09da407e63bbb1",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    },
+    "qualification/cell_common_candidate/20261108/execution_history/observations/increment010-two-ready-packet-preparation-outer-v2/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    },
+    "qualification/cell_common_candidate/20261108/execution_history/observations/evidence-addendum-increment-010a/VERIFY.log": {
+      "bytes": 7511,
+      "sha256": "d3b43baaa28b69da75d68f2b26893018abdf3a53ff749b05f9c4b7c994e8e1ee",
+      "reason": "Exact observed ignored original log; no whitespace or blob-check exemption"
+    }
+  },
+  "git_ignore_rules_modified": false,
+  "new_whitespace_exemptions_added": false,
+  "ignore_rules_observation": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment010-staging-paths-readonly-v1/RESULT.json",
+    "bytes": 2508,
+    "sha256": "d54a14aef331d6de3038161f9ec3f9028a8bc1e1d160e473248910190952272c"
+  },
+  "preparation_history": {
+    "first_builder_failed_before_append": true,
+    "first_failure": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment010-two-ready-packet-preparation-v1/FAILED.json",
+      "bytes": 225,
+      "sha256": "7382a2f8e710d0387e468194053de956af589cc1464ec9a530d6f907d3ffda28"
+    },
+    "first_outer": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment010-two-ready-packet-preparation-outer-v1/EXECUTION.json",
+      "bytes": 1293,
+      "sha256": "508fc3a62d95da68e06a189e77113cdf67f7c4a8afdb1a4108d8cc4393efd04b"
+    },
+    "first_builder_returncode": 1,
+    "first_builder_new_native_tests": 0,
+    "cause": "The old timeout seal EXECUTION omits retry/timeout flags that its exact REQUEST contains; the original REQUEST has both false.",
+    "narrow_adapter": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment010-schema-adapter-preparation-v2.json",
+      "bytes": 1459,
+      "sha256": "663435aaca02525f5febd9bb43e2c9a535983545b2a8476a631dc25eb62e95e5"
+    },
+    "second_builder": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment010-two-ready-packet-preparation-v2/RESULT.json",
+      "bytes": 3987,
+      "sha256": "72629fb7b7a369a2178a7e7fad12a3622bd4ef3e407e2178ead382f3979c5cd2"
+    },
+    "second_outer": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment010-two-ready-packet-preparation-outer-v2/EXECUTION.json",
+      "bytes": 1540,
+      "sha256": "ddb7e77ef2baf3be2d28411ade30b2ca46a4513ea3ee3d70205799459d21ca53"
+    },
+    "second_builder_returncode": 0,
+    "original_FAILURE_bytes_rewritten": false,
+    "published_first_failure_scope": "Exact executed builder, FAILED.json and complete REQUEST/EXECUTION/stdout/stderr outer; duplicate preliminary preview copies remain in records."
+  },
+  "new_source_observations": {
+    "desktop_6ec_workspace_timeout_and_artifact_availability_history": {
+      "host": "desktop",
+      "common_source_advanced": false,
+      "full_workspace_qualified": false,
+      "scientific_acceptance": false,
+      "physical_cost": null,
+      "full_history_cost": null,
+      "new_native_executions_by_transaction": 0,
+      "packet_id": "desktop-6ec-workspace-timeout-and-artifact-availability-history-v1",
+      "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+      "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+      "status": "FAIL",
+      "case_closure_verified": false,
+      "verified_counts": null,
+      "count_bindings": {
+        "source_sha": "6ec5993fec3dcd6a3c569498a1d5b4c277f1c142",
+        "source_tree": "b0ddbe6b6f83dc42657260b266774f79c9d1ed90",
+        "workspace_v1_controller": {
+          "returncode": 1,
+          "native_command_invoked": false,
+          "native_test_count": 0
+        },
+        "workspace_v2": {
+          "driver_returncode": 1,
+          "test_wrapper_exit": 124,
+          "test_child_exit": -9,
+          "timed_out": true,
+          "collector_returncode": 1,
+          "outer_returncode": 1,
+          "verified_complete_counts": null,
+          "case_closure_verified": false,
+          "raw_native_activity_observed": true,
+          "fresh_native_junit_available": false
+        },
+        "partial_readback": {
+          "returncode": 0,
+          "raw_pass_shaped_unique_keys": 6821,
+          "raw_terminal_summary_count": 0,
+          "these_are_not_complete_run_counts": true,
+          "declared_start_counts_are_not_verified_roster_counts": true
+        },
+        "forensic_retainer": {
+          "returncode": 1,
+          "copied_paths": 0,
+          "copied_payload_bytes": 0,
+          "full_source_after_verification_completed": false,
+          "original_record_inputs_unchanged": true
+        },
+        "retained_core_and_tools_readonly_preflight": {
+          "returncode": 0,
+          "retained_paths": 14,
+          "retained_native_paths": 4,
+          "retained_helper_paths": 10,
+          "retained_bytes": 3037089672,
+          "tool_paths": 2,
+          "executable_invocations": 0,
+          "native_executions": 0
+        },
+        "new_native_executions_by_archiver": 0,
+        "full_workspace_passed": false,
+        "scientific_acceptance": false,
+        "full_history_cost": null,
+        "physical_cost": null
+      },
+      "original_execution_cutoff": "2026-11-09T12:14:50.253882+00:00",
+      "seal_finished_at": "2026-11-09T13:27:05.235711+00:00",
+      "independent_finished_at": "2026-11-09T14:16:13.318043+00:00",
+      "negative_native_outcome_excluded_from_this_original_packet": true,
+      "retainer_failure_not_upgraded_by_later_preflight": true,
+      "missing_target_cause_or_actor_established": false,
+      "bounded_proc_observation_is_global_absence": false
+    },
+    "d274_counterfactual_negative_native_retention_history": {
+      "host": "desktop",
+      "common_source_advanced": false,
+      "full_workspace_qualified": false,
+      "scientific_acceptance": false,
+      "physical_cost": null,
+      "full_history_cost": null,
+      "new_native_executions_by_transaction": 0,
+      "packet_id": "d274-negative-native-retention-history-v1",
+      "source_sha": "d27431b69195a2a6331a77d19e22ebeb4cf910c7",
+      "source_tree": "b1cf50c33f5ec9101217ae3f6a7ff987e3aba973",
+      "source_parent": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+      "status": "FAIL",
+      "original_native_returncode": 1,
+      "count_bindings": {
+        "source_sha": "d27431b69195a2a6331a77d19e22ebeb4cf910c7",
+        "source_tree": "b1cf50c33f5ec9101217ae3f6a7ff987e3aba973",
+        "original_native": {
+          "status": "FAIL",
+          "driver_returncode": 1,
+          "test_returncode": 100,
+          "collector_returncode": 1,
+          "unique_executed": 1,
+          "passed": 0,
+          "failed": 1,
+          "failure_exit_code": 101,
+          "filtered_outside_selection": 2447,
+          "selected_ignored": 0,
+          "retries": 0
+        },
+        "counterfactual_HEAD_assertion_failure_observed": true,
+        "expected_failure_does_not_change_test_outcome_to_PASS": true,
+        "retention": {
+          "returncode": 0,
+          "copied_paths": 1,
+          "host_only_payload_bytes": 453757728,
+          "copied_executables_in_archive": 0
+        },
+        "independent_readback": {
+          "returncode": 0,
+          "original_records": 68,
+          "new_native_executions": 0
+        },
+        "archive_new_native_executions": 0,
+        "full_workspace_passed": false,
+        "scientific_acceptance": false,
+        "full_history_cost": null,
+        "physical_cost": null
+      },
+      "counterfactual_assertion_observed_does_not_turn_FAIL_into_PASS": true,
+      "original_bf42_large_output_race_mechanism_established": false,
+      "seal_finished_at": "2026-11-09T14:44:17.740007+00:00",
+      "independent_finished_at": "2026-11-09T14:51:17.696594+00:00",
+      "original_68_inputs_included": true,
+      "host_only_ELF_payload_in_archive": false,
+      "sole_nontext_original": {
+        "packet_id": "d274-negative-native-retention-history-v1",
+        "path": "originals/core-output-d27431b-desktop-negative-v1/source-increment-original.bundle",
+        "bytes": 1800,
+        "sha256": "0e753e10409b9619c7ddff22cd36f00bcfb74f248f5bbb09dadbc989222a6f5e"
+      }
+    }
+  },
+  "outcomes_not_upgraded_by_archiving_or_expected_negative_failure": true,
+  "source_D_E_or_later_native_outcomes_included": false,
+  "readme_and_checker_raw_scope": "Only the explicit 71 originals are copied; other complete raw preparation outputs remain in their records prefixes.",
+  "single_normal_push_required": true,
+  "automatic_retry_allowed": false,
+  "source_common_PR_or_CURRENT_change_authorized_by_this_metadata": false
+}

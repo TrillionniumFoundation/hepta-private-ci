@@ -1,0 +1,208 @@
+{
+  "phase": "increment-010a",
+  "status": "appended_verified_not_committed",
+  "prior_head": "6e162bab21438b857179a22c6207552feda9331b",
+  "packet_count": 95,
+  "added_packets": [
+    {
+      "packet_id": "desktop-6ec-workspace-timeout-and-artifact-availability-history-v1",
+      "scope": "Original 6ec workspace timeout with incomplete case closure, bounded partial readback, missing-target forensic-copy failure and later retained-copy availability preflight; no executable payload.",
+      "archive_bytes": 2599580,
+      "archive_sha256": "b7c25e516550fa01423137c66bef6b6bf5099f1b4aff426d3a941534791e8d95",
+      "file_member_count": 146,
+      "manifest_path": "packets/desktop-6ec-workspace-timeout-and-artifact-availability-history-v1/manifest.json",
+      "manifest_sha256": "25624731f81a13d540449648f461272abc92da408e94ea6b5bd6692005f148cb"
+    },
+    {
+      "packet_id": "d274-negative-native-retention-history-v1",
+      "scope": "Exact d274 counterfactual HEAD assertion FAIL; one independently retained host-only test binary and 68-input readback; all original FAIL outcomes preserved; one exact small source bundle, no executable payload.",
+      "archive_bytes": 1342472,
+      "archive_sha256": "bde9c3428f6261268f02c82e3383ca85a1e476498941d655343d7a25ddd90700",
+      "file_member_count": 130,
+      "manifest_path": "packets/d274-negative-native-retention-history-v1/manifest.json",
+      "manifest_sha256": "5ad42d216ddcdf0c786aeba4acedcce1bfccfd12d28f88ac7542e5a68e131d8b"
+    }
+  ],
+  "prior_packet_bytes_unchanged": true,
+  "manifest_sha256": "7f69e54376094f4db412936f99d8342fe5c2217ff7f81a2b1ef2a0879231a9e6",
+  "pattern_review": {
+    "phase": "increment-010a",
+    "input_sha256": "0fc8f813c9d06f759aec536265aeb571246eaeda737f736075998d2e186f4dec",
+    "inspected_member_count_with_overlap": 302,
+    "patterns": [
+      "github_token_shape",
+      "openai_token_shape",
+      "private_key_block",
+      "aws_access_key_shape"
+    ],
+    "findings": [],
+    "not_a_complete_secret_detection_claim": true
+  },
+  "original_93_packet_index_entries_unchanged": true,
+  "common_before": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "branch": "codex/cell-s0-common-20261108-898e",
+    "status": "",
+    "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+  },
+  "common_after": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "branch": "codex/cell-s0-common-20261108-898e",
+    "status": "",
+    "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+  },
+  "required_json_bindings_verified": true,
+  "original_93_packet_and_all_existing_nonmanifest_file_bytes_unchanged": true,
+  "supplementary_observations": [
+    {
+      "path": "observations/evidence-increment009-publication-v1/RESULT.json",
+      "bytes": 28240,
+      "sha256": "dfae641fdc153236cc6ac85d02920f0a3b1ba5d167b56aa96041762452fd6d5a"
+    },
+    {
+      "path": "observations/evidence-increment009-publication-v1/commands.json",
+      "bytes": 59285,
+      "sha256": "01e2b31594c4a26ff133cbc0157098e3e19ebd30a126694dadf78f9b155c10f3"
+    },
+    {
+      "path": "observations/evidence-increment009-independent-readback-v1/RESULT.json",
+      "bytes": 3136,
+      "sha256": "09282d4f6aeb9ec28163005bf74f45d781f4bf31730bf38dfd23dba93e05c489"
+    },
+    {
+      "path": "observations/evidence-increment009-independent-readback-v1/commands.json",
+      "bytes": 153735,
+      "sha256": "d2b4448c1e32cb518934633a4d0a082d6e7c08e0f96fa51ceb23f657b5420d89"
+    },
+    {
+      "path": "observations/desktop-6ec-workspace-timeout-and-availability-history-v1/RESULT.json",
+      "bytes": 3811,
+      "sha256": "9ae60f97bce3d7e0a9aa2504122bd1eb6e4c04cb800da8f1ac248003bf13bce4"
+    },
+    {
+      "path": "observations/desktop-6ec-workspace-timeout-history-seal-outer-v1/EXECUTION.json",
+      "bytes": 1289,
+      "sha256": "55e8aaf7d73ee77f2833557c1ee630f7deff4751fbe2cba19269b66dc3b96f22"
+    },
+    {
+      "path": "observations/desktop-6ec-workspace-timeout-history-seal-outer-v1/REQUEST.json",
+      "bytes": 1203,
+      "sha256": "1b2839330f20ec3ad63870efc2685461c608f6dda37d4f0225d6cdb89243fc94"
+    },
+    {
+      "path": "observations/desktop-6ec-workspace-timeout-history-seal-outer-v1/stdout.log",
+      "bytes": 637,
+      "sha256": "567c8c2416120dd6c1ba6acc80cc8a66ae11cfb49ca6ca80d0e0832aaf0db6ee"
+    },
+    {
+      "path": "observations/desktop-6ec-workspace-timeout-history-seal-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observations/desktop-6ec-workspace-timeout-history-independent-v1/RESULT.json",
+      "bytes": 137550,
+      "sha256": "019b4c0e4451fe046df0580f5791fd80325ada50a83b6dafcc26de98290efd4c"
+    },
+    {
+      "path": "observations/desktop-6ec-workspace-timeout-history-independent-outer-v1/EXECUTION.json",
+      "bytes": 1585,
+      "sha256": "594ea7c7f5e1b1fee8283c85617ab1091d1fc81c119fcb5cd1b4403571fb4e71"
+    },
+    {
+      "path": "observations/desktop-6ec-workspace-timeout-history-independent-outer-v1/REQUEST.json",
+      "bytes": 711,
+      "sha256": "6abcbc66daae156dde82beb5a0606e33ea9a4344e01ce7892ddb6e33ca05509f"
+    },
+    {
+      "path": "observations/desktop-6ec-workspace-timeout-history-independent-outer-v1/stdout.log",
+      "bytes": 347,
+      "sha256": "0bbaad55311bbf7c77b5102edb14afdc266e08362d6c31d9eac61a0e4ad45c98"
+    },
+    {
+      "path": "observations/desktop-6ec-workspace-timeout-history-independent-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observations/verify-desktop-6ec-workspace-timeout-sealed-packet-v1.py",
+      "bytes": 12220,
+      "sha256": "7b0ee2f5b1254d384793a394f6f7d25e69b343ba5d3eb736a4e1139fcb31e2ac"
+    },
+    {
+      "path": "observations/d274-negative-native-retention-history-v1/RESULT.json",
+      "bytes": 3566,
+      "sha256": "d48e94bc28aac4d4186db502bf16ef0eb217459522ff771426a0575c4bfb4a1d"
+    },
+    {
+      "path": "observations/d274-negative-native-history-seal-outer-v1/EXECUTION.json",
+      "bytes": 1520,
+      "sha256": "cc68349f0a4828ee57625e673513353fbc57fc9fbd02367cee59fda90ec51825"
+    },
+    {
+      "path": "observations/d274-negative-native-history-seal-outer-v1/REQUEST.json",
+      "bytes": 699,
+      "sha256": "9520d636c4e01eac61e687a9e9e3dc9fae9d0d59fe02db8a1696d9fe7f942efe"
+    },
+    {
+      "path": "observations/d274-negative-native-history-seal-outer-v1/stdout.log",
+      "bytes": 595,
+      "sha256": "0448221c89055b86a4399626e18c8ebbfd8614a0c2344cb23d30e16fc2ae733c"
+    },
+    {
+      "path": "observations/d274-negative-native-history-seal-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observations/d274-negative-native-history-independent-v1/RESULT.json",
+      "bytes": 111190,
+      "sha256": "dd3760e736c70b6209e2cadd04a9ddae695a9ca0f2374b700c3d609256aa4b14"
+    },
+    {
+      "path": "observations/d274-negative-native-history-independent-outer-v1/EXECUTION.json",
+      "bytes": 1534,
+      "sha256": "fe19e897692266064adcc1621037ccaf6b7eead2cc63698d24f48e4a4c05c9ff"
+    },
+    {
+      "path": "observations/d274-negative-native-history-independent-outer-v1/REQUEST.json",
+      "bytes": 679,
+      "sha256": "d498404bdab015befaa5440f3cc1b49e1f07a57cf4108644a1a673e3398d5236"
+    },
+    {
+      "path": "observations/d274-negative-native-history-independent-outer-v1/stdout.log",
+      "bytes": 339,
+      "sha256": "60ebac0099f7dc37993e77d8c455dbcc79d47a411f2435904a72a25001d79799"
+    },
+    {
+      "path": "observations/d274-negative-native-history-independent-outer-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "observations/verify-d274-negative-sealed-history-v1.py",
+      "bytes": 17183,
+      "sha256": "1b67dbcbc9e05eee044d50e794ea19657d18534fe3fd15f003ceb26899512031"
+    }
+  ],
+  "supplementary_observation_scope": {
+    "source_commit": "6e162bab21438b857179a22c6207552feda9331b",
+    "source_tree": "db1528464ed0369f3be4b7a8a7b4d8df6d9abde0",
+    "exact_supplementary_files": 26,
+    "files_included": "Prior009 publication/readback RESULT+commands pairs; each packet seal RESULT and complete four-file outer; each independent RESULT and complete four-file outer plus its exact verifier.",
+    "complete_stdout_stderr_prefixes_archived_here": false,
+    "complete_four_file_seal_and_independent_outers_included": true,
+    "prior009_full_stdout_stderr_prefixes_included": false,
+    "hash_references_not_claimed_as_archived_raw": true,
+    "no_new_native_execution": true,
+    "costs_are_not_complete": true
+  },
+  "supplementary_original_result_commands_links_verified": true,
+  "new_metadata_still_requires_index_and_commit_blob_verification_at_publication": true,
+  "sole_exact_nontext_source_bundle_verified": true,
+  "new_tests_executed": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false
+}

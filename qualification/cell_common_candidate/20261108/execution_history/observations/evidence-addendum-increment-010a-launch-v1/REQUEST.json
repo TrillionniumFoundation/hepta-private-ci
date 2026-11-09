@@ -1,0 +1,35 @@
+{
+  "request_key": "898e-qualification-evidence-increment010a-append-v2-once",
+  "started_at": "2026-11-09T15:16:49.455468+00:00",
+  "argv": [
+    "/usr/bin/python3",
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/append-evidence-increment-010-draft-v2.py",
+    "--inputs",
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment010-two-ready-packet-preparation-v2/DRAFT_INPUTS.json",
+    "--phase",
+    "increment-010a",
+    "--expected-index",
+    "0cf1005179c11c185da89843f4bd23d41ce61428de620783bf9f87a5642fc2de",
+    "--require-clean"
+  ],
+  "cwd": "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+  "script": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/append-evidence-increment-010-draft-v2.py",
+    "bytes": 29890,
+    "sha256": "ae6d82fba105ec66a13ee7f5a952bca6c448ad1352f46ee6d078318477d9ec2f"
+  },
+  "inputs": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/increment010-two-ready-packet-preparation-v2/DRAFT_INPUTS.json",
+    "bytes": 386917,
+    "sha256": "0fc8f813c9d06f759aec536265aeb571246eaeda737f736075998d2e186f4dec"
+  },
+  "outer": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-evidence-increment-010a-v1.py",
+    "bytes": 3447,
+    "sha256": "081389c1c5c450a67857399c13127bb923a521e6cc069fb5722d4221b5466855"
+  },
+  "automatic_retry": false,
+  "extra_timeout_or_signals": false,
+  "new_native_tests": 0,
+  "commit_push_or_PR_change": false
+}

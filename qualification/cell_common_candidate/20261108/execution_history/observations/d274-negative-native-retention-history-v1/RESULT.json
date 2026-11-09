@@ -1,0 +1,98 @@
+{
+  "packet_id": "d274-negative-native-retention-history-v1",
+  "status": "SEALED_D274_NATIVE_FAIL_AND_FORENSIC_RETENTION_HISTORY",
+  "returncode": 0,
+  "started_at": "2026-11-09T14:44:01.290314+00:00",
+  "source_sha": "d27431b69195a2a6331a77d19e22ebeb4cf910c7",
+  "source_tree": "b1cf50c33f5ec9101217ae3f6a7ff987e3aba973",
+  "source_parent": "3fc4725343dccfc9487e937f77e30bc6a5d80dbc",
+  "native_executions": 0,
+  "target_or_retained_executable_access": false,
+  "source_checkout_access": false,
+  "append_commit_push": false,
+  "original_native_status": "FAIL",
+  "original_native_returncode": 1,
+  "original_expected_failure_is_not_PASS": true,
+  "scientific_acceptance": false,
+  "ordinary_daemon_accepted": false,
+  "full_workspace_passed": false,
+  "physical_cost": null,
+  "full_history_cost": null,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "archive": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/d274-negative-native-retention-history.tar.xz",
+    "bytes": 1342472,
+    "sha256": "bde9c3428f6261268f02c82e3383ca85a1e476498941d655343d7a25ddd90700"
+  },
+  "manifest": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/MANIFEST.json",
+    "bytes": 89944,
+    "sha256": "f6ed2cff3c7a1799f116e910d88ca404c87a1d196e83982ee91fc6c43eacff11"
+  },
+  "scope": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/SCOPE.json",
+    "bytes": 14199,
+    "sha256": "c908b8e270a1a604b10bfb689b446b8be9bc9f33e72134dcd49fca1e56ca3124"
+  },
+  "count_bindings": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/COUNT_BINDINGS.json",
+    "bytes": 978,
+    "sha256": "b5a2ed6dc20487d31e754c4309488425e6323f89a234e43631f4b975b4d59346"
+  },
+  "member_count": 130,
+  "payload_member_count": 129,
+  "original_record_file_count": 119,
+  "original_record_bytes": 37973446,
+  "all_members_verified": true,
+  "all_68_bound_original_inputs_included": true,
+  "original_inputs_before_after_unchanged": true,
+  "terminal_prefix_membership_unchanged": true,
+  "host_only_negative_binary_payload_archived": false,
+  "original_case_counts": {
+    "status": "FAIL",
+    "driver_returncode": 1,
+    "test_returncode": 100,
+    "collector_returncode": 1,
+    "unique_executed": 1,
+    "passed": 0,
+    "failed": 1,
+    "failure_exit_code": 101,
+    "filtered_outside_selection": 2447,
+    "selected_ignored": 0,
+    "retries": 0
+  },
+  "driver": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/archive-d274-negative-native-retention-history-v1.py",
+    "device": 2050,
+    "inode": 4907622,
+    "bytes": 29511,
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1,
+    "mtime_ns": 1794235406409306205,
+    "ctime_ns": 1794235406420736044,
+    "sha256": "fc48e5c90afe5e91c4156438f983554b85337933bd91e366f65c4f58273bba4e"
+  },
+  "input_index": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-preparation-v1/INPUTS.json",
+    "device": 2050,
+    "inode": 11202367,
+    "bytes": 129017,
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1,
+    "mtime_ns": 1794234647155779149,
+    "ctime_ns": 1794234647155779149,
+    "sha256": "9ec09e219d452ccd7fa8fa6a9e01680db8651b61d51a4fbff22f86b473cb424e"
+  },
+  "finished_at": "2026-11-09T14:44:17.740007+00:00"
+}

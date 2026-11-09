@@ -1,0 +1,2629 @@
+{
+  "schema": 1,
+  "status": "ALL_130_ORIGINAL_MEMBERS_VERIFIED_NEGATIVE_FAIL_PRESERVED",
+  "returncode": 0,
+  "started_at": "2026-11-09T14:51:16.817233+00:00",
+  "packet_id": "d274-negative-native-retention-history-v1",
+  "source_sha": "d27431b69195a2a6331a77d19e22ebeb4cf910c7",
+  "source_tree": "b1cf50c33f5ec9101217ae3f6a7ff987e3aba973",
+  "native_tests_executed": 0,
+  "executable_payload_access": false,
+  "source_checkout_access": false,
+  "target_access": false,
+  "append_commit_push": false,
+  "full_workspace_passed": false,
+  "original_native_status": "FAIL",
+  "original_native_returncode": 1,
+  "scientific_acceptance": false,
+  "full_history_cost": null,
+  "physical_cost": null,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "member_count": 130,
+  "payload_member_count": 129,
+  "original_record_file_count": 119,
+  "original_record_bytes": 37973446,
+  "all_members_bytes_mode_sha_verified": true,
+  "original_records_equal_archive": true,
+  "original_native_FAIL1_test100_collector1_preserved": true,
+  "all_68_original_bound_inputs_included": true,
+  "source_bundle_exact_exception_verified": true,
+  "copied_ELF_payload_access_or_archiving": false,
+  "count_bindings": {
+    "source_sha": "d27431b69195a2a6331a77d19e22ebeb4cf910c7",
+    "source_tree": "b1cf50c33f5ec9101217ae3f6a7ff987e3aba973",
+    "original_native": {
+      "status": "FAIL",
+      "driver_returncode": 1,
+      "test_returncode": 100,
+      "collector_returncode": 1,
+      "unique_executed": 1,
+      "passed": 0,
+      "failed": 1,
+      "failure_exit_code": 101,
+      "filtered_outside_selection": 2447,
+      "selected_ignored": 0,
+      "retries": 0
+    },
+    "counterfactual_HEAD_assertion_failure_observed": true,
+    "expected_failure_does_not_change_test_outcome_to_PASS": true,
+    "retention": {
+      "returncode": 0,
+      "copied_paths": 1,
+      "host_only_payload_bytes": 453757728,
+      "copied_executables_in_archive": 0
+    },
+    "independent_readback": {
+      "returncode": 0,
+      "original_records": 68,
+      "new_native_executions": 0
+    },
+    "archive_new_native_executions": 0,
+    "full_workspace_passed": false,
+    "scientific_acceptance": false,
+    "full_history_cost": null,
+    "physical_cost": null
+  },
+  "archive_sha256": "bde9c3428f6261268f02c82e3383ca85a1e476498941d655343d7a25ddd90700",
+  "verified_members": [
+    {
+      "path": "metadata/ARCHIVER.py",
+      "bytes": 29511,
+      "mode": 420,
+      "sha256": "fc48e5c90afe5e91c4156438f983554b85337933bd91e366f65c4f58273bba4e"
+    },
+    {
+      "path": "metadata/COUNT_BINDINGS.json",
+      "bytes": 978,
+      "mode": 420,
+      "sha256": "b5a2ed6dc20487d31e754c4309488425e6323f89a234e43631f4b975b4d59346"
+    },
+    {
+      "path": "metadata/INPUTS.json",
+      "bytes": 129017,
+      "mode": 420,
+      "sha256": "9ec09e219d452ccd7fa8fa6a9e01680db8651b61d51a4fbff22f86b473cb424e"
+    },
+    {
+      "path": "metadata/INPUT_PREPARATION_DRIVER.py",
+      "bytes": 17788,
+      "mode": 420,
+      "sha256": "5393bd869ae17441f65cea3007bce4ad7cf40c781230fe865c3f71eacac47d0e"
+    },
+    {
+      "path": "metadata/INPUT_PREPARATION_OUTER.json",
+      "bytes": 1534,
+      "mode": 420,
+      "sha256": "54e6f9162701a8a7e1a0e3531a6d4f327d5a88b01dc903d45683097f7794ef48"
+    },
+    {
+      "path": "metadata/INPUT_PREPARATION_REQUEST.json",
+      "bytes": 684,
+      "mode": 420,
+      "sha256": "baa1a502f62669a426e7b9207e44d245bc30c6810a45fc7612016ceeb8a2c06c"
+    },
+    {
+      "path": "metadata/INPUT_PREPARATION_RESULT.json",
+      "bytes": 1034,
+      "mode": 420,
+      "sha256": "21c2c1d21127e03fe601cf2643511917fcc26cc8424bec31880540d4e62a0052"
+    },
+    {
+      "path": "metadata/INPUT_PREPARATION_STDERR.log",
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "metadata/INPUT_PREPARATION_STDOUT.log",
+      "bytes": 588,
+      "mode": 420,
+      "sha256": "84c2928d0fdc58f84739f0511e23e941de8c4695277e569c6519acf255756475"
+    },
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 14199,
+      "mode": 420,
+      "sha256": "c908b8e270a1a604b10bfb689b446b8be9bc9f33e72134dcd49fca1e56ca3124"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-core-retained-binaries-v1/RESULT.json",
+      "bytes": 35292,
+      "mode": 384,
+      "sha256": "dad59749b2c7dc6e20f76986ccd4233fa529e550c8794dc71cf308aa376e9102"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-owning-v1/RESULT.json",
+      "bytes": 17454,
+      "mode": 384,
+      "sha256": "5453d5b637709ed40b851f1c72f2f43079cce4f988522a0573e26dcd32c7d670"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-terminal-independent-v1/RESULT.json",
+      "bytes": 50673,
+      "mode": 384,
+      "sha256": "15df99ab10ddfcc7efc0444c7a8458827cb258c948ca57a723ffe1c3e7e5621e"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-target-metadata-observation-v1/RESULT.json",
+      "bytes": 22700,
+      "mode": 384,
+      "sha256": "92586b7f0e0e45bee76ba2c832fac950b5f7b05e641e1d478587688d3ddeac06"
+    },
+    {
+      "path": "originals/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/RESULT.json",
+      "bytes": 49405,
+      "mode": 384,
+      "sha256": "f85647d0a8ecd69165d608f0d491797123f92ec27d509e3ceaaf992e2a62982a"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/COMMAND.json",
+      "bytes": 4451,
+      "mode": 384,
+      "sha256": "10111da5df3f9a2307ed8c518efdbed81d2672b780bfe5fa29488afb845ad8db"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/EXECUTION.json",
+      "bytes": 30430,
+      "mode": 384,
+      "sha256": "127b48bea65f79d588d9cafe1ac78ee7fcaa23749f59345dd251e197758a7e18"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/TARGET_CREATED.json",
+      "bytes": 346,
+      "mode": 384,
+      "sha256": "cb1371886d125b4ae8b1338be262c873d03de2d013514657a045c2b596c90361"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/failed-timeout-retention-original.json",
+      "bytes": 49405,
+      "mode": 384,
+      "sha256": "f85647d0a8ecd69165d608f0d491797123f92ec27d509e3ceaaf992e2a62982a"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/launcher.py",
+      "bytes": 18359,
+      "mode": 384,
+      "sha256": "3c07b5c24909cf80fd78278d247ad3ab673ea994d83ceb82b6fe06c54ed3bd63"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/native-driver-original.py",
+      "bytes": 41862,
+      "mode": 384,
+      "sha256": "d36f68d6c7d378cbaf6e0f4172540ab52a38c095fcab5e393c35f2b1f3f7df92"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/old-target-metadata-original.json",
+      "bytes": 22700,
+      "mode": 384,
+      "sha256": "92586b7f0e0e45bee76ba2c832fac950b5f7b05e641e1d478587688d3ddeac06"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/positive-core-original.json",
+      "bytes": 17454,
+      "mode": 384,
+      "sha256": "5453d5b637709ed40b851f1c72f2f43079cce4f988522a0573e26dcd32c7d670"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/positive-readback-original.json",
+      "bytes": 50673,
+      "mode": 384,
+      "sha256": "15df99ab10ddfcc7efc0444c7a8458827cb258c948ca57a723ffe1c3e7e5621e"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/positive-retention-original.json",
+      "bytes": 35292,
+      "mode": 384,
+      "sha256": "dad59749b2c7dc6e20f76986ccd4233fa529e550c8794dc71cf308aa376e9102"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/preflight-driver-original.py",
+      "bytes": 9954,
+      "mode": 384,
+      "sha256": "8956e0fc23a16123aba5a7df53ec627a245693d8e4eb5451176c734d0aa92648"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/preflight-outer-original.json",
+      "bytes": 1298,
+      "mode": 384,
+      "sha256": "307e3d8df1a0b18b96eb12c483d87be7cbec97345f2bff76c760ac7a513598bf"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/previous-outer-original.py",
+      "bytes": 6507,
+      "mode": 384,
+      "sha256": "431fe23a69e466bdda2d635bcbd12b53813e74fa62546e3892e98509292cfb88"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/retained-tools-preflight-original.json",
+      "bytes": 30844,
+      "mode": 384,
+      "sha256": "fafa1afaba622967c72351d3d858c443160ba8c706b35c1582bd4e4108a12398"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/stderr.log",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-outer-v3/stdout.log",
+      "bytes": 517826,
+      "mode": 384,
+      "sha256": "f13e27401bfa9a1e9b12e98b403198b59edf284fbdaf3bf76e03207829e7dce6"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retained-binary-v1/RESULT.json",
+      "bytes": 63969,
+      "mode": 384,
+      "sha256": "ae7067c4527911e238d7a3b336ae3a7e2c9403293366da0acb023d94134d1e6f"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retained-binary-v1/driver.py",
+      "bytes": 55477,
+      "mode": 384,
+      "sha256": "e9b9345649b024b166a027c44d381a24ca45c6f159a6bf52ee7449228b46ab8b"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retained-binary-v1/native-result-original.json",
+      "bytes": 29009,
+      "mode": 384,
+      "sha256": "b5a95e77cf627e7ece12652184b04b3334d08b1ee37665587778954396f40c1f"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retained-binary-v1/outer-execution-original.json",
+      "bytes": 30430,
+      "mode": 384,
+      "sha256": "127b48bea65f79d588d9cafe1ac78ee7fcaa23749f59345dd251e197758a7e18"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retained-binary-v1/source-after-retention.diff.patch",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retained-binary-v1/source-after-retention.files.json",
+      "bytes": 5658136,
+      "mode": 384,
+      "sha256": "b484c247d29ed79bdafa110e4a469ca6da000e40438bfb2f34ff3952ff7d3a97"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retained-binary-v1/source-after-retention.json",
+      "bytes": 924,
+      "mode": 384,
+      "sha256": "eefc637bac0b63326b86aa24ae89ca865838b330422719ef71522a859041166a"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retained-binary-v1/source-before-retention.diff.patch",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retained-binary-v1/source-before-retention.files.json",
+      "bytes": 5658136,
+      "mode": 384,
+      "sha256": "b484c247d29ed79bdafa110e4a469ca6da000e40438bfb2f34ff3952ff7d3a97"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retained-binary-v1/source-before-retention.json",
+      "bytes": 926,
+      "mode": 384,
+      "sha256": "e5170ecdef6c0a0cb3be467e843397b4a0d0ad017a7064a429e969782ae60ff5"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retention-independent-outer-v1/EXECUTION.json",
+      "bytes": 1791,
+      "mode": 384,
+      "sha256": "df2e2a91fdc7e73ace95d529f648059c9aa2786c739402ddc4ebc9aed71845e1"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retention-independent-outer-v1/REQUEST.json",
+      "bytes": 884,
+      "mode": 384,
+      "sha256": "a81ed4cef114d1f5b2eb0d79f3e0fc48182a0f82a82e1996841ca978063efdb3"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retention-independent-outer-v1/stderr.log",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retention-independent-outer-v1/stdout.log",
+      "bytes": 419,
+      "mode": 384,
+      "sha256": "be8328e7594f24a46dd4737a87850423309426e91cf32f04157c7764d1618fce"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retention-independent-v1/RESULT.json",
+      "bytes": 45229,
+      "mode": 384,
+      "sha256": "66b642b50606589d4019835cc8e1680e4b517358a03879ffeaa87c0e092eb8ac"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retention-outer-v1/EXECUTION.json",
+      "bytes": 1837,
+      "mode": 384,
+      "sha256": "7596326896831579fd65010e5f695fb38f5d870494ac63585a530c8972307554"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retention-outer-v1/REQUEST.json",
+      "bytes": 962,
+      "mode": 384,
+      "sha256": "dfc64adcd2e4e8667d78f534ad671b3258ced9b8da5c3a4f396045185a53590e"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retention-outer-v1/stderr.log",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-retention-outer-v1/stdout.log",
+      "bytes": 440,
+      "mode": 384,
+      "sha256": "5b4ba4239392b49260842bb09f6770816774190b5fc9af4b5aa36fea2b30f1c0"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/RESULT.json",
+      "bytes": 29009,
+      "mode": 384,
+      "sha256": "b5a95e77cf627e7ece12652184b04b3334d08b1ee37665587778954396f40c1f"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/bundle-heads.stderr",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/bundle-heads.stdout",
+      "bytes": 46,
+      "mode": 384,
+      "sha256": "6ba834f1c8621a4008a9f98f605a57ae78b639fc64e622d040437445e447d094"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/bundle-verify.stderr",
+      "bytes": 141,
+      "mode": 384,
+      "sha256": "c022d9fc3d51b16e4ace5827b3c4538223b0668dc49768ed0918ffb5c91010e8"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/bundle-verify.stdout",
+      "bytes": 207,
+      "mode": 384,
+      "sha256": "76e54a2d480db27d1ff984efb7ef7d98d000d85886baf854f596d8383324df19"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/collect-junit.json",
+      "bytes": 1942,
+      "mode": 384,
+      "sha256": "fb829079005a001f5a0cc8a38b1f7c9a38f0491c2b9eaa8610eef887500b765f"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/collect-junit.json.b2d2ff4608c3441482bf80035f69c16c.log",
+      "bytes": 1256,
+      "mode": 384,
+      "sha256": "e982090cd48bbebfa64029beea0b868a1e7696f77ea60a06fb36233d50449f47"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/core-owning-readonly-strict-clippy.json",
+      "bytes": 1555,
+      "mode": 384,
+      "sha256": "a6a1aedc82c613c43427896fb88206c5e0ba02d23fe1a9eb7b2e64c1ae3b4288"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/core-owning-readonly-strict-clippy.json.afa2b603e2df426b8d98272b9c0ca22b.log",
+      "bytes": 14630,
+      "mode": 384,
+      "sha256": "6465e0ca7865062c1e4787735998f0c00036098a604e49e7d965c06424830242"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/core-owning-strict-fix.json",
+      "bytes": 1524,
+      "mode": 384,
+      "sha256": "7a89f9001359b8a98a12ff958da6f309adfb099367a0112b4904e3c913ec4152"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/core-owning-strict-fix.json.59efa54cd6114622b53e26df6fc30f90.log",
+      "bytes": 44666,
+      "mode": 384,
+      "sha256": "b4acca717c60cda859e2903ea5da756131e50bbf6091c93f3ace243b3ea9d195"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/create-detached-source.stderr",
+      "bytes": 1765,
+      "mode": 384,
+      "sha256": "cd038678330add9cd747c09e548d336b8d25773004eaecfea2e8f4651587d509"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/create-detached-source.stdout",
+      "bytes": 86,
+      "mode": 384,
+      "sha256": "21b84b98130cc4b8eb3a5010660a6cb9a9e6bfc53064f02dc5033e2ea980717d"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/discovered-tests.json",
+      "bytes": 396400,
+      "mode": 384,
+      "sha256": "41ef9b5102d4c038be639f9d197389e14606b6d9a500d6e13f788d3f39fd0607"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/discovery.json",
+      "bytes": 1909,
+      "mode": 384,
+      "sha256": "8741cd553c9f539684357f229b4993bca8f902fda6135112791dab13957272b5"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/discovery.json.8e90c154877a4974a478b8f004a22739.log",
+      "bytes": 440999,
+      "mode": 384,
+      "sha256": "5f1e72e31c91fcc6ef389182a75667e5f10814059874f049a3928552d9612169"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/driver.py",
+      "bytes": 41862,
+      "mode": 384,
+      "sha256": "d36f68d6c7d378cbaf6e0f4172540ab52a38c095fcab5e393c35f2b1f3f7df92"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/existing-task-temp-io-witness-original.json",
+      "bytes": 15762,
+      "mode": 384,
+      "sha256": "f6db0e514ef3d08f7241cc025028f8bef3ee3a9af903a5bae539ab33474d6612"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/fetch-source-bundle.stderr",
+      "bytes": 192,
+      "mode": 384,
+      "sha256": "7d4d34631d1ca415dd63ea5705506bc9a233929bed7e35d9953ef874485ba21d"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/fetch-source-bundle.stdout",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/junit-case-audit.json",
+      "bytes": 1331,
+      "mode": 384,
+      "sha256": "5182a9e448c7e3958355a46fc24082b33cda419a4aae4078b575f88bdcb46c42"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/nextest-store/local/junit.xml",
+      "bytes": 1945,
+      "mode": 384,
+      "sha256": "7f8d7aa687c5f3f97af75a8c23992bbdac7698edfa1add5ce85b37883deb2d8f"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/nextest.toml",
+      "bytes": 125,
+      "mode": 384,
+      "sha256": "d3914d1d3bfb2bdc2c9e4385dcfa3bdb826073bbc61af48a73282fbe3dc5770e"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/original-fresh-junit.xml",
+      "bytes": 1945,
+      "mode": 384,
+      "sha256": "7f8d7aa687c5f3f97af75a8c23992bbdac7698edfa1add5ce85b37883deb2d8f"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/selection.json",
+      "bytes": 644043,
+      "mode": 384,
+      "sha256": "6a2dd9a93ae8a179ca81ca740a65a4cb705e09b4d187236fb518c3bcdd428b37"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/shared-late-subscription-case.rs",
+      "bytes": 2841,
+      "mode": 384,
+      "sha256": "cccd41df340c5776dd078eac87418c25a5816dde4d43bd6946861331d4065879"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/snapshot-utility.py",
+      "bytes": 18350,
+      "mode": 384,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-after-core-owning-readonly-strict-clippy.diff.patch",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-after-core-owning-readonly-strict-clippy.files.json",
+      "bytes": 5658136,
+      "mode": 384,
+      "sha256": "b484c247d29ed79bdafa110e4a469ca6da000e40438bfb2f34ff3952ff7d3a97"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-after-core-owning-readonly-strict-clippy.json",
+      "bytes": 942,
+      "mode": 384,
+      "sha256": "ec53bd9e5cb77a38a9e7f055fdbb7c2520c97ffd0c33240ab2252e52bca6a9cf"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-after-core-owning-strict-fix.diff.patch",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-after-core-owning-strict-fix.files.json",
+      "bytes": 5658136,
+      "mode": 384,
+      "sha256": "b484c247d29ed79bdafa110e4a469ca6da000e40438bfb2f34ff3952ff7d3a97"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-after-core-owning-strict-fix.json",
+      "bytes": 918,
+      "mode": 384,
+      "sha256": "1a834e6858cdbc6f12bc4481bf03abb9b38729697b5c21cb46043e2db9988a5e"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-after.diff.patch",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-after.files.json",
+      "bytes": 5658136,
+      "mode": 384,
+      "sha256": "b484c247d29ed79bdafa110e4a469ca6da000e40438bfb2f34ff3952ff7d3a97"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-after.json",
+      "bytes": 871,
+      "mode": 384,
+      "sha256": "669e739880352da467342f8bb3b928161eb1184e8e1da3733aa247b16ba9c624"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-ancestor-closure.stderr",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-ancestor-closure.stdout",
+      "bytes": 41,
+      "mode": 384,
+      "sha256": "69f4266903b145f69a057147097d83a083c16ff23d843a069c519d6837543e00"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-before.diff.patch",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-before.files.json",
+      "bytes": 5658136,
+      "mode": 384,
+      "sha256": "b484c247d29ed79bdafa110e4a469ca6da000e40438bfb2f34ff3952ff7d3a97"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-before.json",
+      "bytes": 874,
+      "mode": 384,
+      "sha256": "1089725c34d5fa300f7e1c63d2bf873ad6226f4e9e30cc623e5688975371d953"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-freeze-original.json",
+      "bytes": 5709,
+      "mode": 384,
+      "sha256": "aff1ccf7e4972dabd32ac5d97d3154630875e95108a4927973980995a996abea"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/source-increment-original.bundle",
+      "bytes": 1800,
+      "mode": 384,
+      "sha256": "0e753e10409b9619c7ddff22cd36f00bcfb74f248f5bbb09dadbc989222a6f5e"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/tests-junit.summary.json",
+      "bytes": 1396,
+      "mode": 384,
+      "sha256": "0772a80675b35d77ed21b930355cf2ffc1eae30cef12241afb4a954ad106ec8e"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/tests-junit.xml",
+      "bytes": 1945,
+      "mode": 384,
+      "sha256": "7f8d7aa687c5f3f97af75a8c23992bbdac7698edfa1add5ce85b37883deb2d8f"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/tests.json",
+      "bytes": 2070,
+      "mode": 384,
+      "sha256": "2c7c9e37602d4ca501d641879df9b755518dd3e62b2a37f3f3dc4dd53b259a54"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/tests.json.314e7576aab149b290518e5c44b4f558.log",
+      "bytes": 3488,
+      "mode": 384,
+      "sha256": "84785d5f477a0bac846842c7bbd1a9f2f295d81005ba217d461f5a0091be0cd7"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/v8.env",
+      "bytes": 321,
+      "mode": 384,
+      "sha256": "0056da193f536ec14bfa9d7562ba89d748f1e33b7bb1d9b17f2b966917b3296d"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/v8.json",
+      "bytes": 1510,
+      "mode": 384,
+      "sha256": "f7dfe3bce37c6d08493f1b464ff2d681c7e6fe6ae110314d3482719e9651fe4e"
+    },
+    {
+      "path": "originals/core-output-d27431b-desktop-negative-v1/v8.json.7b6431a94695461e815df48ad7a08479.log",
+      "bytes": 0,
+      "mode": 384,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/EXECUTION.json",
+      "bytes": 1298,
+      "mode": 384,
+      "sha256": "307e3d8df1a0b18b96eb12c483d87be7cbec97345f2bff76c760ac7a513598bf"
+    },
+    {
+      "path": "originals/core-output-d27431b-retained-copies-and-tools-preflight-v1/RESULT.json",
+      "bytes": 30844,
+      "mode": 384,
+      "sha256": "fafa1afaba622967c72351d3d858c443160ba8c706b35c1582bd4e4108a12398"
+    },
+    {
+      "path": "originals/d274-negative-history-actual-junit-schema-review-original.json",
+      "bytes": 3885,
+      "mode": 384,
+      "sha256": "2392ec215ee3fe712a6be23f0793a8e25e4f578d6f4353cd8d454cc6455d00fc"
+    },
+    {
+      "path": "originals/d274-negative-history-h-readback-failures-original.json",
+      "bytes": 1395,
+      "mode": 384,
+      "sha256": "67d806f1794a569319a761daa0ff43414976968d29d2fdc08d67a2e56bce9e89"
+    },
+    {
+      "path": "originals/d274-negative-history-local-original-upload-receipts.json",
+      "bytes": 17155,
+      "mode": 384,
+      "sha256": "edac38a8bb935e85316b8f53f697470e6d51ac870d088a8032e6afe5b48c4d1e"
+    },
+    {
+      "path": "originals/d274-negative-history-native-launch-observation-original.json",
+      "bytes": 12073,
+      "mode": 384,
+      "sha256": "7578ad29c87438b7023c0b9a61207714f665d3f5fd78dcd20914370add3b1580"
+    },
+    {
+      "path": "originals/d274-negative-history-native-terminal-raw-readback-original.json",
+      "bytes": 162465,
+      "mode": 384,
+      "sha256": "f74ce0a2e118663bf6d5a8884f60ef11d282a127cb292489c6a659c4a6961fa9"
+    },
+    {
+      "path": "originals/d274-negative-history-retainer-builder-original.py",
+      "bytes": 8636,
+      "mode": 384,
+      "sha256": "ed3612e2016737c0a70fd08cb4a3bf029a45b98df1eac0a25887e8913113eabf"
+    },
+    {
+      "path": "originals/d274-negative-history-retainer-checker-original.py",
+      "bytes": 9738,
+      "mode": 384,
+      "sha256": "d18ee172dd4944c74bb0b1732507ba9b2d19390c1ae1c06e60fdff4ec517df8d"
+    },
+    {
+      "path": "originals/d274-negative-history-retainer-inputs-pending-original.json",
+      "bytes": 4106,
+      "mode": 384,
+      "sha256": "184bd9059437bd8fa3ed7e62eccf1b2053cd1a4a349d62805dd57093442f906c"
+    },
+    {
+      "path": "originals/d274-negative-history-retainer-peer-narrow-review-original.json",
+      "bytes": 800,
+      "mode": 384,
+      "sha256": "c3bcb07b386e2d2dec78da0a22af26d89ae62179240522fd8e5f14f1d11b28f6"
+    },
+    {
+      "path": "originals/d274-negative-history-retainer-preparation-original.json",
+      "bytes": 3474,
+      "mode": 384,
+      "sha256": "6425d21bf8525e8863010f9cbb1c53ace2ec36d2ec1f4aa17f348ae2617560c0"
+    },
+    {
+      "path": "originals/d274-negative-history-retainer-pure-checks-original.json",
+      "bytes": 4406,
+      "mode": 384,
+      "sha256": "18efc7337bb55a9e8ee71244f35977e1d948b8eea9e66fba4ec0d59662bbdcc0"
+    },
+    {
+      "path": "originals/d274-negative-history-retainer-readme-original.md",
+      "bytes": 4725,
+      "mode": 384,
+      "sha256": "4e5412ab179756b6d08cc5628040d2dc46fafbe7a79e37d489c5552c59ab11b9"
+    },
+    {
+      "path": "originals/d274-negative-history-retainer-reuse-proof-original.json",
+      "bytes": 2404,
+      "mode": 384,
+      "sha256": "c47805b14ef79a4509e2572fed13686042d2100f214bcdc24c2b1b8f8784d057"
+    },
+    {
+      "path": "originals/d274-negative-history-retainer-selection-reuse.patch",
+      "bytes": 4876,
+      "mode": 384,
+      "sha256": "0c81eb7ee70d0f7cf911f1f98218717343975cdb6c82a7df65a165a4e6bb1abd"
+    },
+    {
+      "path": "originals/d274-negative-history-retainer-standard-delta.patch",
+      "bytes": 97398,
+      "mode": 384,
+      "sha256": "a0374a942c453e5cc5241bc331a7a33fc2ea1e7c3852ce3511b07837bb0463f8"
+    },
+    {
+      "path": "originals/d274-negative-history-retention-operation-originals.json",
+      "bytes": 241843,
+      "mode": 384,
+      "sha256": "b42d6dbbb8b25d3f8012756e8c94b6817e90f79b03afa979168ed43c667fe6af"
+    },
+    {
+      "path": "originals/d274-negative-history-retention-root-raw-readback-original.json",
+      "bytes": 133510,
+      "mode": 384,
+      "sha256": "d0a0810fe82b84767fbfd370d2b4f50e1d83dcad24c691ef1c576761c63b2729"
+    },
+    {
+      "path": "originals/d274-negative-history-strict-dependency-published-manifest-original.json",
+      "bytes": 137124,
+      "mode": 384,
+      "sha256": "8d5b910315f63250d697727bfbd9125bc68419b0ec54b6e1b895d34252e634b5"
+    },
+    {
+      "path": "originals/d274-negative-history-strict-dependency-records-recovery-original.json",
+      "bytes": 474,
+      "mode": 384,
+      "sha256": "d371ec97c23b9e0983157f27a7af1f91c381c07a418502b5c2d6ea70064c7dd8"
+    },
+    {
+      "path": "originals/launch-core-output-negative-d27431b-desktop-v2.py",
+      "bytes": 6507,
+      "mode": 384,
+      "sha256": "431fe23a69e466bdda2d635bcbd12b53813e74fa62546e3892e98509292cfb88"
+    },
+    {
+      "path": "originals/launch-core-output-negative-d27431b-desktop-v3-reviewed.py",
+      "bytes": 18359,
+      "mode": 384,
+      "sha256": "3c07b5c24909cf80fd78278d247ad3ab673ea994d83ceb82b6fe06c54ed3bd63"
+    },
+    {
+      "path": "originals/prepare-output-summary-successor-strict-desktop-v1.py",
+      "bytes": 18350,
+      "mode": 384,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7"
+    },
+    {
+      "path": "originals/retain-desktop-6ec-workspace-and-helper-binaries-v2.py",
+      "bytes": 44042,
+      "mode": 384,
+      "sha256": "b7390330799f7134485b8be0b9bf1796e1721ef98aaa316d025cb9d34a4c3420"
+    },
+    {
+      "path": "originals/retain-desktop-d274-negative-binary-v1.py",
+      "bytes": 55477,
+      "mode": 384,
+      "sha256": "e9b9345649b024b166a027c44d381a24ca45c6f159a6bf52ee7449228b46ab8b"
+    },
+    {
+      "path": "originals/run-core-output-negative-d27431b-desktop-v1.py",
+      "bytes": 41862,
+      "mode": 384,
+      "sha256": "d36f68d6c7d378cbaf6e0f4172540ab52a38c095fcab5e393c35f2b1f3f7df92"
+    },
+    {
+      "path": "originals/verify-d274-retained-core-copies-and-tools-v1.py",
+      "bytes": 9954,
+      "mode": 384,
+      "sha256": "8956e0fc23a16123aba5a7df53ec627a245693d8e4eb5451176c734d0aa92648"
+    },
+    {
+      "path": "originals/verify-desktop-d274-negative-binary-retention-v1.py",
+      "bytes": 15812,
+      "mode": 384,
+      "sha256": "d2313df53935b58cf0c588337a0a3a0114d05baabb79443da267c2c20793a5f4"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 89944,
+      "mode": 420,
+      "sha256": "f6ed2cff3c7a1799f116e910d88ca404c87a1d196e83982ee91fc6c43eacff11"
+    }
+  ],
+  "inputs_before_after_unchanged": true,
+  "finished_at": "2026-11-09T14:51:17.696594+00:00",
+  "input_count": 136,
+  "input_pins": {
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/RESULT.json",
+      "bytes": 3566,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "d48e94bc28aac4d4186db502bf16ef0eb217459522ff771426a0575c4bfb4a1d",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6867615,
+      "nlink": 1,
+      "mtime_ns": 1794235457740249195,
+      "ctime_ns": 1794235457740249195
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-preparation-v1/INPUTS.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-preparation-v1/INPUTS.json",
+      "bytes": 129017,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "9ec09e219d452ccd7fa8fa6a9e01680db8651b61d51a4fbff22f86b473cb424e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 11202367,
+      "nlink": 1,
+      "mtime_ns": 1794234647155779149,
+      "ctime_ns": 1794234647155779149
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/archive-d274-negative-native-retention-history-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/archive-d274-negative-native-retention-history-v1.py",
+      "bytes": 29511,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "fc48e5c90afe5e91c4156438f983554b85337933bd91e366f65c4f58273bba4e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907622,
+      "nlink": 1,
+      "mtime_ns": 1794235406409306205,
+      "ctime_ns": 1794235406420736044
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-seal-outer-v1/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-seal-outer-v1/EXECUTION.json",
+      "bytes": 1520,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "cc68349f0a4828ee57625e673513353fbc57fc9fbd02367cee59fda90ec51825",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5168735,
+      "nlink": 1,
+      "mtime_ns": 1794235457771837655,
+      "ctime_ns": 1794235457771837655
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/MANIFEST.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/MANIFEST.json",
+      "bytes": 89944,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "f6ed2cff3c7a1799f116e910d88ca404c87a1d196e83982ee91fc6c43eacff11",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6867613,
+      "nlink": 1,
+      "mtime_ns": 1794235441974130003,
+      "ctime_ns": 1794235441974130003
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/SCOPE.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/SCOPE.json",
+      "bytes": 14199,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "c908b8e270a1a604b10bfb689b446b8be9bc9f33e72134dcd49fca1e56ca3124",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6867611,
+      "nlink": 1,
+      "mtime_ns": 1794235441970635575,
+      "ctime_ns": 1794235441970635575
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/COUNT_BINDINGS.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/COUNT_BINDINGS.json",
+      "bytes": 978,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "b5a2ed6dc20487d31e754c4309488425e6323f89a234e43631f4b975b4d59346",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6867612,
+      "nlink": 1,
+      "mtime_ns": 1794235441972621907,
+      "ctime_ns": 1794235441972621907
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/d274-negative-native-retention-history.tar.xz": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-v1/d274-negative-native-retention-history.tar.xz",
+      "bytes": 1342472,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "bde9c3428f6261268f02c82e3383ca85a1e476498941d655343d7a25ddd90700",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6867614,
+      "nlink": 1,
+      "mtime_ns": 1794235457130861045,
+      "ctime_ns": 1794235457130861045
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-seal-outer-v1/REQUEST.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-seal-outer-v1/REQUEST.json",
+      "bytes": 699,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "9520d636c4e01eac61e687a9e9e3dc9fae9d0d59fe02db8a1696d9fe7f942efe",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5168732,
+      "nlink": 1,
+      "mtime_ns": 1794235441222500410,
+      "ctime_ns": 1794235441222500410
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-seal-outer-v1/stdout.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-seal-outer-v1/stdout.log",
+      "bytes": 595,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "0448221c89055b86a4399626e18c8ebbfd8614a0c2344cb23d30e16fc2ae733c",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5168733,
+      "nlink": 1,
+      "mtime_ns": 1794235457752838348,
+      "ctime_ns": 1794235457752838348
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-seal-outer-v1/stderr.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-seal-outer-v1/stderr.log",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5168734,
+      "nlink": 1,
+      "mtime_ns": 1794235441222500410,
+      "ctime_ns": 1794235441222500410
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-preparation-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-retention-history-preparation-v1/RESULT.json",
+      "bytes": 1034,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "21c2c1d21127e03fe601cf2643511917fcc26cc8424bec31880540d4e62a0052",
+      "mode": 384,
+      "device": 2050,
+      "inode": 11202368,
+      "nlink": 1,
+      "mtime_ns": 1794234647227208012,
+      "ctime_ns": 1794234647227208012
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/prepare-d274-negative-native-history-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/prepare-d274-negative-native-history-v1.py",
+      "bytes": 17788,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "5393bd869ae17441f65cea3007bce4ad7cf40c781230fe865c3f71eacac47d0e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907620,
+      "nlink": 1,
+      "mtime_ns": 1794234609484325050,
+      "ctime_ns": 1794234609500553449
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-prepare-outer-v1/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-prepare-outer-v1/EXECUTION.json",
+      "bytes": 1534,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "54e6f9162701a8a7e1a0e3531a6d4f327d5a88b01dc903d45683097f7794ef48",
+      "mode": 384,
+      "device": 2050,
+      "inode": 11202369,
+      "nlink": 1,
+      "mtime_ns": 1794234647271482947,
+      "ctime_ns": 1794234647271482947
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-prepare-outer-v1/REQUEST.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-prepare-outer-v1/REQUEST.json",
+      "bytes": 684,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "baa1a502f62669a426e7b9207e44d245bc30c6810a45fc7612016ceeb8a2c06c",
+      "mode": 384,
+      "device": 2050,
+      "inode": 11202363,
+      "nlink": 1,
+      "mtime_ns": 1794234646559187500,
+      "ctime_ns": 1794234646559187500
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-prepare-outer-v1/stdout.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-prepare-outer-v1/stdout.log",
+      "bytes": 588,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "84c2928d0fdc58f84739f0511e23e941de8c4695277e569c6519acf255756475",
+      "mode": 384,
+      "device": 2050,
+      "inode": 11202364,
+      "nlink": 1,
+      "mtime_ns": 1794234647257693339,
+      "ctime_ns": 1794234647257693339
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-prepare-outer-v1/stderr.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-native-history-prepare-outer-v1/stderr.log",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 11202365,
+      "nlink": 1,
+      "mtime_ns": 1794234646559187500,
+      "ctime_ns": 1794234646559187500
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-core-retained-binaries-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-core-retained-binaries-v1/RESULT.json",
+      "bytes": 35292,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "dad59749b2c7dc6e20f76986ccd4233fa529e550c8794dc71cf308aa376e9102",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5038457,
+      "nlink": 1,
+      "mtime_ns": 1794218424801639694,
+      "ctime_ns": 1794218424801639694
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-owning-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-owning-v1/RESULT.json",
+      "bytes": 17454,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "5453d5b637709ed40b851f1c72f2f43079cce4f988522a0573e26dcd32c7d670",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5671496,
+      "nlink": 1,
+      "mtime_ns": 1794218300165523492,
+      "ctime_ns": 1794218300165706477
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-terminal-independent-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-terminal-independent-v1/RESULT.json",
+      "bytes": 50673,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "15df99ab10ddfcc7efc0444c7a8458827cb258c948ca57a723ffe1c3e7e5621e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 6218122,
+      "nlink": 1,
+      "mtime_ns": 1794219134854636502,
+      "ctime_ns": 1794219134854636502
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-target-metadata-observation-v1/RESULT.json",
+      "bytes": 22700,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "92586b7f0e0e45bee76ba2c832fac950b5f7b05e641e1d478587688d3ddeac06",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089420,
+      "nlink": 1,
+      "mtime_ns": 1794229102473293795,
+      "ctime_ns": 1794229102473293795
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-6ec5993-desktop-workspace-timeout-artifact-retention-v1/RESULT.json",
+      "bytes": 49405,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "f85647d0a8ecd69165d608f0d491797123f92ec27d509e3ceaaf992e2a62982a",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089338,
+      "nlink": 1,
+      "mtime_ns": 1794228795457853662,
+      "ctime_ns": 1794228795457853662
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/COMMAND.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/COMMAND.json",
+      "bytes": 4451,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "10111da5df3f9a2307ed8c518efdbed81d2672b780bfe5fa29488afb845ad8db",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089826,
+      "nlink": 1,
+      "mtime_ns": 1794230341742446414,
+      "ctime_ns": 1794230341742446414
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/EXECUTION.json",
+      "bytes": 30430,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "127b48bea65f79d588d9cafe1ac78ee7fcaa23749f59345dd251e197758a7e18",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101120,
+      "nlink": 1,
+      "mtime_ns": 1794231434681568876,
+      "ctime_ns": 1794231434681568876
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/TARGET_CREATED.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/TARGET_CREATED.json",
+      "bytes": 346,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "cb1371886d125b4ae8b1338be262c873d03de2d013514657a045c2b596c90361",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089827,
+      "nlink": 1,
+      "mtime_ns": 1794230351504012423,
+      "ctime_ns": 1794230351504012423
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/failed-timeout-retention-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/failed-timeout-retention-original.json",
+      "bytes": 49405,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "f85647d0a8ecd69165d608f0d491797123f92ec27d509e3ceaaf992e2a62982a",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089820,
+      "nlink": 1,
+      "mtime_ns": 1794230341741608286,
+      "ctime_ns": 1794230341741608286
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/launcher.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/launcher.py",
+      "bytes": 18359,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "3c07b5c24909cf80fd78278d247ad3ab673ea994d83ceb82b6fe06c54ed3bd63",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089815,
+      "nlink": 1,
+      "mtime_ns": 1794230341739878948,
+      "ctime_ns": 1794230341739878948
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/native-driver-original.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/native-driver-original.py",
+      "bytes": 41862,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "d36f68d6c7d378cbaf6e0f4172540ab52a38c095fcab5e393c35f2b1f3f7df92",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089816,
+      "nlink": 1,
+      "mtime_ns": 1794230341741128929,
+      "ctime_ns": 1794230341741128929
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/old-target-metadata-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/old-target-metadata-original.json",
+      "bytes": 22700,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "92586b7f0e0e45bee76ba2c832fac950b5f7b05e641e1d478587688d3ddeac06",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089821,
+      "nlink": 1,
+      "mtime_ns": 1794230341741758861,
+      "ctime_ns": 1794230341741758861
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/positive-core-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/positive-core-original.json",
+      "bytes": 17454,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "5453d5b637709ed40b851f1c72f2f43079cce4f988522a0573e26dcd32c7d670",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089817,
+      "nlink": 1,
+      "mtime_ns": 1794230341741246895,
+      "ctime_ns": 1794230341741246895
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/positive-readback-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/positive-readback-original.json",
+      "bytes": 50673,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "15df99ab10ddfcc7efc0444c7a8458827cb258c948ca57a723ffe1c3e7e5621e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089819,
+      "nlink": 1,
+      "mtime_ns": 1794230341741490730,
+      "ctime_ns": 1794230341741490730
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/positive-retention-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/positive-retention-original.json",
+      "bytes": 35292,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "dad59749b2c7dc6e20f76986ccd4233fa529e550c8794dc71cf308aa376e9102",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089818,
+      "nlink": 1,
+      "mtime_ns": 1794230341741370595,
+      "ctime_ns": 1794230341741370595
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/preflight-driver-original.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/preflight-driver-original.py",
+      "bytes": 9954,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "8956e0fc23a16123aba5a7df53ec627a245693d8e4eb5451176c734d0aa92648",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089825,
+      "nlink": 1,
+      "mtime_ns": 1794230341742202739,
+      "ctime_ns": 1794230341742202739
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/preflight-outer-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/preflight-outer-original.json",
+      "bytes": 1298,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "307e3d8df1a0b18b96eb12c483d87be7cbec97345f2bff76c760ac7a513598bf",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089823,
+      "nlink": 1,
+      "mtime_ns": 1794230341741970513,
+      "ctime_ns": 1794230341741970513
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/previous-outer-original.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/previous-outer-original.py",
+      "bytes": 6507,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "431fe23a69e466bdda2d635bcbd12b53813e74fa62546e3892e98509292cfb88",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089824,
+      "nlink": 1,
+      "mtime_ns": 1794230341742082853,
+      "ctime_ns": 1794230341742082853
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/retained-tools-preflight-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/retained-tools-preflight-original.json",
+      "bytes": 30844,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "fafa1afaba622967c72351d3d858c443160ba8c706b35c1582bd4e4108a12398",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089822,
+      "nlink": 1,
+      "mtime_ns": 1794230341741866634,
+      "ctime_ns": 1794230341741866634
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/stderr.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/stderr.log",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089829,
+      "nlink": 1,
+      "mtime_ns": 1794230351504012423,
+      "ctime_ns": 1794230351504012423
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/stdout.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-outer-v3/stdout.log",
+      "bytes": 517826,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "f13e27401bfa9a1e9b12e98b403198b59edf284fbdaf3bf76e03207829e7dce6",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089828,
+      "nlink": 1,
+      "mtime_ns": 1794231425719849304,
+      "ctime_ns": 1794231425719849304
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/RESULT.json",
+      "bytes": 63969,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "ae7067c4527911e238d7a3b336ae3a7e2c9403293366da0acb023d94134d1e6f",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5662571,
+      "nlink": 1,
+      "mtime_ns": 1794233514471529848,
+      "ctime_ns": 1794233514471529848
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/driver.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/driver.py",
+      "bytes": 55477,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e9b9345649b024b166a027c44d381a24ca45c6f159a6bf52ee7449228b46ab8b",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5662426,
+      "nlink": 1,
+      "mtime_ns": 1794233481795086714,
+      "ctime_ns": 1794233481795086714
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/native-result-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/native-result-original.json",
+      "bytes": 29009,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "b5a95e77cf627e7ece12652184b04b3334d08b1ee37665587778954396f40c1f",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5662471,
+      "nlink": 1,
+      "mtime_ns": 1794233481813060575,
+      "ctime_ns": 1794233481813060575
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/outer-execution-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/outer-execution-original.json",
+      "bytes": 30430,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "127b48bea65f79d588d9cafe1ac78ee7fcaa23749f59345dd251e197758a7e18",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5662427,
+      "nlink": 1,
+      "mtime_ns": 1794233481812258165,
+      "ctime_ns": 1794233481812258165
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/source-after-retention.diff.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/source-after-retention.diff.patch",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5662530,
+      "nlink": 1,
+      "mtime_ns": 1794233502302641041,
+      "ctime_ns": 1794233502302641041
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/source-after-retention.files.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/source-after-retention.files.json",
+      "bytes": 5658136,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "b484c247d29ed79bdafa110e4a469ca6da000e40438bfb2f34ff3952ff7d3a97",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5662529,
+      "nlink": 1,
+      "mtime_ns": 1794233502285051325,
+      "ctime_ns": 1794233502285051325
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/source-after-retention.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/source-after-retention.json",
+      "bytes": 924,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "eefc637bac0b63326b86aa24ae89ca865838b330422719ef71522a859041166a",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5662570,
+      "nlink": 1,
+      "mtime_ns": 1794233502378303016,
+      "ctime_ns": 1794233502378303016
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/source-before-retention.diff.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/source-before-retention.diff.patch",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5662475,
+      "nlink": 1,
+      "mtime_ns": 1794233484115798799,
+      "ctime_ns": 1794233484115798799
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/source-before-retention.files.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/source-before-retention.files.json",
+      "bytes": 5658136,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "b484c247d29ed79bdafa110e4a469ca6da000e40438bfb2f34ff3952ff7d3a97",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5662472,
+      "nlink": 1,
+      "mtime_ns": 1794233484098798942,
+      "ctime_ns": 1794233484098798942
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/source-before-retention.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retained-binary-v1/source-before-retention.json",
+      "bytes": 926,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e5170ecdef6c0a0cb3be467e843397b4a0d0ad017a7064a429e969782ae60ff5",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5662476,
+      "nlink": 1,
+      "mtime_ns": 1794233484194798135,
+      "ctime_ns": 1794233484194798135
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-independent-outer-v1/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-independent-outer-v1/EXECUTION.json",
+      "bytes": 1791,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "df2e2a91fdc7e73ace95d529f648059c9aa2786c739402ddc4ebc9aed71845e1",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5955682,
+      "nlink": 1,
+      "mtime_ns": 1794233600205627632,
+      "ctime_ns": 1794233600205627632
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-independent-outer-v1/REQUEST.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-independent-outer-v1/REQUEST.json",
+      "bytes": 884,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "a81ed4cef114d1f5b2eb0d79f3e0fc48182a0f82a82e1996841ca978063efdb3",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5955677,
+      "nlink": 1,
+      "mtime_ns": 1794233596442448864,
+      "ctime_ns": 1794233596442448864
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-independent-outer-v1/stderr.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-independent-outer-v1/stderr.log",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5955679,
+      "nlink": 1,
+      "mtime_ns": 1794233596442448864,
+      "ctime_ns": 1794233596442448864
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-independent-outer-v1/stdout.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-independent-outer-v1/stdout.log",
+      "bytes": 419,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "be8328e7594f24a46dd4737a87850423309426e91cf32f04157c7764d1618fce",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5955678,
+      "nlink": 1,
+      "mtime_ns": 1794233600189627819,
+      "ctime_ns": 1794233600189627819
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-independent-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-independent-v1/RESULT.json",
+      "bytes": 45229,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "66b642b50606589d4019835cc8e1680e4b517358a03879ffeaa87c0e092eb8ac",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5955681,
+      "nlink": 1,
+      "mtime_ns": 1794233600189627819,
+      "ctime_ns": 1794233600189627819
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-outer-v1/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-outer-v1/EXECUTION.json",
+      "bytes": 1837,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "7596326896831579fd65010e5f695fb38f5d870494ac63585a530c8972307554",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5662574,
+      "nlink": 1,
+      "mtime_ns": 1794233514488529690,
+      "ctime_ns": 1794233514488529690
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-outer-v1/REQUEST.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-outer-v1/REQUEST.json",
+      "bytes": 962,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "dfc64adcd2e4e8667d78f534ad671b3258ced9b8da5c3a4f396045185a53590e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5660363,
+      "nlink": 1,
+      "mtime_ns": 1794233481712818870,
+      "ctime_ns": 1794233481712818870
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-outer-v1/stderr.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-outer-v1/stderr.log",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5662422,
+      "nlink": 1,
+      "mtime_ns": 1794233481712818870,
+      "ctime_ns": 1794233481712818870
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-outer-v1/stdout.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-retention-outer-v1/stdout.log",
+      "bytes": 440,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "5b4ba4239392b49260842bb09f6770816774190b5fc9af4b5aa36fea2b30f1c0",
+      "mode": 384,
+      "device": 2050,
+      "inode": 5660365,
+      "nlink": 1,
+      "mtime_ns": 1794233514471529848,
+      "ctime_ns": 1794233514471529848
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/RESULT.json",
+      "bytes": 29009,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "b5a95e77cf627e7ece12652184b04b3334d08b1ee37665587778954396f40c1f",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101137,
+      "nlink": 1,
+      "mtime_ns": 1794231425719849304,
+      "ctime_ns": 1794231425719849304
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/bundle-heads.stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/bundle-heads.stderr",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089932,
+      "nlink": 1,
+      "mtime_ns": 1794230351705946759,
+      "ctime_ns": 1794230351705946759
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/bundle-heads.stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/bundle-heads.stdout",
+      "bytes": 46,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "6ba834f1c8621a4008a9f98f605a57ae78b639fc64e622d040437445e447d094",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089832,
+      "nlink": 1,
+      "mtime_ns": 1794230351707564065,
+      "ctime_ns": 1794230351707564065
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/bundle-verify.stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/bundle-verify.stderr",
+      "bytes": 141,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "c022d9fc3d51b16e4ace5827b3c4538223b0668dc49768ed0918ffb5c91010e8",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089934,
+      "nlink": 1,
+      "mtime_ns": 1794230351756562517,
+      "ctime_ns": 1794230351756562517
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/bundle-verify.stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/bundle-verify.stdout",
+      "bytes": 207,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "76e54a2d480db27d1ff984efb7ef7d98d000d85886baf854f596d8383324df19",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089933,
+      "nlink": 1,
+      "mtime_ns": 1794230351756562517,
+      "ctime_ns": 1794230351756562517
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/collect-junit.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/collect-junit.json",
+      "bytes": 1942,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "fb829079005a001f5a0cc8a38b1f7c9a38f0491c2b9eaa8610eef887500b765f",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101132,
+      "nlink": 1,
+      "mtime_ns": 1794231420353531832,
+      "ctime_ns": 1794231420354017213
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/collect-junit.json.b2d2ff4608c3441482bf80035f69c16c.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/collect-junit.json.b2d2ff4608c3441482bf80035f69c16c.log",
+      "bytes": 1256,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e982090cd48bbebfa64029beea0b868a1e7696f77ea60a06fb36233d50449f47",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101129,
+      "nlink": 1,
+      "mtime_ns": 1794231420269019873,
+      "ctime_ns": 1794231420269019873
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/core-owning-readonly-strict-clippy.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/core-owning-readonly-strict-clippy.json",
+      "bytes": 1555,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "a6a1aedc82c613c43427896fb88206c5e0ba02d23fe1a9eb7b2e64c1ae3b4288",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101117,
+      "nlink": 1,
+      "mtime_ns": 1794230968186178114,
+      "ctime_ns": 1794230968188178051
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/core-owning-readonly-strict-clippy.json.afa2b603e2df426b8d98272b9c0ca22b.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/core-owning-readonly-strict-clippy.json.afa2b603e2df426b8d98272b9c0ca22b.log",
+      "bytes": 14630,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "6465e0ca7865062c1e4787735998f0c00036098a604e49e7d965c06424830242",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101111,
+      "nlink": 1,
+      "mtime_ns": 1794230968101180779,
+      "ctime_ns": 1794230968101180779
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/core-owning-strict-fix.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/core-owning-strict-fix.json",
+      "bytes": 1524,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "7a89f9001359b8a98a12ff958da6f309adfb099367a0112b4904e3c913ec4152",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101107,
+      "nlink": 1,
+      "mtime_ns": 1794230735817469474,
+      "ctime_ns": 1794230735822469317
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/core-owning-strict-fix.json.59efa54cd6114622b53e26df6fc30f90.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/core-owning-strict-fix.json.59efa54cd6114622b53e26df6fc30f90.log",
+      "bytes": 44666,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "b4acca717c60cda859e2903ea5da756131e50bbf6091c93f3ace243b3ea9d195",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089953,
+      "nlink": 1,
+      "mtime_ns": 1794230735723472427,
+      "ctime_ns": 1794230735723472427
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/create-detached-source.stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/create-detached-source.stderr",
+      "bytes": 1765,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "cd038678330add9cd747c09e548d336b8d25773004eaecfea2e8f4651587d509",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089940,
+      "nlink": 1,
+      "mtime_ns": 1794230353465197080,
+      "ctime_ns": 1794230353465197080
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/create-detached-source.stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/create-detached-source.stdout",
+      "bytes": 86,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "21b84b98130cc4b8eb3a5010660a6cb9a9e6bfc53064f02dc5033e2ea980717d",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089939,
+      "nlink": 1,
+      "mtime_ns": 1794230353488828259,
+      "ctime_ns": 1794230353488828259
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/discovered-tests.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/discovered-tests.json",
+      "bytes": 396400,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "41ef9b5102d4c038be639f9d197389e14606b6d9a500d6e13f788d3f39fd0607",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101121,
+      "nlink": 1,
+      "mtime_ns": 1794231414085533882,
+      "ctime_ns": 1794231414085533882
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/discovery.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/discovery.json",
+      "bytes": 1909,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "8741cd553c9f539684357f229b4993bca8f902fda6135112791dab13957272b5",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101124,
+      "nlink": 1,
+      "mtime_ns": 1794231414042391248,
+      "ctime_ns": 1794231414043214696
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/discovery.json.8e90c154877a4974a478b8f004a22739.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/discovery.json.8e90c154877a4974a478b8f004a22739.log",
+      "bytes": 440999,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "5f1e72e31c91fcc6ef389182a75667e5f10814059874f049a3928552d9612169",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101122,
+      "nlink": 1,
+      "mtime_ns": 1794231413912218795,
+      "ctime_ns": 1794231413912218795
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/driver.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/driver.py",
+      "bytes": 41862,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "d36f68d6c7d378cbaf6e0f4172540ab52a38c095fcab5e393c35f2b1f3f7df92",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089831,
+      "nlink": 1,
+      "mtime_ns": 1794230351576371560,
+      "ctime_ns": 1794230351576371560
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/existing-task-temp-io-witness-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/existing-task-temp-io-witness-original.json",
+      "bytes": 15762,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "f6db0e514ef3d08f7241cc025028f8bef3ee3a9af903a5bae539ab33474d6612",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089833,
+      "nlink": 1,
+      "mtime_ns": 1794230351577257727,
+      "ctime_ns": 1794230351577257727
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/fetch-source-bundle.stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/fetch-source-bundle.stderr",
+      "bytes": 192,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "7d4d34631d1ca415dd63ea5705506bc9a233929bed7e35d9953ef874485ba21d",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089936,
+      "nlink": 1,
+      "mtime_ns": 1794230351802561064,
+      "ctime_ns": 1794230351802561064
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/fetch-source-bundle.stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/fetch-source-bundle.stdout",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089935,
+      "nlink": 1,
+      "mtime_ns": 1794230351759064866,
+      "ctime_ns": 1794230351759064866
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/junit-case-audit.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/junit-case-audit.json",
+      "bytes": 1331,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "5182a9e448c7e3958355a46fc24082b33cda419a4aae4078b575f88bdcb46c42",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101133,
+      "nlink": 1,
+      "mtime_ns": 1794231420379336730,
+      "ctime_ns": 1794231420379336730
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/nextest-store/local/junit.xml": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/nextest-store/local/junit.xml",
+      "bytes": 1945,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "7f8d7aa687c5f3f97af75a8c23992bbdac7698edfa1add5ce85b37883deb2d8f",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9890959,
+      "nlink": 1,
+      "mtime_ns": 1794231419853032890,
+      "ctime_ns": 1794231419853032890
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/nextest.toml": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/nextest.toml",
+      "bytes": 125,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "d3914d1d3bfb2bdc2c9e4385dcfa3bdb826073bbc61af48a73282fbe3dc5770e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089952,
+      "nlink": 1,
+      "mtime_ns": 1794230970319513014,
+      "ctime_ns": 1794230970319513014
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/original-fresh-junit.xml": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/original-fresh-junit.xml",
+      "bytes": 1945,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "7f8d7aa687c5f3f97af75a8c23992bbdac7698edfa1add5ce85b37883deb2d8f",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101126,
+      "nlink": 1,
+      "mtime_ns": 1794231420378784485,
+      "ctime_ns": 1794231420378784485
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/selection.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/selection.json",
+      "bytes": 644043,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "6a2dd9a93ae8a179ca81ca740a65a4cb705e09b4d187236fb518c3bcdd428b37",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101125,
+      "nlink": 1,
+      "mtime_ns": 1794231415597166068,
+      "ctime_ns": 1794231415597166068
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/shared-late-subscription-case.rs": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/shared-late-subscription-case.rs",
+      "bytes": 2841,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "cccd41df340c5776dd078eac87418c25a5816dde4d43bd6946861331d4065879",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089931,
+      "nlink": 1,
+      "mtime_ns": 1794230353905054268,
+      "ctime_ns": 1794230353905054268
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/snapshot-utility.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/snapshot-utility.py",
+      "bytes": 18350,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089836,
+      "nlink": 1,
+      "mtime_ns": 1794230351590739220,
+      "ctime_ns": 1794230351590739220
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after-core-owning-readonly-strict-clippy.diff.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after-core-owning-readonly-strict-clippy.diff.patch",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101118,
+      "nlink": 1,
+      "mtime_ns": 1794230970154116416,
+      "ctime_ns": 1794230970154116416
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after-core-owning-readonly-strict-clippy.files.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after-core-owning-readonly-strict-clippy.files.json",
+      "bytes": 5658136,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "b484c247d29ed79bdafa110e4a469ca6da000e40438bfb2f34ff3952ff7d3a97",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101110,
+      "nlink": 1,
+      "mtime_ns": 1794230970129372705,
+      "ctime_ns": 1794230970129372705
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after-core-owning-readonly-strict-clippy.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after-core-owning-readonly-strict-clippy.json",
+      "bytes": 942,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "ec53bd9e5cb77a38a9e7f055fdbb7c2520c97ffd0c33240ab2252e52bca6a9cf",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101119,
+      "nlink": 1,
+      "mtime_ns": 1794230970248421383,
+      "ctime_ns": 1794230970248421383
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after-core-owning-strict-fix.diff.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after-core-owning-strict-fix.diff.patch",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101108,
+      "nlink": 1,
+      "mtime_ns": 1794230737759408479,
+      "ctime_ns": 1794230737759408479
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after-core-owning-strict-fix.files.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after-core-owning-strict-fix.files.json",
+      "bytes": 5658136,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "b484c247d29ed79bdafa110e4a469ca6da000e40438bfb2f34ff3952ff7d3a97",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089946,
+      "nlink": 1,
+      "mtime_ns": 1794230737741787620,
+      "ctime_ns": 1794230737741787620
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after-core-owning-strict-fix.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after-core-owning-strict-fix.json",
+      "bytes": 918,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "1a834e6858cdbc6f12bc4481bf03abb9b38729697b5c21cb46043e2db9988a5e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101109,
+      "nlink": 1,
+      "mtime_ns": 1794230737842371807,
+      "ctime_ns": 1794230737842371807
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after.diff.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after.diff.patch",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101135,
+      "nlink": 1,
+      "mtime_ns": 1794231423819908757,
+      "ctime_ns": 1794231423819908757
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after.files.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after.files.json",
+      "bytes": 5658136,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "b484c247d29ed79bdafa110e4a469ca6da000e40438bfb2f34ff3952ff7d3a97",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101134,
+      "nlink": 1,
+      "mtime_ns": 1794231423801865243,
+      "ctime_ns": 1794231423801865243
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-after.json",
+      "bytes": 871,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "669e739880352da467342f8bb3b928161eb1184e8e1da3733aa247b16ba9c624",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101136,
+      "nlink": 1,
+      "mtime_ns": 1794231423897153805,
+      "ctime_ns": 1794231423897153805
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-ancestor-closure.stderr": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-ancestor-closure.stderr",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089938,
+      "nlink": 1,
+      "mtime_ns": 1794230351807990937,
+      "ctime_ns": 1794230351807990937
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-ancestor-closure.stdout": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-ancestor-closure.stdout",
+      "bytes": 41,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "69f4266903b145f69a057147097d83a083c16ff23d843a069c519d6837543e00",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089937,
+      "nlink": 1,
+      "mtime_ns": 1794230351812560748,
+      "ctime_ns": 1794230351812560748
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-before.diff.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-before.diff.patch",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089943,
+      "nlink": 1,
+      "mtime_ns": 1794230356660407627,
+      "ctime_ns": 1794230356660407627
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-before.files.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-before.files.json",
+      "bytes": 5658136,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "b484c247d29ed79bdafa110e4a469ca6da000e40438bfb2f34ff3952ff7d3a97",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089942,
+      "nlink": 1,
+      "mtime_ns": 1794230356296798337,
+      "ctime_ns": 1794230356296798337
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-before.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-before.json",
+      "bytes": 874,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "1089725c34d5fa300f7e1c63d2bf873ad6226f4e9e30cc623e5688975371d953",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089944,
+      "nlink": 1,
+      "mtime_ns": 1794230357069602890,
+      "ctime_ns": 1794230357069602890
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-freeze-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-freeze-original.json",
+      "bytes": 5709,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "aff1ccf7e4972dabd32ac5d97d3154630875e95108a4927973980995a996abea",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089834,
+      "nlink": 1,
+      "mtime_ns": 1794230351590552444,
+      "ctime_ns": 1794230351590552444
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-increment-original.bundle": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/source-increment-original.bundle",
+      "bytes": 1800,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "0e753e10409b9619c7ddff22cd36f00bcfb74f248f5bbb09dadbc989222a6f5e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089835,
+      "nlink": 1,
+      "mtime_ns": 1794230351590645608,
+      "ctime_ns": 1794230351590645608
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/tests-junit.summary.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/tests-junit.summary.json",
+      "bytes": 1396,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "0772a80675b35d77ed21b930355cf2ffc1eae30cef12241afb4a954ad106ec8e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101130,
+      "nlink": 1,
+      "mtime_ns": 1794231420261919498,
+      "ctime_ns": 1794231420261919498
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/tests-junit.xml": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/tests-junit.xml",
+      "bytes": 1945,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "7f8d7aa687c5f3f97af75a8c23992bbdac7698edfa1add5ce85b37883deb2d8f",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101131,
+      "nlink": 1,
+      "mtime_ns": 1794231420261919498,
+      "ctime_ns": 1794231420261919498
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/tests.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/tests.json",
+      "bytes": 2070,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "2c7c9e37602d4ca501d641879df9b755518dd3e62b2a37f3f3dc4dd53b259a54",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101128,
+      "nlink": 1,
+      "mtime_ns": 1794231419966029354,
+      "ctime_ns": 1794231419968029292
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/tests.json.314e7576aab149b290518e5c44b4f558.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/tests.json.314e7576aab149b290518e5c44b4f558.log",
+      "bytes": 3488,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "84785d5f477a0bac846842c7bbd1a9f2f295d81005ba217d461f5a0091be0cd7",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9101127,
+      "nlink": 1,
+      "mtime_ns": 1794231419895031576,
+      "ctime_ns": 1794231419895031576
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/v8.env": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/v8.env",
+      "bytes": 321,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "0056da193f536ec14bfa9d7562ba89d748f1e33b7bb1d9b17f2b966917b3296d",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089941,
+      "nlink": 1,
+      "mtime_ns": 1794230362543221836,
+      "ctime_ns": 1794230362543221836
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/v8.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/v8.json",
+      "bytes": 1510,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "f7dfe3bce37c6d08493f1b464ff2d681c7e6fe6ae110314d3482719e9651fe4e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089951,
+      "nlink": 1,
+      "mtime_ns": 1794230362641570045,
+      "ctime_ns": 1794230362642218710
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/v8.json.7b6431a94695461e815df48ad7a08479.log": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-desktop-negative-v1/v8.json.7b6431a94695461e815df48ad7a08479.log",
+      "bytes": 0,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089947,
+      "nlink": 1,
+      "mtime_ns": 1794230358061363380,
+      "ctime_ns": 1794230358061363380
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/EXECUTION.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-outer-v1/EXECUTION.json",
+      "bytes": 1298,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "307e3d8df1a0b18b96eb12c483d87be7cbec97345f2bff76c760ac7a513598bf",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089508,
+      "nlink": 1,
+      "mtime_ns": 1794229635705361969,
+      "ctime_ns": 1794229635705361969
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-v1/RESULT.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/core-output-d27431b-retained-copies-and-tools-preflight-v1/RESULT.json",
+      "bytes": 30844,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "fafa1afaba622967c72351d3d858c443160ba8c706b35c1582bd4e4108a12398",
+      "mode": 384,
+      "device": 2050,
+      "inode": 9089507,
+      "nlink": 1,
+      "mtime_ns": 1794229635649121843,
+      "ctime_ns": 1794229635649121843
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-actual-junit-schema-review-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-actual-junit-schema-review-original.json",
+      "bytes": 3885,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "2392ec215ee3fe712a6be23f0793a8e25e4f578d6f4353cd8d454cc6455d00fc",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907593,
+      "nlink": 1,
+      "mtime_ns": 1794234229252017067,
+      "ctime_ns": 1794234229306861616
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-h-readback-failures-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-h-readback-failures-original.json",
+      "bytes": 1395,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "67d806f1794a569319a761daa0ff43414976968d29d2fdc08d67a2e56bce9e89",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907606,
+      "nlink": 1,
+      "mtime_ns": 1794234334068627485,
+      "ctime_ns": 1794234334082650118
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-local-original-upload-receipts.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-local-original-upload-receipts.json",
+      "bytes": 17155,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "edac38a8bb935e85316b8f53f697470e6d51ac870d088a8032e6afe5b48c4d1e",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907618,
+      "nlink": 1,
+      "mtime_ns": 1794234505834538868,
+      "ctime_ns": 1794234505890886963
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-native-launch-observation-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-native-launch-observation-original.json",
+      "bytes": 12073,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "7578ad29c87438b7023c0b9a61207714f665d3f5fd78dcd20914370add3b1580",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907604,
+      "nlink": 1,
+      "mtime_ns": 1794234313662381976,
+      "ctime_ns": 1794234313706085788
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-native-terminal-raw-readback-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-native-terminal-raw-readback-original.json",
+      "bytes": 162465,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "f74ce0a2e118663bf6d5a8884f60ef11d282a127cb292489c6a659c4a6961fa9",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907608,
+      "nlink": 1,
+      "mtime_ns": 1794234363335020359,
+      "ctime_ns": 1794234363349020056
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-builder-original.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-builder-original.py",
+      "bytes": 8636,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "ed3612e2016737c0a70fd08cb4a3bf029a45b98df1eac0a25887e8913113eabf",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907587,
+      "nlink": 1,
+      "mtime_ns": 1794234191864749065,
+      "ctime_ns": 1794234191899632464
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-checker-original.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-checker-original.py",
+      "bytes": 9738,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "d18ee172dd4944c74bb0b1732507ba9b2d19390c1ae1c06e60fdff4ec517df8d",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907589,
+      "nlink": 1,
+      "mtime_ns": 1794234197881980012,
+      "ctime_ns": 1794234197955508400
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-inputs-pending-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-inputs-pending-original.json",
+      "bytes": 4106,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "184bd9059437bd8fa3ed7e62eccf1b2053cd1a4a349d62805dd57093442f906c",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907575,
+      "nlink": 1,
+      "mtime_ns": 1794234146867845002,
+      "ctime_ns": 1794234146905544940
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-peer-narrow-review-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-peer-narrow-review-original.json",
+      "bytes": 800,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "c3bcb07b386e2d2dec78da0a22af26d89ae62179240522fd8e5f14f1d11b28f6",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907601,
+      "nlink": 1,
+      "mtime_ns": 1794234285303593851,
+      "ctime_ns": 1794234285350687732
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-preparation-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-preparation-original.json",
+      "bytes": 3474,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "6425d21bf8525e8863010f9cbb1c53ace2ec36d2ec1f4aa17f348ae2617560c0",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907573,
+      "nlink": 1,
+      "mtime_ns": 1794234144139365756,
+      "ctime_ns": 1794234144177599716
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-pure-checks-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-pure-checks-original.json",
+      "bytes": 4406,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "18efc7337bb55a9e8ee71244f35977e1d948b8eea9e66fba4ec0d59662bbdcc0",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907577,
+      "nlink": 1,
+      "mtime_ns": 1794234152842852254,
+      "ctime_ns": 1794234152844425467
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-readme-original.md": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-readme-original.md",
+      "bytes": 4725,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "4e5412ab179756b6d08cc5628040d2dc46fafbe7a79e37d489c5552c59ab11b9",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907581,
+      "nlink": 1,
+      "mtime_ns": 1794234160673679374,
+      "ctime_ns": 1794234160687267232
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-reuse-proof-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-reuse-proof-original.json",
+      "bytes": 2404,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "c47805b14ef79a4509e2572fed13686042d2100f214bcdc24c2b1b8f8784d057",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907579,
+      "nlink": 1,
+      "mtime_ns": 1794234155704427766,
+      "ctime_ns": 1794234155717367563
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-selection-reuse.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-selection-reuse.patch",
+      "bytes": 4876,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "0c81eb7ee70d0f7cf911f1f98218717343975cdb6c82a7df65a165a4e6bb1abd",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907583,
+      "nlink": 1,
+      "mtime_ns": 1794234163857874877,
+      "ctime_ns": 1794234163870202867
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-standard-delta.patch": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retainer-standard-delta.patch",
+      "bytes": 97398,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "a0374a942c453e5cc5241bc331a7a33fc2ea1e7c3852ce3511b07837bb0463f8",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907585,
+      "nlink": 1,
+      "mtime_ns": 1794234187113578549,
+      "ctime_ns": 1794234187151729530
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retention-operation-originals.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retention-operation-originals.json",
+      "bytes": 241843,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "b42d6dbbb8b25d3f8012756e8c94b6817e90f79b03afa979168ed43c667fe6af",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907591,
+      "nlink": 1,
+      "mtime_ns": 1794234210490212123,
+      "ctime_ns": 1794234210586248721
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retention-root-raw-readback-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-retention-root-raw-readback-original.json",
+      "bytes": 133510,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "d0a0810fe82b84767fbfd370d2b4f50e1d83dcad24c691ef1c576761c63b2729",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907612,
+      "nlink": 1,
+      "mtime_ns": 1794234371082255882,
+      "ctime_ns": 1794234371094852480
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-strict-dependency-published-manifest-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-strict-dependency-published-manifest-original.json",
+      "bytes": 137124,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "8d5b910315f63250d697727bfbd9125bc68419b0ec54b6e1b895d34252e634b5",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907599,
+      "nlink": 1,
+      "mtime_ns": 1794234278622386427,
+      "ctime_ns": 1794234278662828945
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-strict-dependency-records-recovery-original.json": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/d274-negative-history-strict-dependency-records-recovery-original.json",
+      "bytes": 474,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "d371ec97c23b9e0983157f27a7af1f91c381c07a418502b5c2d6ea70064c7dd8",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907595,
+      "nlink": 1,
+      "mtime_ns": 1794234245905880839,
+      "ctime_ns": 1794234245907516194
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-core-output-negative-d27431b-desktop-v2.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-core-output-negative-d27431b-desktop-v2.py",
+      "bytes": 6507,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "431fe23a69e466bdda2d635bcbd12b53813e74fa62546e3892e98509292cfb88",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907368,
+      "nlink": 1,
+      "mtime_ns": 1794220956774310261,
+      "ctime_ns": 1794220956789701077
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-core-output-negative-d27431b-desktop-v3-reviewed.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/launch-core-output-negative-d27431b-desktop-v3-reviewed.py",
+      "bytes": 18359,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "3c07b5c24909cf80fd78278d247ad3ab673ea994d83ceb82b6fe06c54ed3bd63",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907551,
+      "nlink": 1,
+      "mtime_ns": 1794230175321779671,
+      "ctime_ns": 1794230175321779671
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/prepare-output-summary-successor-strict-desktop-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/prepare-output-summary-successor-strict-desktop-v1.py",
+      "bytes": 18350,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "57dda31a582c55e5a1c0c33053c7b40ca2c1d1b12fe79dff7bca965a2f0a79a7",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907058,
+      "nlink": 1,
+      "mtime_ns": 1794212646867467282,
+      "ctime_ns": 1794212646880291779
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/retain-desktop-6ec-workspace-and-helper-binaries-v2.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/retain-desktop-6ec-workspace-and-helper-binaries-v2.py",
+      "bytes": 44042,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "b7390330799f7134485b8be0b9bf1796e1721ef98aaa316d025cb9d34a4c3420",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907399,
+      "nlink": 1,
+      "mtime_ns": 1794221826667793287,
+      "ctime_ns": 1794221826667793287
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/retain-desktop-d274-negative-binary-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/retain-desktop-d274-negative-binary-v1.py",
+      "bytes": 55477,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "e9b9345649b024b166a027c44d381a24ca45c6f159a6bf52ee7449228b46ab8b",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907567,
+      "nlink": 1,
+      "mtime_ns": 1794233443957340838,
+      "ctime_ns": 1794233443971109607
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/run-core-output-negative-d27431b-desktop-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/run-core-output-negative-d27431b-desktop-v1.py",
+      "bytes": 41862,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "d36f68d6c7d378cbaf6e0f4172540ab52a38c095fcab5e393c35f2b1f3f7df92",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907165,
+      "nlink": 1,
+      "mtime_ns": 1794216457522357727,
+      "ctime_ns": 1794216457524278541
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/verify-d274-retained-core-copies-and-tools-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/verify-d274-retained-core-copies-and-tools-v1.py",
+      "bytes": 9954,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "8956e0fc23a16123aba5a7df53ec627a245693d8e4eb5451176c734d0aa92648",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907535,
+      "nlink": 1,
+      "mtime_ns": 1794229549240845547,
+      "ctime_ns": 1794229549240845547
+    },
+    "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/verify-desktop-d274-negative-binary-retention-v1.py": {
+      "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/verify-desktop-d274-negative-binary-retention-v1.py",
+      "bytes": 15812,
+      "uid": 1000,
+      "gid": 1000,
+      "sha256": "d2313df53935b58cf0c588337a0a3a0114d05baabb79443da267c2c20793a5f4",
+      "mode": 384,
+      "device": 2050,
+      "inode": 4907569,
+      "nlink": 1,
+      "mtime_ns": 1794233446836051662,
+      "ctime_ns": 1794233446849089100
+    }
+  }
+}

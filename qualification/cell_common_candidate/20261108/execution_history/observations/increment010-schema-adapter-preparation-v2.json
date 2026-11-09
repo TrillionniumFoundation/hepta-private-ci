@@ -1,0 +1,32 @@
+{
+  "status": "EXACT_ORIGINAL_TIMEOUT_SEAL_SCHEMA_ADAPTER_PREPARED_ONLY",
+  "outputs": [
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/prepare-increment010-two-ready-packets-v2.py",
+      "bytes": 47480,
+      "sha256": "c769e7fc92fdfcb8fd4018af1a4ff0617901bea4617aabb53047bfea9f7851db"
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/prepare-increment010-two-ready-packets-v2-delta.patch",
+      "bytes": 1748,
+      "sha256": "fa1815274e75d364eeb045d5f8bee909d154d6c972be40c4fc1392f397a11ce6"
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/append-evidence-increment-010-draft-v2.py",
+      "bytes": 29890,
+      "sha256": "ae6d82fba105ec66a13ee7f5a952bca6c448ad1352f46ee6d078318477d9ec2f"
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/append-evidence-increment-010-draft-v2-delta.patch",
+      "bytes": 1329,
+      "sha256": "bb92319ffc619cfd92562a10f24213f64cee2f1a23dab7f03690ce2b2db7b1e9"
+    }
+  ],
+  "original_preparer_failure_preserved": {
+    "path": "increment010-two-ready-packet-preparation-v1/FAILED.json",
+    "bytes": 225,
+    "sha256": "7382a2f8e710d0387e468194053de956af589cc1464ec9a530d6f907d3ffda28"
+  },
+  "scope": "Only fixed original timeout seal has REQUEST-only flags. Missing fields are not converted to False. Other three actual outers retain original EXECUTION checks.",
+  "main_executed": false
+}

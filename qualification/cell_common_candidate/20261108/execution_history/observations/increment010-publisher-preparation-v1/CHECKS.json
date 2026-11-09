@@ -1,0 +1,165 @@
+{
+  "status": "STATIC_AND_PURE_NEGATIVE_CONTROLS_PASSED",
+  "started_at": "2026-11-09T15:27:27.159665+00:00",
+  "finished_at": "2026-11-09T15:27:29.888239+00:00",
+  "publisher": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/publish-evidence-increment-010-v1.py",
+    "bytes": 58780,
+    "sha256": "ee64fc6da971f04b5a3819d343d0f68be10db74827a37e4b07efb4c66c46bbe5"
+  },
+  "base": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/publish-evidence-increment-009-v1.py",
+    "bytes": 52918,
+    "sha256": "a3b2813942f8a35b3d1566ec0b918e4ea7bd675698aef4eb58cb63ad0765b58e"
+  },
+  "checker": {
+    "path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/check-increment010-publisher-preparation-v1.py",
+    "bytes": 20717,
+    "sha256": "70d600287f933cbf5bfc60377a76767de98f0e78a2c094233c774abe8835d99b"
+  },
+  "cases": [
+    {
+      "case": "exact_two_actual_source_observations_accepted",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "retained_common_source_change_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "workspace_timeout_cannot_be_mislabeled_pass",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "workspace_missing_XML_cannot_claim_case_closure",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "workspace_unknown_counts_must_remain_null",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "partial_keys_not_promoted_to_other_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "failed_retainer_cannot_claim_copy",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "d274_failed_oracle_cannot_be_mislabeled_pass",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "negative_source_identity_not_inherited_from_positive",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "negative_expected_failure_not_a_green_test",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "native_integer_count_not_boolean",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "typed_integer_and_nanosecond_rounding_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "python_targeting_uses_script_argument_not_wrapper_text",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "sixteen_original_identity_transport_and_blob_guard_functions_ast_identical",
+      "passed": true,
+      "detail": [
+        "write",
+        "run",
+        "git",
+        "api",
+        "common_clean",
+        "safe_regular",
+        "blob",
+        "inventory",
+        "tree_map",
+        "index_map",
+        "git_projection",
+        "exact_changes",
+        "verify_blobs",
+        "unchanged_old",
+        "inspect_new_objects",
+        "fresh_transport_admission"
+      ]
+    },
+    {
+      "case": "unlisted_new_git_index_path_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "same_size_wrong_blob_bytes_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "historical_blob_mode_change_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "thirteen_exact_original_logs_are_the_only_force_add_paths",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "omitted_ignored_original_log_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "arbitrary_extra_ignored_path_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "ignore_observation_wrong_source_input_rejected",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "single_normal_push_and_only_exact_original_log_force_add",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "exact39_appender_paths_71_observations_26_supplemental_and_no_new_whitespace_exemption",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "case": "actual_pending_tree_matches39_added_paths_and_1427_baseline",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "case_count": 24,
+  "publisher_main_invoked": false,
+  "git_commands_read_only": true,
+  "new_native_tests": 0,
+  "appender_not_reexecuted": true,
+  "commit_or_push_invoked": false
+}

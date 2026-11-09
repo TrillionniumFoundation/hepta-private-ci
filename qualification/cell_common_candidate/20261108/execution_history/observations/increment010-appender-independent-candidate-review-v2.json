@@ -1,0 +1,45 @@
+{
+  "status": "NO_NEW_STATIC_BLOCKER_IN_EXACT_SCHEMA_ADAPTER_DELTA",
+  "reviewed_at": "2026-11-09T15:11:39.286545+00:00",
+  "inputs": [
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/append-evidence-increment-010-draft-v1.py",
+      "bytes": 29488,
+      "sha256": "ebaacb24c9e6b8f8eff6f6abd3d9f9cea3eac33b455a1b2c1121087dd05257dd"
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/append-evidence-increment-010-draft-v2.py",
+      "bytes": 29890,
+      "sha256": "ae6d82fba105ec66a13ee7f5a952bca6c448ad1352f46ee6d078318477d9ec2f"
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/append-evidence-increment-010-draft-v2-delta.patch",
+      "bytes": 1329,
+      "sha256": "bb92319ffc619cfd92562a10f24213f64cee2f1a23dab7f03690ce2b2db7b1e9"
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/timeout-seal-outer/outer-EXECUTION.json",
+      "bytes": 1289,
+      "sha256": "55e8aaf7d73ee77f2833557c1ee630f7deff4751fbe2cba19269b66dc3b96f22"
+    },
+    {
+      "path": "/workspace/scratch/898e2183709e/ci-fixes/increment010/timeout-seal-outer/outer-REQUEST.json",
+      "bytes": 1203,
+      "sha256": "1b2839330f20ec3ad63870efc2685461c608f6dda37d4f0225d6cdb89243fc94"
+    }
+  ],
+  "findings": [
+    "Exact unified diff equals v1 to v2 and full v2 compiles in memory; appender not imported or executed.",
+    "Both flags must be explicit false in the actual pinned REQUEST for all four outer observations.",
+    "Only the exact old timeout seal outer accepts their absence in EXECUTION, and requires both keys actually absent; there is no get/default-false fallback.",
+    "Other three outers continue to require explicit false in EXECUTION as well.",
+    "The immediately following same_typed comparison binds the EXECUTION request descriptor to the exact archived REQUEST path, bytes and SHA.",
+    "Packet counts, original native FAIL semantics, old typed values, fixed binary exception and final guards are unchanged."
+  ],
+  "actual_inputs_reviewed": false,
+  "archives_or_evidence_worktree_read": false,
+  "native_or_target_access": false,
+  "appender_executed": false,
+  "physical_cost": null,
+  "full_history_cost": null
+}

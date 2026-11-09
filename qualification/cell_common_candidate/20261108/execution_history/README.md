@@ -1,3 +1,59 @@
+# Increment 010 — original workspace timeout and counterfactual failure
+
+This increment preserves two completed history packages and their subsequent seal/readback receipts. It extends evidence commit **6e162bab21438b857179a22c6207552feda9331b**, tree **db1528464ed0369f3be4b7a8a7b4d8df6d9abde0**, from **93 to 95 packets**. All previous packet entries and bytes remain intact. The resulting **11,384 archive-member entries** include repeated provenance and observations; they are not independent tests or unique source files.
+
+The common PR source remains **bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d**, tree **f7b65a747a1d2f585be38a4665ab2b4f1b07efb6**. Its full repository CI remains failed. The formal CURRENT SHA256 remains **c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4**. All S0–S5 stages remain **HOLD**. Physical and complete-history costs remain **null**.
+
+## Two source scopes, with their original outcomes
+
+| Source and retained scope                 | Actual outcome                                                                                                                                       | Interpretation                                                                                                                                                   |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 6ec5993, original workspace controller v1 | Controller failure before any native command, caused by its assumption that two parent environment variables already existed.                        | The subsequent metadata-only controller correction preserved the original workspace command and budget. The failed preparation remains.                          |
+| 6ec5993, original workspace v2            | The original **4,200-second** budget expired: wrapper exit **124**, child **−9**, driver/collector/outer **1/1/1**.                                  | Raw output proves native activity, but there is no final native Summary or fresh native JUnit. Complete execution counts are **null** and case closure is false. |
+| 6ec5993, partial records reader           | Readback completed; **6,821 unique PASS-shaped raw keys** were observed before termination.                                                          | These are partial observations, not a verified full-workspace pass count. Declared start counts do not establish the complete executed roster.                   |
+| 6ec5993, timeout artifact retainer        | Failed when the required target was unavailable; **zero paths and zero executable bytes copied**.                                                    | Original record inputs were stable. Complete source-after/helper/inventory verification was not reached, so those guards are not claimed as passed.              |
+| d27431b, one exact counterfactual case    | **One FAIL**, zero PASS, zero retries, 2,447 filtered cases outside selection. Native driver/test/collector remain **1/100/1**.                      | The expected `HEAD` assertion failure was observed. Expected counterfactual failure does not change the native outcome to PASS.                                  |
+| d27431b, subsequent binary retention      | One independently copied test binary, **453,757,728 bytes**, with exact hash and identity checks; retention and its independent readback returned 0. | The executable remains on the host and is not in this evidence package. Successful retention does not change the failed test.                                    |
+
+The workspace source is **6ec5993fec3dcd6a3c569498a1d5b4c277f1c142**, tree **b0ddbe6b6f83dc42657260b266774f79c9d1ed90**. The counterfactual source is **d27431b69195a2a6331a77d19e22ebeb4cf910c7**, tree **b1cf50c33f5ec9101217ae3f6a7ff987e3aba973**, with parent **3fc4725343dccfc9487e937f77e30bc6a5d80dbc**. Results are not transferred between these sources or to common bf42.
+
+## Workspace timeout and artifact availability
+
+The timeout package retains the original controller attempt, corrected controller, original receipts and complete captured raw output. It also retains the bounded partial reader, process observation, failed forensic retainer, exact-path metadata observations, and the later read-only availability check of fourteen previously retained Core/helper copies and two tools. That preflight verified **3,037,089,672 bytes** of retained copies without executing them. It does not establish that the unavailable workspace target was restored or that a different target contains this run's compiled artifacts.
+
+The bounded process observation found only the expected Root shell among its selected observable processes. Its many denied or unavailable `/proc` link reads remain explicit limitations; it is not proof that every escaped process was absent. Fixed-path observations preserve the actual missing-target facts. They do not identify a deletion actor or prove why the target became unavailable.
+
+The timeout history was sealed at **13:27:05 UTC on 2026-11-09**. The first launch acknowledgment was retained through the later H readback interruption and was reconciled without replaying the seal. Independent packet verification finished at **14:16:13 UTC**. Those later observations do not move the original workspace execution cutoff or fabricate a native JUnit report.
+
+## Exact d274 counterfactual and retained provenance
+
+The selected case is `unified_exec::async_watcher::tests::terminal_summary_retains_output_published_before_streaming_subscribes` in the Core library. Its frozen 2,841-byte source has SHA256 **cccd41df340c5776dd078eac87418c25a5816dde4d43bd6946861331d4065879**. The original failure is at `async_watcher_tests.rs:161:13`, where the expected `HEAD` prefix was absent. The complete original raw output, fresh JUnit and failed collector result remain unchanged. The native outer completed at **13:37:14.679131 UTC**.
+
+The selected-case failure supplies bounded counterfactual evidence for this frozen oracle. It does not establish the precise race that caused the older bf42 large-output CI failure. The package retains the original V8/fix/Clippy/discovery receipts and the full source-inventory metadata before and after execution and retention. All **68** originally bound record inputs are included. Six source inventory files each describe **15,010 entries**; their contents are metadata, not copies of every source file.
+
+The one retained executable was copied independently with a new inode, one link and mode 0555. Its original native-time discovery established a path/size/hash; complete inode identity was captured later at retention time. The evidence does not retroactively claim an earlier inode observation. The retained ELF's SHA256 is **89a1bc28b83a2c0d24a917badd2e6209126c514409a332cf308957e1a26ad7fb**; its bytes remain host-only.
+
+There is one explicit nontext source-provenance member: the original **1,800-byte Git bundle**, SHA256 **0e753e10409b9619c7ddff22cd36f00bcfb74f248f5bbb09dadbc989222a6f5e**. Its exact packet, member path, size and hash are admitted. This exception does not admit ELF payloads, arbitrary NUL-containing members or other binary files. The bundle remains subject to the archive hash, exact member closure and the same bounded pattern scan.
+
+The d274 history was sealed at **14:44:17.740007 UTC**. Independent member verification completed at **14:51:17.696594 UTC** with all 130 members and all 119 current original record files checked; all 136 readback inputs remained stable. These are records operations and add no native cases.
+
+## Exact package and supplementary metadata scope
+
+| Packet                                                             | Members | Compressed bytes | Original record boundary                                         |
+| ------------------------------------------------------------------ | ------: | ---------------: | ---------------------------------------------------------------- |
+| desktop-6ec-workspace-timeout-and-artifact-availability-history-v1 |     146 |        2,599,580 | 140 originals, five generated metadata members and the manifest. |
+| d274-negative-native-retention-history-v1                          |     130 |        1,342,472 | 119 originals, ten generated metadata members and the manifest.  |
+
+The two packages add **276 member entries** and **3,942,052 compressed bytes**. Those storage quantities include overlap and are not network-transfer measurements, unique-program counts or complete execution costs. Actual Git file counts are determined by staged-index and committed-blob verification.
+
+Twenty-six supplementary originals preserve the 009 publication and independent readback RESULT/commands pairs; each new packet's final seal RESULT and complete four-file outer receipt/log set; and each packet's independent RESULT, four-file outer set and exact verifier script. The 009 command metadata identifies its original stdout/stderr hashes, but this increment does not claim to copy that publication's entire raw-output directory. Every supplementary file requires exact bytes and mode verification in the staged index and final commit.
+
+The timeout archive already preserves the PR-v7 observation and both versions of Root's 009 publication observation. The first hand-entered capture time is retained as a corrected historical value; the successor records the time evidence and leaves embedded original strings unchanged. Later PR revisions, source D/E preparation or publication, and new native activity are outside these two packet cutoffs unless a subsequent increment explicitly binds their originals.
+
+All JSON comparisons preserve original Python integer values and exact types. Neither successful archiving, independent readback nor expected negative-control failure advances scientific qualification. The existing 009 README follows byte-for-byte as historical context.
+
+---
+
 # Increment 009 — completed desktop owner records and quiet-source publication
 
 This increment preserves six completed evidence packages for frozen source **6ec5993fec3dcd6a3c569498a1d5b4c277f1c142**, tree **b0ddbe6b6f83dc42657260b266774f79c9d1ed90**, parent **45a50bffd1631d502889069fc3f713b8a5e775d8**. It extends the published 008 checkpoint at **8ca3f19c69f2f14a42aa5fbe3ff72af807c65ff2** from **87 to 93 packets**, retaining all original packet entries and bytes. The resulting **11,108 archive-member entries** include repeated provenance, receipts and readbacks. They are not unique tests or source files.

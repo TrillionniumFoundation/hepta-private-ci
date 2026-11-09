@@ -1,0 +1,294 @@
+[
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 41,
+    "stdout_sha256": "dcb468d622f95a1c912fc6d25168c4775ca6c84f6068a6835493254d96fbf842",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+      "rev-parse",
+      "HEAD^{tree}"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 41,
+    "stdout_sha256": "43d9b1cdf91bb93d66b85aff8a250bb08077dfd7a963deb5d192563a48a0fe54",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+      "branch",
+      "--show-current"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 37,
+    "stdout_sha256": "f05fde2bf756079061d4032a9dcdfe8d149a1cbe71e0e27cc907da1173c71216",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 41,
+    "stdout_sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+      "rev-parse",
+      "HEAD^{tree}"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 41,
+    "stdout_sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+      "branch",
+      "--show-current"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 35,
+    "stdout_sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+      "ls-tree",
+      "-r",
+      "-z",
+      "6e162bab21438b857179a22c6207552feda9331b",
+      "--",
+      "qualification/cell_common_candidate/20261108/execution_history"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 269051,
+    "stdout_sha256": "390aa5849ccdb8486d77163a3444d3dd0268f3ad261f78b9755c7a9a02c40d36",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+      "show",
+      "6e162bab21438b857179a22c6207552feda9331b:qualification/cell_common_candidate/20261108/execution_history/manifest.json"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 172379,
+    "stdout_sha256": "0cf1005179c11c185da89843f4bd23d41ce61428de620783bf9f87a5642fc2de",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+      "show",
+      "6e162bab21438b857179a22c6207552feda9331b:qualification/cell_common_candidate/20261108/execution_history/README.md"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 98814,
+    "stdout_sha256": "861d0499bf3252f843b275fef782dc6dc5dc2aeeae612fbd3e77c57a3eaeb1a0",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 41,
+    "stdout_sha256": "dcb468d622f95a1c912fc6d25168c4775ca6c84f6068a6835493254d96fbf842",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+      "rev-parse",
+      "HEAD^{tree}"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 41,
+    "stdout_sha256": "43d9b1cdf91bb93d66b85aff8a250bb08077dfd7a963deb5d192563a48a0fe54",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+      "branch",
+      "--show-current"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 37,
+    "stdout_sha256": "f05fde2bf756079061d4032a9dcdfe8d149a1cbe71e0e27cc907da1173c71216",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 41,
+    "stdout_sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+      "rev-parse",
+      "HEAD^{tree}"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 41,
+    "stdout_sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+      "branch",
+      "--show-current"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 35,
+    "stdout_sha256": "ab3bed8beeea45acca0ef1d394143d32ca778e0b3cad077bdd9a8ae9b6c43ade",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/home/qian-qi/worktrees/hepta-cell-s0-evidence-20261108-898e",
+      "ls-tree",
+      "-r",
+      "-z",
+      "6e162bab21438b857179a22c6207552feda9331b",
+      "--",
+      "qualification/cell_common_candidate/20261108/execution_history"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 269051,
+    "stdout_sha256": "390aa5849ccdb8486d77163a3444d3dd0268f3ad261f78b9755c7a9a02c40d36",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]
