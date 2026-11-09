@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.mem.ci-invocation-correction.v1",
+  "recorded_utc": "2026-11-09T12:56:04.791793+00:00",
+  "failed_source_sha": "a4068996433f87f756455e97fe06ca1992aa63fb",
+  "failed_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42617500047/job/129160936004",
+  "failure": "ModuleNotFoundError: No module named coverage_control when imported as memory_cell_mem1.test_coverage_control",
+  "prior_candidate_contracts_passed": 17,
+  "old_replay_command": "python -B -m unittest -v memory_cell_mem1.test_coverage_control",
+  "new_replay_command": "python -B -m unittest discover -s scripts/memory_cell_mem1 -p test_coverage_control.py -v",
+  "changed_implementation_files": [],
+  "experiment_rerun": false,
+  "local_tests_rerun_for_workflow_change": false,
+  "validation_required": "Actual GitHub Actions execution at the corrected source head; completion not yet observed at receipt creation",
+  "format": {
+    "command": "just fmt",
+    "directory": "codex-rs",
+    "exit_code": 0
+  },
+  "workflow_sha256": "801e17238328130bdb2529a6a91628440a2301582ffeecc6db986efd501a4b10"
+}

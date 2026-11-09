@@ -78,7 +78,8 @@ jobs:
         run: |
           python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 6 \
             --output "$RUNNER_TEMP/mem-records/replay-tests.json" \
-            -- python -B -m unittest -v memory_cell_mem1.test_coverage_control
+            -- python -B -m unittest discover -s scripts/memory_cell_mem1 \
+            -p test_coverage_control.py -v
       - name: Check frozen cohort and failed-attempt accounting
         run: |
           python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 7 \
