@@ -1242,6 +1242,14 @@ struct Store {
     fail_storage_full_before_rename_once: Cell<bool>,
 }
 
+impl Drop for Store {
+    fn drop(&mut self) {
+        // A concurrent fork may retain this file description until exec.
+        // The lock belongs to this owner, not to the inherited descriptor.
+        let _ = self._lock.unlock();
+    }
+}
+
 impl Store {
     fn open(directory: &Path) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
         let root = prepare_directory(directory)?;
@@ -2518,6 +2526,31 @@ mod tests {
         ));
         drop(first);
         DurablePromptRegistry::open_state_dir(&root, 64).must("reopen after owner exit");
+    }
+
+    #[test]
+    fn owner_drop_releases_retained_descriptor_without_releasing_successor_lock() {
+        let temporary = tempfile::tempdir().must("tempdir");
+        let root = temporary.path().join("registry-retained-descriptor");
+        let first = DurablePromptRegistry::open_state_dir(&root, 64).must("first owner");
+        let before = first.registry().must("first registry").snapshot_digest();
+        // A duplicate retains the same open file description as a forked child.
+        let retained = first.store._lock.try_clone().must("retain descriptor");
+        assert!(matches!(
+            DurablePromptRegistry::open_state_dir(&root, 64),
+            Err(DurableRegistryError::StateLocked)
+        ));
+        drop(first);
+        let successor =
+            DurablePromptRegistry::open_state_dir(&root, 64).must("successor owner");
+        assert_eq!(successor.registry().must("registry").snapshot_digest(), before);
+        drop(retained);
+        assert!(matches!(
+            DurablePromptRegistry::open_state_dir(&root, 64),
+            Err(DurableRegistryError::StateLocked)
+        ));
+        drop(successor);
+        DurablePromptRegistry::open_state_dir(&root, 64).must("reopen after successor exit");
     }
 
     #[test]
