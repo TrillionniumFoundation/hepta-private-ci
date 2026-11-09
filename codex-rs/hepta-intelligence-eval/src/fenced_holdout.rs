@@ -286,6 +286,59 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         &self.fence
     }
 
+    /// Reconcile an original consumption without CAS, consumption or release.
+    /// The namespace and historical receipt are returned only while this exact
+    /// owner still matches the current authoritative store. A later owner may
+    /// read the same historical record after normal fenced recovery.
+    pub(crate) fn read_consumption(
+        &mut self,
+        plan: &CrossFoldPlanReceiptV1,
+    ) -> Result<(Digest32, Option<FinalHoldoutJournalReceiptV1>), FencedHoldoutError> {
+        if self.poisoned {
+            return Err(FencedHoldoutError::Poisoned);
+        }
+        let current = self
+            .store
+            .load(self.binding)?
+            .ok_or(FencedHoldoutError::Missing)?;
+        current.validate(self.binding)?;
+        if current.fence != self.fence {
+            self.poisoned = true;
+            return Err(FencedHoldoutError::StaleFence);
+        }
+        if current.state_digest != self.state_digest {
+            self.poisoned = true;
+            return Err(FencedHoldoutError::Conflict);
+        }
+        let journal =
+            FinalHoldoutJournalV1::from_snapshot_with_record_limit(current.journal, MAX_RECORDS)
+                .map_err(|_| FencedHoldoutError::Corrupt)?;
+        if journal.snapshot() != self.journal.snapshot() {
+            return Err(FencedHoldoutError::Corrupt);
+        }
+        let Some(record) = journal
+            .records()
+            .iter()
+            .find(|record| record.plan.plan_id == plan.plan_id)
+        else {
+            return Ok((self.binding, None));
+        };
+        if &record.plan != plan {
+            return Err(FencedHoldoutError::Binding);
+        }
+        Ok((
+            self.binding,
+            Some(FinalHoldoutJournalReceiptV1 {
+                disposition: crate::HoldoutUseDispositionV1::Recorded,
+                sequence: record.sequence,
+                record_digest: record.record_digest,
+                head_digest: record.record_digest,
+                use_receipt: record.use_receipt.clone(),
+                authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
+            }),
+        ))
+    }
+
     #[must_use]
     pub fn state_digest(&self) -> Digest32 {
         self.state_digest
