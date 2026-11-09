@@ -2769,3 +2769,28 @@ required_function_order = [
   { function = "fn framed_exchange(", sequence = ["write_all(&(request.len() as u32).to_be_bytes())", "read_exact(&mut prefix)", "length == 0 || length > 16_384", "read_exact(&mut response)"] },
 ]
 required_order = [["async fn read<R:", "serde_json::to_vec(request)", "request.len() > 16_384", ".try_acquire()", "let mut stream =", "slot.take()", "check_lifetime(self.root.get_ref())?", "let deadline =", "tokio::select!", "framed_exchange(&mut stream, &request)", "check_lifetime(self.root.get_ref())?", "serde_json::from_slice(&response)", "Instant::now() >= deadline", "= Some(stream)", "Ok(parsed)"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs"
+required = ["pub evaluation_profile: Digest32"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs"
+required = ["hepta.learning.iteration-checkpoint.v2", "request.evaluation_profile"]
+forbidden = ["hepta.learning.iteration-checkpoint.v1"]
+required_function_order = [{ function = "fn initial_digest(", sequence = ["request.selected_artifact_digest", "request.evaluation_profile", "request.selected_bundle.digest()?"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/learning_iteration.rs"
+required = ["request.evaluation_profile.is_zero()", "lineage.evaluation_profile == request.evaluation_profile", "*evaluation_profile == request.evaluation_profile"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_codec.rs"
+required = ["const MAGIC: &[u8; 8] = b\"HEPLCP02\"", "w.digest(request.evaluation_profile)?", "evaluation_profile: r.digest()?"]
+forbidden = []
+required_function_order = [
+  { function = "fn encode(", sequence = ["w.put(MAGIC)?", "w.digest(request.selected_artifact_digest)?", "w.digest(request.evaluation_profile)?", "w.bundle(&request.selected_bundle)?"] },
+  { function = "fn decode(", sequence = ["&r.take::<8>()? != MAGIC", "selected_artifact_digest: r.digest()?", "evaluation_profile: r.digest()?", "selected_bundle: r.bundle()?"] },
+]
