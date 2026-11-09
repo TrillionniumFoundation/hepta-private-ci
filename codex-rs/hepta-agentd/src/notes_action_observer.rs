@@ -250,3 +250,7 @@ pub(crate) fn observe_notes_action(
         runtime_state,
     })
 }
+
+#[cfg(test)]
+#[path = "notes_action_observer_tests.rs"]
+mod tests;
