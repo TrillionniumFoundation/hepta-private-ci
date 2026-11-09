@@ -193,3 +193,6 @@ fn refused(message: impl Into<String>) -> AgentdError {
     AgentdError::GenerationFenced(message.into())
 }
 
+#[cfg(test)]
+#[path = "root_production_learning_inputs_tests.rs"]
+mod tests;
