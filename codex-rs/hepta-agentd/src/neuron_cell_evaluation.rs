@@ -56,7 +56,7 @@ pub struct CellEvaluationRecordV1 {
     #[serde(serialize_with = "contract::serialize_digest")]
     pub original_estimand: Digest32,
     /// Original host-frozen learning protocol reference. This pin is covered
-    /// by the signed record; it is not a reconstruction or validation
+    /// by the realized comparison's signatures; it is not a reconstruction or
     /// proof of the referenced protocol. Non-learning plans omit the field.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub learning_evaluation_profile: Option<[u8; 32]>,
@@ -103,7 +103,7 @@ pub fn freeze_cell_evaluation_plan_v1<C: AnchorWitnessStore, F: AnchorWitnessSto
 }
 
 /// Bind a learning request's original protocol pin before evaluation or signed
-/// qualification. The realized comparison still contains post-training
+/// qualification. The realized plan also binds the actual bundle and cost
 /// observations; its digest cannot itself be the pre-training protocol pin.
 pub fn freeze_cell_learning_evaluation_plan_v1<C: AnchorWitnessStore, F: AnchorWitnessStore>(
     registration: CellEvaluationRegistrationV1,

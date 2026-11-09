@@ -10,6 +10,9 @@ use super::*;
 mod support;
 use support::*;
 
+#[path = "neuron_cell_learning_evaluation_tests.rs"]
+pub(crate) mod learning;
+
 struct FileSink {
     file: std::fs::File,
     publications: usize,
