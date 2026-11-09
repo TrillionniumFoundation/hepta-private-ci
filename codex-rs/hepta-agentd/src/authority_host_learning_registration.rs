@@ -301,3 +301,6 @@ fn learning_store(
     .map_err(io::Error::other)
 }
 
+#[cfg(test)]
+#[path = "authority_host_learning_registration_tests.rs"]
+mod tests;
