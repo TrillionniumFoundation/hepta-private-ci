@@ -125,7 +125,13 @@ impl Fixture {
         wire::Evidence {
             evidence_id: evidence.evidence_id.to_string(),
             principal_id: evidence.principal_id.to_string(),
-            role: "observer".into(),
+            role: match evidence.role {
+                LearningEvidenceRoleV1::Generator => "generator",
+                LearningEvidenceRoleV1::Observer => "observer",
+                LearningEvidenceRoleV1::Evaluator => "evaluator",
+                LearningEvidenceRoleV1::Selector => "selector",
+            }
+            .into(),
             trust_digest: evidence.trust_digest.to_string(),
             scope_digest: evidence.scope_digest.to_string(),
             objective_digest: evidence.objective_digest.to_string(),

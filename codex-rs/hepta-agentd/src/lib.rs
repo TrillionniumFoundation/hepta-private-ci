@@ -327,6 +327,14 @@ mod learning_iteration_evidence_client;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::LearningIterationEvidenceClientV1;
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::AuthenticatedCellLearningEvaluationV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::CellLearningEvaluationReadbackErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::CellLearningEvaluationReadbackRequestV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::read_cell_learning_evaluation_v1;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::LearningIterationEvidencePeerV1;
 
 mod learning_iteration_auth;
