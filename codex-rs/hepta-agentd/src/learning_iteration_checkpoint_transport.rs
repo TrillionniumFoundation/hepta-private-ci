@@ -207,7 +207,9 @@ impl LearningIterationCheckpointOwnerV1 {
         bytes: &[u8],
         next_request_id: &mut u64,
     ) -> Result<Vec<u8>, HostIssuerTransportError> {
-        if bytes.is_empty() || bytes.len() > FRAME_BOUND {
+        // The legacy wire binds the initial snapshot only. It cannot expose a
+        // schema-2 registered owner as an unscoped V1 checkpoint capability.
+        if self.frozen_scope_binding().is_some() || bytes.is_empty() || bytes.len() > FRAME_BOUND {
             return Err(HostIssuerTransportError::InvalidRequest);
         }
         let request: Request =

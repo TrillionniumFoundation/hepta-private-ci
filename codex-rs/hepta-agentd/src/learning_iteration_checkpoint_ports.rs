@@ -86,6 +86,15 @@ impl CheckpointedIterationPorts {
 }
 
 impl LearningIterationOwnerPortsV1 for CheckpointedIterationPorts {
+    fn frozen_scope_binding(&self) -> Option<Digest32> {
+        match &self.checkpoint {
+            Checkpoint::Registered { owner, .. } => owner.frozen_scope_binding(),
+            // The V1 wire does not authenticate a frozen V2 scope binding.
+            #[cfg(target_os = "linux")]
+            Checkpoint::RootClient(_) => None,
+        }
+    }
+
     fn restore<'a>(
         &'a self,
         request: &'a LearningIterationRequestV1,

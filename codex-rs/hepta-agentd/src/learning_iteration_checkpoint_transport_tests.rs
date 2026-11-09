@@ -100,6 +100,40 @@ fn serve(
     })
 }
 
+#[test]
+fn legacy_root_wire_refuses_to_downgrade_a_scoped_registered_owner() -> anyhow::Result<()> {
+    let cuts = snapshots(Decision::EvaluatedNoUpdate)?;
+    let initial = &cuts[0];
+    let scope = FrozenLearningScopeV2::freeze(
+        &initial.request, &initial.owners,
+        codex_hepta_learning_artifacts::LearningUpdateScopeV2::Cell,
+        Digest32::of_bytes(b"rule"),
+    )?;
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("scoped-frontier");
+    let record = LearningIterationCheckpointRecordV1::vacant_scoped_v2(
+        initial.request.clone(), initial.owners.clone(), &scope,
+    )?;
+    let store = Arc::new(FileCas::create(&path, &record)?);
+    let original = LearningIterationCheckpointOwnerV1::from_research_store_scoped_v2(
+        store.clone(), support::OWNER.into(), initial.request.clone(), initial.owners.clone(), scope,
+    )?;
+    let before = std::fs::read(&path)?;
+    let request = Request {
+        schema: 1, operation: OPERATION.into(), request_id: 1,
+        binding: initial.head_digest.to_string(), command: Command::Restore,
+    };
+    let mut next = 1;
+    assert!(matches!(
+        original.exchange_learning_checkpoint(&serde_json::to_vec(&request)?, &mut next),
+        Err(HostIssuerTransportError::InvalidRequest)
+    ));
+    assert_eq!(next, 1);
+    assert_eq!(store.commits.load(Ordering::SeqCst), 0);
+    assert_eq!(std::fs::read(&path)?, before);
+    Ok(())
+}
+
 #[tokio::test]
 async fn learning_checkpoint_maximum_histories_cross_real_frames_and_reopen() -> anyhow::Result<()>
 {
