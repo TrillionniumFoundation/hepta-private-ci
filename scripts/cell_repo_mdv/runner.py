@@ -53,8 +53,18 @@ def bound_files(workspace, expected):
     return rows
 
 
-def run(task, corpus, output, *, state=None, state_receipt=None):
+def run(task, corpus, output, *, state=None, state_receipt=None, policy=None):
     validate_task(task, corpus)
+    policy = {"kind": "learned"} if policy is None else dict(policy)
+    require(
+        policy in ({"kind": "learned"}, {"kind": "bm25"})
+        or (
+            set(policy) == {"kind", "document_id"}
+            and policy["kind"] == "fixed"
+            and policy["document_id"] in {d["id"] for d in corpus["documents"]}
+        ),
+        "unknown or unbound selection policy",
+    )
     state = initial_state(corpus) if state is None else state
     validate_state(state, corpus)
     if state["updates"]:
@@ -122,6 +132,8 @@ def run(task, corpus, output, *, state=None, state_receipt=None):
         "formal_adoption_receipt": None,
         "independent_evaluation": None,
         "state_use_mode": "development_direct_state",
+        "selection_policy": policy,
+        "baseline_executed": False,
         "terminal": "unknown",
         "residual_obligations": [],
         "driver_sources": {},
@@ -231,15 +243,22 @@ def run(task, corpus, output, *, state=None, state_receipt=None):
             with meter.attempt("development-task"):
                 identity("before")
                 with meter.span("retrieval", "encoder"):
-                    ranking = retrieve(corpus, task["query"], state)
                     baseline = retrieve(corpus, task["query"])
-                    selected = ranking[0]["document_id"]
+                    ranking = (
+                        retrieve(corpus, task["query"], state)
+                        if policy["kind"] == "learned"
+                        else baseline
+                    )
+                    selected = (
+                        policy["document_id"]
+                        if policy["kind"] == "fixed"
+                        else ranking[0]["document_id"]
+                    )
                     report.update(
                         selected_document=selected,
                         ranking=ranking,
                         baseline_ranking=baseline,
-                        baseline_executed=False,
-                        development_state_consumed=True,
+                        development_state_consumed=policy["kind"] == "learned",
                         ranking_order_changed=[r["document_id"] for r in ranking]
                         != [r["document_id"] for r in baseline],
                         selected_document_changed=selected
@@ -326,6 +345,9 @@ def run(task, corpus, output, *, state=None, state_receipt=None):
     report["training_updates_consumed"] = (
         state["updates"] - report["state_updates_before"]
     )
+    report["baseline_executed"] = (
+        policy["kind"] == "bm25" and report["terminal"] in {"proved", "refuted"}
+    )
     report["raw_spans_sha256"] = replay["record_sha256"]
     report["costs"] = {
         "envelope_wall_seconds": replay["envelope"]["inclusive_wall_ns"] / 1e9,
@@ -380,3 +402,4 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
