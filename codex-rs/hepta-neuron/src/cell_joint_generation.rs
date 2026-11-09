@@ -65,6 +65,8 @@ pub struct JointGenerationProcessWorkerV1 {
 impl JointGenerationProcessWorkerV1 {
     pub const PROFILE: &'static str = "joint-generator-proposal-linux-v1";
     pub const OBSERVED_PROFILE: &'static str = "joint-generator-proposal-linux-v2";
+    pub const LOADED_PROFILE: &'static str =
+        codex_hepta_infer_core::JOINT_V4_LOADING_PROCESS_PROFILE;
 
     pub fn observed_input_schema_digest() -> [u8; 32] {
         Digest32::of_bytes(b"hepta.joint.owner-bound-public-command.v2").into_array()
@@ -92,6 +94,18 @@ impl JointGenerationProcessWorkerV1 {
 
     pub fn encoder_digest(&self) -> [u8; 32] {
         self.component_digest(b"encoder")
+    }
+
+    /// The full-loading profile uses the actual encoder component. The other
+    /// aggregate manifest slots retain their explicitly opaque asset aliases;
+    /// the complete thirteen-component binding is carried by the load event.
+    pub fn loaded_encoder_digest(&self) -> Result<[u8; 32], CellGenerationErrorV2> {
+        Ok(
+            crate::inspect_joint_v4_generation_weights_v1(&self.weights)?
+                .components()
+                .encoder
+                .into_array(),
+        )
     }
 
     pub fn head_digest(&self) -> [u8; 32] {
@@ -171,7 +185,13 @@ impl JointGenerationProcessWorkerV1 {
         manifest: &CellBackendManifestV2,
     ) -> Result<(), CellGenerationErrorV2> {
         manifest.digest()?;
-        let observed = manifest.profile == Self::OBSERVED_PROFILE;
+        let loading = manifest.profile == Self::LOADED_PROFILE;
+        let observed = loading || manifest.profile == Self::OBSERVED_PROFILE;
+        let encoder = if loading {
+            self.loaded_encoder_digest()?
+        } else {
+            self.encoder_digest()
+        };
         let schemas = if observed {
             (
                 Self::observed_input_schema_digest(),
@@ -185,7 +205,8 @@ impl JointGenerationProcessWorkerV1 {
                 Self::output_schema_digest(),
             )
         };
-        if ![Self::PROFILE, Self::OBSERVED_PROFILE].contains(&manifest.profile.as_str())
+        if ![Self::PROFILE, Self::OBSERVED_PROFILE, Self::LOADED_PROFILE]
+            .contains(&manifest.profile.as_str())
             || manifest.source_digest != self.source_digest
             || manifest.runtime_digest != self.executable_digest
             || manifest.device_digest != self.device_digest
@@ -194,7 +215,7 @@ impl JointGenerationProcessWorkerV1 {
                 manifest.state_schema,
                 manifest.output_schema,
             ) != schemas
-            || manifest.encoder != Some(self.encoder_digest())
+            || manifest.encoder != Some(encoder)
             || manifest.head != Some(self.head_digest())
             || manifest.memory != Some(self.memory_digest())
             || manifest.world_model.is_some()
@@ -233,7 +254,20 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
         {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
-        let payload = if manifest.profile == Self::OBSERVED_PROFILE {
+        let loading = manifest.profile == Self::LOADED_PROFILE;
+        let loading_commitment = if loading {
+            let inspection = crate::inspect_joint_v4_generation_weights_v1(&self.weights)?;
+            Some(
+                codex_hepta_infer_core::joint_v4_loading_commitment_v1(
+                    inspection.physical_weights_digest().into_array(),
+                    inspection.components(),
+                )
+                .map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
+            )
+        } else {
+            None
+        };
+        let payload = if loading || manifest.profile == Self::OBSERVED_PROFILE {
             let input =
                 match serde_json::from_slice::<crate::JointGenerationInputV2>(&request.input) {
                     Ok(value) if value.public_digest == self.public_digest => value,
@@ -274,7 +308,7 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
                 &input.command,
             )
         };
-        let payload = match payload {
+        let mut payload = match payload {
             Ok(value) => value,
             Err(CellGenerationErrorV2::Deadline) => {
                 return unstarted_proposal(
@@ -293,6 +327,9 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
                 );
             }
         };
+        if loading {
+            payload[..8].copy_from_slice(b"HJREQV03");
+        }
         let observation = cell_joint_process::run(ProcessRequest {
             executable: &self.executable,
             executable_digest: self.executable_digest,
@@ -308,7 +345,8 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
                     cell_joint_protocol::read_proposal(&observation.stdout, request_digest)
                         .ok()
                         .filter(|proposal| {
-                            proposal.state.len() <= manifest.max_state_bytes as usize
+                            proposal.loading_commitment == loading_commitment
+                                && proposal.state.len() <= manifest.max_state_bytes as usize
                                 && proposal.delta.len() <= manifest.max_delta_bytes as usize
                                 && request
                                     .predecessor
@@ -391,33 +429,13 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
             disposition,
             CellGenerationDispositionV2::Advanced | CellGenerationDispositionV2::Stopped
         ) {
-            for (index, stage) in [
-                CellCostStageV2::Codec,
-                CellCostStageV2::Encoder,
-                CellCostStageV2::Inference,
-                CellCostStageV2::Planning,
-            ]
-            .into_iter()
-            .enumerate()
-            {
-                cost.record(CellCostEntryV2 {
-                    event_id: Digest32::of_parts(&[
-                        b"hepta.joint.child-phase.v1\0",
-                        &request_digest,
-                        &[index as u8],
-                    ])
-                    .into_array(),
-                    identity,
-                    stage,
-                    outcome,
-                    accounting: CellCostAccountingV2::Exclusive,
-                    metrics: CellCostMetricsV2 {
-                        wall_micros: Some(phase_micros[index]),
-                        ..CellCostMetricsV2::default()
-                    },
-                })
-                .map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
-            }
+            crate::cell_joint_loading::record_child_phases(
+                &mut cost,
+                manifest,
+                request_digest,
+                loading_commitment,
+                phase_micros,
+            )?;
         }
         cost.record(CellCostEntryV2 {
             event_id: Digest32::of_parts(&[

@@ -8,7 +8,7 @@ use crate::CellGenerationErrorV2;
 
 pub(crate) const MAX_WEIGHTS_BYTES: usize = crate::cell_joint_weights::MAX_JOINT_WEIGHTS_BYTES;
 pub(crate) const MAX_PUBLIC_BYTES: usize = 1024 * 1024;
-pub(crate) const MAX_RESULT_BYTES: usize = 8 + 32 + 1 + 32 + 8 + 2 * 65_536 + 64;
+pub(crate) const MAX_RESULT_BYTES: usize = 8 + 32 + 32 + 1 + 32 + 8 + 2 * 65_536 + 64;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -159,6 +159,7 @@ pub(crate) fn request_bytes_with_text_limit(
 }
 
 pub(crate) struct JointProposal {
+    pub loading_commitment: Option<[u8; 32]>,
     pub state: Vec<u8>,
     pub delta: Vec<u8>,
     pub stopped: bool,
@@ -178,9 +179,26 @@ pub(crate) fn read_proposal(
         return Err(CellGenerationErrorV2::Corrupt);
     }
     let mut reader = Reader { bytes: body, at: 0 };
-    if reader.take(8)? != b"HJRESV01" || reader.take(32)? != request_digest {
+    let attested = match reader.take(8)? {
+        b"HJRESV01" => false,
+        b"HJRESV02" => true,
+        _ => return Err(CellGenerationErrorV2::InvalidBinding),
+    };
+    if reader.take(32)? != request_digest {
         return Err(CellGenerationErrorV2::InvalidBinding);
     }
+    let loading_commitment = if attested {
+        let commitment = reader
+            .take(32)?
+            .try_into()
+            .map_err(|_| CellGenerationErrorV2::Corrupt)?;
+        if commitment == [0; 32] {
+            return Err(CellGenerationErrorV2::InvalidBinding);
+        }
+        Some(commitment)
+    } else {
+        None
+    };
     let stopped = match reader.take(1)? {
         [0] => false,
         [1] => true,
@@ -201,6 +219,7 @@ pub(crate) fn read_proposal(
         return Err(CellGenerationErrorV2::Corrupt);
     }
     Ok(JointProposal {
+        loading_commitment,
         state,
         delta,
         stopped,

@@ -25,6 +25,9 @@ type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 #[path = "cell_joint_observed_process_tests.rs"]
 mod observed_process;
 
+#[path = "cell_joint_loading_process_tests.rs"]
+mod loading_process;
+
 #[test]
 fn invalid_clock_at_native_entry_does_not_create_a_terminal_proposal() -> TestResult {
     let harness = Harness::new(16, Arc::new(|| 0))?;

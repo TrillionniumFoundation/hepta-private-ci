@@ -31,6 +31,7 @@ mod cell_generation_types;
 mod cell_inference;
 #[cfg(target_os = "linux")]
 mod cell_joint_generation;
+mod cell_joint_loading;
 #[cfg(target_os = "linux")]
 mod cell_joint_observed;
 #[cfg(target_os = "linux")]
@@ -115,6 +116,7 @@ pub use cell_joint_generation::JointGenerationProcessConfigV1;
 pub use cell_joint_generation::JointGenerationProcessFilesV1;
 #[cfg(target_os = "linux")]
 pub use cell_joint_generation::JointGenerationProcessWorkerV1;
+pub use cell_joint_loading::verify_joint_v4_loading_receipt_v1;
 #[cfg(target_os = "linux")]
 pub use cell_joint_observed::JointGenerationCommandV2;
 #[cfg(target_os = "linux")]
