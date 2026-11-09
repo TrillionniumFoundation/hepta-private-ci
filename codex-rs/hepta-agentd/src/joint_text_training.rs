@@ -9,7 +9,6 @@
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
-use codex_hepta_infer_core::JointTensorPacketV1;
 use codex_hepta_learning_artifacts::CellBundleComponentsV1;
 use codex_hepta_learning_artifacts::CellTrainingLineageV1;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
@@ -18,6 +17,7 @@ use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_memory::CognitiveStore;
+use codex_hepta_neuron::JointTensorPacketV1;
 use codex_hepta_neuron::inspect_joint_v4_generation_weights_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
