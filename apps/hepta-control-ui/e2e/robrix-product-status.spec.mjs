@@ -3,6 +3,7 @@ import {test,expect} from '@playwright/test';
 import {observeFontDelivery} from '../tools/font-delivery-diagnostic.mjs';
 import {recordProductBrowser} from '../tools/font-diagnostic-browser-identity.mjs';
 import {readFile,writeFile} from 'node:fs/promises';
+import {appendFileSync} from 'node:fs';
 import {robrixSourceIdentity} from '../tools/robrix-source-identity.mjs';
 import {createHash} from 'node:crypto';
 import {readProductStatusPixels} from '../tools/product-status-pixels.mjs';
@@ -26,6 +27,21 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  const binding={sourceSha,sourceTree:gateway.sourceTree,uiSourceIdentity:manifest.sourceIdentity.sha256,uiManifestSha256:hash(manifestBytes),gateway,browserIdentity,...(testInfo.project.metadata.diagnosticOnly?{diagnosticOnly:true,project:testInfo.project.name}:{})};
  await writeFile(testInfo.outputPath('binding.json'),JSON.stringify(binding,null,2)+'\n');
  await writeFile(testInfo.outputPath('ui-build-manifest.json'),manifestBytes);
+ // Diagnostic-only, bounded, synchronous progress records survive a blocked
+ // existing cleanup await. No browser action or acceptance condition is added.
+ const progressPath=testInfo.outputPath('status-wait-progress.jsonl');
+ const progressStart=performance.now();let progressSequence=0,progressFailed=false;
+ function progress(event,details={}){
+  if(progressFailed||progressSequence>=512)return;
+  const sequence=++progressSequence,limited=sequence===512;
+  try{
+   appendFileSync(progressPath,JSON.stringify({schema:'hepta.ui-status-wait-progress.v1',diagnosticOnly:true,sourceSha,sourceTree:binding.sourceTree,uiSourceIdentity:binding.uiSourceIdentity,uiManifestSha256:binding.uiManifestSha256,project:testInfo.project.name,title:testInfo.title,width,scenario,sequence,ms:Math.round((performance.now()-progressStart)*1000)/1000,event:limited?'diagnostic-capacity-reached':event,...(limited?{}:details)})+'\n',{flag:sequence===1?'wx':'a'});
+  }catch{
+   progressFailed=true;
+   console.log(JSON.stringify({scope:'UI wait progress unavailable; not acceptance',sourceSha,sourceTree:binding.sourceTree,width,scenario,sequence}));
+  }
+ }
+ progress('diagnostic.started');
  const faults=[],responses=[],requests=[],errors=[],faultCases=[],networkFailures=[],finishedResponses=[];const pendingFonts=new Set();
  // Diagnostic observers only: do not consume bodies, cancel requests, alter cache,
  // replace SDK APIs, or waive any existing font/console/lifecycle assertion.
@@ -65,8 +81,8 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   appendDiagnostic('fontEvents',fontEvents,{id,event,phase,ms:diagnosticMs(),...details});
  }
  function cdpFontEvent(event,details){appendDiagnostic('cdpFontEvents',cdpFontEvents,{event,phase,ms:diagnosticMs(),...details});}
- function cdpApiEvent(event,details){appendDiagnostic('apiNetworkEvents',apiNetworkEvents,{event,phase,ms:diagnosticMs(),...cdpApiIds.get(details.requestId),...details});}
- function apiWait(name,state){appendDiagnostic('apiWaits',apiWaits,{name,state,phase,ms:diagnosticMs()});}
+ function cdpApiEvent(event,details){appendDiagnostic('apiNetworkEvents',apiNetworkEvents,{event,phase,ms:diagnosticMs(),...cdpApiIds.get(details.requestId),...details});progress('api.network.'+event,{requestId:details.requestId,phase,status:details.status,errorText:details.errorText});}
+ function apiWait(name,state){appendDiagnostic('apiWaits',apiWaits,{name,state,phase,ms:diagnosticMs()});progress('api.wait',{name,state,phase});}
  async function observeFontInitiators(){
   // The product config is Chromium-only. CDP is passive observation here: no
   // Fetch domain, request interception, cache overrides or response body reads.
@@ -118,7 +134,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  const ownerUrl=new URL('/api/hepta/owner-status',baseURL).href,runtimeUrl=new URL('/api/hepta/runtime',baseURL).href,sdkUrl=new URL('/makepad_platform/web.js',baseURL).href;
  let phase='initial',nextRequestId=0;const requestRecords=new Map(),proofs={},cancellations=[];
  function requestRecord(request){
-  if(!requestRecords.has(request)){const record={id:++nextRequestId,url:request.url(),method:request.method(),phase};requestRecords.set(request,record);requests.push(record);}
+  if(!requestRecords.has(request)){const record={id:++nextRequestId,url:request.url(),method:request.method(),phase};requestRecords.set(request,record);requests.push(record);progress('api.request',{requestId:record.id,path:diagnosticPath(record.url),method:record.method,phase:record.phase});}
   return requestRecords.get(request);
  }
  function rawAudit(){return {binding,scenario,errors,requests,responses,failures:networkFailures,cancellations,proofs,sdkUrl,runtimeUrl,ownerUrl,faults,apiDiagnostics:{network:apiNetworkEvents,waits:apiWaits},fontDiagnostics:{fontRequests,fontEvents,cdpFontEvents,consoleEvents,browserLifecycle,diagnosticOverflow,diagnosticWaits}};}
@@ -165,6 +181,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  const before=testInfo.outputPath('before-read.png');await page.screenshot({path:before,caret:'initial'});
  expect(requests).toEqual([]);
  const refresh=await screenshotWordCenter(before,'Refresh',width,{recordOcr:true});
+ progress('refresh.coordinates',{x:refresh.x,y:refresh.y,phase});
  const initialSdk503=page.waitForEvent('console',message=>message.type()==='error'&&message.location().url===sdkUrl&&message.text()===`[makepad][http][fail] 503 ${runtimeUrl}`);
  const owner=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/hepta/owner-status');
  const legacy=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/hepta/runtime');
@@ -184,21 +201,32 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  proofs.initial={ownerState:'notAttached',ownerVerified:observation.passed,transportVerified:/runtime unavailable\s*\(Transport\)/i.test(text)};
  if(sdkDelivery)await sdkDelivery.check();
  await audit('initial-read-audit');
+ progress('initial-read-audit.done');
  phase=scenario;
 
  const ownerCount=()=>requests.filter(item=>new URL(item.url).pathname==='/api/hepta/owner-status').length;
  async function observedText(name,state){
-  await settle();const path=testInfo.outputPath(name+'.png');await page.screenshot({path,caret:'initial'});
+  progress('pixels.settle.start',{name,state});
+  await settle();
+  progress('pixels.settle.done',{name,state});
+  const path=testInfo.outputPath(name+'.png');
+  progress('pixels.screenshot.start',{name,state});
+  await page.screenshot({path,caret:'initial'});
+  progress('pixels.screenshot.done',{name,state});
+  progress('pixels.read.start',{name,state,completionMarkerExpected:Boolean(state)});
   if(!state)return {path,text:await readScreenshotText(path,{language:'eng'})};
   const observation=await readProductStatusPixels(path,state);
+  progress('pixels.read.done',{name,state});
   await writeFile(testInfo.outputPath(name+'-ocr.json'),JSON.stringify(observation,null,2)+'\n');
   return {path,...observation};
  }
  const pendingHolds=new Set();
  async function holdOwner(name){
-  const held=await holdOwnerResponse(page,ownerUrl,request=>requestRecord(request).id,name);
+  progress('hold.install.start',{name});
+  const held=await holdOwnerResponse(page,ownerUrl,request=>requestRecord(request).id,name,(event,details)=>progress('hold.'+event,details));
+  progress('hold.install.done',{name});
   pendingHolds.add(held);
-  return {ready:held.ready,get requestId(){return held.requestId;},async finish(){const record=await held.finish();pendingHolds.delete(held);faultCases.push(record);}};
+  return {ready:held.ready,get requestId(){return held.requestId;},async finish(){progress('hold.finish.start',{name,requestId:held.requestId});const record=await held.finish();pendingHolds.delete(held);faultCases.push(record);progress('hold.finish.done',{name,requestId:held.requestId});}};
  }
  // Hold a real response, then exercise the actual Rust five-second timeout and
  // disabled/single-flight control. No fabricated success body is injected.
@@ -206,7 +234,12 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  const timeoutLegacy=scenario==='timeout'?page.waitForResponse(response=>response.url()===runtimeUrl&&requestRecord(response.request()).phase==='timeout'):null;
  const timeoutSdk503=scenario==='timeout'?page.waitForEvent('console',message=>phase==='timeout'&&message.type()==='error'&&message.location().url===sdkUrl&&message.text()===`[makepad][http][fail] 503 ${runtimeUrl}`):null;
  const held=await holdOwner(scenario);const beforeCancellation=ownerCount();
- await page.mouse.click(refresh.x,refresh.y);await held.ready;
+ progress('refresh.click.start',{x:refresh.x,y:refresh.y,phase});
+ await page.mouse.click(refresh.x,refresh.y);
+ progress('refresh.click.done',{x:refresh.x,y:refresh.y,phase});
+ progress('held.ready.wait.start');
+ await held.ready;
+ progress('held.ready.wait.done');
  let expectedState;
  if(scenario==='timeout'){
   for(let index=0;index<3;index++)await page.mouse.click(refresh.x,refresh.y);
@@ -242,7 +275,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  await expect.poll(()=>networkFailures.filter(f=>f.id===held.requestId).length).toBe(1);
  cancellations.push({requestId:held.requestId,phase:scenario});
  proofs[scenario]={ownerState:expectedState,ownerVerified:late.passed,transportVerified:/runtime unavailable\s*\(Transport\)/i.test(late.text)};
- }finally{await Promise.allSettled([...pendingHolds].map(held=>held.finish()));}
+ }finally{progress('holds.cleanup.start',{pending:pendingHolds.size});await Promise.allSettled([...pendingHolds].map(held=>held.finish()));progress('holds.cleanup.done',{pending:pendingHolds.size});}
  await Promise.all(finishedResponses);
  expect(requests.map(item=>({method:item.method,path:new URL(item.url).pathname,phase:item.phase}))).toEqual([
   {method:'GET',path:'/api/hepta/owner-status',phase:'initial'},
@@ -253,7 +286,8 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  const errorAudit=await audit('final-read-audit');
  const bytes=await readFile(screenshot);
  await writeFile(testInfo.outputPath('receipt.json'),JSON.stringify({...binding,width,ownerAttached:false,legacyRuntimeAvailable:false,requests,responses,errorAudit,faults,faultCases,networkFailures,scenario,proofs,cancellations,physicalBackgroundQualified:false,png:{name:'owner-not-attached.png',bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')},ocr:text},null,2)+'\n');
- }catch(error){diagnosticFailed=true;throw error;}finally{
+ }catch(error){progress('case.failed');diagnosticFailed=true;throw error;}finally{
+  progress('case.finally.start');
   // Preserve diagnostics even when initial-read-audit fails. Never wait without
   // bound for unfinished font responses during another failing test path.
   const fontCompletionSettled=await settleFontObservations('finally');
@@ -265,7 +299,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   ]);}finally{clearTimeout(lifecycleTimer);}
   browserLifecycle.fontCompletionSettled=fontCompletionSettled;
   const raw=rawAudit();
-  try{await writeFile(testInfo.outputPath('raw-request-audit.json'),JSON.stringify(raw,null,2)+'\n');}
+  try{progress('raw-audit.write.start');await writeFile(testInfo.outputPath('raw-request-audit.json'),JSON.stringify(raw,null,2)+'\n');progress('raw-audit.write.done');}
   finally{
    try{
     if(diagnosticFailed||faults.length){
