@@ -3,14 +3,13 @@ use app_test_support::MockResponsesConfig;
 use app_test_support::TestAppServer;
 use app_test_support::write_models_cache;
 use codex_app_server_protocol::ClientRequest;
-use codex_app_server_protocol::CollabAgentTool;
-use codex_app_server_protocol::CollabAgentToolCallStatus;
 use codex_app_server_protocol::ItemCompletedNotification;
 use codex_app_server_protocol::JSONRPCMessage;
 use codex_app_server_protocol::JSONRPCNotification;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxMode;
 use codex_app_server_protocol::SandboxPolicy;
+use codex_app_server_protocol::SubAgentActivityKind;
 use codex_app_server_protocol::ThreadHistoryMode;
 use codex_app_server_protocol::ThreadItem;
 use codex_app_server_protocol::ThreadLoadedListParams;
@@ -688,7 +687,7 @@ async fn cold_resume_preserves_effective_developer_instructions_for_worker(
                                         && completed.turn_id == parent_completed.turn.id
                                         && matches!(
                                             completed.item,
-                                            ThreadItem::CollabAgentToolCall { id, .. }
+                                            ThreadItem::SubAgentActivity { id, .. }
                                                 if id == SPAWN_CALL_ID
                                         )
                                 })
@@ -697,23 +696,17 @@ async fn cold_resume_preserves_effective_developer_instructions_for_worker(
                 .await?;
             let spawn_completed: ItemCompletedNotification =
                 serde_json::from_value(spawn_completed.params.expect("spawn parameters"))?;
-            let ThreadItem::CollabAgentToolCall {
-                tool,
-                status,
-                sender_thread_id,
-                receiver_thread_ids,
+            let ThreadItem::SubAgentActivity {
+                kind,
+                agent_thread_id: child_thread_id,
+                agent_path,
                 ..
             } = spawn_completed.item
             else {
                 unreachable!("the matching notification is the initial spawn call");
             };
-            assert_eq!(tool, CollabAgentTool::SpawnAgent);
-            assert_eq!(status, CollabAgentToolCallStatus::Completed);
-            assert_eq!(sender_thread_id, thread.id);
-            let [child_thread_id] = receiver_thread_ids.as_slice() else {
-                anyhow::bail!("initial spawn must identify exactly one worker");
-            };
-            let child_thread_id = child_thread_id.clone();
+            assert_eq!(kind, SubAgentActivityKind::Started);
+            assert_eq!(agent_path, "/root/worker");
             assert_ne!(child_thread_id, thread.id);
 
             let child_completed = app_server

@@ -251,6 +251,46 @@ impl Inputs {
     }
 }
 
+/// Read the OS-defined OpenSSH startup directory without inheriting caller environment.
+pub(crate) fn program_data_directory() -> Result<PathBuf, AcceptanceError> {
+    let mut program_data_buffer = std::ptr::null_mut::<u16>();
+    // SAFETY: the fixed folder ID and output pointer remain valid for the
+    // synchronous call. Zero flags and no token request the current OS path.
+    let result = unsafe {
+        SHGetKnownFolderPath(
+            &FOLDERID_ProgramData,
+            /*dwflags*/ 0,
+            /*htoken*/ 0,
+            &mut program_data_buffer,
+        )
+    };
+    let program_data = (|| {
+        if result != 0 || program_data_buffer.is_null() {
+            return Err(invalid("Windows ProgramData directory is unavailable"));
+        }
+        // SAFETY: on success the OS returns a NUL-terminated UTF-16 buffer.
+        // Stop at its terminator and reject paths at the existing 32K bound.
+        let length = (0..32_768)
+            .find(|&index| unsafe { *program_data_buffer.add(index) } == 0)
+            .ok_or_else(|| invalid("Windows ProgramData directory exceeds its bound"))?;
+        if length == 0 {
+            return Err(invalid("Windows ProgramData directory is empty"));
+        }
+        // SAFETY: the preceding scan established this initialized prefix;
+        // the OS allocation remains owned until CoTaskMemFree below.
+        let bytes = unsafe { std::slice::from_raw_parts(program_data_buffer, length) };
+        let path = PathBuf::from(OsString::from_wide(bytes));
+        if !path.is_absolute() {
+            return Err(invalid("Windows ProgramData directory is not absolute"));
+        }
+        Ok(path)
+    })();
+    // SAFETY: SHGetKnownFolderPath returned this CoTaskMem allocation. Its
+    // contract requires freeing it on failure too; freeing NULL is a no-op.
+    unsafe { CoTaskMemFree(program_data_buffer.cast()) };
+    program_data
+}
+
 struct TrustedOpenSsh {
     path: PathBuf,
     file: File,
@@ -276,42 +316,7 @@ impl TrustedOpenSsh {
         if !system_directory.is_absolute() {
             return Err(invalid("Windows system directory is not absolute"));
         }
-        let mut program_data_buffer = std::ptr::null_mut::<u16>();
-        // SAFETY: the fixed folder ID and output pointer remain valid for the
-        // synchronous call. Zero flags and no token request the current OS path.
-        let result = unsafe {
-            SHGetKnownFolderPath(
-                &FOLDERID_ProgramData,
-                /*dwflags*/ 0,
-                /*htoken*/ 0,
-                &mut program_data_buffer,
-            )
-        };
-        let program_data = (|| {
-            if result != 0 || program_data_buffer.is_null() {
-                return Err(invalid("Windows ProgramData directory is unavailable"));
-            }
-            // SAFETY: on success the OS returns a NUL-terminated UTF-16 buffer.
-            // Stop at its terminator and reject paths at the existing 32K bound.
-            let length = (0..32_768)
-                .find(|&index| unsafe { *program_data_buffer.add(index) } == 0)
-                .ok_or_else(|| invalid("Windows ProgramData directory exceeds its bound"))?;
-            if length == 0 {
-                return Err(invalid("Windows ProgramData directory is empty"));
-            }
-            // SAFETY: the preceding scan established this initialized prefix;
-            // the OS allocation remains owned until CoTaskMemFree below.
-            let bytes = unsafe { std::slice::from_raw_parts(program_data_buffer, length) };
-            let path = PathBuf::from(OsString::from_wide(bytes));
-            if !path.is_absolute() {
-                return Err(invalid("Windows ProgramData directory is not absolute"));
-            }
-            Ok(path)
-        })();
-        // SAFETY: SHGetKnownFolderPath returned this CoTaskMem allocation. Its
-        // contract requires freeing it on failure too; freeing NULL is a no-op.
-        unsafe { CoTaskMemFree(program_data_buffer.cast()) };
-        let program_data_directory = program_data?;
+        let program_data_directory = program_data_directory()?;
         let path = system_directory.join("OpenSSH").join("ssh-keygen.exe");
         let parent = path
             .parent()
