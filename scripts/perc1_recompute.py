@@ -190,10 +190,9 @@ def run(
                         "frozen model binding mismatch",
                     )
                     original_pids.add(producer["worker"]["pid"])
-                    require(
-                        producer["worker"]["pid"] != os.getpid(),
-                        "recomputation must run in a separate process",
-                    )
+                    # PID values can repeat across time or process namespaces.
+                    # Separate CLI invocation is a caller obligation; a numeric
+                    # PID comparison is diagnostic, never process attestation.
                     groups.add(source["group"])
                     source_representations.add((source["id"], representation))
                     raw = dataset.read(source["id"])
@@ -306,6 +305,7 @@ def run(
         source_groups=len(groups),
         original_worker_pids=sorted(original_pids),
         distinct_recompute_pid=os.getpid() not in original_pids,
+        process_identity_scope="PID comparison is diagnostic only; invoke this CLI separately. No process or hardware attestation.",
         wall_ns=time.perf_counter_ns() - started,
         cpu_ns=time.process_time_ns() - cpu,
         command_code_sha256=sha(Path(__file__).read_bytes()),
