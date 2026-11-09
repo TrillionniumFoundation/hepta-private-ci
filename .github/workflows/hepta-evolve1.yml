@@ -116,6 +116,12 @@ jobs:
             python -m unittest -v ndu_real_runtime.test_candidate_diagnostic \
             ndu_real_runtime.test_recursive_contract
 
+      - name: Verify bounded actor-visible candidate memory
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 5 \
+            --output "$RUNNER_TEMP/evolve1-ci/candidate-memory.json" \
+            -- python -B -m unittest -v scripts.ndu_real_runtime.test_candidate_memory
+
       - name: Check formatting and fatal Python errors using the repository lock
         if: always() && steps.runtime.outcome == 'success'
         shell: bash
@@ -129,6 +135,8 @@ jobs:
             scripts/ndu_real_runtime/test_evolve1_pilot.py
             scripts/ndu_real_runtime/candidate_diagnostic.py
             scripts/ndu_real_runtime/test_candidate_diagnostic.py
+            scripts/ndu_real_runtime/candidate_memory.py
+            scripts/ndu_real_runtime/test_candidate_memory.py
           )
           uv run --frozen --project scripts --python 3.12.14 \
             ruff format --check "${files[@]}"
