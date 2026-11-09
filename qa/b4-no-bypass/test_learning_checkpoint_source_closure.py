@@ -113,13 +113,33 @@ class LearningCheckpointSourceClosureTests(unittest.TestCase):
                 )
 
     def test_request_binding_and_original_checkpoint_dispatch_are_required(self):
+        function = "fn exchange_learning_checkpoint("
         for marker in (
+            "let (schema, binding) = self.profile_identity();",
+            "request.schema != schema",
+            "request.operation != OPERATION",
             "request.request_id != *next_request_id",
-            "request.binding != self.initial.head_digest.to_string()",
+            "request.binding != binding",
+            "*next_request_id = next_request_id",
+            ".checked_add(1)",
+            "self.restore(&self.initial.request)",
+            "decode_snapshot(&snapshot)",
+            "expected_head != expected.to_string()",
             "self.checkpoint(expected, &next)",
         ):
             with self.subTest(marker=marker):
-                self.rejects(TRANSPORT, "fn exchange_learning_checkpoint(", marker)
+                self.rejects(TRANSPORT, function, marker)
+
+        # Keep every marker in the same method while moving profile validation
+        # after request consumption and dispatch: presence alone is insufficient.
+        source = (ROOT / TRANSPORT).read_text()
+        start = source.index(function)
+        profile = source.index("let (schema, binding) = self.profile_identity();", start)
+        counter = source.index("*next_request_id = next_request_id", profile)
+        dispatched = source.index("let result = match result {", counter)
+        guard = source[profile:counter]
+        dispatch = source[counter:dispatched]
+        self.rejects(TRANSPORT, function, guard + dispatch, dispatch + guard)
 
     def test_unvalidated_reply_cannot_restore_the_consumed_connection(self):
         self.rejects(
