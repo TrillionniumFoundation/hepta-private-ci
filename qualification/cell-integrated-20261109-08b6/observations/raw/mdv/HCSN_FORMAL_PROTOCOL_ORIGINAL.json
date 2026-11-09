@@ -1,0 +1,60 @@
+{
+  "schema": "hcsn-localization-formal-training-protocol-v1",
+  "status": "specified_not_admitted_not_started",
+  "authorization": "existing user full-research instruction; scientific and resource gates remain distinct",
+  "dataset_sha256": "1fbc965b8d7faf499ea854428b2138132d94e6a26404bc8e4b0c62144f513e8a",
+  "partitions": {"train_subjects": ["A", "B", "C"], "development_subjects": ["D"], "sealed_test_subjects": ["E"]},
+  "selection": {
+    "formal_default": "all source events; split subjects before forming any windows",
+    "optional_development_subset": "first, middle and last 128-event windows of each ABC/D sequence, offsets 0/floor((N-128)/2)/N-128; freeze source-row manifest before fitting or scoring labels",
+    "subset_claim": "development pilot only; never replace the all-event confirmation result",
+    "timestamp_order": "integer tick then original source line; no gap clipping, resampling or window search",
+    "clock": "data.py exact declared display model; elapsed seconds = integer tick difference / 10000000"
+  },
+  "frontend": {"fit": "ABC observed coordinates only", "frozen": true, "shared": true, "features": "12 normalized positions, 12 masks, log1p(dt_seconds)"},
+  "families": ["gru", "official_cfc", "official_recurrent_plif", "official_s4d_lin", "causal_transformer", "hcsn"],
+  "model_identity": "S4D is the declared SSM route; no result is labeled Mamba",
+  "capacity": {
+    "reference": "effective trainable real scalar degrees of freedom of the admitted HCSN configuration",
+    "tolerance_fraction": 0.05,
+    "selection": "choose architecture widths before label scoring by exact parameter counts; no dead/frozen/unused parameter padding",
+    "plain_gate_control": "match bank slot count, content width, effective parameters and shared inputs; report state bytes separately"
+  },
+  "tuning": {
+    "seed_ids": [101, 211, 307],
+    "max_configurations_per_arm": 12,
+    "candidate_learning_rates": [0.0003, 0.001, 0.003],
+    "candidate_weight_decays": [0.0, 0.0001],
+    "candidate_gradient_norm_caps": [1.0, 5.0],
+    "optimizer": "AdamW; honor official S4 parameter-specific learning-rate/zero-decay groups and record them",
+    "selection_metric": "mean development macro-F1 across three independent tuning seeds; deterministic tie break by fewer parameters then lower compute",
+    "test_access": "none during tuning, debugging, calibration design or early stopping"
+  },
+  "training": {
+    "window_events": 256, "window_stride": 256, "batch_size": 1,
+    "state_policy": "fresh episode per nonoverlapping training window; optimizer updates only between episodes; preserve original first gap at each artificial boundary",
+    "maximum_epochs": 100, "minimum_epochs_before_early_stop": 30,
+    "early_stop_patience_epochs": 10, "development_macro_f1_min_delta": 0.002,
+    "loss": "cross entropy with common ABC-only inverse-square-root class-frequency weights, normalized to mean one",
+    "shuffle": "deterministic train-window permutation shared across models for each seed; never shuffle within an episode",
+    "adequacy": "finite gradients, training-only multiclassepisode memorization check, development plateau; record PLIF firing/tau and all learning curves; budget exhaustion is not convergence"
+  },
+  "confirmation": {
+    "training_seeds": [11, 23, 37, 53, 71],
+    "fresh_initialization": true, "refit_train_subjects": ["A", "B", "C"],
+    "fit_temperature_on": "D only after model selection", "ece_equal_width_bins": 15,
+    "evaluation_context": "fixed nonoverlapping 256-event episodes for every model; no undeclared recurrent history advantage",
+    "metrics": ["macro_f1", "accuracy", "balanced_accuracy", "normalized_multiclass_brier", "ece", "negative_log_likelihood"],
+    "statistics": "paired training-seed differences; sequence-clustered data uncertainty; episodes never count as independent fits; one held-out subject limits population inference"
+  },
+  "required_ablations": ["frozen_vs_trainable_physics", "call_only", "risk_only", "dual_only", "same_capacity_plain_dual_gate", "reset_vs_killed_control", "distribution_vs_mean", "shared_vs_independent_generators", "all_physical_readouts_removed", "maintenance_rollover_on_off"],
+  "required_resources": ["persistent_state_bytes", "peak_ram_bytes", "peak_vram_bytes", "throughput", "p99_latency", "training_wall_seconds", "complete_metered_energy_or_explicit_null"],
+  "cost_ledger": ["data_and_frontend", "table_builds", "tuning", "failed_attempts", "all_seed_training", "calibration", "evaluation", "transfer"],
+  "resource_admission": {
+    "formal_budget_status": "not allocated; the executed 30-minute interface envelope is not reused as a formal-study allowance",
+    "requirement": "freeze an independent numeric all-attempts per-arm and whole-study wall/RAM envelope after timing calibration; reject unknown costs rather than treating them as zero"
+  },
+  "remaining_implementation_gates": ["capacity-configurable official adapters and formal episode trainer", "full-context numerical profile for frozen physics", "qualified trainable-physics domain", "pruned readout and ordinary-gate control implementations", "independent-generator and maintenance/rollover dynamics", "complete training/convergence and resource receipts"],
+  "formal_fits_started": 0,
+  "claim_boundary": "This specifies a reproducible training protocol; run_interface.py intentionally does not execute it. Missing gates remain explicit, with no claim of formal-study completion."
+}

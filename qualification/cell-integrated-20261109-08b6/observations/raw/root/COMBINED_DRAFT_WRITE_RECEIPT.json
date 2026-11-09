@@ -1,0 +1,103 @@
+{
+  "schema": "hepta.M6.common-draft-operation-receipt.v1",
+  "request": {
+    "path": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034.request.json",
+    "bytes": 45513,
+    "sha256": "8be36b50cf4ebce9d80939a4ce39a27d6cbc46704eb490c7b43533ba20fcc280",
+    "persisted_create_only_before_start": true
+  },
+  "job_id": "1a1beae734b-5e21-205",
+  "idempotency_key": "cell-08b6-common-M6-final-draft-034-20261109-001",
+  "start_calls": 1,
+  "reused": false,
+  "terminal": {
+    "at_unix_ms": 1794200467394,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1beae734b-5e21-205",
+    "launch_nonce": "5f69d158f0b23ae8edbb461706313f49",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 2181,
+        "stored": 2181
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "delivery": {
+    "receipt": {
+      "path": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034/DELIVERY.json",
+      "bytes": 1860,
+      "sha256": "07795d3fc68f43617fbb9ac0bfa8c6ff90a50c89ad9294ed86c6090ed2ea02c7"
+    },
+    "result": {
+      "schema": "hepta.M6.common-evidence-draft-delivery.v1",
+      "source": {
+        "commit": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+        "tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb",
+        "parent": "953d548d25b1e050109b1b93e1ea474b2ac7c801"
+      },
+      "directory": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034",
+      "files": [
+        {
+          "path": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034/ARTIFACT_MAP.json",
+          "bytes": 5197,
+          "sha256": "8cca0006a92d5c89c41a02d55c0ce9515ead177186287ca7ab7bdd2ecda37698"
+        },
+        {
+          "path": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034/QUALIFICATION.json",
+          "bytes": 19555,
+          "sha256": "558ca3da794bfa51091eb2ed72c9f10bfb2cd7d3a18257aa5b9b5c242001ec19"
+        },
+        {
+          "path": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034/README.zh-CN.md",
+          "bytes": 10497,
+          "sha256": "9e76a9ec48340eb9fca4a07e7e07cb554828a6471c9385533c1df582706cf814"
+        },
+        {
+          "path": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034/SOURCE_ARCHIVE_POINTER.json",
+          "bytes": 1171,
+          "sha256": "77d0c9da5523815e588c86ec264314d38d631f90f041e1af1e52a592709b0021"
+        }
+      ],
+      "payload": {
+        "path": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034/PAYLOAD.json",
+        "bytes": 38950,
+        "sha256": "077b5ab2ae19b3f6322c6d0bd927b4bbe2ff58ae146e7c5a097733678388427b"
+      },
+      "status": "DRAFT_ONLY_FILES_WRITTEN_AND_READ_BACK",
+      "project_tests_executed": false,
+      "training_executed": false,
+      "confirmation_material_read": false,
+      "git_modified": false,
+      "github_write": false,
+      "wall_seconds": 0.005766800022684038,
+      "unresolved": "publication and CI pending; raw files are mapped, not copied by this worker; root completes final link materialization"
+    }
+  },
+  "original_cloud_write_status": "not attempted; preceding read failed because exec-server unavailable; authorized native fallback used",
+  "scope": "only new private draft files; no Git modification, project tests, training, confirmation read or GitHub publication"
+}

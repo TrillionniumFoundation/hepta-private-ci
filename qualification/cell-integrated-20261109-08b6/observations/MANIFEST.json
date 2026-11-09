@@ -1,0 +1,659 @@
+{
+  "schema": "hepta.M6.materialized-evidence-manifest.v1",
+  "tested_source": {
+    "head": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb"
+  },
+  "evidence_branch": "engineering/cell-integrated-20261109-08b6-evidence",
+  "evidence_identity": {
+    "status": "SELF_DESCRIBING_GIT_SNAPSHOT",
+    "commit_reference": "the commit containing this file",
+    "tree_reference": "the tree of the commit containing this file",
+    "expected_parent": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "actual_parent": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "allowed_change_intent": [
+      "qualification/cell-integrated-20261109-08b6/observations/",
+      "exact binary blob allowlist append"
+    ],
+    "actual_diff_verified": true,
+    "runtime_change_free_verified": true,
+    "concrete_commit_tree_bound_in": "external finalization RESULT and evidence publication receipt; no self-referential hash"
+  },
+  "files": [
+    {
+      "destination": "ARTIFACT_MAP.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034/ARTIFACT_MAP.json",
+      "bytes": 19924,
+      "sha256": "9e4c01ab7385fe7675c4fd633245f8372ddfcd659f96a257539b062ec1e48be2",
+      "scope": "original reviewed draft path map; actual pins in MANIFEST.json",
+      "kind": "approved_derived_report",
+      "source_bytes": 5197,
+      "source_sha256": "8cca0006a92d5c89c41a02d55c0ce9515ead177186287ca7ab7bdd2ecda37698",
+      "copy_limit_bytes": 33554432,
+      "owner": "negative_experiments",
+      "derivation_history": [
+        {
+          "before": {
+            "bytes": 5197,
+            "sha256": "8cca0006a92d5c89c41a02d55c0ce9515ead177186287ca7ab7bdd2ecda37698"
+          },
+          "purpose": "Resolve all raw paths to actual bytes; remove unavailable original links from active map; preserve unavailable provenance"
+        }
+      ]
+    },
+    {
+      "destination": "QUALIFICATION.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034/QUALIFICATION.json",
+      "bytes": 37915,
+      "sha256": "6563edc5cafdf9bdc01d1055c6664ccf290098d89164e990f68d4e0d5cee0b45",
+      "scope": "root-reviewed qualification; publication/CI remain pending",
+      "kind": "approved_derived_report",
+      "source_bytes": 19555,
+      "source_sha256": "558ca3da794bfa51091eb2ed72c9f10bfb2cd7d3a18257aa5b9b5c242001ec19",
+      "copy_limit_bytes": 33554432,
+      "derivation_history": [
+        {
+          "before": {
+            "bytes": 19555,
+            "sha256": "558ca3da794bfa51091eb2ed72c9f10bfb2cd7d3a18257aa5b9b5c242001ec19"
+          },
+          "purpose": "Replace obsolete publication state; bind final selected queued CI and active new review-copy pins; keep unavailable originals only in provenance"
+        }
+      ],
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "README.zh-CN.md",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034/README.zh-CN.md",
+      "bytes": 13082,
+      "sha256": "a60e0c51383eb4e84d806f0203f55e6e8ebd1b3b9d3db02fa37c2bb61f2a924e",
+      "scope": "root-reviewed narrative with two explicitly approved copy-only corrections",
+      "kind": "approved_derived_report",
+      "source_bytes": 10497,
+      "source_sha256": "9e76a9ec48340eb9fca4a07e7e07cb554828a6471c9385533c1df582706cf814",
+      "approved_substitutions": [
+        {
+          "from": "baseline_executed=false",
+          "to": "baseline_terminal_arms_executed=false"
+        },
+        {
+          "from": "具体 daemon main 的 provider、正式信任根／签名权限、经验／训练／独立评价／采用与不同后继任务 NextUse 的 owner 后端及常驻 consumer 装配仍缺，故没有生产闭环证明。",
+          "to": "具体 daemon main 的 provider、经验／训练／独立评价／采用与不同后继任务 NextUse 的 owner 后端及常驻 consumer 仍未装配；既有 owner 接口所需的注册信任根、签名与权限配置尚未装配，故没有生产闭环证明。"
+        },
+        {
+          "from": "本文是待发布证据草稿；发布 head、PR、CI 与证据子提交均为 `null/PENDING`，下列结果不替代托管 CI。",
+          "to": "源码 M6 已通过原身份发布为 [draft PR #5433](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5433)，状态为 `PUBLISHED_DRAFT`。最后一次定向 CI 观测中 UI 5 项、Cell 3 项仍全部 queued，未核实 runner 实际 checkout 或浏览器执行。本文所在 Git 提交是独立证据快照，下列本地结果不替代托管 CI。"
+        },
+        {
+          "from": "| 发布 head／证据 child | 目前均未由发布回读确认；未来 evidence child 必须另核 parent、精确变更范围与无运行代码变化 |",
+          "to": "| 发布 head | PR #5433 的 head 已读回为 M6，固定 base 为 H `81da60b349e32d89d0e4c4674a517a66af7e5eee`；draft，尚未合并 |\n| 证据 child | 本文件所在 Git 提交；唯一父提交为 M6，范围仅 observations 与精确 blob allowlist 追加；具体 commit/tree 由外部 finalization／发布回执绑定，避免自引用 |"
+        },
+        {
+          "from": "Mac 只读 fetch-H 在任何新 GitHub 写入前超时，离线对象传输恢复尚待回读。",
+          "to": "此前 Mac 只读 fetch-H 超时、前置检查错误和 TCP GET 超时均保留；006 恢复已完成 source push、draft PR 创建及精确读回。原冻结请求的 UNKNOWN 不因后来发布成功而改写。[发布原始回执](raw/root/SOURCE_PUBLICATION.json)与[完整发布过程](raw/root/mac-source-publication-evidence-035.tar.gz)分别保留最终状态和失败／恢复记录。"
+        },
+        {
+          "from": "[五项下一实验草案](raw/mdv/NEXT_EXPERIMENTS_M6.zh-CN.md)及[机器登记](raw/mdv/NEXT_EXPERIMENTS_M6.json)全部为 **DRAFT_FOR_REVIEW，confirmation_admitted=false**：",
+          "to": "[五项下一实验完整审阅稿（新整理副本）](raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.zh-CN.md)及[机器登记](raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.json)均为 **DRAFT_FOR_REVIEW，confirmation_admitted=false**。原 NEXT_EXPERIMENTS_M6 两文件目前无法恢复原字节；旧 SHA 仅保留为来源记录。**新整理稿，不是原字节恢复。** 新稿根据 M6 已提交完整设计、原 HCSN 规格和已读开发证据重新整理，范围见[恢复记录](raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY_RECOVERY.json)。"
+        },
+        {
+          "from": "四线原件分别保留，旧源码通过项不转移到 M6。未来 evidence child 仅容许 observations 与精确 blob allowlist；实际 commit/tree、无运行变化审计及发布／CI 回执仍待绑定。",
+          "to": "四线原件分别保留，旧源码通过项不转移到 M6。本文件所在证据提交使用 `SELF_DESCRIBING_GIT_SNAPSHOT`：其唯一父提交为 M6，变更范围已核为 observations 与精确 blob allowlist 追加，具体 commit/tree 在外部 finalization 与证据发布回执中绑定。\n\n源码发布的精确 head、tree、base、draft 身份及写入／读回终态见[发布回执](raw/root/SOURCE_PUBLICATION.json)。[初始托管 CI 原件](raw/ui/M6_HOSTED_CI_INITIAL_METADATA.tar.gz)记录 15 个已触发 workflow；[最后定向快照](raw/ui/M6_HOSTED_CI_PRE_FREEZE_TARGETED.tar.gz)与[回读摘要](raw/ui/FINAL_CI_READBACK_RECEIPT.json)记录截至 **2026-11-09 05:24:18.389009 UTC**，UI run `42565769665` 的 5 项、Cell run `42565757710` 的 3 项仍全部 queued，attempt 1。状态为 `QUEUED_NOT_EXECUTED_AT_OBSERVATION`；workflow 的 head SHA 不能证明 job 实际 checkout，尚无这些任务的终态日志或浏览器执行证据，不声称托管 CI 全绿。\n\n[历史定向 CI 包](raw/ui/targeted-ci-safe-native-evidence.tar.gz)保留 S/H 已观察失败，[范围说明](raw/ui/HISTORICAL_TARGETED_CI_SCOPE.md)明确两份 deny 日志传输不完整；它们不计作 M6 当前结果。旧 SDK 迁移使用的[原始虚构测试 fixture](raw/root/old-sdk018-fixture-v3-original.tar.gz)独立保留，未复制升级后的数据。\n\n发布 006 外层观测为 82.365281 秒；两次 CI GET 窗口分别为 34.731569 秒与 10.466975 秒，属于发布／观察费用，不是项目执行费用；失败尝试和其他准备费用仍按各原件独立列示，不相加为完整端到端总价。"
+        }
+      ],
+      "copy_limit_bytes": 33554432,
+      "derivation_history": [
+        {
+          "before": {
+            "bytes": 10560,
+            "sha256": "d76c205a9780be694b4d944b06816f1c2554173faa2a46c6a04fc82d19501047"
+          },
+          "purpose": "Bind actual source publication, final queued CI, self-describing evidence identity and complete new review-copy links; preserve original034"
+        }
+      ],
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "SOURCE_ARCHIVE_POINTER.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034/SOURCE_ARCHIVE_POINTER.json",
+      "bytes": 1171,
+      "sha256": "77d0c9da5523815e588c86ec264314d38d631f90f041e1af1e52a592709b0021",
+      "scope": "full M6 source archive and complete inventory pointer only",
+      "kind": "original_small_record",
+      "source_bytes": 1171,
+      "source_sha256": "77d0c9da5523815e588c86ec264314d38d631f90f041e1af1e52a592709b0021",
+      "copy_limit_bytes": 33554432,
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/HCSN_FORMAL_PROTOCOL_ORIGINAL.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/HCSN_FORMAL_PROTOCOL_ORIGINAL.json",
+      "bytes": 5488,
+      "sha256": "8d7d321a9f538b5d3ae323ae2827e56688b47795f936eca4badaf8acd21bf5f4",
+      "scope": "Original HCSN specification only; no dataset read or formal fit",
+      "kind": "original_small_record",
+      "owner": "negative_experiments",
+      "source_bytes": 5488,
+      "source_sha256": "8d7d321a9f538b5d3ae323ae2827e56688b47795f936eca4badaf8acd21bf5f4",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/mdv/M3-raw-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-repo-mdv-20261109-08b6-evidence/common-M3-delivery-001/raw-evidence.tar.gz",
+      "bytes": 42431,
+      "sha256": "fe4d6b9ca2ad24efc40d2d939dafa047d617755029a3276333c10d3bf5c4bbd5",
+      "scope": "historical exposed development M3; not M6 denominator",
+      "kind": "original_raw_archive",
+      "source_bytes": 42431,
+      "source_sha256": "fe4d6b9ca2ad24efc40d2d939dafa047d617755029a3276333c10d3bf5c4bbd5",
+      "copy_limit_bytes": 33554432,
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/M4-raw-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-repo-mdv-20261109-08b6-evidence/common-M4-delivery-001/raw-evidence.tar.gz",
+      "bytes": 42524,
+      "sha256": "5f21e23b99ca5fcd19d7a52fd9994f8f82205403575a76149ef038ada78bd57e",
+      "scope": "historical exposed development M4; not M6 denominator",
+      "kind": "original_raw_archive",
+      "source_bytes": 42524,
+      "source_sha256": "5f21e23b99ca5fcd19d7a52fd9994f8f82205403575a76149ef038ada78bd57e",
+      "copy_limit_bytes": 33554432,
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/M5-raw-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-repo-mdv-20261109-08b6-evidence/common-M5-delivery-001/raw-evidence.tar.gz",
+      "bytes": 56596,
+      "sha256": "dced7bca8ceb5ffc7a5cef26a9a42121bcfd41371c2235b899418c8792ebfbb4",
+      "scope": "historical exposed development M5; not M6 denominator",
+      "kind": "original_raw_archive",
+      "source_bytes": 56596,
+      "source_sha256": "dced7bca8ceb5ffc7a5cef26a9a42121bcfd41371c2235b899418c8792ebfbb4",
+      "copy_limit_bytes": 33554432,
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/M6-COMPLETE_MANIFEST.json",
+      "native_source": "/home/qian-qi/work/cell-repo-mdv-20261109-08b6-evidence/common-M6-delivery-001/COMPLETE_MANIFEST.json",
+      "bytes": 4854,
+      "sha256": "7879556a013353e3b3a5a0c487034e5b0e66169f1f9b8b994a9171ed3255b047",
+      "scope": "original M6 MDV complete archive manifest; development only",
+      "kind": "original_small_record",
+      "source_bytes": 4854,
+      "source_sha256": "7879556a013353e3b3a5a0c487034e5b0e66169f1f9b8b994a9171ed3255b047",
+      "copy_limit_bytes": 33554432,
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/M6-complete-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-repo-mdv-20261109-08b6-evidence/common-M6-delivery-001/complete-evidence.tar.gz",
+      "bytes": 118128,
+      "sha256": "ad4a1eedbb1c5368368159a14f589d04145990f00bfd9c7b56bf4cf2046a8a9a",
+      "scope": "current M6 exposed development only; HOLD; no independent or production adoption",
+      "kind": "original_raw_archive",
+      "source_bytes": 118128,
+      "source_sha256": "ad4a1eedbb1c5368368159a14f589d04145990f00bfd9c7b56bf4cf2046a8a9a",
+      "copy_limit_bytes": 33554432,
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/NEXT_EXPERIMENTS_M6_REVIEW_COPY.json",
+      "bytes": 36023,
+      "sha256": "45b1725a02ecbf91aa361b6bfeb4ec81c3b176f5b301a8dbb91db268e2e77e23",
+      "scope": "New complete review copy from pinned source designs; DRAFT_FOR_REVIEW; no confirmation admitted; not original-byte recovery",
+      "kind": "new_derived_review_copy",
+      "owner": "negative_experiments",
+      "source_bytes": 36023,
+      "source_sha256": "45b1725a02ecbf91aa361b6bfeb4ec81c3b176f5b301a8dbb91db268e2e77e23",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/NEXT_EXPERIMENTS_M6_REVIEW_COPY.tar.gz",
+      "bytes": 48535,
+      "sha256": "6dd19949179ddcbdb813cb8c96da5575f4b6e20c80540efc344f2455208236b0",
+      "scope": "Complete six-member new review-copy source/protocol/recovery bundle; not original unavailable bytes",
+      "kind": "original_raw_archive",
+      "owner": "negative_experiments",
+      "source_bytes": 48535,
+      "source_sha256": "6dd19949179ddcbdb813cb8c96da5575f4b6e20c80540efc344f2455208236b0",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.zh-CN.md",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/NEXT_EXPERIMENTS_M6_REVIEW_COPY.zh-CN.md",
+      "bytes": 40369,
+      "sha256": "b759ef07aecfc710ad2f67d0332c099f5d6292a608692f2d818fb8e2b7d0c8a4",
+      "scope": "New complete five-experiment review narrative; not original-byte recovery, no new experiment",
+      "kind": "new_derived_review_copy",
+      "owner": "negative_experiments",
+      "source_bytes": 40369,
+      "source_sha256": "b759ef07aecfc710ad2f67d0332c099f5d6292a608692f2d818fb8e2b7d0c8a4",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY_RECOVERY.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/NEXT_EXPERIMENTS_M6_REVIEW_COPY_RECOVERY.json",
+      "bytes": 5450,
+      "sha256": "30d55986abdd8eab619d72c0073a12081d4c4b3d911b1cdc266ac87088173478",
+      "scope": "Bounded missing-original investigation, historical unavailable pins, exact new input provenance",
+      "kind": "original_small_record",
+      "owner": "negative_experiments",
+      "source_bytes": 5450,
+      "source_sha256": "30d55986abdd8eab619d72c0073a12081d4c4b3d911b1cdc266ac87088173478",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/mdv/NEXT_INDEPENDENT_DESIGNS_SOURCE_M6.md",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/NEXT_INDEPENDENT_DESIGNS_SOURCE_M6.md",
+      "bytes": 31079,
+      "sha256": "39df57778404a52216d84fadcacb156e315ae5240a46af7cfac8f29d44646d01",
+      "scope": "Complete M6 Git-backed prior design source used for new review copy; no new execution",
+      "kind": "original_small_record",
+      "owner": "negative_experiments",
+      "source_bytes": 31079,
+      "source_sha256": "39df57778404a52216d84fadcacb156e315ae5240a46af7cfac8f29d44646d01",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/mdv/NEXT_REVIEW_COPY_DELIVERY.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/DELIVERY.json",
+      "bytes": 2743,
+      "sha256": "5256d17d14cd9d507682b1dd581041f469b9f1d6a7390a35621509282c9cb5ec",
+      "scope": "Original new-review-copy write/delivery receipt; job1a1bec596b6-5e21-26e succeeded0; no tests",
+      "kind": "original_small_record",
+      "owner": "negative_experiments",
+      "source_bytes": 2743,
+      "source_sha256": "5256d17d14cd9d507682b1dd581041f469b9f1d6a7390a35621509282c9cb5ec",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/mdv/a51-raw-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-repo-mdv-20261109-08b6-evidence/delivery-001/raw-evidence.tar.gz",
+      "bytes": 77942,
+      "sha256": "8631b2176e7acf1641a588aa9bf9e9f7b77e5b8286cf8401c66bc66d350bdb97",
+      "scope": "historical exposed development a51; not M6 denominator",
+      "kind": "original_raw_archive",
+      "source_bytes": 77942,
+      "source_sha256": "8631b2176e7acf1641a588aa9bf9e9f7b77e5b8286cf8401c66bc66d350bdb97",
+      "copy_limit_bytes": 33554432,
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/python/M6_PYTHON_REGRESSION_EVIDENCE.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-evidence-m6-001.tar.gz",
+      "bytes": 2128771,
+      "sha256": "d31f348259ad1ad4669c84c6d800873a91d295897cb8c6165d12fa1e9cc0cf34",
+      "scope": "current independent Cloud M6 Python91, exact93-file source subset",
+      "kind": "original_raw_archive",
+      "source_bytes": 2128771,
+      "source_sha256": "d31f348259ad1ad4669c84c6d800873a91d295897cb8c6165d12fa1e9cc0cf34",
+      "copy_limit_bytes": 33554432,
+      "owner": "lifecycle_audit"
+    },
+    {
+      "destination": "raw/python/M6_TRANSFER_RECEIPT.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-evidence-m6-001.transfer.json",
+      "bytes": 22820,
+      "sha256": "440ea7ff7350a9da210c4feb6b7595e322a3a9fbc5e7de4e308ce22a004b6e57",
+      "scope": "current M6 Cloud-to-native transport, not a test",
+      "kind": "original_small_record",
+      "source_bytes": 22820,
+      "source_sha256": "440ea7ff7350a9da210c4feb6b7595e322a3a9fbc5e7de4e308ce22a004b6e57",
+      "copy_limit_bytes": 33554432,
+      "owner": "lifecycle_audit"
+    },
+    {
+      "destination": "raw/python/PYTHON_HISTORY_M4_M5.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+      "bytes": 4364628,
+      "sha256": "cbb6e7b1af9aa22ebd8f878a8772bb9219482ba5a56220eca50b481395756565",
+      "scope": "complete original M4/M5 Python archives; historical only",
+      "kind": "original_raw_archive",
+      "source_bytes": 4364628,
+      "source_sha256": "cbb6e7b1af9aa22ebd8f878a8772bb9219482ba5a56220eca50b481395756565",
+      "copy_limit_bytes": 33554432,
+      "owner": "lifecycle_audit"
+    },
+    {
+      "destination": "raw/python/PYTHON_HISTORY_TRANSFER_RECEIPT.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.transfer.json",
+      "bytes": 16624,
+      "sha256": "7bd8bdb7b86185427f466ce25090239cf27354c89add612a07c8f2a25e097c19",
+      "scope": "historical Python archives transport, not a test",
+      "kind": "original_small_record",
+      "source_bytes": 16624,
+      "source_sha256": "7bd8bdb7b86185427f466ce25090239cf27354c89add612a07c8f2a25e097c19",
+      "copy_limit_bytes": 33554432,
+      "owner": "lifecycle_audit"
+    },
+    {
+      "destination": "raw/root/COMBINED_DRAFT_WRITE_RECEIPT.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034/WRITE_RECEIPT.json",
+      "bytes": 3858,
+      "sha256": "86e8cf094478df3723ea87d5c579379b321f621a45ba58ac229ba1009c90216f",
+      "scope": "original shared-document creation request and authoritative terminal",
+      "kind": "original_small_record",
+      "source_bytes": 3858,
+      "source_sha256": "86e8cf094478df3723ea87d5c579379b321f621a45ba58ac229ba1009c90216f",
+      "copy_limit_bytes": 33554432,
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/root/SOURCE_PUBLICATION.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/source-publication-006.RESULT.json",
+      "bytes": 15102,
+      "sha256": "c77cafd26ba57c46acd547c945ecb5dbb72ca1728df53cd02fda303bb853fb15",
+      "scope": "Original exact M6 source push/create/PR5433 readback; PUBLISHED_DRAFT",
+      "kind": "original_small_record",
+      "owner": "root",
+      "source_bytes": 15102,
+      "source_sha256": "c77cafd26ba57c46acd547c945ecb5dbb72ca1728df53cd02fda303bb853fb15",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/root/evidence-assembly-002-failure.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/evidence-assemble-003/evidence-assembly-002-failure.tar.gz",
+      "bytes": 36241,
+      "sha256": "0e5a3482ba2ce099f7614f830ae3b3f8345031c70f5263cd118f323ebf9bd4b5",
+      "source_bytes": 36241,
+      "source_sha256": "0e5a3482ba2ce099f7614f830ae3b3f8345031c70f5263cd118f323ebf9bd4b5",
+      "scope": "Original evidence assembly002 TypeError, complete request/controller/stdout/stderr/terminal and observed0.149615413s; not M6 project-test failure; no test rerun",
+      "kind": "original_assembly_failure_archive",
+      "owner": "lifecycle_audit",
+      "copy_limit_bytes": 512000
+    },
+    {
+      "destination": "raw/root/lifecycle-outbox-native-evidence-007.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/lifecycle-outbox-native-evidence-007.tar.gz",
+      "bytes": 197848,
+      "sha256": "91a71a8b536bf6404f7d5128a8fe0e90345f0f54da7a8000858657231fb0ce11",
+      "scope": "historical H+outbox L2 native engineering; not production owner proof",
+      "kind": "original_raw_archive",
+      "source_bytes": 197848,
+      "source_sha256": "91a71a8b536bf6404f7d5128a8fe0e90345f0f54da7a8000858657231fb0ce11",
+      "copy_limit_bytes": 33554432,
+      "owner": "lifecycle_audit"
+    },
+    {
+      "destination": "raw/root/mac-source-publication-evidence-035.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/mac-source-publication-evidence-035.tar.gz",
+      "bytes": 186504,
+      "sha256": "1c0595ff5bf43d4d7d26c8237e7e49ebd2e5386df726b52a3553c7ea940038d8",
+      "scope": "Complete bounded source publication failures/recovery/success006; excludes objects.git and76MBpack; not project tests",
+      "kind": "original_raw_archive",
+      "owner": "root",
+      "source_bytes": 186504,
+      "source_sha256": "1c0595ff5bf43d4d7d26c8237e7e49ebd2e5386df726b52a3553c7ea940038d8",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/root/mac-source-publication-evidence-035.transfer.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/mac-source-publication-evidence-035.transfer.json",
+      "bytes": 4110,
+      "sha256": "dc42a3ed25151437480f649bf8cefb7afb4a21a6f513ddecfac24f6b2b421710",
+      "scope": "Version-bound Mac-to-native transport metadata and authoritative publication/seal terminals; not a test",
+      "kind": "original_small_record",
+      "owner": "root",
+      "source_bytes": 4110,
+      "source_sha256": "dc42a3ed25151437480f649bf8cefb7afb4a21a6f513ddecfac24f6b2b421710",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/root/offline-frontier-sidecars.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/offline-publication-prerequisites-001/offline-frontier-sidecars.tar.gz",
+      "bytes": 1790551,
+      "sha256": "d252a7722a44c74712228d66f0a1875b78e9cded5db5bf811a965107fd0c68cc",
+      "scope": "offline publication prerequisite proof and35 raw commit/graph records;76.6MB pack retained by pointer, not embedded",
+      "kind": "original_raw_archive",
+      "source_bytes": 1790551,
+      "source_sha256": "d252a7722a44c74712228d66f0a1875b78e9cded5db5bf811a965107fd0c68cc",
+      "copy_limit_bytes": 33554432,
+      "owner": "root"
+    },
+    {
+      "destination": "raw/root/old-sdk018-fixture-v3-original.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-s0s5-20261108-1628/matrix-validation/old-sdk018-fixture-v3-original.tar.gz",
+      "bytes": 50640,
+      "sha256": "80155510e73d9ab63c1e9b54c95a3340422f8d7e712e733d0b01763e9ee65ef5",
+      "scope": "Original fictional test fixture for SDK0.18 migration reproduction; not real user data or a result",
+      "kind": "original_fixture_archive",
+      "owner": "root",
+      "source_bytes": 50640,
+      "source_sha256": "80155510e73d9ab63c1e9b54c95a3340422f8d7e712e733d0b01763e9ee65ef5",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/root/root-cloud-records-033.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/root-cloud-records-033.tar.gz",
+      "bytes": 394790,
+      "sha256": "b1a1bf7b2592d8a67702e116b21c7c504fc25b8476fbdc9b37fa35e2bb5c5cca",
+      "scope": "root control and original Cloud records",
+      "kind": "original_raw_archive",
+      "source_bytes": 394790,
+      "source_sha256": "b1a1bf7b2592d8a67702e116b21c7c504fc25b8476fbdc9b37fa35e2bb5c5cca",
+      "copy_limit_bytes": 33554432,
+      "owner": "root"
+    },
+    {
+      "destination": "raw/root/root-native-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/root-native-evidence-seal-032/root-native-evidence.tar.gz",
+      "bytes": 7475093,
+      "sha256": "f1e80aa3de7d936e2d7265e6ae159667ce186d9c82ba88328630c3abd4908eca",
+      "scope": "current M6 root native qualification plus explicit historical attempts",
+      "kind": "original_raw_archive",
+      "source_bytes": 7475093,
+      "source_sha256": "f1e80aa3de7d936e2d7265e6ae159667ce186d9c82ba88328630c3abd4908eca",
+      "copy_limit_bytes": 33554432,
+      "owner": "root"
+    },
+    {
+      "destination": "raw/ui/FINAL_CI_READBACK_RECEIPT.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/post-M6-hosted-ci-handoff-001/FINAL_CI_READBACK_RECEIPT.json",
+      "bytes": 6671,
+      "sha256": "49696ea33422e3c68b91851eca395b579cdc964a7fd6b4223405d8abc16ab725",
+      "scope": "Final6GET/10.466975s selected-job metadata only; workflow head is not actual checkout",
+      "kind": "original_small_record",
+      "owner": "candidate_audit",
+      "source_bytes": 6671,
+      "source_sha256": "49696ea33422e3c68b91851eca395b579cdc964a7fd6b4223405d8abc16ab725",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/ui/HISTORICAL_TARGETED_CI_SCOPE.md",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/targeted-ci-safe-native-handoff-003/README.zh-CN.md",
+      "bytes": 1397,
+      "sha256": "69cdc8f41ab4efe31f1f341ca3e4e9adda58adc69bf03e0390107231e4e1d8e1",
+      "scope": "Approved original historical CI scope and incomplete-transfer disclosure",
+      "kind": "original_small_record",
+      "owner": "candidate_audit",
+      "source_bytes": 1397,
+      "source_sha256": "69cdc8f41ab4efe31f1f341ca3e4e9adda58adc69bf03e0390107231e4e1d8e1",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/ui/M6_HOSTED_CI_INITIAL_METADATA.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/post-M6-hosted-ci-handoff-001/M6_HOSTED_CI_INITIAL_METADATA.tar.gz",
+      "bytes": 31111,
+      "sha256": "aec14dac5c255feee77a45da0d81a66328efc67b80f1a83bfada59eb58f302bb",
+      "scope": "PR5433 initial non-atomic metadata snapshot,15 workflows; selected UI/Cell jobs queued; no actual checkout verified",
+      "kind": "original_raw_archive",
+      "owner": "candidate_audit",
+      "source_bytes": 31111,
+      "source_sha256": "aec14dac5c255feee77a45da0d81a66328efc67b80f1a83bfada59eb58f302bb",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/ui/M6_HOSTED_CI_INITIAL_RECEIPT.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/post-M6-hosted-ci-handoff-001/RECEIPT.json",
+      "bytes": 6541,
+      "sha256": "caf5f795df0953ba488f58a8114e40c168af8b5ea553406987811ff7c914ea06",
+      "scope": "Initial20GET/34.731569s receipt; no all-CI pass claim",
+      "kind": "original_small_record",
+      "owner": "candidate_audit",
+      "source_bytes": 6541,
+      "source_sha256": "caf5f795df0953ba488f58a8114e40c168af8b5ea553406987811ff7c914ea06",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/ui/M6_HOSTED_CI_PRE_FREEZE_TARGETED.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/post-M6-hosted-ci-handoff-001/M6_HOSTED_CI_PRE_FREEZE_TARGETED.tar.gz",
+      "bytes": 17353,
+      "sha256": "cbcbca3c0bb00de1c002ad738ea7f5442c6b62391b0a2c5fcd357584c034e167",
+      "scope": "Final05:24:18.389009UTC targeted readback UI5/Cell3 all queued; preserves failed packaging compile attempt; no runner execution inferred",
+      "kind": "original_raw_archive",
+      "owner": "candidate_audit",
+      "source_bytes": 17353,
+      "source_sha256": "cbcbca3c0bb00de1c002ad738ea7f5442c6b62391b0a2c5fcd357584c034e167",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/ui/M6_UI_COMPLETE_EVIDENCE.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/ui-m6-evidence-seal-001/M6_UI_COMPLETE_EVIDENCE.tar.gz",
+      "bytes": 19571465,
+      "sha256": "3964450b56d49cfcb071346d0137fbdf9b02f2d0f41f4f509bbc4ca6220b5d3e",
+      "scope": "current M6 UI native/Firefox qualification",
+      "kind": "original_raw_archive",
+      "source_bytes": 19571465,
+      "source_sha256": "3964450b56d49cfcb071346d0137fbdf9b02f2d0f41f4f509bbc4ca6220b5d3e",
+      "copy_limit_bytes": 33554432,
+      "owner": "candidate_audit"
+    },
+    {
+      "destination": "raw/ui/SOURCE_ARCHIVE_SUMMARY.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/ui-m6-evidence-seal-001/SOURCE_ARCHIVE.json",
+      "bytes": 917,
+      "sha256": "e7a342f7c91399c509a49000d5418c2605f311b54bfcfa1f377218faddc7a502",
+      "scope": "original full M6 source archive integrity summary; source.tar not copied",
+      "kind": "original_small_record",
+      "source_bytes": 917,
+      "source_sha256": "e7a342f7c91399c509a49000d5418c2605f311b54bfcfa1f377218faddc7a502",
+      "copy_limit_bytes": 33554432,
+      "owner": "candidate_audit"
+    },
+    {
+      "destination": "raw/ui/firefox-environment-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/firefox-tools-preparation-seal-002/firefox-environment-evidence.tar.gz",
+      "bytes": 36085,
+      "sha256": "850705f31938c1b380e09b88f6fb6bbd2e0b30874058ed9e587c26f6cbbcfc05",
+      "scope": "approved minimum browser preparation failures/recovery, locks and exact runtime pins; no full host inventory or complete browser binaries",
+      "kind": "original_raw_archive",
+      "source_bytes": 36085,
+      "source_sha256": "850705f31938c1b380e09b88f6fb6bbd2e0b30874058ed9e587c26f6cbbcfc05",
+      "copy_limit_bytes": 33554432,
+      "owner": "candidate_audit"
+    },
+    {
+      "destination": "raw/ui/targeted-ci-safe-native-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/targeted-ci-safe-native-handoff-003/targeted-ci-safe-native-evidence.tar.gz",
+      "bytes": 1933590,
+      "sha256": "6a1be4e7106a1ee44bc7a05c4ce36fbbf91ffb0a1556a553f1643b9a176ec77f",
+      "scope": "Historical S/H diagnostics, not M6 CI; 58 retained original payload files, two deny transfers partial, H format/UI complete; four full-user viewer files excluded",
+      "kind": "original_raw_archive",
+      "owner": "candidate_audit",
+      "source_bytes": 1933590,
+      "source_sha256": "6a1be4e7106a1ee44bc7a05c4ce36fbbf91ffb0a1556a553f1643b9a176ec77f",
+      "copy_limit_bytes": 33554432
+    },
+    {
+      "destination": "raw/ui/ui-browser-history-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/ui-browser-history-seal-001/ui-browser-history-evidence.tar.gz",
+      "bytes": 36887906,
+      "sha256": "e647505eb41b752096a13b3af9bec85f913c449f39f4a2e2132c11b9f732bbc6",
+      "scope": "historical browser successes and failures; not M6 test count",
+      "kind": "original_raw_archive",
+      "source_bytes": 36887906,
+      "source_sha256": "e647505eb41b752096a13b3af9bec85f913c449f39f4a2e2132c11b9f732bbc6",
+      "copy_limit_bytes": 67108864,
+      "owner": "candidate_audit"
+    }
+  ],
+  "source_archive": {
+    "native_path": "/home/qian-qi/work/cell-continuation-20261109-08b6/firefox-validation-m6/source.tar",
+    "bytes": 210595840,
+    "sha256": "dfc9484fc2dab61b37801e8197774a67365fb185fedc620a9b970e2f0e9d284e",
+    "inventory_path": "/home/qian-qi/work/cell-continuation-20261109-08b6/firefox-validation-m6/archive-integrity.json",
+    "inventory_bytes": 4379901,
+    "inventory_sha256": "1719ad6f2ca599c23e1c229931a0e835ff12d35daae6c45f8f2d29fc124969ff",
+    "embedded_inventory": "raw/ui/M6_UI_COMPLETE_EVIDENCE.tar.gz::evidence/archive-integrity.json",
+    "copied_to_git": false
+  },
+  "pending_inputs": [],
+  "limits": {
+    "only_observations_and_append_only_allowlist": true,
+    "complete_source_tar_copied_to_git": false,
+    "76MiB_publication_pack_copied_to_git": false,
+    "unsafe_ci_package_included": false,
+    "full_user_or_host_hardware_inventory_included": false
+  },
+  "observed_at_utc": "2026-11-09T05:32:56.852830+00:00",
+  "historical_unavailable_origins": [
+    {
+      "name": "NEXT_EXPERIMENTS_M6.json",
+      "bytes": 16286,
+      "sha256": "391a6c3e639123ee78e45c3f42365229028081c1c044bca7f379c7e941791654",
+      "state": "CURRENTLY_UNAVAILABLE_ORIGINAL_BYTES_NOT_RECOVERED",
+      "original_path": "/workspace/scratch/08b6dd5f2d10/continuation-experiments/NEXT_EXPERIMENTS_M6.json",
+      "status": "CURRENTLY_UNAVAILABLE_NOT_PACKAGED"
+    },
+    {
+      "name": "NEXT_EXPERIMENTS_M6.zh-CN.md",
+      "bytes": 16038,
+      "sha256": "016087f6444cff881be82ebc1dba22b2c7884075ae2707a5f8be48ce1b2d34d9",
+      "state": "CURRENTLY_UNAVAILABLE_ORIGINAL_BYTES_NOT_RECOVERED",
+      "original_path": "/workspace/scratch/08b6dd5f2d10/continuation-experiments/NEXT_EXPERIMENTS_M6.zh-CN.md",
+      "status": "CURRENTLY_UNAVAILABLE_NOT_PACKAGED"
+    }
+  ],
+  "publication": {
+    "status": "PUBLISHED_DRAFT",
+    "published_source_head": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "published_source_tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb",
+    "source_branch": "engineering/cell-integrated-20261109-08b6",
+    "base_branch": "engineering/cell-integrated-20261109-08b6-base-H",
+    "base_head": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+    "pull_request": 5433,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5433",
+    "draft": true,
+    "pull_request_head": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "receipt": "raw/root/SOURCE_PUBLICATION.json",
+    "raw_archive": "raw/root/mac-source-publication-evidence-035.tar.gz",
+    "receipt_sha256": "c77cafd26ba57c46acd547c945ecb5dbb72ca1728df53cd02fda303bb853fb15",
+    "body_sha256": "0148c5597ece9eed84527336bdf090d51c74f4d07b96a66c5efa381ebc4a80fe",
+    "push_exit_code": 0,
+    "create_exit_code": 0,
+    "readback_verified": true,
+    "new_github_write_verified": true,
+    "completed_at_utc": "2026-11-09T05:10:41.912514+00:00",
+    "publication_job": "1a1beb5e374-5e21-22d",
+    "historical_failure_records_preserved": true
+  },
+  "hosted_CI_observation": {
+    "status": "QUEUED_NOT_EXECUTED_AT_OBSERVATION",
+    "observed_at_utc": "2026-11-09T05:24:18.389009+00:00",
+    "receipt": "raw/ui/FINAL_CI_READBACK_RECEIPT.json",
+    "whole_CI_pass_claim": false
+  },
+  "assembly_provenance": {
+    "initial_manifest": {
+      "bytes": 16068,
+      "sha256": "f216fa33cabd087a980193208286f9dd849c1cd8602d075d6f5c093195b70ef5"
+    },
+    "original034_files_preserved": true,
+    "no_runtime_code_changed": true,
+    "self_manifest_hash_bound_in": "external staged file pins and Git tree; not self-referential",
+    "assembly002_failure": {
+      "archive": "raw/root/evidence-assembly-002-failure.tar.gz",
+      "bytes": 36241,
+      "sha256": "0e5a3482ba2ce099f7614f830ae3b3f8345031c70f5263cd118f323ebf9bd4b5",
+      "job_id": "1a1becb960e-5e21-28c",
+      "state": "failed",
+      "exit_code": 1,
+      "timing_seconds": 0.149615413043648,
+      "original_failure_not_rewritten": true,
+      "recovery": "003 validates already materialized bytes and stages without repeating copies, text edits, allowlist append or project tests"
+    }
+  }
+}

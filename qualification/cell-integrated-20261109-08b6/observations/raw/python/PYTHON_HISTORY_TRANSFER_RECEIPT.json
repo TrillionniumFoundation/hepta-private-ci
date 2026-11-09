@@ -1,0 +1,435 @@
+{
+  "schema": "cell.python.original-history-binary-transfer.v1",
+  "plan": {
+    "schema": "cell.python.history-transfer-plan.v1",
+    "local_path": "/workspace/scratch/08b6dd5f2d10/continuation-lifecycle/PYTHON_HISTORY_M4_M5.tar.gz",
+    "host": "rog",
+    "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+    "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+    "expected_version": "absent",
+    "size": 4364628,
+    "sha256": "cbb6e7b1af9aa22ebd8f878a8772bb9219482ba5a56220eca50b481395756565",
+    "chunk_bytes": 262144,
+    "started_at_utc": "2026-11-09T04:41:54.286Z",
+    "scope": "Original complete M4/M5 Python evidence tar archives, original bytes unchanged; no rerun or installation",
+    "commit_only_after_complete_sha": true
+  },
+  "chunk_protocol": "First10 chunks up to256KiB, remaining chunks up to512KiB; every returned next_offset checked. Stable upload_id/path/absent expectation throughout.",
+  "chunk_events": [
+    {
+      "action": "chunk",
+      "offset": 0,
+      "bytes": 262144,
+      "chunk_sha256": "0cbe1481bd4fc5cfc0ffc2456a059c9df56ba5c379eb48026e1a7753432db8b5",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 0
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":262144,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 11.631
+    },
+    {
+      "action": "chunk",
+      "offset": 262144,
+      "bytes": 262144,
+      "chunk_sha256": "e8bf4275a9e57bfe8514d8bb51cfeb8fbe40a8f501f7331b8520220f4c011a3e",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 262144
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":524288,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 5.33
+    },
+    {
+      "action": "chunk",
+      "offset": 524288,
+      "bytes": 262144,
+      "chunk_sha256": "972697517ed735411355dc36adc226163a6caa1ab515f06518c3cc9b9c5f2262",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 524288
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":786432,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 15.982
+    },
+    {
+      "action": "chunk",
+      "offset": 786432,
+      "bytes": 262144,
+      "chunk_sha256": "6cd3e8aac396d2ec2cda7beafe9a3679a8e8f3ad5d603d93f92d0bfca0c6f40b",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 786432
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":1048576,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 3.695
+    },
+    {
+      "action": "chunk",
+      "offset": 1048576,
+      "bytes": 262144,
+      "chunk_sha256": "a4a5bc0cb2736c330574ec536f9f58dc1882e8b2fcf866b1839239aa1ff26260",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 1048576
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":1310720,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 13.7
+    },
+    {
+      "action": "chunk",
+      "offset": 1310720,
+      "bytes": 262144,
+      "chunk_sha256": "c15d15680ff3659f0b7cd92d1c74b94d4c73572a3eed01fa0e6c792070e8d2bb",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 1310720
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":1572864,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 19.332
+    },
+    {
+      "action": "chunk",
+      "offset": 1572864,
+      "bytes": 262144,
+      "chunk_sha256": "afeab65bc6ac99891dc58de97026638a1daebe46aa83a99e86f0b4a876cf5479",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 1572864
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":1835008,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 19.687
+    },
+    {
+      "action": "chunk",
+      "offset": 1835008,
+      "bytes": 262144,
+      "chunk_sha256": "e147c6480dc7c86d72ce3ffd3f94a0b1302d37633972a06df7bb1d73bcbad0dd",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 1835008
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":2097152,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 22.575
+    },
+    {
+      "action": "chunk",
+      "offset": 2097152,
+      "bytes": 262144,
+      "chunk_sha256": "0d43671e22b235261f950c740e7c93e362647ff18f21a84bb9ad4b8167075c0a",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 2097152
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":2359296,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 12.725
+    },
+    {
+      "action": "chunk",
+      "offset": 2359296,
+      "bytes": 262144,
+      "chunk_sha256": "50820b894609decdb5bb9df11c7a60440fa9ff7cf2f281411a8fa1aebd63d594",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 2359296
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":2621440,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 21.702
+    },
+    {
+      "action": "chunk",
+      "offset": 2621440,
+      "bytes": 524288,
+      "chunk_sha256": "897b8ce7c83977a77a95aee85abfbb88b2beb2fe45627700382b061097eca4bd",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 2621440
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":3145728,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 19.755
+    },
+    {
+      "action": "chunk",
+      "offset": 3145728,
+      "bytes": 524288,
+      "chunk_sha256": "456c5b072272fda28ffbdcc5d4f9a20520fe270c24846260cfcc50792a31c00f",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 3145728
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":3670016,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 22.254
+    },
+    {
+      "action": "chunk",
+      "offset": 3670016,
+      "bytes": 524288,
+      "chunk_sha256": "7d929a1d6695653dd3083f57959ad1d3b69d12095681179391986586e80335ee",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 3670016
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":4194304,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 27.31
+    },
+    {
+      "action": "chunk",
+      "offset": 4194304,
+      "bytes": 170324,
+      "chunk_sha256": "4203eb50b827e08e65c72a2e274008325969841a5b29d9ed53ad70965c141972",
+      "request_metadata": {
+        "action": "chunk",
+        "host": "rog",
+        "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+        "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+        "expected_version": "absent",
+        "offset": 4194304
+      },
+      "input_reference": "PLAN.json history archive bytes at offset, base64 encoded",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"next_offset\":4364628,\"upload_id\":\"cell-08b6-cloud-python-history-m4-m5-001\",\"visible\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "observed_rpc_wall_seconds": 24.798
+    }
+  ],
+  "commit": {
+    "request": {
+      "action": "commit",
+      "host": "rog",
+      "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+      "upload_id": "cell-08b6-cloud-python-history-m4-m5-001",
+      "expected_version": "absent",
+      "size": 4364628,
+      "sha256": "cbb6e7b1af9aa22ebd8f878a8772bb9219482ba5a56220eca50b481395756565"
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"committed\":true,\"mode\":384,\"reused\":false,\"sha256\":\"cbb6e7b1af9aa22ebd8f878a8772bb9219482ba5a56220eca50b481395756565\",\"size\":4364628,\"version\":\"66306:33602099:4364628:1794199670145193199:1794199684932106104\"}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "observed_rpc_wall_seconds": 16.583
+  },
+  "readback": {
+    "request": {
+      "host": "rog",
+      "path": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+      "expected_version": "66306:33602099:4364628:1794199670145193199:1794199684932106104",
+      "offset": 0,
+      "limit": 64
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"chunk_sha256\":\"2ca9e8c89059eedcf44f1a4a339d677994a55d64f3bd250be1ee29a9ffc3ea67\",\"data_base64\":\"H4sICKdO8WoC/1BZVEhPTl9ISVNUT1JZX000X001LnRhcgDst0OQMEwQsLe2bdu2bdu2bdu2bdu2+a5t27v5Ug==\",\"eof\":false,\"next_offset\":64,\"offset\":0,\"path\":\"/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz\",\"size\":4364628,\"version\":\"66306:33602099:4364628:1794199670145193199:1794199684932106104\"}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "local_verification": {
+      "prefix_sha256": "2ca9e8c89059eedcf44f1a4a339d677994a55d64f3bd250be1ee29a9ffc3ea67",
+      "full_sha256": "cbb6e7b1af9aa22ebd8f878a8772bb9219482ba5a56220eca50b481395756565",
+      "bytes": 4364628
+    }
+  },
+  "state": "COMMITTED_AND_VERSION_BOUND_READBACK_VERIFIED",
+  "completed_at_utc": "2026-11-09T04:49:24.756Z",
+  "measured_chunk_and_commit_rpc_seconds": 257.05899999999997,
+  "scope": "Server commit verifies full size/SHA; independent readback checks same destination/version/size and first64 bytes. Complete original M4/M5 Python evidence archives retained byte-for-byte; no tests or installations repeated.",
+  "h_process_job_status": "not applicable: documented binary_upload API, no process job was started"
+}

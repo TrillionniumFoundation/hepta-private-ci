@@ -1,0 +1,377 @@
+{
+  "schema": "hepta.M6.materialized-artifact-map.v1",
+  "destination_base": "qualification/cell-integrated-20261109-08b6/observations",
+  "status": "MATERIALIZED_EXACT_PINNED_FILES",
+  "draft_files": [
+    "README.zh-CN.md",
+    "QUALIFICATION.json",
+    "ARTIFACT_MAP.json",
+    "SOURCE_ARCHIVE_POINTER.json"
+  ],
+  "raw_files": [
+    {
+      "destination": "raw/mdv/HCSN_FORMAL_PROTOCOL_ORIGINAL.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/HCSN_FORMAL_PROTOCOL_ORIGINAL.json",
+      "bytes": 5488,
+      "sha256": "8d7d321a9f538b5d3ae323ae2827e56688b47795f936eca4badaf8acd21bf5f4",
+      "scope": "Original HCSN specification only; no dataset read or formal fit",
+      "kind": "original_small_record",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/M3-raw-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-repo-mdv-20261109-08b6-evidence/common-M3-delivery-001/raw-evidence.tar.gz",
+      "bytes": 42431,
+      "sha256": "fe4d6b9ca2ad24efc40d2d939dafa047d617755029a3276333c10d3bf5c4bbd5",
+      "scope": "historical exposed development M3; not M6 denominator",
+      "kind": "original_raw_archive",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/M4-raw-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-repo-mdv-20261109-08b6-evidence/common-M4-delivery-001/raw-evidence.tar.gz",
+      "bytes": 42524,
+      "sha256": "5f21e23b99ca5fcd19d7a52fd9994f8f82205403575a76149ef038ada78bd57e",
+      "scope": "historical exposed development M4; not M6 denominator",
+      "kind": "original_raw_archive",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/M5-raw-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-repo-mdv-20261109-08b6-evidence/common-M5-delivery-001/raw-evidence.tar.gz",
+      "bytes": 56596,
+      "sha256": "dced7bca8ceb5ffc7a5cef26a9a42121bcfd41371c2235b899418c8792ebfbb4",
+      "scope": "historical exposed development M5; not M6 denominator",
+      "kind": "original_raw_archive",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/M6-COMPLETE_MANIFEST.json",
+      "native_source": "/home/qian-qi/work/cell-repo-mdv-20261109-08b6-evidence/common-M6-delivery-001/COMPLETE_MANIFEST.json",
+      "bytes": 4854,
+      "sha256": "7879556a013353e3b3a5a0c487034e5b0e66169f1f9b8b994a9171ed3255b047",
+      "scope": "original M6 MDV complete archive manifest; development only",
+      "kind": "original_small_record",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/M6-complete-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-repo-mdv-20261109-08b6-evidence/common-M6-delivery-001/complete-evidence.tar.gz",
+      "bytes": 118128,
+      "sha256": "ad4a1eedbb1c5368368159a14f589d04145990f00bfd9c7b56bf4cf2046a8a9a",
+      "scope": "current M6 exposed development only; HOLD; no independent or production adoption",
+      "kind": "original_raw_archive",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/NEXT_EXPERIMENTS_M6_REVIEW_COPY.json",
+      "bytes": 36023,
+      "sha256": "45b1725a02ecbf91aa361b6bfeb4ec81c3b176f5b301a8dbb91db268e2e77e23",
+      "scope": "New complete review copy from pinned source designs; DRAFT_FOR_REVIEW; no confirmation admitted; not original-byte recovery",
+      "kind": "new_derived_review_copy",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/NEXT_EXPERIMENTS_M6_REVIEW_COPY.tar.gz",
+      "bytes": 48535,
+      "sha256": "6dd19949179ddcbdb813cb8c96da5575f4b6e20c80540efc344f2455208236b0",
+      "scope": "Complete six-member new review-copy source/protocol/recovery bundle; not original unavailable bytes",
+      "kind": "original_raw_archive",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY.zh-CN.md",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/NEXT_EXPERIMENTS_M6_REVIEW_COPY.zh-CN.md",
+      "bytes": 40369,
+      "sha256": "b759ef07aecfc710ad2f67d0332c099f5d6292a608692f2d818fb8e2b7d0c8a4",
+      "scope": "New complete five-experiment review narrative; not original-byte recovery, no new experiment",
+      "kind": "new_derived_review_copy",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/NEXT_EXPERIMENTS_M6_REVIEW_COPY_RECOVERY.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/NEXT_EXPERIMENTS_M6_REVIEW_COPY_RECOVERY.json",
+      "bytes": 5450,
+      "sha256": "30d55986abdd8eab619d72c0073a12081d4c4b3d911b1cdc266ac87088173478",
+      "scope": "Bounded missing-original investigation, historical unavailable pins, exact new input provenance",
+      "kind": "original_small_record",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/NEXT_INDEPENDENT_DESIGNS_SOURCE_M6.md",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/NEXT_INDEPENDENT_DESIGNS_SOURCE_M6.md",
+      "bytes": 31079,
+      "sha256": "39df57778404a52216d84fadcacb156e315ae5240a46af7cfac8f29d44646d01",
+      "scope": "Complete M6 Git-backed prior design source used for new review copy; no new execution",
+      "kind": "original_small_record",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/NEXT_REVIEW_COPY_DELIVERY.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/next-experiments-review-copy-035/DELIVERY.json",
+      "bytes": 2743,
+      "sha256": "5256d17d14cd9d507682b1dd581041f469b9f1d6a7390a35621509282c9cb5ec",
+      "scope": "Original new-review-copy write/delivery receipt; job1a1bec596b6-5e21-26e succeeded0; no tests",
+      "kind": "original_small_record",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/mdv/a51-raw-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-repo-mdv-20261109-08b6-evidence/delivery-001/raw-evidence.tar.gz",
+      "bytes": 77942,
+      "sha256": "8631b2176e7acf1641a588aa9bf9e9f7b77e5b8286cf8401c66bc66d350bdb97",
+      "scope": "historical exposed development a51; not M6 denominator",
+      "kind": "original_raw_archive",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/python/M6_PYTHON_REGRESSION_EVIDENCE.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-evidence-m6-001.tar.gz",
+      "bytes": 2128771,
+      "sha256": "d31f348259ad1ad4669c84c6d800873a91d295897cb8c6165d12fa1e9cc0cf34",
+      "scope": "current independent Cloud M6 Python91, exact93-file source subset",
+      "kind": "original_raw_archive",
+      "owner": "lifecycle_audit"
+    },
+    {
+      "destination": "raw/python/M6_TRANSFER_RECEIPT.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-evidence-m6-001.transfer.json",
+      "bytes": 22820,
+      "sha256": "440ea7ff7350a9da210c4feb6b7595e322a3a9fbc5e7de4e308ce22a004b6e57",
+      "scope": "current M6 Cloud-to-native transport, not a test",
+      "kind": "original_small_record",
+      "owner": "lifecycle_audit"
+    },
+    {
+      "destination": "raw/python/PYTHON_HISTORY_M4_M5.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.tar.gz",
+      "bytes": 4364628,
+      "sha256": "cbb6e7b1af9aa22ebd8f878a8772bb9219482ba5a56220eca50b481395756565",
+      "scope": "complete original M4/M5 Python archives; historical only",
+      "kind": "original_raw_archive",
+      "owner": "lifecycle_audit"
+    },
+    {
+      "destination": "raw/python/PYTHON_HISTORY_TRANSFER_RECEIPT.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/cloud-python-history-m4-m5-001.transfer.json",
+      "bytes": 16624,
+      "sha256": "7bd8bdb7b86185427f466ce25090239cf27354c89add612a07c8f2a25e097c19",
+      "scope": "historical Python archives transport, not a test",
+      "kind": "original_small_record",
+      "owner": "lifecycle_audit"
+    },
+    {
+      "destination": "raw/root/COMBINED_DRAFT_WRITE_RECEIPT.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/combined-draft-034/WRITE_RECEIPT.json",
+      "bytes": 3858,
+      "sha256": "86e8cf094478df3723ea87d5c579379b321f621a45ba58ac229ba1009c90216f",
+      "scope": "original shared-document creation request and authoritative terminal",
+      "kind": "original_small_record",
+      "owner": "negative_experiments"
+    },
+    {
+      "destination": "raw/root/SOURCE_PUBLICATION.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/source-publication-006.RESULT.json",
+      "bytes": 15102,
+      "sha256": "c77cafd26ba57c46acd547c945ecb5dbb72ca1728df53cd02fda303bb853fb15",
+      "scope": "Original exact M6 source push/create/PR5433 readback; PUBLISHED_DRAFT",
+      "kind": "original_small_record",
+      "owner": "root"
+    },
+    {
+      "destination": "raw/root/lifecycle-outbox-native-evidence-007.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-lifecycle-20261109-08b6/lifecycle-outbox-native-evidence-007.tar.gz",
+      "bytes": 197848,
+      "sha256": "91a71a8b536bf6404f7d5128a8fe0e90345f0f54da7a8000858657231fb0ce11",
+      "scope": "historical H+outbox L2 native engineering; not production owner proof",
+      "kind": "original_raw_archive",
+      "owner": "lifecycle_audit"
+    },
+    {
+      "destination": "raw/root/mac-source-publication-evidence-035.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/mac-source-publication-evidence-035.tar.gz",
+      "bytes": 186504,
+      "sha256": "1c0595ff5bf43d4d7d26c8237e7e49ebd2e5386df726b52a3553c7ea940038d8",
+      "scope": "Complete bounded source publication failures/recovery/success006; excludes objects.git and76MBpack; not project tests",
+      "kind": "original_raw_archive",
+      "owner": "root"
+    },
+    {
+      "destination": "raw/root/mac-source-publication-evidence-035.transfer.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/mac-source-publication-evidence-035.transfer.json",
+      "bytes": 4110,
+      "sha256": "dc42a3ed25151437480f649bf8cefb7afb4a21a6f513ddecfac24f6b2b421710",
+      "scope": "Version-bound Mac-to-native transport metadata and authoritative publication/seal terminals; not a test",
+      "kind": "original_small_record",
+      "owner": "root"
+    },
+    {
+      "destination": "raw/root/offline-frontier-sidecars.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/offline-publication-prerequisites-001/offline-frontier-sidecars.tar.gz",
+      "bytes": 1790551,
+      "sha256": "d252a7722a44c74712228d66f0a1875b78e9cded5db5bf811a965107fd0c68cc",
+      "scope": "offline publication prerequisite proof and35 raw commit/graph records;76.6MB pack retained by pointer, not embedded",
+      "kind": "original_raw_archive",
+      "owner": "root"
+    },
+    {
+      "destination": "raw/root/old-sdk018-fixture-v3-original.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-s0s5-20261108-1628/matrix-validation/old-sdk018-fixture-v3-original.tar.gz",
+      "bytes": 50640,
+      "sha256": "80155510e73d9ab63c1e9b54c95a3340422f8d7e712e733d0b01763e9ee65ef5",
+      "scope": "Original fictional test fixture for SDK0.18 migration reproduction; not real user data or a result",
+      "kind": "original_fixture_archive",
+      "owner": "root"
+    },
+    {
+      "destination": "raw/root/root-cloud-records-033.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/root-cloud-records-033.tar.gz",
+      "bytes": 394790,
+      "sha256": "b1a1bf7b2592d8a67702e116b21c7c504fc25b8476fbdc9b37fa35e2bb5c5cca",
+      "scope": "root control and original Cloud records",
+      "kind": "original_raw_archive",
+      "owner": "root"
+    },
+    {
+      "destination": "raw/root/root-native-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/root-native-evidence-seal-032/root-native-evidence.tar.gz",
+      "bytes": 7475093,
+      "sha256": "f1e80aa3de7d936e2d7265e6ae159667ce186d9c82ba88328630c3abd4908eca",
+      "scope": "current M6 root native qualification plus explicit historical attempts",
+      "kind": "original_raw_archive",
+      "owner": "root"
+    },
+    {
+      "destination": "raw/ui/FINAL_CI_READBACK_RECEIPT.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/post-M6-hosted-ci-handoff-001/FINAL_CI_READBACK_RECEIPT.json",
+      "bytes": 6671,
+      "sha256": "49696ea33422e3c68b91851eca395b579cdc964a7fd6b4223405d8abc16ab725",
+      "scope": "Final6GET/10.466975s selected-job metadata only; workflow head is not actual checkout",
+      "kind": "original_small_record",
+      "owner": "candidate_audit"
+    },
+    {
+      "destination": "raw/ui/HISTORICAL_TARGETED_CI_SCOPE.md",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/targeted-ci-safe-native-handoff-003/README.zh-CN.md",
+      "bytes": 1397,
+      "sha256": "69cdc8f41ab4efe31f1f341ca3e4e9adda58adc69bf03e0390107231e4e1d8e1",
+      "scope": "Approved original historical CI scope and incomplete-transfer disclosure",
+      "kind": "original_small_record",
+      "owner": "candidate_audit"
+    },
+    {
+      "destination": "raw/ui/M6_HOSTED_CI_INITIAL_METADATA.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/post-M6-hosted-ci-handoff-001/M6_HOSTED_CI_INITIAL_METADATA.tar.gz",
+      "bytes": 31111,
+      "sha256": "aec14dac5c255feee77a45da0d81a66328efc67b80f1a83bfada59eb58f302bb",
+      "scope": "PR5433 initial non-atomic metadata snapshot,15 workflows; selected UI/Cell jobs queued; no actual checkout verified",
+      "kind": "original_raw_archive",
+      "owner": "candidate_audit"
+    },
+    {
+      "destination": "raw/ui/M6_HOSTED_CI_INITIAL_RECEIPT.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/post-M6-hosted-ci-handoff-001/RECEIPT.json",
+      "bytes": 6541,
+      "sha256": "caf5f795df0953ba488f58a8114e40c168af8b5ea553406987811ff7c914ea06",
+      "scope": "Initial20GET/34.731569s receipt; no all-CI pass claim",
+      "kind": "original_small_record",
+      "owner": "candidate_audit"
+    },
+    {
+      "destination": "raw/ui/M6_HOSTED_CI_PRE_FREEZE_TARGETED.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/post-M6-hosted-ci-handoff-001/M6_HOSTED_CI_PRE_FREEZE_TARGETED.tar.gz",
+      "bytes": 17353,
+      "sha256": "cbcbca3c0bb00de1c002ad738ea7f5442c6b62391b0a2c5fcd357584c034e167",
+      "scope": "Final05:24:18.389009UTC targeted readback UI5/Cell3 all queued; preserves failed packaging compile attempt; no runner execution inferred",
+      "kind": "original_raw_archive",
+      "owner": "candidate_audit"
+    },
+    {
+      "destination": "raw/ui/M6_UI_COMPLETE_EVIDENCE.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/ui-m6-evidence-seal-001/M6_UI_COMPLETE_EVIDENCE.tar.gz",
+      "bytes": 19571465,
+      "sha256": "3964450b56d49cfcb071346d0137fbdf9b02f2d0f41f4f509bbc4ca6220b5d3e",
+      "scope": "current M6 UI native/Firefox qualification",
+      "kind": "original_raw_archive",
+      "owner": "candidate_audit"
+    },
+    {
+      "destination": "raw/ui/SOURCE_ARCHIVE_SUMMARY.json",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/ui-m6-evidence-seal-001/SOURCE_ARCHIVE.json",
+      "bytes": 917,
+      "sha256": "e7a342f7c91399c509a49000d5418c2605f311b54bfcfa1f377218faddc7a502",
+      "scope": "original full M6 source archive integrity summary; source.tar not copied",
+      "kind": "original_small_record",
+      "owner": "candidate_audit"
+    },
+    {
+      "destination": "raw/ui/firefox-environment-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/firefox-tools-preparation-seal-002/firefox-environment-evidence.tar.gz",
+      "bytes": 36085,
+      "sha256": "850705f31938c1b380e09b88f6fb6bbd2e0b30874058ed9e587c26f6cbbcfc05",
+      "scope": "approved minimum browser preparation failures/recovery, locks and exact runtime pins; no full host inventory or complete browser binaries",
+      "kind": "original_raw_archive",
+      "owner": "candidate_audit"
+    },
+    {
+      "destination": "raw/ui/targeted-ci-safe-native-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/targeted-ci-safe-native-handoff-003/targeted-ci-safe-native-evidence.tar.gz",
+      "bytes": 1933590,
+      "sha256": "6a1be4e7106a1ee44bc7a05c4ce36fbbf91ffb0a1556a553f1643b9a176ec77f",
+      "scope": "Historical S/H diagnostics, not M6 CI; 58 retained original payload files, two deny transfers partial, H format/UI complete; four full-user viewer files excluded",
+      "kind": "original_raw_archive",
+      "owner": "candidate_audit"
+    },
+    {
+      "destination": "raw/ui/ui-browser-history-evidence.tar.gz",
+      "native_source": "/home/qian-qi/work/cell-continuation-20261109-08b6/ui-browser-history-seal-001/ui-browser-history-evidence.tar.gz",
+      "bytes": 36887906,
+      "sha256": "e647505eb41b752096a13b3af9bec85f913c449f39f4a2e2132c11b9f732bbc6",
+      "scope": "historical browser successes and failures; not M6 test count",
+      "kind": "original_raw_archive",
+      "owner": "candidate_audit"
+    }
+  ],
+  "links_must_be_materialized_before_evidence_commit": true,
+  "source_tar_embedded": false,
+  "source_tar_pointer": "SOURCE_ARCHIVE_POINTER.json",
+  "source_commit_chain": "SOURCE_M6_EXPORT_SUMMARY.json in root sealed Cloud records",
+  "root_publication_fields_must_be_filled_from_actual_receipt": false,
+  "original_frozen_receipts_must_not_be_modified": true,
+  "historical_unavailable": [
+    {
+      "name": "NEXT_EXPERIMENTS_M6.json",
+      "bytes": 16286,
+      "sha256": "391a6c3e639123ee78e45c3f42365229028081c1c044bca7f379c7e941791654",
+      "state": "CURRENTLY_UNAVAILABLE_ORIGINAL_BYTES_NOT_RECOVERED",
+      "original_path": "/workspace/scratch/08b6dd5f2d10/continuation-experiments/NEXT_EXPERIMENTS_M6.json",
+      "status": "CURRENTLY_UNAVAILABLE_NOT_PACKAGED"
+    },
+    {
+      "name": "NEXT_EXPERIMENTS_M6.zh-CN.md",
+      "bytes": 16038,
+      "sha256": "016087f6444cff881be82ebc1dba22b2c7884075ae2707a5f8be48ce1b2d34d9",
+      "state": "CURRENTLY_UNAVAILABLE_ORIGINAL_BYTES_NOT_RECOVERED",
+      "original_path": "/workspace/scratch/08b6dd5f2d10/continuation-experiments/NEXT_EXPERIMENTS_M6.zh-CN.md",
+      "status": "CURRENTLY_UNAVAILABLE_NOT_PACKAGED"
+    }
+  ],
+  "root_publication_fields_bound_to": "raw/root/SOURCE_PUBLICATION.json",
+  "evidence_identity": {
+    "status": "SELF_DESCRIBING_GIT_SNAPSHOT",
+    "commit_reference": "the commit containing this file",
+    "tree_reference": "the tree of the commit containing this file",
+    "expected_parent": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "actual_parent": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "allowed_change_intent": [
+      "qualification/cell-integrated-20261109-08b6/observations/",
+      "exact binary blob allowlist append"
+    ],
+    "actual_diff_verified": true,
+    "runtime_change_free_verified": true,
+    "concrete_commit_tree_bound_in": "external finalization RESULT and evidence publication receipt; no self-referential hash"
+  },
+  "derived_from_original034_unchanged": true
+}
