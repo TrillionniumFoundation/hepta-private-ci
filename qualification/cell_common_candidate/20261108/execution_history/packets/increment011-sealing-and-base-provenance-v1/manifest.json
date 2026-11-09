@@ -1,0 +1,127 @@
+{
+  "packet_id": "increment011-sealing-and-base-provenance-v1",
+  "scope": "Exact four-packet sealing RESULT and pattern report, reviewed sealer, independent static review, physical fixed-version base readback and six-tree Git identity closure, plus independent saved-archive disk readback. Publication receipts remain external to their own commit.",
+  "compression": "xz",
+  "bytes": 286700,
+  "sha256": "4fdd882ec91ea8dd49d9addb079eb5462b233a615236b8e94447822e8704e77b",
+  "file_members": [
+    {
+      "path": "metadata/ARCHIVE_DISK_READBACK.json",
+      "bytes": 1003,
+      "sha256": "35225a9075fe8964aaf8fe42624f25d44bc9dbc6245f084bb91edcb9f5cfe96b"
+    },
+    {
+      "path": "metadata/STAGE_SEAL_REVIEW_v1.json",
+      "bytes": 2751,
+      "sha256": "5b4d2ac1bd17d1ce4aa13768d364de1ab14f19abb0ab9be30c91717ca5b847ca"
+    },
+    {
+      "path": "metadata/base-readback/GITHUB_BASE_CLOSURE.json",
+      "bytes": 96872,
+      "sha256": "37952f1e229e13b943e2def8352cfe0d5ad08283de5259bd599bef25b6389a12"
+    },
+    {
+      "path": "metadata/base-readback/README.md",
+      "bytes": 108975,
+      "sha256": "2877ffe95f09d801dc3abcd1a2845ce11e05150b9764c71463a4f2cb285b4bab"
+    },
+    {
+      "path": "metadata/base-readback/chunk-0.json",
+      "bytes": 87795,
+      "sha256": "055a4628f86cb8528b98c8b3a242bf64df72bcaef70868c568671d6435c23fb9"
+    },
+    {
+      "path": "metadata/base-readback/chunk-1.json",
+      "bytes": 87800,
+      "sha256": "1ffe1ddc257ce4a86f169fde38c3d1e10272b8930816347c0a7eabe12d0b4b25"
+    },
+    {
+      "path": "metadata/base-readback/chunk-2.json",
+      "bytes": 87801,
+      "sha256": "f5ed84a8e450287762002a3ccdf149a88023a85bc89865d60468b7eb5246bf06"
+    },
+    {
+      "path": "metadata/base-readback/chunk-3.json",
+      "bytes": 5200,
+      "sha256": "cd63f67e3e90fb82d57bcc042c8283382ee3a7d296acbb1941aba7ca49b59df5"
+    },
+    {
+      "path": "metadata/base-readback/chunk-4.json",
+      "bytes": 87791,
+      "sha256": "21fa2baa91288a042c6bc32854df75618a7c3affe0e469259c81e1da936c2b5f"
+    },
+    {
+      "path": "metadata/base-readback/chunk-5.json",
+      "bytes": 58331,
+      "sha256": "18aba1d438ab8e9c70c9b155ea07c67557f7e1c57cca16ecd42193af74e3d72a"
+    },
+    {
+      "path": "metadata/base-readback/chunk-6.json",
+      "bytes": 3765,
+      "sha256": "26223ac53133da6cf3074ce5c0514888bd93f84252782ab6a67c6f59378a5235"
+    },
+    {
+      "path": "metadata/base-readback/chunk-jobs.json",
+      "bytes": 280,
+      "sha256": "3b07007da2575137caa5115fca79f48f9b2355cc695ec57a0984b11a8af6c781"
+    },
+    {
+      "path": "metadata/base-readback/infos.json",
+      "bytes": 1913,
+      "sha256": "118a93a8ae8be1d2737a1a4e3acae5f1339357cf159c77eb45da8e5128bd233e"
+    },
+    {
+      "path": "metadata/base-readback/manifest.json",
+      "bytes": 200196,
+      "sha256": "20576daeac970e3c13a5f4e587e8e9b9b2f05df130db47ee27b78a192880d86c"
+    },
+    {
+      "path": "metadata/base-readback/verify_packets.py",
+      "bytes": 2515,
+      "sha256": "50e086000bf0a2a414a00e0afb6010bec0394c9b5553e159b80fa9526f3846d7"
+    },
+    {
+      "path": "metadata/build_publication_payload_v1.py",
+      "bytes": 15804,
+      "sha256": "580577601fa384001bee8e7f71ecd8948c574fe2d9dde234cb9654f042b54864"
+    },
+    {
+      "path": "metadata/prepare_closed_packets_v1.py",
+      "bytes": 15035,
+      "sha256": "487736808af862a66a2fa4af54c4aa8c387ec85e13a71dfdc432249828058504"
+    },
+    {
+      "path": "metadata/sealed-v1/PATTERN_REVIEW.json",
+      "bytes": 501407,
+      "sha256": "f0767c380665575ab5d6604feb246e011e316a253016176b55cd287886cb0145"
+    },
+    {
+      "path": "metadata/sealed-v1/RESULT.json",
+      "bytes": 1012447,
+      "sha256": "11a31890dab98b76a708bfd71dc9014a49769f4705dc442a889b1711e70fa8fd"
+    }
+  ],
+  "new_native_executions": 0,
+  "new_numerical_executions": 0,
+  "full_history_cost": null,
+  "all_stage_gates": "HOLD",
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/increment011-sealing-and-base-provenance-v1/archive.part001",
+      "offset": 0,
+      "bytes": 196608,
+      "sha256": "6eae1bf96d95774aff7d7a12de0a32662e163a9db9d1c53ccc6fb7ad4fa356b7"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/increment011-sealing-and-base-provenance-v1/archive.part002",
+      "offset": 196608,
+      "bytes": 90092,
+      "sha256": "517b5d75102635f57abbd68fd65c758e323855da1c22227fe3811667ff1c8976"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "disk_archive_whole_sha_and_members_verified": true
+}

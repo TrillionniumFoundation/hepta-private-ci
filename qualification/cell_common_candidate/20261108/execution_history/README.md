@@ -1,3 +1,62 @@
+# Increment 011 — E–H9 source, original failures and numerical provenance
+
+This increment extends evidence commit **41e1ade6697fee40dd29aef6826348a631396a76**, tree **7171fd32421e18db4287cdde5e1a06f08bab243a**. The original 95 packet entries and their Git subtrees remain unchanged. Four new history packets retain 2,130 selected original files; a fifth packet retains the archiver's own provenance and the independent base/disk checks. Archive-member totals include repeated source and observation bytes. They are storage counts, not independent experiments or passed tests.
+
+The four history packets were captured from **19:01:42.644685 to 19:01:59.898460 UTC on 2026-11-09**. Their exact lists are frozen. Later files appearing under a similarly named local directory are outside that capture. Publication and independent readback have their own subsequent timestamps; those do not move the captured execution cutoff.
+
+The common PR source remains **bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d**, tree **f7b65a747a1d2f585be38a4665ab2b4f1b07efb6**. Formal CURRENT remains SHA256 **c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4**. Common full CI is not green. **S0–S5 all remain HOLD.** Physical and complete historical costs remain **null**.
+
+## Outcomes remain attached to their actual source
+
+| Source and operation | Actual observation | Qualification boundary |
+|---|---|---|
+| E `4c11d13d8cd2da8aefd9b16ab2b7c73a4be9e957`, original caller | Natural FAIL, 389.018815658 seconds. The profile caller's required source marker was absent. | The later explicit receiver/marker correction is source work; it does not change this failed run. |
+| E, first strict attempt | Original V8 checksum phase failed after the network attempt. | The failed records remain alongside the subsequent bounded cache-copy operation. |
+| E, strict recovery | The first nine phases completed; the owning agentd `just fix` failed with six E0659 ambiguous `assert_eq` diagnostics. The following Clippy phase and native tests were not reached. | The explicit assertion import in H preserves the six existing assertions. No E result is relabelled PASS. |
+| FG and H source publication | Exact source objects, coherent commits, final refs and independent reads were retained. H final source is **1d467787e2761192b0c545c377c5d7e281a298d4**, tree **4d639a2834519bd1876307f54fc723fc60254679**. | Source publication and formatting do not establish runtime or scientific acceptance. |
+| H original numerical controls | **Five PASS, zero FAIL, zero skipped**, on the reviewed CPU runtime and exact formatted Python closure. | The original tests ran once. Archival and readback do not rerun training or add cases. |
+| Separate H synthetic attempt | Seed 811, two SGD steps; the core, encoder, transition adapters and text group changed while inactive groups remained unchanged. A distinct candidate was retained. | This is a separate synthetic training attempt, without a signed ordinary-daemon adoption or real-task improvement claim. |
+| H9 source/runtime admission | Actual clean H9 source, a new target and a new temporary root were admitted; original source and protected inputs stayed unchanged. | Admission did not execute native tests. |
+| H9 V8 copy | Two exact historical assets were independently copied into the new temporary root with new inodes. No checksum was copied. The separate strict run's original fresh checksum command completed. | This is a cache/input provenance operation. It does not establish the strict run's overall result. |
+| H9 original full caller gate | Natural **FAIL**, command **402.52780130598694 seconds**, budget **600 seconds**, no timeout, exit 1, clean source before/after. | `root_learning_checkpoint_handoff` missed the actual delivery file. The scoped type-annotation correction retained here is prepared source only. |
+| H9 strict run at the capture cutoff | Launched once with the original phase budgets; only launch and ordinal progress snapshots were available. | There is no terminal strict result in this packet. Running or silent records are not a pass, a native roster or a process-liveness proof. |
+
+The H9 handoff correction gives the existing real return value the explicit `crate::PreparedRootLearningCheckpointV1` type. It preserves the same call, object and following operations. Scoped checks found that this one annotation addresses the handoff and serve receiver queries while leaving the other 173 queries on that changed file unchanged. Those scoped checks do not replace the full caller command on the eventual successor. The correction was not applied to the active H9 checkout.
+
+## Exact numerical and runtime retention
+
+Runtime preparations v1 and v2 failed before their planned installations and remain in their original state. Runtime v3 installed the already pinned local CPU wheels and passed its installation checks. The package includes the installation receipts, pinned wheel metadata and installed distribution RECORD metadata. It excludes the wheel payloads, interpreter executable, virtual environment and installed package bytes. A hash reference to one of those excluded objects is not a copy of that object.
+
+The numerical packet retains the actual 4,980,877-byte predecessor and the actual 4,980,877-byte candidate. Their SHA256 values are respectively **309e02dd4de69712bd3efd79cfdce0fb5927ba28e35118fe643424263c3d9198** and **a7f04b34d0d3ac7812545913980a449d04dd73ff15cfdc2585e0fb9fe59670d0**. The independent readback observed 71 state tensors, 622,185 scalars, unchanged metadata and two canonical packet round trips. The measured loss sequence is retained as an observation, without a new acceptance threshold.
+
+Original failed preparation attempts, the local bytecode-cache observer mistake, its retained correction and the later cache reappearance of unknown origin remain distinguishable. Bytecode-cache payloads are excluded from this archive. No attribution is invented for the unknown reappearance.
+
+## Scope and reconstruction
+
+Each packet manifest lists every archived member and every compressed-file chunk with exact byte counts and SHA256. The unchanged `verify_packets.py` reconstructs and checks those archives without executing their contents. The five new packets were checked with that original verifier in an explicitly scoped local mirror. The prior 95 packet subtrees are preserved by their existing Git object IDs; this increment does not claim a fresh download or re-execution of all old packet payloads.
+
+Three exact gzip JSON formatter files and two exact tensor packets are the only nontext original exceptions in the four history captures. Each exception has an explicit path, byte count and SHA256. The gzip JSON contents received the bounded pattern scan as well. This is not a claim of exhaustive secret detection. Archive entry modes are normalized to 0600; original file modes remain in the captured identity metadata.
+
+The first sealer checked its in-memory archive representation after writing the archive. A later independent builder reopened all four saved disk archives and checked their whole hashes and every ordered member, closing that specific disk-readback boundary. The fifth packet retains that proof, the exact sealing report, the independent static review, the physical base-file readbacks and the six-tree Git identity closure.
+
+Remote source inventories and some helper logs remain referenced by metadata only. For example, the H9 caller packet includes the actual before/after summaries and file-info observations, while its two 6,195,048-byte full source inventories and associated Git inventory files remain host-only. Complete remote prefixes, complete installed runtime contents, physical energy and full historical cost are not claimed.
+
+The retained PR v10 body has its own **18:41:22 UTC** cutoff, before the H9 gate launches and caller failure. It is historical material with that cutoff. This evidence publication changes neither the PR head nor common CURRENT and does not create a new PR, dispatch a workflow or promote a stage.
+
+## Remaining stage gates
+
+| Stage | Status | Missing evidence |
+|---|---|---|
+| S0 | HOLD | One actual ordinary daemon version completing the full task → candidate → evaluation → adoption → distinct successor loop, with recovery and complete costs. |
+| S1 | HOLD | Matched-budget real-task benefit against strong retrieval, rules and controls; acceptance error and retention gates. |
+| S2 | HOLD | Real execution improvement from perception and prediction, with correct failure semantics and complete accounting. |
+| S3 | HOLD | Adequately trained GRU/SSM, gradient or other appropriate baselines under comparable full cost. |
+| S4 | HOLD | Benefit over a fixed graph with a strong scheduler after migration and organization costs. |
+| S5 | HOLD | Common starts, component swaps, independent tasks and multiple generations of actual inherited adoption with complete historical cost. |
+
+
+---
+
 # Increment 010 — original workspace timeout and counterfactual failure
 
 This increment preserves two completed history packages and their subsequent seal/readback receipts. It extends evidence commit **6e162bab21438b857179a22c6207552feda9331b**, tree **db1528464ed0369f3be4b7a8a7b4d8df6d9abde0**, from **93 to 95 packets**. All previous packet entries and bytes remain intact. The resulting **11,384 archive-member entries** include repeated provenance and observations; they are not independent tests or unique source files.

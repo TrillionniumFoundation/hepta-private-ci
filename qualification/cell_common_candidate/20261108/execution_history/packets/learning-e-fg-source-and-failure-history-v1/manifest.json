@@ -1,0 +1,3590 @@
+{
+  "packet_id": "learning-e-fg-source-and-failure-history-v1",
+  "scope": "Selected original E/FG preparations, source publication receipts, E admission, V8 failure and recovery, original caller and strict failures. Earlier A-D publication receipts are provenance only. Exact local copies are enumerated; no complete remote prefix or full execution history is claimed.",
+  "compression": "xz",
+  "archive_path": "/workspace/scratch/898e2183709e/ci-fixes/increment011/sealed-v1/learning-e-fg-source-and-failure-history-v1/original.tar.xz",
+  "bytes": 1130276,
+  "sha256": "9ae79ada49f1e5e3c061cb8efb454f760c4b3f7fee57bd946724366f9b759e1b",
+  "file_members": [
+    {
+      "path": "metadata/DRIVER.py",
+      "bytes": 15035,
+      "sha256": "487736808af862a66a2fa4af54c4aa8c387ec85e13a71dfdc432249828058504"
+    },
+    {
+      "path": "metadata/ORIGINALS.json",
+      "bytes": 163976,
+      "sha256": "6b9e0aae1d8d59c7bb84c0b076c1aa8fc8020099a54673ba133e209baa10e3fb"
+    },
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 333271,
+      "sha256": "3ac52d73c0c2678bafc8681164d66534e2f5f95d7ba1964203a37c5cd8f6dc16"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/ACTUAL_SOURCEFMT_ACK_v1.json",
+      "bytes": 1184,
+      "sha256": "dbb0bf5621f5f6f2804f5323a656317f771bf4358d78a5a7ce0e0e7fc3eb15ff"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/ACTUAL_SOURCEFMT_REQUEST_v1.json",
+      "bytes": 746,
+      "sha256": "d63a90eb49fa09f9e4ae62773f6e5511360c18af145ee134db5325d4ce473b80"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/ACTUAL_SOURCEFMT_TERMINAL_v1.json",
+      "bytes": 2854,
+      "sha256": "024bc8f5370b8d5c3d212ecd1cd2a7dccc3f76bdada465125da46512736def4b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/CONTROLLER_DERIVATION.json",
+      "bytes": 883,
+      "sha256": "c4ea03abbeb32eb0285536a66673bdddcfb39879c391d54b2d05a2cb2644bc3e"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/E-controller-to-FG-controller.patch",
+      "bytes": 30548,
+      "sha256": "ea531ff4ca05ad585c1f2e2f9e32c70102be1cd6320c5d8f0ddddd43b4cc840c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/E-outer-to-FG-outer.patch",
+      "bytes": 1729,
+      "sha256": "5a945ac80071aa97d458091c98b95555b33a2dbd75e2b28df663ff7936cac672"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/E-to-F-and-G-reviewed.patch",
+      "bytes": 77060,
+      "sha256": "f4ac57f8955c5d5874847e18ed735bd979081390a550fcf41a738154f8c434e1"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/EXACT_E_REFERENCE_PINS.json",
+      "bytes": 2425,
+      "sha256": "8b2d45216d16d6be9ee85125b6d64185a2e84379b360b550ae36e3962da4d21e"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/LOCAL_PREPARATION_FAILED_v1.json",
+      "bytes": 605,
+      "sha256": "342349748d1c4575086b67f4121a334674e6c05a38f419e355736f9c9fbdd691"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/LOCAL_SOURCE_APPLY_CHECKS.json",
+      "bytes": 127832,
+      "sha256": "9b676ec9b1f2d4798b8c07bf5dbb8ae58b7fbec7e6e1d9c82485361487f0ecc0"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/PREPARATION.json",
+      "bytes": 9293,
+      "sha256": "c9c2a96ec0ccf90bee8bd68f60f4ddc28393541e2f5a12ce0ab39eb08b3b2ecd"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/E-to-formatted-FG.patch",
+      "bytes": 80366,
+      "sha256": "9c1ea588171bb5944581888353a69696bce1d6a1c42fa111093a0ab0dbfac833"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/EXECUTION.json",
+      "bytes": 3274,
+      "sha256": "c3ce818140f1d183d6a852c9bb4b630118b9fa612be9669e154e4debfe23126c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/INDEPENDENT_READBACK.json",
+      "bytes": 12104,
+      "sha256": "096e5e9e5bc5b26f907c6cd7de401193e575e36112f9ec591b6bf6cc21ac47be"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/RESULT.json",
+      "bytes": 185768,
+      "sha256": "6a15f7fa014a9f46ebeb084bb66a5d09f17efa937c73ba1fe47782d99f028051"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/CALLERS.toml",
+      "bytes": 232495,
+      "sha256": "e92b50d7ee9e82965b5f6240fd6d8bbb7b0028b0a1a15c07f754b2e923ee81eb"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 7975,
+      "sha256": "9e6588ec7f046ec9ce4ca9f3e1e4787924b2f26d006b22d280f17bb6127a1a86"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_admission_tests.rs",
+      "bytes": 2408,
+      "sha256": "7f33644acd00075af9d098c35a47d2d55698a4e295224b66eb1b6a5f8e0b170b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "bytes": 18588,
+      "sha256": "9d611125b0a80f9872a864e7ce666940dc21dd3d8272018f2b70e8be5e6fe1cf"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_fixture_tests.rs",
+      "bytes": 10018,
+      "sha256": "5a31940f6ae1cfd0bf7ff12014453cdf9f4b80fae5c739805982df962457fa91"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_tests.rs",
+      "bytes": 15678,
+      "sha256": "1751f62f94150158deb65decd57faa93b47007836ca8922280e2952271c30e76"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 5937,
+      "sha256": "bc332037ee5539cd75591b52c4548ff8d03719f64686d1b1eb83c364844de2ca"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_delivery_stop_tests.rs",
+      "bytes": 847,
+      "sha256": "58c2880517dfa4adf6cdf2ebf546188ffa6cd7dbd81ec5bc7236aba9ab6e9ef8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_delivery_tests.rs",
+      "bytes": 11785,
+      "sha256": "b707ae704660acdc8e78efceb3a813044e4f1d4d5aedd228e08a13c5232a21a5"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "bytes": 8026,
+      "sha256": "c5343c8829ec4609b49ddd661919b1cf9cf6ab0cb4610b551a208acbf1c869ac"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "bytes": 22338,
+      "sha256": "ce312aac01e7b3d6bf281ef160387f48412a352766d83c3233c2b0dc51ae401c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "bytes": 15868,
+      "sha256": "affc295b01d319a9e8cf98f34557eda4900542bcadbafb50d0f83b5490dae04c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/joint_generation_bundle.rs",
+      "bytes": 5914,
+      "sha256": "9be416849ca948cd7b2b55aeb71305f870fe4699c151b0a7210b1f043276ec46"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/joint_generation_bundle_tests.rs",
+      "bytes": 14258,
+      "sha256": "9e325162e019a44dc3c3a8710effbbbe0c80ff588ac9827c8be3eb6bc2cd137a"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/joint_generation_bundle_weight_fixture.rs",
+      "bytes": 6416,
+      "sha256": "f5b5715422a694aabd683bfa398a266f22a1cc8052b7f1313fb0de5ed3efc8d1"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/joint_memory_text_replay.rs",
+      "bytes": 14378,
+      "sha256": "d71c932d231ce161f3dc6b4b43bde220d1850287875dc688e0b90cf97912d10e"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/joint_memory_text_replay_tests.rs",
+      "bytes": 7131,
+      "sha256": "144856cc332b9404937a48afd2780e62adc955f841d1b9d135466ac6e9d6549b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 43471,
+      "sha256": "5306452b2158fb1b80aaaed1dcf51d49e1c3fdcb3046dc9d8c747eaad020d92c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/neuron_generation_adopted_learning_tests.rs",
+      "bytes": 20397,
+      "sha256": "1c8c1945cb4b71eff45f86735860fe06ec5ba49da9d10d5a85edd8cb03594442"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/neuron_generation_joint_loading_guard_tests.rs",
+      "bytes": 3859,
+      "sha256": "4d77933900637188d3fb6ba7d6068c49b43343899e6b876543027a38662ba8ab"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs",
+      "bytes": 15756,
+      "sha256": "7e07d4ebd8cfc1d262b81e0c8e3ebe7499a89862b980367a9b38ea478d073ad6"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "bytes": 19949,
+      "sha256": "515806ed35189ef8d443a7db134933fca17e8d38e1d704222687702d10dd9af3"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "bytes": 16452,
+      "sha256": "299039bcd1d0bf3d18fce458bbd011cb025650699b3fcc532f4e42666c13e770"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+      "bytes": 11333,
+      "sha256": "15517cb0a644e2f80b7eacafabcb9a86001471359ad28e5efc8a23cb90fb73ff"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-core/src/joint_packet.rs",
+      "bytes": 7866,
+      "sha256": "dfa3eaece21e22674cebba05d6a611d0e9fd149cef690759343bbe65458b8f11"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-core/src/joint_v4_loading.rs",
+      "bytes": 2668,
+      "sha256": "a55ead3aebd688a9e134a88bb09bb4e64941f7f0947b50d18a80aeb38834d4ed"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-core/src/joint_v4_projection.rs",
+      "bytes": 18860,
+      "sha256": "bc2b43e6c782f93ad2848d30188be97698eb1f75da825581ed6868cac2a438ed"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-core/src/lib.rs",
+      "bytes": 9547,
+      "sha256": "ab33091f82126ef57a9fa175e1838fa5c1570400397578ada010325d612ca8de"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/joint_generation.bzl",
+      "bytes": 1520,
+      "sha256": "9916d9371a6b256b11ae40d4f9fb705b32517643dc8e8925a0d1cd5f8301f9e8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/codec.rs",
+      "bytes": 339,
+      "sha256": "5718421a34d5b31d7e7bdc79c9c158d26496475e075584aaf8db106fae481d0c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/loading_tests.rs",
+      "bytes": 8265,
+      "sha256": "9f1c20d26f091656b38ed919544e0336d5014e94cca15c4ba7123f7f2d1008a8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/math.rs",
+      "bytes": 4428,
+      "sha256": "2748da5be39ca45cd08fd015ec170f34f4c1d1ea869c5e2abf28632c830a4f9b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/media_codec.rs",
+      "bytes": 4299,
+      "sha256": "cbd2cfa2ac0977553d06b2605f40e72d1d48b6ca495e219995f4f8f79ec7b267"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/model.rs",
+      "bytes": 23823,
+      "sha256": "eb6c42a69b1a71c1e96251dbedf9b67332c24f371b8063f56b088d6c4f229ded"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs",
+      "bytes": 8476,
+      "sha256": "ee4c1f9e12406f6dde312d5df6b6e72c4ef62818175cc1e58150123387214853"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/observed_model.rs",
+      "bytes": 4041,
+      "sha256": "91bede5fa0dca7ce86015eeb0266c88353d272b3ca802c9278bba05656210a75"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/planner.rs",
+      "bytes": 13058,
+      "sha256": "5711a50b1bc6da57f0be0976a10c6d3d7412084759cbf9ffdf4e0274d4c2cc4d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/projection_tests.rs",
+      "bytes": 4435,
+      "sha256": "077a3cb0fe5742abe5686d41bf594c53cd5263e4a0f0b670045e85572319b8d7"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs",
+      "bytes": 8515,
+      "sha256": "844fce4eb15221879899ab687ed8b7421fe074f3ce69ca295c9f8b462230536d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal_tests.rs",
+      "bytes": 9171,
+      "sha256": "8e6797f29236633e9cc59a837fe273c638caf1d46599441c05a832fcb8efa449"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/protocol.rs",
+      "bytes": 7441,
+      "sha256": "77c4d1aebdd2f454b4e4d24296c91d455db3b7d2a7fd6e3b31362163c96dfc81"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/state.rs",
+      "bytes": 5479,
+      "sha256": "724d9a8187535b8fe8017f00a414cb23975e69facca89e5ab338127ece24b16e"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-infer-worker-host/src/joint_generation/text_codec.rs",
+      "bytes": 3635,
+      "sha256": "fec674e529337faf7d168fcc22a8d2f6d625d2787a13de840914dd024cecb60d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-neuron/src/cell_joint_generation.rs",
+      "bytes": 20504,
+      "sha256": "fc58e8d4d0ad290fd36332d93c960be2b3c030b46978e3a04732b4716c6504a3"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-neuron/src/cell_joint_generation_tests.rs",
+      "bytes": 20943,
+      "sha256": "d40b2700ef443334e19e5b5f99879f52956ec9bb604b2d93bb88312ff4d93a9a"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-neuron/src/cell_joint_loading.rs",
+      "bytes": 5623,
+      "sha256": "89960432ad83622d07037ea28f25c61a2d107e8cae650916450d2d75600087ac"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-neuron/src/cell_joint_loading_process_tests.rs",
+      "bytes": 11519,
+      "sha256": "484326f9d828b5e5c8933037c4e0d496263824c2437cc5c8b2b79427761a67d4"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-neuron/src/cell_joint_protocol.rs",
+      "bytes": 7839,
+      "sha256": "1ecdfa6a72b95985d419225214be536e3c53eb9132c9831517debc114bf7a3c0"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-neuron/src/cell_joint_weights.rs",
+      "bytes": 3137,
+      "sha256": "38e43909b73782312bf629a682e33f3f5b353a94bb9d360866f480741ada717f"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/after/codex-rs/hepta-neuron/src/lib.rs",
+      "bytes": 17167,
+      "sha256": "43e8f014ebb0b694c870e241e216d133909b162d83d55697ecd18b012f620f2b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/canonical-format-only.patch",
+      "bytes": 31779,
+      "sha256": "1cdfb99f46ade6a10d52568d3627684046c54f70b634d4d0b2aba5a7f755b0aa"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/commands.json",
+      "bytes": 138364,
+      "sha256": "80f344cb284ffafd775ddbebf436c52b74f72b9735b8c3abd8db355501dfff02"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/formatted-source-files.json.gz",
+      "bytes": 157140,
+      "sha256": "b8f145d46f413659bdcf8769cb67635abfec32192dd1e1ae2803b2cf2a48baeb"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/0.json",
+      "bytes": 88147,
+      "sha256": "6b5f5381f27fe29564d11babdb5cc4ea703dec1943e70674a13ac96ca3424996"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/1.json",
+      "bytes": 88153,
+      "sha256": "82f0132ff2176d99fed26990dcc589368dfb292ce665c6f667ad039370f99ff2"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/10.json",
+      "bytes": 88181,
+      "sha256": "200b5a19287fe2e6ee07e27c60c0e6405bebb9d77ac843a1c552b360dcd0989f"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/11.json",
+      "bytes": 5134,
+      "sha256": "049b0d557cbbc0e3444745bdbc51df79f491a10793a8fcfd2b6f6e7d3d90ca96"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/12.json",
+      "bytes": 20667,
+      "sha256": "5478d2caf6f553a934235128ba048696c72a7942e25c7d12252eeceff78ce4fe"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/2.json",
+      "bytes": 43180,
+      "sha256": "906f97957f09ad5338a1a0f9bb3af19243732a4cb51c2656dea2ad307c9be145"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/3.json",
+      "bytes": 88204,
+      "sha256": "4f7d30b0360bfe01008573e4d96aee3fc2b482ee29713c5136afd56e48de9a54"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/4.json",
+      "bytes": 88244,
+      "sha256": "cd4cfb9e9971750d8830f2a5a56d3162ac91057d5235e2a7e6b377cefb1c06d7"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/5.json",
+      "bytes": 73789,
+      "sha256": "b54b6fabcb5ae5ce35cbd27e93b1e9a9a83b09c7a3f6b1c38fbb7320a48c1fd5"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/6.json",
+      "bytes": 88250,
+      "sha256": "f2d978b29b7c24d5365b7590c42656e90cab7c1ebee4f672d7b96dd8d96b6903"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/7.json",
+      "bytes": 88301,
+      "sha256": "26deb6cf05105b8087fa7e0512e877307e0b4bda67ff0e97670f03ce88142f65"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/8.json",
+      "bytes": 10591,
+      "sha256": "ea9a02a298965f24873dd6ad0d7a9e22d7b88c75f697e5321e8177712af8ab9c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/actual-v1/original-h-chunks/9.json",
+      "bytes": 35678,
+      "sha256": "1b0e44596281bf9580f3831497b5340ab4f2642f91815934345f7d0f3dba9b66"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F1-core-native-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F1-core-native-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F1-core-native-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F1-core-native-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F1-core-native-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F1-core-native-numstat.stdout",
+      "bytes": 390,
+      "sha256": "cd0d91e48bd26acde76082f73e3d7d770e62403e42d6238311c959832605200e"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F2-neuron-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F2-neuron-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F2-neuron-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F2-neuron-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F2-neuron-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F2-neuron-numstat.stdout",
+      "bytes": 331,
+      "sha256": "9122acf877ad1d5f4ccadefee7daf7cad3abef7da06d968203883d605b7aa3a5"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F3-agentd-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F3-agentd-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F3-agentd-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F3-agentd-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F3-agentd-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/F3-agentd-numstat.stdout",
+      "bytes": 229,
+      "sha256": "7f99e803c5798d482088f8d75a82acebc838b77fa70040a37fef4d4b32cddedf"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/G-verified-memory-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/G-verified-memory-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/G-verified-memory-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/G-verified-memory-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/G-verified-memory-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/apply-logs/G-verified-memory-numstat.stdout",
+      "bytes": 163,
+      "sha256": "efe43352349588fe69697b45975ecbab74dca6a611523a695958315dbc367739"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/derive_integration_controller_v1.py",
+      "bytes": 21980,
+      "sha256": "8e04f33c2f65ac0357dfd7785efbca65bd6cc6c20b03d1c12889c0020825d23f"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/exact-E-reference/AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/exact-E-reference/codex-rs/hepta-agentd/src/neuron_generation_adopted_learning_tests.rs",
+      "bytes": 19211,
+      "sha256": "8855f3dc35c3451efdcc39624bd22bfbaee788b1d12950726e7772e1f3e08a5d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/exact-E-reference/codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs",
+      "bytes": 13921,
+      "sha256": "c01571b72c115bef458eebc7c992659299fb6296bcc01afd6d3ecbdbb52d21c6"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/exact-E-reference/codex-rs/hepta-infer-worker-host/src/joint_generation/protocol.rs",
+      "bytes": 6904,
+      "sha256": "2893879f67a931a4563c2b98d6045d4cbf820fcb651c38ca635844328aaad646"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/exact-E-reference/codex-rs/hepta-neuron/src/cell_joint_generation_tests.rs",
+      "bytes": 20873,
+      "sha256": "1de79263bad5c6356e6415c313887b3707811b51cfbb35ee6e83090b909435d8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/F1-core-native.patch",
+      "bytes": 16975,
+      "sha256": "4242ea153fb675305e37368a8860feced6a5b44a8c23d1222178e1ebbf28d1cc"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/F2-neuron.patch",
+      "bytes": 28597,
+      "sha256": "af44b474f71506608376f3e830983e1d1205cb9222fac0b1dddf2df56ea935e9"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/F3-agentd.patch",
+      "bytes": 10418,
+      "sha256": "b9de2b3fed05a9f976fdc4bbabde2ea7d5d8b1b3cbc268efddb09dd9ce1a4e89"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/G-verified-memory.patch",
+      "bytes": 23919,
+      "sha256": "1e2d1bc9a7bae52be922b5bd7136e583f61a5d5537ec14db6840a714bb35756f"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/PUBLICATION_INPUTS.json",
+      "bytes": 375204,
+      "sha256": "44a33a83cb83a3a0a06e74f7dcd52971f7804b1f5cda2804f35a061a6d3a1d2c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/RESULT.json",
+      "bytes": 104414,
+      "sha256": "557b91127ba8e0cf3da6f42f77c6b88e912ee5eb2a5cf96d194b80ce52ddb163"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/ROOT_REVIEW_v1.json",
+      "bytes": 978,
+      "sha256": "37c4cae6df899b6beee3bb9f3da1b951dc1cf9f23c1a1e8b58c4a438a69138ad"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F1-core-native-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F1-core-native-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F1-core-native-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F1-core-native-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F1-core-native-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F1-core-native-numstat.stdout",
+      "bytes": 391,
+      "sha256": "3b37e053738049e64104b4065bec74bbb1ad04933debbd7c383c2d74664b7650"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F2-neuron-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F2-neuron-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F2-neuron-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F2-neuron-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F2-neuron-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F2-neuron-numstat.stdout",
+      "bytes": 331,
+      "sha256": "899a09ffe467c40cc9cb59b8a6e124b1bb67e49f73a1466fb23f456f15753ef0"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F3-agentd-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F3-agentd-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F3-agentd-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F3-agentd-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F3-agentd-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/F3-agentd-numstat.stdout",
+      "bytes": 229,
+      "sha256": "17653d186c6e29c3580e6b2a585a7b2b63c4fe6cc90fe1a12dbcaaa12001862f"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/G-verified-memory-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/G-verified-memory-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/G-verified-memory-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/G-verified-memory-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/G-verified-memory-numstat.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/G-verified-memory-numstat.stdout",
+      "bytes": 163,
+      "sha256": "f51cd74725484f2c282df7d7e3a7a91858e89c8dc54e714129966aa159d3e625"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/original-complete-apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/original-complete-apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/original-complete-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/commands/original-complete-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/CALLERS.toml",
+      "bytes": 232495,
+      "sha256": "e92b50d7ee9e82965b5f6240fd6d8bbb7b0028b0a1a15c07f754b2e923ee81eb"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 7975,
+      "sha256": "9e6588ec7f046ec9ce4ca9f3e1e4787924b2f26d006b22d280f17bb6127a1a86"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/authority_host_learning_admission_tests.rs",
+      "bytes": 2408,
+      "sha256": "7f33644acd00075af9d098c35a47d2d55698a4e295224b66eb1b6a5f8e0b170b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "bytes": 18588,
+      "sha256": "9d611125b0a80f9872a864e7ce666940dc21dd3d8272018f2b70e8be5e6fe1cf"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_fixture_tests.rs",
+      "bytes": 10018,
+      "sha256": "5a31940f6ae1cfd0bf7ff12014453cdf9f4b80fae5c739805982df962457fa91"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_tests.rs",
+      "bytes": 15678,
+      "sha256": "1751f62f94150158deb65decd57faa93b47007836ca8922280e2952271c30e76"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 5937,
+      "sha256": "bc332037ee5539cd75591b52c4548ff8d03719f64686d1b1eb83c364844de2ca"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/authority_host_learning_delivery_stop_tests.rs",
+      "bytes": 847,
+      "sha256": "58c2880517dfa4adf6cdf2ebf546188ffa6cd7dbd81ec5bc7236aba9ab6e9ef8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/authority_host_learning_delivery_tests.rs",
+      "bytes": 11785,
+      "sha256": "b707ae704660acdc8e78efceb3a813044e4f1d4d5aedd228e08a13c5232a21a5"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "bytes": 8026,
+      "sha256": "c5343c8829ec4609b49ddd661919b1cf9cf6ab0cb4610b551a208acbf1c869ac"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "bytes": 22338,
+      "sha256": "ce312aac01e7b3d6bf281ef160387f48412a352766d83c3233c2b0dc51ae401c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "bytes": 15868,
+      "sha256": "affc295b01d319a9e8cf98f34557eda4900542bcadbafb50d0f83b5490dae04c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/joint_generation_bundle.rs",
+      "bytes": 5914,
+      "sha256": "9be416849ca948cd7b2b55aeb71305f870fe4699c151b0a7210b1f043276ec46"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/joint_generation_bundle_tests.rs",
+      "bytes": 14258,
+      "sha256": "9e325162e019a44dc3c3a8710effbbbe0c80ff588ac9827c8be3eb6bc2cd137a"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/joint_generation_bundle_weight_fixture.rs",
+      "bytes": 6416,
+      "sha256": "f5b5715422a694aabd683bfa398a266f22a1cc8052b7f1313fb0de5ed3efc8d1"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/joint_memory_text_replay.rs",
+      "bytes": 14378,
+      "sha256": "d71c932d231ce161f3dc6b4b43bde220d1850287875dc688e0b90cf97912d10e"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/joint_memory_text_replay_tests.rs",
+      "bytes": 7131,
+      "sha256": "144856cc332b9404937a48afd2780e62adc955f841d1b9d135466ac6e9d6549b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 43471,
+      "sha256": "5306452b2158fb1b80aaaed1dcf51d49e1c3fdcb3046dc9d8c747eaad020d92c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/neuron_generation_adopted_learning_tests.rs",
+      "bytes": 20397,
+      "sha256": "1c8c1945cb4b71eff45f86735860fe06ec5ba49da9d10d5a85edd8cb03594442"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/neuron_generation_joint_loading_guard_tests.rs",
+      "bytes": 3859,
+      "sha256": "4d77933900637188d3fb6ba7d6068c49b43343899e6b876543027a38662ba8ab"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs",
+      "bytes": 15756,
+      "sha256": "7e07d4ebd8cfc1d262b81e0c8e3ebe7499a89862b980367a9b38ea478d073ad6"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "bytes": 19949,
+      "sha256": "515806ed35189ef8d443a7db134933fca17e8d38e1d704222687702d10dd9af3"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "bytes": 16452,
+      "sha256": "299039bcd1d0bf3d18fce458bbd011cb025650699b3fcc532f4e42666c13e770"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+      "bytes": 11333,
+      "sha256": "15517cb0a644e2f80b7eacafabcb9a86001471359ad28e5efc8a23cb90fb73ff"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-core/src/joint_packet.rs",
+      "bytes": 7866,
+      "sha256": "dfa3eaece21e22674cebba05d6a611d0e9fd149cef690759343bbe65458b8f11"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-core/src/joint_v4_loading.rs",
+      "bytes": 2668,
+      "sha256": "a55ead3aebd688a9e134a88bb09bb4e64941f7f0947b50d18a80aeb38834d4ed"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-core/src/joint_v4_projection.rs",
+      "bytes": 18860,
+      "sha256": "bc2b43e6c782f93ad2848d30188be97698eb1f75da825581ed6868cac2a438ed"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-core/src/lib.rs",
+      "bytes": 9547,
+      "sha256": "ab33091f82126ef57a9fa175e1838fa5c1570400397578ada010325d612ca8de"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/joint_generation.bzl",
+      "bytes": 1520,
+      "sha256": "9916d9371a6b256b11ae40d4f9fb705b32517643dc8e8925a0d1cd5f8301f9e8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/codec.rs",
+      "bytes": 339,
+      "sha256": "5718421a34d5b31d7e7bdc79c9c158d26496475e075584aaf8db106fae481d0c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/loading_tests.rs",
+      "bytes": 8265,
+      "sha256": "9f1c20d26f091656b38ed919544e0336d5014e94cca15c4ba7123f7f2d1008a8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/math.rs",
+      "bytes": 4428,
+      "sha256": "2748da5be39ca45cd08fd015ec170f34f4c1d1ea869c5e2abf28632c830a4f9b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/media_codec.rs",
+      "bytes": 4299,
+      "sha256": "cbd2cfa2ac0977553d06b2605f40e72d1d48b6ca495e219995f4f8f79ec7b267"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/model.rs",
+      "bytes": 23823,
+      "sha256": "eb6c42a69b1a71c1e96251dbedf9b67332c24f371b8063f56b088d6c4f229ded"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs",
+      "bytes": 8476,
+      "sha256": "ee4c1f9e12406f6dde312d5df6b6e72c4ef62818175cc1e58150123387214853"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/observed_model.rs",
+      "bytes": 4041,
+      "sha256": "91bede5fa0dca7ce86015eeb0266c88353d272b3ca802c9278bba05656210a75"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/planner.rs",
+      "bytes": 13058,
+      "sha256": "5711a50b1bc6da57f0be0976a10c6d3d7412084759cbf9ffdf4e0274d4c2cc4d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/projection_tests.rs",
+      "bytes": 4435,
+      "sha256": "077a3cb0fe5742abe5686d41bf594c53cd5263e4a0f0b670045e85572319b8d7"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs",
+      "bytes": 8515,
+      "sha256": "844fce4eb15221879899ab687ed8b7421fe074f3ce69ca295c9f8b462230536d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal_tests.rs",
+      "bytes": 9171,
+      "sha256": "8e6797f29236633e9cc59a837fe273c638caf1d46599441c05a832fcb8efa449"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/protocol.rs",
+      "bytes": 7441,
+      "sha256": "77c4d1aebdd2f454b4e4d24296c91d455db3b7d2a7fd6e3b31362163c96dfc81"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/state.rs",
+      "bytes": 5479,
+      "sha256": "724d9a8187535b8fe8017f00a414cb23975e69facca89e5ab338127ece24b16e"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/text_codec.rs",
+      "bytes": 3635,
+      "sha256": "fec674e529337faf7d168fcc22a8d2f6d625d2787a13de840914dd024cecb60d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-neuron/src/cell_joint_generation.rs",
+      "bytes": 20504,
+      "sha256": "fc58e8d4d0ad290fd36332d93c960be2b3c030b46978e3a04732b4716c6504a3"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-neuron/src/cell_joint_generation_tests.rs",
+      "bytes": 20943,
+      "sha256": "d40b2700ef443334e19e5b5f99879f52956ec9bb604b2d93bb88312ff4d93a9a"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-neuron/src/cell_joint_loading.rs",
+      "bytes": 5623,
+      "sha256": "89960432ad83622d07037ea28f25c61a2d107e8cae650916450d2d75600087ac"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-neuron/src/cell_joint_loading_process_tests.rs",
+      "bytes": 11519,
+      "sha256": "484326f9d828b5e5c8933037c4e0d496263824c2437cc5c8b2b79427761a67d4"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-neuron/src/cell_joint_protocol.rs",
+      "bytes": 7839,
+      "sha256": "1ecdfa6a72b95985d419225214be536e3c53eb9132c9831517debc114bf7a3c0"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-neuron/src/cell_joint_weights.rs",
+      "bytes": 3137,
+      "sha256": "38e43909b73782312bf629a682e33f3f5b353a94bb9d360866f480741ada717f"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/original-complete-patch-copy/codex-rs/hepta-neuron/src/lib.rs",
+      "bytes": 17167,
+      "sha256": "43e8f014ebb0b694c870e241e216d133909b162d83d55697ecd18b012f620f2b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/CALLERS.toml",
+      "bytes": 232495,
+      "sha256": "e92b50d7ee9e82965b5f6240fd6d8bbb7b0028b0a1a15c07f754b2e923ee81eb"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 7975,
+      "sha256": "9e6588ec7f046ec9ce4ca9f3e1e4787924b2f26d006b22d280f17bb6127a1a86"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/authority_host_learning_admission_tests.rs",
+      "bytes": 2408,
+      "sha256": "7f33644acd00075af9d098c35a47d2d55698a4e295224b66eb1b6a5f8e0b170b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "bytes": 18588,
+      "sha256": "9d611125b0a80f9872a864e7ce666940dc21dd3d8272018f2b70e8be5e6fe1cf"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_fixture_tests.rs",
+      "bytes": 10018,
+      "sha256": "5a31940f6ae1cfd0bf7ff12014453cdf9f4b80fae5c739805982df962457fa91"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_tests.rs",
+      "bytes": 15678,
+      "sha256": "1751f62f94150158deb65decd57faa93b47007836ca8922280e2952271c30e76"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 5937,
+      "sha256": "bc332037ee5539cd75591b52c4548ff8d03719f64686d1b1eb83c364844de2ca"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/authority_host_learning_delivery_stop_tests.rs",
+      "bytes": 847,
+      "sha256": "58c2880517dfa4adf6cdf2ebf546188ffa6cd7dbd81ec5bc7236aba9ab6e9ef8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/authority_host_learning_delivery_tests.rs",
+      "bytes": 11785,
+      "sha256": "b707ae704660acdc8e78efceb3a813044e4f1d4d5aedd228e08a13c5232a21a5"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "bytes": 8026,
+      "sha256": "c5343c8829ec4609b49ddd661919b1cf9cf6ab0cb4610b551a208acbf1c869ac"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "bytes": 22338,
+      "sha256": "ce312aac01e7b3d6bf281ef160387f48412a352766d83c3233c2b0dc51ae401c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "bytes": 15868,
+      "sha256": "affc295b01d319a9e8cf98f34557eda4900542bcadbafb50d0f83b5490dae04c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/joint_generation_bundle.rs",
+      "bytes": 5914,
+      "sha256": "9be416849ca948cd7b2b55aeb71305f870fe4699c151b0a7210b1f043276ec46"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/joint_generation_bundle_tests.rs",
+      "bytes": 14258,
+      "sha256": "9e325162e019a44dc3c3a8710effbbbe0c80ff588ac9827c8be3eb6bc2cd137a"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/joint_generation_bundle_weight_fixture.rs",
+      "bytes": 6416,
+      "sha256": "f5b5715422a694aabd683bfa398a266f22a1cc8052b7f1313fb0de5ed3efc8d1"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/joint_memory_text_replay.rs",
+      "bytes": 14378,
+      "sha256": "d71c932d231ce161f3dc6b4b43bde220d1850287875dc688e0b90cf97912d10e"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/joint_memory_text_replay_tests.rs",
+      "bytes": 7131,
+      "sha256": "144856cc332b9404937a48afd2780e62adc955f841d1b9d135466ac6e9d6549b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 43471,
+      "sha256": "5306452b2158fb1b80aaaed1dcf51d49e1c3fdcb3046dc9d8c747eaad020d92c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/neuron_generation_adopted_learning_tests.rs",
+      "bytes": 20397,
+      "sha256": "1c8c1945cb4b71eff45f86735860fe06ec5ba49da9d10d5a85edd8cb03594442"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/neuron_generation_joint_loading_guard_tests.rs",
+      "bytes": 3859,
+      "sha256": "4d77933900637188d3fb6ba7d6068c49b43343899e6b876543027a38662ba8ab"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs",
+      "bytes": 15756,
+      "sha256": "7e07d4ebd8cfc1d262b81e0c8e3ebe7499a89862b980367a9b38ea478d073ad6"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "bytes": 19949,
+      "sha256": "515806ed35189ef8d443a7db134933fca17e8d38e1d704222687702d10dd9af3"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "bytes": 16452,
+      "sha256": "299039bcd1d0bf3d18fce458bbd011cb025650699b3fcc532f4e42666c13e770"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+      "bytes": 11333,
+      "sha256": "15517cb0a644e2f80b7eacafabcb9a86001471359ad28e5efc8a23cb90fb73ff"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-core/src/joint_packet.rs",
+      "bytes": 7866,
+      "sha256": "dfa3eaece21e22674cebba05d6a611d0e9fd149cef690759343bbe65458b8f11"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-core/src/joint_v4_loading.rs",
+      "bytes": 2668,
+      "sha256": "a55ead3aebd688a9e134a88bb09bb4e64941f7f0947b50d18a80aeb38834d4ed"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-core/src/joint_v4_projection.rs",
+      "bytes": 18860,
+      "sha256": "bc2b43e6c782f93ad2848d30188be97698eb1f75da825581ed6868cac2a438ed"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-core/src/lib.rs",
+      "bytes": 9547,
+      "sha256": "ab33091f82126ef57a9fa175e1838fa5c1570400397578ada010325d612ca8de"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/joint_generation.bzl",
+      "bytes": 1520,
+      "sha256": "9916d9371a6b256b11ae40d4f9fb705b32517643dc8e8925a0d1cd5f8301f9e8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/codec.rs",
+      "bytes": 339,
+      "sha256": "5718421a34d5b31d7e7bdc79c9c158d26496475e075584aaf8db106fae481d0c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/loading_tests.rs",
+      "bytes": 8265,
+      "sha256": "9f1c20d26f091656b38ed919544e0336d5014e94cca15c4ba7123f7f2d1008a8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/math.rs",
+      "bytes": 4428,
+      "sha256": "2748da5be39ca45cd08fd015ec170f34f4c1d1ea869c5e2abf28632c830a4f9b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/media_codec.rs",
+      "bytes": 4299,
+      "sha256": "cbd2cfa2ac0977553d06b2605f40e72d1d48b6ca495e219995f4f8f79ec7b267"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/model.rs",
+      "bytes": 23823,
+      "sha256": "eb6c42a69b1a71c1e96251dbedf9b67332c24f371b8063f56b088d6c4f229ded"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs",
+      "bytes": 8476,
+      "sha256": "ee4c1f9e12406f6dde312d5df6b6e72c4ef62818175cc1e58150123387214853"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/observed_model.rs",
+      "bytes": 4041,
+      "sha256": "91bede5fa0dca7ce86015eeb0266c88353d272b3ca802c9278bba05656210a75"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/planner.rs",
+      "bytes": 13058,
+      "sha256": "5711a50b1bc6da57f0be0976a10c6d3d7412084759cbf9ffdf4e0274d4c2cc4d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/projection_tests.rs",
+      "bytes": 4435,
+      "sha256": "077a3cb0fe5742abe5686d41bf594c53cd5263e4a0f0b670045e85572319b8d7"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs",
+      "bytes": 8515,
+      "sha256": "844fce4eb15221879899ab687ed8b7421fe074f3ce69ca295c9f8b462230536d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal_tests.rs",
+      "bytes": 9171,
+      "sha256": "8e6797f29236633e9cc59a837fe273c638caf1d46599441c05a832fcb8efa449"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/protocol.rs",
+      "bytes": 7441,
+      "sha256": "77c4d1aebdd2f454b4e4d24296c91d455db3b7d2a7fd6e3b31362163c96dfc81"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/state.rs",
+      "bytes": 5479,
+      "sha256": "724d9a8187535b8fe8017f00a414cb23975e69facca89e5ab338127ece24b16e"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/text_codec.rs",
+      "bytes": 3635,
+      "sha256": "fec674e529337faf7d168fcc22a8d2f6d625d2787a13de840914dd024cecb60d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-neuron/src/cell_joint_generation.rs",
+      "bytes": 20504,
+      "sha256": "fc58e8d4d0ad290fd36332d93c960be2b3c030b46978e3a04732b4716c6504a3"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-neuron/src/cell_joint_generation_tests.rs",
+      "bytes": 20943,
+      "sha256": "d40b2700ef443334e19e5b5f99879f52956ec9bb604b2d93bb88312ff4d93a9a"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-neuron/src/cell_joint_loading.rs",
+      "bytes": 5623,
+      "sha256": "89960432ad83622d07037ea28f25c61a2d107e8cae650916450d2d75600087ac"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-neuron/src/cell_joint_loading_process_tests.rs",
+      "bytes": 11519,
+      "sha256": "484326f9d828b5e5c8933037c4e0d496263824c2437cc5c8b2b79427761a67d4"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-neuron/src/cell_joint_protocol.rs",
+      "bytes": 7839,
+      "sha256": "1ecdfa6a72b95985d419225214be536e3c53eb9132c9831517debc114bf7a3c0"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-neuron/src/cell_joint_weights.rs",
+      "bytes": 3137,
+      "sha256": "38e43909b73782312bf629a682e33f3f5b353a94bb9d360866f480741ada717f"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/formatted-publication-layers-v1/sequential-layer-copy/codex-rs/hepta-neuron/src/lib.rs",
+      "bytes": 17167,
+      "sha256": "43e8f014ebb0b694c870e241e216d133909b162d83d55697ecd18b012f620f2b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/integrate_e_loading_memory_and_format_v1.py",
+      "bytes": 34070,
+      "sha256": "69983f268044e588f4c879f8d50695747615427602824840c9f9451e211adaa5"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/integration-inputs-v1.json",
+      "bytes": 162591,
+      "sha256": "1abd36a5cc0101c8e0202575b01c2c400687bb5121d5513551cf628b5f1c9c0a"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/launch_integrate_e_loading_memory_and_format_v1.py",
+      "bytes": 4382,
+      "sha256": "6a25f881312bf303e71ffe01003a1d8fbbf52fbce1efbe11821ef599440c5100"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/patches/F1-core-native.patch",
+      "bytes": 16789,
+      "sha256": "788872a2be9a0d652ee47c6f14c26ab0deef082009ad87b20be9d0b749c23433"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/patches/F2-neuron.patch",
+      "bytes": 27201,
+      "sha256": "590c2b40a015c7dfc9bf4aee4b61630795912d5515f4240e6cddd19398504362"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/patches/F3-agentd.patch",
+      "bytes": 9940,
+      "sha256": "e91e485fd01858408a7e4fecb24234b3cf6a7af672b0d26c728c9e906b8690db"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/patches/G-verified-memory.patch",
+      "bytes": 23130,
+      "sha256": "9cb7dfd108dc75ef9c0cc5ecf57189ecc9d41b52f253666619da1de22ae1e071"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/prepare-frozen-inputs-v1-to-v2.patch",
+      "bytes": 753,
+      "sha256": "adde35a5e4d73874b69e9141c57b73b460fd90dbde0c6f8927180fafb2cc1ba8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/prepare_frozen_inputs_v1.py",
+      "bytes": 16468,
+      "sha256": "62809c77c55e204cfd3b0b021c2a2ff803d402a8857491771f1ee824ccb79c9c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/prepare_frozen_inputs_v2.py",
+      "bytes": 16595,
+      "sha256": "517f0a428cc92b82687d650b518f2462e0a53eb43c7cac5bf5a34a5ff7b12b1b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/remote-upload-readback-v1/LOCAL_SAVE_ERROR_v1.json",
+      "bytes": 255,
+      "sha256": "5056f770239830ec81208bc04619b6189a58955d2459a520515db170d4664131"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/remote-upload-readback-v1/RESULT.json",
+      "bytes": 3898,
+      "sha256": "a02f26ea7fa661772f32a60f304ed590de9fc9182676d1d71df34586306e91ac"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/remote-upload-readback-v1/UPLOADS.json",
+      "bytes": 7906,
+      "sha256": "83162f372f5010911cf41778b7116f3bc43cc12af688fcf65325d184b9a7d12d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/remote-upload-readback-v1/integrate-e-loading-memory-and-format-v1.py",
+      "bytes": 34070,
+      "sha256": "69983f268044e588f4c879f8d50695747615427602824840c9f9451e211adaa5"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/remote-upload-readback-v1/joint-loading-memory-e-integration-inputs-v1.json",
+      "bytes": 162591,
+      "sha256": "1abd36a5cc0101c8e0202575b01c2c400687bb5121d5513551cf628b5f1c9c0a"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/remote-upload-readback-v1/launch-integrate-e-loading-memory-and-format-v1.py",
+      "bytes": 4382,
+      "sha256": "6a25f881312bf303e71ffe01003a1d8fbbf52fbce1efbe11821ef599440c5100"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/remote-upload-readback-v1/read-0.json",
+      "bytes": 46222,
+      "sha256": "fc30de2144a27af80956d063f6353b3d852d6e6bd1d150703156d3f82110acd6"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/remote-upload-readback-v1/read-1.json",
+      "bytes": 6648,
+      "sha256": "ea004e6a741b81061e6086f01ac1374e1b0c80ee3a764e5868eb6eebaea8a6e4"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/remote-upload-readback-v1/read-2.json",
+      "bytes": 88194,
+      "sha256": "59f991c5ce16f1dba37aa2666d7d72f357fe1ecf7e4e7a5a626c6dc52c3e087b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/remote-upload-readback-v1/read-3.json",
+      "bytes": 88203,
+      "sha256": "6b8e86f1c52afe6dff7446788765015ba677e25c8843b978d6394c86e8a878ab"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/remote-upload-readback-v1/read-4.json",
+      "bytes": 42848,
+      "sha256": "971ac55194206763273811c4248eaf68cbef5688a87d315fae05cf495f600969"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/CALLERS.toml",
+      "bytes": 232495,
+      "sha256": "e92b50d7ee9e82965b5f6240fd6d8bbb7b0028b0a1a15c07f754b2e923ee81eb"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 7975,
+      "sha256": "9e6588ec7f046ec9ce4ca9f3e1e4787924b2f26d006b22d280f17bb6127a1a86"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/authority_host_learning_admission_tests.rs",
+      "bytes": 2408,
+      "sha256": "7f33644acd00075af9d098c35a47d2d55698a4e295224b66eb1b6a5f8e0b170b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "bytes": 18588,
+      "sha256": "9d611125b0a80f9872a864e7ce666940dc21dd3d8272018f2b70e8be5e6fe1cf"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_fixture_tests.rs",
+      "bytes": 10018,
+      "sha256": "5a31940f6ae1cfd0bf7ff12014453cdf9f4b80fae5c739805982df962457fa91"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint_tests.rs",
+      "bytes": 15678,
+      "sha256": "1751f62f94150158deb65decd57faa93b47007836ca8922280e2952271c30e76"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 5937,
+      "sha256": "bc332037ee5539cd75591b52c4548ff8d03719f64686d1b1eb83c364844de2ca"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/authority_host_learning_delivery_stop_tests.rs",
+      "bytes": 847,
+      "sha256": "58c2880517dfa4adf6cdf2ebf546188ffa6cd7dbd81ec5bc7236aba9ab6e9ef8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/authority_host_learning_delivery_tests.rs",
+      "bytes": 11785,
+      "sha256": "b707ae704660acdc8e78efceb3a813044e4f1d4d5aedd228e08a13c5232a21a5"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "bytes": 8026,
+      "sha256": "c5343c8829ec4609b49ddd661919b1cf9cf6ab0cb4610b551a208acbf1c869ac"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "bytes": 22338,
+      "sha256": "ce312aac01e7b3d6bf281ef160387f48412a352766d83c3233c2b0dc51ae401c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "bytes": 15868,
+      "sha256": "affc295b01d319a9e8cf98f34557eda4900542bcadbafb50d0f83b5490dae04c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/joint_generation_bundle.rs",
+      "bytes": 5914,
+      "sha256": "9be416849ca948cd7b2b55aeb71305f870fe4699c151b0a7210b1f043276ec46"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/joint_generation_bundle_tests.rs",
+      "bytes": 14258,
+      "sha256": "9e325162e019a44dc3c3a8710effbbbe0c80ff588ac9827c8be3eb6bc2cd137a"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/joint_generation_bundle_weight_fixture.rs",
+      "bytes": 6416,
+      "sha256": "f5b5715422a694aabd683bfa398a266f22a1cc8052b7f1313fb0de5ed3efc8d1"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/joint_memory_text_replay.rs",
+      "bytes": 14012,
+      "sha256": "720afadcb1c6481befa73b01099eead959f0836d5bdb8b6f25399879c29cdf74"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/joint_memory_text_replay_tests.rs",
+      "bytes": 7021,
+      "sha256": "5128d9bb4d482de17766de01677736780fb05fab929153ebf4a46f21d9d51371"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 43471,
+      "sha256": "5306452b2158fb1b80aaaed1dcf51d49e1c3fdcb3046dc9d8c747eaad020d92c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/neuron_generation_adopted_learning_tests.rs",
+      "bytes": 20397,
+      "sha256": "1c8c1945cb4b71eff45f86735860fe06ec5ba49da9d10d5a85edd8cb03594442"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/neuron_generation_joint_loading_guard_tests.rs",
+      "bytes": 3476,
+      "sha256": "6cf68e2d229555bcedd853ba669585443bacf1109e917ddc13fc39fc2ed6f6c9"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs",
+      "bytes": 15694,
+      "sha256": "b1aeb57455df4ec960ccc79fabdf36d5a4b857c6c2076ef11acde6c4954fa68c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "bytes": 19949,
+      "sha256": "515806ed35189ef8d443a7db134933fca17e8d38e1d704222687702d10dd9af3"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "bytes": 16452,
+      "sha256": "299039bcd1d0bf3d18fce458bbd011cb025650699b3fcc532f4e42666c13e770"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+      "bytes": 11333,
+      "sha256": "15517cb0a644e2f80b7eacafabcb9a86001471359ad28e5efc8a23cb90fb73ff"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-core/src/joint_packet.rs",
+      "bytes": 7866,
+      "sha256": "dfa3eaece21e22674cebba05d6a611d0e9fd149cef690759343bbe65458b8f11"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-core/src/joint_v4_loading.rs",
+      "bytes": 2668,
+      "sha256": "a55ead3aebd688a9e134a88bb09bb4e64941f7f0947b50d18a80aeb38834d4ed"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-core/src/joint_v4_projection.rs",
+      "bytes": 18860,
+      "sha256": "bc2b43e6c782f93ad2848d30188be97698eb1f75da825581ed6868cac2a438ed"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-core/src/lib.rs",
+      "bytes": 9547,
+      "sha256": "ab33091f82126ef57a9fa175e1838fa5c1570400397578ada010325d612ca8de"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/joint_generation.bzl",
+      "bytes": 1520,
+      "sha256": "9916d9371a6b256b11ae40d4f9fb705b32517643dc8e8925a0d1cd5f8301f9e8"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/codec.rs",
+      "bytes": 339,
+      "sha256": "5718421a34d5b31d7e7bdc79c9c158d26496475e075584aaf8db106fae481d0c"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/loading_tests.rs",
+      "bytes": 8151,
+      "sha256": "42b1a7532527520292c75417b9b98eca2e938f0f75ad6c1839bd23cee0fb8853"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/math.rs",
+      "bytes": 4428,
+      "sha256": "2748da5be39ca45cd08fd015ec170f34f4c1d1ea869c5e2abf28632c830a4f9b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/media_codec.rs",
+      "bytes": 4299,
+      "sha256": "cbd2cfa2ac0977553d06b2605f40e72d1d48b6ca495e219995f4f8f79ec7b267"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/model.rs",
+      "bytes": 23823,
+      "sha256": "eb6c42a69b1a71c1e96251dbedf9b67332c24f371b8063f56b088d6c4f229ded"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs",
+      "bytes": 8476,
+      "sha256": "ee4c1f9e12406f6dde312d5df6b6e72c4ef62818175cc1e58150123387214853"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/observed_model.rs",
+      "bytes": 4041,
+      "sha256": "91bede5fa0dca7ce86015eeb0266c88353d272b3ca802c9278bba05656210a75"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/planner.rs",
+      "bytes": 13058,
+      "sha256": "5711a50b1bc6da57f0be0976a10c6d3d7412084759cbf9ffdf4e0274d4c2cc4d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/projection_tests.rs",
+      "bytes": 4435,
+      "sha256": "077a3cb0fe5742abe5686d41bf594c53cd5263e4a0f0b670045e85572319b8d7"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs",
+      "bytes": 8458,
+      "sha256": "7e5f3e2071e2bd3db67da0e01a0d8b14f7be4999407b5783ccf201dc49bcef3d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/proposal_tests.rs",
+      "bytes": 9171,
+      "sha256": "8e6797f29236633e9cc59a837fe273c638caf1d46599441c05a832fcb8efa449"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/protocol.rs",
+      "bytes": 7441,
+      "sha256": "77c4d1aebdd2f454b4e4d24296c91d455db3b7d2a7fd6e3b31362163c96dfc81"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/state.rs",
+      "bytes": 5479,
+      "sha256": "724d9a8187535b8fe8017f00a414cb23975e69facca89e5ab338127ece24b16e"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-infer-worker-host/src/joint_generation/text_codec.rs",
+      "bytes": 3635,
+      "sha256": "fec674e529337faf7d168fcc22a8d2f6d625d2787a13de840914dd024cecb60d"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-neuron/src/cell_joint_generation.rs",
+      "bytes": 20324,
+      "sha256": "4b43689109debae329e5d48c7081a32fcc6377f1754bbf154c964b958b5aa9ce"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-neuron/src/cell_joint_generation_tests.rs",
+      "bytes": 20943,
+      "sha256": "d40b2700ef443334e19e5b5f99879f52956ec9bb604b2d93bb88312ff4d93a9a"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-neuron/src/cell_joint_loading.rs",
+      "bytes": 5567,
+      "sha256": "0bb752dd2d4dad8cbf3cd958ec486cc7769c9972873999ca3d6dcdb4b936f98b"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-neuron/src/cell_joint_loading_process_tests.rs",
+      "bytes": 10471,
+      "sha256": "0424b67ce32055e6de234806c2626e7b115fe18bc51ec2463b68d366091d90a4"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-neuron/src/cell_joint_protocol.rs",
+      "bytes": 7800,
+      "sha256": "440f5461ebcc8bb9bc8582f78447b9eb05b5bcca601f4cd2cc7611d28c3d48b6"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-neuron/src/cell_joint_weights.rs",
+      "bytes": 3137,
+      "sha256": "38e43909b73782312bf629a682e33f3f5b353a94bb9d360866f480741ada717f"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/sequential-apply-source-copy/codex-rs/hepta-neuron/src/lib.rs",
+      "bytes": 17167,
+      "sha256": "9086504eca41bcc8d72e76667e126f7dbc264aa4a06f8a5677742e58b4ca35f2"
+    },
+    {
+      "path": "originals/joint-loading-memory-e-integration-preparation-v1/verify_formatted_publication_layers_v1.py",
+      "bytes": 10364,
+      "sha256": "af64b77011527d4ffbbc636f7716046a9ed3ce72bdf6a54791fb9404bcba759d"
+    },
+    {
+      "path": "originals/learning-owner-retention-E-preparation-v1/BASELINE_H_ORIGINAL.json",
+      "bytes": 26477,
+      "sha256": "bd9f8ebdeb041b1f3f2da2d60bc00ddd9f7c59637cb6501723e733ec19b931a8"
+    },
+    {
+      "path": "originals/learning-owner-retention-E-preparation-v1/PREPARATION.json",
+      "bytes": 6046,
+      "sha256": "646b03ffcbe38f896320a242a423d224215f13d5f35c9d9cfa4f0f5b0d054339"
+    },
+    {
+      "path": "originals/learning-owner-retention-E-preparation-v1/STAGE_AST_PROVENANCE_ASSUMPTION_FAILED_v1.json",
+      "bytes": 412,
+      "sha256": "3216f2db6b2c441e4f0650f7b63693342ad67d6335ea53be61a0c62263b85cee"
+    },
+    {
+      "path": "originals/learning-owner-retention-E-preparation-v1/STAGE_INDEPENDENT_REVIEW_v1.json",
+      "bytes": 4043,
+      "sha256": "5f17c0667b95c100ef279427211c367219d7f8c17e35395407bed8ad111696f0"
+    },
+    {
+      "path": "originals/learning-owner-retention-E-preparation-v1/baseline-retain-desktop-6ec-native-and-helper-binaries-v1.py",
+      "bytes": 19491,
+      "sha256": "57a763b5528d508b6d96ef047af95d8f9f31069bd79c459c2777a1323b716079"
+    },
+    {
+      "path": "originals/learning-owner-retention-E-preparation-v1/generic-6ec-to-E-retainer.patch",
+      "bytes": 63403,
+      "sha256": "d8d7264883b0abd59672927c3a5ca5a89c599c4ae73f96fabdf2d6d3a5893981"
+    },
+    {
+      "path": "originals/learning-owner-retention-E-preparation-v1/prepare_retainer_v1.py",
+      "bytes": 41511,
+      "sha256": "022b110ffc3888bc0c8b96eda9815cc94e7f025c1b66feadbda2e76ebb5eb710"
+    },
+    {
+      "path": "originals/learning-owner-retention-E-preparation-v1/retain-learning-e-owner-and-helper-binaries-v1.py",
+      "bytes": 53642,
+      "sha256": "0cb76f4167f1bc899e8af02346228bbdf05f90964b4adadda5a7ff7bb71e7872"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/CALLER_ACTUAL_REQUEST_v1.json",
+      "bytes": 51686,
+      "sha256": "4d5062a71764ace1ffa9a78def844dbfaeb8f7902d1700128940307cc98ef788"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/CALLER_OUTER_V1_PREPARATION.json",
+      "bytes": 2071,
+      "sha256": "78a014110ef196c3d3eea9bcb8960d67c1d120e1f156ff6b216848e52bb828d1"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/CALLER_STRICT_PREPARATION.json",
+      "bytes": 1179,
+      "sha256": "37ffa5f5c870c95f7fa8c2d8159f7e75e9ba47389da8101aefdefb58b4b5aeba"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/CALLER_STRICT_PURE_CHECKS.json",
+      "bytes": 4630,
+      "sha256": "ab4b0ed8c50f2810ebd5e6d2551d58d94ef4b13c7611009e5c1e8f7e42886e50"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/CALLER_STRICT_PURE_CHECKS_v2.json",
+      "bytes": 4630,
+      "sha256": "369f3f8304a28f822f726aa56f775109333d8c4ba513d08f36f54a24137b8704"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/CALLER_STRICT_PURE_CHECKS_v3.json",
+      "bytes": 6264,
+      "sha256": "ae1e8bf1a6f70f11e0616f3fede9c64293d74dc50bbd7fdaf1350487dbb0c8fa"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/CALLER_STRICT_REVIEW.md",
+      "bytes": 6997,
+      "sha256": "ac5311b6e50ca48508a7ffb4f5e3afd14abc44b7ac03f9de88a41c9ba9e3ec8b"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/CALLER_STRICT_V2_DELTA.json",
+      "bytes": 1154,
+      "sha256": "6730dbec3a3371f741515274356bd2e50233a19dbce1a9bfa9c62fc63933bbc7"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/E_RUNTIME_ADMISSION_ACTUAL_ACK_v1.json",
+      "bytes": 930,
+      "sha256": "9c04ee80c0813366efbfae8f04c088c72541376d1fd9856640e18c4ef92b82d8"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/E_RUNTIME_ADMISSION_PTY_PARAMETER_CORRECTION_v1.json",
+      "bytes": 1364,
+      "sha256": "f4e114b67132c8a5279b5f6567f5265bc73ed200261708930163b0f7059ffada"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/E_RUNTIME_ADMISSION_PURE_CHECKS_v1.json",
+      "bytes": 3933,
+      "sha256": "472d64a47c70cfa81abb232251fb1a0b9a140b5f174a5d011a3a802bb13a95cd"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/E_RUNTIME_ADMISSION_UPLOAD_AND_REQUEST_v1.json",
+      "bytes": 10321,
+      "sha256": "ce29ff329c5091a7af4aeb06e07a1e4f78624fc329de2ef855cd33e394183291"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/E_STRICT_ACTUAL_ACK_v1.json",
+      "bytes": 743,
+      "sha256": "8f8eb04c9768a963a5a563d6c73199260606289e61cc642b46c06663b12f7d5c"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/E_STRICT_ACTUAL_REQUEST_v1.json",
+      "bytes": 1538,
+      "sha256": "451782d68f05d6f6ca93081bd6d411cd9a7121b25b989b50e2d7839c6e867533"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/NATIVE_PRODUCT_V2_PREPARATION.json",
+      "bytes": 1521,
+      "sha256": "f2c1fa2f1bf514b17f1132f71ada09637602cfad5692ece7f3fc411c4d76254a"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/OWNER_OUTER_TEMPLATE_REVIEW_v1.json",
+      "bytes": 2691,
+      "sha256": "78e670d404611d471d3e925469eb1fc5a2e40f974f1c3a42da7a09518155701f"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/PRODUCT_ROOT_LAUNCHER_TEMPLATE_REVIEW_v1.json",
+      "bytes": 4472,
+      "sha256": "a51252f83cafe747025c69753cc450a65a6f67a7407df6cabb4355710cf21814"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/ROOT_NORMAL_EXIT_V2_PREPARATION.json",
+      "bytes": 729,
+      "sha256": "8cb4801e36690046e241e38ac65bc163b7f35b274f6b6f641534da57de99c8b3"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/ROOT_PRODUCT_PURE_CHECKS_v1.json",
+      "bytes": 7062,
+      "sha256": "6276260142732b81977fbdaeebcad6c268fe003d0ed2a550bff06d19db896de1"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/ROOT_PRODUCT_PURE_CHECKS_v2.json",
+      "bytes": 7598,
+      "sha256": "2eb61e01b09d362298a58822cebc04301274fd49adc4541c1fc5724f9019098a"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/STRICT_BOUND_OUTER_PURE_CHECKS_v1.json",
+      "bytes": 1605,
+      "sha256": "ecfe0c9868251332e0dc4101c87a9d196edb5e2180129b3c120703a2485a54b1"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/STRICT_NONTERMINAL_OBSERVATION_004.json",
+      "bytes": 20317,
+      "sha256": "b8c2891915ae816fd4ab5d31b9e25da6772a911979425b3112a32bb14c3b40e9"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/STRICT_RECOVERY_ACTUAL_REQUEST_v2.json",
+      "bytes": 25159,
+      "sha256": "e4d0d2037ba44595009a8597c7aefe9e8dc828fc32f8e01400137d962a86c000"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/STRICT_RECOVERY_V2_PREPARATION.json",
+      "bytes": 1256,
+      "sha256": "9555c51e89b0c7f13ac05d86a76c75361436895fc625a9733f11548bb16fd669"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/STRICT_RECOVERY_V2_PURE_CHECKS.json",
+      "bytes": 833,
+      "sha256": "827a9697acf241ef238cccdd57afdbff7928fad19e188966b4fd7a3fa9a1bde0"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/STRICT_RECOVERY_WRITE_ACK_ORIGINAL_v2.json",
+      "bytes": 241,
+      "sha256": "22d371d6b1dac162054855c260a5d15f2d315fffa3d8f8f86f3f5ff1f9497424"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/V8_COPY_ACTUAL_REQUEST_v1.json",
+      "bytes": 52805,
+      "sha256": "8b75d73a0ac03b40fa529e088b19f46d85338e3750a562ebb2a7427ff4b69558"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/V8_COPY_RECOVERY_PURE_CHECKS_v1_FAILED.json",
+      "bytes": 735,
+      "sha256": "c5a44c474b6ea35963a53f218d7c5c73b7fea7f404cf1a42f154ab4ef0ba86e2"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/V8_COPY_RECOVERY_PURE_CHECKS_v2.json",
+      "bytes": 7454,
+      "sha256": "9c88695764ebf7cfefc9b447656783d9eeda8efe3b09c65de39aa59c6aead89f"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/V8_DIAGNOSTIC_ACTUAL_REQUEST_v1.json",
+      "bytes": 2243,
+      "sha256": "f0520b0f2b7d11076b908bc92d8fa904fdab3a6980b9c575b6c40f653b6056ad"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/V8_DIAGNOSTIC_ASYNC_RECONCILE_ORIGINAL_v1.json",
+      "bytes": 236,
+      "sha256": "17dac3c89d834b82d6303c1c31c6bbe35e59168568b91cd59d984dd99af615df"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/V8_DIAGNOSTIC_ASYNC_RECONCILE_v1.json",
+      "bytes": 2250,
+      "sha256": "d03f5264628a23fc1687e0bf262b408ea8e689a8c8dd2deaed04c1abd54bb830"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/V8_DIAGNOSTIC_FILE_TOOL_REFUSALS_v1.json",
+      "bytes": 1302,
+      "sha256": "299d05703086144e13f1fcb3c8ca549c56b1208b9b14d5e1c281384c0b84ed8e"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/V8_DIAGNOSTIC_SOURCE_ORIGINALS_v1.json",
+      "bytes": 10631,
+      "sha256": "b54d7030497075ddd5252a7ea1f8aa8ed4afa3df85469f507a765780474b82ce"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/V8_DIAGNOSTIC_UPLOAD_RECONCILE_UNKNOWN_v1.json",
+      "bytes": 215,
+      "sha256": "bbd2b7bca8cf6485d08db1f592cb0d4a911a36807fb29962bd76ce400f2a92c6"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/V8_DIAGNOSTIC_UPLOAD_UNKNOWN_v1.json",
+      "bytes": 401,
+      "sha256": "b7adf1e721bef140a91d3aa38c26cdf000c3ba8732f8c51b1ebd63296fbbd37a"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/V8_READONLY_UPLOAD_ROWS.json",
+      "bytes": 19872,
+      "sha256": "b3abc240451ca0f8cdef4e111dd5aa1d48702da722ca3fce54b5ee14f93cd7ac"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-admission-v1/ACTUAL_SUMMARY.json",
+      "bytes": 9632,
+      "sha256": "ad6e28744fe7303203aad9a977223fb7df5181df543d0d1c50c49e49c40c932d"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-admission-v1/EXECUTION.json",
+      "bytes": 9501,
+      "sha256": "4bef2cc6d78cf47d939a5fb9da8b1dd31a757c7d05b069e1574c5fa632fb1003"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-admission-v1/RESULT.json",
+      "bytes": 121610,
+      "sha256": "72c088c102e48a5096fece2b40f6176d472156c494fcef92d484888e078f156c"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-admission-v1/RESULT_BINARY_READ_ORIGINALS.json",
+      "bytes": 162955,
+      "sha256": "650a50809037ef8253a76ce12a0b67a7a83359d53d1420261b04720226e90c0c"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-admission-v1/RUNTIME_ADMISSION.json",
+      "bytes": 14521,
+      "sha256": "9c5413fa8779ff16676b245251febe96bcbf0fa5c372479980e2886f34e94a28"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-admission-v1/RUNTIME_OBSERVATION.json",
+      "bytes": 7079,
+      "sha256": "7e24d04df5fdb81a91be3c82848c620bfcf3a2630d30cd60ce940da73f6438f8"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-admission-v1/TRANSPORT_ORIGINALS.json",
+      "bytes": 45771,
+      "sha256": "cf3a60e49591866945846541857286a1eb7541c3f36b7fe14a83057ac25d0f10"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-callers-v1/EXECUTION.json",
+      "bytes": 9037,
+      "sha256": "0b91bca12a186d303abaac02a3f9968cc8120fa23462b0323ed5bf6faa043032"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-callers-v1/OBSERVATION.json",
+      "bytes": 3528,
+      "sha256": "c4eccaf477e81f0f1c24b24222d82d00cd665cc976b8d252d9884d155b3ed802"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-callers-v1/PTY_TERMINAL.bin",
+      "bytes": 468,
+      "sha256": "b059289fa1942ccc9bc6e3350a1d2c5965a2ef3e2e49abdd6ba25edb59d6a937"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-callers-v1/PTY_TERMINAL_H_RESPONSE_ORIGINAL.json",
+      "bytes": 2276,
+      "sha256": "8cae8f4e44e4ebf3899ee7dc2911a8fd77cef11140603aaadd7c8b0b63fd765a"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-callers-v1/RAW_RECEIPT_H_RESPONSE_ORIGINAL.json",
+      "bytes": 7767,
+      "sha256": "97e5c8b7af064a42b49558b0f7b366b26e351ea7f1d9b6bcf465fb54f1bbb6a1"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-callers-v1/RESULT.json",
+      "bytes": 4810,
+      "sha256": "c2dc2041a1f7b3435aec10f4ff0c394c47d505e5cf6c4ceacedcb244f5b14237"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-callers-v1/START_ACK_ORIGINAL.json",
+      "bytes": 423,
+      "sha256": "7e2d7b2f603a65aae9b96d90dfe5294bfd5814d44e0b6046a54b61e4b7034be7"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-callers-v1/TERMINAL_H_RESPONSE_ORIGINAL.json",
+      "bytes": 15615,
+      "sha256": "9adece8ede2a0c268553ed766afe5a05c72a6ec321a43e56892b167f00f0adbd"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-callers-v1/caller-full-scan.json",
+      "bytes": 1464,
+      "sha256": "2e09128ccb84eded799c1a69c1c94b79e46cdb8aac791c00661057858c92396b"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-callers-v1/caller-full-scan.json.bfec2848db2545d495ece474d4b8f76d.log",
+      "bytes": 169,
+      "sha256": "4b19dc4bead18c2479afea26e1bde8978a4da25c05d195cadfd752464d28dd1b"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-callers-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-callers-v1/stdout.log",
+      "bytes": 4420,
+      "sha256": "f793acaa724169eba92f130cc6f68ca3adf00bec78a9f9cd37eb5cc479953490"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v1/EXECUTION.json",
+      "bytes": 7710,
+      "sha256": "fc94952ee953d5f6db0c429eb30e4361eced8992ecbc09bd284cca8ca5f51b20"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v1/PREPARATION_READ_ORIGINAL.json",
+      "bytes": 17953,
+      "sha256": "3e0c655b955244e0f9020b719304d5d4dfe16de97c62e63d7c61015c3fd4a733"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v1/PTY-terminal-original.bin",
+      "bytes": 484,
+      "sha256": "2235daa9cb0d280e15f7c4be00d74dc0f37354e2ccbcc5e1a321d07a53f2dec6"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v1/TERMINAL_READ_0.json",
+      "bytes": 12065,
+      "sha256": "9cdc75652486642a93692983a974084fdddb8f29d92cfbfa6f5244ec9b4bafe9"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v1/TERMINAL_READ_1.json",
+      "bytes": 2538,
+      "sha256": "48026cf732b197d5516f3af9e81689bfba6245cf4686b654a8e5e70a9429a1fb"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v1/TERMINAL_READ_2.json",
+      "bytes": 6730,
+      "sha256": "da3e3dba4c692d1f0d6e36631e99cff4e8163e7487d872a967fdded80c1fda3e"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v1/preparation.json",
+      "bytes": 14135,
+      "sha256": "13ef021b1b8c59bae8d6f0df69dbf5ac9ffb9ee824e1eec65e91587267c70cd5"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v1/stdout.log",
+      "bytes": 3328,
+      "sha256": "ec1916fe0660bc099bfcde7da6447b233e7dde054b629325e4bb6def138ef3af"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v1/v8.json",
+      "bytes": 1495,
+      "sha256": "f5735ed0cdb3479260f5a4a0d7dd2ef974c06137bf861f8ebf396d99a2d694cf"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v1/v8.json.e613dfa937bc463bb6091d5d97973e6a.log",
+      "bytes": 1710,
+      "sha256": "6c73516a2e0d4fa52a3303d50e5202e850042bc3a9c65cb6ca769c0cb3e4d638"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/EXECUTION.json",
+      "bytes": 15341,
+      "sha256": "b253a16cd38e402dfc601914e25674187fdf8c697d23b971c5d990e6fee314c2"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/LOCAL_TERMINAL_READBACK_PREPARATION_FAILURE_v1.json",
+      "bytes": 382,
+      "sha256": "5afcf8765ce18ace40eba17d722841a4df75d2635c5a8212eaecafccc1b6c7f0"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/TERMINAL_READBACK.json",
+      "bytes": 724,
+      "sha256": "6056e72882b91a824187613bc67fc0b3bf668e498150b9dbb64f4fc78c8ccd3c"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/TERMINAL_READBACK_v2.json",
+      "bytes": 12476,
+      "sha256": "609d7c098e461b262f7b8153b22c61cde244d09127c083d25f50016c74229135"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-agentd-owning-strict-fix.json",
+      "bytes": 1544,
+      "sha256": "e90fe07259e163dda0a5e5d402e18f440cbe2531de2f514980f74e5b45fb5fbc"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-agentd-owning-strict-fix.json.1e0f488277284be693482b8e22665faa.log",
+      "bytes": 28073,
+      "sha256": "f2a2a01484d8103d07fdd480530763d427c651e977eda453feed436ca0a305e1"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-infer-core-owning-readonly-strict-clippy.json",
+      "bytes": 1574,
+      "sha256": "cb7ce11946185ecd1e79dc1ff1b9dbc20cae214b895722a0d670cd450c546349"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-infer-core-owning-readonly-strict-clippy.json.a1917b7ea0944ce9a5219b9c63feeeca.log",
+      "bytes": 328,
+      "sha256": "3e820510f79010abb95cce2b7cacc1150489c8e8beba889bf791a087db6e5a99"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-infer-core-owning-strict-fix.json",
+      "bytes": 1544,
+      "sha256": "ae6ec5b316b617ba76723f1c8ba3bcb4c89ea1cfad6ca8d8f5a219bce273427d"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-infer-core-owning-strict-fix.json.e572b830257e42e195c99f5aa907f40e.log",
+      "bytes": 916,
+      "sha256": "4b55ef5f0552f98ff1ead832fb79e6d943f12278e804f9ef56d7f3b300a9c94b"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-infer-worker-host-owning-readonly-strict-clippy.json",
+      "bytes": 1590,
+      "sha256": "3b1bb243484efd6fa2da7548f15ee9e79e27b2885297f7a5b7faaf28414490d4"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-infer-worker-host-owning-readonly-strict-clippy.json.f43c932a8e9a4e3396e0e313a9d2c04f.log",
+      "bytes": 22177,
+      "sha256": "5b439a717316de7e6afcae7517081129766d76ce5abeb5d437fe4e47cc48c8dd"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-infer-worker-host-owning-strict-fix.json",
+      "bytes": 1560,
+      "sha256": "ecb6443990771347ee05062940c4731d251b2fb69f0528ad9e1a62b3df4c96a4"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-infer-worker-host-owning-strict-fix.json.16345a904fbf4b0cb04cab20444a2cd2.log",
+      "bytes": 46870,
+      "sha256": "26da5c57283ccc9891aa9701cc144cc9f812db88f3a7f0a082e46ee6f61f7a31"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-neuron-owning-readonly-strict-clippy.json",
+      "bytes": 1567,
+      "sha256": "8d1ac815535fe90cde86aceda0c2bbc27525d6c3b7ead6ef9877adb13cfd2419"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-neuron-owning-readonly-strict-clippy.json.cbd8f79e16fb424daef53b5ac340445a.log",
+      "bytes": 460,
+      "sha256": "6c7c44b0b6d94c651529d793c4479fc3dd9723104a4b288e302af353958db7d5"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-neuron-owning-strict-fix.json",
+      "bytes": 1536,
+      "sha256": "f955b18e9f8d9c1a1ce3293835287b997639384fcc6a548aed541f3a971343a8"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/codex-hepta-neuron-owning-strict-fix.json.f49e9bb0113947348b2200253c94211d.log",
+      "bytes": 598,
+      "sha256": "ac568e79e8f35189ba58a82c8a901ac10d1082d8ee4dee9d7badd53240821d0e"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/helper-build.json",
+      "bytes": 1634,
+      "sha256": "7923da54eadf497b93630cfdcecbf6094bb12e15dca33349ae208aed11b925b2"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/helper-build.json.98e7e3a903584cb18e976aeb6a37a185.log",
+      "bytes": 488,
+      "sha256": "118c6652e8092e626ff0a90da85b1e40449948b8ac59aad0dcc9856626d13143"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/helper-verify.json",
+      "bytes": 1656,
+      "sha256": "87cce9ff5040d85e4f12c1068e276f584f7c16efacd49c194e1aa0ba435c17d6"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/helper-verify.json.64f02423b53b49f4aae6a794a4931238.log",
+      "bytes": 5827,
+      "sha256": "ad6663d77cf3cc747654c2488770ee5d37a53676c05404e0d51266282291ee8b"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/helpers-env.json",
+      "bytes": 2567,
+      "sha256": "d7fbbf6f6fe0d8bed7c94281f3c53d5da2426819264e9fedbafa204a0b842f87"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/helpers-manifest.json",
+      "bytes": 14079,
+      "sha256": "4c46154deea57a0d88d72d2adee58801210d8f35a11a108faf828b7371c90f41"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/original-h-all-phase-receipts.json",
+      "bytes": 22354,
+      "sha256": "d1a3418ae93b7c89cffe4eafe392c92f84103f6cbe064b2ee6656e3b2b0fe975"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/original-h-raw-and-helpers-1.json",
+      "bytes": 84633,
+      "sha256": "bbf5b9db2ec5dc69b16a4f2136ab69818bded4850062d70fcebc1874e762b7a6"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/original-h-raw-and-helpers-2.json",
+      "bytes": 20736,
+      "sha256": "3bbd486c4c3951a1116b1fabc85c9efd61536d3906c531be8d0bdda0a1c9cc4a"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/original-h-terminal-read-1.json",
+      "bytes": 21377,
+      "sha256": "0087653e1d4d0986869ba07ba0f3f22653ca85080844db36966a2787250da3a2"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/original-h-terminal-read-2.json",
+      "bytes": 29309,
+      "sha256": "e15206fd7491ffbcfc675a91724c00258d213cbde352dd293ee31fb0d4c1e3d0"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/outer-stdout-chunk-1-original.json",
+      "bytes": 87868,
+      "sha256": "100ca897260a11d9c3987793400043594e9c5794346697f7c8228351c97ebebd"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/outer-stdout-chunk-2-original.json",
+      "bytes": 73400,
+      "sha256": "7f3d743e89ac7b1bdd231b2815ff638a2a91e92560122764764c056345e8c472"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/prep-original-h-response.json",
+      "bytes": 44776,
+      "sha256": "be33656879b624cfcb29aa9bfc9577aea9b9cb4c1c55a0c09ffec91596dca930"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/preparation.json",
+      "bytes": 35838,
+      "sha256": "3307b165449db129ea372ac92b60b2ac8ceb01774053b2e11ac282d6ff01b888"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/pty-original-h-response.json",
+      "bytes": 2586,
+      "sha256": "48d146d9ee1ee376a74c3236dfdba3e1328c24996e43fff46d404874fe2acf3f"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/read_terminal_originals_v1.py",
+      "bytes": 10188,
+      "sha256": "73b63ef4a479ff3ede461498a2d9a80be58fca51217feac93da8af3585275764"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/read_terminal_originals_v2.py",
+      "bytes": 10633,
+      "sha256": "88d0339ae345473d36750271501bac36375df050fd8768ad69eaeea32677fda5"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/readback-v1-to-v2-diagnostic-header.patch",
+      "bytes": 2599,
+      "sha256": "3175df3b6e370fe18df2bb860aec790836662b206a9369324452dd53fc7a8400"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/source-inventory-and-launch-originals.json",
+      "bytes": 2196,
+      "sha256": "9c8975e54898d6cd3b0612a092be4d4fe849c61920a8111af402efff518b5a6a"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/stdout.log",
+      "bytes": 120219,
+      "sha256": "6e9d9b5b94717d41a6f1eb870657481d88fc0fc9f3d713d2e7c35ef669e6fd3d"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/strict-terminal-pty.stdout",
+      "bytes": 486,
+      "sha256": "b4cc02b16debadc407b9f362e7f214d041567314574bbd42a56939105e98f32a"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/v8.json",
+      "bytes": 1491,
+      "sha256": "174982d3313ac17b83a35d4a2de627c8baeac0883cda6857f7acbb02bee007e7"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-strict-v2/v8.json.d0568ce9306d459b957d57e629960d4d.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-v8-copy-v1/EXECUTION.json",
+      "bytes": 8459,
+      "sha256": "bd558db57e4a9def63163da05697bff8b56e413313240991b11d4ef330f2ad25"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-v8-copy-v1/OBSERVATION_ORIGINALS.json",
+      "bytes": 80327,
+      "sha256": "036a926961848ccd756a567aac66f2ebb33fece5abe1f9f75a02e9d2fefed8da"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-v8-copy-v1/RESULT.json",
+      "bytes": 51464,
+      "sha256": "7f4bed4759f0be48a701303f74563b19b6bcfd7f4cc970f5c494587776167e03"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-v8-copy-v1/same-attempt-checksum-original.txt",
+      "bytes": 262,
+      "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-v8-copy-v1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-v8-copy-v1/stdout.log",
+      "bytes": 445,
+      "sha256": "e3501539b09174d3d9baffa426d78b6e20bb92724d754c8ccc8ac561ad6103f6"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-v8-diagnostic-v1/EXECUTION.json",
+      "bytes": 1161,
+      "sha256": "248ebdae6ec42081777288e0f2baf224dfa352506e964d7a1387f71dfe53bf49"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-v8-diagnostic-v1/READ_ORIGINAL.json",
+      "bytes": 58705,
+      "sha256": "c37a3f9044018f84b4e80c70da5776dd64c1325495b8660517115a4ba6c013d4"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-v8-diagnostic-v1/RESULT.json",
+      "bytes": 49789,
+      "sha256": "b33b9be404d832cb922c7591a95dd625caae4a81235c7b695d5deefe4093f31e"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/actual-v8-diagnostic-v1/failed_attempt_cache-checksum-original.txt",
+      "bytes": 262,
+      "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/admit_learning_e_runtime_v1.py",
+      "bytes": 24962,
+      "sha256": "9a8774553cfe4ee1f2e4a20bb4f7a14a91dc54a28075c5e7ecdc92f7ac60777f"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/build_learning_product_child_v1.py",
+      "bytes": 3885,
+      "sha256": "b2caab579f85242a13bf1ec7f645ff342de30366200b1226c796cbd36e68f519"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/build_prepared_controllers.py",
+      "bytes": 12442,
+      "sha256": "2860e5eae49c311baef3b5f3281c71fa7dddf40f75f20bd3325d783c81b5ae6f"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/caller-c-binding-to-final-runtime.patch",
+      "bytes": 26383,
+      "sha256": "f3b3c2199c200cc053900738f99f6fb627a941462368f0f0f2289a7b19be3576"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/caller-failure-static-diagnosis-v1/CHECKER_SOURCE_H_RESPONSE_ORIGINAL.json",
+      "bytes": 32334,
+      "sha256": "0d515ac52cb3b7c13eca20c38383e339571aa624ae6f6e5ba792a861c0a2e983"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/caller-failure-static-diagnosis-v1/MARKER_LINKAGE_CORRECTION_v1.json",
+      "bytes": 2528,
+      "sha256": "86a433876822367d634c0d9f3b1f20e5d25d809b79d75f20293246da7598a667"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/caller-failure-static-diagnosis-v1/RESULT.json",
+      "bytes": 3802,
+      "sha256": "5f0e54fd82c54317237eb16413bf31b8ad69073dd133846aa8e0486cbb28abc2"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/caller-failure-static-diagnosis-v1/TYPED_SOURCE_H_RESPONSE_ORIGINAL.json",
+      "bytes": 9667,
+      "sha256": "8a0eb2fd85f231e54819868a1668c2e8d21c4f3ecc6a8bbd13bd257165e9036f"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/caller-failure-static-diagnosis-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 5964,
+      "sha256": "aa78854079a86f4de8a96b2365bac89157062cafbdd076742cb9621b9caa455c"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/caller-failure-static-diagnosis-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 5937,
+      "sha256": "bc332037ee5539cd75591b52c4548ff8d03719f64686d1b1eb83c364844de2ca"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/caller-failure-static-diagnosis-v1/hepta_typed_callers.py",
+      "bytes": 8807,
+      "sha256": "f1ba6fe993224dbdd1cc78270ef902fd2fba17b25b1d1fce90112362fdea90bc"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/caller-failure-static-diagnosis-v1/prepare_receiver_annotation_fix_v1.py",
+      "bytes": 7501,
+      "sha256": "b6061cd22380d6448795a0c91d745156eacbaf097a2bf45d6078fa499e346075"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/caller-failure-static-diagnosis-v1/receiver-explicit-type.patch",
+      "bytes": 596,
+      "sha256": "0a09e151c82e92cde8ec70658202b891f43f25ec5a3bb5467d3f91141f3ec739"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/caller-failure-static-diagnosis-v1/verify_hepta_callers.py",
+      "bytes": 30543,
+      "sha256": "a6a06b4f915b5c71c678278947cfb0077bdf51c982e4178341d9d5a999e0cb5a"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/caller_binding_fragment.py",
+      "bytes": 5965,
+      "sha256": "4f3986d9818eed0b1100d6f72ae0fe03eb6cace8e0b71784d48352c12a8ccb4c"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/check_bound_strict_outer_v1.py",
+      "bytes": 3952,
+      "sha256": "c07a545e5625a9fb713b2c27bb94dcf733fa49e58c16a05134426f34aded23af"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/check_caller_strict_preparation.py",
+      "bytes": 7956,
+      "sha256": "be17a87192880d3731b13dbd4f55765c98f56140ec38cff8adfd58e4cb7b0dcc"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/check_caller_strict_preparation_v2.py",
+      "bytes": 7959,
+      "sha256": "a1701a199be350ca442ff52f50eba4ecabbcbd3b77c9ea99f9714b5c2dacb4c3"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/check_caller_strict_preparation_v3.py",
+      "bytes": 12134,
+      "sha256": "d535c8d1a79a08b3fab9a2579be69c27f2a00ff3508da41bb9a2b5178fa3d260"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/check_e_runtime_admission_preparation_v1.py",
+      "bytes": 6727,
+      "sha256": "ee10fc43e4275a8902fe1b05d1f42cce48f9a3b50c7265c7e2bef3d780671c8b"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/check_learning_e_v8_copy_recovery_v1.py",
+      "bytes": 12540,
+      "sha256": "cf58b410f3e6b3550949fb5c3a38835cc9721b6c3b94c21d522e09cee5a4500e"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/check_learning_e_v8_copy_recovery_v2.py",
+      "bytes": 12636,
+      "sha256": "bf6f899e4250fe850fbd19e4d8a8d1c4c159d9f3bccb99590561cbdf7801d533"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/check_learning_root_preparation_v1.py",
+      "bytes": 11987,
+      "sha256": "b647d20cf72b957032cbd27edb401d3b81e26638f5979bec25f08272da7718a2"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/check_learning_root_preparation_v2.py",
+      "bytes": 12262,
+      "sha256": "e6fb8313beb415fd15087d2ef8c915aafc7f99f1773d3440ffc725303574aa84"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/diagnose_learning_e_v8_readonly_v1.py",
+      "bytes": 11434,
+      "sha256": "ef745e66f1ed352d09e3707674a74bc792cb6a97dfb34a86fbb0f4c490f5c603"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/extend_publication_checks_v3.py",
+      "bytes": 5129,
+      "sha256": "95e37eefd84daa6ffd018b835ddf5a369089735316a800fd13ee509c95dc0ab7"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/launch_learning_e_callers_v1.py",
+      "bytes": 11520,
+      "sha256": "ef727a1aee65cb20b670c67deb42f5a17e3388c7701e3312287a1f0e0c4cb36c"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/launch_learning_e_owner_native_template_v1.py",
+      "bytes": 15716,
+      "sha256": "e38999b848241c19c20cb4a92d68fd89a7e0bf11382fcd5ee82b97ac348177c8"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/launch_learning_e_product_template_v1.py",
+      "bytes": 16601,
+      "sha256": "5e0ad84111bc1a811260c31218f5ae020d747a26a6bfbbd8caa01393b32ead93"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/launch_learning_e_root_parent_template_v1.py",
+      "bytes": 19584,
+      "sha256": "a6f8c2227bdc178ef24ab2f1bca705394a84ffc8b54c441941d09f198cf2724a"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/launch_learning_e_runtime_admission_v1.py",
+      "bytes": 6581,
+      "sha256": "fd4ff80e5b908130c101beeb8e9eb9be94b5729e857ae7dbd8935feb07bf638e"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/launch_learning_e_strict_recovery_v2.py",
+      "bytes": 17764,
+      "sha256": "84bcb4a0873b9af5b5aa857cfa348f39e9494cce449aaec499b97c5fd98b726d"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/launch_learning_e_strict_v1.py",
+      "bytes": 8971,
+      "sha256": "70a64350d362ba22d1825b4cae879b1573d0715b251bbd5a55dbbc8df8944ac1"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/launch_learning_e_strict_v1.template.py",
+      "bytes": 8864,
+      "sha256": "95c1e10ac55debbcc7190f2b071ab9b81f77d87604b0ad1579fbcc1323735db2"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/launch_learning_e_v8_copy_recovery_v1.py",
+      "bytes": 9126,
+      "sha256": "4c674fea17718c36cf7b854313bf00653f5752e63f5abb0da91a62242b6d2269"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/launch_learning_e_v8_readonly_diagnostic_v1.py",
+      "bytes": 3214,
+      "sha256": "fa59f85b207844b058d97263daf90f844b5cc28892753a134d6504f2d322e712"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/learning-e-runtime-admission-inputs-v1.json",
+      "bytes": 14390,
+      "sha256": "7ab6c72171658eb40ce4c1f1eb3c4e31ff77f977ddc2e8eda368f893a0d29017"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/learning-e-source-publication-original-v1.json",
+      "bytes": 15648,
+      "sha256": "a72889e4d05f37e7557f92086f1533b337b97756f537d1f1f7a96cf4ecf47653"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/native-agentd-to-four-owners.patch",
+      "bytes": 55804,
+      "sha256": "e27ab304f2e1362a6efaede8af109139d2a4853391cb6ddfd78e1f81269369ee"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/native-product-strict-v1-to-v2.patch",
+      "bytes": 5365,
+      "sha256": "dc647579dc9c4b6377baa30cb23b11487f668fce5bcd16edad5fc9b7bada3b4d"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/native_main_fragment.py",
+      "bytes": 19721,
+      "sha256": "c0c8000d2105de3f56b1d13dedc5f36baad3ce4e06b4313c520ff7336cd8e06c"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/originals/AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/originals/actual-E/MAIN_READ_ORIGINAL.json",
+      "bytes": 14394,
+      "sha256": "d7884a738b37cf5a6148a9d3f1790c8a0ff7e3c6d8fb9e493c4bea5fb0af4ee7"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/originals/actual-E/agentd-main.rs",
+      "bytes": 13038,
+      "sha256": "9b6c157d88b2c1f32ab87adf34b73d52f2fce9db2581b222c0a54bf814994f97"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/originals/codex-rs/hepta-agentd/Cargo.toml",
+      "bytes": 4965,
+      "sha256": "691587ea76a582c1a9e8a062feb591b0aa93e5c3385e2847dd883423500075de"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/originals/codex-rs/hepta-infer-core/Cargo.toml",
+      "bytes": 384,
+      "sha256": "7ca860f039344b7629db786ccb069d150ee87838ff8f1211e9a89935da00c16e"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/originals/codex-rs/hepta-infer-worker-host/Cargo.toml",
+      "bytes": 1220,
+      "sha256": "e20f4e783adcfa8d82d3394a827e6f4c6d8e5e8e10e9c3be3b20e1c4824aef74"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/originals/codex-rs/hepta-neuron/Cargo.toml",
+      "bytes": 495,
+      "sha256": "1ebe7dcf2b82b8143aa298059afff3ea17ee76f7c6140aae41d099bed5031c48"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/originals/desktop-6ec-baseline-checkpoint-root-runner.py",
+      "bytes": 7004,
+      "sha256": "c218dadbfa09f29c928c14a44e2539f0f8a4f43543b64fa1383f0fc4c933520f"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/originals/run-desktop-6ec-checkpoint-root-v1.py",
+      "bytes": 31208,
+      "sha256": "e4f1c748a7125620697a591777a0975246c6954063e5cccd4f485fc984e5f4dd"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/originals/scripts/hepta_cell_test_helpers.py",
+      "bytes": 18658,
+      "sha256": "43802e867f91225efcef9ea4763567c0aeabd5a07b6c03000eb033501b4eb9ae"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/originals/scripts/hepta_ci_exec.py",
+      "bytes": 12863,
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/originals/scripts/hepta_ci_junit.py",
+      "bytes": 6613,
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/owner-to-product-once-template-v1.patch",
+      "bytes": 15263,
+      "sha256": "948ae6d743cf3db55b80e7bf967f95ed1e64469073a795f9fb5333d93106a287"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/owner-to-root-parent-once-template-v1.patch",
+      "bytes": 19002,
+      "sha256": "17ed7b95656265c63dd947ba3720b39f51347186da414a464191f9c875eed7e3"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/prepare_e_runtime_admission_inputs_v1.py",
+      "bytes": 5273,
+      "sha256": "41a34fc86a4eac00b0bab58a02742264932ea05c4554080370e5f46db998e2c0"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/prepare_learning_product_v1.py",
+      "bytes": 15951,
+      "sha256": "4d9051aa2a8f8a87b74ff36592bef8789476848871755bec54f7d85ddab503ed"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/prepare_learning_product_v2.py",
+      "bytes": 15951,
+      "sha256": "f010d1737934986aad7302099bae17a69e87e7124a883515412a5257ec7f33ee"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/prepare_learning_source_strict-v1-to-v2.patch",
+      "bytes": 3347,
+      "sha256": "989b3f8d860d32a887e5d232755e1b639b6d30d7d20750e60ade5a882c80edce"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/prepare_learning_source_strict_v1.py",
+      "bytes": 29568,
+      "sha256": "0ec36333ce8c54ad98da93eb0ca6f009154a14bf35ad269b93088efbba324a2e"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/prepare_learning_source_strict_v2.py",
+      "bytes": 31313,
+      "sha256": "23521b523ae2f3d86af5ea7e9259c4aa037bdf24c92162afcf308942be213346"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/prepare_native_product_v2.py",
+      "bytes": 3235,
+      "sha256": "90ddc5a855f10fbdecae80951e4d8d43b8840c6f6d04951bd69fc8ddec232533"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/prepare_reviewed_v2.py",
+      "bytes": 4451,
+      "sha256": "502fe43fd4e197656c05552d2ae62f300c1f364f61af3ed71ba7a8c2a9db7522"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/product_main_fragment.py",
+      "bytes": 15036,
+      "sha256": "df5ed7d1932624154b232fea0d74e37d4d588976052deedc1cf5976408fb47b1"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/recover_learning_e_v8_copy_only_v1.py",
+      "bytes": 28775,
+      "sha256": "9f673928778b3a8c5bcd9f390dbb284372338097f5710c91a9abe3d296fae96a"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/recover_learning_e_v8_copy_only_v2.py",
+      "bytes": 28772,
+      "sha256": "8d4568120ce697a20977d2ddda97ccb15a310fb4c6d2d87eb19360c546bbf1f6"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/root-admission-readback-v1/EXECUTION.json",
+      "bytes": 9501,
+      "sha256": "4bef2cc6d78cf47d939a5fb9da8b1dd31a757c7d05b069e1574c5fa632fb1003"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/root-admission-readback-v1/RUNTIME_ADMISSION.json",
+      "bytes": 14521,
+      "sha256": "9c5413fa8779ff16676b245251febe96bcbf0fa5c372479980e2886f34e94a28"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/root-admission-readback-v1/RUNTIME_OBSERVATION.json",
+      "bytes": 7079,
+      "sha256": "7e24d04df5fdb81a91be3c82848c620bfcf3a2630d30cd60ce940da73f6438f8"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/root-v1-to-v2-normal-product-exit.patch",
+      "bytes": 1475,
+      "sha256": "e931e339724978e31d67ab7fd7a0fd2518e9b3cdeb408d47f6c8be49d1c2acfa"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/run_learning_owner_native_v1.py",
+      "bytes": 33673,
+      "sha256": "f3a4fc47c5dbd75ac5a95643e8306f200e018f5d7aa62255ad8d1d2e00b06360"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/run_learning_owner_native_v2.py",
+      "bytes": 33673,
+      "sha256": "95ac6f0ea880de34d1b7920c3b433f4cb23d80cb58e9fc010bef7c7d31e92f20"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/run_learning_registered_root_case_v1.py",
+      "bytes": 15210,
+      "sha256": "fb6a49dfacec5868d79d5d44822a496ecbc383f39f5798a77e1c85bd024be8f7"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/run_learning_registered_root_case_v2.py",
+      "bytes": 15210,
+      "sha256": "b947ca7bf9152cb025cb64119909a2c650b0d7cc8f05128f415d5703962843a4"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/run_learning_root_parent_v1.py",
+      "bytes": 40333,
+      "sha256": "f94beadda63b100a7b5d79a3ef3d0ecc38b8a133a526a0fa424d7ef95b1a253a"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/run_learning_root_parent_v2.py",
+      "bytes": 40333,
+      "sha256": "392d608e6f724b41f59f157504fb5ae2c72c90ee0e7ffb2c1624f55a7edc5719"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/run_learning_source_callers-v1-to-v2.patch",
+      "bytes": 2460,
+      "sha256": "1f0fd3456cde7cee1c6fa2ab37909a110d07f42d1afdb29ef061cfc88269742c"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/run_learning_source_callers_v1.py",
+      "bytes": 24082,
+      "sha256": "151b973714cfb1709230a5bb06d5edd4749cbb27bce360c24cf862de6c145d9e"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/run_learning_source_callers_v2.py",
+      "bytes": 25804,
+      "sha256": "f0c52e7b70eb04b8dc71de60bd1b3d3ff29b1f0c79af1ffad77411d9d5fa89a9"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/runtime_contract_fragment.py",
+      "bytes": 12015,
+      "sha256": "c2b0d55b5289130e71dc69f5861bb410ab7294f08fe14a126d8e85e68d19704e"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/strict-6ec-to-four-owners.patch",
+      "bytes": 36863,
+      "sha256": "0f459d28b1a990c9eac0ceb10ceab510380f36b18e700aade2275bf26ed613a8"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/strict-failure-explicit-assert-import-v1/RESULT.json",
+      "bytes": 1411,
+      "sha256": "2220ff9c2e53af04a36d28b93c532f198e3b945c7f09d7ca0d7d24146a7a8de8"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/strict-failure-explicit-assert-import-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_delivery_tests.rs",
+      "bytes": 11819,
+      "sha256": "838d0a13e643b900b1b7df4cd7dcbcc3451cf616d47461324a1b4eb595257b97"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/strict-failure-explicit-assert-import-v1/before/codex-rs/hepta-agentd/src/authority_host_learning_delivery_tests.rs",
+      "bytes": 11785,
+      "sha256": "b707ae704660acdc8e78efceb3a813044e4f1d4d5aedd228e08a13c5232a21a5"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/strict-failure-explicit-assert-import-v1/explicit-pretty-assert-eq-import.patch",
+      "bytes": 424,
+      "sha256": "1816e0667f1f5eb0e6fdc1e07cb14dad33ad4e77f9cd248f7ac052ae48d39729"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/strict-outer-three-actual-pins.patch",
+      "bytes": 982,
+      "sha256": "12b9579ca1d6eab1b2a6d791d6345f6f4e2245a2fc7cf4b7084a287ed3fb98a5"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/strict-outer-v1-to-recovery-v2.patch",
+      "bytes": 13379,
+      "sha256": "f4ae7d34b51ee918f6e6f0d5e35a90409f8071392f84961cba3c3c99771179d0"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/strict-to-caller-once-outer-v1.patch",
+      "bytes": 13049,
+      "sha256": "c55ea58411707f001fd32df3c0c5cd4ee9e1c86e6d190e7aa4e064d0e4626db5"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/strict-to-owner-once-template-v1.patch",
+      "bytes": 15806,
+      "sha256": "89345176c2868a8c435e3d2830bdfa812b46f007d39e99d53026f60e0c432989"
+    },
+    {
+      "path": "originals/learning-source-gates-preparation-v1/strict_main_fragment.py",
+      "bytes": 11972,
+      "sha256": "0deb25aae1ae36e4056d205046ef2c04175fe8860fb126c0a38f0da62b521d5b"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/COMMANDS_TAIL_H_RECOVERY_ORIGINAL.json",
+      "bytes": 48225,
+      "sha256": "eaceaba147c91b99f0ad991c1c83804a0717121d8beae7f8b05204f605c7a0d7"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/GITHUB_TOOL_RESPONSES.json",
+      "bytes": 14343,
+      "sha256": "811acac2d844ebc7c8f9fc30d6ecf5cd4648827695c40f47235cac07adf2b2f3"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/PREPARATION.json",
+      "bytes": 30254,
+      "sha256": "5e68091d174e8f083d2841b27c69840ed86ef90d86723f3b51f78e04c7d6a0aa"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/RESULT.json",
+      "bytes": 15648,
+      "sha256": "a72889e4d05f37e7557f92086f1533b337b97756f537d1f1f7a96cf4ecf47653"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/prepare.py",
+      "bytes": 9989,
+      "sha256": "ca9a43df92939629a583fbabcc123db811a37919a23f26c136eaa69655f030ef"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/01.json",
+      "bytes": 17445,
+      "sha256": "c6b96d285adfef6efca4006af736edcba3633f8ec22370c9afdad44b9a70ff7b"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/02.json",
+      "bytes": 20503,
+      "sha256": "dd08bb623b91b44c3873163b13c593d12db79ffb07fc5c32db1b36d6d0eaab6b"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/03.json",
+      "bytes": 1929,
+      "sha256": "1089ad756d5abc7db977498f3de79eeba700121547c20e0802b4e94d66c21b84"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/04.json",
+      "bytes": 7679,
+      "sha256": "cf4b4b6d64d3ff5fbe2eddece3722937f6a246851e28da7d1e7deba04f62e839"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/05.json",
+      "bytes": 36283,
+      "sha256": "52353fea5281d13bf545312065c595720116f1692ad1ec24e575ec0038fb6533"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/06.json",
+      "bytes": 16267,
+      "sha256": "53399b658177b9eb9235ddb670f85fe8ec24aca5a62ade8c92e9729c0d3720d2"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/07.json",
+      "bytes": 13389,
+      "sha256": "de97409c754d2f3c8ec4958a8bf90b000555ba7f9c20af9d1e3aa1ad7552bb48"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/08.json",
+      "bytes": 30793,
+      "sha256": "fb517ea88e1e2d64a7e10a3b6bb93a4941b19fb95446fb498ce29eb5985c2c83"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/09.json",
+      "bytes": 15041,
+      "sha256": "5ea4936628573746306c73681d4a313bd70219bd73458fd9399f80b7d943bfc3"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/10.json",
+      "bytes": 90279,
+      "sha256": "d8318ca2866973833d3e21795624f43c8c814ae708c13891eeef54ad65a62af5"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/11.json",
+      "bytes": 4156,
+      "sha256": "bba792d0cf785d34721640bfee42b53335cab8dc89af76551893f37494a6e53c"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/12.json",
+      "bytes": 4160,
+      "sha256": "f78de01215249675ba44e6f3d501159088bc81af9a5814b7b00491119c4510b0"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/13.json",
+      "bytes": 4178,
+      "sha256": "c1f9237e434c7ef57cc2d5bed2753b84a82b099b13930ac74b89394a09ff3d49"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/14.json",
+      "bytes": 2238,
+      "sha256": "fd87c870ae4f14524562cc0526c829e283bbfa3bdc446184a51262a84506bdd0"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/15.json",
+      "bytes": 2020,
+      "sha256": "b96c10731d75a6fe1151c9bc6845bc420cd2a2a7f51351be5c4fa038e91db2d0"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/16.json",
+      "bytes": 2048,
+      "sha256": "d98eb932e69b9ef95038855314eaba03c44865d384578c2ab6f87a5545f5c6e7"
+    },
+    {
+      "path": "originals/source-assembler-github-publication-v1/readbacks/17.json",
+      "bytes": 1163,
+      "sha256": "ce91d501faca22b6c0df735d56e0f15540df18dd8e8429daae1d3246ccb39fd2"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/FILE_READBACK_SCHEMA_ERROR_v1.json",
+      "bytes": 621,
+      "sha256": "f298167854542bf59973e06cf8b24c147c7b364956c0aaf101e6fecb57975866"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/GITHUB_BEFORE_ORIGINAL.json",
+      "bytes": 2284,
+      "sha256": "cb6390cdc481fcc01a66a850122d8f7dd4b6fc1c32327c5bf9af6dcd58d26678"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/PREPARATION.json",
+      "bytes": 37880,
+      "sha256": "681cd7c18740f90adc0801a60543b7768d3e74a3753e4b462f50936a5418cba6"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/RESULT.json",
+      "bytes": 44946,
+      "sha256": "7f5cf8f5271a9e47d3167dc33e2e0f3746208e2237e58b747965bfaa86e88462"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/ROOT_AUTHORIZATION.json",
+      "bytes": 1110,
+      "sha256": "f827891302159f862f64b28cba2d93729b501dd990934aae3f8f1ee5d6a6b2e6"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/prepare.py",
+      "bytes": 10817,
+      "sha256": "169a1ebf06c4dcf7a2fd26ff7c5c41c055b9e98b72f7a4fc4d954675d7eeb670"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/commit-read-01.json",
+      "bytes": 3858,
+      "sha256": "333bac4bf18c7be8805dd017ea2a5da0f04382a9c86383f0ede5a34d365852bd"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/commit-read-02.json",
+      "bytes": 3878,
+      "sha256": "caecf41e4333a30dbe05f5d51d856b214dcf6195a33216c0f239c7764a992f2b"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/commit-read-03.json",
+      "bytes": 3866,
+      "sha256": "177738e525e0e6ea0ecdbc4f341e8c2e1650c31af23ce854d70690b50ffe5b67"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/commit-read-04.json",
+      "bytes": 3862,
+      "sha256": "c0ea52bd65d853e6bd5392b9d7d138a8dae650b6e0bf84e79d6df943298d7385"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-00.json",
+      "bytes": 7293,
+      "sha256": "f9b632229a336780c1051db1af511fd0a71e8ebbbf99ac095501765afde5e5d3"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-01.json",
+      "bytes": 21398,
+      "sha256": "d6289204362a13b145dee8a30a15c379d89624259bb3f55b4886cf72988b20d1"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-02.json",
+      "bytes": 19000,
+      "sha256": "90a2d3402870cfc2dd62e8dcd89f527bad3f885d8ff7d824ee54579125ca323f"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-03.json",
+      "bytes": 19530,
+      "sha256": "ac8ed56b9aa28a81a14a811646ecf1aeef49e916681b05d6b7b2704e4cc96da0"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-04.json",
+      "bytes": 21072,
+      "sha256": "091da3708580472a17207be4ffa59571a7005e4bc9dee3749c61e3151f16b68b"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-05.json",
+      "bytes": 17422,
+      "sha256": "6804168bb5f2e455367ff5095566897d2d28ffd35814c58ca91155d533dfacd3"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-06.json",
+      "bytes": 44075,
+      "sha256": "6b734c602d4d9e81b40bb1e9c81f7a593ea8b6da25dd443172dd94d4f7ded8fc"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-07.json",
+      "bytes": 45101,
+      "sha256": "02c9eaea47cafeff2020b0ca34ae1e4f30f462538dac342d3111a8c85fb214df"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-08.json",
+      "bytes": 13406,
+      "sha256": "a96eb4db8684db7bbe4dcba892ccf561d04b2722cfdf29e94aafabc4381487da"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-09.json",
+      "bytes": 25769,
+      "sha256": "1d332a296f56796fccb9b048979b422b356835ae3aaaa6ba6a6d54a4ca9d4a2a"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-10.json",
+      "bytes": 18073,
+      "sha256": "f4b5ecbd8e5e7c9bb76a57abb704e07a9a53e5922a36b470c9632ad5042c1891"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-11.json",
+      "bytes": 37066,
+      "sha256": "b0bf42041d86a68a81dbd97c4878563f57703ff27924bfb69ea461e495b4f2d8"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-12.json",
+      "bytes": 44166,
+      "sha256": "6c02023a8af4c663dcb554ce5a82859a55fdffb5a4b93f8a173b51096466578d"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-13.json",
+      "bytes": 10029,
+      "sha256": "a6ae9ac0e02cb4d30f3682cf2c724e30a2147c5af307cd846876973eb786aab0"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-14.json",
+      "bytes": 34404,
+      "sha256": "f1fb551029815f5d3d56d3d57ace29713b476d0fe3c833b79106dedcd8f02a3b"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-15.json",
+      "bytes": 91644,
+      "sha256": "b37020ebc6f58c92ae6557eb4445000050e2858b80cace4662dfd4671efac090"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-16.json",
+      "bytes": 31538,
+      "sha256": "7570cf89b4dc61550e0d4d5d000c1c1779612bd27bd2d8c7100eeac152ba28c1"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/file-17.json",
+      "bytes": 16875,
+      "sha256": "c86ebe29d9a546d3af99982cac4fbc1062b5f1444a76a500ae2ec2284da676b0"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/post-update-ref.json",
+      "bytes": 2313,
+      "sha256": "c27a927cff1060a2c8e1c88b616df977659f908be4f438757dc85d376357fdae"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/pre-update-ref.json",
+      "bytes": 2312,
+      "sha256": "7c8246bdc81bf2cadacd5748e93a3bd19796f2678a25839342e710cf95c36afc"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/tree-read-01.json",
+      "bytes": 29480,
+      "sha256": "f976c0efdce03d1495d4b158739016d143571c927a176e283c1acc780925fe27"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/tree-read-02.json",
+      "bytes": 29480,
+      "sha256": "adc426872c789fec424e3bfa09ab035da0ea7b34eca2b08ff6226baad86a1ebe"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/tree-read-03.json",
+      "bytes": 29480,
+      "sha256": "b33dacaacedf7fc660d19c8a78a912e4e37bd0d8e1e9ea9e5d904726ff2e0f5f"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/readbacks/tree-read-04.json",
+      "bytes": 29480,
+      "sha256": "4f0d41e375d11c1fdbb0d6cb36e753853df4a27d4369c1be39bf65b701787f74"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-00.json",
+      "bytes": 3426,
+      "sha256": "ef02b8f43ab21479640affd07d59171658e2d3359469c8c44000a0c3cab7cf27"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-01.json",
+      "bytes": 10498,
+      "sha256": "2652586fa51ea28bb61f14f446b0587787dfaa33f5ced71d61db78dff157cc07"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-02.json",
+      "bytes": 9233,
+      "sha256": "0301947afdf3a69b2b5e7815ba3fe8eb72de3f7e9a6ea295c5376f3115fd820e"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-03.json",
+      "bytes": 9513,
+      "sha256": "3d2cc3d811daf3a329ff6e02c105e341a8c2f8081c9afe08f5c9d3737bd0b43a"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-04.json",
+      "bytes": 10266,
+      "sha256": "2ce723e8eee7bbdd1d56a33ab92a472446b721864541b9ff73526cbaa0c172eb"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-05.json",
+      "bytes": 8459,
+      "sha256": "082ade3b9612750f25c69ba2bf213e9a4cb706a5f60c7b9655efee127aebed32"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-06.json",
+      "bytes": 21789,
+      "sha256": "1f0157b55b567ba1edeccc06ba078d22c042d90fd43c222fb29df41531308578"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-07.json",
+      "bytes": 22284,
+      "sha256": "4d26fc85000d2b8a4756dc213b1707face8b8c486d75769327f41dd296b54fd0"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-08.json",
+      "bytes": 6463,
+      "sha256": "c7ad4f47e0a3d4bd56efc2dbf1078470076ac03f2ff3bdbfccb2c449c247d74d"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-09.json",
+      "bytes": 12603,
+      "sha256": "f2be335868e3dd153b0cdb6f11b02003285ef080daee1398c41fe01e7c39b331"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-10.json",
+      "bytes": 8794,
+      "sha256": "0189e9f61f234145b465f21d43cfe08d5511627574101fcb771a7a8833933766"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-11.json",
+      "bytes": 18339,
+      "sha256": "135902a7f0cf532e1200d982998e6cff6b3829a7427cca337b6e47f6b937d4ca"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-12.json",
+      "bytes": 21778,
+      "sha256": "3c2b7b0ef5cd312b9eba1788ff9c7679b87c10401215d3cd1f284b3d3d7652a5"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-13.json",
+      "bytes": 4700,
+      "sha256": "d5c34cf9c166350bba1b00da712417e551a9ef82d4007f2b80bca56bc25d5172"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-14.json",
+      "bytes": 16894,
+      "sha256": "f729c88f508635be9575ab0a355f44d9825d466b3c18a8b543a69dfe18eb7270"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-15.json",
+      "bytes": 45628,
+      "sha256": "2080f1d58f5e5d1e71c4e16d36e506eb367e79a09584475f524f6fc7c0c362aa"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-16.json",
+      "bytes": 15512,
+      "sha256": "fcd04e55968cde872afaa5d7ee0ada04d87d5fae4899cba8c71ecd5a107a1ca0"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/blob-17.json",
+      "bytes": 8162,
+      "sha256": "fe2a488a693cdb1aaf25206c9044ee47ed7c5d66bce166b17bd6d3246849b778"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/commit-01.json",
+      "bytes": 380,
+      "sha256": "3a376df09995c3b7c145227a7c726920b82e889d3950d23fd7f39cc6fab9d74d"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/commit-02.json",
+      "bytes": 390,
+      "sha256": "2ede9e7f067976f44fd505b6323dced118f58a49846dd9774364977f73f0e8f0"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/commit-03.json",
+      "bytes": 384,
+      "sha256": "b4179487ecf13f9f79314e9317c44e21707be655486dc1bf37b9124fd80fa3f1"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/commit-04.json",
+      "bytes": 382,
+      "sha256": "50acb647976661a024574932209b799affc35891ac2d1cb3a68614d6d3462c9d"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/tree-01.json",
+      "bytes": 1571,
+      "sha256": "53c17cf36446c872a72ed258e61aa87d516b55fda3595e46cfaf34bcc2b23b16"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/tree-02.json",
+      "bytes": 1509,
+      "sha256": "1f1df93fef2db12b25303f7f175c7b217ee7706bf921cc2d61ec888913ea2b1e"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/tree-03.json",
+      "bytes": 991,
+      "sha256": "9e97e8499e2cbe5df47a88f744eed8547b7901a5206d538edc81d4fdd8a2e265"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/tree-04.json",
+      "bytes": 924,
+      "sha256": "7c1bc8c1ed7700ec965024c4f02fe3f3577b179c64257d172a02f9856f470d3d"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/requests/update-ref-once.json",
+      "bytes": 453,
+      "sha256": "63d79c09b161fb79cf701c7c86fb1c3b1850bd224307ff001fb37baf27e22867"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-00.json",
+      "bytes": 279,
+      "sha256": "fd15992a83ac979ab07f3f269750cf006df793a204325a2b9a719b5bfe05bc5d"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-01.json",
+      "bytes": 279,
+      "sha256": "afa2c2e704ba740d63d8ef8747f8be51f9f57f61d72dfc1a2c5bd8c43d6eabc3"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-02.json",
+      "bytes": 279,
+      "sha256": "bd555214f55cd84480c2b2d1a4e270edc0b6152495a07221fcd8f870651a0e1a"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-03.json",
+      "bytes": 279,
+      "sha256": "4ad6a4cc27067b64d1604f079850347f20d8ab780d7029a97aa5e78e29b090af"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-04.json",
+      "bytes": 279,
+      "sha256": "e8acc229a6de2d2959d930270a20fe431987772635cd7b1e31caca9af90c6e58"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-05.json",
+      "bytes": 279,
+      "sha256": "2142edae5ce7a23f18efed8c03aaf3db3a168113d527133a474d3cfdde153832"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-06.json",
+      "bytes": 279,
+      "sha256": "456a696151a6727d7f8f15571ffc023bd9ef39948fa97e115f73039f6f435fa9"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-07.json",
+      "bytes": 279,
+      "sha256": "1e6fa5eed20118df5e8b54ae25f9747c3fa2fb1755d1ab0b9344e9252cbb531f"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-08.json",
+      "bytes": 279,
+      "sha256": "2f9cbc8f7fd66261c0b697212ff8d40aca2721a3ceb76c4add9903084d8a594c"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-09.json",
+      "bytes": 279,
+      "sha256": "baa98a2d941f399c90e4ca6d40c0970547717d98e8d9e0cda8f1d845686dfc90"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-10.json",
+      "bytes": 279,
+      "sha256": "47225a929af5ebc2aebb84517adec3fb834d2527b5bea9818313400aaaa8d0c9"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-11.json",
+      "bytes": 279,
+      "sha256": "52cfbc602035ad794342ef7bc8ec3ad3771742dacfd38d14600af68478bf540d"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-12.json",
+      "bytes": 279,
+      "sha256": "ba0814c4665db182205a23984cac5f4b4d6a1894b594da6fb69ad4eacba2564a"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-13.json",
+      "bytes": 279,
+      "sha256": "5ea14d69b2d55a59b3ac59a8eb89f68edc49639567e1c5803f8ea583040f6f05"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-14.json",
+      "bytes": 279,
+      "sha256": "dd22022e65884b1cca124227e6a809c597d1b64da4b9e951334190bb5efe3a5d"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-15.json",
+      "bytes": 279,
+      "sha256": "107e3373f52e4877fc2d767617383057bb52729452ccf049592f4e60762230bf"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-16.json",
+      "bytes": 279,
+      "sha256": "7501ce24a8334d6aa314f938a2e0c126b216f7a0af3ca2b515f46702df41b6a8"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/blob-17.json",
+      "bytes": 279,
+      "sha256": "a2c8d41db23fe90d55582add996b84015bcbbc1b0c0da3d4ac7fcc10eb040513"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/commit-01.json",
+      "bytes": 279,
+      "sha256": "7ab49dda68255dac39c8d133fec7cf048a3f0232e9363bfbe150046e18a0787b"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/commit-02.json",
+      "bytes": 279,
+      "sha256": "fb2bc79c7895d8b34daaf084014070a11c90e566cfd37ee477860a657f137620"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/commit-03.json",
+      "bytes": 279,
+      "sha256": "72428ef98a82be234ca6ffe4ea9aa3e4e9e5fd1a3ab56fbbddad3116c28197b5"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/commit-04.json",
+      "bytes": 279,
+      "sha256": "ec26aadd7b626d204012b6d8751bab71058ac109d52f6cc596f06e4628cb0c97"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/tree-01.json",
+      "bytes": 279,
+      "sha256": "0bc32acdf7b081340e36de553a6c67911b6f8def1a61d9ed526ff5b16772375a"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/tree-02.json",
+      "bytes": 279,
+      "sha256": "19b68b1e45e3161eaf9ee8375299f08588211e62664e6ee1b89470f0ac144a35"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/tree-03.json",
+      "bytes": 279,
+      "sha256": "5e7e854045b14d9800a9f2b00dc31b8c7ab11360307d300fb1161f0c47c4ce27"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/tree-04.json",
+      "bytes": 279,
+      "sha256": "fa39d1561c804e5612b9e95efcd0496496fda62631a5b449dc91563af8c3166e"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/responses/update-ref-once.json",
+      "bytes": 245,
+      "sha256": "9f3a67c3d250c6e7aa6bd4546e80fd1da98e764d999fc2c82bf59aa796e53ad4"
+    },
+    {
+      "path": "originals/source-loading-memory-github-publication-v1/verify_readbacks.py",
+      "bytes": 9552,
+      "sha256": "a91c68cc972bf044eeae2a11d1657f5d2c1ce6fd912610b741d71de27a126e85"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/BASE_TREES.json",
+      "bytes": 256018,
+      "sha256": "35f273571b5f359b0b16b3e17b882d3aac2e6c9a57c36d9a21d70e9bd77d6e56"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/GITHUB_TOOL_RESPONSES.json",
+      "bytes": 15643,
+      "sha256": "a064a5f970ab6a1f920e0ff841b4755c557a7dd08a6dc925b0955b744e494542"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/PREPARATION.json",
+      "bytes": 27207,
+      "sha256": "123de4f467efbebacfc3c5b15af026f6bd510ba8f73490a41601c0863285eda6"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/RESULT.json",
+      "bytes": 11840,
+      "sha256": "23c551372d8d4c770719f204c1a5fafba1a878f3b1e7acc33620494f1f263a7e"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/prepare.py",
+      "bytes": 9090,
+      "sha256": "0eb41c7c5db09ab414ebd459aaa4bf6717da83d8505b66cb541b480c546aa745"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/01.json",
+      "bytes": 20035,
+      "sha256": "80f539d79891b205db7dd7ce34acd24acc92efea904e7116b27fafe0f5dd8779"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/02.json",
+      "bytes": 40633,
+      "sha256": "3769298674628b88bed13e561efb0eb840ef2599332bbe50b7957a790c061cd3"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/03.json",
+      "bytes": 4450,
+      "sha256": "1f1626da71378609add30fb6bbbdbb07968307fd403602f0672498e38cb868c7"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/04.json",
+      "bytes": 10379,
+      "sha256": "d84c4e051e5b88e40bc2b20b0c7ffbbe0f514ce40cb3c5c5f8fb57585d5110a2"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/05.json",
+      "bytes": 10205,
+      "sha256": "841a20adbdcbb1084130c9e619890cfaac32e1a4a38bf0f9291f131669efa455"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/06.json",
+      "bytes": 50907,
+      "sha256": "57f0819152336ca14b7c7e5b5b99f81fdb26a94a77e7e6d0c7e62f6d63d4edff"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/07.json",
+      "bytes": 18785,
+      "sha256": "f420e14e1985400bccb28364c02a8523ac9a8b1dfc92f2769e5ea6bf5474d6ca"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/08.json",
+      "bytes": 9695,
+      "sha256": "d2181caf40bb5c2766f23fab8985a399a86f874b9540769660172d28d35ca825"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/09.json",
+      "bytes": 28335,
+      "sha256": "acd08149faf46d3824357d3be77e34c5932d0dd2760b25b22c4ddca2a3e158be"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/10.json",
+      "bytes": 17995,
+      "sha256": "74654e1d6ec798d84a86a0d05087e7aaa5527279835cd7755210e1f69a6ed2c9"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/11.json",
+      "bytes": 20297,
+      "sha256": "c4274aae6599dcbbfdd48d84a5900e4047bcbcdc03eacad461548948b2b19dc1"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/12.json",
+      "bytes": 12707,
+      "sha256": "f45f284b51e79c4a00fceb220f7edae481df68fb121db96035a77d19eff45da0"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/13.json",
+      "bytes": 8793,
+      "sha256": "676567f34aa158760bc1b458854e800e377b43073479c1d1055af803a86a910a"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/14.json",
+      "bytes": 41801,
+      "sha256": "c9065f115bfd6105063861c54c7ff652a162433374efbee7c1bf981a3e43b926"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/15.json",
+      "bytes": 10505,
+      "sha256": "c7f2afbb132f9d9cc0d261fc6ada10827695df5322e7fd21594fe6181d12f6f8"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/16.json",
+      "bytes": 2238,
+      "sha256": "b7eed41f20db0bf0f722ed358a6afe693bc1f16d1b774ce350ede3205c705087"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/17.json",
+      "bytes": 2020,
+      "sha256": "b96c10731d75a6fe1151c9bc6845bc420cd2a2a7f51351be5c4fa038e91db2d0"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/18.json",
+      "bytes": 2048,
+      "sha256": "d98eb932e69b9ef95038855314eaba03c44865d384578c2ab6f87a5545f5c6e7"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/19.json",
+      "bytes": 4130,
+      "sha256": "1362dc14f18e9df5a25a882caba623c62a138230e57d41186c827b9e5158d477"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/20.json",
+      "bytes": 4130,
+      "sha256": "b5f009f9b752aa9c3cafafbff3dbd007fbf6c14b91c1fc5e1b676ad8b732db3d"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/21.json",
+      "bytes": 1163,
+      "sha256": "ce91d501faca22b6c0df735d56e0f15540df18dd8e8429daae1d3246ccb39fd2"
+    },
+    {
+      "path": "originals/source-projection-github-publication-v1/readbacks/22.json",
+      "bytes": 17698,
+      "sha256": "1fc0ca7856f7518db1e139a9d8dc338fdd539b2b1a5b37567f980812ccbc4e06"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/C_GITHUB_TOOL_RESPONSES.json",
+      "bytes": 52976,
+      "sha256": "d9c113c7866429dd9bee0885a16ad267db7ba6945262da39f7a2c5c3dafb10df"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/C_PREPARATION.json",
+      "bytes": 2527,
+      "sha256": "c23d0fdd724886d0bd35a0e60503829000ee76750a0d863a1a58dd73369dedf7"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/C_RESULT.json",
+      "bytes": 1893,
+      "sha256": "c87b55167ffa788b4322cd35731368e58c1f006d58d42458d52e92c068569f70"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/GITHUB_BEFORE.json",
+      "bytes": 252750,
+      "sha256": "9d5de63e36e1b71dabfa3548529c82d071dbc1cfbe83ff68d5fea63a4f77a8e6"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/GITHUB_TOOL_RESPONSES.json",
+      "bytes": 133620,
+      "sha256": "9d2e0c0e3cd7755b7314340e445fadb20bcec2e6304200408b5f867b202db9e8"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/INTENT.json",
+      "bytes": 5267,
+      "sha256": "16a2590d7996554de48b85c9dd87d02e84cbd6397ad7259f63bef9f352a023d7"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/PREPARATION.json",
+      "bytes": 14340,
+      "sha256": "511ee45d041f8c7fbae8f6f12113dc97782c4231c0346b7fcf69dcb293e2f39c"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/RESULT.json",
+      "bytes": 3348,
+      "sha256": "4ae5862aa5eac45402a4040f54048adebc08bd6dcac106607c7a4131c5b8d53f"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/WORKFLOW_TRIGGERS.json",
+      "bytes": 37368,
+      "sha256": "5ef3b4762c6c78ad9d6abda3b10da6a6c587ade39978e0e0693aeece78ac4d96"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/prepare-c.py",
+      "bytes": 4592,
+      "sha256": "0db13df09c9c0d1f6ca3fa8c108c3c19fd3f5827ec56b73bc9bf4161c9ea384c"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/prepare.py",
+      "bytes": 6800,
+      "sha256": "8339b989cd5155a2941741c7640695b2c69c78579fedc06e289d3e6cb20cab0a"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/01.json",
+      "bytes": 13613,
+      "sha256": "78185c3d8898497b893f40ff7d90913b9477b36a38cfac4340c1b65d082072c6"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/02.json",
+      "bytes": 3239,
+      "sha256": "6b1af6d574d0c2784d83e397b1cedecb8df297c7cd327566836c95b2f676619c"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/03.json",
+      "bytes": 17897,
+      "sha256": "8b59ec4f9bcd95a71cca36799e04ef75c1e4b589e557cc9c6d399bbf347f5cd4"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/04.json",
+      "bytes": 33942,
+      "sha256": "1b3d9e78b8ab23b38fbdd10ead180907d1d3389ee22f2fba64fe1192446e1093"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/05.json",
+      "bytes": 492632,
+      "sha256": "4db0f313d444b5e814234f4b1b1280cde96d36d27dc8f9d7133857c6741c3c97"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/06.json",
+      "bytes": 18105,
+      "sha256": "8ae32151dd5ec417b6bf3eb7bd78747b1719e154b7fd8690fed730f510019e62"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/07.json",
+      "bytes": 6092,
+      "sha256": "dabb9435f9b1a7b69962b3311cdf57fb668b44a45442e1d4643b26cc6792b434"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/08.json",
+      "bytes": 39660,
+      "sha256": "b21cb0ca67bdbe64f218d88006e220ee5d37ec8b182a2d0b419184dcd32aadce"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/09.json",
+      "bytes": 22174,
+      "sha256": "2fad3f47509457c12f2b4b61b0b446ed7b104583e3ed8af8d66cc1a50b1c3b60"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/10.json",
+      "bytes": 33760,
+      "sha256": "0443a7107c49a5d3bcd9d7a012bb617efb2251e38efe845180cb4ecebdf20138"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/11.json",
+      "bytes": 22526,
+      "sha256": "df6d55c223982e0c79512e12d1f1d1977617079839c98d6b639bf87d587450ad"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/12.json",
+      "bytes": 47398,
+      "sha256": "4c4f33bd24ca0c9975b7fe87d8faf292cdf96140a5627d91640f5b4afff4acb4"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/13.json",
+      "bytes": 42227,
+      "sha256": "7a8fcacb7255102b7c088d8aa58a1829ebd3b11c809bedfffbc2b3ef12433484"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/14.json",
+      "bytes": 35490,
+      "sha256": "ff0afe37007a599ac7e910754a69b7a6d2ad747e5d6a8dfdcd7d214a3a58fd88"
+    },
+    {
+      "path": "originals/source-wiring-github-publication-v1/source-readbacks/15.json",
+      "bytes": 24882,
+      "sha256": "c0d3a085ddf9e35123869384be2870995df2b7ba6f61eee9544576a97d7ac4ab"
+    }
+  ],
+  "source_scopes": [
+    "4c11d13d8cd2da8aefd9b16ab2b7c73a4be9e957",
+    "15a46030d9fd5588779c146ec57f198f50731fae"
+  ],
+  "full_history_cost": null,
+  "all_stage_gates": "HOLD",
+  "new_native_executions": 0,
+  "new_numerical_executions": 0,
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/learning-e-fg-source-and-failure-history-v1/archive.part001",
+      "offset": 0,
+      "bytes": 196608,
+      "sha256": "aad3a1e5cc78b9b7ccce19bb4c7a515a9b6be283a48a4507db1572b9fc76def2"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/learning-e-fg-source-and-failure-history-v1/archive.part002",
+      "offset": 196608,
+      "bytes": 196608,
+      "sha256": "1714c9e6927ba2e5a7a014a507c0ec7e079aed7ac76bbdab88484973e4b835a1"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/learning-e-fg-source-and-failure-history-v1/archive.part003",
+      "offset": 393216,
+      "bytes": 196608,
+      "sha256": "a6dc7d3df600397261e3b004cee955c48df8a038c741519e9d257d52cc6ec693"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/learning-e-fg-source-and-failure-history-v1/archive.part004",
+      "offset": 589824,
+      "bytes": 196608,
+      "sha256": "e8bd9a87284fadd3a5b12fb9957ea689670f535e96621e6dcd19b576debaefc7"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/learning-e-fg-source-and-failure-history-v1/archive.part005",
+      "offset": 786432,
+      "bytes": 196608,
+      "sha256": "84d74f9532bc847f8880013139b79e5aa63a6f31ab1bdeecaa6ba4212a8d586e"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/learning-e-fg-source-and-failure-history-v1/archive.part006",
+      "offset": 983040,
+      "bytes": 147236,
+      "sha256": "9d70b9350a0df412e24dfd3fb86aaaa4a39c172c8f155a15396cc53f62a163b8"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "disk_archive_whole_sha_and_members_verified": true
+}

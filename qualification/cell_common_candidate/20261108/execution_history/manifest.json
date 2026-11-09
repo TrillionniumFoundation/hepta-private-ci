@@ -302,7 +302,7 @@
     },
     {
       "packet_id": "ba4e-current-ci-nonterminal-snapshot",
-      "scope": "Non-atomic 2026-11-08T23:28:37\u201323:28:48Z API metadata snapshot for 18 workflows associated with ba4e: 8 success, 7 in progress, 3 skipped and zero completed failures. Actual tested merge remains unverified. No waiting, rerun, cancellation or product/scientific qualification inference.",
+      "scope": "Non-atomic 2026-11-08T23:28:37–23:28:48Z API metadata snapshot for 18 workflows associated with ba4e: 8 success, 7 in progress, 3 skipped and zero completed failures. Actual tested merge remains unverified. No waiting, rerun, cancellation or product/scientific qualification inference.",
       "archive_bytes": 20376,
       "archive_sha256": "d7330a39cf8f6f5ccb300a47afccb7a364ad543de92ac85bca5afde3f3137102",
       "file_member_count": 21,
@@ -857,6 +857,51 @@
       "file_member_count": 130,
       "manifest_path": "packets/d274-negative-native-retention-history-v1/manifest.json",
       "manifest_sha256": "5ad42d216ddcdf0c786aeba4acedcce1bfccfd12d28f88ac7542e5a68e131d8b"
+    },
+    {
+      "packet_id": "learning-e-fg-source-and-failure-history-v1",
+      "scope": "Selected original E/FG preparations, source publication receipts, E admission, V8 failure and recovery, original caller and strict failures. Earlier A-D publication receipts are provenance only. Exact local copies are enumerated; no complete remote prefix or full execution history is claimed.",
+      "archive_bytes": 1130276,
+      "archive_sha256": "9ae79ada49f1e5e3c061cb8efb454f760c4b3f7fee57bd946724366f9b759e1b",
+      "file_member_count": 705,
+      "manifest_path": "packets/learning-e-fg-source-and-failure-history-v1/manifest.json",
+      "manifest_sha256": "a9e9742be41c49fcfe4b2918ca06eb2b3a915280e2128ffeafd97d7d00074b3a"
+    },
+    {
+      "packet_id": "joint-text-h9-source-publication-history-v1",
+      "scope": "Exact H source drafts, canonical formatting receipts and afterimages, nine-commit publication and independent readbacks. Source-only intermediate commits are retained; none is thereby native or scientifically qualified.",
+      "archive_bytes": 1381732,
+      "archive_sha256": "642eb91eb6f00644ea96638b0ed3fbea76311ae23c5b6c6b1610e7e9e04d2867",
+      "file_member_count": 905,
+      "manifest_path": "packets/joint-text-h9-source-publication-history-v1/manifest.json",
+      "manifest_sha256": "7165b20af2b8f4027d01417376914b385c275928014303283c226fa073803a0b"
+    },
+    {
+      "packet_id": "joint-text-h-cpu-runtime-and-numerical-history-v1",
+      "scope": "Original failed runtime preparations v1 and v2, successful CPU runtime v3 metadata, fixed H worker source and actual original five numerical tests plus a distinct retained synthetic two-step candidate. Exact predecessor and candidate tensor packet bytes are included.",
+      "archive_bytes": 3466324,
+      "archive_sha256": "050b76a5050f3468b4283f6c2d42c915535d86b93664a7b449f1a19abb54cb14",
+      "file_member_count": 319,
+      "manifest_path": "packets/joint-text-h-cpu-runtime-and-numerical-history-v1/manifest.json",
+      "manifest_sha256": "8736770ea4bac9e4171020f6a6b09e53320aa1cf60c969172eed6c4d8fe4a789"
+    },
+    {
+      "packet_id": "h9-admission-v8-and-caller-failure-history-v1",
+      "scope": "Actual H9 isolated source/runtime admission, exact two-file V8 copy with fresh checksum in the independent strict run, original 600-second caller natural failure, and source-only typed handoff correction preparation. Strict launch and bounded progress observations have no terminal status at this sealing cutoff.",
+      "archive_bytes": 305748,
+      "archive_sha256": "f99157dae46312a21a9011191d4e2b95c1a700d96cdecce1b0988a410b39729a",
+      "file_member_count": 213,
+      "manifest_path": "packets/h9-admission-v8-and-caller-failure-history-v1/manifest.json",
+      "manifest_sha256": "10796bdc246c6f986d5f8c1026c35895004cfb469f6df82401a4036eeef344a2"
+    },
+    {
+      "packet_id": "increment011-sealing-and-base-provenance-v1",
+      "scope": "Exact four-packet sealing RESULT and pattern report, reviewed sealer, independent static review, physical fixed-version base readback and six-tree Git identity closure, plus independent saved-archive disk readback. Publication receipts remain external to their own commit.",
+      "archive_bytes": 286700,
+      "archive_sha256": "4fdd882ec91ea8dd49d9addb079eb5462b233a615236b8e94447822e8704e77b",
+      "file_member_count": 19,
+      "manifest_path": "packets/increment011-sealing-and-base-provenance-v1/manifest.json",
+      "manifest_sha256": "4ed3025fbf9b2a2c6fedd34851b097f6c0d11f56f5d3a02f88325a326b189375"
     }
   ],
   "max_chunk_bytes": 490000,
@@ -878,7 +923,7 @@
   "publication_commit_location": "external_git_readback_receipt",
   "source_branch_mutated_by_publication": false,
   "counts_and_wall_times_must_not_be_added_across_packets": true,
-  "preceding_evidence_commit": "6e162bab21438b857179a22c6207552feda9331b",
+  "preceding_evidence_commit": "41e1ade6697fee40dd29aef6826348a631396a76",
   "latest_reviewed_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
   "latest_reviewed_common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
   "increment003_original_metadata_observations": [
@@ -4061,5 +4106,101 @@
       "bytes": 108975,
       "sha256": "2877ffe95f09d801dc3abcd1a2845ce11e05150b9764c71463a4f2cb285b4bab"
     }
-  ]
+  ],
+  "increment011_separate_source_observations": {
+    "schema": "evidence011-selected-history-summary-v1",
+    "parent_evidence_commit": "41e1ade6697fee40dd29aef6826348a631396a76",
+    "common_source": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "formal_CURRENT_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+    "sealed_originals_started_at": "2026-11-09T19:01:42.644685+00:00",
+    "sealed_originals_finished_at": "2026-11-09T19:01:59.898460+00:00",
+    "original_file_observations": 2130,
+    "new_packets": [
+      {
+        "packet_id": "learning-e-fg-source-and-failure-history-v1",
+        "scope": "Selected original E/FG preparations, source publication receipts, E admission, V8 failure and recovery, original caller and strict failures. Earlier A-D publication receipts are provenance only. Exact local copies are enumerated; no complete remote prefix or full execution history is claimed.",
+        "archive_bytes": 1130276,
+        "archive_sha256": "9ae79ada49f1e5e3c061cb8efb454f760c4b3f7fee57bd946724366f9b759e1b",
+        "file_member_count": 705,
+        "manifest_path": "packets/learning-e-fg-source-and-failure-history-v1/manifest.json",
+        "manifest_sha256": "a9e9742be41c49fcfe4b2918ca06eb2b3a915280e2128ffeafd97d7d00074b3a"
+      },
+      {
+        "packet_id": "joint-text-h9-source-publication-history-v1",
+        "scope": "Exact H source drafts, canonical formatting receipts and afterimages, nine-commit publication and independent readbacks. Source-only intermediate commits are retained; none is thereby native or scientifically qualified.",
+        "archive_bytes": 1381732,
+        "archive_sha256": "642eb91eb6f00644ea96638b0ed3fbea76311ae23c5b6c6b1610e7e9e04d2867",
+        "file_member_count": 905,
+        "manifest_path": "packets/joint-text-h9-source-publication-history-v1/manifest.json",
+        "manifest_sha256": "7165b20af2b8f4027d01417376914b385c275928014303283c226fa073803a0b"
+      },
+      {
+        "packet_id": "joint-text-h-cpu-runtime-and-numerical-history-v1",
+        "scope": "Original failed runtime preparations v1 and v2, successful CPU runtime v3 metadata, fixed H worker source and actual original five numerical tests plus a distinct retained synthetic two-step candidate. Exact predecessor and candidate tensor packet bytes are included.",
+        "archive_bytes": 3466324,
+        "archive_sha256": "050b76a5050f3468b4283f6c2d42c915535d86b93664a7b449f1a19abb54cb14",
+        "file_member_count": 319,
+        "manifest_path": "packets/joint-text-h-cpu-runtime-and-numerical-history-v1/manifest.json",
+        "manifest_sha256": "8736770ea4bac9e4171020f6a6b09e53320aa1cf60c969172eed6c4d8fe4a789"
+      },
+      {
+        "packet_id": "h9-admission-v8-and-caller-failure-history-v1",
+        "scope": "Actual H9 isolated source/runtime admission, exact two-file V8 copy with fresh checksum in the independent strict run, original 600-second caller natural failure, and source-only typed handoff correction preparation. Strict launch and bounded progress observations have no terminal status at this sealing cutoff.",
+        "archive_bytes": 305748,
+        "archive_sha256": "f99157dae46312a21a9011191d4e2b95c1a700d96cdecce1b0988a410b39729a",
+        "file_member_count": 213,
+        "manifest_path": "packets/h9-admission-v8-and-caller-failure-history-v1/manifest.json",
+        "manifest_sha256": "10796bdc246c6f986d5f8c1026c35895004cfb469f6df82401a4036eeef344a2"
+      },
+      {
+        "packet_id": "increment011-sealing-and-base-provenance-v1",
+        "scope": "Exact four-packet sealing RESULT and pattern report, reviewed sealer, independent static review, physical fixed-version base readback and six-tree Git identity closure, plus independent saved-archive disk readback. Publication receipts remain external to their own commit.",
+        "archive_bytes": 286700,
+        "archive_sha256": "4fdd882ec91ea8dd49d9addb079eb5462b233a615236b8e94447822e8704e77b",
+        "file_member_count": 19,
+        "manifest_path": "packets/increment011-sealing-and-base-provenance-v1/manifest.json",
+        "manifest_sha256": "4ed3025fbf9b2a2c6fedd34851b097f6c0d11f56f5d3a02f88325a326b189375"
+      }
+    ],
+    "new_archive_member_entries_with_overlap": 2161,
+    "old_packet_count": 95,
+    "new_packet_count": 100,
+    "old_member_entries_with_overlap": 11384,
+    "new_total_member_entries_with_overlap": 13545,
+    "H9_source": "1d467787e2761192b0c545c377c5d7e281a298d4",
+    "H9_tree": "4d639a2834519bd1876307f54fc723fc60254679",
+    "actual_numerical_original_cases": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "rerun_by_archiver": false
+    },
+    "additional_retained_candidate": "Separate seed-811 two-step synthetic candidate; both exact 4,980,877-byte packets archived.",
+    "H9_caller": {
+      "status": "FAIL",
+      "command_exit": 1,
+      "wall_seconds": 402.52780130598694,
+      "timeout_seconds": 600,
+      "timed_out": false,
+      "boundary": "root_learning_checkpoint_handoff"
+    },
+    "H9_strict_at_original_capture": "No terminal observed; progress snapshots only. Do not infer completion from this archive.",
+    "typed_handoff_patch": "Prepared only; not applied to H9 and not a new caller pass.",
+    "E_original_failures_preserved": true,
+    "scope_B_signed_ordinary_daemon_qualified": false,
+    "old_95_packet_subtrees_preserved": true,
+    "complete_execution_history": false,
+    "physical_cost": null,
+    "full_history_cost": null,
+    "new_native_executions_by_publication": 0,
+    "new_numerical_executions_by_publication": 0,
+    "stages": {
+      "S0": "HOLD",
+      "S1": "HOLD",
+      "S2": "HOLD",
+      "S3": "HOLD",
+      "S4": "HOLD",
+      "S5": "HOLD"
+    }
+  }
 }

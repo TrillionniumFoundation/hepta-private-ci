@@ -1,0 +1,1101 @@
+{
+  "packet_id": "h9-admission-v8-and-caller-failure-history-v1",
+  "scope": "Actual H9 isolated source/runtime admission, exact two-file V8 copy with fresh checksum in the independent strict run, original 600-second caller natural failure, and source-only typed handoff correction preparation. Strict launch and bounded progress observations have no terminal status at this sealing cutoff.",
+  "compression": "xz",
+  "archive_path": "/workspace/scratch/898e2183709e/ci-fixes/increment011/sealed-v1/h9-admission-v8-and-caller-failure-history-v1/original.tar.xz",
+  "bytes": 305748,
+  "sha256": "f99157dae46312a21a9011191d4e2b95c1a700d96cdecce1b0988a410b39729a",
+  "file_members": [
+    {
+      "path": "metadata/DRIVER.py",
+      "bytes": 15035,
+      "sha256": "487736808af862a66a2fa4af54c4aa8c387ec85e13a71dfdc432249828058504"
+    },
+    {
+      "path": "metadata/ORIGINALS.json",
+      "bytes": 46077,
+      "sha256": "23e9aa52e5afa0777abbbad59632dd59f18bb5ac4a680496e7fa26c8a3a10110"
+    },
+    {
+      "path": "metadata/SCOPE.json",
+      "bytes": 97780,
+      "sha256": "72c0ee3360e7ab6b98414f89d6e8042262992a296aaa164267cf350906de0125"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/EXECUTION.json",
+      "bytes": 463,
+      "sha256": "3afdfe976e65f3744a5bdf3f6e1c16e3b669b38d0953684a592a55dfd2928611"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/GITHUB_ORIGINAL_1.json",
+      "bytes": 11865,
+      "sha256": "e1d6973c1dd70c701c2fe9f9da790edc482b8e0ad3b8d3c926035a4c2a749d02"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/GITHUB_ORIGINAL_2.json",
+      "bytes": 11850,
+      "sha256": "70c8b816e7d99b7d2de6bcc1784fc10138dfb8e8b9aef04afe691f548ee96441"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/PREPARATION.json",
+      "bytes": 78643,
+      "sha256": "276b96d24da1f9d40a1651b3d8304c05854fc96ce08a037e6280a5b99842b8e9"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/PREPARATION.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/PREPARATION.stdout",
+      "bytes": 697,
+      "sha256": "0c9daf3f9cd5aa3d664418dffd89ca669ef996a86048439bc3a60bd80666fa3a"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/actual-prepared-learning-type.patch",
+      "bytes": 718,
+      "sha256": "1545aa1fbca1889d992aa678fd11da501f19305e02d26c4116d7ee9b9a82404c"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/base/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 5964,
+      "sha256": "aa78854079a86f4de8a96b2365bac89157062cafbdd076742cb9621b9caa455c"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/exact-source-context/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "bytes": 18588,
+      "sha256": "9d611125b0a80f9872a864e7ce666940dc21dd3d8272018f2b70e8be5e6fe1cf"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/exact-source-context/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 5964,
+      "sha256": "aa78854079a86f4de8a96b2365bac89157062cafbdd076742cb9621b9caa455c"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/exact-source-context/codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "bytes": 8026,
+      "sha256": "c5343c8829ec4609b49ddd661919b1cf9cf6ab0cb4610b551a208acbf1c869ac"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/exact-source-context/codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "bytes": 10906,
+      "sha256": "7ca7edb0286e3344f8a90aeed9610723567f5b35b886aa5bddc4afa302c6e705"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/exact-source-context/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "bytes": 10821,
+      "sha256": "31f1f5b52c46accf055b613c9a5553bd1461f703abc7842e2ea169938ef63813"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/exact-source-context/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "bytes": 19949,
+      "sha256": "515806ed35189ef8d443a7db134933fca17e8d38e1d704222687702d10dd9af3"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/patched/codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs",
+      "bytes": 6005,
+      "sha256": "15c6dc7636883312a0d3dec314b91edcffb6f927b055354df86922b26a42a5d7"
+    },
+    {
+      "path": "originals/learning-training-h-caller-handoff-fix-v1/prepare_and_check_v1.py",
+      "bytes": 10078,
+      "sha256": "24da548cf7024ad288a100e92ac144bb4792cc4334333496e6957c63bec206fe"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/OUTER_TEMPLATE_PREPARATION_v1.json",
+      "bytes": 1064,
+      "sha256": "1c49f6627658a199a11577e8b7586ec07a2056272bbe92bc0a38024f9e63e56b"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/PREPARATION_ATTEMPT_01.json",
+      "bytes": 353,
+      "sha256": "2a2b1379502f60f386911373b4c271c905d98f1d46e0b92e3a0bcfa84ca964ce"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/ROOT_BOUND_ADMISSION_REVIEW_v1.json",
+      "bytes": 1250,
+      "sha256": "7fbed5ff2ace76741227a684f64c36e193720e5bb2d17f518320f155eec18090"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/ROOT_STRICT_CALLER_BOUND_REVIEW_v1.json",
+      "bytes": 1198,
+      "sha256": "2387b5a388e7d39e3454934b042d5bfff2d286f45900e7d05d7836df94983829"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/RUNTIME_ADMISSION_PREPARATION_v1.json",
+      "bytes": 3191,
+      "sha256": "da9ed631aa8189ac44b2b3775eb9ab04022575308d5be1ef327378ddf8a6bc79"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/TEMPLATE_PREPARATION_v1.json",
+      "bytes": 9567,
+      "sha256": "b4c32c393338e54891dec788e34409e586cd18d43d8763a612945dbe1145f1f9"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/ADDITIONAL_ORIGINALS_METADATA.tool.json",
+      "bytes": 3784,
+      "sha256": "a9a0ed7764d8b3b7a98ca3b6aaf337d418b5cec346c35cf58915ca523644c130"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/ADDITIONAL_READBACK.json",
+      "bytes": 2246,
+      "sha256": "683ef993301f39d3140a0ea60d20bb8c0f68e54e115d1289312d5270d1c7c8b8"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/EXECUTION.json",
+      "bytes": 9517,
+      "sha256": "389c9c6918058ef0b820c49821edb66c4f5ff08f4a37a2048423d8923d4c3ba0"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/PTY_TERMINAL.raw",
+      "bytes": 507,
+      "sha256": "c115a47942a27b35c1be517d12773b28179e79d77d8a7d7d7e0d8448a5123cb8"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/PTY_TERMINAL.tool.json",
+      "bytes": 2877,
+      "sha256": "1497a8f1582efbf534cf48cc3f9d2a7e6a6bc98e387937f39a00b204471d02a8"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/READBACK_RESULT.json",
+      "bytes": 3014,
+      "sha256": "9bb1428136c4d1f3d6c0a63a0e71e10b293d84b6334880b085dc296f39cc1107"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/RESULT.json",
+      "bytes": 209573,
+      "sha256": "11cd2b72dde2e61b932f55ee9b33917364146fb7907bf8ae55f9ee8e047f097d"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/RUNTIME_ADMISSION.json",
+      "bytes": 19743,
+      "sha256": "cff782f7cda8379d25578ce95be1122693c53129b42987e3dd41673aa919cd83"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/RUNTIME_OBSERVATION.json",
+      "bytes": 7084,
+      "sha256": "eddb78f3088c5844dc9960b4ba9fff2735a4ba86c2c6da3f2ef2f50be5528054"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/additional-commands-0.tool.json",
+      "bytes": 88953,
+      "sha256": "2e28dfd6c0f619ba85006471402a73e7850369e51ed92362427ca625e052f26e"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/additional-commands-131072.tool.json",
+      "bytes": 88964,
+      "sha256": "97c7be8ff2286d689b1c6045bc2d5fbddbbd46566abc4de0295cb52de3788833"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/additional-commands-196608.tool.json",
+      "bytes": 42859,
+      "sha256": "4ebc5634f7e0df4eeebe07d495f3a27ae44392a5001d717ed118a868207522ea"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/additional-commands-65536.tool.json",
+      "bytes": 88962,
+      "sha256": "49e8eee88fd75b22b141f19dc19338c5ac3a0ea37dce9bdbe66339aad0cc2e01"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/additional-observation-0.tool.json",
+      "bytes": 11041,
+      "sha256": "31e4f6e19f640f427fd2a5d093de763c97f3d3a822080ca4c41612d9897a2bf1"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/additional-outer-stderr-0.tool.json",
+      "bytes": 1552,
+      "sha256": "761e5a7b9d6f659cdd4dfcf4cc9fe994ab45039fd1029b9dda641aa539b7bc65"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/additional-outer-stdout-0.tool.json",
+      "bytes": 1976,
+      "sha256": "e989de7978fd67a546d2a792ebb84995d16f980263891b452b224e5296d74e1a"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/commands.json",
+      "bytes": 227567,
+      "sha256": "9c2f3b39f8a1055d3abf82c94e841436a18d40c492f1a78a6afd40acf04301ff"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/inner-result-0.tool.json",
+      "bytes": 88951,
+      "sha256": "2511a784e1eff106ad4c6e0bd97ec374f7cebea88c6018e0900a02fc7c4e99a9"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/inner-result-131072.tool.json",
+      "bytes": 88962,
+      "sha256": "494b9f9aab9159c7be4b5709a796b33349572429a686c8eeaace8b584912f7a3"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/inner-result-196608.tool.json",
+      "bytes": 18865,
+      "sha256": "f0377680d3a1d87558b99a765936460837c35cd6ba9f96af840ebaacd06093a1"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/inner-result-65536.tool.json",
+      "bytes": 88960,
+      "sha256": "54da1bca2afdaf5ebf5b09cd00cf4be1982b65841f6641ab94794a99b2abd247"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/outer-execution-0.tool.json",
+      "bytes": 14277,
+      "sha256": "c133bdf45efbee889b7aadfd3ff7f9ab4f666388aa7b7064ad30ecf8a77e5e26"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/outer-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/outer-stdout.log",
+      "bytes": 309,
+      "sha256": "fc3a20b3c64dc6fea29def4b574ae7bd705bd9d2b752fca3b04f69069bc17952"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-admission-v1/runtime-admission-0.tool.json",
+      "bytes": 27923,
+      "sha256": "9d0b0a5b04408ff457b2ae6c523c979b453a3b0f649590b9a6430f720d89c539"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/CALLER_OUTER_ORIGINAL.json",
+      "bytes": 12994,
+      "sha256": "a4be17717f502890e66f04b6ca6a5cfbcfb2922de0269fa8d2fba8e5afd2452f"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/CALLER_RESULT_INFO_ORIGINAL.json",
+      "bytes": 926,
+      "sha256": "b83f80f66e355c106544e4abe8583846167b83136c732fbaad5098f2b3042c0d"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/EXECUTION.json",
+      "bytes": 9100,
+      "sha256": "0f4da5173c49a447242ddab69cb19986e50f886ba0edc7f34ba8df832d1e24f8"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/INVENTORY_PIN_source-after.files.json.json",
+      "bytes": 718,
+      "sha256": "15e6de75e97ff005e9a593c18c6257c19df5f1fcac422f467763bc82ca1a4bec"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/INVENTORY_PIN_source-after.head-tree.bin.json",
+      "bytes": 721,
+      "sha256": "2e0c868e17b67cb3c58d3db17c4972ee1462556f8b3425b7d3a02967f7de71a1"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/INVENTORY_PIN_source-after.index.bin.json",
+      "bytes": 717,
+      "sha256": "1d1411747fdc6c6360a5784a92b485b9986e23a0eca966ce36e87e290b7a19c4"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/INVENTORY_PIN_source-after.untracked.bin.json",
+      "bytes": 709,
+      "sha256": "e66f83be17fb934c5bda2d139efc34a9ca0d575c841c22d0bd333c4a4c996b1c"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/INVENTORY_PIN_source-before.files.json.json",
+      "bytes": 719,
+      "sha256": "df4721e8d96252453a16c8eef66783382895957a0bae1f88b929329896971472"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/INVENTORY_PIN_source-before.head-tree.bin.json",
+      "bytes": 722,
+      "sha256": "475e65d612837d9c2f7f352225c492010cfaf5432f075249de20be88c1a28234"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/INVENTORY_PIN_source-before.index.bin.json",
+      "bytes": 718,
+      "sha256": "1ebeab0e2f71ae74a7d8892bb7bb5f62e8ba58f5576d9e6a054462be490f1596"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/INVENTORY_PIN_source-before.untracked.bin.json",
+      "bytes": 710,
+      "sha256": "aa7b652427c01db19e091becbfe9f68c3594a2168d0335f5430c7e6c366841c7"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/PTY_TERMINAL.raw",
+      "bytes": 471,
+      "sha256": "7971066d0787dfe881c48d4be0a844ee573929185bad6881710a5689994c960d"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/RAW_READ_1.json",
+      "bytes": 2712,
+      "sha256": "0f13adda072d658f002ee6826553fa52bf436d3b3d2b97b51f0563dd5dac4a50"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/RAW_READ_2.json",
+      "bytes": 1062,
+      "sha256": "1b5bd6449ae22ec6c05b0e196205a066ca2eb5ea397bbae78b8312f838a07331"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/RAW_READ_3.json",
+      "bytes": 6733,
+      "sha256": "4fe8a86fd6b4cabfdfcef1a52020b6a225a4dd1dc4c27abcc73b747ee9786388"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/RAW_READ_4.json",
+      "bytes": 813,
+      "sha256": "2787745ee4f80de5d71bb4654c76ce20193051b302b35b15a12077db9d58119d"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/RESULT.json",
+      "bytes": 4821,
+      "sha256": "9602b69127a5e2c717e8872825fee903176eb18341ce6d67cdfbbb3a6d8d5b21"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/RESULT_BINARY_ORIGINAL.json",
+      "bytes": 6905,
+      "sha256": "71a8ee049f77fd2dcb8370c64a128433268623116b7c67d303324de03b42d2a3"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/SOURCE_INVENTORY_INFO_1.json",
+      "bytes": 867,
+      "sha256": "d7e3e2ab1977b44f089e2aaa3743166c4d6deafc169ea9a7ed74199eeb8a4647"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/SOURCE_INVENTORY_INFO_2.json",
+      "bytes": 865,
+      "sha256": "5e5e30f2fc8cee309d11a1a19d7b12bbb850d4076186f7b9531aab8c6bc527f5"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/TERMINAL_READBACK.json",
+      "bytes": 9061,
+      "sha256": "1108c0faf3a7c3809fcb68c7b629b47875fd9745a429205813c17b0579348310"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/caller-full-scan.json",
+      "bytes": 1460,
+      "sha256": "3705624d9e5ca25165f34945a5cae742d11f7d66cf77cfe0653d1b86ea14bdac"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/caller-full-scan.raw",
+      "bytes": 169,
+      "sha256": "8d8e7fef08015a4593c1e9b405d404c9982216eeb215a51424632c214a1eff4d"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/outer-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/outer-stdout.log",
+      "bytes": 4431,
+      "sha256": "c3f45b6e0756949b5988b062361aa591448f157d06a3c352e06cfa927725c981"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/source-after-BINARY-ORIGINAL.json",
+      "bytes": 50744,
+      "sha256": "aaedac5e4aa4e142c453646a0ba8a7d0486f425ee4470b854186f2cad8e99a9a"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/source-after.json",
+      "bytes": 37650,
+      "sha256": "6971e3f9fef94fa6a77a3007ff021efc0792b99c8d0ddb29df6ca526d7e9ee21"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/source-before-BINARY-ORIGINAL.json",
+      "bytes": 50745,
+      "sha256": "70adb922c8bb321a9d1655fbb144204cd13800f1f6392101f5dc314b41528e19"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/actual-callers-v1/source-before.json",
+      "bytes": 37650,
+      "sha256": "4ea9d42ea2b1ddf518e2091d212c7d3ca4189101c1be1dcc4c81b4764b132102"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/admission-binder-v1-to-v2.patch",
+      "bytes": 4818,
+      "sha256": "312cd6139bc5c45801bfc3a91738b73076cd62bacaccfb621baf0b849a24f797"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/admission-template-v1-to-v2.patch",
+      "bytes": 626,
+      "sha256": "e19b7dadf42b7282e8d25d2c47d23b575ac657958c5b7740af8e1c11f285edb0"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/admit_learning_h_runtime_template_v1.py",
+      "bytes": 25150,
+      "sha256": "491b4e6804e294a76b163147718aac1fba5e3c4402776adcf1c7a17f3acd6fa6"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/admit_learning_h_runtime_template_v2.py",
+      "bytes": 25257,
+      "sha256": "1fb180c17224874ad710efa00fc1850f576cc39887bf9e7e203788e117763e78"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/admit_learning_h_runtime_v1.py",
+      "bytes": 25362,
+      "sha256": "ca2ee67497da865408642c15f629bce0ff82b2315b6441776dc8fefb7c495591"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/bind_h_runtime_admission_v1.py",
+      "bytes": 8617,
+      "sha256": "3f0c0fd409faba757587951c28b17a0ff1c9881dfadc4c79a3341046b9e15ae7"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/bind_h_runtime_admission_v2.py",
+      "bytes": 8787,
+      "sha256": "23c9e7727c119ba4f4ae00285889a6f8874d12f90d39e35d06fd214eff30e0f5"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/BINDING_REVIEW.json",
+      "bytes": 4021,
+      "sha256": "9c2498f9eba9b1e57a35a202cc661f0b38886294680e1b5b4b309f9e76b5789b"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/E-admission-outer-to-bound-H.patch",
+      "bytes": 3281,
+      "sha256": "95a1293481aeab4933f3b634769de86f9ec59a2a55d3060ee02f3773944ad342"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/EXECUTION.json",
+      "bytes": 9953,
+      "sha256": "6d5eb4f9a56eff06282a0177f0a34ca594aee59726872dc62af7ab5763a4c269"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H9_TASKFLOW_GITHUB_ORIGINAL.json",
+      "bytes": 97831,
+      "sha256": "4ccd0bcbead838855a90586c79cf2445129b2b0801262671dbc2a4d55c094523"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H9_taskflow.rs",
+      "bytes": 94260,
+      "sha256": "f9434d11ffed4fb86ab5eb0fcc99672a786389d5256f41516f062d932be06b66"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/HC6_CALLERS_FOLLOWUP.json",
+      "bytes": 4764,
+      "sha256": "e82be472870acb1a8f971d9cf8208068f23d4b40530a2e242a1c5cce63beec30"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_EXISTING_INPUT_METADATA.json",
+      "bytes": 2928,
+      "sha256": "8b2eb8cec40efe6de6b0d5ba3b3da39049684910e4d302310bb704b27984f19d"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_LAUNCH_ACK.json",
+      "bytes": 384,
+      "sha256": "2ecb17b02644eff8ab95152b67bf99d2fbb102cacae05d1ada33ed1213044d54"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_LAUNCH_REQUEST.json",
+      "bytes": 744,
+      "sha256": "d56cfbbc7eadea7cfd44f35e2377e51725e5f789615deecab01243c28ff60f02"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_PTY_BEFORE.json",
+      "bytes": 1016,
+      "sha256": "f4f6ba4aa1d34d25930a1d92e12c0b5093938645c5c8af03908b2a026541ca6b"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_PTY_POLL_01.json",
+      "bytes": 1244,
+      "sha256": "57d0f2cc169a3e6363c886152cefa356d013c5d81fbf97c2b7e7e876b7f9565c"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_PTY_PROMPT_BEFORE.json",
+      "bytes": 4325,
+      "sha256": "69964a511a271d29bba1b63dbf9a2e937ffeb4c04766e6ea77c30443022b1a25"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_READBACK_01_0.json",
+      "bytes": 34833,
+      "sha256": "fb6fc017ae598d1be925ab6c1ec810da74f1ef7c4e8ea8cdf1597bca4a3f9d4b"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_READBACK_02_0.json",
+      "bytes": 30540,
+      "sha256": "397c12a71bc9534dc7c79d7a1170df63463ed341bde82cd29f958736e6cbce28"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_READBACK_03_0.json",
+      "bytes": 88450,
+      "sha256": "8ff6890e56f1a6cfd30c2d76e78e1ccccd7530944acab7afa4ead7124c4b22c6"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_READBACK_03_65536.json",
+      "bytes": 38429,
+      "sha256": "1caa133732cf752bb2a090f27f54a3d07e87900f8ec9f06c069247b29155c96c"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_READBACK_04_0.json",
+      "bytes": 10209,
+      "sha256": "36a86b5e4ab8a8ded61ee86ab6518b5438247807363ab788f4bb1aca67dcc1b9"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_TERMINAL_METADATA_01.json",
+      "bytes": 2862,
+      "sha256": "12464daa7fdb353de060a7cdd175de7ec5a0ebdeb2aacdf1ee6f4d2d29170dcd"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_UPLOAD_ACK_01.json",
+      "bytes": 525,
+      "sha256": "8a0b36987787d80c8222a196b781553e19572ac93bc47628b8016bc626ce59c9"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_UPLOAD_ACK_02.json",
+      "bytes": 538,
+      "sha256": "49e12868cf8a06f73c0cd64a2126f9012fe5da5e7f664b185cb13e083007fc18"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_UPLOAD_ACK_03.json",
+      "bytes": 541,
+      "sha256": "049a6ec57fad054fabcff79cfe9f812e5d8c275f1e937b57d315355db877c6b6"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_UPLOAD_ACK_04.json",
+      "bytes": 532,
+      "sha256": "6a7f4f18ac459c196f0934a710a8d1db5536e991735875841d0afe33f923f263"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_UPLOAD_READBACK_VERIFIED.json",
+      "bytes": 2090,
+      "sha256": "b20c12d6cd90d38d69e9ca6632f60bc9e8ba969fa6b8edf071d694405b798586"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/H_UPLOAD_REQUEST.json",
+      "bytes": 1326,
+      "sha256": "d8838aee025df60d863b57ac07a16d159d779a154411414ab904b82ab80ab63a"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/READBACK_ATTEMPT_01.json",
+      "bytes": 491,
+      "sha256": "e36abf2005bac8077a2423bfa8ff2b6bb17dbb9c33a499f5bd865ef2b344c334"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/REQUEST.json",
+      "bytes": 6563,
+      "sha256": "7e40c1176941f2ca27c40b0455284ac7537f78ea62ec902165f8340251a68a8f"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/command.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/command.stdout",
+      "bytes": 3438,
+      "sha256": "7f13e13a920340f1f4cf8bd291d4441b7ffd40e996b7558429d8ce9df27e0f36"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/binding-actual-v1/template-v2-to-bound-inner.patch",
+      "bytes": 1066,
+      "sha256": "328302a12c3bc96442144271fabdc37efe31e75dc1f638c515056b7cba356e48"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/launch_learning_h_callers_template_v1.py",
+      "bytes": 11396,
+      "sha256": "babb8d71a26973a57cc2152ed1d8124a44c3f88b12c8aabb34a31d42265f7e51"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/launch_learning_h_callers_v1.py",
+      "bytes": 11569,
+      "sha256": "7537cfe0e9a0b7c8f8f57994dfc901e0e62eaf34ac4fd9e79493afde9ba2ea7e"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/launch_learning_h_runtime_admission_v1.py",
+      "bytes": 6872,
+      "sha256": "97555c41fbbf429e9ce016bbbbd2513e414fc57767d38693ce6115ecdee04637"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/launch_learning_h_strict_template_v1.py",
+      "bytes": 8836,
+      "sha256": "2d7528863aa65ed1666c666771a31947cb3e6cddd2934b97416b64dce6c8a025"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/launch_learning_h_strict_v1.py",
+      "bytes": 8986,
+      "sha256": "80b2ebe06425abef5edae3993a7646562dc2d75f33a2fb9c9e15c8f32992cf18"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/learning-h-runtime-admission-inputs-v1.json",
+      "bytes": 22111,
+      "sha256": "0446ea0a3a7d7bce97f21245385ce5308e58907fcb45cb08348d367b4755db26"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/learning-h-source-publication-original-v1.json",
+      "bytes": 93707,
+      "sha256": "503d256ca09ee87959372a3676763f165f18bf7e436ee964326639848ce90bb9"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/prepare_gate_templates_v1.py",
+      "bytes": 8172,
+      "sha256": "e58ccdfde85f544f6de67d35bb836f227d11cbb27c37d2f35cd9fd649ccde780"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/EXECUTION.json",
+      "bytes": 9517,
+      "sha256": "389c9c6918058ef0b820c49821edb66c4f5ff08f4a37a2048423d8923d4c3ba0"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/RESULT.json",
+      "bytes": 209573,
+      "sha256": "11cd2b72dde2e61b932f55ee9b33917364146fb7907bf8ae55f9ee8e047f097d"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/ROOT_INDEPENDENT_REVIEW_v1.json",
+      "bytes": 1855,
+      "sha256": "68a74c153e7b9330afc02fb1ad4ef4890e4e350940ea1b4c58b4183aea57886f"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/ROOT_READBACK_ATTEMPTS_v1.json",
+      "bytes": 528,
+      "sha256": "317e1adcfdb0f357c59f9073b1bcd5515777425aaf956d8be332f34adbb1f0e0"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/RUNTIME_ADMISSION.json",
+      "bytes": 19743,
+      "sha256": "cff782f7cda8379d25578ce95be1122693c53129b42987e3dd41673aa919cd83"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/RUNTIME_OBSERVATION.json",
+      "bytes": 7084,
+      "sha256": "eddb78f3088c5844dc9960b4ba9fff2735a4ba86c2c6da3f2ef2f50be5528054"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/chunk-0-0.json",
+      "bytes": 87731,
+      "sha256": "06f50b00664199a6436e08523ef92bab7c423d57f4385906aaa2923cfef57868"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/chunk-0-131072.json",
+      "bytes": 87737,
+      "sha256": "be7df2ed79cf490b1c0957faa1c7daa04542bbfc9a74c96b1c7c80a096f8105b"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/chunk-0-196608.json",
+      "bytes": 17640,
+      "sha256": "0ca9a02374d8225e993dc3fea8ebaf8ab7dbb097b14612d5dd20c0e0fa695688"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/chunk-0-65536.json",
+      "bytes": 87736,
+      "sha256": "07555f1a15789d701b0718db87274da27017e82a7deed67b62d868ccb09ccad6"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/chunk-1-0.json",
+      "bytes": 26679,
+      "sha256": "eb1db7de5264952392da9e13a6a8ca80eec00ea5c1aac7f61e3475859fc5b402"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/chunk-2-0.json",
+      "bytes": 13042,
+      "sha256": "041911ca97483d093e817b3ba69ba32691b6182bf8d8fd94731a34f3cdf8c2e2"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-admission-readback-v1/chunk-runtime.json",
+      "bytes": 9802,
+      "sha256": "72032cdd583966b090bd69f347130ff0ef1f60430cef9eb3771fb6d5c9e50bbb"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-caller-failure-v1/EXECUTION.json",
+      "bytes": 9100,
+      "sha256": "0f4da5173c49a447242ddab69cb19986e50f886ba0edc7f34ba8df832d1e24f8"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-caller-failure-v1/RESULT.json",
+      "bytes": 4821,
+      "sha256": "9602b69127a5e2c717e8872825fee903176eb18341ce6d67cdfbbb3a6d8d5b21"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-caller-failure-v1/ROOT_INDEPENDENT_REVIEW_v1.json",
+      "bytes": 1013,
+      "sha256": "e4275b826b46c34e8c682ca67b87074b05e3ce96c1f25430b834b162cb354b76"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-caller-failure-v1/chunk-0.json",
+      "bytes": 6792,
+      "sha256": "f985324384d4d16bec2db9bd2eadf3c57366384c409f8cf03265144defde3566"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-caller-failure-v1/chunk-1.json",
+      "bytes": 12509,
+      "sha256": "7bdc85a916a1539106f4ce57170fdb3125c491b88bc86edac824018785c0b46b"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-caller-failure-v1/chunk-2.json",
+      "bytes": 2322,
+      "sha256": "ffd7e9fe0cea20d5c0080732a9ea7d295bf8a66560289cb84a88c63655831057"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-caller-failure-v1/chunk-3.json",
+      "bytes": 636,
+      "sha256": "986330c8b3e4bae223ca741765e57f5aa97b224a1a8d11534f811137c977f8f8"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-caller-failure-v1/raw.log",
+      "bytes": 169,
+      "sha256": "8d8e7fef08015a4593c1e9b405d404c9982216eeb215a51424632c214a1eff4d"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/root-independent-caller-failure-v1/receipt.json",
+      "bytes": 1460,
+      "sha256": "3705624d9e5ca25165f34945a5cae742d11f7d66cf77cfe0653d1b86ea14bdac"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/run_learning_owner_native_v3.py",
+      "bytes": 36535,
+      "sha256": "145fe6d611e4edc1947ed8a4f2e1d0e69795c66d84b3f0bb675c6bbb05346c67"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/CALLER_INITIAL_PTY_READ.json",
+      "bytes": 1281,
+      "sha256": "e24e76fb9180e7d9459dcb0421d0e9a6d2078ed380d4d6536eff9083f08ed82b"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/CALLER_LAUNCH_ACK.json",
+      "bytes": 586,
+      "sha256": "53ebcbfb69319ccfdb3f262e8777a678cca011df95be4c37ad4138113750c2f8"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/CALLER_LAUNCH_REQUEST.json",
+      "bytes": 755,
+      "sha256": "bf9eae89a02d35c9928ee1ab75e2addd17bd10b27820324f40bbeff1908ae01d"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/CALLER_PTY_READ_02.json",
+      "bytes": 1049,
+      "sha256": "70211f7ba007cd51ca888f96c83aac3785ff08b37212bf7fcf50ee0af2315133"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/CALLER_PTY_READ_03.json",
+      "bytes": 2554,
+      "sha256": "b856318bae79a4a143c13c2196fb4841fc7f73a498ee60009b9ddb40fefd474b"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/CALLER_REQUEST_OBSERVATION_01.json",
+      "bytes": 5730,
+      "sha256": "b283bd22792cdfdaa6d104104fcae7d4bc9f52cf6ef205ba0afe2845b0b97d87"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/PREPARATION.json",
+      "bytes": 4779,
+      "sha256": "8ec77842dbc40a1b32152861c308ccffaf522359a6aa9b5fbe6e17b4bf43c512"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/READBACK_ACK_1.json",
+      "bytes": 12591,
+      "sha256": "9305947ef22b198623ec96cd2806f4a3c6e21954e5f879a0cbf8568b449a9c26"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/READBACK_ACK_2.json",
+      "bytes": 16040,
+      "sha256": "183948d5a6fe7052eefb6467fc27560586109aba599cb253775816ae0f4a5bc8"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/STRICT_INITIAL_PTY_READ.json",
+      "bytes": 1311,
+      "sha256": "2428791811e154f288db7f06221b53faf34e3b9b729b5fb2c2497c0dfa7adb43"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/STRICT_LAUNCH_ACK.json",
+      "bytes": 384,
+      "sha256": "00d5158d2888e1ea03fb44bb14fda3ee22a97af07102a334522191d110852ce3"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/STRICT_LAUNCH_REQUEST.json",
+      "bytes": 650,
+      "sha256": "73a953bbca007c2ac2d37f08e155ce25421498df24b84c7dfc78fd3a8474fb6f"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/STRICT_PROGRESS_OBSERVATION_01.json",
+      "bytes": 15328,
+      "sha256": "bea98720c7355308369bbc30d0c775389564224d07f9b9c90d69cf1505a05202"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/STRICT_PROGRESS_OBSERVATION_02.json",
+      "bytes": 15048,
+      "sha256": "6fcb2fba3cb475c774968a77589842064ba7213f64d5870a2df22401cf15e38c"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/STRICT_PTY_READ_02.json",
+      "bytes": 1074,
+      "sha256": "7344fc39496cb5870aafbf20e454a2f6191977f6e772bbba2813dee3a1aa05dd"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/STRICT_REQUEST_OBSERVATION_01.json",
+      "bytes": 5492,
+      "sha256": "bec1ab05f012d878912aebbcf95624a836c10f9b695b1aabb77ae906230d97eb"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/UPLOAD_ACK_1.json",
+      "bytes": 400,
+      "sha256": "57169939ae45ce7efdad995756900f4ccf9e18ce5fc976a838c740849be037af"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/UPLOAD_ACK_2.json",
+      "bytes": 404,
+      "sha256": "9cb26544bb46e56da3532f1e2f14b643f13f1a73ad0e2518a67b1084094e8362"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/UPLOAD_READBACK_RESULT.json",
+      "bytes": 756,
+      "sha256": "8d0333dec9ec2790159ce4d1bd654db18a4872f3fe41b3ebb086bd341235fb8e"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/UPLOAD_REQUEST.json",
+      "bytes": 715,
+      "sha256": "1081f0bcd0d1c23e8c2683455faf53a66477db70270e3f9c71a01effebe3c39e"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/launch_learning_h_callers_v1.py.patch",
+      "bytes": 1210,
+      "sha256": "418434581d9f41896d3b74cd7c5916f3b68db6c25e44b2a13564519b4c8e295c"
+    },
+    {
+      "path": "originals/learning-training-h-gates-preparation-v1/strict-caller-bound-v1/launch_learning_h_strict_v1.py.patch",
+      "bytes": 1155,
+      "sha256": "666b0edfa0c609ff2bdd5c91424b5a6a21be6d217cd6ec7edbea11a1c9026ccc"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/BOUND_PREPARATION.json",
+      "bytes": 2993,
+      "sha256": "08aec4007c13b62245d15002d2e310dc1e2163021f426916d5e41d254168b0c4"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/E-copy-outer-to-H-template.patch",
+      "bytes": 11918,
+      "sha256": "14c9101a5ccd3f7d46a9b93576b677eb6d21a118eba3b61bb86c4a1e1275bd64"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/E-copy-to-H-template.patch",
+      "bytes": 44639,
+      "sha256": "1c07de5ec38ccc5de0ea3a43b40d5ab31d448daffd945e3e266c3d08c4fc9728"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/OFFLINE_CHECKS.json",
+      "bytes": 3108,
+      "sha256": "d9e5b196fa1937a995ec790f98ad2839e5f776f3c3dac6d9cc052a287c8cfa17"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/PREPARATION.json",
+      "bytes": 8006,
+      "sha256": "3ecc7c4eaef231d61a526e032ed06f05a9f08119fcf075365a80679059baed47"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/ROOT_FULL_STATIC_REVIEW_v1.json",
+      "bytes": 1207,
+      "sha256": "d263c155d0a86bd54d86d61c4f2bf84c37d6762b26bfa4c69263264a84389ed4"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/EXECUTION.json",
+      "bytes": 12064,
+      "sha256": "37276b154298db962e256525e0c65331205c6ef85b7afc0ca05141e0f13dd4a4"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/LAUNCH_ACK.json",
+      "bytes": 384,
+      "sha256": "9caaadcc3981def88f37c300c5eebad5364e5a76a62b3aded4f59fe47ee7225c"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/LAUNCH_REQUEST.json",
+      "bytes": 717,
+      "sha256": "f0b491088b621bf529aa068f22105a31835607ba70c4f1bf39b0782023ccb011"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/PTY_POLL_01.tool.json",
+      "bytes": 2601,
+      "sha256": "a26e051f3023240d2c5e26fc1fb2de9f3b3c9aa5ef4fb4027fce368ee6b45488"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/PTY_TERMINAL.raw",
+      "bytes": 491,
+      "sha256": "ad483c3fcde7d17a94ee97ed7177711d167016e4093f8c14ea845aafd8aa6d55"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/READBACK_RESULT.json",
+      "bytes": 7197,
+      "sha256": "98052b95642a91c192710760ff110b99ba08e0f820d5666295dbcf7ee13e6971"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/RESULT.json",
+      "bytes": 53282,
+      "sha256": "db824e316fe4f5074cb12e7021d0d87b6b68f52fc1e9aa993c328a424b0e017a"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/TERMINAL_METADATA.tool.json",
+      "bytes": 1876,
+      "sha256": "7d370a945c07d3b90aa1a4bba65e87bc160d28b2ee6a39321af32cd51399e911"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/UPLOAD_ACK_1.json",
+      "bytes": 397,
+      "sha256": "a1599e732aa1fa7831e0d7abdf1255177a751117d6f4208f9f5da037f0ab119c"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/UPLOAD_ACK_2.json",
+      "bytes": 404,
+      "sha256": "e5dee041d98e8e6b92f06bdd0fd279bf6403d646b214ffb1c70ca28fbf033300"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/UPLOAD_READBACK_1.tool.json",
+      "bytes": 44605,
+      "sha256": "b71ec1383f882e11e54168a5726f0137bcb8d603c9df88ed3b120d0569e8c606"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/UPLOAD_READBACK_2.tool.json",
+      "bytes": 17874,
+      "sha256": "85047257105d7b4278966d269f79b44f1762875b07ffdbac9888f3b6e1746f0e"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/UPLOAD_REQUEST.json",
+      "bytes": 728,
+      "sha256": "5c2b6942221af69536cc03d62c2e251fd0af086a27bdabd83a9701a27d7d0e5e"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/UPLOAD_VERIFIED.json",
+      "bytes": 1050,
+      "sha256": "569ed031e0b221f8627882ff6fdedc891ffd637b1e6cdb12876958a2ba1cfeca"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/copy-outer.tool.json",
+      "bytes": 17662,
+      "sha256": "c38af3eab4fee9da6db41ee24445f64906b56080e1f0d245cac7dfa5d9cc3d68"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/actual-copy-v1/copy-result.tool.json",
+      "bytes": 72592,
+      "sha256": "ae1fe2fc14fb3b6974b474e3a472b05573c99fb37e5da881a2d8f7ba31d19d93"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/bind_h_v8_copy_v1.py",
+      "bytes": 5034,
+      "sha256": "6328c4b015bedffb8d93df0b173accf3fe17460ede4c77840770fe6f20105238"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/binding-actual-v1/BOUND_DIFF_REVIEW.json",
+      "bytes": 2221,
+      "sha256": "0d0341a192528158788d7bd379cee48f0b141c6e37320d50957a32f38cea4e28"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/binding-actual-v1/EXECUTION.json",
+      "bytes": 7864,
+      "sha256": "6035da63953d6171a96a773193543785336e39e0bc67c139b61140b7e3fbfd73"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/binding-actual-v1/REQUEST.json",
+      "bytes": 5095,
+      "sha256": "6386be96586324524e184b8037981aab5eea4d926b44a0a9a04f2e8c52e179bd"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/binding-actual-v1/command.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/binding-actual-v1/command.stdout",
+      "bytes": 3225,
+      "sha256": "0b55225df136753a861d3808c3da1a2b31b84d42cd60eb44b3457a15480b2aed"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/binding-actual-v1/copy_learning_h_v8_v1.py.patch",
+      "bytes": 1173,
+      "sha256": "77758ac29f1fd2da8547bb7ab1544009916490f834f99ef5d6c9669606408070"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/binding-actual-v1/launch_learning_h_v8_copy_v1.py.patch",
+      "bytes": 2014,
+      "sha256": "007bf20542080a6fdc4c4fc0abdc419f11d82b7b7ed7b0931ac90a58f6b275ef"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/copy_learning_h_v8_template_v1.py",
+      "bytes": 32286,
+      "sha256": "8ca35200851a5199e075eded8d6afcbb1a092758d473969737ba3174e9239877"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/copy_learning_h_v8_v1.py",
+      "bytes": 32802,
+      "sha256": "108841de6442643f58f8d86effae6a532eb5f4e16058cf840c1fc01e764b7604"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/launch_learning_h_v8_copy_template_v1.py",
+      "bytes": 11326,
+      "sha256": "9b7cb0dcb583f149a5bce1e35d40692d36b071e2fc5a522fb8fb438398b83c90"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/launch_learning_h_v8_copy_v1.py",
+      "bytes": 12737,
+      "sha256": "31d087d5c9c6f2a541d8a82fa2ad05707cbf73c7d9a7686a33ae3026eec3405d"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/prepare_h_v8_copy_templates_v1.py",
+      "bytes": 27370,
+      "sha256": "2ed82c22eebbbe1e40bf6760c275a6e23fd092e3b1a17f183bd10794b056121f"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/root-independent-actual-v1/EXECUTION.json",
+      "bytes": 12064,
+      "sha256": "37276b154298db962e256525e0c65331205c6ef85b7afc0ca05141e0f13dd4a4"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/root-independent-actual-v1/RESULT.json",
+      "bytes": 53282,
+      "sha256": "db824e316fe4f5074cb12e7021d0d87b6b68f52fc1e9aa993c328a424b0e017a"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/root-independent-actual-v1/ROOT_INDEPENDENT_REVIEW_v1.json",
+      "bytes": 1053,
+      "sha256": "02c3f403f05bf6b70f7b207e053c2c5723616dcdfd7d6ffb2f4266718efc527f"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/root-independent-actual-v1/chunk-0.json",
+      "bytes": 71384,
+      "sha256": "0ce77ad952ead01f0b1af942465a64b14a4c5640a4b0a270dac60f0140a4e102"
+    },
+    {
+      "path": "originals/learning-training-h-v8-copy-preparation-v1/root-independent-actual-v1/chunk-1.json",
+      "bytes": 16437,
+      "sha256": "2f1e35ac7c90991591beb63f46ac6295303876e6ab2c7c5f4dd8c8989c85e9f7"
+    },
+    {
+      "path": "originals/pr5397-status-v10-before.json",
+      "bytes": 26769,
+      "sha256": "14022395020eff3e9e26b03d4489ef4a68814aaa66875de5d0c78f933aa36300"
+    },
+    {
+      "path": "originals/pr5397-status-v10-draft.md",
+      "bytes": 35935,
+      "sha256": "22b7856c199a96ab47837950a3afb84568947dfc6fa7b357e6ab27a324902b23"
+    },
+    {
+      "path": "originals/pr5397-status-v10-final.md",
+      "bytes": 35935,
+      "sha256": "22b7856c199a96ab47837950a3afb84568947dfc6fa7b357e6ab27a324902b23"
+    },
+    {
+      "path": "originals/pr5397-status-v10-publication.json",
+      "bytes": 802,
+      "sha256": "b45e3ce9380e629c08ec91056ba4fc44dbbc6bdb6b09a22a1b5dde03316f64cc"
+    },
+    {
+      "path": "originals/root-continuation-20261109-1858-v1.json",
+      "bytes": 14581,
+      "sha256": "35cbc0d3f9f828237b2b59486ee54b36d0cc5d206361846eda5c190d6ab87977"
+    }
+  ],
+  "source_scopes": [
+    "1d467787e2761192b0c545c377c5d7e281a298d4"
+  ],
+  "full_history_cost": null,
+  "all_stage_gates": "HOLD",
+  "new_native_executions": 0,
+  "new_numerical_executions": 0,
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/h9-admission-v8-and-caller-failure-history-v1/archive.part001",
+      "offset": 0,
+      "bytes": 196608,
+      "sha256": "80266aabb7ce9c0f4c65878ba4d22596e957eb27e179f00d3c181c435bd284f1"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/h9-admission-v8-and-caller-failure-history-v1/archive.part002",
+      "offset": 196608,
+      "bytes": 109140,
+      "sha256": "1dd9029e283021eccdb01267d20817d125d38bed22eeb0d521e1b4947679cb9e"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "disk_archive_whole_sha_and_members_verified": true
+}
