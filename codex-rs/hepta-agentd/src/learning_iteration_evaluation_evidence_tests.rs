@@ -6,6 +6,7 @@ use std::io::ErrorKind;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
 use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
+use pretty_assertions::assert_eq;
 
 use super::*;
 use crate::neuron_cell_evaluation::tests::learning::LearningFixture;
