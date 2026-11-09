@@ -12,16 +12,16 @@ import io
 import json
 from pathlib import Path
 import resource
-import shutil
 import subprocess
 import time
 import traceback
 
 from PIL import Image
 
-from ndu_real_materials.common import read_bound, strict_json
+from ndu_real_materials.common import read_bound, read_relative, strict_json
 from ndu_real_materials.isolate import run_actor
 from .controllers import ACTIONS, ControlPlan
+from . import content_chain
 from .metering import Meter, atomic_json, canonical_sha, file_sha
 from .interval_costs import actor_receipts, close_observer_tail, reconcile
 from .objective import utility_profile
@@ -157,6 +157,7 @@ class EpisodeHost:
             "kind": "overview",
         }
         self.prepared, self.steps, self.snapshots = None, [], []
+        self.snapshot_records, self.action_attempts = [], []
         self.ready, self.stopped, self.budget_stop = False, False, False
         self.last_send = self.started
         if training:
@@ -180,18 +181,29 @@ class EpisodeHost:
                 raise ValueError(
                     "Predeclared exploration must end in STOP within eight actions"
                 )
-        self.snapshot()
+        with self.meter.stage("sync", "persist original delivery snapshot"):
+            self.snapshot()
 
     def snapshot(self):
         directory = self.output / f"delivery-{len(self.snapshots):02d}"
         directory.mkdir()
         delivery = copy.deepcopy(self.delivery)
         if delivery["image"] is not None:
-            source = self.public / delivery["image"]["path"]
-            shutil.copyfile(source, directory / "delivered.png")
+            raw = read_bound(
+                self.public,
+                {key: delivery["image"][key] for key in ("path", "sha256", "bytes")},
+            )
+            write_bytes_once(directory / "delivered.png", raw)
             delivery["image"]["path"] = "delivered.png"
         atomic_json(directory / "delivery.json", delivery)
+        record = content_chain.delivery_snapshot(directory)
+        if record["semantic_sha256"] != content_chain.delivery_semantic_sha(
+            self.delivery
+        ):
+            raise ValueError("Snapshot changed delivered content")
+        atomic_json(directory / "snapshot.json", record)
         self.snapshots.append(directory)
+        self.snapshot_records.append(record)
 
     def public_step(self):
         step = len(self.steps)
@@ -215,14 +227,14 @@ class EpisodeHost:
             "forced_action": forced,
         }
         self.last_send = time.perf_counter()
-        self.last_public = value
+        self.last_public = copy.deepcopy(value)
         return (
             json.dumps(value, separators=(",", ":"), allow_nan=False) + "\n"
         ).encode()
 
     def callback(self, line):
         value = (
-            line
+            copy.deepcopy(line)
             if isinstance(line, dict)
             else strict_json(line.encode() if isinstance(line, str) else line)
         )
@@ -239,10 +251,51 @@ class EpisodeHost:
             self.ready_receipt = value
             self.startup_seconds = time.perf_counter() - self.started
             return self.public_step()
+        self._effect_started = False
+        original = self.output / f"actor-proposal-{len(self.action_attempts):02d}.json"
+        with self.meter.stage("sync", "retain original actor proposal"):
+            proposal_sha = atomic_json(original, value)
+        attempt = {
+            "proposal": {
+                "path": original.name,
+                "sha256": proposal_sha,
+                "bytes": original.stat().st_size,
+            },
+            "status": "received",
+        }
+        self.action_attempts.append(attempt)
+        try:
+            self.apply_observation(value, attempt)
+            attempt["status"] = "completed"
+        except BaseException as error:
+            attempt.update(
+                status="failed" if self._effect_started else "rejected",
+                error={"type": type(error).__name__, "message": str(error)},
+            )
+            raise
+        finally:
+            try:
+                with self.meter.stage("sync", "retain original action outcome"):
+                    atomic_json(
+                        original.with_name(original.stem + "-outcome.json"), attempt
+                    )
+            except BaseException as error:
+                attempt.update(status="failed", persistence_error=type(error).__name__)
+                raise
+        value["observed_action_seconds"] = time.perf_counter() - self.last_send
+        return None if self.stopped else self.public_step()
+
+    def apply_observation(self, value, attempt):
+        if {
+            "retained_catalog",
+            "delivery_readback",
+            "observed_action_seconds",
+        } & value.keys():
+            raise ValueError("Actor supplied host-reserved content evidence")
         if (
             not self.ready
             or self.stopped
-            or value.get("schema") != "ndu.real.actor-observation.v1"
+            or value.get("schema") != "ndu.real.actor-observation.v2"
             or value.get("case_id") != self.case["id"]
             or value.get("step") != len(self.steps)
             or value.get("weights_sha256") != self.profile["model_sha256"]
@@ -299,6 +352,42 @@ class EpisodeHost:
         )
         if set(arguments) != expected:
             raise ValueError("Action contains unexpected arguments")
+        with self.meter.stage("codec", "verify public content selection before effect"):
+            if content_chain.delivery_semantic_sha(
+                self.delivery
+            ) != content_chain.delivery_semantic_sha(
+                self.last_public["delivery"]
+            ) or canonical_sha(self.observation) != canonical_sha(
+                self.last_public["observation"]
+            ):
+                raise ValueError("Host content changed after the public observation")
+            selection = content_chain.verify_selection(
+                self.actor_output,
+                self.last_public,
+                action,
+                value.get("content_selection"),
+                retain_root=self.output / "content-catalogs",
+            )
+            value["retained_catalog"] = {
+                **selection["catalog"],
+                "path": f"content-catalogs/decision-{len(self.steps):02d}.candidates.json",
+            }
+            attempt["retained_catalog"] = value["retained_catalog"]
+            if (
+                self.training
+                and strict_json(
+                    read_bound(
+                        self.output,
+                        value["retained_catalog"],
+                        limit=content_chain.MAX_CATALOG_BYTES,
+                    )
+                )["candidates"]
+                != value["candidate_metadata"]
+            ):
+                raise ValueError(
+                    "Training candidates differ from the retained content catalog"
+                )
+        self._effect_started = True
         with self.meter.stage("codec", "execute real " + name):
             if name in {"PREPARE_ROI", "RENDER_IMAGE"}:
                 box = arguments["bbox"]
@@ -345,8 +434,13 @@ class EpisodeHost:
         self.steps.append(value)
         with self.meter.stage("sync", "persist actual delivery snapshot"):
             self.snapshot()
-        value["observed_action_seconds"] = time.perf_counter() - self.last_send
-        return None if self.stopped else self.public_step()
+            value["delivery_readback"] = {
+                "schema": "ndu.real.content-effect-readback.v1",
+                "content_selection_sha256": canonical_sha(selection),
+                "action_sha256": canonical_sha(action),
+                "snapshot_directory": self.snapshots[-1].name,
+                **self.snapshot_records[-1],
+            }
 
     def crop(self, box, name):
         raw = read_bound(self.root, self.source_binding)
@@ -458,6 +552,9 @@ class EpisodeHost:
         measured = close_observer_tail(measured)
         atomic_json(self.output / "launch.json", launch)
         atomic_json(self.output / "trajectory.json", {"steps": self.steps})
+        atomic_json(
+            self.output / "action-attempts.json", {"attempts": self.action_attempts}
+        )
         result = {
             "schema": "ndu.real.episode-result.v1",
             **self.profile,
@@ -534,6 +631,7 @@ class EpisodeHost:
         directories = self.snapshots if self.training else self.snapshots[-1:]
         try:
             for directory in directories:
+                snapshot = self.snapshot_records[self.snapshots.index(directory)]
                 output = directory / "evaluation.json"
                 command = bootstrap(self.config, "ndu_real_runtime.score_worker") + [
                     "--root",
@@ -555,6 +653,7 @@ class EpisodeHost:
                     with meter.stage(
                         "critic", "independent post-actor reference scorer"
                     ):
+                        content_chain.verify_snapshot(directory, snapshot)
                         run = subprocess.run(
                             command, capture_output=True, timeout=30, check=False
                         )
@@ -578,10 +677,14 @@ class EpisodeHost:
                     raise
                 write_bytes_once(directory / "evaluation.stdout", run.stdout)
                 write_bytes_once(directory / "evaluation.stderr", run.stderr)
-                score = strict_json(output.read_bytes())
-                if score["evaluator_source_sha256"] != self.config["evaluator_sha256"]:
-                    raise ValueError(
-                        "External scorer source differs from the predeclared pin"
+                with meter.stage(
+                    "critic", "bind scorer identity to the actual delivery"
+                ):
+                    score = strict_json(
+                        read_relative(directory, output.name, limit=262144)
+                    )
+                    content_chain.verify_evaluation(
+                        score, self.case, self.config, snapshot, directory
                     )
                 scores.append(score)
             meter_status = "SUCCEEDED"

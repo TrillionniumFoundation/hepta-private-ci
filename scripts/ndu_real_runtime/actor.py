@@ -17,6 +17,7 @@ import numpy as np
 import torch
 
 from .controllers import ACTIONS, ControlPlan, Controller, PublicState
+from .content_chain import publish_selection
 from .metering import Meter, atomic_json, file_sha, transport_receipt, canonical_sha
 from .neural import FittedPredictor, ReceiptPortfolioModel
 from .objective import utility_profile
@@ -270,17 +271,23 @@ def run():
         ):
             # An initial-delivery baseline/final fixed STOP does no unnecessary
             # encoding. Actual process/model loading remains host-metered.
+            output = {
+                "schema": "ndu.real.actor-action.v1",
+                "action": "STOP",
+                "arguments": {},
+            }
+            with meter.stage("sync", "retain public candidate and selection identity"):
+                content_selection = publish_selection(
+                    Path.cwd(), state, [], None, output
+                )
             print(
                 json.dumps(
                     {
-                        "schema": "ndu.real.actor-observation.v1",
+                        "schema": "ndu.real.actor-observation.v2",
                         "case_id": packet["case_id"],
                         "step": sequence,
-                        "action": {
-                            "schema": "ndu.real.actor-action.v1",
-                            "action": "STOP",
-                            "arguments": {},
-                        },
+                        "action": output,
+                        "content_selection": content_selection,
                         "public_features": [],
                         "public_metadata": [],
                         "controller": {"forecast_calls": 0},
@@ -389,11 +396,16 @@ def run():
             (packet["source_size"]["width"], packet["source_size"]["height"]),
             state,
         )
+        with meter.stage("sync", "retain public candidate and selection identity"):
+            content_selection = publish_selection(
+                Path.cwd(), state, candidates, selected_index, output
+            )
         result = {
-            "schema": "ndu.real.actor-observation.v1",
+            "schema": "ndu.real.actor-observation.v2",
             "case_id": packet["case_id"],
             "step": sequence,
             "action": output,
+            "content_selection": content_selection,
             "public_features": list(public_state.features),
             "public_metadata": meta,
             "controller": details,
