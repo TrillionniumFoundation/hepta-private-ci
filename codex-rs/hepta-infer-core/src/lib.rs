@@ -6,8 +6,14 @@
 
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
+mod joint_packet;
 mod joint_v4_projection;
 mod neuron_feature;
+
+pub use joint_packet::Packet as JointTensorPacketV1;
+pub use joint_packet::Result as JointPacketResultV1;
+pub use joint_packet::Tensor as JointTensorV1;
+pub use joint_packet::sha256 as joint_packet_sha256_v1;
 
 pub use joint_v4_projection::JOINT_V4_CORE_DT;
 pub use joint_v4_projection::JOINT_V4_INPUT_BYTE_LIMIT;
