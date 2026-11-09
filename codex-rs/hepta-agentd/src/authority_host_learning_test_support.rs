@@ -39,6 +39,8 @@ pub(crate) fn fixture() -> anyhow::Result<(
         source_run_id: StableId::new("profile-source-run")?,
         completed_task_receipt: digest("completed-task"),
         selected_artifact_digest: digest("selected-artifact"),
+        // Match the frozen synthetic profile of the shared generation-learning fixture.
+        evaluation_profile: digest("evaluation"),
         selected_bundle: crate::neuron_generation_update_bootstrap::learning_test_baseline()?,
         envelope: IterationEnvelopeV1 {
             envelope_id: StableId::new("profile-envelope")?,
