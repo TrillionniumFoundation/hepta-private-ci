@@ -129,12 +129,25 @@ fn root_learning_registration_reopens_without_replacing_original_history() -> an
     let (_fixture, _identity, mut coordinator) = fixture()?;
     let initial = coordinator.snapshot().clone();
     let path = root.path().join("learning-checkpoint");
-    assert!(learning_store(root.path(), &initial, StoreMode::Reopen).is_err());
+    assert!(
+        learning_store(
+            root.path(),
+            &initial,
+            StoreMode::Reopen,
+            /*scope*/ None
+        )
+        .is_err()
+    );
     assert!(
         !path.exists(),
         "open-only recovery must not register a missing owner"
     );
-    let owner = learning_store(root.path(), &initial, StoreMode::Register)?;
+    let owner = learning_store(
+        root.path(),
+        &initial,
+        StoreMode::Register,
+        /*scope*/ None,
+    )?;
     assert_eq!(owner.restore(&initial.request)?, None);
     assert_eq!(
         owner.checkpoint(Digest32::ZERO, &initial)?,
@@ -149,14 +162,35 @@ fn root_learning_registration_reopens_without_replacing_original_history() -> an
     drop(owner);
 
     let before = retained_files(&path)?;
-    assert!(learning_store(root.path(), &initial, StoreMode::Register).is_err());
+    assert!(
+        learning_store(
+            root.path(),
+            &initial,
+            StoreMode::Register,
+            /*scope*/ None
+        )
+        .is_err()
+    );
     let mut changed = initial.request.clone();
     changed.operation_id = StableId::new("different-unregistered-learning-operation")?;
     let changed = LearningIterationCoordinatorV1::new(changed, initial.owners.clone())?;
-    assert!(learning_store(root.path(), changed.snapshot(), StoreMode::Reopen).is_err());
+    assert!(
+        learning_store(
+            root.path(),
+            changed.snapshot(),
+            StoreMode::Reopen,
+            /*scope*/ None
+        )
+        .is_err()
+    );
     assert_eq!(retained_files(&path)?, before);
 
-    let reopened = learning_store(root.path(), &initial, StoreMode::Reopen)?;
+    let reopened = learning_store(
+        root.path(),
+        &initial,
+        StoreMode::Reopen,
+        /*scope*/ None,
+    )?;
     assert_eq!(reopened.restore(&initial.request)?, Some(progress.clone()));
     assert_eq!(
         reopened.checkpoint(initial.head_digest, &progress)?,
@@ -177,7 +211,12 @@ async fn root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint(
     let root = root_state()?;
     let (_fixture, identity, mut coordinator) = fixture()?;
     let initial = coordinator.snapshot().clone();
-    let owner = learning_store(root.path(), &initial, StoreMode::Register)?;
+    let owner = learning_store(
+        root.path(),
+        &initial,
+        StoreMode::Register,
+        /*scope*/ None,
+    )?;
     let profile = HostAuthorityLearningProfileV1::new(
         &identity,
         [7; 32],
@@ -207,6 +246,7 @@ async fn root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint(
         },
         writer_proof_digest: Digest32::from_array([7; 32]).to_string(),
         initial_snapshot: profile.encoded_initial().to_owned(),
+        update_scope: None,
         socket_path: root.path().join("learning-checkpoint-v1.sock"),
     };
     let encoded = serde_json::to_vec(&bundle)?;
@@ -257,7 +297,113 @@ async fn root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint(
     worker
         .join()
         .map_err(|_| anyhow::anyhow!("Root checkpoint worker failed"))??;
-    let reopened = learning_store(root.path(), &initial, StoreMode::Reopen)?;
+    let reopened = learning_store(
+        root.path(),
+        &initial,
+        StoreMode::Reopen,
+        /*scope*/ None,
+    )?;
+    assert_eq!(reopened.restore(&initial.request)?, Some(progress));
+    Ok(())
+}
+
+#[tokio::test]
+#[ignore = "explicit actual Root scoped learning CAS and UDS qualification"]
+async fn root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client() -> anyhow::Result<()>
+{
+    let root = root_state()?;
+    let (_fixture, _identity, mut coordinator) = fixture()?;
+    let initial = coordinator.snapshot().clone();
+    let scope = FrozenLearningScopeV2::freeze(
+        &initial.request,
+        &initial.owners,
+        codex_hepta_learning_artifacts::LearningUpdateScopeV2::Cell,
+        Digest32::of_bytes(b"frozen-rule"),
+    )?;
+    let owner = learning_store(
+        root.path(),
+        &initial,
+        StoreMode::Register,
+        Some(scope.clone()),
+    )?;
+    assert_eq!(owner.frozen_scope_binding(), Some(scope.binding()));
+    let path = root.path().join("learning-checkpoint");
+    let before = retained_files(&path)?;
+    let (stream, server) = UnixStream::pair()?;
+    let worker = serve_registered_store(server, owner)?;
+    let legacy = AgentdLearningCheckpointClientV1::from_root_stream(
+        stream,
+        root_peer()?,
+        pidfd()?,
+        initial.clone(),
+        Duration::from_millis(500),
+        Duration::from_secs(10),
+    )?;
+    assert!(legacy.restore(&initial.request).await.is_err());
+    drop(legacy);
+    assert!(
+        worker
+            .join()
+            .map_err(|_| anyhow::anyhow!("Root checkpoint worker failed"))?
+            .is_err()
+    );
+    assert_eq!(retained_files(&path)?, before);
+    assert!(
+        learning_store(
+            root.path(),
+            &initial,
+            StoreMode::Reopen,
+            /*scope*/ None
+        )
+        .is_err()
+    );
+    let organ = FrozenLearningScopeV2::freeze(
+        &initial.request,
+        &initial.owners,
+        codex_hepta_learning_artifacts::LearningUpdateScopeV2::Organ,
+        Digest32::of_bytes(b"frozen-rule"),
+    )?;
+    assert!(learning_store(root.path(), &initial, StoreMode::Reopen, Some(organ)).is_err());
+    assert_eq!(retained_files(&path)?, before);
+
+    let owner = learning_store(
+        root.path(),
+        &initial,
+        StoreMode::Reopen,
+        Some(scope.clone()),
+    )?;
+    let (stream, server) = UnixStream::pair()?;
+    let worker = serve_registered_store(server, owner)?;
+    let client = AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2(
+        stream,
+        root_peer()?,
+        pidfd()?,
+        initial.clone(),
+        Duration::from_millis(500),
+        Duration::from_secs(10),
+        scope.clone(),
+    )?;
+    assert_eq!(client.frozen_scope_binding(), Some(scope.binding()));
+    assert_eq!(client.restore(&initial.request).await?, None);
+    assert_eq!(
+        client.checkpoint(Digest32::ZERO, &initial).await?,
+        initial.head_digest
+    );
+    record_experience(&mut coordinator)?;
+    let progress = coordinator.snapshot().clone();
+    assert_eq!(
+        client.checkpoint(initial.head_digest, &progress).await?,
+        progress.head_digest
+    );
+    assert_eq!(
+        client.restore(&initial.request).await?,
+        Some(progress.clone())
+    );
+    drop(client);
+    worker
+        .join()
+        .map_err(|_| anyhow::anyhow!("Root checkpoint worker failed"))??;
+    let reopened = learning_store(root.path(), &initial, StoreMode::Reopen, Some(scope))?;
     assert_eq!(reopened.restore(&initial.request)?, Some(progress));
     Ok(())
 }

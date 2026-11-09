@@ -154,6 +154,7 @@ fn bundles() -> anyhow::Result<(
         registered_identity: registered,
         writer_proof_digest: digest.as_str().to_owned(),
         initial_snapshot: profile.encoded_initial().to_owned(),
+        update_scope: None,
         socket_path: lanes.join("learning-checkpoint-v1.sock"),
     };
     Ok((directory, identity, original, learning))
