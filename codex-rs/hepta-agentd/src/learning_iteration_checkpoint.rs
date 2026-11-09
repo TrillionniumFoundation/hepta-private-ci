@@ -338,7 +338,3 @@ mod tests;
 #[cfg(test)]
 #[path = "learning_iteration_checkpoint_profile_tests.rs"]
 mod profile_tests;
-
-#[cfg(test)]
-#[path = "learning_iteration_checkpoint_scope_tests.rs"]
-mod scope_tests;

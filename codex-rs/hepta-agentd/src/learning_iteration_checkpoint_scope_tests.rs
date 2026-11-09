@@ -6,9 +6,7 @@ use codex_hepta_learning_artifacts::LearningUpdateScopeV2;
 use pretty_assertions::assert_eq;
 
 use super::*;
-#[path = "learning_iteration_checkpoint_test_support.rs"]
-mod support;
-use support::{Decision, FileCas, OWNER, owner, snapshots};
+use super::support::{Decision, FileCas, OWNER, owner, snapshots};
 
 #[test]
 fn scoped_checkpoint_reopens_all_decisions_and_refuses_profile_downgrade() -> anyhow::Result<()> {
