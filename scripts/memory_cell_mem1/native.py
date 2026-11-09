@@ -16,15 +16,21 @@ class NativeMemory:
         self.width, self.outputs, self.eta = width, outputs, eta
         self.stderr = tempfile.TemporaryFile(mode="w+t")
         self.process = subprocess.Popen(
-            [self.binary], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=self.stderr, text=True, bufsize=1,
+            [self.binary],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=self.stderr,
+            text=True,
+            bufsize=1,
         )
         self.replies = queue.Queue()
         self.reader = threading.Thread(target=self.read_replies, daemon=True)
         self.reader.start()
         self.multiplications = self.calls = self.wall_ns = 0
         try:
-            reply = self.command(f"new {state} scope:mem1 {generation} {width} {outputs} {eta} 1")
+            reply = self.command(
+                f"new {state} scope:mem1 {generation} {width} {outputs} {eta} 1"
+            )
             self.digest, self.state_bytes = reply[1], int(reply[2])
         except Exception:
             self.close()
@@ -42,7 +48,9 @@ class NativeMemory:
         try:
             line = self.replies.get(timeout=10)
         except queue.Empty as error:
-            raise TimeoutError("native protocol response exceeded 10 seconds") from error
+            raise TimeoutError(
+                "native protocol response exceeded 10 seconds"
+            ) from error
         self.wall_ns += time.perf_counter_ns() - start
         self.calls += 1
         if not line:
@@ -62,7 +70,9 @@ class NativeMemory:
     def update(self, key, target, support):
         result = self.command(
             f"update {self.generation} {support} "
-            + ",".join(map(repr, key)) + " " + ",".join(map(repr, target))
+            + ",".join(map(repr, key))
+            + " "
+            + ",".join(map(repr, target))
         )
         self.digest = result[1]
         self.multiplications += int(result[2])
@@ -85,7 +95,9 @@ class NativeMemory:
 
     def clone(self):
         checkpoint = self.checkpoint()
-        result = NativeMemory(self.binary, self.state, self.generation, self.width, self.outputs, self.eta)
+        result = NativeMemory(
+            self.binary, self.state, self.generation, self.width, self.outputs, self.eta
+        )
         result.restore(checkpoint)
         return result
 
@@ -98,10 +110,19 @@ class NativeMemory:
         (path / "owner-witness.txt").write_text(checkpoint[0] + "\n")
         old_pid = self.process.pid
         self.close()
-        restored = NativeMemory(self.binary, self.state, self.generation, self.width, self.outputs, self.eta)
-        restored.restore(((path / "owner-witness.txt").read_text().strip(), (path / "state.bin").read_bytes().hex()))
+        restored = NativeMemory(
+            self.binary, self.state, self.generation, self.width, self.outputs, self.eta
+        )
+        restored.restore(
+            (
+                (path / "owner-witness.txt").read_text().strip(),
+                (path / "state.bin").read_bytes().hex(),
+            )
+        )
         if restored.process.pid == old_pid or restored.digest != checkpoint[0]:
-            raise ValueError("restart did not restore the independently witnessed state")
+            raise ValueError(
+                "restart did not restore the independently witnessed state"
+            )
         return restored
 
     def close(self):
