@@ -114,6 +114,12 @@ jobs:
             test_hepta_cells_composition test_hepta_cells_lifecycle \
             test_hepta_cells_semantic test_hepta_cells_temporal \
             test_hepta_cells_temporal_component
+      - name: Check bounded V8 transport recovery and checksum failures
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 15 \
+            --output "$RUNNER_TEMP/cell-runtime-records/v8-transport-tests.json" \
+            -- python -B -m unittest -v scripts/codex_package/test_v8.py \
+            scripts/test_hepta_ci_v8.py
       - name: Retain final source state
         if: always()
         shell: bash
