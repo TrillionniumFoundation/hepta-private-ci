@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.windows.appserver-quiet-scope.v1",
+  "expectedTotal": 5,
+  "originalRunner": "Cargo Nextest 0.9.103, dev-small, local, one test thread",
+  "thisRunner": "One original 65-minute owner job; unchanged case watchdogs and zero retries; strict preparation precedes both native groups",
+  "groups": [
+    {
+      "id": "appserver-fixtures",
+      "package": "codex-app-server",
+      "binaryId": "codex-app-server::all",
+      "crate": "app-server",
+      "target": ["--test", "all"],
+      "features": [],
+      "required": [
+        "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+        "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+        "suite::v2::app_list::list_apps_uses_thread_feature_flag_when_thread_id_is_provided"
+      ],
+      "prefixes": {},
+      "expected": 3,
+      "interpretation": "Original three integration cases with all assertions retained. Actual ImageGeneration remains mandatory. Cargo cannot qualify the Bazel runfiles change."
+    },
+    {
+      "id": "appserver-status-routing",
+      "package": "codex-app-server",
+      "binaryId": "codex-app-server",
+      "crate": "app-server",
+      "target": ["--lib"],
+      "features": [],
+      "required": [
+        "transport::tests::remote_control_update_with_no_ready_recipient_stays_behind_initialize",
+        "transport::tests::remote_control_update_freezes_ready_recipients_before_initialize"
+      ],
+      "prefixes": {},
+      "expected": 2,
+      "interpretation": "Two deterministic actual-producer and router regressions; not proof of the exact historical CI scheduler interleaving."
+    }
+  ],
+  "explicitSkipMarkers": [
+    "skipping cloud-managed sandbox subprocess:",
+    "Skipping test in a remote test environment:",
+    "Skipping test because it cannot execute when network is disabled in a Codex sandbox."
+  ]
+}

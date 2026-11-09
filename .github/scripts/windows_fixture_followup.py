@@ -1,7 +1,7 @@
-"""Observe one original image-edit failure and existing typed-error unit on Windows.
+"""Observe the exact app-server regression scopes under Windows Cargo.
 
-Owning strict checks must finish without source drift before either selected case.
-This diagnostic lane does not repair or qualify the underlying sandbox launch.
+The owning strict checks must finish without source drift before either group.
+Cargo observations do not validate the separately tested Bazel helper delivery.
 """
 
 import argparse
@@ -171,6 +171,19 @@ def select_groups(scope, group_id):
     if group_id not in identities:
         raise ValueError("owner job must select exactly one registered original group")
     return [group for group in groups if group["id"] == group_id]
+
+
+def select_appserver_owner_groups(scope, group_id):
+    groups = select_groups(scope, group_id)
+    if (
+        group_id is not None
+        or {group["id"] for group in groups}
+        != {"appserver-fixtures", "appserver-status-routing"}
+        or {group["package"] for group in groups} != {"codex-app-server"}
+        or scope["expectedTotal"] != 5
+    ):
+        raise ValueError("the quiet owner job requires both closed app-server groups")
+    return groups
 
 
 def leak_observations(log):
@@ -462,11 +475,9 @@ def main():
         raise ValueError("records and target must be outside both read-only checkouts")
     output.mkdir(parents=True, exist_ok=False)
     target.mkdir(parents=True, exist_ok=True)
-    scope_path = observer / ".github/fixtures/windows-image-edit-diagnostic-scope.json"
+    scope_path = observer / ".github/fixtures/windows-appserver-quiet-scope.json"
     scope = json.loads(scope_path.read_text(encoding="utf-8"))
-    groups = select_groups(scope, args.group_id)
-    if args.group_id is None or len(groups) != 1:
-        raise ValueError("the diagnostic owner job requires exactly one closed group")
+    groups = select_appserver_owner_groups(scope, args.group_id)
     selected_total = sum(group["expected"] for group in groups)
     receipt = {
         "status": "failed_or_incomplete",
@@ -504,10 +515,10 @@ def main():
         "legacyIsolationQualified": False,
         "durabilityQualified": False,
         "originalBazelRunnerReplayed": False,
-        "executionTopology": "independent_diagnostic_owner_job_with_strict_preparation",
+        "executionTopology": "single_appserver_owner_with_two_disjoint_native_groups",
         "selectedGroupId": args.group_id,
         "selectedExpectedTotal": selected_total,
-        "diagnosticExpectedTotalAcrossJobs": scope["expectedTotal"],
+        "declaredExpectedTotal": scope["expectedTotal"],
         "originalFailureSourceSha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
         "underlyingSandboxLaunchRepaired": False,
         "originalSingleJobReplayed": False,
@@ -561,6 +572,13 @@ def main():
                     "codex-rs/windows-sandbox-rs/Cargo.toml",
                     "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
                     "codex-rs/app-server/tests/suite/v2/imagegen_extension.rs",
+                    "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+                    "codex-rs/app-server/tests/suite/v2/app_list.rs",
+                    "codex-rs/app-server/tests/common/test_app_server.rs",
+                    "codex-rs/app-server/BUILD.bazel",
+                    "codex-rs/app-server/src/lib.rs",
+                    "codex-rs/app-server/src/transport.rs",
+                    "codex-rs/app-server/src/transport_tests.rs",
                 ],
             ),
             (
@@ -575,6 +593,9 @@ def main():
                     ".github/scripts/test_windows_fixture_followup.py",
                     ".github/scripts/test_windows_image_edit_diagnostic.py",
                     ".github/workflows/hepta-windows-image-edit-diagnostic.yml",
+                    ".github/fixtures/windows-appserver-quiet-scope.json",
+                    ".github/scripts/test_windows_appserver_quiet.py",
+                    ".github/workflows/hepta-windows-appserver-quiet.yml",
                 ],
             ),
         ):
