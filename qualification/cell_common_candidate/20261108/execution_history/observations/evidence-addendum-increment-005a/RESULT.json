@@ -1,0 +1,78 @@
+{
+  "phase": "increment-005a",
+  "status": "appended_verified_not_committed",
+  "prior_head": "5a3137e8ed198a07eb63bd97b5bb639f4471011f",
+  "packet_count": 70,
+  "added_packets": [
+    {
+      "packet_id": "bf42-original-ui-shared-history-native-v1",
+      "scope": "Original UI run 42553073250 shared API, five job logs, native/SDK artifacts, original partial download and failed readers, and successful one-artifact recovery. Per lane SDK 7, headless 29 and native 52 are distinct feature/profile executions with the 7 and 29 name sets contained in 52, not 88 unique cases. Actual source-head bf42, foundation merge 7450f0cb and native merge 52ebeefe have the same f7b tree and distinct commit identities. Merge identities are bound by original creation and execution records, not independent commit API retrieval. No device, real-task or stage advancement is claimed.",
+      "archive_bytes": 22567308,
+      "archive_sha256": "1e4dc0c00bf3f7c59c83fdfd2ad2f6f4ad5a1f723012bcfc9ad812b2fad8f8ce",
+      "file_member_count": 288,
+      "manifest_path": "packets/bf42-original-ui-shared-history-native-v1/manifest.json",
+      "manifest_sha256": "b5638eb46f379e223c8729d786efd145947931909b360117ffb5e002aa395808"
+    },
+    {
+      "packet_id": "bf42-original-ui-source-head-browser-v1",
+      "scope": "Original source-head bf42/f7b browser and gateway artifacts from UI run 42553073250: default 6, fixtures including sidebar 9, buffer-control 1 and gateway 7 actual reported scenario executions. Gateway contains six actual missing-owner-status cases plus one original SDK synthetic-sink control. Original capture bytes, manifests and report results are verified. The 60+78 captures and 138+438 semantic checks are observations, not additional cases. No pixel checker, browser or native test was rerun, and no human visual or physical IME/GPU/device qualification is claimed.",
+      "archive_bytes": 75093912,
+      "archive_sha256": "8fa3391d5c10c95516e63e015e185a893edbc7de8d9904a50853273ae28d9ab2",
+      "file_member_count": 75,
+      "manifest_path": "packets/bf42-original-ui-source-head-browser-v1/manifest.json",
+      "manifest_sha256": "942133de72ff6d9bb762f14c9cd2f0477134c7307e727c240f9204bd00efc45d"
+    },
+    {
+      "packet_id": "bf42-original-ui-base-merge-browser-v1",
+      "scope": "Original base-merge browser/gateway lane tested 7450f0cbe49443a2b78826a2786ac37889c60e76/f7b, separate from source head and the native-presentation merge. Original default 6, fixtures including sidebar 9, buffer-control 1 and gateway 7 reported scenario executions and image byte bindings are retained. Counts are not added across repeated attachments, feature profiles or source identities. No rerun, pixel-checker rerun, human visual review, executable-byte retention or physical-device qualification is inferred.",
+      "archive_bytes": 75166320,
+      "archive_sha256": "a207b056f809952903506e70678c4a0ea1aff4bac667e0c7f10b41ebd8e46e8a",
+      "file_member_count": 75,
+      "manifest_path": "packets/bf42-original-ui-base-merge-browser-v1/manifest.json",
+      "manifest_sha256": "dc1ddb9aaee1ff7529901b56fc81547ebcf5ccbb1dc61ceea7558e0fef824663"
+    },
+    {
+      "packet_id": "bf42-original-windows-regression-failure-v1",
+      "scope": "Original common-source Windows regression run 42553073234 completed with failure naturally. All 19 groups contain 167 distinct selected case executions: 158 clean passes, eight failures and one body-pass with LEAK. No JUnit was included in the original artifact; the original scope, raw nextest status and summary lines and receipts establish the accounting. Deletion-route controls completed on the ordinary host before the unchanged legacy FILE_DELETE_CHILD refusal. The original collector ACK timeout was reconciled with the exact same key and no replay; no native test was rerun. Unselected cases, leaky bodies and missing full-history costs are not counted as passes or zero cost.",
+      "archive_bytes": 169124,
+      "archive_sha256": "fb52c5cd35c1b8208052757d66d26de27cfe3636bb4eec069fdc204a6db844cc",
+      "file_member_count": 45,
+      "manifest_path": "packets/bf42-original-windows-regression-failure-v1/manifest.json",
+      "manifest_sha256": "9412b097d6fa53f901deb1a4363bcaaeae2b8f12fe4af476dbf22a669f8567e2"
+    }
+  ],
+  "prior_packet_bytes_unchanged": true,
+  "manifest_sha256": "95b2d2c050932ff99578281f71c05fd64337eaddb046b3adfa4e49c38282befc",
+  "pattern_review": {
+    "phase": "increment-005a",
+    "input_sha256": "fd86e7a0b7200ef6a6d4debc579310f350b54f8ee36b912229273960b2875db8",
+    "inspected_member_count_with_overlap": 483,
+    "patterns": [
+      "github_token_shape",
+      "openai_token_shape",
+      "private_key_block",
+      "aws_access_key_shape"
+    ],
+    "findings": [],
+    "not_a_complete_secret_detection_claim": true
+  },
+  "original_66_packet_index_entries_unchanged": true,
+  "common_before": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "branch": "codex/cell-s0-common-20261108-898e",
+    "status": "",
+    "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+  },
+  "common_after": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "branch": "codex/cell-s0-common-20261108-898e",
+    "status": "",
+    "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+  },
+  "required_json_bindings_verified": true,
+  "new_tests_executed": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false
+}

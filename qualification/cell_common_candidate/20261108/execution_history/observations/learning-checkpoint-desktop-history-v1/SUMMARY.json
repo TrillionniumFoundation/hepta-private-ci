@@ -1,0 +1,59 @@
+{
+  "collection_status": "SEALED",
+  "archive": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/learning-checkpoint-desktop-history-v1/learning-checkpoint-desktop-history.tar.xz",
+  "archive_bytes": 415064,
+  "archive_sha256": "b94387249400ba0f841a3862ceb93d6bbbdf6251e2090dfb230a12f4665f14ce",
+  "manifest_sha256": "1ca1e6b7b43265be3fead7343cb871422f66973071eaefbc80a69efe0e575684",
+  "member_count": 219,
+  "all_member_hashes_and_modes_verified": true,
+  "before_after_originals_stable": true,
+  "source_sha": "e54f7791068ad16ff6082c148cf73798836d36e4",
+  "source_tree": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66",
+  "source_changed": false,
+  "separate_native_archive": {
+    "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/learning-checkpoint-native-history-v1.tar.xz",
+    "bytes": 3618492,
+    "sha256": "7c51d224ad2638ab810ba97f1aba9dadf8e7a06a36e6f9821d1a65e019dd1d87",
+    "manifest_sha256": "aecc1df0dab60f60de0a6048b53548608986ee2aa828ad43874dc5c43dffbef8",
+    "members": 254,
+    "all_member_hashes_and_modes_verified": true,
+    "original_stat": [
+      2050,
+      4906663,
+      3618492,
+      33152,
+      1794199305937406767,
+      1794199343107334321
+    ],
+    "current_results": {
+      "strict": {
+        "member": "records/learning-checkpoint-strict-e54f779-v1/preparation.json",
+        "sha256": "0cc1d1ab515948716bedd43ed386ed525ba216d8310c83eec3401b72be0fb672",
+        "status": "prepared_clean",
+        "returncode": 0,
+        "source_unchanged": true
+      },
+      "components": {
+        "member": "records/learning-checkpoint-components-e54f779-v1/RESULT.json",
+        "sha256": "43d02524d7298cf04aba644cfb4e3901efd10a1af7d6188c8b15a595f9cfc0eb",
+        "status": "PASS",
+        "returncode": 0,
+        "source_unchanged": true
+      },
+      "root": {
+        "member": "records/learning-checkpoint-root-e54f779-v1/RESULT.json",
+        "sha256": "4ca089de7152a6ff2b5c55bb082d1e8f35e78ad8b2dd5ba2e3409500044a447a",
+        "status": "PASS",
+        "returncode": 0,
+        "source_unchanged": true
+      }
+    },
+    "tests_executed_by_readback": false,
+    "full_history_cost": null
+  },
+  "tests_executed_by_collector": false,
+  "scientific_acceptance": false,
+  "full_history_cost": null,
+  "physical_cost": null,
+  "archival_completeness": false
+}

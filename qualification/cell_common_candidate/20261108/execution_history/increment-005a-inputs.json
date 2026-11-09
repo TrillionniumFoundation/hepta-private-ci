@@ -1,0 +1,729 @@
+{
+  "phase": "increment-005a",
+  "expected_evidence_head": "5a3137e8ed198a07eb63bd97b5bb639f4471011f",
+  "expected_index_sha256": "511513fbba0e5b260687e75e1835e15d12e008789e569631e5d53dcbdf18f212",
+  "expected_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "expected_common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "expected_prior_packet_count": 66,
+  "expected_final_packet_count": 70,
+  "current_common_validation": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+    "local_python": {
+      "packet_id": "bf42-python130-full-caller-originals-v1",
+      "independent_unit_cases_passed": 130,
+      "full_caller_passed": true,
+      "full_caller_elapsed_seconds": 380.6801889021881,
+      "full_caller_budget_seconds": 600,
+      "source_unchanged": true
+    },
+    "local_strict_preparation": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "prepared_clean",
+      "scope": "Same-source V8 and helper plus owning agentd qualification-cognitive-write just fix and read-only clippy; previous owners' unchanged-source preparations retain their own historical identities.",
+      "source_unchanged": true
+    },
+    "local_selected_native": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "PASS",
+      "selected_unique_cases_executed": 38,
+      "selected_unique_cases_passed": 38,
+      "selected_skips": 0,
+      "retries": 0,
+      "raw_nextest_leak_readback": "NO_NEXTEST_LEAK_OBSERVED",
+      "full_workspace": false,
+      "windows_execution": false,
+      "source_unchanged": true,
+      "filter_excluded_counts_not_added": true
+    },
+    "full_repository_ci": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "run_id": 42553073160,
+      "state": "completed",
+      "conclusion": "failure",
+      "green": false,
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+      "completion_result_included": true,
+      "actual_native_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+      "actual_native_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "same_tree_not_same_commit": true,
+      "full_post_build_working_tree_byte_snapshot": false,
+      "final_target_outcomes_not_case_counts": {
+        "128953043649": {
+          "failed": 3,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128953043675": {
+          "failed": 3,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128953043702": {
+          "failed": 5,
+          "flaky": 0,
+          "timeout": 2
+        },
+        "128953043792": {
+          "failed": 2,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128957722404": {
+          "additional_cases": 0,
+          "aggregation_only": true
+        },
+        "128961511532": {
+          "additional_cases": 0,
+          "aggregation_only": true
+        }
+      },
+      "original_failed_attempts_retained": true,
+      "all_common_workflows_terminal_at_cutoff": false
+    },
+    "independent_grouped_windows_result_included": true,
+    "ui_diagnostic_source_qualified_as_common": false,
+    "scientific_qualification_performed": false,
+    "full_history_cost": null,
+    "physical_cost": null,
+    "stage_advancement_claimed": false,
+    "independent_grouped_windows": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+      "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+      "run_id": 42550332155,
+      "terminal_status": "completed",
+      "terminal_conclusion": "failure",
+      "whole_selected_scope_passed": false,
+      "selected_executed": 11,
+      "selected_passed": 10,
+      "selected_failed": 1,
+      "selected_timeouts": 1,
+      "selected_skipped": 0,
+      "retry_records": 0,
+      "raw_leak_markers": 0,
+      "explicit_guard_skip_markers": 0,
+      "groups": [
+        {
+          "group": "matrix-startup-diagnostic",
+          "packet_id": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-matrix-sdk",
+              "name": "sdk::startup_deadline_tests::expired_finalization_rejects_success_without_erasing_a_written_session",
+              "time_seconds": "5.831",
+              "forbidden_nodes": []
+            }
+          ]
+        },
+        {
+          "group": "agentd-h7-qualification",
+          "packet_id": "windows-fixture-owner-agentd-h7-qualification-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+              "time_seconds": "2.480",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "agentd-fleet-default",
+          "packet_id": "windows-fixture-owner-agentd-fleet-default-bf42-v1",
+          "executed": 2,
+          "passed": 2,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+              "time_seconds": "2.339",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+              "time_seconds": "0.820",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "cli-cloud",
+          "packet_id": "windows-fixture-owner-cli-cloud-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-cli::sandbox_cloud_config",
+              "name": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+              "time_seconds": "31.998",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "appserver-fixtures",
+          "packet_id": "windows-fixture-owner-appserver-fixtures-bf42-v1",
+          "executed": 6,
+          "passed": 5,
+          "failed": 1,
+          "selected_scope_passed": false,
+          "cases": [
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+              "time_seconds": "60.015",
+              "problems": [
+                {
+                  "kind": "failure",
+                  "attributes": {
+                    "type": "test timeout"
+                  }
+                }
+              ],
+              "xml_passed": false
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_1_inherits_parent_developer_instructions_without_an_override",
+              "time_seconds": "1.535",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_2_reapplies_configured_subagent_developer_instructions",
+              "time_seconds": "1.488",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_3_reapplies_updated_configured_role_settings_and_restores_paginated_usage",
+              "time_seconds": "1.856",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_4_reapplies_an_implicitly_selected_configured_default_role",
+              "time_seconds": "1.456",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+              "time_seconds": "4.636",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        }
+      ],
+      "history_packet_id": "windows-fixture-owner-observer-history-bf42-v1",
+      "additional_topology": "five independent 65-minute owner jobs and an independent read-only aggregate",
+      "original_single_job_result_superseded": false,
+      "full_workspace_passed": false,
+      "full_history_cost": null,
+      "scientific_qualification_performed": false
+    },
+    "initial_full_repository_registration_observation": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "state": "pending_or_in_progress_at_publication_readback",
+      "conclusion": null,
+      "green": null,
+      "observation_cutoff": "2026-11-09T02:50:20.636321Z",
+      "registration_packet_id": "bf42-source-freeze-common-fastforward-and-publication-history-v3",
+      "initial_run_ids": {
+        "native": 42553066862,
+        "blocking": 42553073160,
+        "ui": 42553073250,
+        "windows": 42553073234
+      },
+      "completion_result_included": false
+    },
+    "ui_workflow_api_observation": {
+      "source_api_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "run_id": 42553073250,
+      "state": "completed",
+      "conclusion": "success",
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+      "complete_original_case_results_qualified": false,
+      "base_and_source_lanes_must_keep_separate_identities": true
+    },
+    "remaining_common_ci_at_cutoff": {
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "scope": [
+        "native composition",
+        "original Windows regressions",
+        "Windows arm64 V8",
+        "Windows x64 V8"
+      ],
+      "state": "in_progress_at_cutoff",
+      "later_results_inferred": false
+    },
+    "original_windows_regression": {
+      "packet_id": "bf42-original-windows-regression-failure-v1",
+      "run_id": 42553073234,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "terminal_status": "completed",
+      "conclusion": "failure",
+      "groups": 19,
+      "clean_passing_groups": 17,
+      "unique_selected_executed": 167,
+      "clean_passed": 158,
+      "failed": 8,
+      "passed_but_leaky": 1,
+      "selected_skips": 0,
+      "retries_observed": false,
+      "junit_available": false,
+      "whole_declared_scope_passed": false,
+      "source_binding": "original_checkout_and_before_after_git_identity_and_lock",
+      "full_source_byte_inventory_available": false
+    },
+    "original_ui_readback": {
+      "run_id": 42553073250,
+      "run_attempt": 1,
+      "conclusion": "success",
+      "packets": [
+        "bf42-original-ui-shared-history-native-v1",
+        "bf42-original-ui-source-head-browser-v1",
+        "bf42-original-ui-base-merge-browser-v1"
+      ],
+      "case_level_readback": "verified_original_scopes_only",
+      "tested_commits": {
+        "source_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+        "rust_ui_foundation_base_merge": "7450f0cbe49443a2b78826a2786ac37889c60e76",
+        "native_presentation_base_merge": "52ebeefecb4ab2d2fbb3e69100ab3773df0b8ea5"
+      },
+      "all_three_tested_trees": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "same_tree_not_same_commit": true,
+      "merge_identities_independently_fetched_through_commit_api": false,
+      "per_lane_library_executions": {
+        "sdk": 7,
+        "headless": 29,
+        "native": 52
+      },
+      "headless_and_sdk_name_sets_are_subsets_of_native": true,
+      "counts_are_not_summed_as_unique_cases": true,
+      "per_browser_lane_scenario_executions": {
+        "default": 6,
+        "fixtures_including_sidebar": 9,
+        "buffer_control": 1,
+        "gateway": 7
+      },
+      "gateway_includes_one_original_sdk_synthetic_sink_control": true,
+      "per_browser_lane_capture_observations_not_cases": {
+        "default": 60,
+        "fixtures": 78
+      },
+      "physical_device_or_full_product_qualification": false,
+      "new_tests_executed_by_readback": false,
+      "full_history_cost": null
+    }
+  },
+  "packets": [
+    {
+      "packet_id": "bf42-original-ui-shared-history-native-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-ui-evidence-packets-v1/shared-history-native/bf42-original-ui-shared-history-native-v1.tar.xz",
+      "bytes": 22567308,
+      "sha256": "1e4dc0c00bf3f7c59c83fdfd2ad2f6f4ad5a1f723012bcfc9ad812b2fad8f8ce",
+      "file_member_count": 288,
+      "scope": "Original UI run 42553073250 shared API, five job logs, native/SDK artifacts, original partial download and failed readers, and successful one-artifact recovery. Per lane SDK 7, headless 29 and native 52 are distinct feature/profile executions with the 7 and 29 name sets contained in 52, not 88 unique cases. Actual source-head bf42, foundation merge 7450f0cb and native merge 52ebeefe have the same f7b tree and distinct commit identities. Merge identities are bound by original creation and execution records, not independent commit API retrieval. No device, real-task or stage advancement is claimed.",
+      "required_json_members": [
+        {
+          "path": "SCOPE.json",
+          "bytes": 4177,
+          "sha256": "839b95ddeb5aac24ff21a12c219017de58f3784ab878a421e3c90285a12afb4d",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "actual_tested_commits": {
+                  "native_presentation_base_merge": "52ebeefecb4ab2d2fbb3e69100ab3773df0b8ea5",
+                  "rust_ui_foundation_base_merge": "7450f0cbe49443a2b78826a2786ac37889c60e76",
+                  "source_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+                },
+                "actual_tested_tree_all_three": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                "artifact_counts_are_not_case_counts": true,
+                "base_merge_parent_order": [
+                  "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+                  "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+                ],
+                "complete_execution_history": false,
+                "cost_limit": "CI/test/download/readback wall intervals are observations, not complete build, physical or historical cost.",
+                "created_at": "2026-11-09T04:14:36.079063+00:00",
+                "feature_profiles_and_base_merge_commit_executions_are_distinct": true,
+                "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+                "full_history_cost": null,
+                "headless_and_sdk_names_are_subsets_of_native_52": true,
+                "included_artifact_ids": [
+                  13646048853,
+                  13646064795,
+                  13646462821,
+                  13646516836,
+                  13646731683
+                ],
+                "native_scope_limit": "Library composition regressions only; not actual native window/GPU/device or general task-learning qualification. SDK font bytes and native test binaries are not contained in these original small artifacts; their recorded input hashes do not imply archived binary bytes.",
+                "new_tests_executed": false,
+                "no_88_unique_case_claim": true,
+                "original_workflow_conclusion": "success",
+                "original_workflow_status": "completed",
+                "packet_id": "bf42-original-ui-shared-history-native-v1",
+                "per_lane_headless_selected_executions": 29,
+                "per_lane_native_selected_executions": 52,
+                "per_lane_sdk_selected_executions": 7,
+                "physical_cost": null,
+                "reader_failure_history": "V1 incorrectly required source_sha==tested_sha in merge-lane receipts and assumed every group manifest contained the full global file list. It failed closed. V2 preserves source_sha=bf42 and actual tested merge separately; each group subset is checked against the summary global manifest. These were reader failures, not original UI failures.",
+                "reader_scope": "Readback of existing original execution receipts, raw logs, XML, report flags and archived image byte bindings; no test, browser, pixel checker, or native program rerun.",
+                "recovery": {
+                  "old_download_outer_timeout_seconds": 600,
+                  "old_partial_artifact_id": 13646364694,
+                  "old_partial_bytes": 21184512,
+                  "old_partial_is_not_a_valid_completed_zip": true,
+                  "old_process_exit_code": 124,
+                  "old_timeout_is_not_ci_or_test_failure": true,
+                  "recovery_download_outer_timeout_seconds": 3600,
+                  "recovery_process_exit_code": 0,
+                  "redownloaded_artifact_ids": [
+                    13646364694
+                  ],
+                  "reused_complete_artifacts": 28,
+                  "test_budgets_unchanged": true
+                },
+                "rerun_cancel_or_dispatch": false,
+                "run_attempt": 1,
+                "run_id": 42553073250,
+                "schema": "hepta-bounded-original-ui-evidence-packet-v1",
+                "scientific_qualification_performed": false,
+                "scope": "Shared original five-job logs/API/collector history, seven-case SDK evidence, two native-presentation feature/profile runs per lane, dependency-lock proposal, old download partial and timeout, successful single-artifact recovery, failed reader v1 and corrected reader v2. The 24 browser/gateway ZIPs are in the two sibling packets.",
+                "separate_native_junit_checker_executions_per_lane": 12,
+                "source_api_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "source_identity_limit": "The two CI-local merge identities are bound by original creation-command logs and clean before/after execution receipts; they were not independently fetched through a commit API. Same tree is not same commit.",
+                "source_modified": false,
+                "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                "stage_advancement_claimed": false,
+                "stage_origin": "Existing unchanged formal CURRENT_RESULT; this packet evaluates no scientific gate.",
+                "stages_remain": {
+                  "S0": "HOLD",
+                  "S1": "HOLD",
+                  "S2": "HOLD",
+                  "S3": "HOLD",
+                  "S4": "HOLD",
+                  "S5": "HOLD"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "bf42-original-ui-source-head-browser-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-ui-evidence-packets-v1/source-head-browser/bf42-original-ui-source-head-browser-v1.tar.xz",
+      "bytes": 75093912,
+      "sha256": "8fa3391d5c10c95516e63e015e185a893edbc7de8d9904a50853273ae28d9ab2",
+      "file_member_count": 75,
+      "scope": "Original source-head bf42/f7b browser and gateway artifacts from UI run 42553073250: default 6, fixtures including sidebar 9, buffer-control 1 and gateway 7 actual reported scenario executions. Gateway contains six actual missing-owner-status cases plus one original SDK synthetic-sink control. Original capture bytes, manifests and report results are verified. The 60+78 captures and 138+438 semantic checks are observations, not additional cases. No pixel checker, browser or native test was rerun, and no human visual or physical IME/GPU/device qualification is claimed.",
+      "required_json_members": [
+        {
+          "path": "SCOPE.json",
+          "bytes": 3234,
+          "sha256": "9c63b846a972f66237b01855975218281adcc3ad5f1c6e14d10e594065ef4423",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "actual_tested_commit": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                "all_reported_capture_png_hashes_match_archived_originals": true,
+                "artifact_counts_are_not_case_counts": true,
+                "canonical_playwright_case_executions": {
+                  "buffer_control": 1,
+                  "default": 6,
+                  "fixtures_including_sidebar": 9,
+                  "gateway": 7
+                },
+                "complete_execution_history": false,
+                "cost_limit": "CI/test/download/readback wall intervals are observations, not complete build, physical or historical cost.",
+                "created_at": "2026-11-09T04:14:36.079063+00:00",
+                "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+                "full_history_cost": null,
+                "gateway_cases": {
+                  "actual_missing_owner_status": 6,
+                  "original_sdk_synthetic_sink_control": 1
+                },
+                "global_robrix_manifest_unique_files": 1740,
+                "human_visual_review_performed": false,
+                "included_artifact_ids": [
+                  13646309737,
+                  13646364694,
+                  13646817603,
+                  13646862963,
+                  13647052379,
+                  13647052406,
+                  13647296386,
+                  13647321451,
+                  13647341304,
+                  13647356244,
+                  13647386089,
+                  13647525389
+                ],
+                "limited_cjk_ime_widget_probes_are_not_product_or_physical_device_qualification": true,
+                "new_tests_executed": false,
+                "original_workflow_conclusion": "success",
+                "original_workflow_status": "completed",
+                "packet_id": "bf42-original-ui-source-head-browser-v1",
+                "physical_cost": null,
+                "pixel_capture_observations": {
+                  "default": 60,
+                  "fixtures": 78
+                },
+                "pixel_observations_are_not_additional_test_cases": true,
+                "pixel_semantic_check_observations": {
+                  "default": 138,
+                  "fixtures": 438
+                },
+                "reader_scope": "Readback of existing original execution receipts, raw logs, XML, report flags and archived image byte bindings; no test, browser, pixel checker, or native program rerun.",
+                "rerun_cancel_or_dispatch": false,
+                "result_limit": "Passed original report fields and image byte bindings are preserved. No pixel checker rerun or physical IME/GPU/native device qualification. Browser and gateway binary hash observations are not claims that those executable bytes were uploaded. The 29 artifact count and repeated browser/report attachments cannot be summed as unique cases.",
+                "run_attempt": 1,
+                "run_id": 42553073250,
+                "schema": "hepta-bounded-original-ui-evidence-packet-v1",
+                "scientific_qualification_performed": false,
+                "scope": "Original eleven Robrix grouped artifact ZIPs and one gateway-status artifact ZIP, with original API metadata, download receipts and complete member indexes. Scope is the exact original browser scenarios and recorded pixel-check observations.",
+                "source_api_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "source_modified": false,
+                "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                "stage_advancement_claimed": false,
+                "stage_origin": "Existing unchanged formal CURRENT_RESULT; this packet evaluates no scientific gate.",
+                "stages_remain": {
+                  "S0": "HOLD",
+                  "S1": "HOLD",
+                  "S2": "HOLD",
+                  "S3": "HOLD",
+                  "S4": "HOLD",
+                  "S5": "HOLD"
+                },
+                "zero_reported_case_failures_skips_retries": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "bf42-original-ui-base-merge-browser-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-ui-evidence-packets-v1/base-merge-browser/bf42-original-ui-base-merge-browser-v1.tar.xz",
+      "bytes": 75166320,
+      "sha256": "a207b056f809952903506e70678c4a0ea1aff4bac667e0c7f10b41ebd8e46e8a",
+      "file_member_count": 75,
+      "scope": "Original base-merge browser/gateway lane tested 7450f0cbe49443a2b78826a2786ac37889c60e76/f7b, separate from source head and the native-presentation merge. Original default 6, fixtures including sidebar 9, buffer-control 1 and gateway 7 reported scenario executions and image byte bindings are retained. Counts are not added across repeated attachments, feature profiles or source identities. No rerun, pixel-checker rerun, human visual review, executable-byte retention or physical-device qualification is inferred.",
+      "required_json_members": [
+        {
+          "path": "SCOPE.json",
+          "bytes": 3233,
+          "sha256": "308669e3cc258e06e3c6928c5fac0b3e267a448a0bf8fab143b22f74e9659e96",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "actual_tested_commit": "7450f0cbe49443a2b78826a2786ac37889c60e76",
+                "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                "all_reported_capture_png_hashes_match_archived_originals": true,
+                "artifact_counts_are_not_case_counts": true,
+                "canonical_playwright_case_executions": {
+                  "buffer_control": 1,
+                  "default": 6,
+                  "fixtures_including_sidebar": 9,
+                  "gateway": 7
+                },
+                "complete_execution_history": false,
+                "cost_limit": "CI/test/download/readback wall intervals are observations, not complete build, physical or historical cost.",
+                "created_at": "2026-11-09T04:14:36.079063+00:00",
+                "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+                "full_history_cost": null,
+                "gateway_cases": {
+                  "actual_missing_owner_status": 6,
+                  "original_sdk_synthetic_sink_control": 1
+                },
+                "global_robrix_manifest_unique_files": 1740,
+                "human_visual_review_performed": false,
+                "included_artifact_ids": [
+                  13646398915,
+                  13646519295,
+                  13646668797,
+                  13646708423,
+                  13646887893,
+                  13647032262,
+                  13647032272,
+                  13647191488,
+                  13647246316,
+                  13647345752,
+                  13647350740,
+                  13647400423
+                ],
+                "limited_cjk_ime_widget_probes_are_not_product_or_physical_device_qualification": true,
+                "new_tests_executed": false,
+                "original_workflow_conclusion": "success",
+                "original_workflow_status": "completed",
+                "packet_id": "bf42-original-ui-base-merge-browser-v1",
+                "physical_cost": null,
+                "pixel_capture_observations": {
+                  "default": 60,
+                  "fixtures": 78
+                },
+                "pixel_observations_are_not_additional_test_cases": true,
+                "pixel_semantic_check_observations": {
+                  "default": 138,
+                  "fixtures": 438
+                },
+                "reader_scope": "Readback of existing original execution receipts, raw logs, XML, report flags and archived image byte bindings; no test, browser, pixel checker, or native program rerun.",
+                "rerun_cancel_or_dispatch": false,
+                "result_limit": "Passed original report fields and image byte bindings are preserved. No pixel checker rerun or physical IME/GPU/native device qualification. Browser and gateway binary hash observations are not claims that those executable bytes were uploaded. The 29 artifact count and repeated browser/report attachments cannot be summed as unique cases.",
+                "run_attempt": 1,
+                "run_id": 42553073250,
+                "schema": "hepta-bounded-original-ui-evidence-packet-v1",
+                "scientific_qualification_performed": false,
+                "scope": "Original eleven Robrix grouped artifact ZIPs and one gateway-status artifact ZIP, with original API metadata, download receipts and complete member indexes. Scope is the exact original browser scenarios and recorded pixel-check observations.",
+                "source_api_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "source_modified": false,
+                "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                "stage_advancement_claimed": false,
+                "stage_origin": "Existing unchanged formal CURRENT_RESULT; this packet evaluates no scientific gate.",
+                "stages_remain": {
+                  "S0": "HOLD",
+                  "S1": "HOLD",
+                  "S2": "HOLD",
+                  "S3": "HOLD",
+                  "S4": "HOLD",
+                  "S5": "HOLD"
+                },
+                "zero_reported_case_failures_skips_retries": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "bf42-original-windows-regression-failure-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-windows-original-evidence-v1/bf42-original-windows-regression-failure-v1.tar.xz",
+      "bytes": 169124,
+      "sha256": "fb52c5cd35c1b8208052757d66d26de27cfe3636bb4eec069fdc204a6db844cc",
+      "file_member_count": 45,
+      "scope": "Original common-source Windows regression run 42553073234 completed with failure naturally. All 19 groups contain 167 distinct selected case executions: 158 clean passes, eight failures and one body-pass with LEAK. No JUnit was included in the original artifact; the original scope, raw nextest status and summary lines and receipts establish the accounting. Deletion-route controls completed on the ordinary host before the unchanged legacy FILE_DELETE_CHILD refusal. The original collector ACK timeout was reconciled with the exact same key and no replay; no native test was rerun. Unselected cases, leaky bodies and missing full-history costs are not counted as passes or zero cost.",
+      "required_json_members": [
+        {
+          "path": "SCOPE.json",
+          "bytes": 3345,
+          "sha256": "b92c564246c59abf8cda03b6952b7e43efe1e7df9f22330a074b6eb6f16c0021",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "actual_checkout_proof": [
+                  {
+                    "command_line": 222,
+                    "sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                    "sha_line": 223
+                  }
+                ],
+                "actual_selected_unique_cases": 167,
+                "actual_tested_commit": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "case_binding": "Original pinned scope required-name set, actual nextest Starting and unique status lines before Summary, original receipt selection, original hash-verified logs.",
+                "clean_passed_cases": 158,
+                "collector_ack_recovery": {
+                  "ack_timeout_is_not_ci_or_test_failure": true,
+                  "collector_exit_code": 0,
+                  "original_job_id": "1a1be817d85-5e21-136",
+                  "retried_launch": false,
+                  "same_key_reused": true
+                },
+                "complete_execution_history": false,
+                "failed_cases": 8,
+                "failing_groups": 2,
+                "failure_boundary": "The two deletion-route tests complete the ordinary-host four-cell controls in this run, then fail on the preserved legacy FILE_DELETE_CHILD refusal. Other legacy positive/error-precedence cases retain their refusal/assertion failures. Elevated non-TTY returns a passed body but LEAK and is not a clean capability pass.",
+                "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+                "fresh_junit_verification_claimed": false,
+                "full_history_cost": null,
+                "group_count": 19,
+                "helper_binary_bytes_archived": false,
+                "independent_nextest_list_available": false,
+                "interval_observations_not_full_cost": {
+                  "helper_preparation_seconds": 678.718,
+                  "sum_group_command_seconds": 2893.36
+                },
+                "job_id": 128952720859,
+                "junit_available": false,
+                "new_tests_executed": false,
+                "nonpassing_semantics": "The original seven nonPassingTests in sandbox-original-failures are six FAIL plus one LEAK; do not relabel them as seven FAIL.",
+                "original_receipt_status": "FAIL_DECLARED_WINDOWS_SCOPE",
+                "original_source_before_after": {
+                  "cargoLockSha256": "192c40e4c327fc23dce2fe2ff10e5a1048079458ccfdeedf5bb41ecf8b7d77ad",
+                  "head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                  "trackedChanges": "",
+                  "tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+                },
+                "packet_id": "bf42-original-windows-regression-failure-v1",
+                "passed_but_leaky_cases": 1,
+                "passing_groups": 17,
+                "physical_cost": null,
+                "retry_observed": false,
+                "run_attempt": 1,
+                "run_id": 42553073234,
+                "schema": "hepta-original-windows-regression-readback-v1",
+                "scientific_acceptance": false,
+                "scope": "Original common Windows regression run and all 19 groups; actual overall failure is preserved. Original API/job log/26-member artifact, collector ACK recovery, source excerpts and independent readback are included. No JUnit existed in the original artifact.",
+                "selected_skips": 0,
+                "source_binding_limit": "Original git checkout plus before/after HEAD/tree/tracked-change checks and measured Cargo.lock bytes; not a complete per-file/untracked snapshot.",
+                "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                "stage_origin": "Existing unchanged CURRENT_RESULT; this packet evaluates no scientific gate.",
+                "stages_remain": {
+                  "S0": "HOLD",
+                  "S1": "HOLD",
+                  "S2": "HOLD",
+                  "S3": "HOLD",
+                  "S4": "HOLD",
+                  "S5": "HOLD"
+                },
+                "status": "original_failure_case_accounting_verified",
+                "timeouts": 0,
+                "workflow_conclusion": "failure"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

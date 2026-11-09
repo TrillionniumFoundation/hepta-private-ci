@@ -1,0 +1,330 @@
+{
+  "packet_id": "bf42-original-windows-regression-failure-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-windows-original-evidence-v1/bf42-original-windows-regression-failure-v1.tar.xz",
+  "bytes": 169124,
+  "sha256": "fb52c5cd35c1b8208052757d66d26de27cfe3636bb4eec069fdc204a6db844cc",
+  "file_member_count": 45,
+  "scope": "Original common-source Windows regression run 42553073234 completed with failure naturally. All 19 groups contain 167 distinct selected case executions: 158 clean passes, eight failures and one body-pass with LEAK. No JUnit was included in the original artifact; the original scope, raw nextest status and summary lines and receipts establish the accounting. Deletion-route controls completed on the ordinary host before the unchanged legacy FILE_DELETE_CHILD refusal. The original collector ACK timeout was reconciled with the exact same key and no replay; no native test was rerun. Unselected cases, leaky bodies and missing full-history costs are not counted as passes or zero cost.",
+  "required_json_members": [
+    {
+      "path": "SCOPE.json",
+      "bytes": 3345,
+      "sha256": "b92c564246c59abf8cda03b6952b7e43efe1e7df9f22330a074b6eb6f16c0021",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "actual_checkout_proof": [
+              {
+                "command_line": 222,
+                "sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "sha_line": 223
+              }
+            ],
+            "actual_selected_unique_cases": 167,
+            "actual_tested_commit": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "case_binding": "Original pinned scope required-name set, actual nextest Starting and unique status lines before Summary, original receipt selection, original hash-verified logs.",
+            "clean_passed_cases": 158,
+            "collector_ack_recovery": {
+              "ack_timeout_is_not_ci_or_test_failure": true,
+              "collector_exit_code": 0,
+              "original_job_id": "1a1be817d85-5e21-136",
+              "retried_launch": false,
+              "same_key_reused": true
+            },
+            "complete_execution_history": false,
+            "failed_cases": 8,
+            "failing_groups": 2,
+            "failure_boundary": "The two deletion-route tests complete the ordinary-host four-cell controls in this run, then fail on the preserved legacy FILE_DELETE_CHILD refusal. Other legacy positive/error-precedence cases retain their refusal/assertion failures. Elevated non-TTY returns a passed body but LEAK and is not a clean capability pass.",
+            "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+            "fresh_junit_verification_claimed": false,
+            "full_history_cost": null,
+            "group_count": 19,
+            "helper_binary_bytes_archived": false,
+            "independent_nextest_list_available": false,
+            "interval_observations_not_full_cost": {
+              "helper_preparation_seconds": 678.718,
+              "sum_group_command_seconds": 2893.36
+            },
+            "job_id": 128952720859,
+            "junit_available": false,
+            "new_tests_executed": false,
+            "nonpassing_semantics": "The original seven nonPassingTests in sandbox-original-failures are six FAIL plus one LEAK; do not relabel them as seven FAIL.",
+            "original_receipt_status": "FAIL_DECLARED_WINDOWS_SCOPE",
+            "original_source_before_after": {
+              "cargoLockSha256": "192c40e4c327fc23dce2fe2ff10e5a1048079458ccfdeedf5bb41ecf8b7d77ad",
+              "head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+              "trackedChanges": "",
+              "tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            "packet_id": "bf42-original-windows-regression-failure-v1",
+            "passed_but_leaky_cases": 1,
+            "passing_groups": 17,
+            "physical_cost": null,
+            "retry_observed": false,
+            "run_attempt": 1,
+            "run_id": 42553073234,
+            "schema": "hepta-original-windows-regression-readback-v1",
+            "scientific_acceptance": false,
+            "scope": "Original common Windows regression run and all 19 groups; actual overall failure is preserved. Original API/job log/26-member artifact, collector ACK recovery, source excerpts and independent readback are included. No JUnit existed in the original artifact.",
+            "selected_skips": 0,
+            "source_binding_limit": "Original git checkout plus before/after HEAD/tree/tracked-change checks and measured Cargo.lock bytes; not a complete per-file/untracked snapshot.",
+            "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+            "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+            "stage_origin": "Existing unchanged CURRENT_RESULT; this packet evaluates no scientific gate.",
+            "stages_remain": {
+              "S0": "HOLD",
+              "S1": "HOLD",
+              "S2": "HOLD",
+              "S3": "HOLD",
+              "S4": "HOLD",
+              "S5": "HOLD"
+            },
+            "status": "original_failure_case_accounting_verified",
+            "timeouts": 0,
+            "workflow_conclusion": "failure"
+          }
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "SCOPE.json",
+      "bytes": 3345,
+      "sha256": "b92c564246c59abf8cda03b6952b7e43efe1e7df9f22330a074b6eb6f16c0021"
+    },
+    {
+      "path": "reader-and-sealer.py",
+      "bytes": 20521,
+      "sha256": "e1039139624de4528d122abb78ba84853a1f866377766f1f2c8d1f463a6d2766"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/.hepta-lock-8722db4535312cda1c26bd8c",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/.hepta-lock-8c4f7bcd659029f32acc71da",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/RESULT.json",
+      "bytes": 2371,
+      "sha256": "f2c616fec5086ef7f78fc2f77c6559980c1a65e8dc06ec4522bf6ce05446bc58"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/artifact-13648545786/MEMBERS.json",
+      "bytes": 3928,
+      "sha256": "44a1c24cc456c9705311095ab9360b14c762f34708986c6d2ae0d67ddb2d4994"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/artifact-13648545786/REPORTS.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/artifact-13648545786/artifact.command.json",
+      "bytes": 509,
+      "sha256": "419f82701776c2e5b73733ab8b1bb6645af0e45113576b2c586b8419b897863c"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/artifact-13648545786/artifact.raw",
+      "bytes": 116411,
+      "sha256": "85594a23e6ee4f32c24609afcb6816a2a505b0cbac4604c86dd32e0fb9e388f0"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/artifact-13648545786/artifact.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/artifact-13648545786/original-artifact-api.json",
+      "bytes": 892,
+      "sha256": "111e332d5bc02b90fca0a39c3b356f6e0f584780dfd165ce689ff2053459a451"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/artifacts.command.json",
+      "bytes": 519,
+      "sha256": "40fa94db540bb3a940899a9253a37a1872250397e02ce72cf0732d620ceb3fef"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/artifacts.raw",
+      "bytes": 841,
+      "sha256": "6764512813e08cf90589c1ffdb79ab13e8ca7dc0e8356ff6a84dc51be508b9ff"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/artifacts.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/collector.py",
+      "bytes": 9082,
+      "sha256": "35804725db476530e951adead8b491f1e022f280b28321929b18e36e75911997"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/common-after.json",
+      "bytes": 177,
+      "sha256": "71fe4682336f0d9a00d3c105da6ba1ac7f06e9156ed4357a6fd9e6077560ccaf"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/common-before.json",
+      "bytes": 177,
+      "sha256": "71fe4682336f0d9a00d3c105da6ba1ac7f06e9156ed4357a6fd9e6077560ccaf"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/job-128952720859/log.command.json",
+      "bytes": 505,
+      "sha256": "2b90d7fb62f05aff06651c16497bad49575accd0ebb7bb2dcedfdaeb6e7ba33a"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/job-128952720859/log.raw",
+      "bytes": 196994,
+      "sha256": "0a777b7940fd5688784b9381d002f26ac79a5337490c7fd03907897b8369aed5"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/job-128952720859/log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/job-128952720859/original-job-api.json",
+      "bytes": 3490,
+      "sha256": "1ae66036d55013d4ab4e122a0e3b5fd9b78b92de4eb0ec40fd9b3a6c9c3ef5e2"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/jobs.command.json",
+      "bytes": 526,
+      "sha256": "d78c1cc1088c267d0b4ca70781d35da82fb135e815da77129d3807173458f931"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/jobs.raw",
+      "bytes": 2832,
+      "sha256": "0a7916324a91b0663e6efaf16b508039a3a008ccf67be38789225c480a66b652"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/mcp-launch-timeout.json",
+      "bytes": 217,
+      "sha256": "94d107c4e95cc0eceb47304427d694536912b8af7e1febb5b90c19fed23ea59d"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/mcp-same-key-recovery.json",
+      "bytes": 2084,
+      "sha256": "7b6132a25edff06b5c94db220e1b594672fb856b94f1171f5a03877867a99ee4"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/run-final.command.json",
+      "bytes": 498,
+      "sha256": "874c42526ac936cd61fc403a72bddcb1a6dd8126fbdc9c22616e68a4950f52d5"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/run-final.raw",
+      "bytes": 14927,
+      "sha256": "87d69610ad5bfdd3fb26e0885c40859177a1ff056d5b5dd2a99bf2abc51386dc"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/run-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/run.command.json",
+      "bytes": 498,
+      "sha256": "c9d0fc1fbe36247a29d357762d6a0cad009ed3bb1724c9e996ce2a97d5d6b82a"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/run.raw",
+      "bytes": 14927,
+      "sha256": "87d69610ad5bfdd3fb26e0885c40859177a1ff056d5b5dd2a99bf2abc51386dc"
+    },
+    {
+      "path": "ci-bf42-windows-originals-v1/run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-windows-readback-v1/ANALYSIS.json",
+      "bytes": 105773,
+      "sha256": "36068a3c31b894ec32a859fdd9ea76a94e2ceab7e8bdcb70c28e4f48c4c20d7a"
+    },
+    {
+      "path": "ci-bf42-windows-readback-v1/collector-final-status.json",
+      "bytes": 729,
+      "sha256": "3d8a818d0fa6428b967b6fde04b0d4e2c7e32907f8eb40fbed739fd8823b2e03"
+    },
+    {
+      "path": "ci-bf42-windows-readback-v1/common-after.json",
+      "bytes": 127,
+      "sha256": "6195016e7fb43a90c832da02734b74b19e622112b48a231be9488aa1676d8c08"
+    },
+    {
+      "path": "ci-bf42-windows-readback-v1/common-before.json",
+      "bytes": 127,
+      "sha256": "6195016e7fb43a90c832da02734b74b19e622112b48a231be9488aa1676d8c08"
+    },
+    {
+      "path": "ci-bf42-windows-readback-v1/formal-current-result.json",
+      "bytes": 7587,
+      "sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+    },
+    {
+      "path": "ci-bf42-windows-readback-v1/readback-observer-notes.json",
+      "bytes": 538,
+      "sha256": "31d3ab68c6ab0e2a82e06621d6e9a71a9110ba850ea48c9d41decb60e36e2a23"
+    },
+    {
+      "path": "ci-bf42-windows-readback-v1/source/.github/fixtures/windows-current-ci-scope.json",
+      "bytes": 31537,
+      "sha256": "24f0752a4e01943dbc6212803dd5647a6f620f58351e57c979e4ce84d4c350c0"
+    },
+    {
+      "path": "ci-bf42-windows-readback-v1/source/.github/scripts/test_windows_current_ci.py",
+      "bytes": 7774,
+      "sha256": "900ee6ddc4aa9832d8a8b53d0a42285c7b19010568a27e1d3e25b0aa605fbd1b"
+    },
+    {
+      "path": "ci-bf42-windows-readback-v1/source/.github/scripts/windows_current_ci.py",
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    {
+      "path": "ci-bf42-windows-readback-v1/source/.github/workflows/hepta-windows-current-ci.yml",
+      "bytes": 2965,
+      "sha256": "b133ae757b14a04021cae5b393f1f0d3ff54063d1dd3e3901367cdfc96f0475c"
+    },
+    {
+      "path": "ci-bf42-windows-readback-v1/source/codex-rs/.config/nextest.toml",
+      "bytes": 5987,
+      "sha256": "63f832eabf890a5f3cd7c0e4ee1856b1ca99d4db8952de71b81282265668dc8c"
+    },
+    {
+      "path": "collect-bf42-windows-originals-v1.py",
+      "bytes": 9082,
+      "sha256": "35804725db476530e951adead8b491f1e022f280b28321929b18e36e75911997"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 15454,
+      "sha256": "459bacd62af251afbc8dc8a585b2390fc35440b77f1cf468246d86def85b62da"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/bf42-original-windows-regression-failure-v1/archive.part001",
+      "offset": 0,
+      "bytes": 169124,
+      "sha256": "fb52c5cd35c1b8208052757d66d26de27cfe3636bb4eec069fdc204a6db844cc"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

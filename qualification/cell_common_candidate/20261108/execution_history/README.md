@@ -5,6 +5,138 @@ original archives, failed attempts, source preparation and publication records.
 **S0, S1, S2, S3, S4 and S5 remain HOLD.** Complete execution history, full
 physical cost and full historical cost remain unknown.
 
+## Increment 005: original UI, Windows failure, and checkpoint delivery
+
+This checkpoint adds six packets to the 66-packet predecessor
+[`5a3137e8ed198a07eb63bd97b5bb639f4471011f`](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/5a3137e8ed198a07eb63bd97b5bb639f4471011f/qualification/cell_common_candidate/20261108/execution_history).
+All 66 original packet index entries and their bytes remain unchanged. The new
+total is 72 packets. Archive members and repeated artifacts are not test counts.
+
+The common candidate remains
+`bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d`, tree
+`f7b65a747a1d2f585be38a4665ab2b4f1b07efb6`. The checkpoint-delivery implementation
+was validated separately at
+`e54f7791068ad16ff6082c148cf73798836d36e4`, tree
+`dfd0f9f53d791542cafbfc74c53ab2c981d86f66`, on its published quiet branch.
+Its results are not attributed to common bf42.
+
+### Original common-source workflows
+
+The last included API snapshot ended at **2026-11-09 04:41:07 UTC**. Of the 18
+original bf42 workflow runs, native composition and Windows x64 V8 still had
+running jobs. Windows ARM V8 had reached its API terminal state. These API
+observations do not establish individual test results. The common branch was
+not advanced while the original jobs remained active.
+
+| Original execution                  | Verified result                                                                           | Scope and identity                                                                                                                                                                                                                                |
+| ----------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Blocking CI, run 42553073160        | Failure, retained in increment 004                                                        | The actual Bazel checkout was merge `8828133f2566b7e537cac0bad58c84eb5b0168bb`, with the same f7b tree and a distinct commit identity. No full repository pass is claimed.                                                                        |
+| Windows regression, run 42553073234 | 167 distinct selected executions: **158 clean passes, 8 failures, 1 body-pass with LEAK** | All 19 original groups are retained; 17 groups passed cleanly. The job ended with failure naturally at 03:51:04 UTC. No original JUnit was available. Counts are bound to the original scope, raw nextest status and summary lines, and receipts. |
+| UI, run 42553073250                 | The original reported UI scopes passed and their original evidence was read back          | Source-head, foundation base-merge, and native-presentation base-merge identities remain separate. Passing these scopes does not establish real-task learning or physical-device behavior.                                                        |
+
+The Windows deletion-route tests completed their ordinary-host controls before
+the preserved legacy `FILE_DELETE_CHILD` refusal. The non-TTY body-pass with
+LEAK is not a clean capability pass. No failed test, old attempt, ignored case,
+or unexecuted case is converted into a passing observation.
+
+The Windows collector's first acknowledgement timed out, but the original
+collector had completed. Reconciliation with the exact same idempotency key
+returned the original successful job with no second launch. This transport
+acknowledgement failure is not a CI failure or a rerun.
+
+### UI source and counting boundaries
+
+| Lane                           | Actually tested commit                     | Original library executions                   |
+| ------------------------------ | ------------------------------------------ | --------------------------------------------- |
+| Source head                    | `bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d` | SDK 7, headless 29, native 52                 |
+| Foundation base-merge          | `7450f0cbe49443a2b78826a2786ac37889c60e76` | SDK 7; original browser and gateway scenarios |
+| Native-presentation base-merge | `52ebeefecb4ab2d2fbb3e69100ab3773df0b8ea5` | Headless 29, native 52                        |
+
+All three tested commits have the f7b source tree. The two CI-local merge
+identities are supported by original merge-creation commands and clean
+before/after execution receipts; they were not independently retrieved through
+a commit API. An API run head or an artifact name alone is not the tested commit.
+
+Across the retained feature executions, the seven SDK names and 29 headless
+names are subsets of the 52-name native set. The table identifies which commit
+actually ran each scope. Feature/profile and commit executions remain distinct;
+**7 + 29 + 52 is not 88 unique tests**. The original twelve-case JUnit checker
+runs are separately identified as checker executions.
+
+For each original browser lane, the canonical scenario executions were default
+6, fixtures including sidebar 9, buffer-control 1, and gateway 7. Gateway
+contains six actual missing-owner-status cases and one original SDK synthetic
+sink control. The 60 default and 78 fixture captures, and their 138 and 438
+semantic-check observations, are not additional tests. Repeated reports and
+attachments are not extra coverage. All reported capture PNG hashes match the
+archived original image bytes; this readback did not rerun a browser or pixel
+checker, perform human visual review, or qualify physical IME/GPU devices.
+
+All 29 original UI artifact ZIPs are verified. The first downloader's original
+600-second outer limit left one incomplete artifact and 28 complete artifacts.
+The recovery downloaded only that one missing artifact and reverified all
+original ZIP members. Both the original partial and failure records remain.
+This was artifact recovery, not a test budget increase. The first evidence
+reader's merge-identity and group-manifest assumptions also failed closed;
+the corrected reader retained the original execution results and identities.
+
+### Separate checkpoint-delivery implementation
+
+The quiet source
+[`e54f7791068ad16ff6082c148cf73798836d36e4`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e54f7791068ad16ff6082c148cf73798836d36e4)
+provides a bounded restore/checkpoint channel over the existing registered
+Root authority. It uses the original authenticated consumer identity, writer
+fences, sequence and protected HostCAS state. It does not fabricate stage
+execution, proposal preparation, adoption receipts or downstream consumption.
+
+| Validation at exact e54   | Actual result                                                                                      | Limit                                                                                             |
+| ------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Same-source preparation   | All five preparation steps passed, including owning `just fix` and separate readonly strict Clippy | Preparation is not a test count; source entries remained unchanged.                               |
+| Codec and wire components | 13 exact fresh cases passed: nine codec/CAS regressions and four wire regressions                  | Zero selected skips, retries, observed LEAK or explicit guard-skip markers.                       |
+| Registered Root boundary  | One parent case passed with a real UID 60001 child and protected Root storage                      | The child's libtest summary is part of that parent fixture, not another acceptance case.          |
+| Full caller scan          | Passed in 400.58282532705925 seconds within the original 600-second budget                         | 6,480 Rust files, 173 declared boundaries and 160 protected boundaries; this grants no authority. |
+| Quiet publication         | Normal push and exact Git/API source, tree and parent readback succeeded                           | Common bf42 and the formal CURRENT record remained unchanged.                                     |
+
+The real Root fixture exercised restoration, stale conflict, durable commit
+followed by a lost acknowledgement, reconciliation through a freshly delivered
+channel, and refusal after actual registered revocation. It retained the
+original executable's SHA256 before and after execution, and the temporary
+Root mount was cleaned up. Elapsed lease expiry was not independently tested.
+
+The original 0eed compile failure and 9d Root failure remain separate historical
+records. The latter failed when the child executable was placed on a
+`noexec` filesystem. The corrected fixture used a fresh Root-owned executable
+directory without changing mount policy, private-state permissions, writer
+checks, or the original assertions. A separate post-reader permission failure
+also remains recorded. Both large original test binaries are retained on the
+native host with exact hash records; their executable bytes are not part of
+these publication archives.
+
+**Ordinary daemon learning is still incomplete.** The production entry still
+needs independently produced learning-stage results, proposal preparation,
+matching trust and attestation inputs, and a real published successor consumed
+by a later task. The checkpoint client only implements restore/checkpoint;
+it is not a complete learning-port implementation. This packet contains no
+ordinary-daemon installation, production owner registration, real learning
+dataset/model execution, or proof of successor-task consumption.
+
+### Six appended original packets
+
+| Packet                                    | Original archive SHA256                                            | File members |
+| ----------------------------------------- | ------------------------------------------------------------------ | -----------: |
+| UI shared history and native scopes       | `1e4dc0c00bf3f7c59c83fdfd2ad2f6f4ad5a1f723012bcfc9ad812b2fad8f8ce` |          288 |
+| UI source-head browser scopes             | `8fa3391d5c10c95516e63e015e185a893edbc7de8d9904a50853273ae28d9ab2` |           75 |
+| UI base-merge browser scopes              | `a207b056f809952903506e70678c4a0ea1aff4bac667e0c7f10b41ebd8e46e8a` |           75 |
+| Original bf42 Windows failure             | `fb52c5cd35c1b8208052757d66d26de27cfe3636bb4eec069fdc204a6db844cc` |           45 |
+| e54 native and failure history            | `7c51d224ad2638ab810ba97f1aba9dadf8e7a06a36e6f9821d1a65e019dd1d87` |          254 |
+| e54 source, callers and quiet publication | `b94387249400ba0f841a3862ceb93d6bbbdf6251e2090dfb230a12f4665f14ce` |          219 |
+
+Wall intervals include preparation, failures, collection and recovery where
+observed. They can overlap and are not a complete CPU, physical, learning or
+historical cost total. Unknown costs remain null. **S0, S1, S2, S3, S4 and S5
+remain HOLD.** The earlier increment narratives below retain their original
+cutoffs and source identities.
+
 ## Increment 004: common source bf42 and original observations
 
 The common draft candidate is now

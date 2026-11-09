@@ -1,0 +1,1741 @@
+{
+  "packet_id": "e54-learning-checkpoint-native-history-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/learning-checkpoint-native-history-v1.tar.xz",
+  "bytes": 3618492,
+  "sha256": "7c51d224ad2638ab810ba97f1aba9dadf8e7a06a36e6f9821d1a65e019dd1d87",
+  "file_member_count": 254,
+  "scope": "Isolated e54/dfd0 learning-checkpoint delivery history: original owning strict preparation, exact 13 component cases, and one actual Root parent case with a live UID 60001 consumer through fresh sealed handoffs, restore, CAS conflict, committed lost ACK and revocation. The child fixture is not another acceptance case. Original 0eed compile failure and 9d Root noexec failure plus post-reader PermissionDenied are retained at their original identities. Elapsed lease expiry was not independently tested. Large retained binaries remain host-only. This is no ordinary daemon installation, real learner/model run, complete workspace pass, scientific qualification, or complete historical cost.",
+  "required_json_members": [
+    {
+      "path": "MANIFEST.json",
+      "bytes": 146697,
+      "sha256": "aecc1df0dab60f60de0a6048b53548608986ee2aa828ad43874dc5c43dffbef8",
+      "equals": [
+        {
+          "path": [
+            "current_source_sha"
+          ],
+          "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+        },
+        {
+          "path": [
+            "current_source_tree"
+          ],
+          "value": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66"
+        },
+        {
+          "path": [
+            "ordinary_daemon_installed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "scientific_acceptance"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "elapsed_lease_expiry_independently_tested"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "archival_completeness"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_history_cost"
+          ],
+          "value": null
+        }
+      ]
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/preparation.json",
+      "bytes": 7529,
+      "sha256": "0cc1d1ab515948716bedd43ed386ed525ba216d8310c83eec3401b72be0fb672",
+      "equals": [
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66"
+        },
+        {
+          "path": [
+            "source_unchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "returncode"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "status"
+          ],
+          "value": "prepared_clean"
+        }
+      ]
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/RESULT.json",
+      "bytes": 26223,
+      "sha256": "43d02524d7298cf04aba644cfb4e3901efd10a1af7d6188c8b15a595f9cfc0eb",
+      "equals": [
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66"
+        },
+        {
+          "path": [
+            "source_unchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "returncode"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "status"
+          ],
+          "value": "PASS"
+        },
+        {
+          "path": [
+            "expected_selected_tests"
+          ],
+          "value": 13
+        },
+        {
+          "path": [
+            "fixed_selected_tests"
+          ],
+          "value": 13
+        },
+        {
+          "path": [
+            "retries"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "results",
+            0,
+            "observed_passed_tests"
+          ],
+          "value": 13
+        },
+        {
+          "path": [
+            "results",
+            0,
+            "observed_failed_tests"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "results",
+            0,
+            "exact_fresh_unique_set"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "results",
+            0,
+            "nextest_leak_observed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "results",
+            0,
+            "explicit_skip_markers"
+          ],
+          "value": []
+        }
+      ]
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/RESULT.json",
+      "bytes": 6561,
+      "sha256": "4ca089de7152a6ff2b5c55bb082d1e8f35e78ad8b2dd5ba2e3409500044a447a",
+      "equals": [
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66"
+        },
+        {
+          "path": [
+            "source_unchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "returncode"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "status"
+          ],
+          "value": "PASS"
+        },
+        {
+          "path": [
+            "parent_case_pass_count"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "fixture_child_is_additional_acceptance_case"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "production_registration_performed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "root_fixture_result",
+            "uid"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "root_fixture_result",
+            "euid"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "root_fixture_result",
+            "command_exit"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "root_fixture_result",
+            "original_parent_pass_count"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "root_fixture_result",
+            "cleanup_complete"
+          ],
+          "value": true
+        }
+      ]
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/preparation.json",
+      "bytes": 6891,
+      "sha256": "8d4a238ab62cfcbfa5221aae39bf38872d10492b24afbf71feae0f83090f3bb2",
+      "equals": [
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "0eed6e0adde8a3eec05fddf1e7f91ea9771882de"
+        },
+        {
+          "path": [
+            "status"
+          ],
+          "value": "preparation_failed"
+        },
+        {
+          "path": [
+            "returncode"
+          ],
+          "value": 101
+        },
+        {
+          "path": [
+            "source_unchanged"
+          ],
+          "value": true
+        }
+      ]
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/RESULT.json",
+      "bytes": 4732,
+      "sha256": "9234dae4d4402e2230b83459d049221ed5e50fee1f5a1d4efef0190b348edd8f",
+      "equals": [
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "9d643d9b469fe0cf9b2465bf9fa77549c70ecf49"
+        },
+        {
+          "path": [
+            "status"
+          ],
+          "value": "FAIL"
+        },
+        {
+          "path": [
+            "returncode"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "parent_case_pass_count"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "source_unchanged"
+          ],
+          "value": true
+        }
+      ]
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-fixture/RESULT.json",
+      "bytes": 1569,
+      "sha256": "efcf2e4153907e7f7677d412d0d6036137fc915395ee77132ff594afd07149b3",
+      "equals": [
+        {
+          "path": [],
+          "value": {
+            "started_at": "2026-11-09T04:00:48.046931+00:00",
+            "uid": 0,
+            "euid": 0,
+            "pid": 1525550,
+            "command": [
+              "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/target-ci-test-bf42d2a-fresh/ci-test/deps/codex_hepta_agentd-086aa0f6fbbc4f00",
+              "--exact",
+              "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+              "--ignored",
+              "--nocapture",
+              "--test-threads=1"
+            ],
+            "binary_sha256_before": "3f7fbdde6135a8895c436023524e02f51bf53205c37690cd285e065399526299",
+            "native_execution_started": true,
+            "command_exit": 101,
+            "mount_created": true,
+            "unmounted": true,
+            "cleanup_complete": true,
+            "full_history_cost": null,
+            "physical_cost": null,
+            "scientific_acceptance": false,
+            "scope": "test-only Root bind and exact original test binary",
+            "test_root": "/run/hepta-learning-checkpoint-898e-bun56k5_",
+            "source": "/run/hepta-learning-checkpoint-898e-bun56k5_/source",
+            "mountpoint": "/run/hepta-learning-checkpoint-898e-bun56k5_/mount",
+            "mount_exit": 0,
+            "bind_identity": {
+              "device": 27,
+              "inode": 906357
+            },
+            "command_wall_seconds": 0.09412967483513057,
+            "observed_libtest_summaries": [
+              [
+                "FAILED",
+                "0",
+                "1",
+                "0",
+                "0",
+                "797"
+              ]
+            ],
+            "original_parent_case_executed": false,
+            "error": "RuntimeError('final original parent result must be exactly one executed passing case')",
+            "umount_exit": 0,
+            "runner_wall_seconds": 0.10063003981485963,
+            "finished_at": "2026-11-09T04:00:48.147599+00:00",
+            "runner_exit": 1
+          }
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "MANIFEST.json",
+      "bytes": 146697,
+      "sha256": "aecc1df0dab60f60de0a6048b53548608986ee2aa828ad43874dc5c43dffbef8"
+    },
+    {
+      "path": "archive_checkpoint_native_history_v1.py",
+      "bytes": 15110,
+      "sha256": "2dc0a6a54bd5d3f6ac4e1311c568e437d69b0fd832b66edac551f3eae605285b"
+    },
+    {
+      "path": "learning-checkpoint-source-v4.bundle",
+      "bytes": 25363,
+      "sha256": "2cd22f21b16ecf63655a8468a4e6b48643c3e15fd60a21ea2b9b98635385ae4d"
+    },
+    {
+      "path": "learning-checkpoint-source-v5.bundle",
+      "bytes": 25856,
+      "sha256": "ec75a08832b91ddeee583913845adddff64a87551ac4c56cfe2ed4039fd91071"
+    },
+    {
+      "path": "learning-checkpoint-source-v6.bundle",
+      "bytes": 26694,
+      "sha256": "c512569ce77325d3bbcb340f8f0be5648b75a83466791cbf68e459b8756118ea"
+    },
+    {
+      "path": "records/learning-checkpoint-component-launch-9d643d9-v1/console.log",
+      "bytes": 233849,
+      "sha256": "bc5ccb9d161f895ee264bee67f29b2a4301a1f99c60d26cf07862efd1df4b789"
+    },
+    {
+      "path": "records/learning-checkpoint-component-launch-9d643d9-v1/launch.json",
+      "bytes": 950,
+      "sha256": "44822be9181fe59ea36bbd3b1226e660de2b97c6852f0918ddbf78fd1761d7bb"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/RESULT.json",
+      "bytes": 26223,
+      "sha256": "425d8a8d079f74970af5d4beccd4483409be783fac04802ac0ead77a742186e5"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/cargo-version.json",
+      "bytes": 1439,
+      "sha256": "cc8d75a68ec73bb7d4e82ed35f7bc4d8f30ba6112d9c465f1486f985d4012812"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/cargo-version.json.c83cf421f6584ceeb9c5bd1a8fba256c.log",
+      "bytes": 36,
+      "sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/checkpoint-codec-and-wire/collect-junit.json",
+      "bytes": 2040,
+      "sha256": "c7deca609242221a2f7208ceb95fdeccd506af68beb66b7ca3d12268dc2366d3"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/checkpoint-codec-and-wire/collect-junit.json.13c76cf18ebc473baa9f62b00eab859a.log",
+      "bytes": 2800,
+      "sha256": "60fb74da1972f96ad9cd351ecd63b35d6cd3744890ebe1331690818addee3c41"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/checkpoint-codec-and-wire/discovered-tests.json",
+      "bytes": 147259,
+      "sha256": "eb15897e74cb5b2d9c62396c3332566f77dbb6d8be60ae33b7585fef6e18dce0"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/checkpoint-codec-and-wire/discovery.json",
+      "bytes": 3438,
+      "sha256": "3a9d7501e0dbf81025bd1701595c2ae09d85994817679cbeba5db63621d4a5ec"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/checkpoint-codec-and-wire/discovery.json.2536daf38fea4dfdb3f0e93818a11d98.log",
+      "bytes": 175333,
+      "sha256": "1cae8d12b022e39542377519d6154d1d71121816e5342b7e0db1b6e4cd1c076b"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/checkpoint-codec-and-wire/nextest-store/local/junit.xml",
+      "bytes": 3538,
+      "sha256": "747be45f154c333ebf0d200e916074707bd7254276dd6bf336b0a0cdeab6b32e"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/checkpoint-codec-and-wire/nextest.toml",
+      "bytes": 154,
+      "sha256": "fabf5282b672835aed7cb72f386fcb954fb332a2b523d906e8a10e4868dab068"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/checkpoint-codec-and-wire/selection.json",
+      "bytes": 234498,
+      "sha256": "738231a6c6ccc57790b6af12a5bf6167b639d6e1ec2018bb62aca1a23c3eeab8"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/checkpoint-codec-and-wire/tests-junit.summary.json",
+      "bytes": 2940,
+      "sha256": "e7502abf4f9f8811af7d723c58950cf5c8a20a2e51c9ceedae9fd0a06e8f9de5"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/checkpoint-codec-and-wire/tests-junit.xml",
+      "bytes": 3538,
+      "sha256": "747be45f154c333ebf0d200e916074707bd7254276dd6bf336b0a0cdeab6b32e"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/checkpoint-codec-and-wire/tests.json",
+      "bytes": 3544,
+      "sha256": "af177fdfc4d52c7ea1847f4ff92dac08cec6e8b7c2982068491e766c4d3e920f"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/checkpoint-codec-and-wire/tests.json.968ecadb81f1423eba94414174f03900.log",
+      "bytes": 10038,
+      "sha256": "f9bba18c763fb3789deba1359038eddf375a0364c898d03fb7cf6add8824ccab"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/driver.py",
+      "bytes": 23532,
+      "sha256": "9d345be03eef78e9fad8f0ac5c5356ed0789e49cf2e432842ffda5126cf6c358"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/helpers-after-checkpoint-codec-and-wire.json",
+      "bytes": 1780,
+      "sha256": "a0586cbae64e48218ca127751d1b4248e74c7bb691a900fd6767e6bb3dd64ffc"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/helpers-after-checkpoint-codec-and-wire.json.9b0c986a29ac42fe87c814df244b1e27.log",
+      "bytes": 1239,
+      "sha256": "df484e4a1f11401f87e280a6257abc054033273889eb3ed325b37338489a18b7"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/helpers-before-tests.json",
+      "bytes": 1761,
+      "sha256": "3ad56120c13c89efffa6150e67c24200943dcd4e981573becc4258711b4e7d83"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/helpers-before-tests.json.3ffdc4640b47465f9a0109332872c255.log",
+      "bytes": 1239,
+      "sha256": "df484e4a1f11401f87e280a6257abc054033273889eb3ed325b37338489a18b7"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/nextest-version.json",
+      "bytes": 1455,
+      "sha256": "4fda2a42e94ca38d37a2f7d15457773922a5debace8b477b06fd738f67409b6d"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/nextest-version.json.b7b3a6deef25471ca0a891119a780e88.log",
+      "bytes": 171,
+      "sha256": "13fae229b3f8485e0d02d80bf3c77e6cd38a2a2f1227d3e70a880cfb49365f61"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/preparation-lineage.json",
+      "bytes": 7529,
+      "sha256": "e3a833b21f527b7695954d349a96321f106a9947830a4139685188905d95f5e5"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/rust-version.json",
+      "bytes": 1455,
+      "sha256": "1e579cce4ae72801368c12f525b1234d08330151bcc3ff26c5a6ee9863877520"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/rust-version.json.11cf4fff23bb495b9f22c6f17e082c25.log",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/snapshot_helper.py",
+      "bytes": 14786,
+      "sha256": "0df9a68b94edc08689b9f63d733732cb2d4f5976fd584896e552ce02e9ffb5e8"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/source-after.files.json",
+      "bytes": 5658135,
+      "sha256": "2a39701c799ec64688d8b7dbb4691257cebd16932f999e074c7761dd7dfb88a7"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/source-after.json",
+      "bytes": 878,
+      "sha256": "8e2950390189bd20a394eaf94a5201b1400463e1e2f7bfd877fbdcf6d3f03468"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/source-before.files.json",
+      "bytes": 5658135,
+      "sha256": "2a39701c799ec64688d8b7dbb4691257cebd16932f999e074c7761dd7dfb88a7"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/source-before.json",
+      "bytes": 880,
+      "sha256": "88577506ac62e01ad69b7748d1603b82eab4ea69a753f2e86f7218c265422c0e"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/v8.env",
+      "bytes": 295,
+      "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/v8.json",
+      "bytes": 1523,
+      "sha256": "29c2795c83c8368750d563de8320870539de8d26488c7a8a369806f46ac9c498"
+    },
+    {
+      "path": "records/learning-checkpoint-components-9d643d9-v1/v8.json.4b38c33870b243428da5c122ea6014a3.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/RESULT.json",
+      "bytes": 26223,
+      "sha256": "43d02524d7298cf04aba644cfb4e3901efd10a1af7d6188c8b15a595f9cfc0eb"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/cargo-version.json",
+      "bytes": 1438,
+      "sha256": "1ae97bbc208129b75feda87e5562e7b1634141b681338006af4a116530ed241e"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/cargo-version.json.0d48e850b977475786689e37eb0c019e.log",
+      "bytes": 36,
+      "sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/checkpoint-codec-and-wire/collect-junit.json",
+      "bytes": 2041,
+      "sha256": "210f283234b26c83449fff065ff70f8b3a93c9604b30a68d4d53926c0416ac4a"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/checkpoint-codec-and-wire/collect-junit.json.f2b047444063497ca4057b9bf8a510f8.log",
+      "bytes": 2800,
+      "sha256": "464e243a778b769b2cc0eeee2b7d3492887511e22541eaa32325f873b0e97ad6"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/checkpoint-codec-and-wire/discovered-tests.json",
+      "bytes": 147259,
+      "sha256": "5f365889b7ce622d0ed56a389b9f1136a7869d7bf86fd64c77c58f231577ef5e"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/checkpoint-codec-and-wire/discovery.json",
+      "bytes": 3438,
+      "sha256": "e05a0c52bd7b26225b028a66abfc48465b02b548fb9cfaa4b0ab573458cc88ce"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/checkpoint-codec-and-wire/discovery.json.110749c2bc904af5b10a35ee2603c9e6.log",
+      "bytes": 175333,
+      "sha256": "0802d853c0508da4c236a25e70535627d5de2adfd41e636a83ed8d5735be0d0f"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/checkpoint-codec-and-wire/nextest-store/local/junit.xml",
+      "bytes": 3538,
+      "sha256": "3071a5a83bde001f001633d890b1230467b969f5c5d33616f09ec570320b10e1"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/checkpoint-codec-and-wire/nextest.toml",
+      "bytes": 154,
+      "sha256": "932c394f79d31f9397cd1af5592ec1e0304401812e0261f31b812523a54a3572"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/checkpoint-codec-and-wire/selection.json",
+      "bytes": 234498,
+      "sha256": "edbb9c3c3f81c1393d3d31c7d62734ea8eb76ded5d07b53bfdd3322a2aa62d7c"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/checkpoint-codec-and-wire/tests-junit.summary.json",
+      "bytes": 2940,
+      "sha256": "d382bdba6d465e8756925d6a8fbb77662e93c83311411bf74de58f4a787973b1"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/checkpoint-codec-and-wire/tests-junit.xml",
+      "bytes": 3538,
+      "sha256": "3071a5a83bde001f001633d890b1230467b969f5c5d33616f09ec570320b10e1"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/checkpoint-codec-and-wire/tests.json",
+      "bytes": 3544,
+      "sha256": "68df0fd8d766959fb79b61d923272062666e65badcbb25dc7f3e57e278d48116"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/checkpoint-codec-and-wire/tests.json.31e24d84a36e4468a755fa76a2d700a9.log",
+      "bytes": 10038,
+      "sha256": "13ddd301941b7cba8a87a839e1d5d2da3ceea7bf4fd4be147ad3825e19092195"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/driver.py",
+      "bytes": 23532,
+      "sha256": "9d345be03eef78e9fad8f0ac5c5356ed0789e49cf2e432842ffda5126cf6c358"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/helpers-after-checkpoint-codec-and-wire.json",
+      "bytes": 1780,
+      "sha256": "bd0e77fd0146c7927a6b3ad4ca28b7d5b78c1256117fcaa2f5c0add23ed2ff3a"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/helpers-after-checkpoint-codec-and-wire.json.0bbb5a9af6714aa5bb01bafbbb6f36b8.log",
+      "bytes": 1239,
+      "sha256": "f1fafbfe6c9118b759b440b7dd3c1ff932dad2cb14d3ed88fe2f0d9f11dd6222"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/helpers-before-tests.json",
+      "bytes": 1760,
+      "sha256": "c9d04c7c7152fa80377652121a57b4520d576ef33ca1ae3e68d4c89911c6bcc7"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/helpers-before-tests.json.ac9c37812e934188b2336bd422a3efce.log",
+      "bytes": 1239,
+      "sha256": "f1fafbfe6c9118b759b440b7dd3c1ff932dad2cb14d3ed88fe2f0d9f11dd6222"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/nextest-version.json",
+      "bytes": 1456,
+      "sha256": "e186b87ea71832b989d7746ccc78a571f3be10f037cc31cf5ffe4731182daf4d"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/nextest-version.json.54967f94736d45cdbe23b6f19d337ad0.log",
+      "bytes": 171,
+      "sha256": "13fae229b3f8485e0d02d80bf3c77e6cd38a2a2f1227d3e70a880cfb49365f61"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/preparation-lineage.json",
+      "bytes": 7529,
+      "sha256": "0cc1d1ab515948716bedd43ed386ed525ba216d8310c83eec3401b72be0fb672"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/rust-version.json",
+      "bytes": 1455,
+      "sha256": "847dd9990f27a1af1222ff06ea41c9317fd4c4b50d83fc1589b75aab9dc9b96f"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/rust-version.json.48c14dc309dd49e5a75cf62dbf4e0363.log",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/snapshot_helper.py",
+      "bytes": 14786,
+      "sha256": "0df9a68b94edc08689b9f63d733732cb2d4f5976fd584896e552ce02e9ffb5e8"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/source-after.files.json",
+      "bytes": 5658135,
+      "sha256": "46943778bad0a993a86abb452d78ee5f0565455b7c2cec9ca8c36405700abe9f"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/source-after.json",
+      "bytes": 878,
+      "sha256": "c68639db1486cb1be55621dfc1f539c5674716849af7b236d4c1f47b063bcff1"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/source-before.files.json",
+      "bytes": 5658135,
+      "sha256": "46943778bad0a993a86abb452d78ee5f0565455b7c2cec9ca8c36405700abe9f"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/source-before.json",
+      "bytes": 881,
+      "sha256": "ff4b60dce1e560cef63ad139156c984dda0305bc0c7f889b84e2df4107afa3c8"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/v8.env",
+      "bytes": 295,
+      "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/v8.json",
+      "bytes": 1522,
+      "sha256": "9507c8ae7004cfd89b10f5eeeb206426c86c611d966da8f6a76866a162251d36"
+    },
+    {
+      "path": "records/learning-checkpoint-components-e54f779-v1/v8.json.f2e3e3222ec449bd8390f8a36684ffc3.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/RESULT.json",
+      "bytes": 4732,
+      "sha256": "9234dae4d4402e2230b83459d049221ed5e50fee1f5a1d4efef0190b348edd8f"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/component-result.json",
+      "bytes": 26223,
+      "sha256": "425d8a8d079f74970af5d4beccd4483409be783fac04802ac0ead77a742186e5"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/driver.py",
+      "bytes": 8713,
+      "sha256": "ec30b039a7064ec04798186a367085f6f78691bb1a96387ebaeecb1c3a4c6420"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/post-readback-v1/RESULT.json",
+      "bytes": 1569,
+      "sha256": "efcf2e4153907e7f7677d412d0d6036137fc915395ee77132ff594afd07149b3"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/post-readback-v1/RESULT.json.read-stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/post-readback-v1/exec-mount-observation.json",
+      "bytes": 925,
+      "sha256": "ce23f626ce2135f580372a76ad71c2d4f0f79ae2abcc778b0857e1dac7a17a95"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/post-readback-v1/mount.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/post-readback-v1/mount.stderr.read-stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/post-readback-v1/original-test.log",
+      "bytes": 552,
+      "sha256": "6b67eeafe47d0bba9421302ed6cfbccf49991ef20fb458cef2771b130c7a4d0d"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/post-readback-v1/original-test.log.read-stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/post-readback-v1/umount.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/post-readback-v1/umount.stderr.read-stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-execution.json",
+      "bytes": 2196,
+      "sha256": "ca3a5f2c755ee38a779a0d712c1f34c01bba387e609d68b5b11596c2c316de69"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-execution.json.88a349245210475aae1e5da7d5822f5d.log",
+      "bytes": 552,
+      "sha256": "6b67eeafe47d0bba9421302ed6cfbccf49991ef20fb458cef2771b130c7a4d0d"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-fixture/RESULT.json",
+      "bytes": 1569,
+      "sha256": "efcf2e4153907e7f7677d412d0d6036137fc915395ee77132ff594afd07149b3"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-fixture/mount.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-fixture/mount.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-fixture/mountinfo-after.txt",
+      "bytes": 5476,
+      "sha256": "e0f7922afcfecf7583d6eea2c2169a6e7cefa8929f0de677dc42787f7152f65c"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-fixture/mountinfo-before.txt",
+      "bytes": 5476,
+      "sha256": "e0f7922afcfecf7583d6eea2c2169a6e7cefa8929f0de677dc42787f7152f65c"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-fixture/mountinfo-created.txt",
+      "bytes": 5678,
+      "sha256": "dd82884270cc1ea5340f47935c2a5f8f74df5fa07dfbf5e5135c50974530dabd"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-fixture/original-test.log",
+      "bytes": 552,
+      "sha256": "6b67eeafe47d0bba9421302ed6cfbccf49991ef20fb458cef2771b130c7a4d0d"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-fixture/umount.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-fixture/umount.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/root-runner.py",
+      "bytes": 7004,
+      "sha256": "c218dadbfa09f29c928c14a44e2539f0f8a4f43543b64fa1383f0fc4c933520f"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/source-after.files.json",
+      "bytes": 5658135,
+      "sha256": "2a39701c799ec64688d8b7dbb4691257cebd16932f999e074c7761dd7dfb88a7"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/source-after.json",
+      "bytes": 866,
+      "sha256": "25f7567842a955d16a64d95b599261fcf67eb606d3ba293c35e07d0ef38ec06a"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/source-before.files.json",
+      "bytes": 5658135,
+      "sha256": "2a39701c799ec64688d8b7dbb4691257cebd16932f999e074c7761dd7dfb88a7"
+    },
+    {
+      "path": "records/learning-checkpoint-root-9d643d9-v1/source-before.json",
+      "bytes": 867,
+      "sha256": "01c2588daac9613d36c7e83e0a59829056a29dfefa5662f1c8a79a2c5f012728"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/RESULT.json",
+      "bytes": 6561,
+      "sha256": "4ca089de7152a6ff2b5c55bb082d1e8f35e78ad8b2dd5ba2e3409500044a447a"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/component-result.json",
+      "bytes": 26223,
+      "sha256": "43d02524d7298cf04aba644cfb4e3901efd10a1af7d6188c8b15a595f9cfc0eb"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/driver.py",
+      "bytes": 9135,
+      "sha256": "211c8ce07452ff5fd999e57eb92e9561f142de298e88e5583ea70ac2fae277ac"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-execution.json",
+      "bytes": 2141,
+      "sha256": "68712a72bdbb8788df36003278773780c07206c0dc9f4a108c8ffa819f1362cd"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-execution.json.a1d97635626a401dbf06235f72619699.log",
+      "bytes": 755,
+      "sha256": "d8027b0cae505ede0b6598651668eee5c12c5e0fa0bd704da06e90bbc0725289"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-fixture/RESULT.json",
+      "bytes": 1737,
+      "sha256": "e8be57895c5d1fd7f73cdd1a622d2a2749d6fcb339f0a4647271c1c68f41a2ab"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-fixture/mount.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-fixture/mount.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-fixture/mountinfo-after.txt",
+      "bytes": 5476,
+      "sha256": "e0f7922afcfecf7583d6eea2c2169a6e7cefa8929f0de677dc42787f7152f65c"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-fixture/mountinfo-before.txt",
+      "bytes": 5476,
+      "sha256": "e0f7922afcfecf7583d6eea2c2169a6e7cefa8929f0de677dc42787f7152f65c"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-fixture/mountinfo-created.txt",
+      "bytes": 5678,
+      "sha256": "21f2ecd12365b4bcdd5c3367bf4cb84a39524d4510ccaddb523d6775a09b6697"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-fixture/original-test.log",
+      "bytes": 755,
+      "sha256": "d8027b0cae505ede0b6598651668eee5c12c5e0fa0bd704da06e90bbc0725289"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-fixture/umount.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-fixture/umount.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-fixture-result-original.json",
+      "bytes": 1737,
+      "sha256": "e8be57895c5d1fd7f73cdd1a622d2a2749d6fcb339f0a4647271c1c68f41a2ab"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/root-runner.py",
+      "bytes": 7004,
+      "sha256": "c218dadbfa09f29c928c14a44e2539f0f8a4f43543b64fa1383f0fc4c933520f"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/source-after.files.json",
+      "bytes": 5658135,
+      "sha256": "46943778bad0a993a86abb452d78ee5f0565455b7c2cec9ca8c36405700abe9f"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/source-after.json",
+      "bytes": 867,
+      "sha256": "015015033b8fc85c4839ad2ffc9d05695f65bae615cf74c648fa6fcdd3b684dd"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/source-before.files.json",
+      "bytes": 5658135,
+      "sha256": "46943778bad0a993a86abb452d78ee5f0565455b7c2cec9ca8c36405700abe9f"
+    },
+    {
+      "path": "records/learning-checkpoint-root-e54f779-v1/source-before.json",
+      "bytes": 868,
+      "sha256": "93c7cf3616561373c088d02a52b637159f1e66ea3b65e38486eb4378bbfc3099"
+    },
+    {
+      "path": "records/learning-checkpoint-root-launch-9d643d9-v1/console.log",
+      "bytes": 2558,
+      "sha256": "6997d89a385f818d22b5cc5f77fe807246ab57ebf2c761c7977e757a718af47c"
+    },
+    {
+      "path": "records/learning-checkpoint-root-launch-9d643d9-v1/launch.json",
+      "bytes": 735,
+      "sha256": "8ef7cc9baaa694449f4ef05c53e4abb60b228b78cb5bdce1fde6e7affa5a87d1"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v1/admission-failure.json",
+      "bytes": 215,
+      "sha256": "30f9a9d56591bbb6151ae29312829d037417af6d50ecad8cb7150a36bec1d9ca"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v1/verify-bundle.stderr",
+      "bytes": 101,
+      "sha256": "76562f99efae012bdb60c9ba712b521069cc4fd188422c5aeff22cf7e2395a3f"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v1/verify-bundle.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/admission.json",
+      "bytes": 2428,
+      "sha256": "6ff6674c767ebe5f59857499725c87b2ec74fad754e750fff457350a821df853"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/base-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/base-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/base-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/base-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/commands.json",
+      "bytes": 1135,
+      "sha256": "afda23ef810233a337a130b81946c2128033961b21fe4c494b0f710cb1bea7d9"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/import-objects.stderr",
+      "bytes": 138,
+      "sha256": "8d64e0ff90d14184a961536c8a1e0f07aee37edf422abecc7c1599431c47aa9e"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/import-objects.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/launch.json",
+      "bytes": 977,
+      "sha256": "01642b5f5a0736b9f3b137b2a500ae3d4866cf80b63a95727149cdbd5a505b7a"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/strict-console.log",
+      "bytes": 43494,
+      "sha256": "cde42459e5d7562ce94336966ab856ef2484a2266f6ee833be974aef09a7ac36"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/verify-bundle.stderr",
+      "bytes": 93,
+      "sha256": "a43d3b2e858fa3f4c3b86bb999251a44e4313f991a8345fb7bfac37d4f03e877"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/verify-bundle.stdout",
+      "bytes": 190,
+      "sha256": "4fba30ab44987c3e6f30a80d41e2effea4a0ceb5dedfa4556abfdef761f4360b"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/worktree.stderr",
+      "bytes": 44,
+      "sha256": "55207fd0573aed8ae9cb1f0f8699146695a34f9e9fca93f447d25c65e3177087"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v2/worktree.stdout",
+      "bytes": 96,
+      "sha256": "3a7ffa455f1450bbebeecb37ef142a9b6b7bd179fb1a146753c4da5dea3ad6f6"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/admission.json",
+      "bytes": 2428,
+      "sha256": "5644f90f1f763fc27890f25654d617c483ee3e43dbc5119993b2dca4bc2401b9"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/base-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/base-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/base-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/base-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/commands.json",
+      "bytes": 1135,
+      "sha256": "b6ed252170613f8b68b74269e8a650e4a0f20ea74208f460b84769657444bb61"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/import-objects.stderr",
+      "bytes": 138,
+      "sha256": "f3ccde3a961ac2f587eedafb3392946b4976dd28f63e1bb12f792682803284e1"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/import-objects.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/launch.json",
+      "bytes": 975,
+      "sha256": "45bb47b83ad2bc6df40f3a263b4072eddbf5a858345d5a1131707e8c5a3823ec"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/strict-console.log",
+      "bytes": 68886,
+      "sha256": "ec642a0627a9b496b68fb7c659725ffd7bb780d7b62aab166a3e8049b44756b6"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/verify-bundle.stderr",
+      "bytes": 93,
+      "sha256": "9cd399fd8f07b5fa2841b25909bee0dfa2316f6d2a6c0f653ef2789329556a1f"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/verify-bundle.stdout",
+      "bytes": 190,
+      "sha256": "4dc76e1b186f524064420814feed8e13ece03c05a85ad0cc438621e6060cc97f"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/worktree.stderr",
+      "bytes": 44,
+      "sha256": "4ec9ba477f4887a1b3f1b22b9373a9c9e600cf83db6a8b4a27867ec49d4ce10b"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v3/worktree.stdout",
+      "bytes": 85,
+      "sha256": "b999a043ad5ba968ac0d113a57a02ee48ca7dacc6a253cde37bd80ad3b7a889e"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/admission.json",
+      "bytes": 1549,
+      "sha256": "5eadf011b8194d568cbc86882a696bd30405c0e853de31d4efc4dafa196ed69c"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/base-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/base-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/base-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/base-head.stdout",
+      "bytes": 41,
+      "sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/commands.json",
+      "bytes": 1135,
+      "sha256": "31c94a6013b522dee60a8be88ce126dd478c69c9f767b6378f9f681cef4a912a"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/components-console.log",
+      "bytes": 233848,
+      "sha256": "7ff7f893d09b9af9d5776f284aaf998efe14055336d0a7055c6817ebec79d2d6"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/execution-sequence.json",
+      "bytes": 3163,
+      "sha256": "0221ff8090156d326cc560d1261f2c90790eb7e6d10779ba55209bed496b754a"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/import-objects.stderr",
+      "bytes": 138,
+      "sha256": "80b84f27c29efce5ffd28c45203c73478432b57727d84754d137eb006916dacc"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/import-objects.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/old-binary-retention.json",
+      "bytes": 1069,
+      "sha256": "71638423a5b21c204bd298ab638638412cbed4af49ff486d3063bf3cb0d7f9ba"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/root-console.log",
+      "bytes": 2708,
+      "sha256": "f60cd36a7f369d713d83ce32b9c24facdaaf10cd21404c296855908bafeae94f"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/strict-console.log",
+      "bytes": 68885,
+      "sha256": "360e2def323967e2ce884cfbd554c901dca0e2d560039daca94137c9acbe2389"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/verify-bundle.stderr",
+      "bytes": 93,
+      "sha256": "4f300ed39175ba4cc206eff891f8950c34f417a6cb5924e9492b163fad03fcb5"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/verify-bundle.stdout",
+      "bytes": 190,
+      "sha256": "562d0ed270d36b1727b633bf0bce265a0468aef9565a4067d8650df488534f8f"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/worktree.stderr",
+      "bytes": 44,
+      "sha256": "ef96d4b7a6e757399799d5bd2110ccd1bfabfeafcb41a1e128735cb2580ff91c"
+    },
+    {
+      "path": "records/learning-checkpoint-source-admission-v4/worktree.stdout",
+      "bytes": 101,
+      "sha256": "06edb4b7853e0a4be6782428e48e0b792fa9769026be34930b8aeda8518d72e2"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/agentd-checkpoint-strict-fix.json",
+      "bytes": 1550,
+      "sha256": "571a430843518724ded8f27a29f4eec4f77c0e48209b2b882773193dec8b2aa2"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/agentd-checkpoint-strict-fix.json.c3ca5a3b22424ca198a21acee6a188bc.log",
+      "bytes": 28839,
+      "sha256": "0410e506a3cad37c0510b2106a1fe9e0c58b5bfc3190ded191dbdd35bb0f528b"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/driver.py",
+      "bytes": 14786,
+      "sha256": "0df9a68b94edc08689b9f63d733732cb2d4f5976fd584896e552ce02e9ffb5e8"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/helper-build.json",
+      "bytes": 1730,
+      "sha256": "d10f96ff8ad4495a0669d22fc8f0dbf9498c7168a2e77ccc9f78ff5bb24c0105"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/helper-build.json.46a00e37c7d44c738368f373e760dfae.log",
+      "bytes": 219,
+      "sha256": "742a5c31bd3036019dd7ddf0a59a185727a3b54cb53f87840ad82a3f14a55a40"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/helper-verify.json",
+      "bytes": 1753,
+      "sha256": "7fe87c8b828eba867ca90e258c79236e164efc9dc626f756c75e487d0a25ae62"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/helper-verify.json.b06473c5d8614bf99b8f47c6a70d3c14.log",
+      "bytes": 1239,
+      "sha256": "d9df7e7f4bfe6b2db3a36635ed02e7639fd64663f30100cf9cf13c21815c89bf"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/helpers/bin/hepta-joint-propose",
+      "bytes": 1437568,
+      "sha256": "30e8da2e3e298fca3e0037b7aa55c96135adc527931232d404bcf7e874306d0d"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1115913,
+      "sha256": "26a4f96900c7e671bd41ee70e8f6025fd27ee9f29a9444e82494e65c0441a736"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 27754,
+      "sha256": "4cd74a26fc34da750776f37aed4052a0abaa29c226fa834560ccb2a87f65f653"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/helpers/env.json",
+      "bytes": 339,
+      "sha256": "4eff056b0483f23648f729465ba9cecf95f951f47ebf58d92314a9190085137f"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/helpers/manifest.json",
+      "bytes": 2047,
+      "sha256": "92b226f106caeea401d110531f8aab0f24a00605195466d798320cc0bf235d5d"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/preparation.json",
+      "bytes": 6891,
+      "sha256": "8d4a238ab62cfcbfa5221aae39bf38872d10492b24afbf71feae0f83090f3bb2"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/source-after.files.json",
+      "bytes": 5658135,
+      "sha256": "0f69df117cbcbc3b3d58b34c68a4d3423764ea7b10ec91feeb494f624032726c"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/source-after.json",
+      "bytes": 871,
+      "sha256": "ca93c69338823d1315eaef0217817c1baf6dc6e01f725944b4fdeac627485a15"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/source-before.files.json",
+      "bytes": 5658135,
+      "sha256": "0f69df117cbcbc3b3d58b34c68a4d3423764ea7b10ec91feeb494f624032726c"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/source-before.json",
+      "bytes": 872,
+      "sha256": "cb0b6839a7abab5e910695b0934655a70ad1c7da5e3f21b82119837d2e6001d8"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/v8.env",
+      "bytes": 295,
+      "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/v8.json",
+      "bytes": 1523,
+      "sha256": "cc20333b18e9f110bc0537a7d88abbf5a4e53e9c463dcd10cc323d9cf7d0e3e2"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-0eed6e0-v1/v8.json.f3c6fcc1926e4728bbd69ad7bed8e934.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/agentd-checkpoint-readonly-strict-clippy.json",
+      "bytes": 1576,
+      "sha256": "ff123627fade8dde0157892af7e22dda32421527a673a84a06e750c8af45ae30"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/agentd-checkpoint-readonly-strict-clippy.json.ed56af4405884eb5be197c66eba7fb34.log",
+      "bytes": 24567,
+      "sha256": "b4b0f22bcda78cc90d32420494ff40bc200879f8bf7ec3d156c05409fb70c214"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/agentd-checkpoint-strict-fix.json",
+      "bytes": 1545,
+      "sha256": "c546272617311ecdb6b09d27848bdb125841afa28d7d4f5d70dfa9ba173b7d84"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/agentd-checkpoint-strict-fix.json.612312e3707e4a43b237791cc6335ab8.log",
+      "bytes": 27765,
+      "sha256": "23ac989796cc613eb0f38a4240441c795c7a932c9a9c62257afc1f27748cda1f"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/driver.py",
+      "bytes": 14786,
+      "sha256": "0df9a68b94edc08689b9f63d733732cb2d4f5976fd584896e552ce02e9ffb5e8"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/helper-build.json",
+      "bytes": 1730,
+      "sha256": "7604b7de94130b2df129af2ddae1b14071bfb864b4c19d2be48999f4d8804328"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/helper-build.json.449a6d61e50d4751b3f82ba43f26578f.log",
+      "bytes": 219,
+      "sha256": "0f40b214599786ff5c738646d96b637ccc5326f44397d44ad310521ebee5025d"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/helper-verify.json",
+      "bytes": 1754,
+      "sha256": "e0ae954a9596374e102756b2e704bcfd1bca8f6be407872a3c3114590d43fe9f"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/helper-verify.json.773ff607b8d542f39321c0883f47589b.log",
+      "bytes": 1239,
+      "sha256": "df484e4a1f11401f87e280a6257abc054033273889eb3ed325b37338489a18b7"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/helpers/bin/hepta-joint-propose",
+      "bytes": 1437568,
+      "sha256": "30e8da2e3e298fca3e0037b7aa55c96135adc527931232d404bcf7e874306d0d"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1115913,
+      "sha256": "1f754e056d2d8526f305ac971620d4f6e8f613a8784d75e51d4318f002079f49"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 27754,
+      "sha256": "8b3c0d74d3eb145812eaeab950f0c44f56e14dc25f59e07f4832bb614d378880"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/helpers/env.json",
+      "bytes": 339,
+      "sha256": "688b657eb41bd97ffafcc4824b2dd81dc22dd5755a8da459ffbaeaa077f0b334"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/helpers/manifest.json",
+      "bytes": 2047,
+      "sha256": "9973184a3fbdc1bab488367e4596b81ce1b9ee96c989a7d4d2e755289b994ebc"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/preparation.json",
+      "bytes": 7529,
+      "sha256": "e3a833b21f527b7695954d349a96321f106a9947830a4139685188905d95f5e5"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/source-after.files.json",
+      "bytes": 5658135,
+      "sha256": "2a39701c799ec64688d8b7dbb4691257cebd16932f999e074c7761dd7dfb88a7"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/source-after.json",
+      "bytes": 871,
+      "sha256": "1773e1c02f50cb58093061b1bdc1d8aa449bde088d02bb292778d23048df70a2"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/source-before.files.json",
+      "bytes": 5658135,
+      "sha256": "2a39701c799ec64688d8b7dbb4691257cebd16932f999e074c7761dd7dfb88a7"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/source-before.json",
+      "bytes": 872,
+      "sha256": "3257a7356839a1f0dc04a41f4e1ffd871aa87c57c921ac090ff68cd3fcb320d9"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/v8.env",
+      "bytes": 295,
+      "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/v8.json",
+      "bytes": 1522,
+      "sha256": "80d28edc183d8287ff41840526d0a10ab936ce0ffd4322d77276d55189017475"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-9d643d9-v1/v8.json.4c0156bb17e64feb93e8796689925ae1.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/agentd-checkpoint-readonly-strict-clippy.json",
+      "bytes": 1576,
+      "sha256": "0dc92539bade87940998e1cec1d75a0eddf69f3ea43695b2f0bc10eb4517cb75"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/agentd-checkpoint-readonly-strict-clippy.json.c100442e4c07410480a71b7ca1322425.log",
+      "bytes": 24567,
+      "sha256": "bbb46d5593b9a3409b09dd1ea79bfc84a1d603bee0bc0e14453dbec998f470b5"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/agentd-checkpoint-strict-fix.json",
+      "bytes": 1544,
+      "sha256": "5840ded09a34780d6e838fa60a4a7caa3200557b53e7f4f3553b930d9dd895a5"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/agentd-checkpoint-strict-fix.json.875d037f57f54aa097030812171955b6.log",
+      "bytes": 27765,
+      "sha256": "f452afce3b897a8f814a1d30f88713af01ab648fa50bbddfe012de67954050ca"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/driver.py",
+      "bytes": 14786,
+      "sha256": "0df9a68b94edc08689b9f63d733732cb2d4f5976fd584896e552ce02e9ffb5e8"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/helper-build.json",
+      "bytes": 1730,
+      "sha256": "f1a2d0a00257028e7b4bee959c78f7bc3345493cb76b3d2d973a44c42f9e9836"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/helper-build.json.144f74605f834d10b5ee41e533319cf9.log",
+      "bytes": 219,
+      "sha256": "c3d295add520bf3ba2ab5dae24d928c214c7e555955e4c8a5a12cd5c595b73c6"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/helper-verify.json",
+      "bytes": 1754,
+      "sha256": "fd1e60e0485375d17e390d174e92ed5f5d47ea2cbdc8b20490e3b0082dad7bab"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/helper-verify.json.946dd6b922cd4906868e2e233f2f38a2.log",
+      "bytes": 1239,
+      "sha256": "f1fafbfe6c9118b759b440b7dd3c1ff932dad2cb14d3ed88fe2f0d9f11dd6222"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/helpers/bin/hepta-joint-propose",
+      "bytes": 1437568,
+      "sha256": "30e8da2e3e298fca3e0037b7aa55c96135adc527931232d404bcf7e874306d0d"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1115913,
+      "sha256": "6337a9535f2bc8e31c6be70cf5c51820d8ef79822f5b683d774760ebffbc6838"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 27754,
+      "sha256": "cb2674f066e74f9b5fd44442acf60e8d279317cfae9a106f0d54903f6df803db"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/helpers/env.json",
+      "bytes": 339,
+      "sha256": "512683b985d6212706446f2b0e75692ecd8733c764ffc4271ba2cf6ee6aeb4f7"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/helpers/manifest.json",
+      "bytes": 2047,
+      "sha256": "d150dddd8550bb3b860a47604fc8f45fd254880b7f4c82c06552895447326e46"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/preparation.json",
+      "bytes": 7529,
+      "sha256": "0cc1d1ab515948716bedd43ed386ed525ba216d8310c83eec3401b72be0fb672"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/source-after.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/source-after.files.json",
+      "bytes": 5658135,
+      "sha256": "46943778bad0a993a86abb452d78ee5f0565455b7c2cec9ca8c36405700abe9f"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/source-after.json",
+      "bytes": 871,
+      "sha256": "f7ce6a4116a0229a0e1246bf109361901356d347de8e3226cd15b1a5ccff439d"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/source-before.diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/source-before.files.json",
+      "bytes": 5658135,
+      "sha256": "46943778bad0a993a86abb452d78ee5f0565455b7c2cec9ca8c36405700abe9f"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/source-before.json",
+      "bytes": 872,
+      "sha256": "a4d744925e275703ea324f0655486055433283c3510ccf6b795b037d8ad08d34"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/v8.env",
+      "bytes": 295,
+      "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/v8.json",
+      "bytes": 1522,
+      "sha256": "7b4c6d1c51466fccb0eaf4261647a53f6b8ec5ce44cfb484f0b06c219dd3011e"
+    },
+    {
+      "path": "records/learning-checkpoint-strict-e54f779-v1/v8.json.e938fffc53b44cbfb68a015797fd4536.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "run_checkpoint_component_tests_v1.py",
+      "bytes": 23532,
+      "sha256": "9d345be03eef78e9fad8f0ac5c5356ed0789e49cf2e432842ffda5126cf6c358"
+    },
+    {
+      "path": "run_checkpoint_root_test_v1.py",
+      "bytes": 8713,
+      "sha256": "ec30b039a7064ec04798186a367085f6f78691bb1a96387ebaeecb1c3a4c6420"
+    },
+    {
+      "path": "run_checkpoint_root_test_v2.py",
+      "bytes": 9135,
+      "sha256": "211c8ce07452ff5fd999e57eb92e9561f142de298e88e5583ea70ac2fae277ac"
+    },
+    {
+      "path": "run_checkpoint_strict_preparation_v1.py",
+      "bytes": 14786,
+      "sha256": "0df9a68b94edc08689b9f63d733732cb2d4f5976fd584896e552ce02e9ffb5e8"
+    },
+    {
+      "path": "run_root_checkpoint_fixture.py",
+      "bytes": 7004,
+      "sha256": "c218dadbfa09f29c928c14a44e2539f0f8a4f43543b64fa1383f0fc4c933520f"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/e54-learning-checkpoint-native-history-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "76eccaa3c030452a82a982586c28d974931633192228c1349daebb4cdbc58fa5"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/e54-learning-checkpoint-native-history-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "8bad1b4e32d63ab3c4f4a5291365836b6704b0562a3ff1efade3ec53c6a63e42"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/e54-learning-checkpoint-native-history-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "7a162d3b6670b2ee01fcd27c6b03344d1080a6035920dd57ee6b0463fb808cfa"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/e54-learning-checkpoint-native-history-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "11801fd5ae50a26c0c4dac820b7a3834c5525ce78a0d2db9ab1dd467e6f7d109"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/e54-learning-checkpoint-native-history-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 490000,
+      "sha256": "c74cec3ea8aef09d2cb4313fc0a7b2ed73c013bccf107bfaccb5cf50deefb76b"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/e54-learning-checkpoint-native-history-v1/archive.part006",
+      "offset": 2450000,
+      "bytes": 490000,
+      "sha256": "c2060833afb8ba4df47413e9284e838f4f0850fd5582733c7df0ba44f0b71624"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/e54-learning-checkpoint-native-history-v1/archive.part007",
+      "offset": 2940000,
+      "bytes": 490000,
+      "sha256": "6a1e8134ec702ba780879a2932b8dec5c3ad3650c6babbd34b46ca88feb494a1"
+    },
+    {
+      "sequence": 8,
+      "path": "packets/e54-learning-checkpoint-native-history-v1/archive.part008",
+      "offset": 3430000,
+      "bytes": 188492,
+      "sha256": "484cc70d7629867d4b36e1cc80a7aff759b5b9f2fa7e3a9638e9d63e6585a1c4"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

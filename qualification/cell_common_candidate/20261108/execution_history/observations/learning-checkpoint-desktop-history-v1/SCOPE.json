@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.learning-checkpoint-delivery-scope.v1",
+  "source_sha": "e54f7791068ad16ff6082c148cf73798836d36e4",
+  "source_tree": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66",
+  "base_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "quiet_branch": "codex/cell-learning-checkpoint-bf42-20261109-898e",
+  "publication_status": "PUBLISHED_VERIFIED",
+  "source_preparation": "Original same-source owning just fix and read-only clippy both succeeded; not a test count.",
+  "component_cases_passed": 13,
+  "actual_root_parent_cases_passed": 1,
+  "child_fixture_acceptance_count": 0,
+  "caller_result": {
+    "receipt": "records/learning-checkpoint-callers-e54f779-v1/caller-full-scan.json",
+    "status": "passed",
+    "wall_seconds": 400.58282532705925,
+    "command": [
+      "python3",
+      "scripts/verify_hepta_callers.py",
+      "verify"
+    ],
+    "budget_seconds": 600
+  },
+  "native_archive": {
+    "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/learning-checkpoint-native-history-v1.tar.xz",
+    "bytes": 3618492,
+    "sha256": "7c51d224ad2638ab810ba97f1aba9dadf8e7a06a36e6f9821d1a65e019dd1d87",
+    "manifest_sha256": "aecc1df0dab60f60de0a6048b53548608986ee2aa828ad43874dc5c43dffbef8",
+    "members": 254,
+    "all_member_hashes_and_modes_verified": true,
+    "original_stat": [
+      2050,
+      4906663,
+      3618492,
+      33152,
+      1794199305937406767,
+      1794199343107334321
+    ],
+    "current_results": {
+      "strict": {
+        "member": "records/learning-checkpoint-strict-e54f779-v1/preparation.json",
+        "sha256": "0cc1d1ab515948716bedd43ed386ed525ba216d8310c83eec3401b72be0fb672",
+        "status": "prepared_clean",
+        "returncode": 0,
+        "source_unchanged": true
+      },
+      "components": {
+        "member": "records/learning-checkpoint-components-e54f779-v1/RESULT.json",
+        "sha256": "43d02524d7298cf04aba644cfb4e3901efd10a1af7d6188c8b15a595f9cfc0eb",
+        "status": "PASS",
+        "returncode": 0,
+        "source_unchanged": true
+      },
+      "root": {
+        "member": "records/learning-checkpoint-root-e54f779-v1/RESULT.json",
+        "sha256": "4ca089de7152a6ff2b5c55bb082d1e8f35e78ad8b2dd5ba2e3409500044a447a",
+        "status": "PASS",
+        "returncode": 0,
+        "source_unchanged": true
+      }
+    },
+    "tests_executed_by_readback": false,
+    "full_history_cost": null
+  },
+  "actual_root_scope": "Test-only real registered Root HostCAS, live UID 60001 consumer, sealed fresh handoffs, restore, conflict, committed lost ACK, real revocation and refusal after revocation. No production owner was registered.",
+  "elapsed_lease_expiry_independently_tested": false,
+  "ordinary_daemon_installed": false,
+  "all_learning_ports_available": false,
+  "real_learning_dataset_or_model_executed": false,
+  "published_cellbundle_successor_task_proven": false,
+  "full_workspace_tests": false,
+  "scientific_acceptance": false,
+  "current_result_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+  "current_result_modified": false,
+  "cost_semantics": "Command wall observations are retained separately and may overlap. No CPU, physical, learning, or full-history cost total is inferred.",
+  "physical_cost": null,
+  "learning_cost": null,
+  "full_history_cost": null,
+  "archival_completeness": false,
+  "archival_limit": "This packet and the separate admitted native packet are a closed task history checkpoint. Large retained test binaries and ephemeral private Root state are not included.",
+  "tests_executed_by_collector": false
+}

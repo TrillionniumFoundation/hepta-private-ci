@@ -1,0 +1,402 @@
+{
+  "started_at": "2026-11-09T04:25:35.267272+00:00",
+  "source_sha": "e54f7791068ad16ff6082c148cf73798836d36e4",
+  "source_tree": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66",
+  "base_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "branch": "codex/cell-learning-checkpoint-bf42-20261109-898e",
+  "remote": "publish",
+  "commands": [
+    {
+      "name": "before-head",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:35.267300+00:00",
+      "finished_at": "2026-11-09T04:25:35.271280+00:00",
+      "wall_seconds": 0.003990170080214739,
+      "stdout_sha256": "2352d65d59b98609939f577698f44784551ebe1e63862bfacb5be38cdc34fea3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "before-tree",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:35.271560+00:00",
+      "finished_at": "2026-11-09T04:25:35.275516+00:00",
+      "wall_seconds": 0.0039590171072632074,
+      "stdout_sha256": "e20fbbcb3a7c43e946f3c364970bcacec582e6553aabb456b7988381e7462e7a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "before-status",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:35.275873+00:00",
+      "finished_at": "2026-11-09T04:25:35.332346+00:00",
+      "wall_seconds": 0.056482621002942324,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "before-branch",
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:35.332784+00:00",
+      "finished_at": "2026-11-09T04:25:35.336498+00:00",
+      "wall_seconds": 0.0037195300683379173,
+      "stdout_sha256": "9ac5434aabc300f240e98b8b8806d356f259bda531051e40ac2fe50bb452643b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "common-before-commit",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:35.336982+00:00",
+      "finished_at": "2026-11-09T04:25:35.339522+00:00",
+      "wall_seconds": 0.002542214933782816,
+      "stdout_sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "common-before-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:35.340012+00:00",
+      "finished_at": "2026-11-09T04:25:35.343707+00:00",
+      "wall_seconds": 0.003693025093525648,
+      "stdout_sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "common-before-dirty",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+        "status",
+        "--porcelain"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:35.344286+00:00",
+      "finished_at": "2026-11-09T04:25:35.396047+00:00",
+      "wall_seconds": 0.05176198482513428,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "base-ancestor",
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+        "e54f7791068ad16ff6082c148cf73798836d36e4"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:35.399725+00:00",
+      "finished_at": "2026-11-09T04:25:35.404611+00:00",
+      "wall_seconds": 0.004881589207798243,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "local-parents",
+      "argv": [
+        "git",
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        "e54f7791068ad16ff6082c148cf73798836d36e4"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:35.405105+00:00",
+      "finished_at": "2026-11-09T04:25:35.409323+00:00",
+      "wall_seconds": 0.004224220989271998,
+      "stdout_sha256": "00900d4ad4bfee0f33e06f12a3de6ae81dd26c1e5f27d1d40b168ebbbcb61c36",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "changed-paths",
+      "argv": [
+        "git",
+        "diff",
+        "--name-only",
+        "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+        "e54f7791068ad16ff6082c148cf73798836d36e4"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:35.409866+00:00",
+      "finished_at": "2026-11-09T04:25:35.414534+00:00",
+      "wall_seconds": 0.0046695321798324585,
+      "stdout_sha256": "4a6d459a4854ec617fc1d377c7c5e76784b15516927704ba5d6391f7a6bc6a94",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+        "e54f7791068ad16ff6082c148cf73798836d36e4"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:35.415021+00:00",
+      "finished_at": "2026-11-09T04:25:35.426782+00:00",
+      "wall_seconds": 0.011766417883336544,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "remote-before",
+      "argv": [
+        "git",
+        "ls-remote",
+        "--heads",
+        "publish",
+        "refs/heads/codex/cell-learning-checkpoint-bf42-20261109-898e"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:35.427326+00:00",
+      "finished_at": "2026-11-09T04:25:39.896265+00:00",
+      "wall_seconds": 4.468956158030778,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "normal-push",
+      "argv": [
+        "git",
+        "push",
+        "--porcelain",
+        "publish",
+        "e54f7791068ad16ff6082c148cf73798836d36e4:refs/heads/codex/cell-learning-checkpoint-bf42-20261109-898e"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:39.897971+00:00",
+      "finished_at": "2026-11-09T04:25:47.479979+00:00",
+      "wall_seconds": 7.582015089923516,
+      "stdout_sha256": "17c86d9e90d6e3ad5c1976e560c2fabe3eafda41353df71a03b39f436e8310de",
+      "stderr_sha256": "4137afe620a46e3652bfe01865536f2ff0c6c2e3e03c01b42812322ce8f3bc73"
+    },
+    {
+      "name": "remote-after",
+      "argv": [
+        "git",
+        "ls-remote",
+        "--heads",
+        "publish",
+        "refs/heads/codex/cell-learning-checkpoint-bf42-20261109-898e"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:47.481014+00:00",
+      "finished_at": "2026-11-09T04:25:51.782218+00:00",
+      "wall_seconds": 4.301211263984442,
+      "stdout_sha256": "876f31e65d459b1f0825fd3f5d96e70a3e9b62a595c6f7102f9e298fb4dbbc37",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "api-commit",
+      "argv": [
+        "gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/git/commits/e54f7791068ad16ff6082c148cf73798836d36e4"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:51.783371+00:00",
+      "finished_at": "2026-11-09T04:25:53.428977+00:00",
+      "wall_seconds": 1.6456163369584829,
+      "stdout_sha256": "8d15ad41004d8ca2510b190c650b70505d26cdbe77c30fb2142c944274e021a7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "api-ref",
+      "argv": [
+        "gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/cell-learning-checkpoint-bf42-20261109-898e"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:53.465028+00:00",
+      "finished_at": "2026-11-09T04:25:55.107727+00:00",
+      "wall_seconds": 1.6426999298855662,
+      "stdout_sha256": "ad35f12e21d4f84ba2ae83972325075aa252404bcd6e3c96d08ad908fab34ef2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "after-head",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:55.108627+00:00",
+      "finished_at": "2026-11-09T04:25:55.113214+00:00",
+      "wall_seconds": 0.004587573930621147,
+      "stdout_sha256": "2352d65d59b98609939f577698f44784551ebe1e63862bfacb5be38cdc34fea3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "after-tree",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:55.113909+00:00",
+      "finished_at": "2026-11-09T04:25:55.117349+00:00",
+      "wall_seconds": 0.003439699998125434,
+      "stdout_sha256": "e20fbbcb3a7c43e946f3c364970bcacec582e6553aabb456b7988381e7462e7a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "after-status",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:55.118089+00:00",
+      "finished_at": "2026-11-09T04:25:55.172479+00:00",
+      "wall_seconds": 0.05439280392602086,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "after-branch",
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:55.185803+00:00",
+      "finished_at": "2026-11-09T04:25:55.189339+00:00",
+      "wall_seconds": 0.0035487760324031115,
+      "stdout_sha256": "9ac5434aabc300f240e98b8b8806d356f259bda531051e40ac2fe50bb452643b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "common-after-commit",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:55.190450+00:00",
+      "finished_at": "2026-11-09T04:25:55.193731+00:00",
+      "wall_seconds": 0.003272492904216051,
+      "stdout_sha256": "f67b52c509e0b3fecf2035ff7d3604c8e9713c12ba0d29ee0ed1e6dad5f886d7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "common-after-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:55.194261+00:00",
+      "finished_at": "2026-11-09T04:25:55.197880+00:00",
+      "wall_seconds": 0.003619590075686574,
+      "stdout_sha256": "9ec026bac0f65f855131aa739a08d0436c4bb89523eb1e385f722c236719ee03",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "common-after-dirty",
+      "argv": [
+        "git",
+        "-C",
+        "/home/qian-qi/worktrees/hepta-cell-s0-common-20261108-898e",
+        "status",
+        "--porcelain"
+      ],
+      "returncode": 0,
+      "started_at": "2026-11-09T04:25:55.200131+00:00",
+      "finished_at": "2026-11-09T04:25:55.256709+00:00",
+      "wall_seconds": 0.05658352002501488,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "status": "PUBLISHED_VERIFIED",
+  "common_branch_modified": false,
+  "tag_created": false,
+  "production_registration_performed": false,
+  "scientific_acceptance": false,
+  "physical_cost": null,
+  "full_history_cost": null,
+  "before": {
+    "commit": "e54f7791068ad16ff6082c148cf73798836d36e4",
+    "tree": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66",
+    "dirty": "",
+    "branch": "codex/cell-learning-checkpoint-bf42-20261109-898e"
+  },
+  "common_before": {
+    "commit": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "dirty": "",
+    "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+  },
+  "local_parents": [
+    "9d643d9b469fe0cf9b2465bf9fa77549c70ecf49"
+  ],
+  "push_attempted": true,
+  "push_command_exit": 0,
+  "git_readback": "e54f7791068ad16ff6082c148cf73798836d36e4\trefs/heads/codex/cell-learning-checkpoint-bf42-20261109-898e",
+  "api_parents": [
+    "9d643d9b469fe0cf9b2465bf9fa77549c70ecf49"
+  ],
+  "api_readback_verified": true,
+  "after": {
+    "commit": "e54f7791068ad16ff6082c148cf73798836d36e4",
+    "tree": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66",
+    "dirty": "",
+    "branch": "codex/cell-learning-checkpoint-bf42-20261109-898e"
+  },
+  "common_after": {
+    "commit": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "dirty": "",
+    "current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+  },
+  "returncode": 0,
+  "finished_at": "2026-11-09T04:25:55.259963+00:00"
+}

@@ -1,0 +1,1239 @@
+{
+  "phase": "increment-005b",
+  "expected_evidence_head": "5a3137e8ed198a07eb63bd97b5bb639f4471011f",
+  "expected_index_sha256": "95b2d2c050932ff99578281f71c05fd64337eaddb046b3adfa4e49c38282befc",
+  "expected_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "expected_common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "expected_prior_packet_count": 70,
+  "expected_final_packet_count": 72,
+  "current_common_validation": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+    "local_python": {
+      "packet_id": "bf42-python130-full-caller-originals-v1",
+      "independent_unit_cases_passed": 130,
+      "full_caller_passed": true,
+      "full_caller_elapsed_seconds": 380.6801889021881,
+      "full_caller_budget_seconds": 600,
+      "source_unchanged": true
+    },
+    "local_strict_preparation": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "prepared_clean",
+      "scope": "Same-source V8 and helper plus owning agentd qualification-cognitive-write just fix and read-only clippy; previous owners' unchanged-source preparations retain their own historical identities.",
+      "source_unchanged": true
+    },
+    "local_selected_native": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "PASS",
+      "selected_unique_cases_executed": 38,
+      "selected_unique_cases_passed": 38,
+      "selected_skips": 0,
+      "retries": 0,
+      "raw_nextest_leak_readback": "NO_NEXTEST_LEAK_OBSERVED",
+      "full_workspace": false,
+      "windows_execution": false,
+      "source_unchanged": true,
+      "filter_excluded_counts_not_added": true
+    },
+    "full_repository_ci": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "run_id": 42553073160,
+      "state": "completed",
+      "conclusion": "failure",
+      "green": false,
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+      "completion_result_included": true,
+      "actual_native_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+      "actual_native_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "same_tree_not_same_commit": true,
+      "full_post_build_working_tree_byte_snapshot": false,
+      "final_target_outcomes_not_case_counts": {
+        "128953043649": {
+          "failed": 3,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128953043675": {
+          "failed": 3,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128953043702": {
+          "failed": 5,
+          "flaky": 0,
+          "timeout": 2
+        },
+        "128953043792": {
+          "failed": 2,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128957722404": {
+          "additional_cases": 0,
+          "aggregation_only": true
+        },
+        "128961511532": {
+          "additional_cases": 0,
+          "aggregation_only": true
+        }
+      },
+      "original_failed_attempts_retained": true,
+      "all_common_workflows_terminal_at_cutoff": false
+    },
+    "independent_grouped_windows_result_included": true,
+    "ui_diagnostic_source_qualified_as_common": false,
+    "scientific_qualification_performed": false,
+    "full_history_cost": null,
+    "physical_cost": null,
+    "stage_advancement_claimed": false,
+    "independent_grouped_windows": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+      "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+      "run_id": 42550332155,
+      "terminal_status": "completed",
+      "terminal_conclusion": "failure",
+      "whole_selected_scope_passed": false,
+      "selected_executed": 11,
+      "selected_passed": 10,
+      "selected_failed": 1,
+      "selected_timeouts": 1,
+      "selected_skipped": 0,
+      "retry_records": 0,
+      "raw_leak_markers": 0,
+      "explicit_guard_skip_markers": 0,
+      "groups": [
+        {
+          "group": "matrix-startup-diagnostic",
+          "packet_id": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-matrix-sdk",
+              "name": "sdk::startup_deadline_tests::expired_finalization_rejects_success_without_erasing_a_written_session",
+              "time_seconds": "5.831",
+              "forbidden_nodes": []
+            }
+          ]
+        },
+        {
+          "group": "agentd-h7-qualification",
+          "packet_id": "windows-fixture-owner-agentd-h7-qualification-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+              "time_seconds": "2.480",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "agentd-fleet-default",
+          "packet_id": "windows-fixture-owner-agentd-fleet-default-bf42-v1",
+          "executed": 2,
+          "passed": 2,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+              "time_seconds": "2.339",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+              "time_seconds": "0.820",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "cli-cloud",
+          "packet_id": "windows-fixture-owner-cli-cloud-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-cli::sandbox_cloud_config",
+              "name": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+              "time_seconds": "31.998",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "appserver-fixtures",
+          "packet_id": "windows-fixture-owner-appserver-fixtures-bf42-v1",
+          "executed": 6,
+          "passed": 5,
+          "failed": 1,
+          "selected_scope_passed": false,
+          "cases": [
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+              "time_seconds": "60.015",
+              "problems": [
+                {
+                  "kind": "failure",
+                  "attributes": {
+                    "type": "test timeout"
+                  }
+                }
+              ],
+              "xml_passed": false
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_1_inherits_parent_developer_instructions_without_an_override",
+              "time_seconds": "1.535",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_2_reapplies_configured_subagent_developer_instructions",
+              "time_seconds": "1.488",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_3_reapplies_updated_configured_role_settings_and_restores_paginated_usage",
+              "time_seconds": "1.856",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_4_reapplies_an_implicitly_selected_configured_default_role",
+              "time_seconds": "1.456",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+              "time_seconds": "4.636",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        }
+      ],
+      "history_packet_id": "windows-fixture-owner-observer-history-bf42-v1",
+      "additional_topology": "five independent 65-minute owner jobs and an independent read-only aggregate",
+      "original_single_job_result_superseded": false,
+      "full_workspace_passed": false,
+      "full_history_cost": null,
+      "scientific_qualification_performed": false
+    },
+    "initial_full_repository_registration_observation": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "state": "pending_or_in_progress_at_publication_readback",
+      "conclusion": null,
+      "green": null,
+      "observation_cutoff": "2026-11-09T02:50:20.636321Z",
+      "registration_packet_id": "bf42-source-freeze-common-fastforward-and-publication-history-v3",
+      "initial_run_ids": {
+        "native": 42553066862,
+        "blocking": 42553073160,
+        "ui": 42553073250,
+        "windows": 42553073234
+      },
+      "completion_result_included": false
+    },
+    "ui_workflow_api_observation": {
+      "source_api_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "run_id": 42553073250,
+      "state": "completed",
+      "conclusion": "success",
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+      "complete_original_case_results_qualified": false,
+      "base_and_source_lanes_must_keep_separate_identities": true
+    },
+    "remaining_common_ci_at_cutoff": {
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "scope": [
+        "native composition",
+        "original Windows regressions",
+        "Windows arm64 V8",
+        "Windows x64 V8"
+      ],
+      "state": "in_progress_at_cutoff",
+      "later_results_inferred": false
+    },
+    "original_windows_regression": {
+      "packet_id": "bf42-original-windows-regression-failure-v1",
+      "run_id": 42553073234,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "terminal_status": "completed",
+      "conclusion": "failure",
+      "groups": 19,
+      "clean_passing_groups": 17,
+      "unique_selected_executed": 167,
+      "clean_passed": 158,
+      "failed": 8,
+      "passed_but_leaky": 1,
+      "selected_skips": 0,
+      "retries_observed": false,
+      "junit_available": false,
+      "whole_declared_scope_passed": false,
+      "source_binding": "original_checkout_and_before_after_git_identity_and_lock",
+      "full_source_byte_inventory_available": false
+    },
+    "original_ui_readback": {
+      "run_id": 42553073250,
+      "run_attempt": 1,
+      "conclusion": "success",
+      "packets": [
+        "bf42-original-ui-shared-history-native-v1",
+        "bf42-original-ui-source-head-browser-v1",
+        "bf42-original-ui-base-merge-browser-v1"
+      ],
+      "case_level_readback": "verified_original_scopes_only",
+      "tested_commits": {
+        "source_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+        "rust_ui_foundation_base_merge": "7450f0cbe49443a2b78826a2786ac37889c60e76",
+        "native_presentation_base_merge": "52ebeefecb4ab2d2fbb3e69100ab3773df0b8ea5"
+      },
+      "all_three_tested_trees": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "same_tree_not_same_commit": true,
+      "merge_identities_independently_fetched_through_commit_api": false,
+      "per_lane_library_executions": {
+        "sdk": 7,
+        "headless": 29,
+        "native": 52
+      },
+      "headless_and_sdk_name_sets_are_subsets_of_native": true,
+      "counts_are_not_summed_as_unique_cases": true,
+      "per_browser_lane_scenario_executions": {
+        "default": 6,
+        "fixtures_including_sidebar": 9,
+        "buffer_control": 1,
+        "gateway": 7
+      },
+      "gateway_includes_one_original_sdk_synthetic_sink_control": true,
+      "per_browser_lane_capture_observations_not_cases": {
+        "default": 60,
+        "fixtures": 78
+      },
+      "physical_device_or_full_product_qualification": false,
+      "new_tests_executed_by_readback": false,
+      "full_history_cost": null
+    },
+    "latest_common_ci_api_observation": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observation_cutoff": "2026-11-09T04:41:07.054469+00:00",
+      "summary_original_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-current-snapshot-006/SUMMARY.json",
+      "summary_original_bytes": 7032,
+      "summary_original_sha256": "d4826f12f62bf013da903e12065de8092f572558f641f590b5ecbf5b7d438fdf",
+      "workflow_run_count": 18,
+      "all_run_api_head_sha_equal_common": true,
+      "all_common_workflows_terminal": false,
+      "in_progress_job_ids": [
+        128952701454,
+        128953446740
+      ],
+      "run_observations": [
+        {
+          "id": 42553073435,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073516,
+          "name": "v8-canary",
+          "status": "in_progress",
+          "conclusion": null,
+          "nonpassing_jobs": [
+            {
+              "id": 128953446740,
+              "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-11-09T02:53:05Z",
+              "completed_at": null,
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073516/job/128953446740"
+            }
+          ]
+        },
+        {
+          "id": 42553073264,
+          "name": "Hepta HCSN training bridge",
+          "status": "completed",
+          "conclusion": "skipped",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073130,
+          "name": "App-server schema refresh",
+          "status": "completed",
+          "conclusion": "skipped",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073141,
+          "name": "Production HOS2 owner proposal",
+          "status": "completed",
+          "conclusion": "skipped",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073121,
+          "name": "Hepta Cell research stage evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073195,
+          "name": "Hepta PRED-1 CPU checks",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073191,
+          "name": "Hepta MEM-1 evidence verifier",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073280,
+          "name": "Hepta EVOLVE-1 CPU contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073159,
+          "name": "Hepta VERIFY-1 engineering validation",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073323,
+          "name": "Keyring synchronous backend lock proposal",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073131,
+          "name": "Bazel stable lock proposal",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073250,
+          "name": "Rust UI product foundation",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073160,
+          "name": "blocking-ci",
+          "status": "completed",
+          "conclusion": "failure",
+          "nonpassing_jobs": [
+            {
+              "id": 128953043649,
+              "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:51:34Z",
+              "completed_at": "2026-11-09T03:05:52Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043649"
+            },
+            {
+              "id": 128953043675,
+              "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:52:24Z",
+              "completed_at": "2026-11-09T03:09:09Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043675"
+            },
+            {
+              "id": 128953043702,
+              "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:52:13Z",
+              "completed_at": "2026-11-09T03:21:17Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043702"
+            },
+            {
+              "id": 128953043792,
+              "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:52:25Z",
+              "completed_at": "2026-11-09T03:06:54Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043792"
+            },
+            {
+              "id": 128957722404,
+              "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T03:08:57Z",
+              "completed_at": "2026-11-09T03:09:00Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128957722404"
+            },
+            {
+              "id": 128961511532,
+              "name": "CI required",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T03:25:12Z",
+              "completed_at": "2026-11-09T03:25:24Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128961511532"
+            }
+          ]
+        },
+        {
+          "id": 42553073125,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553073234,
+          "name": "Windows original CI regressions (declared scope only)",
+          "status": "completed",
+          "conclusion": "failure",
+          "nonpassing_jobs": [
+            {
+              "id": 128952720859,
+              "name": "original-regressions",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-09T02:50:38Z",
+              "completed_at": "2026-11-09T03:51:04Z",
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073234/job/128952720859"
+            }
+          ]
+        },
+        {
+          "id": 42553066841,
+          "name": "Hepta Cell research stage evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "nonpassing_jobs": []
+        },
+        {
+          "id": 42553066862,
+          "name": "Hepta Cell framework native validation",
+          "status": "in_progress",
+          "conclusion": null,
+          "nonpassing_jobs": [
+            {
+              "id": 128952701454,
+              "name": "Cell framework (agentd-composition)",
+              "status": "in_progress",
+              "conclusion": null,
+              "started_at": "2026-11-09T02:50:44Z",
+              "completed_at": null,
+              "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553066862/job/128952701454"
+            }
+          ]
+        }
+      ],
+      "observation_scope": "Original GitHub API workflow/job state only, not native case counts or new test execution. Prior cutoffs and their case evidence remain unchanged.",
+      "api_status_is_not_case_result": true,
+      "scientific_advancement_claimed": false,
+      "physical_cost": null,
+      "full_history_cost": null
+    }
+  },
+  "packets": [
+    {
+      "packet_id": "e54-learning-checkpoint-native-history-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/learning-checkpoint-native-history-v1.tar.xz",
+      "bytes": 3618492,
+      "sha256": "7c51d224ad2638ab810ba97f1aba9dadf8e7a06a36e6f9821d1a65e019dd1d87",
+      "file_member_count": 254,
+      "scope": "Isolated e54/dfd0 learning-checkpoint delivery history: original owning strict preparation, exact 13 component cases, and one actual Root parent case with a live UID 60001 consumer through fresh sealed handoffs, restore, CAS conflict, committed lost ACK and revocation. The child fixture is not another acceptance case. Original 0eed compile failure and 9d Root noexec failure plus post-reader PermissionDenied are retained at their original identities. Elapsed lease expiry was not independently tested. Large retained binaries remain host-only. This is no ordinary daemon installation, real learner/model run, complete workspace pass, scientific qualification, or complete historical cost.",
+      "required_json_members": [
+        {
+          "path": "MANIFEST.json",
+          "bytes": 146697,
+          "sha256": "aecc1df0dab60f60de0a6048b53548608986ee2aa828ad43874dc5c43dffbef8",
+          "equals": [
+            {
+              "path": [
+                "current_source_sha"
+              ],
+              "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+            },
+            {
+              "path": [
+                "current_source_tree"
+              ],
+              "value": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66"
+            },
+            {
+              "path": [
+                "ordinary_daemon_installed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "scientific_acceptance"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "elapsed_lease_expiry_independently_tested"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "archival_completeness"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_history_cost"
+              ],
+              "value": null
+            }
+          ]
+        },
+        {
+          "path": "records/learning-checkpoint-strict-e54f779-v1/preparation.json",
+          "bytes": 7529,
+          "sha256": "0cc1d1ab515948716bedd43ed386ed525ba216d8310c83eec3401b72be0fb672",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66"
+            },
+            {
+              "path": [
+                "source_unchanged"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "returncode"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "status"
+              ],
+              "value": "prepared_clean"
+            }
+          ]
+        },
+        {
+          "path": "records/learning-checkpoint-components-e54f779-v1/RESULT.json",
+          "bytes": 26223,
+          "sha256": "43d02524d7298cf04aba644cfb4e3901efd10a1af7d6188c8b15a595f9cfc0eb",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66"
+            },
+            {
+              "path": [
+                "source_unchanged"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "returncode"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "status"
+              ],
+              "value": "PASS"
+            },
+            {
+              "path": [
+                "expected_selected_tests"
+              ],
+              "value": 13
+            },
+            {
+              "path": [
+                "fixed_selected_tests"
+              ],
+              "value": 13
+            },
+            {
+              "path": [
+                "retries"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "results",
+                0,
+                "observed_passed_tests"
+              ],
+              "value": 13
+            },
+            {
+              "path": [
+                "results",
+                0,
+                "observed_failed_tests"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "results",
+                0,
+                "exact_fresh_unique_set"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "results",
+                0,
+                "nextest_leak_observed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "results",
+                0,
+                "explicit_skip_markers"
+              ],
+              "value": []
+            }
+          ]
+        },
+        {
+          "path": "records/learning-checkpoint-root-e54f779-v1/RESULT.json",
+          "bytes": 6561,
+          "sha256": "4ca089de7152a6ff2b5c55bb082d1e8f35e78ad8b2dd5ba2e3409500044a447a",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66"
+            },
+            {
+              "path": [
+                "source_unchanged"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "returncode"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "status"
+              ],
+              "value": "PASS"
+            },
+            {
+              "path": [
+                "parent_case_pass_count"
+              ],
+              "value": 1
+            },
+            {
+              "path": [
+                "fixture_child_is_additional_acceptance_case"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "production_registration_performed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "root_fixture_result",
+                "uid"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "root_fixture_result",
+                "euid"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "root_fixture_result",
+                "command_exit"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "root_fixture_result",
+                "original_parent_pass_count"
+              ],
+              "value": 1
+            },
+            {
+              "path": [
+                "root_fixture_result",
+                "cleanup_complete"
+              ],
+              "value": true
+            }
+          ]
+        },
+        {
+          "path": "records/learning-checkpoint-strict-0eed6e0-v1/preparation.json",
+          "bytes": 6891,
+          "sha256": "8d4a238ab62cfcbfa5221aae39bf38872d10492b24afbf71feae0f83090f3bb2",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "0eed6e0adde8a3eec05fddf1e7f91ea9771882de"
+            },
+            {
+              "path": [
+                "status"
+              ],
+              "value": "preparation_failed"
+            },
+            {
+              "path": [
+                "returncode"
+              ],
+              "value": 101
+            },
+            {
+              "path": [
+                "source_unchanged"
+              ],
+              "value": true
+            }
+          ]
+        },
+        {
+          "path": "records/learning-checkpoint-root-9d643d9-v1/RESULT.json",
+          "bytes": 4732,
+          "sha256": "9234dae4d4402e2230b83459d049221ed5e50fee1f5a1d4efef0190b348edd8f",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "9d643d9b469fe0cf9b2465bf9fa77549c70ecf49"
+            },
+            {
+              "path": [
+                "status"
+              ],
+              "value": "FAIL"
+            },
+            {
+              "path": [
+                "returncode"
+              ],
+              "value": 1
+            },
+            {
+              "path": [
+                "parent_case_pass_count"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "source_unchanged"
+              ],
+              "value": true
+            }
+          ]
+        },
+        {
+          "path": "records/learning-checkpoint-root-9d643d9-v1/root-fixture/RESULT.json",
+          "bytes": 1569,
+          "sha256": "efcf2e4153907e7f7677d412d0d6036137fc915395ee77132ff594afd07149b3",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "started_at": "2026-11-09T04:00:48.046931+00:00",
+                "uid": 0,
+                "euid": 0,
+                "pid": 1525550,
+                "command": [
+                  "/home/qq/work/hepta-cell-s0-ai395-20261108-898e/target-ci-test-bf42d2a-fresh/ci-test/deps/codex_hepta_agentd-086aa0f6fbbc4f00",
+                  "--exact",
+                  "authority_host_service::learning_checkpoint::tests::registered_root_cross_process_restore_conflict_and_committed_lost_ack",
+                  "--ignored",
+                  "--nocapture",
+                  "--test-threads=1"
+                ],
+                "binary_sha256_before": "3f7fbdde6135a8895c436023524e02f51bf53205c37690cd285e065399526299",
+                "native_execution_started": true,
+                "command_exit": 101,
+                "mount_created": true,
+                "unmounted": true,
+                "cleanup_complete": true,
+                "full_history_cost": null,
+                "physical_cost": null,
+                "scientific_acceptance": false,
+                "scope": "test-only Root bind and exact original test binary",
+                "test_root": "/run/hepta-learning-checkpoint-898e-bun56k5_",
+                "source": "/run/hepta-learning-checkpoint-898e-bun56k5_/source",
+                "mountpoint": "/run/hepta-learning-checkpoint-898e-bun56k5_/mount",
+                "mount_exit": 0,
+                "bind_identity": {
+                  "device": 27,
+                  "inode": 906357
+                },
+                "command_wall_seconds": 0.09412967483513057,
+                "observed_libtest_summaries": [
+                  [
+                    "FAILED",
+                    "0",
+                    "1",
+                    "0",
+                    "0",
+                    "797"
+                  ]
+                ],
+                "original_parent_case_executed": false,
+                "error": "RuntimeError('final original parent result must be exactly one executed passing case')",
+                "umount_exit": 0,
+                "runner_wall_seconds": 0.10063003981485963,
+                "finished_at": "2026-11-09T04:00:48.147599+00:00",
+                "runner_exit": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "e54-learning-checkpoint-source-publication-history-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/learning-checkpoint-desktop-history-v1/learning-checkpoint-desktop-history.tar.xz",
+      "bytes": 415064,
+      "sha256": "b94387249400ba0f841a3862ceb93d6bbbdf6251e2090dfb230a12f4665f14ce",
+      "file_member_count": 219,
+      "scope": "Exact e54/dfd0 source/preparation, original 9d and e54 caller receipts, and normal quiet-branch Git/API publication. Final source full caller scan passed in 400.582825327 seconds within its original 600-second budget; it is not a native case count. Actual common before/after stayed bf42/f7b clean with unchanged CURRENT c8b2. The packet SCOPE pins the separate original native archive and keeps ordinary_daemon_installed, all_learning_ports_available, real_learning_dataset_or_model_executed and published successor qualification false. Engineering failures and transport rejections remain visible. No common/evidence append or source qualification was performed by this preparation.",
+      "required_json_members": [
+        {
+          "path": "metadata/SCOPE.json",
+          "bytes": 3567,
+          "sha256": "32a269bb3c22b181acdc45e1b2d12910cc08ebe75e07a192ac84108a84d9fdfc",
+          "equals": [
+            {
+              "path": [],
+              "value": {
+                "schema": "hepta.learning-checkpoint-delivery-scope.v1",
+                "source_sha": "e54f7791068ad16ff6082c148cf73798836d36e4",
+                "source_tree": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66",
+                "base_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+                "quiet_branch": "codex/cell-learning-checkpoint-bf42-20261109-898e",
+                "publication_status": "PUBLISHED_VERIFIED",
+                "source_preparation": "Original same-source owning just fix and read-only clippy both succeeded; not a test count.",
+                "component_cases_passed": 13,
+                "actual_root_parent_cases_passed": 1,
+                "child_fixture_acceptance_count": 0,
+                "caller_result": {
+                  "receipt": "records/learning-checkpoint-callers-e54f779-v1/caller-full-scan.json",
+                  "status": "passed",
+                  "wall_seconds": 400.58282532705925,
+                  "command": [
+                    "python3",
+                    "scripts/verify_hepta_callers.py",
+                    "verify"
+                  ],
+                  "budget_seconds": 600
+                },
+                "native_archive": {
+                  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/learning-checkpoint-native-history-v1.tar.xz",
+                  "bytes": 3618492,
+                  "sha256": "7c51d224ad2638ab810ba97f1aba9dadf8e7a06a36e6f9821d1a65e019dd1d87",
+                  "manifest_sha256": "aecc1df0dab60f60de0a6048b53548608986ee2aa828ad43874dc5c43dffbef8",
+                  "members": 254,
+                  "all_member_hashes_and_modes_verified": true,
+                  "original_stat": [
+                    2050,
+                    4906663,
+                    3618492,
+                    33152,
+                    1794199305937406767,
+                    1794199343107334321
+                  ],
+                  "current_results": {
+                    "strict": {
+                      "member": "records/learning-checkpoint-strict-e54f779-v1/preparation.json",
+                      "sha256": "0cc1d1ab515948716bedd43ed386ed525ba216d8310c83eec3401b72be0fb672",
+                      "status": "prepared_clean",
+                      "returncode": 0,
+                      "source_unchanged": true
+                    },
+                    "components": {
+                      "member": "records/learning-checkpoint-components-e54f779-v1/RESULT.json",
+                      "sha256": "43d02524d7298cf04aba644cfb4e3901efd10a1af7d6188c8b15a595f9cfc0eb",
+                      "status": "PASS",
+                      "returncode": 0,
+                      "source_unchanged": true
+                    },
+                    "root": {
+                      "member": "records/learning-checkpoint-root-e54f779-v1/RESULT.json",
+                      "sha256": "4ca089de7152a6ff2b5c55bb082d1e8f35e78ad8b2dd5ba2e3409500044a447a",
+                      "status": "PASS",
+                      "returncode": 0,
+                      "source_unchanged": true
+                    }
+                  },
+                  "tests_executed_by_readback": false,
+                  "full_history_cost": null
+                },
+                "actual_root_scope": "Test-only real registered Root HostCAS, live UID 60001 consumer, sealed fresh handoffs, restore, conflict, committed lost ACK, real revocation and refusal after revocation. No production owner was registered.",
+                "elapsed_lease_expiry_independently_tested": false,
+                "ordinary_daemon_installed": false,
+                "all_learning_ports_available": false,
+                "real_learning_dataset_or_model_executed": false,
+                "published_cellbundle_successor_task_proven": false,
+                "full_workspace_tests": false,
+                "scientific_acceptance": false,
+                "current_result_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+                "current_result_modified": false,
+                "cost_semantics": "Command wall observations are retained separately and may overlap. No CPU, physical, learning, or full-history cost total is inferred.",
+                "physical_cost": null,
+                "learning_cost": null,
+                "full_history_cost": null,
+                "archival_completeness": false,
+                "archival_limit": "This packet and the separate admitted native packet are a closed task history checkpoint. Large retained test binaries and ephemeral private Root state are not included.",
+                "tests_executed_by_collector": false
+              }
+            }
+          ]
+        },
+        {
+          "path": "records/learning-checkpoint-final-source-v1/SOURCE_MANIFEST.json",
+          "bytes": 9240,
+          "sha256": "a228ea94984200b386dfdb41234848628093f83cb6b52a9cdf58ccd5c26d6488",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66"
+            },
+            {
+              "path": [
+                "tests_executed_by_capture"
+              ],
+              "value": false
+            }
+          ]
+        },
+        {
+          "path": "records/learning-checkpoint-quiet-publication-v1/publication.json",
+          "bytes": 14447,
+          "sha256": "278e73a458e6f941c4eb1eb97e9b19f3d34599ecfa6e5a55e92fb941fd35feb5",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "dfd0f9f53d791542cafbfc74c53ab2c981d86f66"
+            },
+            {
+              "path": [
+                "status"
+              ],
+              "value": "PUBLISHED_VERIFIED"
+            },
+            {
+              "path": [
+                "common_branch_modified"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "production_registration_performed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "api_readback_verified"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "before",
+                "commit"
+              ],
+              "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+            },
+            {
+              "path": [
+                "after",
+                "commit"
+              ],
+              "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+            }
+          ]
+        },
+        {
+          "path": "records/learning-checkpoint-callers-e54f779-v1/caller-full-scan.json",
+          "bytes": 1472,
+          "sha256": "e0a38bf322f582f135b11811abdb29962a9ee63e4ccf6d0592564f25e8e7f0d0",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+            },
+            {
+              "path": [
+                "tested_sha"
+              ],
+              "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+            },
+            {
+              "path": [
+                "status"
+              ],
+              "value": "passed"
+            },
+            {
+              "path": [
+                "command_exit_code"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "timed_out"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "minimum_tests"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "observed_passed_tests"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "before",
+                "commit"
+              ],
+              "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+            },
+            {
+              "path": [
+                "after",
+                "commit"
+              ],
+              "value": "e54f7791068ad16ff6082c148cf73798836d36e4"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
