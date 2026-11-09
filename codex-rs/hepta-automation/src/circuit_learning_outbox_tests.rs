@@ -13,7 +13,7 @@ use pretty_assertions::assert_eq;
 async fn store() -> (tempfile::TempDir, AutomationStore) {
     let root = tempfile::tempdir().unwrap();
     let store = AutomationStore::open_root(
-        root.path().join("automation"),
+        root.path().canonicalize().unwrap().join("automation"),
         fence(/*generation*/ 1).owner_agent_id,
     )
     .await

@@ -1,6 +1,8 @@
 //! Native prepare -> shared inference -> legal policy -> owner CAS pipeline.
 //! The sparse kernel and calibration are the same mechanisms as NeuronRuntime.
 
+use std::sync::Arc;
+
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
@@ -246,6 +248,11 @@ pub fn decide_cell(
             .map_or(Digest32::ZERO, SparseCheckpoint::digest),
         checkpoint_after: checkpoint.digest(),
         model_output_digest: output.output_digest,
+        representation: Arc::new(CellRepresentationV1 {
+            // Shared history must not retain a backend's unused Vec capacity.
+            drive_q24: output.drive_q24.into_boxed_slice().into_vec(),
+            prediction_q24: output.prediction_q24.into_boxed_slice().into_vec(),
+        }),
         policy,
         selected_candidate: definition.candidates[selected].candidate_id.clone(),
         confidence_ppm,

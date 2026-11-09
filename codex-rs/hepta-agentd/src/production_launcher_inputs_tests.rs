@@ -187,6 +187,7 @@ fn explicit_desktop_transfers_distinct_readonly_capabilities_without_notes_input
     let (inputs, ordinary) = parse(arguments)?;
     let inputs = inputs.ok_or_else(|| anyhow::anyhow!("explicit Desktop was not selected"))?;
     assert!(ordinary.is_empty() && inputs.notes.is_none() && inputs.notes_ui.is_none());
+    assert!(inputs.learning_handoff.is_none());
     let PrimaryInputs::Desktop {
         handoff,
         deployment,
@@ -259,5 +260,76 @@ fn partial_mixed_and_alias_desktop_inputs_refuse_before_taking_rights() -> anyho
     aliased[value] = fixture.descriptors[0].as_raw_fd().to_string().into();
     assert!(parse(aliased).is_err());
     fixture.assert_retained();
+    Ok(())
+}
+
+#[test]
+fn optional_learning_handoff_transfers_once_beside_original_desktop_inputs() -> anyhow::Result<()> {
+    let mut fixture = DesktopDescriptors::new()?;
+    let (learning, _root) = UnixDatagram::pair()?;
+    let expected = learning.as_raw_fd();
+    let mut arguments = fixture.arguments();
+    arguments.extend([
+        "--root-learning-handoff-fd".into(),
+        expected.to_string().into(),
+        "--objective-profile-file".into(),
+        "/original/objective.json".into(),
+    ]);
+    for descriptor in fixture.descriptors.drain(..) {
+        let _ = descriptor.into_raw_fd();
+    }
+    let _ = learning.into_raw_fd();
+    let (inputs, ordinary) = parse(arguments)?;
+    let inputs = inputs.ok_or_else(|| anyhow::anyhow!("original launch was not selected"))?;
+    assert!(matches!(inputs.primary, PrimaryInputs::Desktop { .. }));
+    let retained = inputs
+        .learning_handoff
+        .ok_or_else(|| anyhow::anyhow!("dedicated learning handoff was lost"))?;
+    assert_eq!(retained.as_raw_fd(), expected);
+    assert!(retained.local_addr()?.is_unnamed() && retained.peer_addr()?.is_unnamed());
+    assert_eq!(
+        ordinary,
+        vec![
+            OsString::from("--objective-profile-file"),
+            OsString::from("/original/objective.json"),
+        ]
+    );
+    // SAFETY: this observes the sole descriptor now retained by the parser.
+    assert_ne!(
+        unsafe { libc::fcntl(retained.as_raw_fd(), libc::F_GETFD) } & libc::FD_CLOEXEC,
+        0
+    );
+    Ok(())
+}
+
+#[test]
+fn incomplete_learning_launch_preserves_all_inherited_descriptors() -> anyhow::Result<()> {
+    let fixture = DesktopDescriptors::new()?;
+    let (learning, _root) = UnixDatagram::pair()?;
+    let flag = OsString::from("--root-learning-handoff-fd");
+    let value = OsString::from(learning.as_raw_fd().to_string());
+    assert!(parse(vec![flag.clone(), value.clone()]).is_err());
+    let mut duplicate = fixture.arguments();
+    duplicate.extend([flag.clone(), value.clone(), flag, value]);
+    assert!(parse(duplicate).is_err());
+    fixture.assert_retained();
+    // SAFETY: no successful parse has consumed the caller-owned socket.
+    assert!(unsafe { libc::fcntl(learning.as_raw_fd(), libc::F_GETFD) } >= 0);
+    assert!(learning.local_addr()?.is_unnamed());
+    Ok(())
+}
+
+#[test]
+fn learning_handoff_alias_refuses_before_taking_original_rights() -> anyhow::Result<()> {
+    let fixture = DesktopDescriptors::new()?;
+    for descriptor in &fixture.descriptors {
+        let mut arguments = fixture.arguments();
+        arguments.extend([
+            "--root-learning-handoff-fd".into(),
+            descriptor.as_raw_fd().to_string().into(),
+        ]);
+        assert!(parse(arguments).is_err());
+        fixture.assert_retained();
+    }
     Ok(())
 }

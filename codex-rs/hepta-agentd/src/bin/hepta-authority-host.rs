@@ -7,7 +7,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args_os().skip(1);
     let command = args
         .next()
-        .ok_or("initialize, register-writer, serve-session, serve-fresh-session, diagnose-native, launch-native, provider-status or provider-login required")?;
+        .ok_or("initialize, register-writer, register-learning, serve-session, serve-fresh-session, diagnose-native, launch-native, provider-status or provider-login required")?;
     let mut options = std::collections::BTreeMap::new();
     let mut pidfd_stdin = false;
     while let Some(option) = args.next() {
@@ -94,6 +94,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         let proof = codex_hepta_agentd::register_host_writer_authorization(&config)?;
         println!("{}", serde_json::to_string(&proof)?);
+    } else if command == "register-learning" {
+        let config = take("--config")?;
+        let registration = take("--registration")?;
+        let profile = take("--learning-profile")?;
+        if !options.is_empty() || !pidfd_stdin {
+            return Err("learning registration requires original config, registration, Root profile and pre-held owner pidfd".into());
+        }
+        let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
+        let registered = codex_hepta_agentd::register_host_learning_checkpoint(
+            &config,
+            &registration,
+            &profile,
+            &owner,
+        )?;
+        println!("{}", serde_json::to_string(&registered)?);
     } else if command == "serve-session" || command == "serve-fresh-session" {
         let config = take("--config")?;
         let registration = take("--registration")?;
@@ -106,6 +121,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let ui_fd = options.remove(std::ffi::OsStr::new("--text-ui-pidfd"));
         let handoff = options.remove(std::ffi::OsStr::new("--root-handoff-fd"));
         let root_fd = options.remove(std::ffi::OsStr::new("--root-pidfd"));
+        let learning_profile = options
+            .remove(std::ffi::OsStr::new("--learning-profile"))
+            .map(PathBuf::from);
+        let learning_handoff = options.remove(std::ffi::OsStr::new("--root-learning-handoff-fd"));
         let notes_profile = options
             .remove(std::ffi::OsStr::new("--notes-launch-profile"))
             .map(PathBuf::from);
@@ -126,6 +145,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
+        let learning_handoff = learning_handoff
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        if learning_profile.is_some() != learning_handoff.is_some()
+            || learning_profile.is_some() && root_fd.is_none()
+        {
+            return Err("learning serving requires its Root profile, separate handoff and original Root pidfd".into());
+        }
         let notes = match (notes_profile, notes_reservation, notes_session, notes_deployment) {
             (None, None, None, None) => None,
             (Some(profile), Some(reservation), Some(session), Some(deployment))
@@ -149,7 +177,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let prepared = if command == "serve-fresh-session" {
             let handoff =
                 handoff.ok_or("fresh session requires the original Root handoff descriptor")?;
-            let root = root_fd.ok_or("fresh session requires the pre-held current Root pidfd")?;
+            let root = root_fd
+                .as_ref()
+                .ok_or("fresh session requires the pre-held current Root pidfd")?;
             let runtime = tokio::runtime::Builder::new_current_thread()
                 .enable_all()
                 .build()?;
@@ -175,20 +205,46 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             codex_hepta_agentd::send_root_production_handoff(
                 std::os::unix::net::UnixDatagram::from(handoff),
                 &bootstrap,
-                &root,
+                root,
                 std::time::Duration::from_secs(30),
             )?;
             prepared
         } else {
-            if handoff.is_some() || root_fd.is_some() {
+            if handoff.is_some() || root_fd.is_some() && learning_handoff.is_none() {
                 return Err("open-only serving does not accept fresh handoff inputs".into());
             }
             codex_hepta_agentd::PreparedHostAuthoritySession::open(&config, &registration, owner)?
         };
+        let prepared = match learning_profile {
+            Some(profile) => prepared.with_registered_learning(&profile)?,
+            None => prepared,
+        };
+        let learning_bootstrap = learning_handoff
+            .as_ref()
+            .map(|_| prepared.seal_learning_bootstrap())
+            .transpose()?;
+        let ready = || {
+            if let (Some(handoff), Some(bootstrap), Some(root)) =
+                (learning_handoff, learning_bootstrap, root_fd)
+            {
+                codex_hepta_agentd::send_root_learning_handoff(
+                    std::os::unix::net::UnixDatagram::from(handoff),
+                    &bootstrap,
+                    &root,
+                    std::time::Duration::from_secs(30),
+                )
+                .map_err(std::io::Error::other)?;
+            }
+            Ok(())
+        };
         match (native_profile, text) {
-            (Some(profile), None) => prepared.launch_native(&config, &registration, &profile)?,
-            (None, Some((file, pidfd))) => prepared.serve_with_text(file, pidfd)?,
-            (None, None) => prepared.serve()?,
+            (Some(profile), None) => {
+                prepared.launch_native_with_ready(&config, &registration, &profile, ready)?
+            }
+            (None, Some((file, pidfd))) => {
+                prepared.serve_with_text_and_ready(file, pidfd, ready)?
+            }
+            (None, None) => prepared.serve_with_ready(ready)?,
             (Some(_), Some(_)) => return Err("exclusive native/text UI options".into()),
         }
     } else {

@@ -637,6 +637,12 @@ ignored = [
 # across local dev builds.
 debug = "limited"
 
+# Matrix's full-strength passphrase KDF runs during bounded startup.
+# Keep this dependency optimized in development/test builds; unoptimized
+# crypto exceeded the unchanged five-second deadline in constrained runs.
+[profile.dev.package.matrix-sdk-store-encryption]
+opt-level = 3
+
 [profile.dev-small]
 inherits = "dev"
 opt-level = 0

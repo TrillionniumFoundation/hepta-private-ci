@@ -2,6 +2,8 @@
 //! The Model payload is a synthetic contract fixture, not trained qualification.
 
 use std::fs::File;
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -26,10 +28,56 @@ pub(super) struct ArtifactFiles {
     selector: SigningKey,
     selected: SignedArtifactSelectionV1,
     verifier: ArtifactSelectionVerifierV1,
+    times: ArtifactTimes,
+}
+
+#[derive(Clone, Copy)]
+struct ArtifactTimes {
+    created: u64,
+    observed: u64,
+    expires: u64,
+    selection_expires: u64,
 }
 
 impl ArtifactFiles {
     pub(super) fn new(root: &Path, manifest: &CellBackendManifestV2) -> anyhow::Result<Self> {
+        Self::new_at(
+            root,
+            manifest,
+            ArtifactTimes {
+                created: 1,
+                observed: NOW,
+                expires: 10_000,
+                selection_expires: 2_000,
+            },
+        )
+    }
+
+    pub(super) fn new_research(
+        root: &Path,
+        manifest: &CellBackendManifestV2,
+        now: u64,
+    ) -> anyhow::Result<Self> {
+        let expires = now
+            .checked_add(600_000)
+            .ok_or_else(|| anyhow::anyhow!("research authority expiry overflow"))?;
+        Self::new_at(
+            root,
+            manifest,
+            ArtifactTimes {
+                created: now,
+                observed: now,
+                expires,
+                selection_expires: expires,
+            },
+        )
+    }
+
+    fn new_at(
+        root: &Path,
+        manifest: &CellBackendManifestV2,
+        times: ArtifactTimes,
+    ) -> anyhow::Result<Self> {
         let key = SigningKey::from_bytes(&[61; 32]);
         let selector = SigningKey::from_bytes(&[62; 32]);
         let withdrawals = DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalScopeV1 {
@@ -45,8 +93,8 @@ impl ArtifactFiles {
             verifying_key: key.verifying_key().to_bytes(),
             minimum_authority_epoch: 1,
             maximum_authority_epoch: 1,
-            valid_from: 1,
-            expires_at: 10_000,
+            valid_from: times.created,
+            expires_at: times.expires,
             revoked_at: None,
         };
         let trust = ArtifactOwnerTrustV1 {
@@ -67,8 +115,8 @@ impl ArtifactFiles {
             signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
             authority_epoch: 1,
             lease_generation: 1,
-            issued_at: 1,
-            expires_at: 10_000,
+            issued_at: times.created,
+            expires_at: times.expires,
             signature: [0; 64],
         };
         lease.signature = key.sign(&lease.signing_bytes()).to_bytes();
@@ -79,10 +127,10 @@ impl ArtifactFiles {
             required_current_head: None,
             withdrawal_registry: withdrawals,
             storage_binding: Digest32::of_bytes(b"test-artifact-storage"),
-            now: NOW,
+            now: times.observed,
         })?;
-        let candidate = publish_candidate(&mut owner, manifest, &key, "selected-candidate")?;
-        let current = owner.current_registry_view(NOW)?;
+        let candidate = publish_candidate(&mut owner, manifest, &key, "selected-candidate", times)?;
+        let current = owner.current_registry_view(times.observed)?;
         let verifier = ArtifactSelectionVerifierV1::new(
             ArtifactSelectionTrustV1 {
                 registry_id: trust.registry_id.clone(),
@@ -93,8 +141,8 @@ impl ArtifactFiles {
                     verifying_key: selector.verifying_key().to_bytes(),
                     minimum_authority_epoch: 1,
                     maximum_authority_epoch: 1,
-                    valid_from: 1,
-                    expires_at: 10_000,
+                    valid_from: times.created,
+                    expires_at: times.expires,
                     revoked_at: None,
                 }],
             },
@@ -120,8 +168,8 @@ impl ArtifactFiles {
             selector_credential_digest: Digest32::of_bytes(b"test-selector-credential"),
             signing_key_digest: Digest32::of_bytes(&selector.verifying_key().to_bytes()),
             authority_epoch: 1,
-            issued_at: NOW,
-            expires_at: 2_000,
+            issued_at: times.observed,
+            expires_at: times.selection_expires,
             signature: [0; 64],
         };
         selected.signature = selector.sign(&selected.signing_bytes()).to_bytes();
@@ -132,6 +180,7 @@ impl ArtifactFiles {
             selector,
             selected,
             verifier,
+            times,
         })
     }
 
@@ -155,11 +204,58 @@ impl ArtifactFiles {
         name: &str,
         now: u64,
     ) -> anyhow::Result<AgentdSelectedGenerationV1> {
+        self.publish_next_selection_until(manifest, name, now, now + 1_000)
+            .map(|(selection, _)| selection)
+    }
+
+    pub(super) fn publish_research_next_selection(
+        &self,
+        manifest: &CellBackendManifestV2,
+        name: &str,
+        now: u64,
+    ) -> anyhow::Result<AgentdSelectedGenerationV1> {
+        let expires = now
+            .checked_add(90_000)
+            .ok_or_else(|| anyhow::anyhow!("research selection expiry overflow"))?
+            .min(self.times.selection_expires);
+        anyhow::ensure!(now < expires, "research selection authority expired");
+        let (selection, signed) =
+            self.publish_next_selection_until(manifest, name, now, expires)?;
+        let mut file = OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .open(self.root.join("research-selected.json"))?;
+        file.write_all(&research_selection_bytes(&signed)?)?;
+        file.sync_all()?;
+        File::open(&self.root)?.sync_all()?;
+        Ok(selection)
+    }
+
+    pub(super) fn research_selection(
+        &self,
+        now: u64,
+    ) -> anyhow::Result<AgentdSelectedGenerationV1> {
+        let bytes = std::fs::read(self.root.join("research-selected.json"))?;
+        let selected = research_selection_from_bytes(&bytes)?;
+        let owner = self
+            .owner
+            .lock()
+            .map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
+        load_selection(&owner, &self.root, self.verifier.clone(), selected, now)
+    }
+
+    fn publish_next_selection_until(
+        &self,
+        manifest: &CellBackendManifestV2,
+        name: &str,
+        now: u64,
+        expires: u64,
+    ) -> anyhow::Result<(AgentdSelectedGenerationV1, SignedArtifactSelectionV1)> {
         let mut owner = self
             .owner
             .lock()
             .map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
-        let candidate = publish_candidate(&mut owner, manifest, &self.key, name)?;
+        let candidate = publish_candidate(&mut owner, manifest, &self.key, name, self.times)?;
         let current = owner.current_registry_view(now)?;
         let mut selected = self.selected.clone();
         selected.selection_id = id(&format!("selection-{name}"))?;
@@ -176,9 +272,16 @@ impl ArtifactFiles {
         selected.compatibility_digest = candidate.compatibility_digest;
         selected.encoded_size_bytes = candidate.encoded_size_bytes;
         selected.issued_at = now;
-        selected.expires_at = now + 1_000;
+        selected.expires_at = expires;
         selected.signature = self.selector.sign(&selected.signing_bytes()).to_bytes();
-        load_selection(&owner, &self.root, self.verifier.clone(), selected, now)
+        let verified = load_selection(
+            &owner,
+            &self.root,
+            self.verifier.clone(),
+            selected.clone(),
+            now,
+        )?;
+        Ok((verified, selected))
     }
 
     pub(super) fn advance_current(&self, manifest: &CellBackendManifestV2) -> anyhow::Result<()> {
@@ -186,7 +289,13 @@ impl ArtifactFiles {
             .owner
             .lock()
             .map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
-        publish_candidate(&mut owner, manifest, &self.key, "new-current-candidate")?;
+        publish_candidate(
+            &mut owner,
+            manifest,
+            &self.key,
+            "new-current-candidate",
+            self.times,
+        )?;
         Ok(())
     }
 
@@ -204,7 +313,7 @@ impl ArtifactFiles {
             credential_chain_digest: Digest32::of_bytes(b"test-withdrawal-credential"),
             signing_key_digest: Digest32::of_bytes(&self.key.verifying_key().to_bytes()),
             authority_epoch: 1,
-            issued_at: NOW,
+            issued_at: self.times.observed,
         })?;
         owner.install_withdrawal_frontier(withdrawals)?;
         Ok(())
@@ -244,6 +353,7 @@ fn publish_candidate(
     cell: &CellBackendManifestV2,
     key: &SigningKey,
     name: &str,
+    times: ArtifactTimes,
 ) -> anyhow::Result<ArtifactManifest> {
     let payload = serde_json::to_vec(cell)?;
     let manifest = LearningArtifactManifestV2 {
@@ -265,15 +375,15 @@ fn publish_candidate(
         schema_profile_digest: Digest32::from_array(cell.state_schema),
         normalization_digest: Digest32::of_bytes(b"test-normalization"),
         producer_id: id("test-producer")?,
-        created_at: 1,
-        expires_at: 10_000,
+        created_at: times.created,
+        expires_at: times.expires,
     };
     let predecessor = owner.registry().snapshot().head_digest;
     let admission = admit_manifest_at_withdrawal_head_v3(
         owner.withdrawal_registry(),
         owner.withdrawal_registry().head_digest(),
         manifest.clone(),
-        NOW,
+        times.observed,
     )?;
     let transaction = ArtifactPublicationTransactionV1::begin(
         id(name)?,
@@ -281,7 +391,7 @@ fn publish_candidate(
         owner.withdrawal_registry(),
         owner.registry(),
         predecessor,
-        NOW,
+        times.observed,
     )?;
     // The fixture issuer previews the same public Register event that the real
     // owner stages. Only Service::publish supplies durable CURRENT evidence.
@@ -316,8 +426,8 @@ fn publish_candidate(
             authority_epoch: 1,
             signer_id: id("test-artifact-authority")?,
             signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
-            issued_at: NOW,
-            expires_at: 10_000,
+            issued_at: times.observed,
+            expires_at: times.expires,
         },
         signature: [0; 64],
     };
@@ -328,7 +438,7 @@ fn publish_candidate(
         payload,
         signed_current_head: signed,
         expected_registry_predecessor_head: predecessor,
-        now: NOW,
+        now: times.observed,
     })?;
     anyhow::ensure!(
         receipt.registry_head_digest == staged.snapshot().head_digest,
@@ -339,4 +449,88 @@ fn publish_candidate(
 
 fn id(value: &str) -> anyhow::Result<StableId> {
     Ok(StableId::new(value.to_owned())?)
+}
+
+// The original SignedArtifactSelectionV1 intentionally has no Serde admission.
+// This test-only wire retains every original field, signing preimage and signed
+// bytes. Recovery reconstructs that unverified type and immediately calls the
+// original load_selection verifier; it never signs again or returns admission.
+fn research_selection_bytes(signed: &SignedArtifactSelectionV1) -> anyhow::Result<Vec<u8>> {
+    anyhow::ensure!(
+        signed.artifact_kind == ArtifactKind::Model,
+        "research selected payload must use the original Model kind"
+    );
+    Ok(serde_json::to_vec(&serde_json::json!({
+        "schema":"hepta.research.original-signed-selection.v1",
+        "selection_id":signed.selection_id.to_string(),"artifact_id":signed.artifact_id.to_string(),
+        "registry_id":signed.registry_id.to_string(),"withdrawal_scope_digest":signed.withdrawal_scope_digest.to_string(),
+        "registry_head_digest":signed.registry_head_digest.to_string(),"current_witness_digest":signed.current_witness_digest.to_string(),
+        "current_trust_digest":signed.current_trust_digest.to_string(),"artifact_kind":"model",
+        "artifact_generation":signed.artifact_generation.get(),"predecessor_id":signed.predecessor_id.as_ref().map(ToString::to_string),
+        "content_digest":signed.content_digest.to_string(),"objective_digest":signed.objective_digest.to_string(),
+        "support_digest":signed.support_digest.to_string(),"compatibility_digest":signed.compatibility_digest.to_string(),
+        "encoded_size_bytes":signed.encoded_size_bytes,"selector_id":signed.selector_id.to_string(),
+        "selector_credential_digest":signed.selector_credential_digest.to_string(),"signing_key_digest":signed.signing_key_digest.to_string(),
+        "authority_epoch":signed.authority_epoch,"issued_at":signed.issued_at,"expires_at":signed.expires_at,
+        "signature":signed.signature.as_slice(),"original_signing_bytes":signed.signing_bytes(),
+    }))?)
+}
+
+fn research_selection_from_bytes(bytes: &[u8]) -> anyhow::Result<SignedArtifactSelectionV1> {
+    anyhow::ensure!(bytes.len() <= 16384, "bounded retained research selection");
+    let value: serde_json::Value = serde_json::from_slice(bytes)?;
+    anyhow::ensure!(
+        value.as_object().is_some_and(|object| object.len() == 24)
+            && value["schema"] == "hepta.research.original-signed-selection.v1"
+            && value["artifact_kind"] == "model",
+        "closed research selection encoding"
+    );
+    let text = |field: &str| -> anyhow::Result<&str> {
+        value[field]
+            .as_str()
+            .ok_or_else(|| anyhow::anyhow!("research selection string {field}"))
+    };
+    let number = |field: &str| -> anyhow::Result<u64> {
+        value[field]
+            .as_u64()
+            .ok_or_else(|| anyhow::anyhow!("research selection number {field}"))
+    };
+    let signature: Vec<u8> = serde_json::from_value(value["signature"].clone())?;
+    let signature: [u8; 64] = signature
+        .try_into()
+        .map_err(|_| anyhow::anyhow!("original selection signature length"))?;
+    let selected = SignedArtifactSelectionV1 {
+        selection_id: StableId::new(text("selection_id")?)?,
+        artifact_id: StableId::new(text("artifact_id")?)?,
+        registry_id: StableId::new(text("registry_id")?)?,
+        withdrawal_scope_digest: text("withdrawal_scope_digest")?.parse()?,
+        registry_head_digest: text("registry_head_digest")?.parse()?,
+        current_witness_digest: text("current_witness_digest")?.parse()?,
+        current_trust_digest: text("current_trust_digest")?.parse()?,
+        artifact_kind: ArtifactKind::Model,
+        artifact_generation: Generation::new(number("artifact_generation")?)?,
+        predecessor_id: if value["predecessor_id"].is_null() {
+            None
+        } else {
+            Some(StableId::new(text("predecessor_id")?)?)
+        },
+        content_digest: text("content_digest")?.parse()?,
+        objective_digest: text("objective_digest")?.parse()?,
+        support_digest: text("support_digest")?.parse()?,
+        compatibility_digest: text("compatibility_digest")?.parse()?,
+        encoded_size_bytes: number("encoded_size_bytes")?,
+        selector_id: StableId::new(text("selector_id")?)?,
+        selector_credential_digest: text("selector_credential_digest")?.parse()?,
+        signing_key_digest: text("signing_key_digest")?.parse()?,
+        authority_epoch: number("authority_epoch")?,
+        issued_at: number("issued_at")?,
+        expires_at: number("expires_at")?,
+        signature,
+    };
+    let preimage: Vec<u8> = serde_json::from_value(value["original_signing_bytes"].clone())?;
+    anyhow::ensure!(
+        selected.signing_bytes() == preimage && research_selection_bytes(&selected)? == bytes,
+        "retained selection fields/signature/preimage encoding differ"
+    );
+    Ok(selected)
 }

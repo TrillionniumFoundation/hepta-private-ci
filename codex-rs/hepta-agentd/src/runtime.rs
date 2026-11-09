@@ -48,6 +48,8 @@ pub async fn run_with_shutdown(
     arg0_paths: Arg0DispatchPaths,
     shutdown: impl Future<Output = Result<(), AgentdError>> + Send,
 ) -> Result<(), AgentdError> {
+    #[cfg(target_os = "linux")]
+    config.require_root_learning_assembled()?;
     let circuit_task = config.take_circuit_task_bootstrap()?;
     let production_operations = config.take_production_operations();
     let sockets = config.take_socket_inputs();
@@ -68,12 +70,20 @@ pub async fn run_with_shutdown(
     #[cfg(not(target_os = "linux"))]
     let app_server_model_tools = crate::app_runtime::AppServerModelToolProfile::Standard;
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
-    let learning_iteration = config.take_learning_iteration_bootstrap();
+    let mut learning_iteration = config.take_learning_iteration_bootstrap();
+    let circuit_learning_delivery = learning_iteration
+        .as_mut()
+        .and_then(crate::LearningIterationRuntimeBootstrapV1::take_circuit_delivery);
     let terminal_learning = config.take_terminal_learning_bootstrap();
     let neuron_generation = config.take_neuron_generation_bootstrap();
     if learning_iteration.is_some() && plasticity_bootstrap.is_none() {
         return Err(AgentdError::Invalid(
             "learning iteration requires the governed plasticity owner".into(),
+        ));
+    }
+    if circuit_learning_delivery.is_some() && circuit_task.is_none() {
+        return Err(AgentdError::Invalid(
+            "Circuit learning delivery requires the ordinary Circuit task profile".into(),
         ));
     }
     let trust_file = config
@@ -145,6 +155,9 @@ pub async fn run_with_shutdown(
         registry,
         EVENT_CAPACITY,
     )?);
+    if let Some(delivery) = &circuit_learning_delivery {
+        state.attach_circuit_learning_source(delivery.request.source_run_id.clone())?;
+    }
     let circuit_task = if let Some((bootstrap, invocation)) = circuit_task {
         state
             .circuit_task
@@ -326,7 +339,8 @@ pub async fn run_with_shutdown(
     if let Some(store) = automation_store.as_ref() {
         state.attach_automation_store(store.clone())?;
         if let Some(host) = state.objective_runtime.get() {
-            host.reconcile_learning_outbox(store).await?;
+            host.reconcile_learning_outbox(store, state.circuit_learning_source())
+                .await?;
         }
     }
     if let Some(path) = automation_effect_host_file {
@@ -439,6 +453,17 @@ pub async fn run_with_shutdown(
             tasks.spawn_required(
                 "learning-iteration-owner",
                 owner.run(Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
+        if let Some(delivery) = circuit_learning_delivery {
+            let store = automation_store.clone().ok_or_else(|| {
+                AgentdError::Invalid(
+                    "Circuit learning requires its original AutomationStore".into(),
+                )
+            })?;
+            tasks.spawn_required(
+                "circuit-learning-delivery",
+                delivery.run(store, Arc::clone(&state), cancellation.clone()),
             )?;
         }
         if let Some(owner) = terminal_learning {

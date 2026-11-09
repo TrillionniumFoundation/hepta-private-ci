@@ -1,0 +1,54 @@
+name: Hepta stem Cell routes
+
+on:
+  pull_request:
+    paths:
+      - "scripts/hepta_cells/**"
+      - "scripts/hepta_pred1/models.py"
+      - "scripts/test_hepta_cells_*.py"
+      - "scripts/qualify_hepta_cells.py"
+      - "scripts/qualify_hepta_semantic_serving.py"
+      - "codex-rs/hepta-learning-artifacts/src/cell_implementation*.rs"
+      - ".github/workflows/hepta-stem-cell-routes.yml"
+  push:
+    branches:
+      - codex/cell-stem-routes-20261108-5e692
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-stem-cells-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cpu-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.12"
+      - name: Install the pinned CPU dependency
+        run: python3 -m pip install -r scripts/hepta_cells/requirements.txt
+      - name: Exercise real gradients, recovery, isolation and local update rules
+        run: python3 -m unittest discover -s scripts -p 'test_hepta_cells_*.py' -v
+      - name: Retain the fixed engineering probe without selecting a model
+        run: python3 scripts/qualify_hepta_cells.py --output "$RUNNER_TEMP/stem-cell-probe"
+      - name: Retain original results and any failed attempt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-cell-probe-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stem-cell-probe
+          if-no-files-found: warn
+          retention-days: 14

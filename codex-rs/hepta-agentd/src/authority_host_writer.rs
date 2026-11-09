@@ -15,6 +15,11 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 #[path = "authority_host_bootstrap_capture.rs"]
 mod bootstrap;
 
+#[path = "authority_host_learning_registration.rs"]
+mod learning_registration;
+pub use learning_registration::HostAuthorityLearningRegistrationV1;
+pub(crate) use learning_registration::RegisteredHostLearningCheckpointV1;
+
 #[path = "authority_host_fresh.rs"]
 mod fresh;
 pub use fresh::FreshHostCognitiveState;
@@ -156,6 +161,44 @@ impl RegisteredWriter {
                     .map_err(io::Error::other)?
                     .observed_unix_ms;
                 validate_observation_lease(&self.registration.authority_lease, &head, now)?;
+                Ok(response)
+            })
+            .map_err(unavailable)
+    }
+
+    pub(super) fn exchange_learning_checkpoint(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        backend: &crate::LearningIterationCheckpointOwnerV1,
+        bytes: &[u8],
+        next_request_id: &mut u64,
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        self.registration
+            .with_live(&self.leases, |_| {
+                if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                    return Err(io::Error::other("retained writer proof changed"));
+                }
+                let before = issuer.revocations()?;
+                let now = clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms;
+                validate_observation_lease(&self.registration.authority_lease, &before, now)?;
+                let response = backend
+                    .exchange_learning_checkpoint(bytes, next_request_id)
+                    .map_err(io::Error::other)?;
+                let after = issuer.revocations()?;
+                if before != after {
+                    return Err(io::Error::other(
+                        "issuer head changed during learning checkpoint",
+                    ));
+                }
+                let now = clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms;
+                validate_observation_lease(&self.registration.authority_lease, &after, now)?;
                 Ok(response)
             })
             .map_err(unavailable)

@@ -18,6 +18,8 @@ mod batch_cost_recovery;
 mod inference_clock;
 #[path = "cell_queue_cost_journal_tests.rs"]
 mod queue_cost;
+#[path = "cell_representation_journal_tests.rs"]
+mod representation;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 

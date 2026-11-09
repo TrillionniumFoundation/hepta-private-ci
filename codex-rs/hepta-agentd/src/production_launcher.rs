@@ -44,6 +44,7 @@ struct RootStartup {
     config: PreparedRootAgentdConfig,
     bootstrap: File,
     root_pidfd: OwnedFd,
+    learning: Option<crate::RootLearningHandoffV1>,
     control: OwnedFd,
     app_server: OwnedFd,
     lifetime: Duration,
@@ -82,6 +83,7 @@ impl AgentdProductionStartup {
             Some(inputs) => {
                 let LaunchInputs {
                     handoff,
+                    learning_handoff,
                     uid,
                     gid,
                     control,
@@ -101,6 +103,14 @@ impl AgentdProductionStartup {
                     handoff,
                     remaining(bootstrap_deadline)?,
                 )?;
+                let learning = learning_handoff
+                    .map(|handoff| {
+                        crate::receive_root_learning_handoff(
+                            handoff,
+                            remaining(bootstrap_deadline)?,
+                        )
+                    })
+                    .transpose()?;
                 let inputs = RuntimeInputs {
                     primary,
                     notes,
@@ -110,6 +120,7 @@ impl AgentdProductionStartup {
                     config,
                     bootstrap,
                     root_pidfd,
+                    learning,
                     control,
                     app_server,
                     lifetime,
@@ -140,12 +151,14 @@ impl AgentdProductionStartup {
                     config,
                     bootstrap,
                     root_pidfd,
+                    learning,
                     control,
                     app_server,
                     lifetime,
                     deadline,
                     inputs,
                 } = *root;
+                let session_end = Instant::now() + lifetime;
                 let root = crate::receive_root_production_inputs(
                     bootstrap,
                     root_pidfd,
@@ -154,9 +167,27 @@ impl AgentdProductionStartup {
                     lifetime,
                 )
                 .await?;
-                let config = config
+                let mut config = config
                     .finish(&root)?
                     .with_root_bound_sockets(control, app_server)?;
+                if let Some(learning) = learning {
+                    let learning: crate::RootLearningHandoffV1 = learning;
+                    let lifetime = session_end
+                        .checked_duration_since(Instant::now())
+                        .filter(|remaining| !remaining.is_zero())
+                        .ok_or_else(|| {
+                            AgentdError::Protocol("original Root learning lifetime expired".into())
+                        })?;
+                    let inputs = learning
+                        .connect(
+                            &root,
+                            config.identity(),
+                            remaining(deadline)?.min(Duration::from_millis(500)),
+                            lifetime,
+                        )
+                        .await?;
+                    config = config.with_root_learning_inputs(inputs)?;
+                }
                 Ok((config, Some(AgentdProductionLaunch { root, inputs })))
             }
         }
@@ -173,6 +204,7 @@ impl AgentdProductionLaunch {
         mut config: AgentdConfig,
         arg0_paths: Arg0DispatchPaths,
     ) -> Result<(), AgentdError> {
+        config.require_root_learning_assembled()?;
         let RuntimeInputs {
             primary,
             notes,

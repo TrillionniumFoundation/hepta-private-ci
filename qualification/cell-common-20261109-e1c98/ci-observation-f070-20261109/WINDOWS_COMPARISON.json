@@ -1,0 +1,318 @@
+{
+  "schema": "hepta.common.windows-ci-observation-comparison.v1",
+  "method": "Read retained full logs; strip timestamp/ANSI only for analysis, preserve raw bytes separately. Match exact failed test names and first failure blocks; use final Bazel target summary for target conclusions.",
+  "shard3": {
+    "current_job": 129159652631,
+    "m6_comparison_job": 129000593125,
+    "m6_raw_log_sha256": "cc20142b9758837eb0431e9617f1ff68bdfef9206b95211c3fc098f92d72a3b4",
+    "m6_existing_archive": "../ci-forensics/raw-logs/job-129000593125.log.gz",
+    "final_failed_targets": [
+      "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "//codex-rs/hepta-neuron:hepta-neuron-unit-tests",
+      "//codex-rs/tui:tui-unit-tests"
+    ],
+    "bazel_summary": "Executed 46 out of 147 tests: 99 tests pass, 3 fail locally, and 45 were skipped.",
+    "distinct_failed_cases_in_log": 27,
+    "same_names_failed_in_m6_log": 25,
+    "new_credit_cases_failed_before_credit_behavior": 2,
+    "cases": [
+      {
+        "case": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture failed: Durable(Io(PermissionDenied))"
+        ],
+        "m6_first_failure_details": [
+          "fixture failed: Durable(Io(PermissionDenied))"
+        ]
+      },
+      {
+        "case": "circuit_task::driver::tests::circuit_deadline_wakes_before_a_later_feedback_activation",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture failed: Invalid"
+        ],
+        "m6_first_failure_details": [
+          "fixture failed: Invalid"
+        ]
+      },
+      {
+        "case": "circuit_task::driver::tests::delayed_feedback_waits_without_appending_empty_scheduling_events",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture failed: Invalid"
+        ],
+        "m6_first_failure_details": [
+          "fixture failed: Invalid"
+        ]
+      },
+      {
+        "case": "circuit_task::driver::tests::elapsed_task_deadline_never_creates_a_run_or_contacts_a_cell",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture failed: Invalid"
+        ],
+        "m6_first_failure_details": [
+          "fixture failed: Invalid"
+        ]
+      },
+      {
+        "case": "circuit_task::driver::tests::lost_circuit_completion_ack_reads_the_original_committed_cell_result",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture failed: Invalid"
+        ],
+        "m6_first_failure_details": [
+          "fixture failed: Invalid"
+        ]
+      },
+      {
+        "case": "circuit_task::driver::tests::lost_claim_ack_cannot_become_a_fresh_cell_dispatch",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture failed: Invalid"
+        ],
+        "m6_first_failure_details": [
+          "fixture failed: Invalid"
+        ]
+      },
+      {
+        "case": "circuit_task::driver::tests::task_reaches_durable_terminal_and_replays_the_exact_result",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture failed: Invalid"
+        ],
+        "m6_first_failure_details": [
+          "fixture failed: Invalid"
+        ]
+      },
+      {
+        "case": "neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_generation_runtime::tests::control::pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_generation_runtime::tests::control::private_socket_pages_acknowledges_and_reopens_exact_original_operation",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_generation_runtime::tests::control::stale_generation_changed_content_and_oversized_input_do_not_mutate_owner",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again",
+        "also_failed_in_m6_log": false,
+        "f070_first_failure_details": [
+          "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": null
+      },
+      {
+        "case": "neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends",
+        "also_failed_in_m6_log": false,
+        "f070_first_failure_details": [
+          "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": null
+      },
+      {
+        "case": "neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ],
+        "m6_first_failure_details": [
+          "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+        ]
+      },
+      {
+        "case": "perception::tests::perception_cross_language_fixture_round_trips_and_binds_raw_evidence",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "assertion failed: `(left == right)`",
+          ">    13,"
+        ],
+        "m6_first_failure_details": [
+          "assertion failed: `(left == right)`",
+          ">    13,"
+        ]
+      },
+      {
+        "case": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+        "also_failed_in_m6_log": true,
+        "f070_first_failure_details": [
+          "assertion failed: `(left == right)`",
+          "<\"D:\\\\tmp\\\\.tmpUxRH6I\\\\sqlite-home\\\\logs_2.sqlite\"",
+          ">\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmpUxRH6I\\\\sqlite-home\\\\logs_2.sqlite\""
+        ],
+        "m6_first_failure_details": [
+          "assertion failed: `(left == right)`",
+          "<\"D:\\\\tmp\\\\.tmp7BwxrD\\\\sqlite-home\\\\logs_2.sqlite\"",
+          ">\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmp7BwxrD\\\\sqlite-home\\\\logs_2.sqlite\""
+        ]
+      }
+    ],
+    "interpretation": "The pre-existing cases repeat Windows file-lock code 33, Circuit fixture Invalid/PermissionDenied, a perception byte fixture with CR=13, and the TUI extended-path prefix assertion. Two newly added credit cases fail at the unchanged generation service fixture with the same code 33. This is actual Windows test failure, not V8 acquisition failure; a newly introduced runtime regression is not established by these logs."
+  },
+  "shard1": {
+    "current_job": 129159652726,
+    "final_failed_target": "//codex-rs/exec-server:exec-server-exec_process-test",
+    "failed_case": "remote_windows_sandbox_process_accepts_process_write",
+    "observed_error": "legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+    "same_error_in_m6": [
+      {
+        "raw_name": "job-129000593067.log",
+        "sha256": "ec0cbb543061dcc6721bdf38918fa17ef5846f9bfec692b64e5fd124793c8ae1",
+        "existing_archive": "../ci-forensics/raw-logs/job-129000593067.log.gz"
+      },
+      {
+        "raw_name": "job-129000593201.log",
+        "sha256": "abebed6d28e02a9075598dd7e4fbeffd785d83cff1961e7bc763de3800e38ccf",
+        "existing_archive": "../ci-forensics/raw-logs/job-129000593201.log.gz"
+      }
+    ],
+    "bazel_summary": "Executed 40 out of 144 tests: 92 tests pass, 1 fails locally, and 51 were skipped.",
+    "core_target_final_status": "FLAKY, failed in 1 out of 9 in 113.2s",
+    "core_flaky_case": "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context",
+    "core_observed_error": "terminal cleanup should finish before persisting resume context: Elapsed(())",
+    "core_is_not_an_additional_final_failed_target": true,
+    "v8_acquisition_failure": false
+  }
+}

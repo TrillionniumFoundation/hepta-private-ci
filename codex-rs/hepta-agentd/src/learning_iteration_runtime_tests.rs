@@ -46,6 +46,8 @@ struct AttestationBarrier {
 }
 
 struct IterationPorts {
+    scope_binding: Option<Digest32>,
+    training_mutation: Option<fn(&mut CellCompatibilityBundleV1)>,
     signing: SigningFixture,
     verifier: LearningEvidenceVerifierV1,
     proposal: Option<ParameterPlasticityProductRequestV1>,
@@ -79,6 +81,8 @@ impl IterationPorts {
         let signing = SigningFixture::new();
         let verifier = signing.verifier(digest("plasticity-objective"));
         Self {
+            scope_binding: None,
+            training_mutation: None,
             signing,
             verifier,
             proposal,
@@ -96,6 +100,9 @@ impl IterationPorts {
 }
 
 impl LearningIterationOwnerPortsV1 for IterationPorts {
+    fn frozen_scope_binding(&self) -> Option<Digest32> {
+        self.scope_binding
+    }
     fn restore<'a>(
         &'a self,
         _request: &'a LearningIterationRequestV1,
@@ -155,6 +162,9 @@ impl LearningIterationOwnerPortsV1 for IterationPorts {
                 update_rule,
                 evaluation_profile: digest("frozen-evaluation"),
             });
+            if let Some(mutate) = self.training_mutation {
+                mutate(&mut candidate);
+            }
             let candidate_bundle = ok(candidate.digest());
             let observation = match stage {
                 LearningIterationStageV1::Experience => {
@@ -265,6 +275,12 @@ impl LearningIterationOwnerPortsV1 for IterationPorts {
 #[path = "learning_iteration_recovery_tests.rs"]
 mod recovery_tests;
 
+#[path = "learning_iteration_profile_tests.rs"]
+mod profile_tests;
+
+#[path = "learning_iteration_scope_tests.rs"]
+mod scope_tests;
+
 fn iteration_request(daemon: &AgentdFixture) -> LearningIterationRequestV1 {
     LearningIterationRequestV1 {
         operation_id: id("proposal:agentd-lifetime"),
@@ -274,6 +290,7 @@ fn iteration_request(daemon: &AgentdFixture) -> LearningIterationRequestV1 {
         source_run_id: id("run:source"),
         completed_task_receipt: digest("completed-task"),
         selected_artifact_digest: digest("selected-artifact:lifetime"),
+        evaluation_profile: digest("frozen-evaluation"),
         selected_bundle: CellCompatibilityBundleV1 {
             artifact_id: id("artifact:baseline"),
             generation: generation(1),

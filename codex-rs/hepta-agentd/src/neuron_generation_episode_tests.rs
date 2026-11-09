@@ -27,6 +27,9 @@ use support::freeze;
 use support::request;
 use support::signed_request;
 
+#[path = "neuron_generation_episode_credit_tests.rs"]
+mod credit;
+
 #[tokio::test]
 async fn real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome() {
     let mut fixture = host::Fixture::new().await;

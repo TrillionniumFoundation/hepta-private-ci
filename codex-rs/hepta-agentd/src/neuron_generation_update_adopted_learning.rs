@@ -2,7 +2,8 @@
 //! This supports the generation owner's published reset only. It neither
 //! executes a generic CellBundleCutoverPlan nor claims preserved/migrated state.
 //! Shared schema and declared encoder pins must match the learning bundles;
-//! effective base/adapter loading remains the backend/artifact owner's contract.
+//! The composed Q24 control profile also checks its complete component mapping.
+//! Other effective base/adapter loading remains the backend/artifact owner's contract.
 
 use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
 use codex_hepta_learning_artifacts::CellStatePartitionV1;
@@ -278,14 +279,17 @@ impl<W: AnchorWitnessStore> GenerationLearningReadbackV1<'_, W> {
     }
 }
 
-/// Check only pins with the same meaning in both contracts. An absent encoder
-/// retains the backend's explicit optional-component semantics. Aggregate heads,
-/// base/adapter composition and effective weights have no defined projection
-/// here; neither this check nor a changed weights digest proves their loading.
+/// Validate the full fixed component projection for the composed Q24 profile.
+/// Other profiles compare shared schema pins and the optional encoder; their
+/// loader retains the base/adapter composition and effective weights contract.
+/// These manifest checks alone do not prove that model bytes were loaded.
 fn validate_manifest_contract(
     bundle: &CellCompatibilityBundleV1,
     manifest: &CellBackendManifestV2,
 ) -> Result<(), AgentdError> {
+    if manifest.profile == crate::CellQ24GenerationWorkerV1::PROFILE {
+        return crate::cell_composed_q24::validate_manifest(bundle, manifest).map_err(invalid);
+    }
     for (field, expected, actual) in [
         (
             "state schema",
@@ -318,3 +322,7 @@ fn validate_manifest_contract(
 fn invalid(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::Invalid(error.to_string())
 }
+
+#[cfg(test)]
+#[path = "cell_composed_q24_tests.rs"]
+mod composed_tests;

@@ -8,6 +8,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationError;
 use codex_hepta_learning_artifacts::LearningIterationOwnersV1;
@@ -27,6 +28,9 @@ use crate::AgentdState;
 use crate::LearningIterationOwnerPortsV1;
 use crate::PlasticityRuntimeCallErrorV1;
 
+#[path = "learning_iteration_delivery_runtime.rs"]
+mod delivery;
+
 const MAX_LEARNING_QUEUE: usize = 64;
 const MAX_ITERATION_SECONDS: u64 = 86_400;
 
@@ -39,6 +43,8 @@ pub enum LearningIterationRuntimeErrorV1 {
     DeadlineExceeded,
     OwnerUnavailable(&'static str),
     CommitUncertain,
+    #[cfg(unix)]
+    Checkpoint(crate::LearningIterationCheckpointErrorV1),
     Evidence(SignedEvidenceError),
     Proposal(PlasticityRuntimeCallErrorV1),
 }
@@ -121,7 +127,11 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     owners: LearningIterationOwnersV1,
     ports: Arc<dyn LearningIterationOwnerPortsV1>,
     verifier: LearningEvidenceVerifierV1,
+    scope: Option<FrozenLearningScopeV2>,
     receiver: mpsc::Receiver<LearningIterationCommandV1>,
+    sender: mpsc::Sender<LearningIterationCommandV1>,
+    circuit_delivery_request: Option<LearningIterationRequestV1>,
+    enforce_circuit_admission: bool,
 }
 
 pub fn learning_iteration_channel_v1(
@@ -138,24 +148,85 @@ pub fn learning_iteration_channel_v1(
     ),
     AgentdError,
 > {
+    learning_iteration_channel(
+        agent_id,
+        spawn_generation,
+        owners,
+        ports,
+        verifier,
+        capacity,
+        /*scope*/ None,
+    )
+}
+
+/// Select the frozen medium-cadence profile. The host must supply a matching
+/// schema-2 protected checkpoint; legacy ports cannot silently acquire it.
+pub fn learning_iteration_channel_scoped_v2(
+    agent_id: AgentId,
+    spawn_generation: u64,
+    owners: LearningIterationOwnersV1,
+    ports: Arc<dyn LearningIterationOwnerPortsV1>,
+    verifier: LearningEvidenceVerifierV1,
+    capacity: usize,
+    scope: FrozenLearningScopeV2,
+) -> Result<
+    (
+        LearningIterationHandleV1,
+        LearningIterationRuntimeBootstrapV1,
+    ),
+    AgentdError,
+> {
+    learning_iteration_channel(
+        agent_id,
+        spawn_generation,
+        owners,
+        ports,
+        verifier,
+        capacity,
+        Some(scope),
+    )
+}
+
+fn learning_iteration_channel(
+    agent_id: AgentId,
+    spawn_generation: u64,
+    owners: LearningIterationOwnersV1,
+    ports: Arc<dyn LearningIterationOwnerPortsV1>,
+    verifier: LearningEvidenceVerifierV1,
+    capacity: usize,
+    scope: Option<FrozenLearningScopeV2>,
+) -> Result<
+    (
+        LearningIterationHandleV1,
+        LearningIterationRuntimeBootstrapV1,
+    ),
+    AgentdError,
+> {
     if spawn_generation == 0
         || !(1..=MAX_LEARNING_QUEUE).contains(&capacity)
         || owners.evidence_trust_digest != verifier.trust_digest()
+        || ports.frozen_scope_binding() != scope.as_ref().map(FrozenLearningScopeV2::binding)
     {
         return Err(AgentdError::Invalid(
-            "learning owner requires generation, pinned trust and bounded queue".into(),
+            "learning owner requires generation, pinned trust, matching checkpoint profile and bounded queue".into(),
         ));
     }
     let (sender, receiver) = mpsc::channel(capacity);
     Ok((
-        LearningIterationHandleV1 { sender },
+        LearningIterationHandleV1 {
+            sender: sender.clone(),
+        },
         LearningIterationRuntimeBootstrapV1 {
             agent_id,
             spawn_generation,
             owners,
             ports,
             verifier,
+            scope,
             receiver,
+            sender,
+            circuit_delivery_request: None,
+            enforce_circuit_admission: false,
         },
     ))
 }
@@ -242,6 +313,7 @@ impl LearningIterationRuntimeBootstrapV1 {
         {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
+        self.require_frozen_scope(&request)?;
         LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?;
         require_ready(state)?;
         let snapshot = self
@@ -253,6 +325,9 @@ impl LearningIterationRuntimeBootstrapV1 {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
         let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
+        if let Some(scope) = &self.scope {
+            scope.validate_snapshot(restored.snapshot())?;
+        }
         crate::learning_iteration_auth::authenticate_restored_iteration_v1(
             state,
             self.ports.as_ref(),
@@ -277,6 +352,7 @@ impl LearningIterationRuntimeBootstrapV1 {
         {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
+        self.require_frozen_scope(&request)?;
         let initial = LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?;
         require_ready(state)?;
         let mut coordinator = match self.ports.restore(&request).await? {
@@ -285,6 +361,9 @@ impl LearningIterationRuntimeBootstrapV1 {
                     return Err(LearningIterationRuntimeErrorV1::WrongScope);
                 }
                 let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
+                if let Some(scope) = &self.scope {
+                    scope.validate_snapshot(restored.snapshot())?;
+                }
                 require_ready(state)?;
                 if restored.next_stage().is_some()
                     && clock()? >= request.envelope.expiry_unix_seconds
@@ -303,7 +382,7 @@ impl LearningIterationRuntimeBootstrapV1 {
                 restored
             }
             None => {
-                require_ready(state)?;
+                self.require_stage_admission(state)?;
                 if clock()? >= request.envelope.expiry_unix_seconds {
                     return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
                 }
@@ -318,7 +397,7 @@ impl LearningIterationRuntimeBootstrapV1 {
             }
         };
         while let Some(stage) = coordinator.next_stage() {
-            require_ready(state)?;
+            self.require_stage_admission(state)?;
             if clock()? >= request.envelope.expiry_unix_seconds {
                 return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
             }
@@ -353,7 +432,10 @@ impl LearningIterationRuntimeBootstrapV1 {
                 .await?;
                 receipt
             };
-            require_ready(state)?;
+            self.require_stage_admission(state)?;
+            if let Some(scope) = &self.scope {
+                scope.validate_observation(&receipt.observation)?;
+            }
             let previous = coordinator.snapshot().head_digest;
             coordinator.record(receipt, clock()?)?;
             let committed = self
@@ -365,6 +447,36 @@ impl LearningIterationRuntimeBootstrapV1 {
             }
         }
         Ok(coordinator.snapshot().clone())
+    }
+
+    fn require_frozen_scope(
+        &self,
+        request: &LearningIterationRequestV1,
+    ) -> Result<(), LearningIterationRuntimeErrorV1> {
+        if self.ports.frozen_scope_binding()
+            != self.scope.as_ref().map(FrozenLearningScopeV2::binding)
+        {
+            return Err(LearningIterationRuntimeErrorV1::WrongScope);
+        }
+        if let Some(scope) = &self.scope {
+            scope.validate_request(request, &self.owners)?;
+        }
+        Ok(())
+    }
+
+    fn require_stage_admission(
+        &self,
+        state: &AgentdState,
+    ) -> Result<(), LearningIterationRuntimeErrorV1> {
+        require_ready(state)?;
+        if self.enforce_circuit_admission
+            && !state
+                .automation_admission_ready()
+                .map_err(|_| LearningIterationRuntimeErrorV1::Unavailable)?
+        {
+            return Err(LearningIterationRuntimeErrorV1::Unavailable);
+        }
+        Ok(())
     }
 }
 

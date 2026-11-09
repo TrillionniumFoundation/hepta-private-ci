@@ -40,6 +40,16 @@ pub(super) async fn submit_iteration_proposal_v1(
         return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
     }
     let (composition_digest, disposition) = match prepared.payload {
+        #[cfg(all(test, unix))]
+        LearningIterationProposalPayloadV1::ResearchExternalTrainedArtifact(request) => {
+            // This explicit research namespace has its own concrete durable
+            // owner. It does not acquire Parameter V3 or Product OPE authority.
+            let receipt = request.commit_for(snapshot, now)?;
+            (
+                receipt.composition_digest(),
+                LearningProposalDispositionV1::UpdateCandidates,
+            )
+        }
         LearningIterationProposalPayloadV1::Parameter(request) => {
             if request.proposal_id != context.operation_id
                 || request.admission.baseline_id != context.selected_bundle.artifact_id
