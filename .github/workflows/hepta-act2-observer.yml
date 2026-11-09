@@ -1,0 +1,182 @@
+name: ACT-2 observer qualification
+
+on:
+  push:
+    branches: [validation/act2-observer-20261109]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: act2-observer-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ACT2_BASE: 885dae0f3285267e9e9c49d8b43b0d009779f9e8
+  ACT2_UI_SOURCE: fd8d56c52b971c2d5d0e6430f296803b43ef60a3
+  CARGO_BUILD_JOBS: "2"
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  NEXTEST_TEST_THREADS: "2"
+
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          components: rustfmt
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - name: Apply the official formatter and retain exact source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/act2-format"
+          mkdir -p "$records"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git fetch --no-tags --depth=1 origin "$ACT2_BASE"
+          git rev-parse HEAD HEAD^{tree} > "$records/source-identity.txt"
+          rustfmt --version > "$records/rustfmt-version.txt"
+          just fmt --base "$ACT2_BASE" > "$records/formatter.log" 2>&1
+          git diff --binary > "$records/format.patch"
+          python3 - "$records/formatted-files.json" <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+          paths = subprocess.check_output([
+              "git", "diff", "--name-only", "-z", os.environ["ACT2_BASE"], "HEAD", "--", "*.rs"
+          ]).decode().strip("\0").split("\0")
+          files = []
+          for name in paths:
+              if not name:
+                  continue
+              data = Path(name).read_bytes()
+              files.append({"path": name, "sha256": hashlib.sha256(data).hexdigest(), "content": data.decode()})
+          Path(sys.argv[1]).write_text(json.dumps({"source_sha": os.environ["GITHUB_SHA"], "files": files}, indent=2) + "\n")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: act2-format-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/act2-format
+          if-no-files-found: error
+          retention-days: 14
+
+  native-and-real-notes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: TrillionniumFoundation/trillionnium-os-desktop
+          ref: ${{ env.ACT2_UI_SOURCE }}
+          path: act2-companion-input
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Bind both original source identities and native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          mv act2-companion-input "$RUNNER_TEMP/act2-ui-source"
+          records="$RUNNER_TEMP/act2-records"
+          mkdir -p "$records"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          git fetch --no-tags --depth=1 origin "$ACT2_BASE"
+          git rev-parse HEAD HEAD^{tree} > "$records/hepta-source.txt"
+          git -C "$RUNNER_TEMP/act2-ui-source" rev-parse HEAD HEAD^{tree} > "$records/ui-source.txt"
+          test "$(git -C "$RUNNER_TEMP/act2-ui-source" rev-parse HEAD)" = "$ACT2_UI_SOURCE"
+          sha256sum codex-rs/Cargo.lock "$RUNNER_TEMP/act2-ui-source/ui/Cargo.lock" > "$records/locks.sha256"
+          git config --global credential.helper '!gh auth git-credential'
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap libwayland-dev libxkbcommon-dev libxkbcommon-x11-0 libgl1-mesa-dev libegl1-mesa-dev libx11-dev libxi-dev libxrandr-dev libxcursor-dev libxinerama-dev libgbm-dev libgl1-mesa-dri xvfb xauth x11-utils dbus-x11 at-spi2-core
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          components: rustfmt,clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Resolve existing verified native inputs
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: |
+          sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+          python3 scripts/hepta_ci_v8.py
+          rustc --version --verbose > "$RUNNER_TEMP/act2-records/rustc.txt"
+      - name: Run the affected automation package through its original runner
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 2400 --minimum-tests 6 \
+            --output "$RUNNER_TEMP/act2-records/automation.json" \
+            -- just test --locked -p codex-hepta-automation
+      - name: Run Notes projection, private readback and original owner tests
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 2400 --minimum-tests 8 \
+            --output "$RUNNER_TEMP/act2-records/notes-owner.json" \
+            -- just test --locked -p codex-hepta-agentd --lib \
+            -E 'test(notes_act2) | test(notes_recovered_writer_persists_lost_reply_and_retires_without_replay) | test(notes_document_observer)'
+      - name: Build the pinned real Session and App without changing their locks
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/act2-records/ui-build.json" \
+            -- env CARGO_TARGET_DIR="$RUNNER_TEMP/act2-ui-target" rustup run 1.96.0 \
+            cargo build --locked --manifest-path "$RUNNER_TEMP/act2-ui-source/ui/Cargo.toml" \
+            -p trill-session -p trill-app-window --bins
+          sha256sum "$RUNNER_TEMP/act2-ui-target/debug/trill-session" \
+            "$RUNNER_TEMP/act2-ui-target/debug/trill-app-window" > "$RUNNER_TEMP/act2-records/ui-binaries.sha256"
+          test -z "$(git -C "$RUNNER_TEMP/act2-ui-source" status --porcelain)"
+      - name: Observe the real Notes goal after original-owner lost-reply recovery
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 300 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/act2-records/notes-real-gui.json" \
+            -- env -u WAYLAND_DISPLAY dbus-run-session -- \
+            xvfb-run -a -s '-screen 0 1280x800x24 -nolisten tcp' env \
+            WINIT_UNIX_BACKEND=x11 LIBGL_ALWAYS_SOFTWARE=1 TRILL_NOTES_PROBE_ISOLATED=1 \
+            HEPTA_NOTES_SESSION_BIN="$RUNNER_TEMP/act2-ui-target/debug/trill-session" \
+            HEPTA_NOTES_QUALIFICATION_OUTPUT="$RUNNER_TEMP/act2-records/notes-actual.json" \
+            just test --locked -p codex-hepta-agentd --lib \
+            -E 'test(notes_actual_ui_original_owner_roundtrip)' --run-ignored only --status-level all
+      - name: Run scoped lint and final official formatting
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/act2-records/fix.json" \
+            -- just fix --locked -p codex-hepta-automation -p codex-hepta-agentd
+          just fmt --base "$ACT2_BASE" > "$RUNNER_TEMP/act2-records/formatter.log" 2>&1
+      - name: Preserve actual source state and records even on failure
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/act2-records"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/act2-records/source-after.txt"
+          git status --porcelain > "$RUNNER_TEMP/act2-records/source-status-after.txt"
+          git diff --binary > "$RUNNER_TEMP/act2-records/final-source.patch"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: act2-native-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/act2-records
+          if-no-files-found: error
+          retention-days: 14
