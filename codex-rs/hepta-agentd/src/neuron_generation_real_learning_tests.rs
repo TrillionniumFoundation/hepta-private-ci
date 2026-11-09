@@ -1129,6 +1129,32 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         Err(_) if !updated => "NO_UPDATE_ADOPT_NOT_QUALIFIED",
         Err(_) => "FAIL_ADOPT_BINDING",
     };
+    let recovery_request = running
+        .request
+        .clone()
+        .ok_or_else(|| anyhow::anyhow!("original next request missing"))?;
+    let recovery_receipt = running.runtime.handle.step(recovery_request.clone()).await?;
+    let recovery_context = crate::learning_iteration_checkpoint::os_process_recovery::RecoveryContext {
+        parent_pid: std::process::id(),
+        deadline_unix_seconds: driver.deadline,
+        root: publication.research_directory()?.to_path_buf(),
+        evidence: driver.evidence.clone(),
+        model: driver.output.clone(),
+        old_config: publication.old_config.clone(),
+        target_config: running.target_config.clone(),
+        operation_id: adoption::operation(&running.coordinator)?,
+        intent_digest: running.runtime.publication.intent_digest(),
+        request: recovery_request,
+        receipt: recovery_receipt,
+        initial_record_sha256: d(&fs::read(driver.evidence.join("native-checkpoint-0-owner.json"))?),
+        checkpoint_sha256: d(&checkpoint_before),
+        external_proposal: flow == ResearchFlow::ExternalTrainedArtifact,
+        probe: crate::learning_iteration_checkpoint::os_process_recovery::Probe::Completed,
+    };
+    running.tasks.shutdown().await;
+    let os_process_recovery = tokio::task::spawn_blocking(move ||
+        crate::learning_iteration_checkpoint::os_process_recovery::verify_in_new_process(recovery_context)
+    ).await??;
     let result = json!({"schema":match flow {
             ResearchFlow::RetainedOnly => "hepta.research.real-model-native-completion.v1",
             ResearchFlow::ExternalTrainedArtifact => "hepta.research.external-trained-native-completion.v1",
@@ -1146,13 +1172,13 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         "original_parameter_v3_qualified":false,"product_ope_qualified":false,
         "original_learning_signature_verifier":true,"original_checkpoint_codec":true,"original_generation_actor":true,
         "generation_owner_reopened":true,"worker_process_restarted":true,"learning_owner_reopened":true,"reexecuted_after_recovery":false,
+        "native_owner_os_process_recovery":os_process_recovery,
         "native_daemon_os_restart":false,"native_fleet_lifecycle_recreated":true,"research_keys_and_custody":true,"independent_operator_custody":false,
         "production_root_capability":false,"production_final_use":false,"production_activation":false,"qualification":"HOLD_NO_GO"});
     persist(
         &driver.evidence.join("native-result.json"),
         &serde_json::to_vec(&result)?,
     )?;
-    running.tasks.shutdown().await;
     println!(
         "HEPTA_REAL_MODEL_NATIVE_COMPLETION_V1 {}",
         serde_json::to_string(&result)?
