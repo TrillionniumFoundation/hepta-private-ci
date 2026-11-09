@@ -30,6 +30,9 @@ use crate::recover_agentd_generation_update_v1;
 #[path = "neuron_generation_learning_contract_tests.rs"]
 mod contract;
 
+#[path = "neuron_generation_joint_loading_guard_tests.rs"]
+mod joint_loading_guard;
+
 fn d(label: &str) -> Digest32 {
     Digest32::of_bytes(label.as_bytes())
 }
@@ -111,6 +114,11 @@ struct UpdatedRuntime {
     selection: LearningIterationObservationV1,
 }
 
+enum RuntimeTestContract {
+    Existing,
+    Joint(&'static str),
+}
+
 impl UpdatedRuntime {
     async fn read_selection(
         &self,
@@ -140,15 +148,36 @@ impl UpdatedRuntime {
     }
 
     async fn new() -> anyhow::Result<Self> {
+        Self::new_with_contract(RuntimeTestContract::Existing).await
+    }
+
+    async fn new_with_contract(contract: RuntimeTestContract) -> anyhow::Result<Self> {
+        let joint_profile = match contract {
+            RuntimeTestContract::Existing => None,
+            RuntimeTestContract::Joint(profile) => Some(profile),
+        };
         let mut host = host::Fixture::new().await;
         let baseline = learning_test_baseline()?;
-        let candidate = candidate(&baseline)?;
+        let mut candidate = candidate(&baseline)?;
+        if joint_profile.is_some() {
+            // Deliberately declared v4 components with no actual Model loading.
+            // The existing synthetic worker must not manufacture NextUse proof.
+            candidate.components.organ_adapter = None;
+            candidate.components.cell_adapter = None;
+            candidate.components.state_schema =
+                Digest32::of_bytes(codex_hepta_infer_core::JOINT_V4_STATE_SCHEMA);
+            candidate.components.output_schema =
+                Digest32::of_bytes(codex_hepta_infer_core::JOINT_V4_OUTPUT_SCHEMA);
+        }
         bind_test_contract(&mut host.config, &baseline)?;
         let mut next = host.config.clone();
         next.initial.scope.run_id.push_str("-updated-learning-next");
         next.initial.generation += 1;
         next.initial.writer_epoch += 1;
         next.task_digest = d("updated learning next task").into_array();
+        if let Some(profile) = joint_profile {
+            next.manifest.profile = profile.into();
+        }
         bind_test_contract(&mut next, &candidate)?;
         let publication = Fixture::new_with_target(host.config.clone(), next)?;
         let coordinator = decision(&publication, candidate, d("proposal composition"))?;

@@ -2,7 +2,9 @@
 //! This supports the generation owner's published reset only. It neither
 //! executes a generic CellBundleCutoverPlan nor claims preserved/migrated state.
 //! Shared schema and declared encoder pins must match the learning bundles;
-//! effective base/adapter loading remains the backend/artifact owner's contract.
+//! Joint v4 additionally requires the explicit native-loading profile and its
+//! original committed thirteen-component loading event before NextUse. Other
+//! backends retain their own effective-loading contract.
 
 use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
 use codex_hepta_learning_artifacts::CellStatePartitionV1;
@@ -166,6 +168,14 @@ impl<W: AnchorWitnessStore> GenerationLearningReadbackV1<'_, W> {
                 "updated learning next-task result did not adopt work",
             ));
         }
+        validate_joint_loading_receipt(
+            self.journal.manifest(),
+            coordinator
+                .next_task_bundle()
+                .ok_or_else(|| invalid("updated candidate is absent"))?,
+            intent.task_digest,
+            &receipt,
+        )?;
         let observed = self.journal.observe_generation().map_err(invalid)?;
         if intent.task_digest != self.publication.target().task_digest()
             || intent.source_frontier != observed.source_frontier()
@@ -313,6 +323,45 @@ fn validate_manifest_contract(
         ));
     }
     Ok(())
+}
+
+/// Joint v4 cannot inherit loading evidence from the legacy observed profile.
+/// All fields here come from the selected immutable candidate and the original
+/// live journal receipt; no caller-provided cost or attestation is accepted.
+fn validate_joint_loading_receipt(
+    manifest: &CellBackendManifestV2,
+    bundle: &CellCompatibilityBundleV1,
+    task_digest: [u8; 32],
+    receipt: &codex_hepta_neuron::CellGenerationReceiptV2,
+) -> Result<(), AgentdError> {
+    let c = &bundle.components;
+    if c.state_schema != Digest32::of_bytes(codex_hepta_infer_core::JOINT_V4_STATE_SCHEMA)
+        && c.output_schema != Digest32::of_bytes(codex_hepta_infer_core::JOINT_V4_OUTPUT_SCHEMA)
+    {
+        return Ok(());
+    }
+    let components = codex_hepta_infer_core::JointV4ComponentDigestsV1 {
+        base: c.base,
+        organ_adapter: c.organ_adapter,
+        cell_adapter: c.cell_adapter,
+        heads: c.heads,
+        composition: c.composition,
+        encoder: c.encoder,
+        tokenizer: c.tokenizer,
+        normalizer: c.normalizer,
+        calibration: c.calibration,
+        numeric_profile: c.numeric_profile,
+        output_schema: c.output_schema,
+        state_schema: c.state_schema,
+        state_semantics: c.state_semantics,
+    };
+    codex_hepta_neuron::verify_joint_v4_loading_receipt_v1(
+        manifest,
+        &components,
+        task_digest,
+        receipt,
+    )
+    .map_err(invalid)
 }
 
 fn invalid(error: impl std::fmt::Display) -> AgentdError {
