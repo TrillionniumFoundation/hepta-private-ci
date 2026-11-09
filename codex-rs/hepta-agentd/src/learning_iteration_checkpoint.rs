@@ -24,6 +24,8 @@ use serde::Serialize;
 
 #[path = "learning_iteration_checkpoint_codec.rs"]
 mod codec;
+#[path = "learning_iteration_checkpoint_ports.rs"]
+mod ports;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LearningIterationCheckpointErrorV1 {
@@ -81,8 +83,9 @@ enum Store {
 }
 
 /// Consumes the original concrete Root CAS capability, pinned to one exact
-/// request and owner set. It neither issues attestations nor implements the
-/// missing complete production LearningIterationOwnerPortsV1 adapter.
+/// request and owner set. It issues no attestations. `with_stage_owners` binds
+/// this existing capability to the ordinary iteration worker's persistence
+/// calls while retaining the independently supplied stage owners.
 pub struct LearningIterationCheckpointOwnerV1 {
     owner_id: String,
     store: Store,

@@ -673,6 +673,7 @@ pub use learning_iteration_checkpoint::LearningIterationCheckpointRecordV1;
 pub use learning_iteration_ports::LearningIterationOwnerFutureV1;
 pub use learning_iteration_ports::LearningIterationOwnerPortsV1;
 pub use learning_iteration_ports::LearningIterationProposalPayloadV1;
+pub use learning_iteration_ports::LearningIterationStageOwnerPortsV1;
 pub use learning_iteration_ports::PreparedLearningIterationProposalV1;
 pub use neuron_cell_evaluation::CellComparisonContractV1;
 pub use neuron_cell_evaluation::CellCostCoverageV1;

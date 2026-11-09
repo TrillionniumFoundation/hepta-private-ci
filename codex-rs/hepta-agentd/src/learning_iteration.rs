@@ -39,6 +39,8 @@ pub enum LearningIterationRuntimeErrorV1 {
     DeadlineExceeded,
     OwnerUnavailable(&'static str),
     CommitUncertain,
+    #[cfg(unix)]
+    Checkpoint(crate::LearningIterationCheckpointErrorV1),
     Evidence(SignedEvidenceError),
     Proposal(PlasticityRuntimeCallErrorV1),
 }
