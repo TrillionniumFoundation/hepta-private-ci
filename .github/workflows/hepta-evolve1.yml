@@ -100,7 +100,7 @@ jobs:
               python -m unittest -v "$module" || status=1
           done <<'CASES'
           25 scripts.ndu_real_runtime.test_causal_ace
-          13 scripts.ndu_real_runtime.test_evolve1
+          17 scripts.ndu_real_runtime.test_evolve1
           3 scripts.ndu_real_runtime.test_evolve1_pilot
           CASES
           exit "$status"

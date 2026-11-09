@@ -14,6 +14,10 @@ retention_data_digest pins the actual frozen retention data, not group-ID text.
 Authenticated heldout_final evaluator records add retention_baseline,
 retention_candidate (higher is better), and matching retention_data_digest.
 The frozen holdout profile must cover both utility and retention evaluation.
+Original run IDs cannot repeat under either their producer or evaluator owner.
+Attempt and operation IDs cannot repeat under their producer owner. Independent
+owners may reuse local identifiers; pair IDs and shared confirmation data are
+not original execution identities and remain eligible for reuse.
 
 Output cells S0-I0/S0-I1/S1-I0/S1-I1 report registered/qualified/unresolved run
 counts, missing-evidence probability bounds (NOT confidence intervals), all-run
@@ -38,6 +42,7 @@ _CELLS = ("S0-I0", "S0-I1", "S1-I0", "S1-I1")
 def _validated_blocks(blocks):
     _require(isinstance(blocks, list) and blocks, "EVOLVE_BLOCKS_REQUIRED")
     prepared, lineages, children, global_groups, global_data = [], set(), set(), {}, {}
+    original_runs = set()
     for block in deepcopy(blocks):
         _fields(
             block,
@@ -97,6 +102,10 @@ def _validated_blocks(blocks):
         children.add(child)
         cells, context = {}, None
         for run_id, run in runs.items():
+            for owner_role in ("producer_owner", "evaluator_owner"):
+                identity = (owner_role, run[owner_role], run_id)
+                _require(identity not in original_runs, "EVOLVE_REUSED_ORIGINAL_RUN")
+                original_runs.add(identity)
             start = run["common_start"]
             _require(start["initial_bundle"] in solver_rows, "EVOLVE_SOLVER_BINDING")
             row = solver_rows[start["initial_bundle"]]
@@ -263,6 +272,7 @@ def summarize_transfer(
     prepared = _validated_blocks(blocks)
     cell_records = {cell: [] for cell in _CELLS}
     lineages, history = {}, {}
+    original_attempts, original_operations = set(), set()
     complete = True
     for block, runs, pairs, cells, _, _ in prepared:
         verified_finals = {}
@@ -294,6 +304,21 @@ def summarize_transfer(
             read_evaluation=read if has_ports else None,
             verify_evaluation=verify if has_ports else None,
         )
+        # The existing validator has checked these registered identities, including
+        # attempts with missing results. A new lineage cannot count them again.
+        for entry in block["registry"]["entries"]:
+            owner = runs[entry["run_id"]]["producer_owner"]
+            for key, observed, code in (
+                ("attempt_id", original_attempts, "EVOLVE_REUSED_ORIGINAL_ATTEMPT"),
+                (
+                    "operation_id",
+                    original_operations,
+                    "EVOLVE_REUSED_ORIGINAL_OPERATION",
+                ),
+            ):
+                identity = (owner, entry[key])
+                _require(identity not in observed, code)
+                observed.add(identity)
         complete = complete and comparison["status"] == "DESCRIPTIVE_COMPLETE"
         results, rows_by_id = {}, {row["attempt_id"]: row for row in block["attempts"]}
         for run_id, run in runs.items():

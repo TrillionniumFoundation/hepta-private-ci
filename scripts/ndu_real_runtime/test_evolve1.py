@@ -93,6 +93,18 @@ def transfer_fixture(lineage="lineage-0"):
     }, evaluations
 
 
+def remap_identifiers(value, aliases):
+    """Rename exact fixture identities, including run-keyed registries."""
+    if isinstance(value, dict):
+        return {
+            aliases.get(key, key): remap_identifiers(item, aliases)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [remap_identifiers(item, aliases) for item in value]
+    return aliases.get(value, value) if isinstance(value, str) else value
+
+
 class EvolveTransferChecks(unittest.TestCase):
     def assess(self, block, records, **options):
         return summarize_transfer(
@@ -286,6 +298,89 @@ class EvolveTransferChecks(unittest.TestCase):
             run["common_start"]["holdout_data"] = pin("different-holdout-data")
         with self.assertRaisesRegex(ACEValidationError, "EVOLVE_DATA_DIGEST_LEAKAGE"):
             self.assess([first, second], {})
+
+    def test_relabelled_lineage_cannot_recount_original_runs(self):
+        first, records = transfer_fixture()
+        second, other_records = transfer_fixture("lineage-1")
+        aliases = {
+            new["run_id"]: old["run_id"]
+            for old, new in zip(first["plan"]["runs"], second["plan"]["runs"])
+        }
+        second = remap_identifiers(second, aliases)
+        records.update(remap_identifiers(other_records, aliases))
+        for changed_owner in (None, "producer_owner", "evaluator_owner"):
+            with self.subTest(changed_owner=changed_owner):
+                renamed = deepcopy(second)
+                if changed_owner is not None:
+                    for run in renamed["plan"]["runs"]:
+                        run[changed_owner] = "other/" + run[changed_owner]
+                with self.assertRaisesRegex(
+                    ACEValidationError, "EVOLVE_REUSED_ORIGINAL_RUN"
+                ):
+                    self.assess([first, renamed], records)
+
+    def test_original_attempt_and_operation_cannot_be_reused_with_new_run_ids(self):
+        for key, code in (
+            ("attempt_id", "EVOLVE_REUSED_ORIGINAL_ATTEMPT"),
+            ("operation_id", "EVOLVE_REUSED_ORIGINAL_OPERATION"),
+        ):
+            with self.subTest(identity=key):
+                first, records = transfer_fixture()
+                second, other_records = transfer_fixture("lineage-1")
+                aliases = {
+                    second["registry"]["entries"][0][key]: first["registry"]["entries"][
+                        0
+                    ][key]
+                }
+                second = remap_identifiers(second, aliases)
+                records.update(remap_identifiers(other_records, aliases))
+                with self.assertRaisesRegex(ACEValidationError, code):
+                    self.assess([first, second], records)
+
+    def test_unresolved_registered_operation_remains_an_original_identity(self):
+        first, records = transfer_fixture()
+        second, other_records = transfer_fixture("lineage-1")
+        original = first["registry"]["entries"][2]
+        first["attempts"] = [
+            row
+            for row in first["attempts"]
+            if row["attempt_id"] != original["attempt_id"]
+        ]
+        aliases = {
+            second["registry"]["entries"][0]["operation_id"]: original["operation_id"]
+        }
+        second = remap_identifiers(second, aliases)
+        records.update(remap_identifiers(other_records, aliases))
+        with self.assertRaisesRegex(
+            ACEValidationError, "EVOLVE_REUSED_ORIGINAL_OPERATION"
+        ):
+            self.assess([first, second], records)
+
+    def test_independent_owner_namespaces_can_reuse_local_identifiers(self):
+        first, records = transfer_fixture()
+        second, other_records = transfer_fixture("lineage-1")
+        aliases = {
+            new["run_id"]: old["run_id"]
+            for old, new in zip(first["plan"]["runs"], second["plan"]["runs"])
+        }
+        for old, new in zip(
+            first["registry"]["entries"], second["registry"]["entries"]
+        ):
+            aliases.update(
+                {new[key]: old[key] for key in ("attempt_id", "operation_id")}
+            )
+        for run in second["plan"]["runs"]:
+            for key in ("producer_owner", "evaluator_owner"):
+                aliases[run[key]] = "independent/" + run[key]
+        second = remap_identifiers(second, aliases)
+        records.update(remap_identifiers(other_records, aliases))
+        report = self.assess([first, second], records)
+        self.assertEqual(report["status"], "DESCRIPTIVE_PILOT_COMPLETE")
+        self.assertTrue(
+            all(cell["qualified_runs"] == 2 for cell in report["cells"].values())
+        )
+        self.assertFalse(report["independent_lineage_provenance_verified"])
+        self.assertFalse(report["scientific_efficacy_qualified"])
 
 
 if __name__ == "__main__":
