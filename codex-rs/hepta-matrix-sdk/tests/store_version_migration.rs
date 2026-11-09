@@ -8,6 +8,7 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_matrix_protocol::MATRIX_BINDING_SCHEMA_VERSION;
@@ -298,8 +299,20 @@ async fn reopen_fixture(root: &Path) -> TestResult {
 #[tokio::test]
 async fn encrypted_state_identity_session_and_queues_survive_restart() -> TestResult {
     let temp = tempfile::tempdir()?;
-    prepare_fixture(temp.path()).await?;
-    reopen_fixture(temp.path()).await
+    let started = Instant::now();
+    let prepared = prepare_fixture(temp.path()).await;
+    eprintln!(
+        "matrix migration prepare elapsed_ms={}",
+        started.elapsed().as_millis(),
+    );
+    prepared.map_err(|error| format!("matrix migration prepare failed: {error}"))?;
+    let started = Instant::now();
+    let reopened = reopen_fixture(temp.path()).await;
+    eprintln!(
+        "matrix migration reopen elapsed_ms={}",
+        started.elapsed().as_millis(),
+    );
+    reopened.map_err(|error| format!("matrix migration reopen failed: {error}").into())
 }
 
 fn external_fixture_directory() -> TestResult<PathBuf> {

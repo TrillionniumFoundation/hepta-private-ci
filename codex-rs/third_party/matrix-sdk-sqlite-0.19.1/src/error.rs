@@ -64,6 +64,10 @@ pub enum OpenStoreError {
     #[error("Failed to initialize the store cipher: {0}")]
     InitCipher(#[from] matrix_sdk_store_encryption::Error),
 
+    /// The blocking cipher worker could not return its result.
+    #[error("Store cipher worker failed")]
+    CipherTask(#[source] tokio::task::JoinError),
+
     /// Failed to load the store cipher from the DB.
     #[error("Failed to load the store cipher from the DB: {0}")]
     LoadCipher(#[source] rusqlite::Error),

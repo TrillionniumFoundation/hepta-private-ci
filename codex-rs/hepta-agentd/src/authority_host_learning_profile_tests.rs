@@ -108,3 +108,31 @@ fn learning_profile_refuses_unknown_storage_fields_and_incompatible_schema() -> 
     );
     Ok(())
 }
+
+#[test]
+fn root_profile_requires_frozen_evaluation_and_refuses_unbound_initial_bytes()
+-> anyhow::Result<()> {
+    let (_directory, identity, coordinator) = fixture()?;
+    let initial = coordinator.snapshot();
+    let mut missing = initial.request.clone();
+    missing.evaluation_profile = Digest32::ZERO;
+    assert!(
+        HostAuthorityLearningProfileV1::new(&identity, [7; 32], missing, initial.owners.clone())
+            .is_err()
+    );
+    let mut profile = HostAuthorityLearningProfileV1::new(
+        &identity,
+        [7; 32],
+        initial.request.clone(),
+        initial.owners.clone(),
+    )?;
+    let writer = Digest32::from_array([7; 32]).to_string();
+    assert_eq!(profile.require_binding(&identity, &writer)?, *initial);
+    let mut old_version = codec::encode(initial)?;
+    old_version[..8].copy_from_slice(b"HEPLCP01");
+    profile.initial_snapshot = STANDARD_NO_PAD.encode(old_version);
+    let original_bytes = serde_json::to_vec(&profile)?;
+    assert!(profile.require_binding(&identity, &writer).is_err());
+    assert_eq!(serde_json::to_vec(&profile)?, original_bytes);
+    Ok(())
+}

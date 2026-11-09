@@ -22,6 +22,7 @@
     allow(dead_code, unused_imports)
 )]
 
+mod cipher;
 mod connection;
 #[cfg(feature = "crypto-store")]
 mod crypto_store;

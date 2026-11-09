@@ -696,8 +696,9 @@ zbus-secret-service-keyring-store = { path = "third_party/zbus-secret-service-ke
 # API stable while replacing the unmaintained implementation with anymap3.
 anymap2 = { path = "third_party/anymap2-compat" }
 # Matrix SDK 0.19.1 requires the libsqlite3-sys 0.38 line through rusqlite.
-# Preserve the existing SQLx 0.9/libsqlite3-sys 0.37 link with a manifest-only
-# rusqlite 0.39 compatibility patch. Upstream Rust and SQL are unchanged.
+# Preserve the existing SQLx 0.9/libsqlite3-sys 0.37 link through rusqlite 0.39.
+# The local Rust patch also moves cipher CPU work off the async execution thread;
+# encryption parameters, SQL and startup deadlines remain unchanged.
 matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.19.1" }
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }

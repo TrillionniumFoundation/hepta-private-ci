@@ -59,12 +59,8 @@ impl MatrixSdkClient {
         store_passphrase: Option<&str>,
     ) -> Result<Self, MatrixSdkError> {
         verify_session_identity(&config, &session)?;
-        let sidecar = tokio::time::timeout(
-            MATRIX_STARTUP_REQUEST_TIMEOUT,
-            Self::build(layout, config, store_passphrase),
-        )
-        .await
-        .map_err(|_| MatrixSdkError::Initialization)??;
+        let sidecar = initialization_with_deadline(Self::build(layout, config, store_passphrase))
+            .await?;
         sidecar
             .client
             .restore_session(session.clone())
@@ -83,12 +79,8 @@ impl MatrixSdkClient {
         store_passphrase: Option<&str>,
         device_display_name: Option<&str>,
     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
-        let sidecar = tokio::time::timeout(
-            MATRIX_STARTUP_REQUEST_TIMEOUT,
-            Self::build(layout, config, store_passphrase),
-        )
-        .await
-        .map_err(|_| MatrixSdkError::Initialization)??;
+        let sidecar = initialization_with_deadline(Self::build(layout, config, store_passphrase))
+            .await?;
         let mut login = sidecar
             .client
             .matrix_auth()
@@ -126,12 +118,9 @@ impl MatrixSdkClient {
         store_passphrase: Option<&str>,
         device_display_name: Option<&str>,
     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
-        let sidecar = tokio::time::timeout(
-            MATRIX_STARTUP_REQUEST_TIMEOUT,
-            Self::build(layout, config.clone(), store_passphrase),
-        )
-        .await
-        .map_err(|_| MatrixSdkError::Initialization)??;
+        let sidecar =
+            initialization_with_deadline(Self::build(layout, config.clone(), store_passphrase))
+                .await?;
 
         if let Some(session) = load_session(sidecar.paths.session())? {
             verify_session_identity(&sidecar.config, &session)?;
@@ -170,7 +159,7 @@ impl MatrixSdkClient {
             .handle_refresh_tokens()
             .build()
             .await
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|_| MatrixSdkError::ClientBuild)?;
         // The SDK's own sync token is only an optimization for its normal
         // sync loop.  Hepta persists the authoritative cursor in its durable
         // inbox store and always supplies that cursor explicitly.  Clear a
@@ -181,7 +170,7 @@ impl MatrixSdkClient {
             .state_store()
             .remove_kv_data(StateStoreDataKey::SyncToken)
             .await
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|_| MatrixSdkError::SyncTokenReset)?;
         let save_session_path = paths.session().to_path_buf();
         let reload_session_path = paths.session().to_path_buf();
         client
@@ -207,7 +196,7 @@ impl MatrixSdkClient {
                     })
                 }),
             )
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|_| MatrixSdkError::SessionCallbacks)?;
         verify_homeserver(&config, &client)?;
         Ok(Self {
             client,
@@ -319,7 +308,7 @@ impl MatrixSdkClient {
         self.client
             .event_cache()
             .subscribe()
-            .map_err(|_| MatrixSdkError::Initialization)
+            .map_err(|_| MatrixSdkError::EventCacheSubscription)
     }
 
     fn verify_authenticated_identity(&self) -> Result<(), MatrixSdkError> {
@@ -454,6 +443,18 @@ pub enum MatrixSdkError {
     Configuration,
     #[error("Matrix SDK persistent store initialization failed")]
     Initialization,
+    #[error("Matrix SDK initialization exceeded its startup deadline")]
+    InitializationTimeout,
+    #[error("Matrix SDK client builder failed")]
+    ClientBuild,
+    #[error("Matrix SDK persisted sync token reset failed")]
+    SyncTokenReset,
+    #[error("Matrix SDK session callback registration failed")]
+    SessionCallbacks,
+    #[error("Matrix SDK persisted session read or validation failed")]
+    SessionRead,
+    #[error("Matrix SDK event cache subscription failed")]
+    EventCacheSubscription,
     #[error("Matrix authentication failed")]
     Authentication,
     #[error("Matrix session identity differs from the exact binding")]
@@ -470,6 +471,16 @@ impl From<MatrixSidecarConfigError> for MatrixSdkError {
     fn from(_: MatrixSidecarConfigError) -> Self {
         Self::Configuration
     }
+}
+
+// Preserve the production deadline and any completed phase error. Fixed error
+// variants locate the failure without exposing paths, tokens or SDK messages.
+async fn initialization_with_deadline<T>(
+    operation: impl std::future::Future<Output = Result<T, MatrixSdkError>>,
+) -> Result<T, MatrixSdkError> {
+    tokio::time::timeout(MATRIX_STARTUP_REQUEST_TIMEOUT, operation)
+        .await
+        .map_err(|_| MatrixSdkError::InitializationTimeout)?
 }
 
 fn verify_session_identity(
@@ -497,7 +508,7 @@ fn load_session(path: &std::path::Path) -> Result<Option<MatrixSession>, MatrixS
     let metadata = match std::fs::symlink_metadata(path) {
         Ok(metadata) => metadata,
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-        Err(_) => return Err(MatrixSdkError::Initialization),
+        Err(_) => return Err(MatrixSdkError::SessionRead),
     };
     if !metadata.file_type().is_file()
         || !session_file_is_single_link(&metadata)
@@ -505,11 +516,11 @@ fn load_session(path: &std::path::Path) -> Result<Option<MatrixSession>, MatrixS
         || metadata.len() > MATRIX_SESSION_MAX_BYTES
         || !session_file_mode_is_private(&metadata)
     {
-        return Err(MatrixSdkError::Initialization);
+        return Err(MatrixSdkError::SessionRead);
     }
-    serde_json::from_slice(&std::fs::read(path).map_err(|_| MatrixSdkError::Initialization)?)
+    serde_json::from_slice(&std::fs::read(path).map_err(|_| MatrixSdkError::SessionRead)?)
         .map(Some)
-        .map_err(|_| MatrixSdkError::Initialization)
+        .map_err(|_| MatrixSdkError::SessionRead)
 }
 
 fn persist_session(path: &std::path::Path, session: &MatrixSession) -> Result<(), MatrixSdkError> {
@@ -632,6 +643,10 @@ fn system_time_ms() -> Result<u64, MatrixSdkError> {
         .as_millis();
     u64::try_from(millis).map_err(|_| MatrixSdkError::Sync)
 }
+
+#[cfg(test)]
+#[path = "sdk_initialization_tests.rs"]
+mod initialization_tests;
 
 #[cfg(test)]
 mod tests {
