@@ -45,6 +45,9 @@ mod files;
 #[path = "neuron_generation_update_initial_test_support.rs"]
 mod initial_fixture;
 
+#[path = "neuron_generation_owner_process_recovery.rs"]
+pub(crate) mod process_recovery;
+
 use artifacts::ArtifactFiles;
 use files::FileCas;
 use files::NOW;

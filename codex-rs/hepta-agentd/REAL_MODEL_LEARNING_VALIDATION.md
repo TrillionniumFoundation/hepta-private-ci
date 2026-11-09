@@ -196,3 +196,61 @@ assertions remain. This differs from the tested edf03ec bytes; no actual model P
 is attributed to the maintenance source. Tests are not rerun after fix/fmt, following
 AGENTS.md. Exact formatter/lint results and the tested-to-maintained file hashes
 are retained in REAL_MODEL_ADOPTION_MAINTENANCE.json.
+
+## Fresh OS-process owner replay (2026-11-09)
+
+The follow-up at tested source `968430a3180baa3e64b7c275831595ae38c013c9`
+(tree `2b0530ef5d0bbcdd1d2dbb2e3badd7d543a5e255`) completed two new
+actual model operations through the original research paths. The exact nextest
+archive SHA-256 is
+`6901d46102d57a1aee8bee2ec51eafd922e62a3ada61b819a968eb271ab58d78`.
+All 11,215 tracked source entries were checked against their original bytes before
+and after each run. Fourteen existing actor and research-owner controls passed on
+the same tested source.
+
+| Operation | Original native test time | Restored receipts | Retained owner files |
+| --- | ---: | ---: | ---: |
+| `learning-5176-native-no-update-v2` | 45.729 s | 6 | 20 |
+| `learning-5176-native-adopt-v1` | 51.789 s | 7 | 35 |
+
+Each operation performed ten optimizer steps, eight evaluation forwards, one
+source-task forward and one next-task forward. It retained the original
+60-second nextest watchdog, zero automatic retries, 600-second research window,
+four-core CPU quota and 8 GiB memory limit. The positive adoption remains a result
+on the frozen four-prompt research comparison; it is not independent evaluation or
+a general model-quality qualification.
+
+After the original native actors stopped, three distinct native child processes
+reopened the actual owner files. The completed probe read the original CURRENT,
+guarded generation journal, exact next-task receipt, drained ACK state and
+completed learning checkpoint. The two negative probes required refusal of a
+different learning operation and a foreign CURRENT operation ID. All six child
+processes across the two operations passed. The adoption probe also reopened the
+concrete external-artifact owner and its retained sibling anchor.
+
+The IPC context is bound to the original create-only `next-use-owner.json`
+record. Constructing that context does not call `handle.step` again. Each child
+checks the original request, receipt, nonce count and record digest before
+comparing the original receipt with the reopened journal. Generation owner
+files, and the external proposal/anchor files when present, must be byte-for-byte
+unchanged around every probe. The original expiry is checked without renewal.
+
+This is fresh-process owner readback under the research test owner. The native
+parent remains alive to supervise its children. It does not launch or crash and
+restart the full daemon, recreate production Root custody, authorize a new
+dispatch or establish independent operation. `native_daemon_os_restart`,
+`production_root_capability`, `production_final_use`, `production_activation`,
+Parameter V3 and Product OPE qualification remain false; qualification remains
+`HOLD_NO_GO`.
+
+Retained unsuccessful attempts include the initial test-IPC digest serialization
+compile error at `aaec9de151d1a7b2d459e830ed2f105fa83c8c26`, and the first
+NoUpdate packaging attempt that exited before extraction because its destination
+directory did not exist. That packaging attempt executed no native test or model
+operation. Its original wrapper's `model_test_started` field meant only command
+launch; an additional diagnosis preserves that distinction without rewriting the
+failed record. Subsequent attempts use distinct operation directories.
+
+Post-test scoped fix, strict Clippy and formatting are maintenance. Their source
+delta is retained separately, and these native passes belong to the tested
+commit above. Tests are not rerun after that maintenance.

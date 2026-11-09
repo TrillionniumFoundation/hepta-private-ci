@@ -252,6 +252,10 @@ impl LearningIterationCheckpointOwnerV1 {
     }
 }
 
+#[cfg(all(test, unix))]
+#[path = "learning_iteration_os_process_recovery.rs"]
+pub(crate) mod os_process_recovery;
+
 #[cfg(test)]
 #[path = "learning_iteration_checkpoint_tests.rs"]
 mod tests;
