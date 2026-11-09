@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from perc1.acquisition import choose, features, load_head, paired_label, predict
 from perc1.acquisition import save_head, train_head
@@ -84,6 +85,15 @@ class AcquisitionTests(unittest.TestCase):
     def candidate(self, value, upper=4):
         public = pair("heldout-source", "confirmation", value)["features"]
         return {"id": "extra", "upper_cost": upper, "features": public}
+
+    def test_fixed_and_random_do_not_run_the_unused_learned_head(self):
+        with patch(
+            "perc1.acquisition.predict", side_effect=AssertionError("unused head ran")
+        ):
+            for mode in ("fixed", "random"):
+                result = choose(self.head, [self.candidate(1.0)], mode=mode)
+                self.assertEqual(result["action"], "ACQUIRE")
+                self.assertIsNone(result["prediction"])
 
     def test_pair_uses_terminal_gain_and_complete_incremental_cost(self):
         self.assertEqual(paired_label(self.train[2]), (1.0, 4))
