@@ -1,0 +1,179 @@
+{
+  "schema": "hepta.cell-evaluation-readback.qualification.v1",
+  "production_status": "HOLD",
+  "scope": {
+    "schema": "hepta.cell-evaluation-readback.scope.v1",
+    "evaluation_code_head": "715dfcecd10afcdaf9db4d2559c306c11282ba7b",
+    "evaluation_evidence_head": "11e1782675b1ac32e525ff28f3b063a2d4911c3b",
+    "cell_original_candidate": "cff892d9b0c302a76f38aa590b9cec8b7a49251b",
+    "test_scope": "codex-hepta-agentd library tests filtered to neuron_cell_evaluation",
+    "passed": 10,
+    "skipped": 817,
+    "new_parent_tests_included": 3,
+    "original_cell_tests_included": 7,
+    "evaluation_crate_tests_rerun": false,
+    "original_fixture_inputs_restored": [
+      {
+        "path": "docs/modules/MODULES.json",
+        "git_blob": "2571766d45a0a6b0db0ec83e675c70609d3bc39d"
+      },
+      {
+        "path": "qualification/neuron-v13-generation/proposal_worker.py",
+        "git_blob": "a5845d8203bea1b9f17bb6abc917d01b06c9bea5"
+      }
+    ],
+    "mechanism_evidence": [
+      "original drained Cell journal and cost cut checked before durable execution claim",
+      "complete frozen Product plan equality before claim",
+      "completed file readback preserves exact Cell receipt and original evaluator",
+      "expired evidence or changed evaluator rejected",
+      "current original holdout fence required",
+      "no repeated holdout release or execution attestation"
+    ],
+    "limits": [
+      "synthetic cohort and deterministic role keys",
+      "same-process Cell reopen; separate Product tests cover OS child exit",
+      "no real private-head training, independent custody, production Adopt/NoUpdate or NextUse",
+      "evaluation code source-closure receipt does not cover this later Cell change"
+    ]
+  },
+  "source": {
+    "native_git_head": "e2e20033daa67d9d9826d4942e4d6bdd15ba4ab5",
+    "projection_base_tree": "449a94a5d583248a97d00605a77c5a54592f05e2",
+    "tested_source_projection_tree": "af07cf9473a7ab25a8eeb26bd06bd7a9d53917f1",
+    "maintained_source_projection_tree": "72f4a9bc320723ccfc1cb3fe1b0dd8248d58d70d",
+    "published_code_commit": "bc6b9ff0a6436c5aacc3a3f0fb1edca7b5dd115b",
+    "published_code_tree": "29b59b85b406cca78e7c76b9fb9c0f112c08ca66",
+    "tested_inventory_sha256": "92dc7b736c831fbc7f1e7525239201aa768f54aa82824aafd6ef6b0494ef5ef4",
+    "maintained_inventory_sha256": "843b0e6e5ed93671dcfcdc8230930d88f2379b30a0d4c2dff7ce6ea6183c4e97",
+    "matched_objects": 10618,
+    "codex_rs_objects": 10616,
+    "canonical_external_inputs": 2,
+    "projection_excludes_later_qualification_documents": true
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "neuron_cell_evaluation",
+    "--test-threads",
+    "2"
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "exit_code": 101,
+      "tests_executed": 0,
+      "elapsed_seconds": 464.039115190506,
+      "source_inventory_sha256": "3439302f06eb483d7823649ac422ead4e98607e83f23288aa1902f869ca56c64",
+      "source_file_count": 10616,
+      "source_unchanged": true,
+      "log": "native-evidence-v1.tar.xz:cell-attempt-01/test.log",
+      "log_sha256": "b9f22433ed329a110f774a059773bd4ef55c00d638e9a8364e3ee06e1b12d8ab",
+      "failure": "missing original docs/modules/MODULES.json"
+    },
+    {
+      "attempt": 2,
+      "exit_code": 101,
+      "tests_executed": 0,
+      "elapsed_seconds": 140.7422811985016,
+      "source_inventory_sha256": "be4bd2c7690e6dd491fd639e1a43727176f089b5c769230b8d2b0510c9fafb51",
+      "source_file_count": 10617,
+      "source_unchanged": true,
+      "log": "native-evidence-v1.tar.xz:cell-attempt-02/test.log",
+      "log_sha256": "8c32ab5f4430169dc51d6bfe3a962ccb261e02e60b12e6aa7c4a9cf8491e6382",
+      "failure": "missing original qualification/neuron-v13-generation/proposal_worker.py"
+    },
+    {
+      "attempt": 3,
+      "exit_code": 0,
+      "tests_executed": 10,
+      "elapsed_seconds": 142.79770040512085,
+      "source_inventory_sha256": "92dc7b736c831fbc7f1e7525239201aa768f54aa82824aafd6ef6b0494ef5ef4",
+      "source_file_count": 10618,
+      "source_unchanged": true,
+      "log": "native-evidence-v1.tar.xz:cell-attempt-03/test.log",
+      "log_sha256": "1fb30e56aaab0ba36e052a7498856164aaa33af6dfb971c8179606d59614c38c",
+      "failure": null
+    }
+  ],
+  "maintenance": {
+    "results": [
+      {
+        "name": "fix",
+        "command": [
+          "just",
+          "fix",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 400.04068660736084
+      },
+      {
+        "name": "fmt",
+        "command": [
+          "just",
+          "fmt"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 1.284299612045288
+      }
+    ],
+    "changed_by_maintenance": [
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_readback_tests.rs"
+    ],
+    "tests_rerun_after_maintenance": false
+  },
+  "maintained_check": {
+    "command": [
+      "cargo",
+      "check",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib",
+      "--bins"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 151.27971577644348,
+    "behavior_tests_rerun": false,
+    "source_unchanged": true
+  },
+  "warning_free_claimed": false,
+  "warnings_retained": [
+    "preexisting duplicate_mod in checkpoint test support",
+    "third-party i18n-config lifetime syntax",
+    "scoped nextest cargo metadata package warnings"
+  ],
+  "full_caller_closure_on_this_cell_head": {
+    "status": "NOT_RUN",
+    "prior_evaluation_receipt_scope": "715dfcecd10afcdaf9db4d2559c306c11282ba7b"
+  },
+  "real_model_training": false,
+  "independent_evaluator_custody_established": false,
+  "production_adopt_or_no_update": false,
+  "root_session_learning_recovery": false,
+  "main_merged": false,
+  "deployed": false,
+  "archives": [
+    {
+      "path": "native-evidence-v1.tar.xz",
+      "bytes": 771984,
+      "sha256": "c6c5c9375d0b156827fc7f013879dbdeea4861e5bf85491d9fe24e084b23746f"
+    },
+    {
+      "path": "source-and-review-evidence-v1.tar.xz",
+      "bytes": 7944,
+      "sha256": "4c1f82851d8452119a29ad19c899ca9469a37409a2677a01bf2bc3365aea5d28"
+    }
+  ]
+}
