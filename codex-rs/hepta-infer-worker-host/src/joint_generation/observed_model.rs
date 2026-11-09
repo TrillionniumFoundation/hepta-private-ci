@@ -66,9 +66,15 @@ impl Model {
         &self,
         state: &State,
         observation: &DeliveryObservation,
+        public: &Packet,
     ) -> Result<Packet> {
         let features = self.features_observed(state, observation)?;
-        let mut result = self.inspect_features(state, &features, Some(observation))?;
+        let mut result = self.inspect_features(
+            state,
+            &features,
+            Some(observation),
+            self.verification_support(public)?,
+        )?;
         result.vector("observation.features", observation.features());
         result.vector(
             "observation.cursors",
