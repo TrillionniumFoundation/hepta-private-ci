@@ -1,0 +1,303 @@
+{
+  "status": "common_draft_fast_forward_published_and_remote_readback_verified",
+  "finished_at": "2026-11-09T02:50:20.636321+00:00",
+  "previous_common_source": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1",
+  "previous_common_tree": "d2f261084bad25c230b95835e9a589fe7b866be1",
+  "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "branch": "codex/cell-s0-common-20261108-898e",
+  "source_was_already_frozen": true,
+  "new_merge_commit_created": false,
+  "original_native_workflow_completed_before_push": true,
+  "preceding_common_workflows": [
+    {
+      "id": 42534602375,
+      "name": "blocking-ci",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602412,
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602479,
+      "name": "Hepta EVOLVE-1 CPU contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602381,
+      "name": "Hepta Cell research stage evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602458,
+      "name": "Hepta MEM-1 evidence verifier",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602352,
+      "name": "Hepta HCSN training bridge",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602390,
+      "name": "App-server schema refresh",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602309,
+      "name": "Production HOS2 owner proposal",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602449,
+      "name": "Hepta PRED-1 CPU checks",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602366,
+      "name": "Hepta VERIFY-1 engineering validation",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602361,
+      "name": "Keyring synchronous backend lock proposal",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602368,
+      "name": "Bazel stable lock proposal",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602485,
+      "name": "Rust UI product foundation",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602336,
+      "name": "v8-canary",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602310,
+      "name": "Hepta architecture convergence",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534602318,
+      "name": "Windows original CI regressions (declared scope only)",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534597175,
+      "name": "Hepta Cell research stage evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    },
+    {
+      "id": 42534597157,
+      "name": "Hepta Cell framework native validation",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+    }
+  ],
+  "no_process_cancel_command_used": true,
+  "pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5397",
+  "draft": true,
+  "new_ci_is_not_a_passing_result": true,
+  "initial_new_ci_run_observed": true,
+  "initial_new_runs": [
+    {
+      "id": 42553073516,
+      "name": "v8-canary",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073516"
+    },
+    {
+      "id": 42553073435,
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073435"
+    },
+    {
+      "id": 42553073234,
+      "name": "Windows original CI regressions (declared scope only)",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073234"
+    },
+    {
+      "id": 42553073160,
+      "name": "blocking-ci",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160"
+    },
+    {
+      "id": 42553073280,
+      "name": "Hepta EVOLVE-1 CPU contracts",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073280"
+    },
+    {
+      "id": 42553073250,
+      "name": "Rust UI product foundation",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073250"
+    },
+    {
+      "id": 42553073121,
+      "name": "Hepta Cell research stage evidence",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073121"
+    },
+    {
+      "id": 42553073323,
+      "name": "Keyring synchronous backend lock proposal",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073323"
+    },
+    {
+      "id": 42553073159,
+      "name": "Hepta VERIFY-1 engineering validation",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073159"
+    },
+    {
+      "id": 42553073131,
+      "name": "Bazel stable lock proposal",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073131"
+    },
+    {
+      "id": 42553073191,
+      "name": "Hepta MEM-1 evidence verifier",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073191"
+    },
+    {
+      "id": 42553073195,
+      "name": "Hepta PRED-1 CPU checks",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073195"
+    },
+    {
+      "id": 42553073125,
+      "name": "Hepta architecture convergence",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073125"
+    },
+    {
+      "id": 42553073264,
+      "name": "Hepta HCSN training bridge",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073264"
+    },
+    {
+      "id": 42553073130,
+      "name": "App-server schema refresh",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073130"
+    },
+    {
+      "id": 42553073141,
+      "name": "Production HOS2 owner proposal",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073141"
+    },
+    {
+      "id": 42553066841,
+      "name": "Hepta Cell research stage evidence",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553066841"
+    },
+    {
+      "id": 42553066862,
+      "name": "Hepta Cell framework native validation",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553066862"
+    }
+  ],
+  "original_ba4_results_not_relabelled": true,
+  "independent_windows_and_ui_observers_unchanged": true,
+  "full_history_cost": null,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "commands_sha256": "f0a89010f2e6a8f5cf1c96149a7230c6e6e9872e91fb6378fc8b5eb2adbb1d76"
+}

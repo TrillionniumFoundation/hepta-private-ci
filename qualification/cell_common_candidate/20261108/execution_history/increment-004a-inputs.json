@@ -1,0 +1,739 @@
+{
+  "schema": "hepta.evidence-increment-source-bound-inputs.v1",
+  "phase": "increment-004a",
+  "expected_evidence_head": "4628cc139cc8067b1fa42713aa80c32c819e4e48",
+  "expected_index_sha256": "c87b370cf668f143f08b74fd3b0e0f51d34023f6c611828c8538387039cdc388",
+  "expected_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "expected_common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "expected_prior_packet_count": 53,
+  "expected_final_packet_count": 59,
+  "scope": "Only the six explicitly sealed packets listed below. Later grouped Windows or common CI outcomes require a new reviewed phase/input; no active or partial follow-on result is silently added.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "physical_cost": null,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "current_common_validation": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+    "local_python": {
+      "packet_id": "bf42-python130-full-caller-originals-v1",
+      "independent_unit_cases_passed": 130,
+      "full_caller_passed": true,
+      "full_caller_elapsed_seconds": 380.6801889021881,
+      "full_caller_budget_seconds": 600,
+      "source_unchanged": true
+    },
+    "local_strict_preparation": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "prepared_clean",
+      "scope": "Same-source V8 and helper plus owning agentd qualification-cognitive-write just fix and read-only clippy; previous owners' unchanged-source preparations retain their own historical identities.",
+      "source_unchanged": true
+    },
+    "local_selected_native": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "PASS",
+      "selected_unique_cases_executed": 38,
+      "selected_unique_cases_passed": 38,
+      "selected_skips": 0,
+      "retries": 0,
+      "raw_nextest_leak_readback": "NO_NEXTEST_LEAK_OBSERVED",
+      "full_workspace": false,
+      "windows_execution": false,
+      "source_unchanged": true,
+      "filter_excluded_counts_not_added": true
+    },
+    "full_repository_ci": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "state": "pending_or_in_progress_at_publication_readback",
+      "conclusion": null,
+      "green": null,
+      "observation_cutoff": "2026-11-09T02:50:20.636321Z",
+      "registration_packet_id": "bf42-source-freeze-common-fastforward-and-publication-history-v3",
+      "initial_run_ids": {
+        "native": 42553066862,
+        "blocking": 42553073160,
+        "ui": 42553073250,
+        "windows": 42553073234
+      },
+      "completion_result_included": false
+    },
+    "independent_grouped_windows_result_included": false,
+    "ui_diagnostic_source_qualified_as_common": false,
+    "scientific_qualification_performed": false,
+    "full_history_cost": null,
+    "physical_cost": null,
+    "stage_advancement_claimed": false
+  },
+  "packets": [
+    {
+      "packet_id": "bf42-python130-full-caller-originals-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/followup5-bf42d2a-python-sealed-v1/original-python-execution.tar.xz",
+      "bytes": 22044,
+      "sha256": "793167e250598093524aa4f1de2de0a4b25f1fc691610db80675b731c21da200",
+      "compression": "xz",
+      "file_member_count": 49,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "scope": "Exact bf42 fixed-source engineering Python validation: 130 independent unit cases, original caller self-test and complete caller scan passing in 380.6801889021881 seconds under the unchanged 600-second gate, with original command logs, clean before/after source and unchanged formal CURRENT. The original earlier sealer-invocation failure is retained in the archive. This packet runs no Rust and provides no S0-S5 or complete-cost qualification.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "path": "execution-manifest.json",
+          "bytes": 21608,
+          "sha256": "f837b0ef75bab3dd1d28e892e9d0656f87f59109f35b577f1f8dab6fcffe0570",
+          "equals": [
+            {
+              "path": [
+                "state"
+              ],
+              "value": "finished"
+            },
+            {
+              "path": [
+                "all_commands_passed"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "source_unchanged"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "expected_independent_unittest_count"
+              ],
+              "value": 130
+            },
+            {
+              "path": [
+                "before",
+                "commit"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "before",
+                "tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "after",
+                "commit"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "after",
+                "tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "full_history_cost"
+              ],
+              "value": null
+            },
+            {
+              "path": [
+                "native_tests_included"
+              ],
+              "value": false
+            }
+          ]
+        },
+        {
+          "path": "caller-full-scan.json",
+          "bytes": 1462,
+          "sha256": "a9b6341ab78c6bc471692d44f6396104b767738d69bff09cb398230b4e39c463",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "tested_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "status"
+              ],
+              "value": "passed"
+            },
+            {
+              "path": [
+                "elapsed_seconds"
+              ],
+              "value": 380.6801889021881
+            },
+            {
+              "path": [
+                "timed_out"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "command_exit_code"
+              ],
+              "value": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/followup5-bf42d2a-selected-complete.tar.xz",
+      "bytes": 2709476,
+      "sha256": "4deb1c2bdaf59eba048f8ab05de06a383909f60dc21e70c37886421f00f0a2d0",
+      "compression": "xz",
+      "file_member_count": 179,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "scope": "Exact bf42 selected Linux engineering validation: same-source V8/helper preparation, owning agentd qualification-feature strict fix and read-only clippy with unchanged source, followed by 13 selected cases plus the discovered complete 25-case operator lib target. All 38 selected unique cases pass with fresh JUnit, zero selected skips/retries and an independently bound raw-log readback reporting NO_NEXTEST_LEAK_OBSERVED. Filter-excluded cases and overlapping historical scopes are not additional executions. Includes the first failed launch before Cargo, the unexplained disappearance of the prior task target, admission of the new empty Cargo target, and resulting cold-build command costs; registry-cache state and full physical/history cost remain unknown. This is not a full workspace or Windows run.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "path": "followup5-bf42d2a-native13-operator-v1/RESULT.json",
+          "bytes": 68210,
+          "sha256": "f77d163276061f8edf94c0bde615ddf8728ba617193b60abbf3365defe4b569f",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "status"
+              ],
+              "value": "PASS"
+            },
+            {
+              "path": [
+                "returncode"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "expected_selected_tests"
+              ],
+              "value": 38
+            },
+            {
+              "path": [
+                "source_unchanged"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "source_before",
+                "files_sha256"
+              ],
+              "value": "2464b0bf9018b4bab8e4b1ae5f40d999ccb7cf3f16de51055b660e10cb372172"
+            },
+            {
+              "path": [
+                "source_after",
+                "files_sha256"
+              ],
+              "value": "2464b0bf9018b4bab8e4b1ae5f40d999ccb7cf3f16de51055b660e10cb372172"
+            }
+          ]
+        },
+        {
+          "path": "followup5-bf42d2a-strictfix-v2/preparation.json",
+          "bytes": 8140,
+          "sha256": "2698246a5b16ae62ae80ad589a42d9d18a311dcc6d32a8f7275cac7a2be87c89",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "status"
+              ],
+              "value": "prepared_clean"
+            },
+            {
+              "path": [
+                "source_unchanged"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "returncode"
+              ],
+              "value": 0
+            }
+          ]
+        },
+        {
+          "path": "followup5-bf42d2a-leak-readback-v1/RESULT.json",
+          "bytes": 23948,
+          "sha256": "324b223911155baae6ad48045eb39b85cfbb3c58d30a920b46c4c3d03c910671",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "status"
+              ],
+              "value": "NO_NEXTEST_LEAK_OBSERVED"
+            },
+            {
+              "path": [
+                "new_tests_run"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "all_original_nextest_reports_clean"
+              ],
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "ui-status-diagnostic-originals-5e33-history-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ui-status-diagnostic-history-v1/ui-status-diagnostic-history.tar.xz",
+      "bytes": 2340476,
+      "sha256": "e8c880a965de795c7d11b8b82a0a089cf7e6eea8daeb79a06dd0148540e26923",
+      "compression": "xz",
+      "file_member_count": 417,
+      "source_sha": "5e33ff84c6e556a63de77610ea968d480221747c",
+      "source_tree": "e73045f95d99644c6f7b2b1ff2b111f6b4969782",
+      "scope": "Original UI diagnostic execution and preparation history on instrumented source 5e33, parent d1, run 42549225359. Seven original cases pass with zero retries/skips: six real gateway status cases plus one synthetic SDK export-sink control. Includes original job raw, verified 180-member artifact, paired recorded wait boundaries, and preparation/publication failures. The previous timeout was not reproduced; root cause remains unknown. Synchronous diagnostic I/O can change scheduling; the pass does not qualify uninstrumented d1 or bf42, prove a production fix, or advance a research stage.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "path": "ui-status-diagnostic-preparation-v1/UI_DIAGNOSTIC_RESULT.json",
+          "bytes": 3446,
+          "sha256": "9d221aeabbf99a6f137d75888e690a992c7619a1eb15e38ba5302c17cdb5cd92",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "5e33ff84c6e556a63de77610ea968d480221747c"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "e73045f95d99644c6f7b2b1ff2b111f6b4969782"
+            },
+            {
+              "path": [
+                "base_sha"
+              ],
+              "value": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca"
+            },
+            {
+              "path": [
+                "run_id"
+              ],
+              "value": 42549225359
+            },
+            {
+              "path": [
+                "actual_cases"
+              ],
+              "value": 7
+            },
+            {
+              "path": [
+                "gateway_status_cases"
+              ],
+              "value": 6
+            },
+            {
+              "path": [
+                "sdk_transport_control_cases"
+              ],
+              "value": 1
+            },
+            {
+              "path": [
+                "passed"
+              ],
+              "value": 7
+            },
+            {
+              "path": [
+                "failed"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "skipped"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "retries"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "original_failure_reproduced"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "original_failure_root_cause"
+              ],
+              "value": "unknown"
+            },
+            {
+              "path": [
+                "production_fix_claimed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "base_source_qualified"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "science_stage_advanced"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_history_cost"
+              ],
+              "value": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "windows-fixture-eleven-d1-partial-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-fixture-eleven-d1-partial-packet-v1/windows-fixture-eleven-d1-partial.tar.xz",
+      "bytes": 18034120,
+      "sha256": "6b6c52207b134864fc02f8df16d46858036a15dfc6ee5c41d2869a1318acfe79",
+      "compression": "xz",
+      "file_member_count": 38,
+      "source_sha": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+      "source_tree": "f95a33684df6aac0a32326e20b63d4017d7b1968",
+      "scope": "Historical d1 Windows observer bd7962, run 42545587597/job 128929757824, naturally cancelled at its original 65-minute cap. Four of the eleven planned cases actually executed: fleet and H7 passed; CLI and signed-credit failed. Seven did not execute, including Matrix after discovery compilation began and all six app-server cases. Original selected-case logs/JUnit and tested/observer before-after identities remain present; zero selected skips/retries/LEAK markers. Seven hidden execution-source copies were omitted by the original artifact upload and are explicitly not claimed archived or reconstructed. This partial cancelled run is not a complete scope pass and is never relabelled bf42.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "path": "SCOPE.json",
+          "bytes": 1867,
+          "sha256": "0eef04fb6247f09412e6ed1069009642e11e6b9fb6f0b4f49a1f29877fc2d1cc",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f95a33684df6aac0a32326e20b63d4017d7b1968"
+            },
+            {
+              "path": [
+                "observer_sha"
+              ],
+              "value": "bd7962c944e47fcadb0f205d808300f780491800"
+            },
+            {
+              "path": [
+                "run_id"
+              ],
+              "value": 42545587597
+            },
+            {
+              "path": [
+                "github_conclusion"
+              ],
+              "value": "cancelled"
+            },
+            {
+              "path": [
+                "case_totals",
+                "executed"
+              ],
+              "value": 4
+            },
+            {
+              "path": [
+                "case_totals",
+                "xmlPassed"
+              ],
+              "value": 2
+            },
+            {
+              "path": [
+                "case_totals",
+                "failed"
+              ],
+              "value": 2
+            },
+            {
+              "path": [
+                "case_totals",
+                "notExecutedOfPlannedEleven"
+              ],
+              "value": 7
+            },
+            {
+              "path": [
+                "complete_scope_passed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "missing_copies_are_not_claimed_archived"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "new_tests_run"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_cost"
+              ],
+              "value": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "ordinary-learning-slice-bf42-readonly-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ordinary-learning-slice-bf42-packet-v1/ordinary-learning-slice-bf42.tar.xz",
+      "bytes": 143952,
+      "sha256": "9ed951422bb44dcb9ac40c9bc77983ee09c091aa60107623a02819ee7f33b72b",
+      "compression": "xz",
+      "file_member_count": 45,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "scope": "Targeted read-only review of exact bf42 source and the unchanged formal CURRENT, with original source copies and a proposed minimal D02 ordinary-learning checkpoint delivery slice. This packet contains feasibility analysis/design only: no source change, test execution, provisioning, newly granted authority, product adoption or scientific acceptance. It does not include any later implementation work.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "path": "SOURCE_MANIFEST.json",
+          "bytes": 10201,
+          "sha256": "1788a006516e69ac7878c0cc9c6bcee7b2416d372457452e125b5b0eaba03b5a",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "comparison_base"
+              ],
+              "value": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+            },
+            {
+              "path": [
+                "tests_executed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "source_modified"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "scientific_acceptance"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_history_cost"
+              ],
+              "value": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "bf42-source-freeze-common-fastforward-and-publication-history-v3",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/followup-source-history-sealed-v3/followup-source-history.tar.xz",
+      "bytes": 361892,
+      "sha256": "5a9962dc4db95f4db0b6bbf955e034235bfcc0a8c165e9dfe4397869781f7268",
+      "compression": "xz",
+      "file_member_count": 273,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "scope": "Exact bf42 source freeze, unchanged-source quiet publication, the completed 53-packet evidence checkpoint publication, PR status005 and status006, and the normal ba4-to-bf42 common draft fast-forward with original Git/API readback and two fresh observations that all preceding ba4 workflows were terminal. Includes initial nonterminal bf42 CI registration, independent root native review, native archive-transfer receipt, and Python packet-sealing metadata. Actual bf42 Python/strict/native test originals are separate packets, and the original failed first strict launch and Python-sealer invocation remain in those packets. No original result is relabeled to another source. Source/publication actions are not scientific qualification, and initial CI registrations are not test results. Full physical and historical costs remain unknown.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "path": "common-bf42-publication-v1/RESULT.json",
+          "bytes": 10498,
+          "sha256": "e07bfd14ed0e7591dc73cbe4255282d05fc95212ca83c7d0bef7d7f0630d63ac",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "status"
+              ],
+              "value": "common_draft_fast_forward_published_and_remote_readback_verified"
+            },
+            {
+              "path": [
+                "previous_common_source"
+              ],
+              "value": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+            },
+            {
+              "path": [
+                "source_was_already_frozen"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "new_merge_commit_created"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "original_native_workflow_completed_before_push"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "no_process_cancel_command_used"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "new_ci_is_not_a_passing_result"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "original_ba4_results_not_relabelled"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "full_history_cost"
+              ],
+              "value": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

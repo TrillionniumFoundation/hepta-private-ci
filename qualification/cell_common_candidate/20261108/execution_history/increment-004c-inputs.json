@@ -1,0 +1,972 @@
+{
+  "schema": "hepta.evidence-increment-source-bound-inputs.v1",
+  "phase": "increment-004c",
+  "expected_evidence_head": "4628cc139cc8067b1fa42713aa80c32c819e4e48",
+  "expected_index_sha256": "6572fce4a299b3fad52c475935b532b5d1ff6ee7c43ad4acabd8c5ea1537e734",
+  "expected_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "expected_common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "expected_prior_packet_count": 65,
+  "expected_final_packet_count": 66,
+  "scope": "Append the original common full-CI terminal failure and exact snapshots002/003, preserving earlier observation cutoffs and all previous 65 packet bytes. This does not include later native, Windows-regression, V8 or complete UI-case qualification.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "physical_cost": null,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "current_common_validation": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+    "local_python": {
+      "packet_id": "bf42-python130-full-caller-originals-v1",
+      "independent_unit_cases_passed": 130,
+      "full_caller_passed": true,
+      "full_caller_elapsed_seconds": 380.6801889021881,
+      "full_caller_budget_seconds": 600,
+      "source_unchanged": true
+    },
+    "local_strict_preparation": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "prepared_clean",
+      "scope": "Same-source V8 and helper plus owning agentd qualification-cognitive-write just fix and read-only clippy; previous owners' unchanged-source preparations retain their own historical identities.",
+      "source_unchanged": true
+    },
+    "local_selected_native": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "PASS",
+      "selected_unique_cases_executed": 38,
+      "selected_unique_cases_passed": 38,
+      "selected_skips": 0,
+      "retries": 0,
+      "raw_nextest_leak_readback": "NO_NEXTEST_LEAK_OBSERVED",
+      "full_workspace": false,
+      "windows_execution": false,
+      "source_unchanged": true,
+      "filter_excluded_counts_not_added": true
+    },
+    "full_repository_ci": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "run_id": 42553073160,
+      "state": "completed",
+      "conclusion": "failure",
+      "green": false,
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+      "completion_result_included": true,
+      "actual_native_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+      "actual_native_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "same_tree_not_same_commit": true,
+      "full_post_build_working_tree_byte_snapshot": false,
+      "final_target_outcomes_not_case_counts": {
+        "128953043649": {
+          "failed": 3,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128953043675": {
+          "failed": 3,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128953043702": {
+          "failed": 5,
+          "flaky": 0,
+          "timeout": 2
+        },
+        "128953043792": {
+          "failed": 2,
+          "flaky": 0,
+          "timeout": 0
+        },
+        "128957722404": {
+          "additional_cases": 0,
+          "aggregation_only": true
+        },
+        "128961511532": {
+          "additional_cases": 0,
+          "aggregation_only": true
+        }
+      },
+      "original_failed_attempts_retained": true,
+      "all_common_workflows_terminal_at_cutoff": false
+    },
+    "independent_grouped_windows_result_included": true,
+    "ui_diagnostic_source_qualified_as_common": false,
+    "scientific_qualification_performed": false,
+    "full_history_cost": null,
+    "physical_cost": null,
+    "stage_advancement_claimed": false,
+    "independent_grouped_windows": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+      "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+      "run_id": 42550332155,
+      "terminal_status": "completed",
+      "terminal_conclusion": "failure",
+      "whole_selected_scope_passed": false,
+      "selected_executed": 11,
+      "selected_passed": 10,
+      "selected_failed": 1,
+      "selected_timeouts": 1,
+      "selected_skipped": 0,
+      "retry_records": 0,
+      "raw_leak_markers": 0,
+      "explicit_guard_skip_markers": 0,
+      "groups": [
+        {
+          "group": "matrix-startup-diagnostic",
+          "packet_id": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-matrix-sdk",
+              "name": "sdk::startup_deadline_tests::expired_finalization_rejects_success_without_erasing_a_written_session",
+              "time_seconds": "5.831",
+              "forbidden_nodes": []
+            }
+          ]
+        },
+        {
+          "group": "agentd-h7-qualification",
+          "packet_id": "windows-fixture-owner-agentd-h7-qualification-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+              "time_seconds": "2.480",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "agentd-fleet-default",
+          "packet_id": "windows-fixture-owner-agentd-fleet-default-bf42-v1",
+          "executed": 2,
+          "passed": 2,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+              "time_seconds": "2.339",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+              "time_seconds": "0.820",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "cli-cloud",
+          "packet_id": "windows-fixture-owner-cli-cloud-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-cli::sandbox_cloud_config",
+              "name": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+              "time_seconds": "31.998",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "appserver-fixtures",
+          "packet_id": "windows-fixture-owner-appserver-fixtures-bf42-v1",
+          "executed": 6,
+          "passed": 5,
+          "failed": 1,
+          "selected_scope_passed": false,
+          "cases": [
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+              "time_seconds": "60.015",
+              "problems": [
+                {
+                  "kind": "failure",
+                  "attributes": {
+                    "type": "test timeout"
+                  }
+                }
+              ],
+              "xml_passed": false
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_1_inherits_parent_developer_instructions_without_an_override",
+              "time_seconds": "1.535",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_2_reapplies_configured_subagent_developer_instructions",
+              "time_seconds": "1.488",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_3_reapplies_updated_configured_role_settings_and_restores_paginated_usage",
+              "time_seconds": "1.856",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_4_reapplies_an_implicitly_selected_configured_default_role",
+              "time_seconds": "1.456",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+              "time_seconds": "4.636",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        }
+      ],
+      "history_packet_id": "windows-fixture-owner-observer-history-bf42-v1",
+      "additional_topology": "five independent 65-minute owner jobs and an independent read-only aggregate",
+      "original_single_job_result_superseded": false,
+      "full_workspace_passed": false,
+      "full_history_cost": null,
+      "scientific_qualification_performed": false
+    },
+    "initial_full_repository_registration_observation": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "state": "pending_or_in_progress_at_publication_readback",
+      "conclusion": null,
+      "green": null,
+      "observation_cutoff": "2026-11-09T02:50:20.636321Z",
+      "registration_packet_id": "bf42-source-freeze-common-fastforward-and-publication-history-v3",
+      "initial_run_ids": {
+        "native": 42553066862,
+        "blocking": 42553073160,
+        "ui": 42553073250,
+        "windows": 42553073234
+      },
+      "completion_result_included": false
+    },
+    "ui_workflow_api_observation": {
+      "source_api_head": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "run_id": 42553073250,
+      "state": "completed",
+      "conclusion": "success",
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+      "complete_original_case_results_qualified": false,
+      "base_and_source_lanes_must_keep_separate_identities": true
+    },
+    "remaining_common_ci_at_cutoff": {
+      "observation_cutoff": "2026-11-09T03:30:34.867406+00:00",
+      "scope": [
+        "native composition",
+        "original Windows regressions",
+        "Windows arm64 V8",
+        "Windows x64 V8"
+      ],
+      "state": "in_progress_at_cutoff",
+      "later_results_inferred": false
+    }
+  },
+  "packets": [
+    {
+      "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-failure-evidence-002-003-v1/bf42-original-full-ci-failures-002-003.tar.xz",
+      "bytes": 507152,
+      "sha256": "4beffe0dace6d56e657cc9a7f58346fb032bcf8251ca3831717cdc39802127c5",
+      "compression": "xz",
+      "file_member_count": 235,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "actual_native_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+      "actual_native_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "scope": "Original terminal blocking CI failure for API head bf42. Four native jobs actually checked out merge8828133f at the same tree; Windows2 has 3 failed targets, Windows4 has 2, macOS ARM has 3, and macOS Intel has 5 failed plus 2 timed-out targets. Two aggregation jobs add no test cases. Original repeated attempts, first errors, source bindings, full raw logs and snapshot cutoffs remain distinct. No reruns or scientific acceptance were performed.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "bytes": 2949,
+          "path": "SCOPE.json",
+          "sha256": "d308ac7c84f18b2710cea6bdb72e9413cd24e496788fd0fd63b6d93fd6a6826d",
+          "equals": [
+            {
+              "path": [
+                "packet_id"
+              ],
+              "value": "bf42-original-full-ci-failure-snapshots002-003-v1"
+            },
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "actual_native_checkout_sha"
+              ],
+              "value": "8828133f2566b7e537cac0bad58c84eb5b0168bb"
+            },
+            {
+              "path": [
+                "actual_native_checkout_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "blocking_run_id"
+              ],
+              "value": 42553073160
+            },
+            {
+              "path": [
+                "blocking_run_status"
+              ],
+              "value": "completed"
+            },
+            {
+              "path": [
+                "blocking_run_conclusion"
+              ],
+              "value": "failure"
+            },
+            {
+              "path": [
+                "full_repository_ci_green"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "observation_cutoff"
+              ],
+              "value": "2026-11-09T03:30:34.867406+00:00"
+            },
+            {
+              "path": [
+                "final_bazel_target_outcomes"
+              ],
+              "value": {
+                "128953043649": {
+                  "failed": 3,
+                  "flaky": 0,
+                  "timeout": 0
+                },
+                "128953043675": {
+                  "failed": 3,
+                  "flaky": 0,
+                  "timeout": 0
+                },
+                "128953043702": {
+                  "failed": 5,
+                  "flaky": 0,
+                  "timeout": 2
+                },
+                "128953043792": {
+                  "failed": 2,
+                  "flaky": 0,
+                  "timeout": 0
+                },
+                "128957722404": {
+                  "additional_cases": 0,
+                  "aggregation_only": true
+                },
+                "128961511532": {
+                  "additional_cases": 0,
+                  "aggregation_only": true
+                }
+              }
+            },
+            {
+              "path": [
+                "new_tests_executed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_history_cost"
+              ],
+              "value": null
+            },
+            {
+              "path": [
+                "stages_remain"
+              ],
+              "value": {
+                "S0": "HOLD",
+                "S1": "HOLD",
+                "S2": "HOLD",
+                "S3": "HOLD",
+                "S4": "HOLD",
+                "S5": "HOLD"
+              }
+            },
+            {
+              "path": [
+                "same_tree_not_same_commit"
+              ],
+              "value": true
+            }
+          ]
+        },
+        {
+          "bytes": 4180,
+          "path": "ci-bf42-failure-analysis-004c-v2/SOURCE_BINDING.json",
+          "sha256": "51f5c7c217da0a3d4ad3195c981b06a8fa16b8959a97ead1ab5ed693c8751598",
+          "equals": [
+            {
+              "path": [
+                "source_head"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "actual_native_checkout"
+              ],
+              "value": "8828133f2566b7e537cac0bad58c84eb5b0168bb"
+            },
+            {
+              "path": [
+                "actual_native_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "merge_parents_in_order"
+              ],
+              "value": [
+                "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+                "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+              ]
+            },
+            {
+              "path": [
+                "tree_identity_equal"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "commit_identity_equal"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "jobs"
+              ],
+              "value": [
+                {
+                  "actual_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "actual_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                  "actual_tested_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                  "aggregate_only_no_additional_test_cases": false,
+                  "checkout_proofs": [
+                    {
+                      "command_line": 179,
+                      "sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                      "sha_line": 180
+                    }
+                  ],
+                  "job_id": 128953043649,
+                  "role": "windows-bazel-shard-2"
+                },
+                {
+                  "actual_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "actual_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                  "actual_tested_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                  "aggregate_only_no_additional_test_cases": false,
+                  "checkout_proofs": [
+                    {
+                      "command_line": 187,
+                      "sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                      "sha_line": 188
+                    }
+                  ],
+                  "job_id": 128953043675,
+                  "role": "macos-arm-bazel"
+                },
+                {
+                  "actual_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "actual_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                  "actual_tested_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                  "aggregate_only_no_additional_test_cases": false,
+                  "checkout_proofs": [
+                    {
+                      "command_line": 182,
+                      "sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                      "sha_line": 183
+                    }
+                  ],
+                  "job_id": 128953043792,
+                  "role": "windows-bazel-shard-4"
+                },
+                {
+                  "actual_checkout_sha": null,
+                  "actual_checkout_tree": null,
+                  "actual_tested_sha": null,
+                  "actual_tested_tree": null,
+                  "aggregate_only_no_additional_test_cases": true,
+                  "checkout_proofs": [],
+                  "job_id": 128957722404,
+                  "role": "windows-shard-aggregation"
+                },
+                {
+                  "actual_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "actual_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                  "actual_tested_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                  "aggregate_only_no_additional_test_cases": false,
+                  "checkout_proofs": [
+                    {
+                      "command_line": 215,
+                      "sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                      "sha_line": 216
+                    }
+                  ],
+                  "job_id": 128953043702,
+                  "role": "macos-intel-bazel"
+                },
+                {
+                  "actual_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "actual_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+                  "actual_tested_sha": null,
+                  "actual_tested_tree": null,
+                  "aggregate_only_no_additional_test_cases": true,
+                  "checkout_proofs": [
+                    {
+                      "command_line": 126,
+                      "sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                      "sha_line": 127
+                    }
+                  ],
+                  "job_id": 128961511532,
+                  "role": "required-ci-aggregation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "bytes": 7408,
+          "path": "ci-bf42-current-snapshot-003/SUMMARY.json",
+          "sha256": "e6ca91aed884d39101751837c9730664f724c3273dc3be88aa1a5180c165fcc4",
+          "equals": [
+            {
+              "path": [
+                "observed_until"
+              ],
+              "value": "2026-11-09T03:30:34.867406+00:00"
+            },
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "runs"
+              ],
+              "value": [
+                {
+                  "id": 42553073435,
+                  "name": "Hepta Windows private-state native (security qualification only)",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553073516,
+                  "name": "v8-canary",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "nonpassing_jobs": [
+                    {
+                      "id": 128953446680,
+                      "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+                      "status": "in_progress",
+                      "conclusion": null,
+                      "started_at": "2026-11-09T02:52:55Z",
+                      "completed_at": null,
+                      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073516/job/128953446680"
+                    },
+                    {
+                      "id": 128953446740,
+                      "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+                      "status": "in_progress",
+                      "conclusion": null,
+                      "started_at": "2026-11-09T02:53:05Z",
+                      "completed_at": null,
+                      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073516/job/128953446740"
+                    }
+                  ]
+                },
+                {
+                  "id": 42553073264,
+                  "name": "Hepta HCSN training bridge",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553073130,
+                  "name": "App-server schema refresh",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553073141,
+                  "name": "Production HOS2 owner proposal",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553073121,
+                  "name": "Hepta Cell research stage evidence",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553073234,
+                  "name": "Windows original CI regressions (declared scope only)",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "nonpassing_jobs": [
+                    {
+                      "id": 128952720859,
+                      "name": "original-regressions",
+                      "status": "in_progress",
+                      "conclusion": null,
+                      "started_at": "2026-11-09T02:50:38Z",
+                      "completed_at": null,
+                      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073234/job/128952720859"
+                    }
+                  ]
+                },
+                {
+                  "id": 42553073195,
+                  "name": "Hepta PRED-1 CPU checks",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553073191,
+                  "name": "Hepta MEM-1 evidence verifier",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553073280,
+                  "name": "Hepta EVOLVE-1 CPU contracts",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553073159,
+                  "name": "Hepta VERIFY-1 engineering validation",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553073323,
+                  "name": "Keyring synchronous backend lock proposal",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553073131,
+                  "name": "Bazel stable lock proposal",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553073250,
+                  "name": "Rust UI product foundation",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553073160,
+                  "name": "blocking-ci",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "nonpassing_jobs": [
+                    {
+                      "id": 128953043649,
+                      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+                      "status": "completed",
+                      "conclusion": "failure",
+                      "started_at": "2026-11-09T02:51:34Z",
+                      "completed_at": "2026-11-09T03:05:52Z",
+                      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043649"
+                    },
+                    {
+                      "id": 128953043675,
+                      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+                      "status": "completed",
+                      "conclusion": "failure",
+                      "started_at": "2026-11-09T02:52:24Z",
+                      "completed_at": "2026-11-09T03:09:09Z",
+                      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043675"
+                    },
+                    {
+                      "id": 128953043702,
+                      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+                      "status": "completed",
+                      "conclusion": "failure",
+                      "started_at": "2026-11-09T02:52:13Z",
+                      "completed_at": "2026-11-09T03:21:17Z",
+                      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043702"
+                    },
+                    {
+                      "id": 128953043792,
+                      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+                      "status": "completed",
+                      "conclusion": "failure",
+                      "started_at": "2026-11-09T02:52:25Z",
+                      "completed_at": "2026-11-09T03:06:54Z",
+                      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043792"
+                    },
+                    {
+                      "id": 128957722404,
+                      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+                      "status": "completed",
+                      "conclusion": "failure",
+                      "started_at": "2026-11-09T03:08:57Z",
+                      "completed_at": "2026-11-09T03:09:00Z",
+                      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128957722404"
+                    },
+                    {
+                      "id": 128961511532,
+                      "name": "CI required",
+                      "status": "completed",
+                      "conclusion": "failure",
+                      "started_at": "2026-11-09T03:25:12Z",
+                      "completed_at": "2026-11-09T03:25:24Z",
+                      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128961511532"
+                    }
+                  ]
+                },
+                {
+                  "id": 42553073125,
+                  "name": "Hepta architecture convergence",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553066841,
+                  "name": "Hepta Cell research stage evidence",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "nonpassing_jobs": []
+                },
+                {
+                  "id": 42553066862,
+                  "name": "Hepta Cell framework native validation",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "nonpassing_jobs": [
+                    {
+                      "id": 128952701454,
+                      "name": "Cell framework (agentd-composition)",
+                      "status": "in_progress",
+                      "conclusion": null,
+                      "started_at": "2026-11-09T02:50:44Z",
+                      "completed_at": null,
+                      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553066862/job/128952701454"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "path": [
+                "scientific_advancement_claimed"
+              ],
+              "value": false
+            }
+          ]
+        },
+        {
+          "bytes": 11869,
+          "path": "ci-bf42-original-failure-findings-004c-v1.json",
+          "sha256": "46f14e6bfea5dcc34d0e532f28ad2091e4dd41e201e46fa78640a99e86f91039",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "actual_native_checkout_sha"
+              ],
+              "value": "8828133f2566b7e537cac0bad58c84eb5b0168bb"
+            },
+            {
+              "path": [
+                "actual_native_checkout_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "final_target_counts"
+              ],
+              "value": {
+                "128953043649": {
+                  "failed": 3,
+                  "timeout": 0,
+                  "flaky": 0
+                },
+                "128953043675": {
+                  "failed": 3,
+                  "timeout": 0,
+                  "flaky": 0
+                },
+                "128953043792": {
+                  "failed": 2,
+                  "timeout": 0,
+                  "flaky": 0
+                },
+                "128953043702": {
+                  "failed": 5,
+                  "timeout": 2,
+                  "flaky": 0
+                },
+                "128957722404": {
+                  "aggregation_only": true,
+                  "additional_cases": 0
+                },
+                "128961511532": {
+                  "aggregation_only": true,
+                  "additional_cases": 0
+                }
+              }
+            },
+            {
+              "path": [
+                "accounting"
+              ],
+              "value": {
+                "target_counts_are_not_rust_case_counts": true,
+                "repeated_final_failure_log_display_is_not_a_retry": true,
+                "windows_appserver": "Final target reports FAILED in 6 out of 20. Raw failed attempt paths show shards 2 and 11 of 16 each failing attempt_1, attempt_2 and final test.log. These are six failed invocations, not six distinct Rust tests. The target remains FAILED.",
+                "windows_core": "Final target reports FAILED in 16 out of 27. Raw failed paths show shards 1,4,6,7,13 each failing attempt_1, attempt_2 and final test.log, and shard16 failing attempt_1. The later absence of a shard16 final failure is not counted as a separate final FLAKY target. All original paths and the final target result are retained; no zero-retry claim is made.",
+                "macos": "Each nonpassing unsharded target has one observed FAIL or TIMEOUT marker. No additional retry is inferred from duplicated final diagnostic display. The raw data does not supply a complete per-case XML ledger for all passing targets.",
+                "rust_failed_names": "The parser lists distinct failed Rust names only to locate diagnostics. They are not presented as complete final run counts, and names from failed attempts are not added to target counts. TIMEOUT targets can have unfinished cases without individual FAILED outcomes."
+              }
+            },
+            {
+              "path": [
+                "observation_only"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "tests_run_by_analysis"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "source_modified"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "scientific_qualification_performed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_repository_ci_green"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_history_cost"
+              ],
+              "value": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

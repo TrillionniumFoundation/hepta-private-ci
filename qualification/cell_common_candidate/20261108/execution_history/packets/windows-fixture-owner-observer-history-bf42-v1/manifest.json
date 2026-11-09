@@ -1,0 +1,1373 @@
+{
+  "packet_id": "windows-fixture-owner-observer-history-bf42-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-observer-history-packet-v1/windows-fixture-owner-observer-history-bf42.tar.xz",
+  "bytes": 102780,
+  "sha256": "46ce0378c8bc75fa4e083e53d34b09ac27f6899f6e21e4f7034473b249c73a7f",
+  "compression": "xz",
+  "file_member_count": 213,
+  "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+  "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+  "scope": "Original Windows observer preparation and publication history, including first Ruff-path ENOENT and unchanged v1/v2 originals, exact observer 5574 publication/readbacks, terminal run and read-only aggregate originals. Independently reconciled closed set: eleven executions, ten passed, one timeout, overall failure. The five native artifact ZIPs are retained in separately bound packets; no tests or aggregation reruns were performed to seal this packet.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false,
+  "required_json_members": [
+    {
+      "path": "SCOPE.json",
+      "bytes": 5472,
+      "sha256": "0397ae790357bb3ee771a7236e3190520c7ddc5ebcac83ff10348717032bf621",
+      "equals": [
+        {
+          "path": [
+            "packet_id"
+          ],
+          "value": "windows-fixture-owner-observer-history-bf42-v1"
+        },
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "observer_sha"
+          ],
+          "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+        },
+        {
+          "path": [
+            "observer_tree"
+          ],
+          "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+        },
+        {
+          "path": [
+            "run_id"
+          ],
+          "value": 42550332155
+        },
+        {
+          "path": [
+            "full_cost"
+          ],
+          "value": null
+        },
+        {
+          "path": [
+            "scientific_qualification_performed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "new_tests_run_by_packet_builder"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "actual_executed"
+          ],
+          "value": 11
+        },
+        {
+          "path": [
+            "actual_passed_without_leak_or_guard_skip"
+          ],
+          "value": 10
+        },
+        {
+          "path": [
+            "actual_failed"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "whole_selected_scope_passed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "original_single_job_result_superseded"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_workspace_passed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "native_group_artifacts_in_separate_bound_packets"
+          ],
+          "value": [
+            {
+              "group": "cli-cloud",
+              "packet_id": "windows-fixture-owner-cli-cloud-bf42-v1",
+              "packet_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/cli-cloud/windows-fixture-owner-cli-cloud-bf42.tar.xz",
+              "packet_bytes": 18004732,
+              "packet_sha256": "db11066b80b9b6610e699ac3ad26fafcf1a4d3f5e42dcfdbc4b16194d851cce7",
+              "packet_result_sha256": "d827c8df5a24fbdece610915fe001e681eebe639da224ad936e6fa30798af2d0",
+              "analysis_sha256": "15951f315a174f299c1717dba07dbd57707823893ef5a62d0edd52c73213be27",
+              "original_receipt_sha256": "98427cbe6a0cb5720483d33dd6dbd92c46c975ad49f47140150fbb08e202d005",
+              "selected_scope_passed": true,
+              "executed": 1,
+              "xml_passed": 1,
+              "failed": 0,
+              "filter_excluded": 0
+            },
+            {
+              "group": "agentd-fleet-default",
+              "packet_id": "windows-fixture-owner-agentd-fleet-default-bf42-v1",
+              "packet_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/agentd-fleet-default/windows-fixture-owner-agentd-fleet-default-bf42.tar.xz",
+              "packet_bytes": 18040428,
+              "packet_sha256": "f1656cc57fbc672774e694ed4bb7885e2fdacf5b9fd7fed898964dc6eff1287d",
+              "packet_result_sha256": "9e65015f62b4ed3a3f1f7fec0c0631ec918173f67ba7cf465633c93072e518ff",
+              "analysis_sha256": "04ecfc25e0f9f800459b8f3562c0b3a926e5004756821634b480390380357094",
+              "original_receipt_sha256": "2242a4dbb4eda47c08e703e27d12d82048e79c794a859e9149006a12609dfd16",
+              "selected_scope_passed": true,
+              "executed": 2,
+              "xml_passed": 2,
+              "failed": 0,
+              "filter_excluded": 259
+            },
+            {
+              "group": "agentd-h7-qualification",
+              "packet_id": "windows-fixture-owner-agentd-h7-qualification-bf42-v1",
+              "packet_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/agentd-h7-qualification/windows-fixture-owner-agentd-h7-qualification-bf42.tar.xz",
+              "packet_bytes": 18043196,
+              "packet_sha256": "db3a43d4f70ad6dc8547916c97ecbaac10d564b52eec7d968b4c53ae5f8d672d",
+              "packet_result_sha256": "199e4aa711823826d4e9de89f78c0cb43606dc3bfdec7788159fe9be8d03f784",
+              "analysis_sha256": "4326d332b9df5b4826dc77c3322e1461c743eab34a3e4159251d66a482e0b016",
+              "original_receipt_sha256": "bed8c25b8d06f9ae2934f1db129a0a21a59c627d6786f7c61220e4a3af094a0d",
+              "selected_scope_passed": true,
+              "executed": 1,
+              "xml_passed": 1,
+              "failed": 0,
+              "filter_excluded": 263
+            },
+            {
+              "group": "matrix-startup-diagnostic",
+              "packet_id": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1",
+              "packet_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/matrix-startup-diagnostic/windows-fixture-owner-matrix-startup-diagnostic-bf42.tar.xz",
+              "packet_bytes": 17967716,
+              "packet_sha256": "4482994b3243513f0e324545cc12f6e5f22d172fab96f021740152f08bde6012",
+              "packet_result_sha256": "b854f7938bfc3869431de9bfa67ca3dfd147ec21e1632ef91e65fc5a5e830be5",
+              "analysis_sha256": "eadf19cf19c3b92f10a69bcef190518661cac0c1373ca9e5a997a875f0c34cc1",
+              "original_receipt_sha256": "69d7f03339c9d4c65f6ed9b8fadb108fd2abd70d6cd483a717e6d45cc045d562",
+              "selected_scope_passed": true,
+              "executed": 1,
+              "xml_passed": 1,
+              "failed": 0,
+              "filter_excluded": 25
+            },
+            {
+              "group": "appserver-fixtures",
+              "packet_id": "windows-fixture-owner-appserver-fixtures-bf42-v1",
+              "packet_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/appserver-fixtures/windows-fixture-owner-appserver-fixtures-bf42.tar.xz",
+              "packet_bytes": 18111768,
+              "packet_sha256": "d4cdc6f963ce15d83ed4e92899c6b662b7d6a63bd85d75dfeffbf9162118dbff",
+              "packet_result_sha256": "1559ca0fc2eb266cd733f27b739f7f5bf9c87a8a9587aa87780e8e4a67134a9d",
+              "analysis_sha256": "495d43579a831b470a6bf483b7160b167bec58a3240a521f500e3e6246a108e3",
+              "original_receipt_sha256": "c198e09e13410a341e5acdc4c9f55052dd31f47a05ddb8ae4ef9677e655d90e0",
+              "selected_scope_passed": false,
+              "executed": 6,
+              "xml_passed": 5,
+              "failed": 1,
+              "filter_excluded": 948
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "READONLY_AGGREGATE_RECONCILIATION.json",
+      "bytes": 5279,
+      "sha256": "5c12cb913a474eb0344432c4e8366d0c0a702c0aa69dd283dba23f3b2600ee03",
+      "equals": [
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "observer_sha"
+          ],
+          "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+        },
+        {
+          "path": [
+            "observer_tree"
+          ],
+          "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+        },
+        {
+          "path": [
+            "run_id"
+          ],
+          "value": 42550332155
+        },
+        {
+          "path": [
+            "terminal_run_status"
+          ],
+          "value": "completed"
+        },
+        {
+          "path": [
+            "terminal_run_conclusion"
+          ],
+          "value": "failure"
+        },
+        {
+          "path": [
+            "original_aggregate_passed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "actual_executed"
+          ],
+          "value": 11
+        },
+        {
+          "path": [
+            "actual_passed_without_leak_or_guard_skip"
+          ],
+          "value": 10
+        },
+        {
+          "path": [
+            "actual_failed"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "all_groups_original_artifacts_independently_reconciled"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "new_native_tests_run"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "research_advancement"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_cost"
+          ],
+          "value": null
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "MANIFEST.json",
+      "bytes": 44208,
+      "sha256": "675996407014a924ee39e48c93e0ffb459bc78b51f44131ddb35fa62c8eb5700"
+    },
+    {
+      "path": "NESTED_ARCHIVE_MEMBERS.json",
+      "bytes": 2570,
+      "sha256": "ceb99a40c42d513caf58f4f0b541fb75db2b3aadac90f376ae4666f5869c6a55"
+    },
+    {
+      "path": "READONLY_AGGREGATE_RECONCILIATION.json",
+      "bytes": 5279,
+      "sha256": "5c12cb913a474eb0344432c4e8366d0c0a702c0aa69dd283dba23f3b2600ee03"
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 5472,
+      "sha256": "0397ae790357bb3ee771a7236e3190520c7ddc5ebcac83ff10348717032bf621"
+    },
+    {
+      "path": "analysis-source/read_owner_group_artifacts_v1.py",
+      "bytes": 12552,
+      "sha256": "41c28121fc66d7944e251c51f33e64a3ba9c23e891cfabb1754f011bdef20701"
+    },
+    {
+      "path": "analysis-source/seal_owner_group_history_v1.py",
+      "bytes": 12122,
+      "sha256": "993a779a1b3b81ef3d2504182669da7feba9544b67bbf06bedbd5b52ebe64dbb"
+    },
+    {
+      "path": "group-packet-bindings/agentd-fleet-default/MANIFEST.json",
+      "bytes": 2975,
+      "sha256": "acec2d2c9461f3f7376e39180f38b126864e2ec10c2eb8fed34c3e10784f1a3c"
+    },
+    {
+      "path": "group-packet-bindings/agentd-fleet-default/RESULT.json",
+      "bytes": 925,
+      "sha256": "9e65015f62b4ed3a3f1f7fec0c0631ec918173f67ba7cf465633c93072e518ff"
+    },
+    {
+      "path": "group-packet-bindings/agentd-fleet-default/SCOPE.json",
+      "bytes": 1820,
+      "sha256": "1416e734c2fe6c517c7f098f9d5de163b894d60b3fe8f0e0510477284d44aaed"
+    },
+    {
+      "path": "group-packet-bindings/agentd-h7-qualification/MANIFEST.json",
+      "bytes": 4044,
+      "sha256": "277e6bf2ecccc6aeabaec4a94bfc6672f03069f1709a4eaf8717a75cd05c830a"
+    },
+    {
+      "path": "group-packet-bindings/agentd-h7-qualification/RESULT.json",
+      "bytes": 940,
+      "sha256": "199e4aa711823826d4e9de89f78c0cb43606dc3bfdec7788159fe9be8d03f784"
+    },
+    {
+      "path": "group-packet-bindings/agentd-h7-qualification/SCOPE.json",
+      "bytes": 1527,
+      "sha256": "79a507ff209eb2545dda329900279a018cee4ab26a79f954527c83d994a0a354"
+    },
+    {
+      "path": "group-packet-bindings/appserver-fixtures/MANIFEST.json",
+      "bytes": 4405,
+      "sha256": "03247250775e4cac8e1ea845f042a543c5e54637b23ca50ac7b80d67665e2b29"
+    },
+    {
+      "path": "group-packet-bindings/appserver-fixtures/RESULT.json",
+      "bytes": 916,
+      "sha256": "1559ca0fc2eb266cd733f27b739f7f5bf9c87a8a9587aa87780e8e4a67134a9d"
+    },
+    {
+      "path": "group-packet-bindings/appserver-fixtures/SCOPE.json",
+      "bytes": 3250,
+      "sha256": "f44143223da8fbe094e49e97d79e3dbd7e7d873cd622d8480f69217a1e302c62"
+    },
+    {
+      "path": "group-packet-bindings/cli-cloud/MANIFEST.json",
+      "bytes": 2975,
+      "sha256": "d264e6141a3022897c0f071cb4152d9f692d799847c595ff455f92456d39d639"
+    },
+    {
+      "path": "group-packet-bindings/cli-cloud/RESULT.json",
+      "bytes": 870,
+      "sha256": "d827c8df5a24fbdece610915fe001e681eebe639da224ad936e6fa30798af2d0"
+    },
+    {
+      "path": "group-packet-bindings/cli-cloud/SCOPE.json",
+      "bytes": 1481,
+      "sha256": "5640b518a27776707df89295b5ceaa61529bc995c4f9f5a241e5ff51e4d84666"
+    },
+    {
+      "path": "group-packet-bindings/matrix-startup-diagnostic/MANIFEST.json",
+      "bytes": 3049,
+      "sha256": "55ae29bdd6a36b58201552989f2f3b1838c2d3640b71227b7139add4fad68bfd"
+    },
+    {
+      "path": "group-packet-bindings/matrix-startup-diagnostic/RESULT.json",
+      "bytes": 840,
+      "sha256": "b854f7938bfc3869431de9bfa67ca3dfd147ec21e1632ef91e65fc5a5e830be5"
+    },
+    {
+      "path": "group-packet-bindings/matrix-startup-diagnostic/SCOPE.json",
+      "bytes": 1358,
+      "sha256": "09b210a28a63ecf843a49d508878e7ab4305948dbfae86ac7d524942fb78600a"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-022326/RESULT.json",
+      "bytes": 19220,
+      "sha256": "b44280af80e7fd37d38c3e33b422fb0e5e7b28d50a34dc80266cc27295220f3b"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-022326/new-jobs.json",
+      "bytes": 15226,
+      "sha256": "21f42ef74c2f3fe162d0260109c8bc983e668ba6eb4f3ffa5e6d38ce43819adc"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-022326/new-jobs.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-022326/new-run.json",
+      "bytes": 14341,
+      "sha256": "37d10e59e1b02a184e0670811e9814fa4e8cbdbee3d7f2d724378b4f264763e9"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-022326/new-run.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-022326/old-d1-job.json",
+      "bytes": 3050,
+      "sha256": "2c4ec6b72c0fc37ac92a489afee4ef90291b96bde8bfbb4cd5ae5abd302626e5"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-022326/old-d1-job.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/RESULT.json",
+      "bytes": 16522,
+      "sha256": "9dbafb3651aa75d2c7cc3d706ddf061e14152f9b0dd4b5012c4f4743b3024183"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/new-jobs.json",
+      "bytes": 15226,
+      "sha256": "21f42ef74c2f3fe162d0260109c8bc983e668ba6eb4f3ffa5e6d38ce43819adc"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/new-jobs.meta.json",
+      "bytes": 358,
+      "sha256": "b1184bb9c0659bb6ee6cf1740e231cf1e700f4499dfc09f4b9ddc3daa94718f7"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/new-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/new-run.json",
+      "bytes": 14341,
+      "sha256": "37d10e59e1b02a184e0670811e9814fa4e8cbdbee3d7f2d724378b4f264763e9"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/new-run.meta.json",
+      "bytes": 340,
+      "sha256": "d1b03a2d626909f194ca7e222674c1e79bf606c9ea97cef6ef0afa10473b9b97"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/new-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/old-d1-job.json",
+      "bytes": 3379,
+      "sha256": "f802867ae52543b0b2ff64c82fc95b020f8c14825440221e200079ad9f45f097"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/old-d1-job.meta.json",
+      "bytes": 340,
+      "sha256": "a2848f0c2c6c188478b0739127efad1545dcaa1e04eeba04bc521deafb70851f"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/old-d1-job.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/old-d1-run.json",
+      "bytes": 14322,
+      "sha256": "9ea32046ef88ad1c304d1d34652999208cf93ccd817638e9e41e38dae36614b0"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/old-d1-run.meta.json",
+      "bytes": 340,
+      "sha256": "33453938d50d3c788ccad689ed3f0bc80aa8adc73d172593294e6b1241fb6c9a"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-023206/old-d1-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-024118/RESULT.json",
+      "bytes": 2598,
+      "sha256": "8ba5d87ea27978acb3d2f3c51fb25a49f8886bd771d64310fccea9848d61ff89"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-024118/jobs.json",
+      "bytes": 15226,
+      "sha256": "21f42ef74c2f3fe162d0260109c8bc983e668ba6eb4f3ffa5e6d38ce43819adc"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-024118/jobs.meta.json",
+      "bytes": 358,
+      "sha256": "e34ee27679f9b429b007112b44fd792f19a5ba455b610048b677f1451cd2d315"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-024118/jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-024522/RESULT.json",
+      "bytes": 1327,
+      "sha256": "f80960a9dd19db4ee0ef73c89f086650bcc5991514063203f7a1e8bac32ca5a8"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-024522/artifacts.json",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-024522/artifacts.meta.json",
+      "bytes": 360,
+      "sha256": "ccf31d31cdbd59897968a6ae05f6d8ec2d864cdf7726672e55c03236eee5c9e9"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-024522/artifacts.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-024522/jobs.json",
+      "bytes": 15226,
+      "sha256": "21f42ef74c2f3fe162d0260109c8bc983e668ba6eb4f3ffa5e6d38ce43819adc"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-024522/jobs.meta.json",
+      "bytes": 358,
+      "sha256": "4aa6b18feb43461b6782e6b62a5c990d41b27f86a791a42cf1840cc3c59e4963"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-024522/jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025053/RESULT.json",
+      "bytes": 1655,
+      "sha256": "501e5566b435a497338ea55dc65ca4e6165eab913552829e684249f9d0112bf9"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025053/artifacts.json",
+      "bytes": 891,
+      "sha256": "f64b01e58b3547231604b30615ab5a2a5b4aedd954107879718a634afbb9581e"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025053/artifacts.meta.json",
+      "bytes": 361,
+      "sha256": "e5d2f17cd11b5fdb915389925d42f74e0a489e1298a3edd434707c3b1a648577"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025053/artifacts.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025053/jobs.json",
+      "bytes": 15551,
+      "sha256": "616991a37a2353aeb6066da77e09909247c990a8f51784d3c28755e5f452c57f"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025053/jobs.meta.json",
+      "bytes": 358,
+      "sha256": "2213e6b972a4bb0684c01f0fbb7e2e9ed1ec31a8c0c5875d61d59110fff22cc4"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025053/jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025751/RESULT.json",
+      "bytes": 2298,
+      "sha256": "11ce8fdd99e66e020a469bc1a5155c7cdf8145e244347eab3c27d0f35b04aa34"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025751/artifacts.json",
+      "bytes": 2602,
+      "sha256": "9c53d89bd35589abacd16d1bfec7d0897a1fd351b4972a8c02c3a86de47e322c"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025751/artifacts.meta.json",
+      "bytes": 362,
+      "sha256": "3996191e0833e2927ad9d922af86c2b379fc48083ec177cd576f60922736c032"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025751/artifacts.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025751/jobs.json",
+      "bytes": 16201,
+      "sha256": "1b9b9381350cbc318229c866523b56d7465b3eebfe60a3683ac149908e1b8ac4"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025751/jobs.meta.json",
+      "bytes": 358,
+      "sha256": "2fbf6698b48ecc3ac79d93526c6491817dfdf2c67b3e9e3c07344febeee6ba7a"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-025751/jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-030913/RESULT.json",
+      "bytes": 1345,
+      "sha256": "a5f841cab7061d59e1c86815ad718905e4857dfc8316491044c3b965f86a3160"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-030913/artifacts.json",
+      "bytes": 5143,
+      "sha256": "45404ce88d8de67e585a22d48dd5c4df9bbc1527cdf1d6c009a2de7a6c1c1976"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-030913/artifacts.meta.json",
+      "bytes": 484,
+      "sha256": "c90a41c582dc253b3d9bc7f9a93f039c3083257217f7f11bdb456cfc72734250"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-030913/artifacts.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-030913/jobs.json",
+      "bytes": 19191,
+      "sha256": "192f0d72210d944af69ffa3d4c9abfc4c7cf877175cdc41cfb6f06d0ab961563"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-030913/jobs.meta.json",
+      "bytes": 480,
+      "sha256": "caf8e681e84837145c8de4cbbe45b7adf81db7a7599ca69c50f338b33f3c6881"
+    },
+    {
+      "path": "originals/windows-owner-groups-observation-20261109-030913/jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-history-packet-v1/terminal-api/run.json",
+      "bytes": 14344,
+      "sha256": "a6b38424dfdd77ee1cdff3c30a814f3df37bdc2b055487d6cefe31ef8ae67cb9"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-history-packet-v1/terminal-api/run.meta.json",
+      "bytes": 462,
+      "sha256": "ac192b421fa524c21444e1a8ca3b0ef6be4ea75ff7490fdc850358f814c6dd56"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-history-packet-v1/terminal-api/run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/CHECKS.json",
+      "bytes": 4807,
+      "sha256": "bdf3cbee080eb50c3c54f2cdb1772636ad00c49e62b0ea2fad9d4b007945e76b"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/FORMAT_ATTEMPT1_ERROR.json",
+      "bytes": 224,
+      "sha256": "b142a42b64df0a2b6715c6e27d87cc173f0c2a1638ce24872ce8b4bac164349f"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/git-apply-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/git-apply-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/preformat-source.tar.gz",
+      "bytes": 28504,
+      "sha256": "57d0e5549f2d75a86c3db23df56a2133b4c761cbd204ad72673d87066a06808c"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/prettier-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/prettier-version.stdout",
+      "bytes": 6,
+      "sha256": "50060b8e79abd0beaf59e6309e519a73cba73a94b97defd0f8b68e1c8f6447b2"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/prettier.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/prettier.stdout",
+      "bytes": 162,
+      "sha256": "15789b44a2a93b19c22a7b749b90a5d50512c21aca90ca9bad0fa759836f2816"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/ruff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/ruff-check.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/ruff-format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/ruff-format.stdout",
+      "bytes": 20,
+      "sha256": "779cd08be038ac289c50927416d74769a286b3d89191260af669534feb28cf68"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/ruff-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/ruff-version.stdout",
+      "bytes": 13,
+      "sha256": "0e5c455ef40e6fb922d42f5ea8cd386e3c19cca81ca91d7697a6c81d2583846c"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/source/.github/fixtures/windows-fixture-followup-scope.json",
+      "bytes": 3105,
+      "sha256": "87161e6cfd390180de6e8457e9b8ccf55f5b75532505ffdd24b6cc230052049e"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/source/.github/scripts/test_windows_fixture_followup.py",
+      "bytes": 16287,
+      "sha256": "b195758178a926fcb63b1c11d85437a9834cc7cf6c115fce9c91980d0f938b29"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/source/.github/scripts/test_windows_fixture_owner_aggregate.py",
+      "bytes": 8868,
+      "sha256": "2b57622e9521980183a9fadb1ccace489ef0f018c5fc4c6ea366659c184f5510"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/source/.github/scripts/windows_current_ci.py",
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/source/.github/scripts/windows_fixture_followup.py",
+      "bytes": 25801,
+      "sha256": "492dee6f1d76b0fd3fe5277ec293b8ddb31dae8f9e6edd79628f91ccbf3b2379"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/source/.github/scripts/windows_fixture_owner_aggregate.py",
+      "bytes": 14247,
+      "sha256": "8dfded0261285568864b77c922db71595a8c548b67d81cf7ce9b971aa59f1443"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/source/.github/scripts/windows_native_probe.py",
+      "bytes": 25146,
+      "sha256": "47bca1523c35200722a7bbd19afd100aac9cf90e8019df4556d35431c00ef8e3"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/source/.github/workflows/hepta-windows-fixture-owner-groups.yml",
+      "bytes": 5438,
+      "sha256": "6163b85e92873fcdd64e384ed9d99b6dcb0daba4fcd4267cea10120152bdee03"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/source/scripts/hepta_ci_junit.py",
+      "bytes": 6613,
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/test_windows_fixture_followup.py.stderr",
+      "bytes": 115,
+      "sha256": "3850466224ce3768a5a9573738f27063b802929ecfe28578d40c00a9cae109d3"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/test_windows_fixture_followup.py.stdout",
+      "bytes": 203,
+      "sha256": "f5d37ad32ac39fc078369fe6a0fd147a6a3b2e1512deb91b6ad995ff53f6c258"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/test_windows_fixture_owner_aggregate.py.stderr",
+      "bytes": 106,
+      "sha256": "b0791340df4ec819b65008b60efff0649994e452b53cbc006545cc188e0208bf"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/test_windows_fixture_owner_aggregate.py.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v1/windows-fixture-owner-groups-v1.patch",
+      "bytes": 46635,
+      "sha256": "04de6db4aeccd04cf9888e456fbaccd38d2f3c3d2d240ff30baaa96555055dea"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/CHECKS.json",
+      "bytes": 2535,
+      "sha256": "3c2d46d0735c1191aab8bad245deb262c6010fd72aaa810446d69b123002cb8b"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/aggregate-checkers.stderr",
+      "bytes": 106,
+      "sha256": "7214f39034b4171bc9cede52cb379b5cae12e5965a6ea0130d26ca46eb7289f4"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/aggregate-checkers.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/driver-checkers.stderr",
+      "bytes": 115,
+      "sha256": "7ec580543a8cc85e0e4d0b04ad949f11eaa519faee1a4fd6b50c59d2916b45ed"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/driver-checkers.stdout",
+      "bytes": 203,
+      "sha256": "f5d37ad32ac39fc078369fe6a0fd147a6a3b2e1512deb91b6ad995ff53f6c258"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/git-apply-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/git-apply-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/owner-groups-v1-v2-count-semantics.patch",
+      "bytes": 3429,
+      "sha256": "af1dfc2d98734eee1448ea05430dcb2d1887fb7a4e5fea630d4f224bc890babe"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/prettier-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/prettier-check.stdout",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/publish_owner_groups_v2.py",
+      "bytes": 6230,
+      "sha256": "527bb8b843f22c8bd08ad1a7bf69537f959fbd7625f4c10643a16bac49207bbb"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/ruff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/ruff-check.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/ruff-format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/ruff-format.stdout",
+      "bytes": 43,
+      "sha256": "a9c322be5811cf4bd7ab6927ecb6751d36851790b8b4de75d87f0c39a56d2c8d"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/source/.github/fixtures/windows-fixture-followup-scope.json",
+      "bytes": 3105,
+      "sha256": "87161e6cfd390180de6e8457e9b8ccf55f5b75532505ffdd24b6cc230052049e"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/source/.github/scripts/test_windows_fixture_followup.py",
+      "bytes": 16287,
+      "sha256": "b195758178a926fcb63b1c11d85437a9834cc7cf6c115fce9c91980d0f938b29"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/source/.github/scripts/test_windows_fixture_owner_aggregate.py",
+      "bytes": 9265,
+      "sha256": "c6ffd84e753661d5947a5272d50226919a8cdeb10cc4853026d27e9957f806ca"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/source/.github/scripts/windows_current_ci.py",
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/source/.github/scripts/windows_fixture_followup.py",
+      "bytes": 25801,
+      "sha256": "492dee6f1d76b0fd3fe5277ec293b8ddb31dae8f9e6edd79628f91ccbf3b2379"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/source/.github/scripts/windows_fixture_owner_aggregate.py",
+      "bytes": 14431,
+      "sha256": "d0d8c9204ec879b0f4b8b978ed3d610afc302a7a1be40142b5e0d4827ea38ccd"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/source/.github/scripts/windows_native_probe.py",
+      "bytes": 25146,
+      "sha256": "47bca1523c35200722a7bbd19afd100aac9cf90e8019df4556d35431c00ef8e3"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/source/.github/workflows/hepta-windows-fixture-owner-groups.yml",
+      "bytes": 5438,
+      "sha256": "6163b85e92873fcdd64e384ed9d99b6dcb0daba4fcd4267cea10120152bdee03"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/source/scripts/hepta_ci_junit.py",
+      "bytes": 6613,
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/strict-preparation.original.json",
+      "bytes": 8140,
+      "sha256": "2698246a5b16ae62ae80ad589a42d9d18a311dcc6d32a8f7275cac7a2be87c89"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-preparation-v2/windows-fixture-owner-groups-v2.patch",
+      "bytes": 47227,
+      "sha256": "b7a08c4beaf2381cd468523b0a1f70719044607dd73fa0e90c20c7e23a000aa9"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/RESULT.json",
+      "bytes": 1061,
+      "sha256": "3da7df2077023c52025afb1167115219252e91ee523e420fc7ca33b97e46894e"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/apply-check.json",
+      "bytes": 315,
+      "sha256": "cef73da90ad2e6228c361fad37a442d70df44ccf42915553c600d622c988e580"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/apply-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/apply-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/apply.json",
+      "bytes": 300,
+      "sha256": "f05c1949431b4278a836abf15fd5068e87754bc84b781da091afd2e3d5c161ab"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/base-clean.json",
+      "bytes": 204,
+      "sha256": "ba03c986ea1b0195b98fb4bf12ab64c2a2c892229d114bad335a6f3373c93b96"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/base-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/base-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/base.json",
+      "bytes": 171,
+      "sha256": "fa82a3838d2b102eaf8c9da5d504dc9b2be73996b0e443ea1e0b29704cb61b32"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/base.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/base.stdout",
+      "bytes": 41,
+      "sha256": "21161e29df0d763c8b99bf75eed431e203804d06f47153d2331235e821b8facb"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/branch.json",
+      "bytes": 275,
+      "sha256": "16098278be9bc153899713b656f2cfefd0e7c83dc8300cb2c1d7e3ff79c12307"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/branch.stderr",
+      "bytes": 81,
+      "sha256": "f6264ec391cba5dcfaf268a346899f8cabb7c07b35b3b624719e4439d6bdba21"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/branch.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/commit.json",
+      "bytes": 237,
+      "sha256": "0f11e7237c67cd39a974bfe07c7fb9e3d8d9d3c71739f476ee219b2c8d7fe453"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/commit.stdout",
+      "bytes": 406,
+      "sha256": "a98ef7b20222aadfe73405d7960f7152c945d9e3397e9a7f57c6d8d8d4b467cd"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/committed-clean.json",
+      "bytes": 204,
+      "sha256": "7c476e87982736d35a440332b7295722fb7ae94fc7b9aedc3998a3005220ac5e"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/committed-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/committed-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/diff-check.json",
+      "bytes": 169,
+      "sha256": "5166cf5598526b7b02a6a6a281c87a0cc2a0019b0c13ec4ed13c1ce9b85ba95f"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/diff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/diff-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/new-local-branch.json",
+      "bytes": 231,
+      "sha256": "246ccce8bb74c9343a6167c8ab5e42d54e169db12d85e486524930cd27b17fc0"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/new-local-branch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/new-local-branch.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/new-remote-branch.json",
+      "bytes": 246,
+      "sha256": "8d5ab8615f222c5bd8f18fb07db645f39e49fdd4bf387322cfa28cf046c28b68"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/new-remote-branch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/new-remote-branch.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-api.json",
+      "bytes": 258,
+      "sha256": "421a716d679218b0654c0f0ea026a2e14af8bd8e65718ec33d64ee79dbeab622"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-api.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-api.stdout",
+      "bytes": 1251,
+      "sha256": "8b63ddf70800e9a1d58b0cd466efd112b3eaca9fdb01f96251bba66fb3fcb4dc"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-head.json",
+      "bytes": 171,
+      "sha256": "3b752f2ed2047dacf3313f63d994fb0bf7b7d0a78313f95b5b508783bdd62d7e"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-head.stdout",
+      "bytes": 41,
+      "sha256": "d7331ef9250cd64c9211052759656bf47c8263bbc2e5e7e0f6a5253d61aaddee"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-parent.json",
+      "bytes": 172,
+      "sha256": "067293e3671d59a7350243b40092ce4a5737144a61e8dc0b9744ddc9afc38938"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-parent.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-parent.stdout",
+      "bytes": 41,
+      "sha256": "21161e29df0d763c8b99bf75eed431e203804d06f47153d2331235e821b8facb"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-runs.json",
+      "bytes": 279,
+      "sha256": "013353a3fe54fe672d1383d13ce8871388d5169ddca242bde460c721733f2858"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-runs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-runs.stdout",
+      "bytes": 14377,
+      "sha256": "8ada9bf79cbf3a2466ef0ea4feef483415075569542281121552af7d882f50a7"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-tree.json",
+      "bytes": 178,
+      "sha256": "a03e611fee0525b0f71ece028b04aa1d31c83fcccae8ad2bd21b8affe5612095"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/observer-tree.stdout",
+      "bytes": 41,
+      "sha256": "a3e9627ab73f42acfc5c6a921896559bd34adf8affd3ca72e5c449413721ca6b"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/publish-remote.json",
+      "bytes": 186,
+      "sha256": "737bf870c91bbcaea230c068b8fbb3030ae45cbf8a2194154fbbc107f3d51dff"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/publish-remote.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/publish-remote.stdout",
+      "bytes": 63,
+      "sha256": "5658277e105c40f27aee579ae3112d570c7dc42bf3fb99fa6e8fdf1b098653e1"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/push.json",
+      "bytes": 246,
+      "sha256": "c508b7b9a4a4568ee0651c7fb786aa0d47d1c5312650c58c35a5773432cc6311"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/push.stderr",
+      "bytes": 722,
+      "sha256": "e592e9d499ddfdf3121061f1f20953cdae69acc39baba41ec29f005446e8489d"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/push.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/quiet-source-api.json",
+      "bytes": 258,
+      "sha256": "46d5b446c6fa473f2b77c05f883d7204cbd1853dfe1e1a983385db608e2f241e"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/quiet-source-api.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/quiet-source-api.stdout",
+      "bytes": 1263,
+      "sha256": "b5bfb92ffeebeb9c593342023a61ce96a648fef131d3323df890d0aeb4c250bf"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/quiet-source-readback.json",
+      "bytes": 233,
+      "sha256": "7c885e24565ef2107f3d73b3bb74a93dddc9751d89cf58ead527c505ac162631"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/quiet-source-readback.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/quiet-source-readback.stdout",
+      "bytes": 93,
+      "sha256": "2d3497d072584d0b0ae5e411f2e71d151149bdd5ee47cd9e5b563a1ebf156e9a"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/readback.json",
+      "bytes": 246,
+      "sha256": "40a0cca56acd2c45319c8dd2e848410d74ffb96adbe30b2ca30c632091286be6"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/readback.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/readback.stdout",
+      "bytes": 106,
+      "sha256": "3eb1b9ac724b0caf703fbebf3d8dfa63df2e932ec6c2ac7ec048faf5f7a05c02"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/stage.json",
+      "bytes": 455,
+      "sha256": "5bad1793443287d8238ee1939e150cb2c620c45abfd3b544189c98b60a9190f9"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/stage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/stage.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/staged-files.json",
+      "bytes": 189,
+      "sha256": "826a96398b11ffe890993d4c995661a0b20db48d9e9532f66eb3d6026fc3c2a1"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/staged-files.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-observer-publication-v1/staged-files.stdout",
+      "bytes": 257,
+      "sha256": "0a7cef5934b4f26a0835bac17b103d8a765cf2aaf3f69e3409d46a7166dfe6fe"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/CAPTURE.json",
+      "bytes": 1820,
+      "sha256": "a69d9b9d7aa5e7d45149bd5d303e397153a4bae7a703d461ef4056510c418107"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/ZIP_MEMBERS.json",
+      "bytes": 285,
+      "sha256": "543ed3ba6e8b2ed7ff1f266496ac4cdd7c7f10b7af03c502cd0879c040ab9550"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/artifact.json",
+      "bytes": 924,
+      "sha256": "39743677392a29b370cf80282fbaff69c3eb56263a38f50c7353fad998ab49df"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/artifact.meta.json",
+      "bytes": 602,
+      "sha256": "9e1b7930dfb536e663715a442fb5f3bcac7d4e26319af0402e4d522c6417990a"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/artifact.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/artifact.zip",
+      "bytes": 2230,
+      "sha256": "150cd33c83e96812dbdcad20fb01221f27b1c763c86ec918be3d49085903dafd"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/job.json",
+      "bytes": 2850,
+      "sha256": "228b588875d40057f3832e627db1b79d9d98171c19615b7eeff79e00dabc4fae"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/raw.log",
+      "bytes": 28870,
+      "sha256": "184faea44297bd0b6237b1a658248ede11a39cff9f0be336d5af4f8e9099f5e0"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/raw.meta.json",
+      "bytes": 595,
+      "sha256": "5f206766ea44d4029f33c82d8d79658d140130d8ed62df0eac99722406ed380e"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/snapshot-RESULT.json",
+      "bytes": 1345,
+      "sha256": "a5f841cab7061d59e1c86815ad718905e4857dfc8316491044c3b965f86a3160"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/snapshot-artifacts.json",
+      "bytes": 5143,
+      "sha256": "45404ce88d8de67e585a22d48dd5c4df9bbc1527cdf1d6c009a2de7a6c1c1976"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/snapshot-artifacts.meta.json",
+      "bytes": 484,
+      "sha256": "c90a41c582dc253b3d9bc7f9a93f039c3083257217f7f11bdb456cfc72734250"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/snapshot-jobs.json",
+      "bytes": 19191,
+      "sha256": "192f0d72210d944af69ffa3d4c9abfc4c7cf877175cdc41cfb6f06d0ab961563"
+    },
+    {
+      "path": "originals/windows-owner-groups-originals-v1/aggregate/snapshot-jobs.meta.json",
+      "bytes": 480,
+      "sha256": "caf8e681e84837145c8de4cbbe45b7adf81db7a7599ca69c50f338b33f3c6881"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/windows-fixture-owner-observer-history-bf42-v1/archive.part001",
+      "offset": 0,
+      "bytes": 102780,
+      "sha256": "46ce0378c8bc75fa4e083e53d34b09ac27f6899f6e21e4f7034473b249c73a7f"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

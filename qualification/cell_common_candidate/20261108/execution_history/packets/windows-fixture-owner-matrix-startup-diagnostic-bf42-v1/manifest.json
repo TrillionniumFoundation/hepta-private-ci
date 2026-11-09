@@ -1,0 +1,495 @@
+{
+  "packet_id": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/matrix-startup-diagnostic/windows-fixture-owner-matrix-startup-diagnostic-bf42.tar.xz",
+  "bytes": 17967716,
+  "sha256": "4482994b3243513f0e324545cc12f6e5f22d172fab96f021740152f08bde6012",
+  "compression": "xz",
+  "file_member_count": 19,
+  "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+  "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+  "scope": "Original Windows matrix-startup-diagnostic owner job: 1 selected cases executed, 1 passed, 0 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false,
+  "required_json_members": [
+    {
+      "path": "SCOPE.json",
+      "bytes": 1358,
+      "sha256": "09b210a28a63ecf843a49d508878e7ab4305948dbfae86ac7d524942fb78600a",
+      "equals": [
+        {
+          "path": [
+            "packet_id"
+          ],
+          "value": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1"
+        },
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "observer_sha"
+          ],
+          "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+        },
+        {
+          "path": [
+            "observer_tree"
+          ],
+          "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+        },
+        {
+          "path": [
+            "run_id"
+          ],
+          "value": 42550332155
+        },
+        {
+          "path": [
+            "full_cost"
+          ],
+          "value": null
+        },
+        {
+          "path": [
+            "scientific_qualification_performed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "new_tests_run_by_packet_builder"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "group"
+          ],
+          "value": "matrix-startup-diagnostic"
+        },
+        {
+          "path": [
+            "selected_scope_passed"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "actual_cases"
+          ],
+          "value": [
+            {
+              "binary_id": "codex-hepta-matrix-sdk",
+              "name": "sdk::startup_deadline_tests::expired_finalization_rejects_success_without_erasing_a_written_session",
+              "time_seconds": "5.831",
+              "forbidden_nodes": []
+            }
+          ]
+        },
+        {
+          "path": [
+            "selected_count"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "filter_excluded_count"
+          ],
+          "value": 25
+        },
+        {
+          "path": [
+            "old_failed_or_cancelled_results_superseded"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "complete_eleven_case_scope_claimed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_workspace_passed"
+          ],
+          "value": false
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "MANIFEST.json",
+      "bytes": 3049,
+      "sha256": "55ae29bdd6a36b58201552989f2f3b1838c2d3640b71227b7139add4fad68bfd"
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 1358,
+      "sha256": "09b210a28a63ecf843a49d508878e7ab4305948dbfae86ac7d524942fb78600a"
+    },
+    {
+      "path": "originals/CAPTURE.json",
+      "bytes": 1515,
+      "sha256": "8a3a271c10385519b74df602402f4f276232d6fbe4d4726c4ce22137819a14ec"
+    },
+    {
+      "path": "originals/INDEPENDENT_ANALYSIS.json",
+      "bytes": 2933,
+      "sha256": "eadf19cf19c3b92f10a69bcef190518661cac0c1373ca9e5a997a875f0c34cc1"
+    },
+    {
+      "path": "originals/ORIGINAL_RECEIPT_SUMMARY.json",
+      "bytes": 2277,
+      "sha256": "5e281b241ed396b7e46f58b7b628e32e9eba4ef1227b74ff8c9eb0a9111e9660"
+    },
+    {
+      "path": "originals/ZIP_MEMBERS.json",
+      "bytes": 10924,
+      "sha256": "47c6e5ad699c5a15486d09a85794c746ce9874ce1b265a9388f82f51b273c580"
+    },
+    {
+      "path": "originals/annotations.json",
+      "bytes": 1302,
+      "sha256": "6456dff38757663d693f2cdaafab1cfddae3965e68c0a8e8e9ed98c067d54d06"
+    },
+    {
+      "path": "originals/annotations.json.meta.json",
+      "bytes": 393,
+      "sha256": "645afc342e8943b4bab1c44c4723315e0907cd92de6220dc7ee9879e8677f489"
+    },
+    {
+      "path": "originals/annotations.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/artifact-13646381072.zip",
+      "bytes": 18539054,
+      "sha256": "c31106451709d705ddc708b48515aef29c60b89d2a2d0625e845f9a7455892bf"
+    },
+    {
+      "path": "originals/artifact-13646381072.zip.meta.json",
+      "bytes": 390,
+      "sha256": "8acf975f8c7961872d2ecca7bdbd9544601d07e201afc2dc6259720966d62bdf"
+    },
+    {
+      "path": "originals/artifact-13646381072.zip.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/observation-artifacts.json",
+      "bytes": 891,
+      "sha256": "f64b01e58b3547231604b30615ab5a2a5b4aedd954107879718a634afbb9581e"
+    },
+    {
+      "path": "originals/observation-artifacts.meta.json",
+      "bytes": 361,
+      "sha256": "e5d2f17cd11b5fdb915389925d42f74e0a489e1298a3edd434707c3b1a648577"
+    },
+    {
+      "path": "originals/observation-jobs.json",
+      "bytes": 15551,
+      "sha256": "616991a37a2353aeb6066da77e09909247c990a8f51784d3c28755e5f452c57f"
+    },
+    {
+      "path": "originals/observation-jobs.meta.json",
+      "bytes": 358,
+      "sha256": "2213e6b972a4bb0684c01f0fbb7e2e9ed1ec31a8c0c5875d61d59110fff22cc4"
+    },
+    {
+      "path": "originals/raw.log",
+      "bytes": 95974,
+      "sha256": "201b344922ad813061e32ce9829800a32ccb1fcf76f66f928d325f0028ddb885"
+    },
+    {
+      "path": "originals/raw.log.meta.json",
+      "bytes": 367,
+      "sha256": "18d00cd3f7b38ca580b801107d8bd40e3a8942e9f263c0af35ece3ae7bfca51a"
+    },
+    {
+      "path": "originals/raw.log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "1922c46fc356e33540c2867e0291d6d537e083f22ebd04d02af933efb6594657"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "5603d737bf533b39005169c1e8ec9a4e4427cf568ec7750257fb9e88e16af70c"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "b393970b15515b0f45ecf7f4cb2a73b43e43849038beee826166e29d011bfee7"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "4dd88898677a879c5bdb466195e46c0c1a9cb81422c572629b0593ea0c945f6c"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 490000,
+      "sha256": "03e5b200100404b6c69dd33a34d94c3b2e9f64b0128345e762b279cfe9a65056"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part006",
+      "offset": 2450000,
+      "bytes": 490000,
+      "sha256": "c7ae600ff41ba455357d036d6db843b62b3c206102a0fa7c360a537ae8c34444"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part007",
+      "offset": 2940000,
+      "bytes": 490000,
+      "sha256": "07227c7fe398cfc92780ff97e892a6c156e0acb9c5a41eb8eb1882096e277d61"
+    },
+    {
+      "sequence": 8,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part008",
+      "offset": 3430000,
+      "bytes": 490000,
+      "sha256": "5e154ebd3fbb6cb22bcab76e80f0e7b2068873cd1611b056a68ca63f4bfd8061"
+    },
+    {
+      "sequence": 9,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part009",
+      "offset": 3920000,
+      "bytes": 490000,
+      "sha256": "6a96b3286ae7a9b4298bfbca2ccededfc64036849b38858d0355c9fd3a52f2da"
+    },
+    {
+      "sequence": 10,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part010",
+      "offset": 4410000,
+      "bytes": 490000,
+      "sha256": "c92831031efd7765ab1aafe65c677812a3c98699becbf186f5f8365c7c520ec4"
+    },
+    {
+      "sequence": 11,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part011",
+      "offset": 4900000,
+      "bytes": 490000,
+      "sha256": "8b673332c06a7f502ed37dc79d48de16859edf008e16aab6a020252d656832f8"
+    },
+    {
+      "sequence": 12,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part012",
+      "offset": 5390000,
+      "bytes": 490000,
+      "sha256": "e7f5e67fbb13baa827b6282f4f87f16e4bddabc7e8874feaa7b52a2ac3fcbc4b"
+    },
+    {
+      "sequence": 13,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part013",
+      "offset": 5880000,
+      "bytes": 490000,
+      "sha256": "9ad177cb7728be11820e61e05cffdf818e7348a5d2f35288c9107a071fab0c45"
+    },
+    {
+      "sequence": 14,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part014",
+      "offset": 6370000,
+      "bytes": 490000,
+      "sha256": "5f955c4c3acfab0e2407df71ae5ce5952817495ceeca963736cfa99661a27633"
+    },
+    {
+      "sequence": 15,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part015",
+      "offset": 6860000,
+      "bytes": 490000,
+      "sha256": "d03cca6169a03022bbfd4a2bee14cdd307c1e52c24ae1dbb5529ef997e2dfc1b"
+    },
+    {
+      "sequence": 16,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part016",
+      "offset": 7350000,
+      "bytes": 490000,
+      "sha256": "6bf35208af1b0c74f517366b7c98448d0f4b49aaf63feebe19e96168f15ffb7f"
+    },
+    {
+      "sequence": 17,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part017",
+      "offset": 7840000,
+      "bytes": 490000,
+      "sha256": "fe0f73aea1de4170fe8b39275000b06c041e76e5c9f6e57b5e9cb9265427e4ce"
+    },
+    {
+      "sequence": 18,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part018",
+      "offset": 8330000,
+      "bytes": 490000,
+      "sha256": "b0a377b4fe7fa7d647729740b7ba578193b94ee68b3c6a6f4a25ba974634abb2"
+    },
+    {
+      "sequence": 19,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part019",
+      "offset": 8820000,
+      "bytes": 490000,
+      "sha256": "64a444d0402dfad99b37304e4cb75236a67c99eae113dbe93d8fbfafa74a21c3"
+    },
+    {
+      "sequence": 20,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part020",
+      "offset": 9310000,
+      "bytes": 490000,
+      "sha256": "3cd765946ed99cef8809a64da91a967eefcde7b5512692eef27159837754bff8"
+    },
+    {
+      "sequence": 21,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part021",
+      "offset": 9800000,
+      "bytes": 490000,
+      "sha256": "6bd0d3d8e099cf22bd0b96c92a5283819aeeabedb1fc4e21e9faeda04ebd582b"
+    },
+    {
+      "sequence": 22,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part022",
+      "offset": 10290000,
+      "bytes": 490000,
+      "sha256": "47629eab2b311194d7fac6e9bd05705fd43ab178205c11f36c9b6d3228d8d1b8"
+    },
+    {
+      "sequence": 23,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part023",
+      "offset": 10780000,
+      "bytes": 490000,
+      "sha256": "3d1876bc95fab67d5f83569f3575673dec978d4a6222348d3d2c1415123da9ea"
+    },
+    {
+      "sequence": 24,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part024",
+      "offset": 11270000,
+      "bytes": 490000,
+      "sha256": "0a7aa6ee1424a0b3f3d1156f249b7c962f8994c8d26e1fa94e414d2509222f10"
+    },
+    {
+      "sequence": 25,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part025",
+      "offset": 11760000,
+      "bytes": 490000,
+      "sha256": "0874d2084ab646a99fc4667992298149251a5ef1a417e47d3492309f2ddae47c"
+    },
+    {
+      "sequence": 26,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part026",
+      "offset": 12250000,
+      "bytes": 490000,
+      "sha256": "44bf61380f6509776198f74ea6c2e4afec27ec218ee08a86bf85dfa911ca0a58"
+    },
+    {
+      "sequence": 27,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part027",
+      "offset": 12740000,
+      "bytes": 490000,
+      "sha256": "58523ff78d22da5426b9f5726e280ed3b495b40d80b4ed0c8292108c78e1ed1e"
+    },
+    {
+      "sequence": 28,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part028",
+      "offset": 13230000,
+      "bytes": 490000,
+      "sha256": "3d4f48ed2123c9069e255f7eae09f4b3865d1671b13391e37ce7bf24784b13b3"
+    },
+    {
+      "sequence": 29,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part029",
+      "offset": 13720000,
+      "bytes": 490000,
+      "sha256": "0eb5cc9f8e8992bb54ab97627eafada84ce22d366fd1e76851ab09fcfb13df38"
+    },
+    {
+      "sequence": 30,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part030",
+      "offset": 14210000,
+      "bytes": 490000,
+      "sha256": "6414f17c68bb8f992993f3f4b87e87df364ae2a2f0d682d175f4749532dd863d"
+    },
+    {
+      "sequence": 31,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part031",
+      "offset": 14700000,
+      "bytes": 490000,
+      "sha256": "bfca01ee3938333adb12988b2179f2d2af238345fbee615a4593e1c3374c70bd"
+    },
+    {
+      "sequence": 32,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part032",
+      "offset": 15190000,
+      "bytes": 490000,
+      "sha256": "1ada64c3f5db5ad251f194ab2be8cfed899038ce3b7dc6f8cdcc92b50bfdc23b"
+    },
+    {
+      "sequence": 33,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part033",
+      "offset": 15680000,
+      "bytes": 490000,
+      "sha256": "1da81c6fc6ea4061ba7fe34d9552ae7357820b72b480ea676dfad8d0bcca8b4e"
+    },
+    {
+      "sequence": 34,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part034",
+      "offset": 16170000,
+      "bytes": 490000,
+      "sha256": "dc6dca81c22489250f0cbf735f821072d09b1ab30c03c63133d0cd0d2053b3fc"
+    },
+    {
+      "sequence": 35,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part035",
+      "offset": 16660000,
+      "bytes": 490000,
+      "sha256": "7ff1d687e0fe3daaf6fb61b777f07012ccff92102427528ba998244a12b4542f"
+    },
+    {
+      "sequence": 36,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part036",
+      "offset": 17150000,
+      "bytes": 490000,
+      "sha256": "929d106c98ed136e61ca42c1942229152de98d2c6e8d83009e4d5bf61837f9c7"
+    },
+    {
+      "sequence": 37,
+      "path": "packets/windows-fixture-owner-matrix-startup-diagnostic-bf42-v1/archive.part037",
+      "offset": 17640000,
+      "bytes": 327716,
+      "sha256": "e641b2630e092cf9cb3281b0ceb1a2508be8cc1f1f83e7c1d85638455826391d"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

@@ -1,0 +1,496 @@
+{
+  "packet_id": "windows-fixture-owner-cli-cloud-bf42-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/cli-cloud/windows-fixture-owner-cli-cloud-bf42.tar.xz",
+  "bytes": 18004732,
+  "sha256": "db11066b80b9b6610e699ac3ad26fafcf1a4d3f5e42dcfdbc4b16194d851cce7",
+  "compression": "xz",
+  "file_member_count": 19,
+  "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+  "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+  "scope": "Original Windows cli-cloud owner job: 1 selected cases executed, 1 passed, 0 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false,
+  "required_json_members": [
+    {
+      "path": "SCOPE.json",
+      "bytes": 1481,
+      "sha256": "5640b518a27776707df89295b5ceaa61529bc995c4f9f5a241e5ff51e4d84666",
+      "equals": [
+        {
+          "path": [
+            "packet_id"
+          ],
+          "value": "windows-fixture-owner-cli-cloud-bf42-v1"
+        },
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "observer_sha"
+          ],
+          "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+        },
+        {
+          "path": [
+            "observer_tree"
+          ],
+          "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+        },
+        {
+          "path": [
+            "run_id"
+          ],
+          "value": 42550332155
+        },
+        {
+          "path": [
+            "full_cost"
+          ],
+          "value": null
+        },
+        {
+          "path": [
+            "scientific_qualification_performed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "new_tests_run_by_packet_builder"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "group"
+          ],
+          "value": "cli-cloud"
+        },
+        {
+          "path": [
+            "selected_scope_passed"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "actual_cases"
+          ],
+          "value": [
+            {
+              "binary_id": "codex-cli::sandbox_cloud_config",
+              "name": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+              "time_seconds": "31.998",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "path": [
+            "selected_count"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "filter_excluded_count"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "old_failed_or_cancelled_results_superseded"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "complete_eleven_case_scope_claimed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_workspace_passed"
+          ],
+          "value": false
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "MANIFEST.json",
+      "bytes": 2975,
+      "sha256": "d264e6141a3022897c0f071cb4152d9f692d799847c595ff455f92456d39d639"
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 1481,
+      "sha256": "5640b518a27776707df89295b5ceaa61529bc995c4f9f5a241e5ff51e4d84666"
+    },
+    {
+      "path": "analysis-source/read_owner_group_artifacts_v1.py",
+      "bytes": 12552,
+      "sha256": "41c28121fc66d7944e251c51f33e64a3ba9c23e891cfabb1754f011bdef20701"
+    },
+    {
+      "path": "originals/CAPTURE.json",
+      "bytes": 1829,
+      "sha256": "cc08af352aa56f3d9374e2355ac8a30514bd1497ff0565f00a1bb32e904ae93a"
+    },
+    {
+      "path": "originals/INDEPENDENT_ANALYSIS.json",
+      "bytes": 3092,
+      "sha256": "15951f315a174f299c1717dba07dbd57707823893ef5a62d0edd52c73213be27"
+    },
+    {
+      "path": "originals/ZIP_MEMBERS.json",
+      "bytes": 12509,
+      "sha256": "bb64d21d1b502899eea935de231b71b0708db48206e178d2ec89c170875eb8f2"
+    },
+    {
+      "path": "originals/artifact.json",
+      "bytes": 926,
+      "sha256": "53eec930361a35322ca860a333b0e1187a6dfbdca55d991589fe196ae91a7b0a"
+    },
+    {
+      "path": "originals/artifact.meta.json",
+      "bytes": 606,
+      "sha256": "2872b9ff58cd4471b7678a3cb7ed085a3a5e017a3db51560f87bdf4d824c2408"
+    },
+    {
+      "path": "originals/artifact.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/artifact.zip",
+      "bytes": 18542031,
+      "sha256": "b279fff71880e7c64bac8ba75b0d45906e6972bf2e85c083ca44117d64ce6d80"
+    },
+    {
+      "path": "originals/job.json",
+      "bytes": 4213,
+      "sha256": "19e16c5508652dabff0b572d3df0ee2bba60adbaa21fbb7dc68ba08dfb7f9ffb"
+    },
+    {
+      "path": "originals/raw.log",
+      "bytes": 96453,
+      "sha256": "883861f440d8f7f01d6b80796496d5e4da797e3ab22acd91a77936c82c71d175"
+    },
+    {
+      "path": "originals/raw.meta.json",
+      "bytes": 595,
+      "sha256": "28c45c33b69a4e105759d80913573bbd459b3f51faadc8ea54f8ce21f7af489a"
+    },
+    {
+      "path": "originals/raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/snapshot-RESULT.json",
+      "bytes": 1345,
+      "sha256": "a5f841cab7061d59e1c86815ad718905e4857dfc8316491044c3b965f86a3160"
+    },
+    {
+      "path": "originals/snapshot-artifacts.json",
+      "bytes": 5143,
+      "sha256": "45404ce88d8de67e585a22d48dd5c4df9bbc1527cdf1d6c009a2de7a6c1c1976"
+    },
+    {
+      "path": "originals/snapshot-artifacts.meta.json",
+      "bytes": 484,
+      "sha256": "c90a41c582dc253b3d9bc7f9a93f039c3083257217f7f11bdb456cfc72734250"
+    },
+    {
+      "path": "originals/snapshot-jobs.json",
+      "bytes": 19191,
+      "sha256": "192f0d72210d944af69ffa3d4c9abfc4c7cf877175cdc41cfb6f06d0ab961563"
+    },
+    {
+      "path": "originals/snapshot-jobs.meta.json",
+      "bytes": 480,
+      "sha256": "caf8e681e84837145c8de4cbbe45b7adf81db7a7599ca69c50f338b33f3c6881"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "aaa5b1e628087cc7e93a815b4d35ad7c30478aaa31723773763a310d170c8e50"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "a82e51af1f4d8d7f0623047bd276a2cf44d6edf9833f200be9bc6290c56e83b8"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "19849684fcc3c7f47267ae552f245645f37091ba8d359e0dce5416a1a3edde08"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "76d9848014ecdba93c64803802bd69c2c98910aadbe71d2fa705a970fc1df7b1"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 490000,
+      "sha256": "6a4cd435520082b596cd8b5edb5389bb1df05f863c8f2f04a8c24707e9234b40"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part006",
+      "offset": 2450000,
+      "bytes": 490000,
+      "sha256": "324a763c9ef49b5d24368ae6a514b5af1ca88062d43c491a4a46f5ef2eb0d475"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part007",
+      "offset": 2940000,
+      "bytes": 490000,
+      "sha256": "11a021106c0b3f460d075e5d4a1e32ee63a126804a4a045690780c469df42fc8"
+    },
+    {
+      "sequence": 8,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part008",
+      "offset": 3430000,
+      "bytes": 490000,
+      "sha256": "4c09c2cccc8eaf34e2ca0b4eaac080dba0a2d0b511be73790795ef01aef2a5e7"
+    },
+    {
+      "sequence": 9,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part009",
+      "offset": 3920000,
+      "bytes": 490000,
+      "sha256": "1b9b83d3888d6ad46611d3985fb957a22a9d13652545b99bfc1e019dc2edec61"
+    },
+    {
+      "sequence": 10,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part010",
+      "offset": 4410000,
+      "bytes": 490000,
+      "sha256": "1b51473b3d1da8167df3f3bbbbfeea47a5bfc9295ab5e048d45d822ceaa48d73"
+    },
+    {
+      "sequence": 11,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part011",
+      "offset": 4900000,
+      "bytes": 490000,
+      "sha256": "c5eb386d7689c120f430c01d4c4acc7d6796dd1d336691e34707c22e21f25a6f"
+    },
+    {
+      "sequence": 12,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part012",
+      "offset": 5390000,
+      "bytes": 490000,
+      "sha256": "c097952c4c5569be863ef68841ac4b618c06edd513e2c059f9ecd4d90b2e658d"
+    },
+    {
+      "sequence": 13,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part013",
+      "offset": 5880000,
+      "bytes": 490000,
+      "sha256": "187c55df88c6825df720f3274d40f24084b4ddf8d7eb6235c12d4a987b04340e"
+    },
+    {
+      "sequence": 14,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part014",
+      "offset": 6370000,
+      "bytes": 490000,
+      "sha256": "1ea31451d215836c8fc3efd0aca362574048158decf5790f138a8d42199fe222"
+    },
+    {
+      "sequence": 15,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part015",
+      "offset": 6860000,
+      "bytes": 490000,
+      "sha256": "a4891498dbf5480aa6675ce733ca0fec0de737de1b787a206701b287f1d6d07e"
+    },
+    {
+      "sequence": 16,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part016",
+      "offset": 7350000,
+      "bytes": 490000,
+      "sha256": "d6e21e3789e6fdb43d19806b76167baad1d9f397700d2d8e3b7e1fdef85b9b0e"
+    },
+    {
+      "sequence": 17,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part017",
+      "offset": 7840000,
+      "bytes": 490000,
+      "sha256": "562ef06a881bc4cd37a382907acb01226285fc17543625e747882210143c3a49"
+    },
+    {
+      "sequence": 18,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part018",
+      "offset": 8330000,
+      "bytes": 490000,
+      "sha256": "455e5c795ed0d0e353b9ea44a82ffdafb1534a0bd3b29e09e7b5456175911693"
+    },
+    {
+      "sequence": 19,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part019",
+      "offset": 8820000,
+      "bytes": 490000,
+      "sha256": "ba58d76435f3cda0115e7f553119849bebb8e72be9ace1367f22ff9220ac8e5b"
+    },
+    {
+      "sequence": 20,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part020",
+      "offset": 9310000,
+      "bytes": 490000,
+      "sha256": "e0181388ca7c132540945a628e8b834a180380b494970e1e9a54f6068f8519d2"
+    },
+    {
+      "sequence": 21,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part021",
+      "offset": 9800000,
+      "bytes": 490000,
+      "sha256": "375dced0bf8b419d1fc2a7ef31208f9be554b9bbb27d555e6466b8dea9285423"
+    },
+    {
+      "sequence": 22,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part022",
+      "offset": 10290000,
+      "bytes": 490000,
+      "sha256": "895698455c089fe026bd03e7034b2617dc247371650ac3e0ca960a34ed40053b"
+    },
+    {
+      "sequence": 23,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part023",
+      "offset": 10780000,
+      "bytes": 490000,
+      "sha256": "1018bf8a8126504df1ebd4ed99c96496b2b9e5edd86f2ee8c90ebdef12281711"
+    },
+    {
+      "sequence": 24,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part024",
+      "offset": 11270000,
+      "bytes": 490000,
+      "sha256": "5c698093a20f8b121cb3efe3168ce370aa20c302fa592441af6209eb2c0963b3"
+    },
+    {
+      "sequence": 25,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part025",
+      "offset": 11760000,
+      "bytes": 490000,
+      "sha256": "50497d35e919a7629e38e96373486e9af3605049966245e6539f3e9d8065dbf3"
+    },
+    {
+      "sequence": 26,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part026",
+      "offset": 12250000,
+      "bytes": 490000,
+      "sha256": "e10fb4341eb85e87db083d07016eda3c259df6337fe99a11aaca634f693bf736"
+    },
+    {
+      "sequence": 27,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part027",
+      "offset": 12740000,
+      "bytes": 490000,
+      "sha256": "992bfbbf6f200e115ed8b9533c47c6553386af09503d1838ced09681aa8479be"
+    },
+    {
+      "sequence": 28,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part028",
+      "offset": 13230000,
+      "bytes": 490000,
+      "sha256": "2b45dd9c4eb424245a52898b5864c53211257489282fb6a8a77edd4da79b17aa"
+    },
+    {
+      "sequence": 29,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part029",
+      "offset": 13720000,
+      "bytes": 490000,
+      "sha256": "f4101f8d5bdd51b8bd41ad104c7f70b440aa7d5269bf074f28db99eb13e89541"
+    },
+    {
+      "sequence": 30,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part030",
+      "offset": 14210000,
+      "bytes": 490000,
+      "sha256": "27969c8f677f8f6353f9ce4bd11bf4ab519f8db07b44c0370fdc015efe407ec2"
+    },
+    {
+      "sequence": 31,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part031",
+      "offset": 14700000,
+      "bytes": 490000,
+      "sha256": "264fcc5085fc7c3d4bcf380677961295d9d6fb5c89e6994daaa8875c3eb5ef29"
+    },
+    {
+      "sequence": 32,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part032",
+      "offset": 15190000,
+      "bytes": 490000,
+      "sha256": "51f62f50f3ce9e4fe2a61ced950511a28887054a6782f3e61c28d5dbb5b12f93"
+    },
+    {
+      "sequence": 33,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part033",
+      "offset": 15680000,
+      "bytes": 490000,
+      "sha256": "b387f54294c725ea476252a77efa0dc56b3b535d711abf852a86afe35566c432"
+    },
+    {
+      "sequence": 34,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part034",
+      "offset": 16170000,
+      "bytes": 490000,
+      "sha256": "546e9024b2ec2b1923910ad4f96cbb7d5132033cc2c06e964b56ed9aea1d6818"
+    },
+    {
+      "sequence": 35,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part035",
+      "offset": 16660000,
+      "bytes": 490000,
+      "sha256": "f47db2563df088f882b661475d0c39f3a5b29eb1c675a8b5eee9171923d3178b"
+    },
+    {
+      "sequence": 36,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part036",
+      "offset": 17150000,
+      "bytes": 490000,
+      "sha256": "64449a95e458301dccac52e771060ba02fb094c3a5c68ffa2ddd9c7fab789be4"
+    },
+    {
+      "sequence": 37,
+      "path": "packets/windows-fixture-owner-cli-cloud-bf42-v1/archive.part037",
+      "offset": 17640000,
+      "bytes": 364732,
+      "sha256": "40cc16e34f38b1314b704cc32944b0d9152661d73244c9326269e0508d35f275"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

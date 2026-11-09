@@ -1,0 +1,304 @@
+{
+  "packet_id": "ordinary-learning-slice-bf42-readonly-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ordinary-learning-slice-bf42-packet-v1/ordinary-learning-slice-bf42.tar.xz",
+  "bytes": 143952,
+  "sha256": "9ed951422bb44dcb9ac40c9bc77983ee09c091aa60107623a02819ee7f33b72b",
+  "compression": "xz",
+  "file_member_count": 45,
+  "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "scope": "Targeted read-only review of exact bf42 source and the unchanged formal CURRENT, with original source copies and a proposed minimal D02 ordinary-learning checkpoint delivery slice. This packet contains feasibility analysis/design only: no source change, test execution, provisioning, newly granted authority, product adoption or scientific acceptance. It does not include any later implementation work.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false,
+  "required_json_members": [
+    {
+      "path": "SOURCE_MANIFEST.json",
+      "bytes": 10201,
+      "sha256": "1788a006516e69ac7878c0cc9c6bcee7b2416d372457452e125b5b0eaba03b5a",
+      "equals": [
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "comparison_base"
+          ],
+          "value": "ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1"
+        },
+        {
+          "path": [
+            "tests_executed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "source_modified"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "scientific_acceptance"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_history_cost"
+          ],
+          "value": null
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "MANIFEST.json",
+      "bytes": 10281,
+      "sha256": "a04c2ea639b8bbb9a2cd8837d57fc880e130466da0775ee232252e5cb426d06e"
+    },
+    {
+      "path": ".hepta-lock-a056381f89b2ef9fffc6fd91",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "COLLECTION.json",
+      "bytes": 456,
+      "sha256": "748ab57adbc8125ff34cc050e0b206dfca7d2e128b6bd9fdf52c333a6c7a1f27"
+    },
+    {
+      "path": "CURRENT_RESULT.original.json",
+      "bytes": 7587,
+      "sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+    },
+    {
+      "path": "INDEPENDENT_REVIEW.json",
+      "bytes": 606,
+      "sha256": "57e7eb9bee11243f691af669aa015341b2c2242062807044cc20c9f8b7329cca"
+    },
+    {
+      "path": "NEXT_SLICE.json",
+      "bytes": 11755,
+      "sha256": "e8619ed6ce881449d243af2c06d8a8114d8c696804c4abcd02b0910b41ad0b00"
+    },
+    {
+      "path": "REVIEW_PAYLOAD.json",
+      "bytes": 27070,
+      "sha256": "7945a036e1579e703bdbcd543db9d202aed5ce303c6d6051c7ddd7cdf8708ee5"
+    },
+    {
+      "path": "SOURCE_MANIFEST.json",
+      "bytes": 10201,
+      "sha256": "1788a006516e69ac7878c0cc9c6bcee7b2416d372457452e125b5b0eaba03b5a"
+    },
+    {
+      "path": "host_frontier_definitions.git-grep.txt",
+      "bytes": 314,
+      "sha256": "6256a62a13e5d3e3d69299ea05020d4af79e97db26f8a534751301f39453219c"
+    },
+    {
+      "path": "learning_checkpoint_delivery.git-grep.txt",
+      "bytes": 1416,
+      "sha256": "95d91e5b701d5abf9290491a5cd3696a46e0d96eebaccd6288bbfd75ad279f80"
+    },
+    {
+      "path": "learning_ports_and_bootstrap.git-grep.txt",
+      "bytes": 1843,
+      "sha256": "188d3680afe156a36a24f023fa0b60fd39d00f223232d722b1d06752dc73f581"
+    },
+    {
+      "path": "read_sources.py",
+      "bytes": 4413,
+      "sha256": "58ca048689798a6a603e95764e912ffaa5825767f50e99be5246fd4672534ef7"
+    },
+    {
+      "path": "root_config_owners.git-grep.txt",
+      "bytes": 2322,
+      "sha256": "c5b2ba8d2dd243b51f0e47af731421954f99ae09c480e42c7e14c7f315349cec"
+    },
+    {
+      "path": "seal_review.py",
+      "bytes": 3043,
+      "sha256": "195e0b9ae943924e11508dbf15f61bc1adc024dd0a6730f206d233c4cd062180"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/authority_host_bootstrap.rs",
+      "bytes": 4320,
+      "sha256": "779b30c44a4788b3cb0138acdcbc212db32d342ac2aac3b00fe9f69a61e52e38"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/authority_host_checkpoint.rs",
+      "bytes": 14879,
+      "sha256": "da19b93a6939e361e9c65d3b5db5ebfbc65947be9280308034b9b6bd43211a59"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/authority_host_config.rs",
+      "bytes": 7060,
+      "sha256": "d940d9ed0cd645bb911c7545a1094cdb6168949972859e4e27cee1f1e65c2d62"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "bytes": 18177,
+      "sha256": "4924d84e35e7e69f07f780a6bd218448dafece706dd1ce444a7a16616388e55b"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "bytes": 21996,
+      "sha256": "21d5adaa5ccbbe524cba5c8e97f627bddc57984bec59021df5efba555bf5ecdd"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/config.rs",
+      "bytes": 37947,
+      "sha256": "b22d7df86a0e44c9cebce43e230fc6e71da0ba6f0d0ff650d50e44cc331db4f6"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/config_root_handoff.rs",
+      "bytes": 9725,
+      "sha256": "ce7a08933a135401786a67c431bb87fb4e2ced22fc21e02a520d1faae4f43a42"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "bytes": 20558,
+      "sha256": "f1f67b480ae8c1b6633aedbc5df4636e5fe839189cd24ab94f66cbe28f722d97"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "bytes": 11769,
+      "sha256": "1c03c7f8ae51fe7d19211bb6fb81aeec6a7b6d114e7d3f7ff7b6ae754e67efa5"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "bytes": 9360,
+      "sha256": "8a1aaf90ed1d2859b9535fd908ead0aee499b08de103c5904e67be02ba09a50a"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+      "bytes": 3817,
+      "sha256": "608f783f4aa15a0171508e1050dbead7cd5131322fd2a2ed6254d6bf4bd9092b"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/main.rs",
+      "bytes": 13038,
+      "sha256": "9b6c157d88b2c1f32ab87adf34b73d52f2fce9db2581b222c0a54bf814994f97"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/neuron_generation_learning_runtime.rs",
+      "bytes": 9822,
+      "sha256": "7e2da259231d6d1ee4c67925507e99838a0ef31ae2a710384ccfc158d2aa293e"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/neuron_generation_process_bootstrap.rs",
+      "bytes": 12581,
+      "sha256": "330694fe2f36d0ab6dfd4af315304c5ff288274997788faf1a88c4950fdaed6e"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/neuron_generation_runtime.rs",
+      "bytes": 17634,
+      "sha256": "d56660cc1b903d04e007745e5ccbdb537bddac4621c1f93b5c16287cf3a79cec"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs",
+      "bytes": 5655,
+      "sha256": "cd86f3c18ae6319c680e484c096472cafa91823ec17c0c0045f30cb208aa69b1"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/neuron_v13_generation_owners.rs",
+      "bytes": 9529,
+      "sha256": "be4e70feabdc543d1def6edad9b1c616e18aca8ce4a03bec5face8ece5020938"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/neuron_v13_generation_update_runtime.rs",
+      "bytes": 2417,
+      "sha256": "e73b98d29d768c9c891425d3a47f4866e846860965eab2f07f3004f27219ed57"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/production_composition.rs",
+      "bytes": 9635,
+      "sha256": "82acddc7bcfb717e1a88cfd51be0551c25cda2b9473077a2addbb4cca67e4dfd"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "bytes": 17100,
+      "sha256": "0fcb86a8f87a2e2e8c5bc34b84dbd23e34f95e2784421e794769ede935556591"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/production_root_composition.rs",
+      "bytes": 10175,
+      "sha256": "10561eae5e1d9cd51283df2c8cbcd714cbf5877b26c77e2b10508829a509a180"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "bytes": 9167,
+      "sha256": "10be66862ba6c658ceb6fdc6cc32c36b76fb2d60395a97c4b3912c4030e46782"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "bytes": 12923,
+      "sha256": "c46260717d90ee9da91bd9a252ea233996843acf328bf3e938501d8b3ee2df56"
+    },
+    {
+      "path": "source/codex-rs/hepta-contracts/src/authority_host_store.rs",
+      "bytes": 16412,
+      "sha256": "f80799bad7efc8fa349dc88e3ea8a921218d3d98d447b786e1a84e51afa0660e"
+    },
+    {
+      "path": "sources.tar.xz",
+      "bytes": 57740,
+      "sha256": "5d9fa83832b828683720d9b672ca0782a4ce6ae40e9512f8f09198712644ef40"
+    },
+    {
+      "path": "supplement/definitions.txt",
+      "bytes": 408,
+      "sha256": "3fcfb6d53c40100bbe769200ea0a4df5ef9f551cc9afb2c3025dda3d68e4e5fb"
+    },
+    {
+      "path": "supplement/manifest.json",
+      "bytes": 641,
+      "sha256": "4ef8fb5192eaaa4e1cb7cb0c13979e3320f4a5fab828c3cacac71c440251f8b3"
+    },
+    {
+      "path": "supplement/source/codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "bytes": 9856,
+      "sha256": "4c7a032d1b1a9cdfe3d9539e059f155efb53f74f22e88a42a4afde936dcad557"
+    },
+    {
+      "path": "supplement/source/codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "bytes": 6672,
+      "sha256": "3682f24de45022de85758c2052577e5165c3407134eed1590d599d741a117352"
+    },
+    {
+      "path": "supplement/source/codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "bytes": 8315,
+      "sha256": "cd0b581fc4b3421d2184b7f6d4999c1f6cfdf32c144a7358537f2c0b6ca12ead"
+    },
+    {
+      "path": "supplement/supplement.tar.xz",
+      "bytes": 6056,
+      "sha256": "6855781fe09473189081bb0466dbd3e495d57a8d3ab82dd4698b596d565efc61"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/ordinary-learning-slice-bf42-readonly-v1/archive.part001",
+      "offset": 0,
+      "bytes": 143952,
+      "sha256": "9ed951422bb44dcb9ac40c9bc77983ee09c091aa60107623a02819ee7f33b72b"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

@@ -1,0 +1,521 @@
+{
+  "packet_id": "windows-fixture-owner-agentd-h7-qualification-bf42-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/agentd-h7-qualification/windows-fixture-owner-agentd-h7-qualification-bf42.tar.xz",
+  "bytes": 18043196,
+  "sha256": "db3a43d4f70ad6dc8547916c97ecbaac10d564b52eec7d968b4c53ae5f8d672d",
+  "compression": "xz",
+  "file_member_count": 24,
+  "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+  "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+  "scope": "Original Windows agentd-h7-qualification owner job: 1 selected cases executed, 1 passed, 0 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false,
+  "required_json_members": [
+    {
+      "path": "SCOPE.json",
+      "bytes": 1527,
+      "sha256": "79a507ff209eb2545dda329900279a018cee4ab26a79f954527c83d994a0a354",
+      "equals": [
+        {
+          "path": [
+            "packet_id"
+          ],
+          "value": "windows-fixture-owner-agentd-h7-qualification-bf42-v1"
+        },
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "observer_sha"
+          ],
+          "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+        },
+        {
+          "path": [
+            "observer_tree"
+          ],
+          "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+        },
+        {
+          "path": [
+            "run_id"
+          ],
+          "value": 42550332155
+        },
+        {
+          "path": [
+            "full_cost"
+          ],
+          "value": null
+        },
+        {
+          "path": [
+            "scientific_qualification_performed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "new_tests_run_by_packet_builder"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "group"
+          ],
+          "value": "agentd-h7-qualification"
+        },
+        {
+          "path": [
+            "selected_scope_passed"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "actual_cases"
+          ],
+          "value": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+              "time_seconds": "2.480",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "path": [
+            "selected_count"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "filter_excluded_count"
+          ],
+          "value": 263
+        },
+        {
+          "path": [
+            "old_failed_or_cancelled_results_superseded"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "complete_eleven_case_scope_claimed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_workspace_passed"
+          ],
+          "value": false
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "MANIFEST.json",
+      "bytes": 4044,
+      "sha256": "277e6bf2ecccc6aeabaec4a94bfc6672f03069f1709a4eaf8717a75cd05c830a"
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 1527,
+      "sha256": "79a507ff209eb2545dda329900279a018cee4ab26a79f954527c83d994a0a354"
+    },
+    {
+      "path": "analysis-source/read_owner_group_artifacts_v1.py",
+      "bytes": 12552,
+      "sha256": "41c28121fc66d7944e251c51f33e64a3ba9c23e891cfabb1754f011bdef20701"
+    },
+    {
+      "path": "originals/CAPTURE.json",
+      "bytes": 1513,
+      "sha256": "202c3aac4fb8e324de687059f9df400e8e2cd63eda18fc8f93efcf9ae765e29e"
+    },
+    {
+      "path": "originals/INDEPENDENT_ANALYSIS.json",
+      "bytes": 3437,
+      "sha256": "4326d332b9df5b4826dc77c3322e1461c743eab34a3e4159251d66a482e0b016"
+    },
+    {
+      "path": "originals/ORIGINAL_RECEIPT_SUMMARY.json",
+      "bytes": 3798,
+      "sha256": "cf2537c6501322c60698616022ebce650c4aa49a13c17651b3c3472fd389b59d"
+    },
+    {
+      "path": "originals/ZIP_MEMBERS.json",
+      "bytes": 10896,
+      "sha256": "41e59e2d76e1b645f5ba75352b0cf5d4db86f97b28751e604ef537a2eb941393"
+    },
+    {
+      "path": "originals/annotations.json",
+      "bytes": 1302,
+      "sha256": "6456dff38757663d693f2cdaafab1cfddae3965e68c0a8e8e9ed98c067d54d06"
+    },
+    {
+      "path": "originals/annotations.json.meta.json",
+      "bytes": 393,
+      "sha256": "8da61cd6d7edb7c5e63cbf83c4f4c0c9e5807e7fc7b580338599948e69c31efb"
+    },
+    {
+      "path": "originals/annotations.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/artifact-13646067822.zip",
+      "bytes": 18572973,
+      "sha256": "b069a15adab434a33bce185933e09aa88ba347cea4176be099d1ab002c3da40b"
+    },
+    {
+      "path": "originals/artifact-13646067822.zip.meta.json",
+      "bytes": 390,
+      "sha256": "4e2db40dba0527b15aa0e589bff45ef5b51ee59d5058091d920d1c2901b7ccce"
+    },
+    {
+      "path": "originals/artifact-13646067822.zip.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/observation-artifacts.json",
+      "bytes": 2602,
+      "sha256": "9c53d89bd35589abacd16d1bfec7d0897a1fd351b4972a8c02c3a86de47e322c"
+    },
+    {
+      "path": "originals/observation-artifacts.meta.json",
+      "bytes": 362,
+      "sha256": "3996191e0833e2927ad9d922af86c2b379fc48083ec177cd576f60922736c032"
+    },
+    {
+      "path": "originals/observation-jobs.json",
+      "bytes": 16201,
+      "sha256": "1b9b9381350cbc318229c866523b56d7465b3eebfe60a3683ac149908e1b8ac4"
+    },
+    {
+      "path": "originals/observation-jobs.meta.json",
+      "bytes": 358,
+      "sha256": "2fbf6698b48ecc3ac79d93526c6491817dfdf2c67b3e9e3c07344febeee6ba7a"
+    },
+    {
+      "path": "originals/raw.log",
+      "bytes": 95754,
+      "sha256": "ee416bf3fb8071ed64eac7a7be5183d9c42e58b31d89a87136a95080fa25ab40"
+    },
+    {
+      "path": "originals/raw.log.meta.json",
+      "bytes": 367,
+      "sha256": "ba069187544cbe504944c00b0bb2c3dd9ec3f0d3d769f60f65fce9f534e6ef4f"
+    },
+    {
+      "path": "originals/raw.log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/selected-originals/agentd-h7-qualification/nextest-store/local/junit.xml",
+      "bytes": 548,
+      "sha256": "ab973fcc79bac669244820450107ec9301c93977a29f9ee989c089bb24a84c18"
+    },
+    {
+      "path": "originals/selected-originals/agentd-h7-qualification/tests.json",
+      "bytes": 957,
+      "sha256": "1639515e2579598cb005350307ae5ed371be2f3e4eb23dae87e4c0f4772b1d93"
+    },
+    {
+      "path": "originals/selected-originals/agentd-h7-qualification/tests.stderr",
+      "bytes": 8898,
+      "sha256": "b262f89399031295fccba15927cdff53c96cc0e2efe3c844e2478f6db502bc82"
+    },
+    {
+      "path": "originals/selected-originals/agentd-h7-qualification/tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "b5e2bcd381e35be1d2e418589c8ead551a16f727bc93aea6fa8c71d178d4e956"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "35381444f8468c43c658fb1d441110af2fa6221efc51fe3f2fb40c28813a61c1"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "38479db8f0d5c01d6fca0011bc1d9e203cf73305baab6560ff20e88f5f5771fc"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "60fde2725f9d5f06cbe8541ee257633a1af37b3e58a90c3ef1e266cc1a5662e5"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 490000,
+      "sha256": "bfe03de9a9440bda6d0ded7d5044e5b98abc12cd0815f68f604c437fe092d868"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part006",
+      "offset": 2450000,
+      "bytes": 490000,
+      "sha256": "80492e78e765beacc4c19ede5c93b3344fa140dcd077cbec1186c18bf518e7b8"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part007",
+      "offset": 2940000,
+      "bytes": 490000,
+      "sha256": "75b7badb1a7ff8c8dfa8ba0b3946069f03d31915cff35784d3e7c14ba9c65580"
+    },
+    {
+      "sequence": 8,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part008",
+      "offset": 3430000,
+      "bytes": 490000,
+      "sha256": "989e3185c82eb852124bf6938e134067a75bd4a62b68ae43f21ce1e342299405"
+    },
+    {
+      "sequence": 9,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part009",
+      "offset": 3920000,
+      "bytes": 490000,
+      "sha256": "c2f1b602f81cc98238da1464e08f748c630e621b49e4fd1efac73d34b8105381"
+    },
+    {
+      "sequence": 10,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part010",
+      "offset": 4410000,
+      "bytes": 490000,
+      "sha256": "16f05081e2bc5dadb90f0a4583af65cb73814cec3a8dd146600f1a26aa15ee99"
+    },
+    {
+      "sequence": 11,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part011",
+      "offset": 4900000,
+      "bytes": 490000,
+      "sha256": "8d55f8f7874f3f747871fa3e490cfb3c19e49e79a2cb07d6d03b7b8b7dee5db6"
+    },
+    {
+      "sequence": 12,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part012",
+      "offset": 5390000,
+      "bytes": 490000,
+      "sha256": "d0acf15392f0b5acb0845443f1d765f65a1f796dc2539685e76313aadff76d3f"
+    },
+    {
+      "sequence": 13,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part013",
+      "offset": 5880000,
+      "bytes": 490000,
+      "sha256": "ed5bf0340c0227b2da2357016ebf0c617f77372907c3bc8e5b8ae7571a635832"
+    },
+    {
+      "sequence": 14,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part014",
+      "offset": 6370000,
+      "bytes": 490000,
+      "sha256": "1836040d42df7719439a5440bf5cbdbd06345846dc37618b84786d46ef8bcf6f"
+    },
+    {
+      "sequence": 15,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part015",
+      "offset": 6860000,
+      "bytes": 490000,
+      "sha256": "c8cc206d43b5b7eb35d3c6e77b897dc208490e9f5887b8fbe72e95a0ad1df361"
+    },
+    {
+      "sequence": 16,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part016",
+      "offset": 7350000,
+      "bytes": 490000,
+      "sha256": "cdc87bf5f16a22469d72f3262ee4215489a32bebf72e37049b1d1a611350dd7a"
+    },
+    {
+      "sequence": 17,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part017",
+      "offset": 7840000,
+      "bytes": 490000,
+      "sha256": "32aba34e998623b13a0bf7c40f9ab24158638978fd0b9a711ab3492ffa78f960"
+    },
+    {
+      "sequence": 18,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part018",
+      "offset": 8330000,
+      "bytes": 490000,
+      "sha256": "9a28d73652a7458fe34fef46b8f50130b0a5550889e1d0894fb1a71894a9d527"
+    },
+    {
+      "sequence": 19,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part019",
+      "offset": 8820000,
+      "bytes": 490000,
+      "sha256": "a70fd493ff376c233723762055398608a4bba7c3123f394251e5ddf30e8adc11"
+    },
+    {
+      "sequence": 20,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part020",
+      "offset": 9310000,
+      "bytes": 490000,
+      "sha256": "de5385628ecd93c58703dda10548247113515b2bb2b02dd1a0587ed434af1f46"
+    },
+    {
+      "sequence": 21,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part021",
+      "offset": 9800000,
+      "bytes": 490000,
+      "sha256": "4c4ddc4967829a39d8bf0fe1a1cbdb1d90c1a20b78ab79d4bed0f8c399e84afe"
+    },
+    {
+      "sequence": 22,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part022",
+      "offset": 10290000,
+      "bytes": 490000,
+      "sha256": "72ee6a1dbfe520c2af311a018f3e48897188db59a227de244b39c155cde918ed"
+    },
+    {
+      "sequence": 23,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part023",
+      "offset": 10780000,
+      "bytes": 490000,
+      "sha256": "66b8c14389e368fd4d49dd2c53b095ccd063f4ed6739ecd883464c6f7b4e1d7d"
+    },
+    {
+      "sequence": 24,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part024",
+      "offset": 11270000,
+      "bytes": 490000,
+      "sha256": "478031406f08605fe3d92765cfeaba40c595f037d5e2596518d84e5f81f7c669"
+    },
+    {
+      "sequence": 25,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part025",
+      "offset": 11760000,
+      "bytes": 490000,
+      "sha256": "b45dcab1e8a9c835baf7de7b09fff59946d39039dafda3b2443a0c741e736bba"
+    },
+    {
+      "sequence": 26,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part026",
+      "offset": 12250000,
+      "bytes": 490000,
+      "sha256": "94203cea47eea0357d328b7a1eda2636c71b4d4f21979379b824d2ed6a3d466e"
+    },
+    {
+      "sequence": 27,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part027",
+      "offset": 12740000,
+      "bytes": 490000,
+      "sha256": "0e1df803daa94fc05e319479fbf2d2a02aeca4d8a40b0a5286be0e28aa96dfb2"
+    },
+    {
+      "sequence": 28,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part028",
+      "offset": 13230000,
+      "bytes": 490000,
+      "sha256": "0a0fd062570dc5f77dd06d7b396151805ca8261f8d6f29552b878643aa0dec3b"
+    },
+    {
+      "sequence": 29,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part029",
+      "offset": 13720000,
+      "bytes": 490000,
+      "sha256": "73fddd6333b79804cf93a8a9d683cc5aedb2e498406b165262e47ff18d21a9e4"
+    },
+    {
+      "sequence": 30,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part030",
+      "offset": 14210000,
+      "bytes": 490000,
+      "sha256": "ea082d10fb431ec4efe357164641ede778b830198b67384ffc93eb6c1712ed90"
+    },
+    {
+      "sequence": 31,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part031",
+      "offset": 14700000,
+      "bytes": 490000,
+      "sha256": "77e222b06a53ec26dfe333ec3db168d130b763193baccc3d09e544a8cd8248e6"
+    },
+    {
+      "sequence": 32,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part032",
+      "offset": 15190000,
+      "bytes": 490000,
+      "sha256": "2cb64347429c0cbc333126bc629bc8626ade5050dc427e05d80687c7a56c37bf"
+    },
+    {
+      "sequence": 33,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part033",
+      "offset": 15680000,
+      "bytes": 490000,
+      "sha256": "91314bbcf60b78792b1ff2790814567e91ba5ba341335fda98ce002386fdae9a"
+    },
+    {
+      "sequence": 34,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part034",
+      "offset": 16170000,
+      "bytes": 490000,
+      "sha256": "3792efbf93952e959efb86e11c27dcaa17e780b9cb9e085e42396c2c5a9eb96e"
+    },
+    {
+      "sequence": 35,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part035",
+      "offset": 16660000,
+      "bytes": 490000,
+      "sha256": "10fb8dd34dd3d3ef6ebf4824e6d0c389a440ec11773570dc1bb8b81d88d01747"
+    },
+    {
+      "sequence": 36,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part036",
+      "offset": 17150000,
+      "bytes": 490000,
+      "sha256": "0f106607fa6c48b6936717228ff4174eec098ba186daa7c03b7f212610e074a3"
+    },
+    {
+      "sequence": 37,
+      "path": "packets/windows-fixture-owner-agentd-h7-qualification-bf42-v1/archive.part037",
+      "offset": 17640000,
+      "bytes": 403196,
+      "sha256": "2940bd5d455a573d0e839c2c02bd315aedec075edff55ebe9ab71fb76b31e732"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

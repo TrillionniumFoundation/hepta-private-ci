@@ -1,0 +1,2252 @@
+{
+  "packet_id": "ui-status-diagnostic-originals-5e33-history-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ui-status-diagnostic-history-v1/ui-status-diagnostic-history.tar.xz",
+  "bytes": 2340476,
+  "sha256": "e8c880a965de795c7d11b8b82a0a089cf7e6eea8daeb79a06dd0148540e26923",
+  "compression": "xz",
+  "file_member_count": 417,
+  "source_sha": "5e33ff84c6e556a63de77610ea968d480221747c",
+  "source_tree": "e73045f95d99644c6f7b2b1ff2b111f6b4969782",
+  "scope": "Original UI diagnostic execution and preparation history on instrumented source 5e33, parent d1, run 42549225359. Seven original cases pass with zero retries/skips: six real gateway status cases plus one synthetic SDK export-sink control. Includes original job raw, verified 180-member artifact, paired recorded wait boundaries, and preparation/publication failures. The previous timeout was not reproduced; root cause remains unknown. Synchronous diagnostic I/O can change scheduling; the pass does not qualify uninstrumented d1 or bf42, prove a production fix, or advance a research stage.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false,
+  "required_json_members": [
+    {
+      "path": "ui-status-diagnostic-preparation-v1/UI_DIAGNOSTIC_RESULT.json",
+      "bytes": 3446,
+      "sha256": "9d221aeabbf99a6f137d75888e690a992c7619a1eb15e38ba5302c17cdb5cd92",
+      "equals": [
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "5e33ff84c6e556a63de77610ea968d480221747c"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "e73045f95d99644c6f7b2b1ff2b111f6b4969782"
+        },
+        {
+          "path": [
+            "base_sha"
+          ],
+          "value": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca"
+        },
+        {
+          "path": [
+            "run_id"
+          ],
+          "value": 42549225359
+        },
+        {
+          "path": [
+            "actual_cases"
+          ],
+          "value": 7
+        },
+        {
+          "path": [
+            "gateway_status_cases"
+          ],
+          "value": 6
+        },
+        {
+          "path": [
+            "sdk_transport_control_cases"
+          ],
+          "value": 1
+        },
+        {
+          "path": [
+            "passed"
+          ],
+          "value": 7
+        },
+        {
+          "path": [
+            "failed"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "skipped"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "retries"
+          ],
+          "value": 0
+        },
+        {
+          "path": [
+            "original_failure_reproduced"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "original_failure_root_cause"
+          ],
+          "value": "unknown"
+        },
+        {
+          "path": [
+            "production_fix_claimed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "base_source_qualified"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "science_stage_advanced"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_history_cost"
+          ],
+          "value": null
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "MANIFEST.json",
+      "bytes": 197396,
+      "sha256": "95ac2fa4b92345acddad0eaf31b44a706f42b6fbd9c3c41f89b3544fa1a4309f"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-001/CAPTURE.json",
+      "bytes": 937,
+      "sha256": "182f1160670e5b12faae7a0ac3a3c5f4d7e98f302989946ba1ac102beacd9cc3"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-001/jobs.json",
+      "bytes": 3080,
+      "sha256": "2cb93dc070ae60dfaf5de69ce9e91dad9ee75eb03ee17af3b224fc866eea8cdc"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-001/jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-001/run.json",
+      "bytes": 14280,
+      "sha256": "c7cc91b50b5262c347d3c90ea55327d1131a905fd05903a4e79241fac3fdc88e"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-001/run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-002/CAPTURE.json",
+      "bytes": 928,
+      "sha256": "e4059a39d85500499a4a3a30d74800a9274e0ccdee00df9a10595853c3d1a810"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-002/jobs.json",
+      "bytes": 3419,
+      "sha256": "b53aa02ddd9589c28c1e186e2887c1eb967d84fdc75d59cc53cc38790ce76678"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-002/jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-002/run.json",
+      "bytes": 14280,
+      "sha256": "c7cc91b50b5262c347d3c90ea55327d1131a905fd05903a4e79241fac3fdc88e"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-002/run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-003/CAPTURE.json",
+      "bytes": 925,
+      "sha256": "345a74b037da99af79c1adbc76cb9b06de94b63084f3261cb6049d6232d06570"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-003/jobs.json",
+      "bytes": 3505,
+      "sha256": "f8c5d6c90098006788dc1bc053c6ab4d5c2f795ea5f6b78245f3b74d335fbb51"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-003/jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-003/run.json",
+      "bytes": 14280,
+      "sha256": "c7cc91b50b5262c347d3c90ea55327d1131a905fd05903a4e79241fac3fdc88e"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-003/run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-004/CAPTURE.json",
+      "bytes": 863,
+      "sha256": "ca2abb97ae6294c9a4c83dc3bc3b8f4642a2e0f6866757d3584c34316c359785"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-004/jobs.json",
+      "bytes": 3959,
+      "sha256": "dfaedb7a499bfa6d1cb6a4d180bdf62464d9e8f2359c5c5dc607c1df95c1df99"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-004/jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-004/run.json",
+      "bytes": 14283,
+      "sha256": "a3c16abbf3c175bb1285e42e1527569449ab83cf559874634248df2446bdf374"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/capture-004/run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/COLLECTION.json",
+      "bytes": 118504,
+      "sha256": "11c6999816ea5ab29a947ff75b1f74bf8a1b80615753b5452c64ff5673074f39"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/PROGRESS_PROJECTION.json",
+      "bytes": 82093,
+      "sha256": "c5b9d795a8c7041620939e953c51edf0b5976a12e9498fa9f2b1812e75628642"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/WAIT_ANALYSIS.json",
+      "bytes": 81213,
+      "sha256": "1e047e393126970cef99938d7f2329f9d8bf94717af8b7bfa6cd4ccc3bee36bb"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064.command.json",
+      "bytes": 226,
+      "sha256": "0acfb5cc17721bfe44e9eab6700d832e9045c04f58b3872f53d976cc0802766d"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064.raw",
+      "bytes": 2159441,
+      "sha256": "abb216ed9f2da41f3d5804996266e329a4305ce32cdf87877f9020851832f222"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/MEMBER_INDEX.json",
+      "bytes": 52452,
+      "sha256": "fed3e12d5520458e336b38fc8ad1acdc10da2820dce258f0eca2590e4d85831c"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/product-gateway-target/debug/examples/ui_product_preview.hepta-build.json",
+      "bytes": 2242,
+      "sha256": "9d8939cc306a50bc1cd82fc5e43db00e6b10531a09034d0308023f25b66801fa"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/ADMISSION.json",
+      "bytes": 5232,
+      "sha256": "567ddde9a6d4c523eb143e0d9a3b48ea352ef604773597edc13ccf18750ea5f9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/COMMAND_FINISHED.json",
+      "bytes": 587,
+      "sha256": "56d5d368ec0f6f2ccf6f0b1959fb4a39b428760a7a2de88970166952aa123f39"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/COMMAND_STARTED.json",
+      "bytes": 464,
+      "sha256": "358bdf23a651a9d9c522eeddefaf2df37d2a9bb43ebf2315c695f4931453a677"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/MANIFEST.json",
+      "bytes": 4687,
+      "sha256": "f76803a69fd9b4c39567e88b27c6d6430bb253cc48b2e7d66bcd2c19066eac26"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/OBSERVATION.json",
+      "bytes": 6489,
+      "sha256": "89de28f5bf50436722442bfd58b6d89bb17155ed9b8ac05d285f48c818683dca"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/SOURCE_AFTER.json",
+      "bytes": 128,
+      "sha256": "f0c6a1c465946429d88b1471fc38e80b0ba80a2e8ec6083d15fbb6fc0c8e7b36"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/SOURCE_BEFORE.json",
+      "bytes": 128,
+      "sha256": "f0c6a1c465946429d88b1471fc38e80b0ba80a2e8ec6083d15fbb6fc0c8e7b36"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/SOURCE_FINAL.json",
+      "bytes": 128,
+      "sha256": "f0c6a1c465946429d88b1471fc38e80b0ba80a2e8ec6083d15fbb6fc0c8e7b36"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/browser-command.log",
+      "bytes": 1068,
+      "sha256": "da08115bc300ba5d0758cf1d2543c97ca7cfa00b43c36834b16491f33cde283a"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/ocr-inputs.log",
+      "bytes": 124,
+      "sha256": "2980b51a6383c42a9480d1605cc26753102aabceb6af850dc955d2835d53f54b"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/source/apps__hepta-control-ui__e2e__robrix-font-transport.spec.mjs",
+      "bytes": 5510,
+      "sha256": "ba43bf0c74fa691826a1c9d19e42ae1e383b56165bc6aa3e71a6186c4649b101"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/source/apps__hepta-control-ui__e2e__robrix-product-status.spec.mjs",
+      "bytes": 27927,
+      "sha256": "dd1ea0140544e4db7d923782592206b75e3a8d9f5d223db0a8750ebb5e3200dd"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/source/apps__hepta-control-ui__package-lock.json",
+      "bytes": 2625,
+      "sha256": "716a8be89200c7f916a1db41fdc5a4c8e1badc5a72c230a6aabee2215baa2d19"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/source/apps__hepta-control-ui__playwright.product.config.mjs",
+      "bytes": 1425,
+      "sha256": "2bb2a7dfbcdb8a3e4b06ee4986af09e839c5e4802f5db96944b5e81573d4d3e9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/source/apps__hepta-control-ui__tools__build-product-preview.py",
+      "bytes": 3285,
+      "sha256": "2e9e39d0e46eae064abd974795040695589aef0ec6c86b302e5b4abf2c4f965e"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/source/apps__hepta-control-ui__tools__build-robrix.mjs",
+      "bytes": 15154,
+      "sha256": "7399d3649766f6a919703212cbbfd75467a365a8786fd249b04809725ea52d8d"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/source/apps__hepta-control-ui__tools__hold-owner-response.mjs",
+      "bytes": 5012,
+      "sha256": "b437082c432e0bd06a560da8b0b7708bc591a4172207c2a83bdf415b90f060c7"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/source/github__scripts__ui_status_wait_diagnostic.py",
+      "bytes": 15195,
+      "sha256": "ccadda1e5bb31c497af3a6de845325624f85e08b9ec7d689a60a6b27a539ce7e"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/source/github__workflows__hepta-ui-status-wait-diagnostic.yml",
+      "bytes": 4944,
+      "sha256": "d85e9d98381eb1bd5acce62a18a061322077ebd0670276c1d142d87f5f36a245"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/_temp/ui-status-wait-diagnostic/source/github__workflows__ui-product-foundation.yml",
+      "bytes": 45640,
+      "sha256": "a6dde4cf1fd81abde35abd524c92ad7b757c3d34b87e8a4fc4c1e811cd41a8a0"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/dist/build-manifest.json",
+      "bytes": 43298,
+      "sha256": "2df1dea09165571c5779f62b41ceb2e9b6628fc069658478bf30ff17d3154eeb"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status-results.json",
+      "bytes": 11003,
+      "sha256": "900c210a5ac4535260d4bc81f4e4a17503a51f2b241d1ab96a5fa8c67a23b3a1"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-font-transport-bounded-SDK-stream-terminal-controls-chromium/browser-identity.json",
+      "bytes": 546,
+      "sha256": "36113767ee72e93309f57f04fbf3e3332a3d5dcc92a5595ba64996c192afaed2"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-font-transport-bounded-SDK-stream-terminal-controls-chromium/sdk-control-results.json",
+      "bytes": 5538,
+      "sha256": "3bc431864fac7d0c33af22363ea185cec6e256b0506ebbca79d4027ed9e0cb24"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/before-read-controls-psm11-ocr.txt",
+      "bytes": 3509,
+      "sha256": "b5301d53be14a6c26489a144c1a6cd48203e948b1fcd94a921cd9f6c0fb37cb6"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/before-read.png",
+      "bytes": 49359,
+      "sha256": "3c01604dc4802184a0b3ee723c6fd6f08382b297beecb5e41ca890590dc455f8"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/binding.json",
+      "bytes": 3198,
+      "sha256": "af1d1014330126a03c1958fc5333ccb31db230bc407f5a98f82cf533993f7eb5"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/browser-identity.json",
+      "bytes": 546,
+      "sha256": "36113767ee72e93309f57f04fbf3e3332a3d5dcc92a5595ba64996c192afaed2"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-after-cancel-navigation-controls.json",
+      "bytes": 961,
+      "sha256": "1322551e913db6bfe221018a70e02c89d94cdb15544daa50b10ef7859d0351bf"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-after-cancel-navigation-neutral-normalized.png",
+      "bytes": 29799,
+      "sha256": "0a526fa3e50e327613509cd782609316ff10911194fea4c6e32b8a25d834be4e"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-after-cancel-navigation-neutral-psm11-ocr.txt",
+      "bytes": 817,
+      "sha256": "0c26c4e062b53ba5d28cb06eb0d604e995b0fdd10dcdffde2ee9bed62cddc84e"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-after-cancel-navigation-neutral-psm11-source-coordinates.tsv",
+      "bytes": 1021,
+      "sha256": "45fd5979647fed5e931dfa040d362cdd0c03f1c9b50b642913d167b40fbdd7b6"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-after-cancel-navigation-normalized.png",
+      "bytes": 31254,
+      "sha256": "72a90ae2ea1dca27235565af92e06c1b730601464e7df710cdae57393d65def4"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-after-cancel-navigation-psm11-ocr.txt",
+      "bytes": 385,
+      "sha256": "81eef014319ee35c1448ff853c79d4c34ec81fac17178fc3944db4b69c1300a3"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-after-cancel-navigation-psm11-source-coordinates.tsv",
+      "bytes": 522,
+      "sha256": "0acffc342f99984751d69b2f3ab0b8e741f50c2f8c3d0e7c7be6c93ff5d779f8"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-after-cancel-navigation-psm6-ocr.txt",
+      "bytes": 385,
+      "sha256": "6f3d6779ba575de550bff048254d5f858b28f218b0384667ecf5775653ab9aa7"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-after-cancel-navigation-psm6-source-coordinates.tsv",
+      "bytes": 522,
+      "sha256": "f1ca231611b7036f630709bb2a00907f0e6d7a94201a152f2b2e94c45f2c6cd0"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-after-cancel.png",
+      "bytes": 38372,
+      "sha256": "f15b75704869eba7d3645be0924d26ed48d6ca90fd76bd58dcbfbb1de11d3439"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-navigation-controls.json",
+      "bytes": 953,
+      "sha256": "ae50439ffb27d4f40c17d1039929a9a0059b2287a76bf511e0b8ef56c98afa48"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-navigation-normalized.png",
+      "bytes": 30065,
+      "sha256": "5272152c18a295a8e7eb315f1c71f35581eb3323b2d26e810d580ec9ad9712f9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-navigation-psm11-ocr.txt",
+      "bytes": 825,
+      "sha256": "8b5c5777638ae32afb12531f5c97759303f2bddb861b1bb6f9552d2786b33f2f"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat-navigation-psm11-source-coordinates.tsv",
+      "bytes": 1043,
+      "sha256": "418ccb0fed1bd235be99089ecde8e0ccff4de160710633bb50b758552b573351"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/chat.png",
+      "bytes": 38049,
+      "sha256": "989d9965f5acc03205fd33abcb0cd5ae589911b3680ae156b55c991ed1bb6d47"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/final-read-audit-raw.json",
+      "bytes": 58916,
+      "sha256": "4d3d04834f9283d0de43d23a65528bd9e961f9725b795b868725235f69945095"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/final-read-audit.json",
+      "bytes": 1013,
+      "sha256": "479e12ba4567e360e067ba23c2d58d92596158c0afb9e10b1e96a96d6e273de6"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/initial-read-audit-raw.json",
+      "bytes": 56903,
+      "sha256": "2d3aca9cf73cb69997eaacf6668db5ff117f4039e4d45738731653c252eeda90"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/initial-read-audit.json",
+      "bytes": 690,
+      "sha256": "78650c11648d6ed8ee7f1032371b84fd543f4533b82dc759f41bcb3ed39b7eb9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/late-after-navigation-ocr.json",
+      "bytes": 1085,
+      "sha256": "b07016810aec8f37d47f87a8539c7dae1e3c62b07a9fc92fa160800d02e03391"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/late-after-navigation.png",
+      "bytes": 49359,
+      "sha256": "3c01604dc4802184a0b3ee723c6fd6f08382b297beecb5e41ca890590dc455f8"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/owner-not-attached-ocr.json",
+      "bytes": 1839,
+      "sha256": "ee177da8108283e49fd7d292bae6ef36f8db8918f9eb30183b0fa63553796546"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/owner-not-attached.png",
+      "bytes": 46932,
+      "sha256": "3ba8e9cc10ede95b933cbe1d10dcd5741b3d4e0d8f2a4cc2b1daf4dbc3a0507c"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/raw-request-audit.json",
+      "bytes": 59538,
+      "sha256": "6b313aa0601deb935b2c32e15d856aabf82a99f8aced318deb67c1a202d51553"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/reading-navigation-controls.json",
+      "bytes": 984,
+      "sha256": "ade466d77fe5a986efac4a00eb4cb54862a238c76a7f54df8a2204e8b0601577"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/reading-navigation-normalized.png",
+      "bytes": 29869,
+      "sha256": "6b77d1b98bf528edf4ecb14a18baf3f3d6b89a217a67b44ac18f6caec229760a"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/reading-navigation-psm11-ocr.txt",
+      "bytes": 688,
+      "sha256": "0d804e897f23e3b68f804001b92052b1d19e6ba4381a3b9a10753a6f8a320e46"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/reading-navigation-psm11-source-coordinates.tsv",
+      "bytes": 876,
+      "sha256": "3149031e35a7043d204a5a39548f940bb21278f4062adc92ac852fd578771f4e"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/reading.png",
+      "bytes": 46418,
+      "sha256": "c20a8b52b1f647139e029af4dc0d57eed0ba93bf4811f414c5a2ebc7272f77e2"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/receipt.json",
+      "bytes": 7321,
+      "sha256": "fba9b3b56530926032b08a694642c6b316a557912d4fe159fc2123c81ca354b5"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/status-wait-progress.jsonl",
+      "bytes": 40537,
+      "sha256": "c34fb7a846236f2625cd55968a695a624e604ba54fc92a655e87a29c852fa53c"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/ui-build-manifest.json",
+      "bytes": 43298,
+      "sha256": "2df1dea09165571c5779f62b41ceb2e9b6628fc069658478bf30ff17d3154eeb"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/before-read-controls-psm11-ocr.txt",
+      "bytes": 3509,
+      "sha256": "b5301d53be14a6c26489a144c1a6cd48203e948b1fcd94a921cd9f6c0fb37cb6"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/before-read.png",
+      "bytes": 49359,
+      "sha256": "3c01604dc4802184a0b3ee723c6fd6f08382b297beecb5e41ca890590dc455f8"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/binding.json",
+      "bytes": 3198,
+      "sha256": "af1d1014330126a03c1958fc5333ccb31db230bc407f5a98f82cf533993f7eb5"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/browser-identity.json",
+      "bytes": 546,
+      "sha256": "36113767ee72e93309f57f04fbf3e3332a3d5dcc92a5595ba64996c192afaed2"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/chat-navigation-controls.json",
+      "bytes": 953,
+      "sha256": "ae50439ffb27d4f40c17d1039929a9a0059b2287a76bf511e0b8ef56c98afa48"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/chat-navigation-normalized.png",
+      "bytes": 30065,
+      "sha256": "5272152c18a295a8e7eb315f1c71f35581eb3323b2d26e810d580ec9ad9712f9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/chat-navigation-psm11-ocr.txt",
+      "bytes": 825,
+      "sha256": "8b5c5777638ae32afb12531f5c97759303f2bddb861b1bb6f9552d2786b33f2f"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/chat-navigation-psm11-source-coordinates.tsv",
+      "bytes": 1043,
+      "sha256": "418ccb0fed1bd235be99089ecde8e0ccff4de160710633bb50b758552b573351"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/chat.png",
+      "bytes": 38049,
+      "sha256": "989d9965f5acc03205fd33abcb0cd5ae589911b3680ae156b55c991ed1bb6d47"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/final-read-audit-raw.json",
+      "bytes": 61934,
+      "sha256": "c7dc42c8b8f46bd498e6494337f347d1e82813e41ede1fda69a794b5aed04b23"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/final-read-audit.json",
+      "bytes": 1553,
+      "sha256": "93ae59900b40f2baecdf10d594aa8ba9911e09a84eb430dcf36cbec2c0abea6b"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/initial-read-audit-raw.json",
+      "bytes": 56892,
+      "sha256": "26fef52131978a81700a8d61e6614d55672f82b2e9b750b920a8ddf046befff0"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/initial-read-audit.json",
+      "bytes": 690,
+      "sha256": "78650c11648d6ed8ee7f1032371b84fd543f4533b82dc759f41bcb3ed39b7eb9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/late-after-timeout-ocr.json",
+      "bytes": 1026,
+      "sha256": "f9e550e86db2fb871a2b9ba3fd086ec706f0bbc433ef57f9f28b1cbe143db182"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/late-after-timeout.png",
+      "bytes": 46108,
+      "sha256": "2b6040ab8f5adaa5f7057a72638e9ce5e6d5b656297b49030cf88876787f0af6"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/owner-not-attached-ocr.json",
+      "bytes": 1839,
+      "sha256": "ee177da8108283e49fd7d292bae6ef36f8db8918f9eb30183b0fa63553796546"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/owner-not-attached.png",
+      "bytes": 46932,
+      "sha256": "3ba8e9cc10ede95b933cbe1d10dcd5741b3d4e0d8f2a4cc2b1daf4dbc3a0507c"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/raw-request-audit.json",
+      "bytes": 62556,
+      "sha256": "ea90f074dcfe421db5945bf0c152d412b900995ac5c7d24a849da8a838cfcfea"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/receipt.json",
+      "bytes": 8632,
+      "sha256": "09c0ebdd6bdf05aa7360c2d20da17cfafc0b7ef9115b53daca73b5beab353756"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/status-wait-progress.jsonl",
+      "bytes": 60775,
+      "sha256": "aecc4d8077459732904c72088385d468cf61196c4b4a84e7361cb28ea7f1c786"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/timed-out-ocr.json",
+      "bytes": 1026,
+      "sha256": "f9e550e86db2fb871a2b9ba3fd086ec706f0bbc433ef57f9f28b1cbe143db182"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/timed-out.png",
+      "bytes": 46108,
+      "sha256": "2b6040ab8f5adaa5f7057a72638e9ce5e6d5b656297b49030cf88876787f0af6"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/ui-build-manifest.json",
+      "bytes": 43298,
+      "sha256": "2df1dea09165571c5779f62b41ceb2e9b6628fc069658478bf30ff17d3154eeb"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/before-read-controls-psm11-ocr.txt",
+      "bytes": 5754,
+      "sha256": "c3332a8869dadf62b8bbdbc21a856c7e774abecab33789477d0aa11cdda61400"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/before-read.png",
+      "bytes": 69725,
+      "sha256": "6d20536aceeb636264fa619ff0a8b20028afe0db81b763df655229b34584eb12"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/binding.json",
+      "bytes": 3198,
+      "sha256": "af1d1014330126a03c1958fc5333ccb31db230bc407f5a98f82cf533993f7eb5"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/browser-identity.json",
+      "bytes": 546,
+      "sha256": "36113767ee72e93309f57f04fbf3e3332a3d5dcc92a5595ba64996c192afaed2"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/chat-navigation-controls.json",
+      "bytes": 1041,
+      "sha256": "f6078a0a1406e235548afabf4de1fd2464a08d8f8d027c62eb7e86c638e9cebf"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/chat-navigation-normalized.png",
+      "bytes": 7916,
+      "sha256": "ac3b8c3fe4fce0d80bc9ee6b8474bb68ff4896388bd8d475f1b10092d8be07ed"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/chat-navigation-psm11-ocr.txt",
+      "bytes": 373,
+      "sha256": "4698cef9e70bfca2bc7b1682baaec2a883c911aaecf58096fa32b0a04f1fc0d7"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/chat-navigation-psm11-source-coordinates.tsv",
+      "bytes": 466,
+      "sha256": "495a3475326c021a28bcfa5adced3bab534b2bf7e35ce25075e92513f3498374"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/chat.png",
+      "bytes": 56800,
+      "sha256": "eb7bddfb3a8ef4d3bf764bdb309f69caf844757cf067defaf8f905cc56f34bc9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/final-read-audit-raw.json",
+      "bytes": 62821,
+      "sha256": "be512668edb818baad856e66dd438e8a85d179142a20b08179c1bc7a1390fdfe"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/final-read-audit.json",
+      "bytes": 1553,
+      "sha256": "93ae59900b40f2baecdf10d594aa8ba9911e09a84eb430dcf36cbec2c0abea6b"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/initial-read-audit-raw.json",
+      "bytes": 57776,
+      "sha256": "05aace6e11d87d935a29680143d02370a595da2356b32ea4a8c954016a70f389"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/initial-read-audit.json",
+      "bytes": 690,
+      "sha256": "78650c11648d6ed8ee7f1032371b84fd543f4533b82dc759f41bcb3ed39b7eb9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/late-after-timeout-ocr.json",
+      "bytes": 1290,
+      "sha256": "0108a0e88398cf72755d4026d42646e3ee6aacb692806cd37b23c846289134da"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/late-after-timeout.png",
+      "bytes": 65673,
+      "sha256": "ee7e482e0a372d5ad87cf6a31ad70b9e5927b5a66009927b8b12c0ecd825019b"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/owner-not-attached-ocr.json",
+      "bytes": 2235,
+      "sha256": "4b0399e38308df3f680cd12b8e57aa9b3ffb61da2f9c75aa5d550fd17eea2ce4"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/owner-not-attached.png",
+      "bytes": 66726,
+      "sha256": "9d6df7f5a066594e2f85ddf6975f1523dac8e2bd7cacf0c10ef6ac06c3e0a7e8"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/raw-request-audit.json",
+      "bytes": 63443,
+      "sha256": "39a3cde70128c76fcf3ba611fbc8d274427f55191bd5ec36576761196f09ad8a"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/receipt.json",
+      "bytes": 8831,
+      "sha256": "c66d9801af16bd7d0b90cd7952ae01a55dde0aa7851891d5778c8bb38fdae0be"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/status-wait-progress.jsonl",
+      "bytes": 61008,
+      "sha256": "5f9fc3b539e4d82417bdc278349a2bb7f7565d4bdf4c8f905c6f93a46af5257d"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/timed-out-ocr.json",
+      "bytes": 1290,
+      "sha256": "0108a0e88398cf72755d4026d42646e3ee6aacb692806cd37b23c846289134da"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/timed-out.png",
+      "bytes": 65673,
+      "sha256": "ee7e482e0a372d5ad87cf6a31ad70b9e5927b5a66009927b8b12c0ecd825019b"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/ui-build-manifest.json",
+      "bytes": 43298,
+      "sha256": "2df1dea09165571c5779f62b41ceb2e9b6628fc069658478bf30ff17d3154eeb"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/before-read-controls-psm11-ocr.txt",
+      "bytes": 5754,
+      "sha256": "c3332a8869dadf62b8bbdbc21a856c7e774abecab33789477d0aa11cdda61400"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/before-read.png",
+      "bytes": 69725,
+      "sha256": "6d20536aceeb636264fa619ff0a8b20028afe0db81b763df655229b34584eb12"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/binding.json",
+      "bytes": 3198,
+      "sha256": "af1d1014330126a03c1958fc5333ccb31db230bc407f5a98f82cf533993f7eb5"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/browser-identity.json",
+      "bytes": 546,
+      "sha256": "36113767ee72e93309f57f04fbf3e3332a3d5dcc92a5595ba64996c192afaed2"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/chat-after-cancel-navigation-controls.json",
+      "bytes": 1041,
+      "sha256": "e9de2f8e569445e290c236fac94212be41df869747dc95bd43c98ee44012e997"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/chat-after-cancel-navigation-normalized.png",
+      "bytes": 8299,
+      "sha256": "e27af2b1482401bf7534d5ed92d56f064a06f4984686d0806b9b577e3751ec43"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/chat-after-cancel-navigation-psm11-ocr.txt",
+      "bytes": 373,
+      "sha256": "98624df11da4f881b46cee926152a4dc09a24b54c8aec64e7e69fb7cf19b4da0"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/chat-after-cancel-navigation-psm11-source-coordinates.tsv",
+      "bytes": 466,
+      "sha256": "c8199704fb2f125c26b0c31e1c1c93b8fb284b2c5f551d2bf407485b9bca8cf8"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/chat-after-cancel.png",
+      "bytes": 56903,
+      "sha256": "b9cd21ef130f1e2200926677bf4dcb2859a1405307575c54ec56919a851a88c9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/chat-navigation-controls.json",
+      "bytes": 1041,
+      "sha256": "f6078a0a1406e235548afabf4de1fd2464a08d8f8d027c62eb7e86c638e9cebf"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/chat-navigation-normalized.png",
+      "bytes": 7916,
+      "sha256": "ac3b8c3fe4fce0d80bc9ee6b8474bb68ff4896388bd8d475f1b10092d8be07ed"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/chat-navigation-psm11-ocr.txt",
+      "bytes": 373,
+      "sha256": "4698cef9e70bfca2bc7b1682baaec2a883c911aaecf58096fa32b0a04f1fc0d7"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/chat-navigation-psm11-source-coordinates.tsv",
+      "bytes": 466,
+      "sha256": "495a3475326c021a28bcfa5adced3bab534b2bf7e35ce25075e92513f3498374"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/chat.png",
+      "bytes": 56800,
+      "sha256": "eb7bddfb3a8ef4d3bf764bdb309f69caf844757cf067defaf8f905cc56f34bc9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/final-read-audit-raw.json",
+      "bytes": 58949,
+      "sha256": "b6d6506e04bfc4ff882678d9df2865b92fc3abb59822cb4ab9aeed5e91d99a57"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/final-read-audit.json",
+      "bytes": 1013,
+      "sha256": "479e12ba4567e360e067ba23c2d58d92596158c0afb9e10b1e96a96d6e273de6"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/initial-read-audit-raw.json",
+      "bytes": 56934,
+      "sha256": "3067e53425e5e092519e3020012d8a3ddf5bfd7ff06be14f2d82b61559141b86"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/initial-read-audit.json",
+      "bytes": 690,
+      "sha256": "78650c11648d6ed8ee7f1032371b84fd543f4533b82dc759f41bcb3ed39b7eb9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/late-after-navigation-ocr.json",
+      "bytes": 1373,
+      "sha256": "47f54a0b95b61ff81a916ae5af12e2c69ed707a44f46da4c60bc0e9320f828f2"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/late-after-navigation.png",
+      "bytes": 73779,
+      "sha256": "436beb791495738bb215480bd8087927226322acff1ac9d5e8b9a6431ab8715c"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/owner-not-attached-ocr.json",
+      "bytes": 2235,
+      "sha256": "4b0399e38308df3f680cd12b8e57aa9b3ffb61da2f9c75aa5d550fd17eea2ce4"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/owner-not-attached.png",
+      "bytes": 66726,
+      "sha256": "9d6df7f5a066594e2f85ddf6975f1523dac8e2bd7cacf0c10ef6ac06c3e0a7e8"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/raw-request-audit.json",
+      "bytes": 59572,
+      "sha256": "2dd32a1a9ee58ad181a0d215344ab0102be13da052f176fca3862ba003e74b79"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/reading-navigation-controls.json",
+      "bytes": 1054,
+      "sha256": "b4aaedbbabc76aaf3b642958d37f35f631f429ddf1d2e2d35bd85e8d96f38f74"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/reading-navigation-normalized.png",
+      "bytes": 6700,
+      "sha256": "19a3b0fd32ac2aa8965c0cf16d797b783201531cbc1d823f2300b621513f09b1"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/reading-navigation-psm11-ocr.txt",
+      "bytes": 373,
+      "sha256": "8671dc47bf7fe39e911fc0bd250952c5b33fdbad312dac7d92e5450e72834654"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/reading-navigation-psm11-source-coordinates.tsv",
+      "bytes": 466,
+      "sha256": "ce2ff0c8e42fb886cda30199321847f7920d6de7ee59acfdfcaf01307cf440e0"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/reading.png",
+      "bytes": 66073,
+      "sha256": "444f18943b978b2fb550ae863b5d77c94512fd416acdb554260e0aa580d31b18"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/receipt.json",
+      "bytes": 7520,
+      "sha256": "cb2dc47c2bbb1229091095df0eb7ff45ec2cd534daf9cd82df33b6c5abd9b5d0"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/status-wait-progress.jsonl",
+      "bytes": 40688,
+      "sha256": "98ebceca78bb57e3ec21431d0691a63c6681518a5bd0999dea29b476a589a3d5"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/ui-build-manifest.json",
+      "bytes": 43298,
+      "sha256": "2df1dea09165571c5779f62b41ceb2e9b6628fc069658478bf30ff17d3154eeb"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/before-read-controls-psm11-ocr.txt",
+      "bytes": 5754,
+      "sha256": "c3332a8869dadf62b8bbdbc21a856c7e774abecab33789477d0aa11cdda61400"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/before-read.png",
+      "bytes": 69725,
+      "sha256": "6d20536aceeb636264fa619ff0a8b20028afe0db81b763df655229b34584eb12"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/binding.json",
+      "bytes": 3198,
+      "sha256": "af1d1014330126a03c1958fc5333ccb31db230bc407f5a98f82cf533993f7eb5"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/browser-identity.json",
+      "bytes": 546,
+      "sha256": "36113767ee72e93309f57f04fbf3e3332a3d5dcc92a5595ba64996c192afaed2"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/chat-navigation-controls.json",
+      "bytes": 1041,
+      "sha256": "f6078a0a1406e235548afabf4de1fd2464a08d8f8d027c62eb7e86c638e9cebf"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/chat-navigation-normalized.png",
+      "bytes": 7916,
+      "sha256": "ac3b8c3fe4fce0d80bc9ee6b8474bb68ff4896388bd8d475f1b10092d8be07ed"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/chat-navigation-psm11-ocr.txt",
+      "bytes": 373,
+      "sha256": "4698cef9e70bfca2bc7b1682baaec2a883c911aaecf58096fa32b0a04f1fc0d7"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/chat-navigation-psm11-source-coordinates.tsv",
+      "bytes": 466,
+      "sha256": "495a3475326c021a28bcfa5adced3bab534b2bf7e35ce25075e92513f3498374"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/chat.png",
+      "bytes": 56800,
+      "sha256": "eb7bddfb3a8ef4d3bf764bdb309f69caf844757cf067defaf8f905cc56f34bc9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/final-read-audit-raw.json",
+      "bytes": 58945,
+      "sha256": "649f1324c471bf3bf26d0abaff33a8f51da1418d88993df1cb10ad824cf04785"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/final-read-audit.json",
+      "bytes": 1013,
+      "sha256": "9197a62399fe796b473392ccf30034427612b17d2dc405c16d8cd5c6aec1291a"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/initial-read-audit-raw.json",
+      "bytes": 56930,
+      "sha256": "d5fe9503756264c3b9c07a0d8e4ba59a275bbefd74fce95afc203740d989bc6a"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/initial-read-audit.json",
+      "bytes": 690,
+      "sha256": "78650c11648d6ed8ee7f1032371b84fd543f4533b82dc759f41bcb3ed39b7eb9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/late-after-background-ocr.json",
+      "bytes": 1381,
+      "sha256": "8816257519127956844625170bcbe39e8d376e8482a9eb5dbe61fdaf032aed54"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/late-after-background.png",
+      "bytes": 69922,
+      "sha256": "696c08f237ae85d7270fd7640b95fbbbddcc5de99b6f306f7f9134ddbd8e5fc9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/owner-not-attached-ocr.json",
+      "bytes": 2235,
+      "sha256": "4b0399e38308df3f680cd12b8e57aa9b3ffb61da2f9c75aa5d550fd17eea2ce4"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/owner-not-attached.png",
+      "bytes": 66726,
+      "sha256": "9d6df7f5a066594e2f85ddf6975f1523dac8e2bd7cacf0c10ef6ac06c3e0a7e8"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/raw-request-audit.json",
+      "bytes": 59891,
+      "sha256": "03cf00b841a7492c91ecbcb1460f26eaf3dcb8478f3c1b435e8b69e87d4a75a8"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/receipt.json",
+      "bytes": 7400,
+      "sha256": "79978ef6860fa5ed5f113748d90d59a64d7daa6b28834fc80715a91980004f20"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/status-wait-progress.jsonl",
+      "bytes": 35220,
+      "sha256": "d4c64d2135a989d873616dbbb7767fee21e3f1d3ef0b80e5d10eab7ed93cc9a6"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/ui-build-manifest.json",
+      "bytes": 43298,
+      "sha256": "2df1dea09165571c5779f62b41ceb2e9b6628fc069658478bf30ff17d3154eeb"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/before-read-controls-psm11-ocr.txt",
+      "bytes": 3509,
+      "sha256": "b5301d53be14a6c26489a144c1a6cd48203e948b1fcd94a921cd9f6c0fb37cb6"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/before-read.png",
+      "bytes": 49359,
+      "sha256": "3c01604dc4802184a0b3ee723c6fd6f08382b297beecb5e41ca890590dc455f8"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/binding.json",
+      "bytes": 3198,
+      "sha256": "af1d1014330126a03c1958fc5333ccb31db230bc407f5a98f82cf533993f7eb5"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/browser-identity.json",
+      "bytes": 546,
+      "sha256": "36113767ee72e93309f57f04fbf3e3332a3d5dcc92a5595ba64996c192afaed2"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/chat-navigation-controls.json",
+      "bytes": 953,
+      "sha256": "ae50439ffb27d4f40c17d1039929a9a0059b2287a76bf511e0b8ef56c98afa48"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/chat-navigation-normalized.png",
+      "bytes": 30065,
+      "sha256": "5272152c18a295a8e7eb315f1c71f35581eb3323b2d26e810d580ec9ad9712f9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/chat-navigation-psm11-ocr.txt",
+      "bytes": 825,
+      "sha256": "8b5c5777638ae32afb12531f5c97759303f2bddb861b1bb6f9552d2786b33f2f"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/chat-navigation-psm11-source-coordinates.tsv",
+      "bytes": 1043,
+      "sha256": "418ccb0fed1bd235be99089ecde8e0ccff4de160710633bb50b758552b573351"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/chat.png",
+      "bytes": 38049,
+      "sha256": "989d9965f5acc03205fd33abcb0cd5ae589911b3680ae156b55c991ed1bb6d47"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/final-read-audit-raw.json",
+      "bytes": 58930,
+      "sha256": "a618d734f625bbf909e7bb71bf08935d1bb07d3708be950411f89a46848d8d58"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/final-read-audit.json",
+      "bytes": 1013,
+      "sha256": "9197a62399fe796b473392ccf30034427612b17d2dc405c16d8cd5c6aec1291a"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/initial-read-audit-raw.json",
+      "bytes": 56915,
+      "sha256": "3ff5ebce3dc9bee46e835461e294c1f5a9de4c5454174c663f89b0bdd4c883ab"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/initial-read-audit.json",
+      "bytes": 690,
+      "sha256": "78650c11648d6ed8ee7f1032371b84fd543f4533b82dc759f41bcb3ed39b7eb9"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/late-after-background-ocr.json",
+      "bytes": 1147,
+      "sha256": "f0a09e6923618019a24d4b9ee5e95b75ffc25a3548d9bee2c5de091b71249b28"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/late-after-background.png",
+      "bytes": 49193,
+      "sha256": "a71b65004bf9169058b449a0d1778831181407e5ce856e7b5edb473102ffaba3"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/owner-not-attached-ocr.json",
+      "bytes": 1839,
+      "sha256": "ee177da8108283e49fd7d292bae6ef36f8db8918f9eb30183b0fa63553796546"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/owner-not-attached.png",
+      "bytes": 46932,
+      "sha256": "3ba8e9cc10ede95b933cbe1d10dcd5741b3d4e0d8f2a4cc2b1daf4dbc3a0507c"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/raw-request-audit.json",
+      "bytes": 59890,
+      "sha256": "2e0c9f8033452562aa389747d1a64f9577ca04c2c4c0ae61385012226b2a6ec8"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/receipt.json",
+      "bytes": 7201,
+      "sha256": "a4be4aeeacaed03ae50a69bfcbd9d409518816e185f87f1b3167d27f79dcf5db"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/status-wait-progress.jsonl",
+      "bytes": 35088,
+      "sha256": "3b7369c2cc226972eeb7ff5ce0a21dd886cf3544b3c4bfae7455fc0e23221f12"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifact-13645316064/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/ui-build-manifest.json",
+      "bytes": 43298,
+      "sha256": "2df1dea09165571c5779f62b41ceb2e9b6628fc069658478bf30ff17d3154eeb"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifacts.command.json",
+      "bytes": 236,
+      "sha256": "c4062223244b63adb9d4ae7cea4f0d710560ed74cec25c02c6d5fd6f9f6ce3f6"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifacts.raw",
+      "bytes": 846,
+      "sha256": "3b43c1c8455701e33a06f81402dc7d0a0fefa47053c32dfabd859484653f0c9e"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/artifacts.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/collector.py",
+      "bytes": 8738,
+      "sha256": "8b504bd4cb36f2783b388a9a27ad05e266e97c77a32402c82efd40986115efc5"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/job-128940831096-log.command.json",
+      "bytes": 223,
+      "sha256": "b71e525587ff0ddd50cc99ab061cc0764c3635096d736fc8bc49249d3037c38c"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/job-128940831096-log.raw",
+      "bytes": 1697853,
+      "sha256": "62356e84139e475a788f631df3b0e80224a38f01c482a398edff5c1c5cda87d1"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/job-128940831096-log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/jobs.command.json",
+      "bytes": 243,
+      "sha256": "f592316941ba8c372f9dba9c8441d0bf40df3bab0c3358a34ffb88a2ffc600f6"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/jobs.raw",
+      "bytes": 3959,
+      "sha256": "dfaedb7a499bfa6d1cb6a4d180bdf62464d9e8f2359c5c5dc607c1df95c1df99"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/run-final.command.json",
+      "bytes": 214,
+      "sha256": "d375bf483b65d026488f5a9dd4a276aed22751450e70cfd57ab4279f46aed13b"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/run-final.raw",
+      "bytes": 14283,
+      "sha256": "a3c16abbf3c175bb1285e42e1527569449ab83cf559874634248df2446bdf374"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/run-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/run.command.json",
+      "bytes": 215,
+      "sha256": "66e0584a62c019d160f2fe7a264c81cc295737eca2e299d58882075eea99e673"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/run.raw",
+      "bytes": 14283,
+      "sha256": "a3c16abbf3c175bb1285e42e1527569449ab83cf559874634248df2446bdf374"
+    },
+    {
+      "path": "ui-status-diagnostic-ci/terminal-v1/run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-05c003a7c9fcd8f5190b654c",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-0a77b2158fd4eb102659e06d",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-17c581dc9f9115388294c9ce",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-2aa9b1a801b2a3f50f908375",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-42f0ff345326d96f9acebfdb",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-49507b4b1312b2f08f81bcf5",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-5326499b3ce093a1213ca2c9",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-6266070064f21fa1db8315a8",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-7cdd05486006a16cec3cd12f",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-a24f264f9bdc24f0d6a3ceb9",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-b025343111d08789e3319137",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-c4bcfb901b0fc19b253660ea",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-c4e584985553c411f9e50977",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.hepta-lock-c8a6561e8d1af2501868c96b",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.ruff_cache/.gitignore",
+      "bytes": 35,
+      "sha256": "9e3a60f1e6ec4ae60215c11d54b171392745ec25e9dded433d5bd921363af316"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.ruff_cache/0.15.13/2830411050207013856",
+      "bytes": 200,
+      "sha256": "66a2494cb962cc51b8d15167985f64071b091b6c50e251e88a07ca80aa7a740e"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/.ruff_cache/CACHEDIR.TAG",
+      "bytes": 43,
+      "sha256": "5953156d7e0c564a427251316eaf26f8870e6483ae2197f916b630e4f93e31ae"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/LOCAL_PREPARATION_PACKAGE.json",
+      "bytes": 324,
+      "sha256": "e51689e0fd0e21dad65a1191513f102ff1170078ec6251df04acdadb24e8894a"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/OBSERVER_FINAL_STATIC.json",
+      "bytes": 1251,
+      "sha256": "44bc96588e7f8ce1e4a727818437a52d4a1d9aa100a4662bbff600f1fabacc5d"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/OBSERVER_FORMAT.json",
+      "bytes": 2229,
+      "sha256": "b1b34a43fa63376f8bc70d579921b807825cb797119b1ecb8c93664157daf350"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/PUBLICATION_INPUTS.json",
+      "bytes": 1242,
+      "sha256": "dfed7869d8dad07356c0993e61a781c53cf19811781b420af063bfac2b08ce01"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/SOURCE.json",
+      "bytes": 665,
+      "sha256": "4277d02b18928c4fc3d777dc3d75b69dabc03bc0cc7da72f2f7248cc35787e90"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/UI_DIAGNOSTIC_RESULT.json",
+      "bytes": 3446,
+      "sha256": "9d221aeabbf99a6f137d75888e690a992c7619a1eb15e38ba5302c17cdb5cd92"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/WORKFLOW_SOURCE.json",
+      "bytes": 867,
+      "sha256": "5e4af213153112f8309d44f031142be1cafb83dbe40a9b17174f1ebd0d66439d"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/analyze-terminal-ui-v1.py",
+      "bytes": 9600,
+      "sha256": "76e9562b0ca9f08accbbba7a1cba98ce0595e2d1397f2be75a45e0138de17c8b"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/collect-terminal-ui-v1.py",
+      "bytes": 8005,
+      "sha256": "cab8402f642778ffe219b22cff0df743a48aa1086cc1a45ab44ceff943d00749"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/collect-terminal-ui-v2.py",
+      "bytes": 8738,
+      "sha256": "8b504bd4cb36f2783b388a9a27ad05e266e97c77a32402c82efd40986115efc5"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/prettier.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/prettier.stdout",
+      "bytes": 51,
+      "sha256": "5123e8d9caa894f4502f4c0248e02240afce1360239fbaf2d3ebd50498138ac4"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/publication-console-v1.log",
+      "bytes": 904,
+      "sha256": "f3bd278942e77109a00a58b7ab8308be9eb6b5f3d86b5e6be7be62ecd4a04f4d"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/publication-console-v2.log",
+      "bytes": 2086,
+      "sha256": "7c6b6a1182a453498f329ec2c140f8d436fae960bb59e4fb62c7728bd3a5b954"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/publication-launch-result-v1.json",
+      "bytes": 169,
+      "sha256": "93acfe6098d62f5f7fa470386bc2cd12d6910057ab12b0701b9b00cbc8700d04"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/publication-launch-result-v2.json",
+      "bytes": 170,
+      "sha256": "b3ff74f0ea3953c796b36e41a798139a4ef1fc93b05a54cffe4a038fcda7a74d"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/publish-ui-status-diagnostic-v1.py",
+      "bytes": 9579,
+      "sha256": "4980c765ad52601340d7ae6ba46538a18a59a55fe1e28a497c689646cf4a4d95"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/publish-ui-status-diagnostic-v2.py",
+      "bytes": 10888,
+      "sha256": "90227319c907ccf003a4c713405e3894ae290cd253bb7815f65d65ff00d21fa5"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ruff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ruff-check.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ruff-final-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ruff-final-check.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ruff-final-format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ruff-final-format.stdout",
+      "bytes": 25,
+      "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ruff-format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ruff-format.stdout",
+      "bytes": 19,
+      "sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/seal-ui-diagnostic-history-v1.py",
+      "bytes": 6026,
+      "sha256": "ead4158db551b1e909ef0503d8b8819c6e1d729d8842d415fc12f466343c956e"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/source/apps/hepta-control-ui/e2e/robrix-product-status.spec.mjs",
+      "bytes": 25299,
+      "sha256": "a3217983fc51959767eddf9d43ad5ec9aab72e765b385decba234b8f7d9ec2aa"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/source/apps/hepta-control-ui/tools/hold-owner-response.mjs",
+      "bytes": 3341,
+      "sha256": "953c32a3a4628b1b5e7aaf5f85f49192a8fa9fff872aff2702a14f673e872c70"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/terminal-analysis-console-v1.log",
+      "bytes": 11832,
+      "sha256": "8abddbcf80923fe635dca77421a57eb3580cd50b87b1de6854e39e4b02d6cbae"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/terminal-analysis-launch-v1.json",
+      "bytes": 239,
+      "sha256": "d787a6589b3850fb2104efa1b4cf564d4f55bb30b4d867b21ee6c5a16941f69c"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/terminal-collection-console-v1.log",
+      "bytes": 848,
+      "sha256": "dce5f7c294fe7f12ab280f1a1d02e6e153bf032b7e56e28dd05b8e9538841dc0"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/terminal-collection-launch-v1.json",
+      "bytes": 209,
+      "sha256": "57c3e7076dc82dcb2a1fa0ef0e2bcf123a70690a79d6585d5b9ac2362b3de295"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ui-status-diagnostic-driver-final.py",
+      "bytes": 15195,
+      "sha256": "ccadda1e5bb31c497af3a6de845325624f85e08b9ec7d689a60a6b27a539ce7e"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ui-status-diagnostic-driver.py",
+      "bytes": 14524,
+      "sha256": "f0232e2cc7e8b0f367d97108fa0ee262257021e10ef50de23e48d6fea48cf2b7"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ui-status-diagnostic-final-combined.patch",
+      "bytes": 37654,
+      "sha256": "a4348fd892cd47589d7285710dba4ddcd27012319e266281008ec65a27b905e8"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ui-status-diagnostic-local-preparation-v1.tar.xz",
+      "bytes": 47716,
+      "sha256": "2600de66b6b9d86b2a0bc140a7bc15dd041a7d0da6a4dfeaa740aef996db553a"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/ui-status-diagnostic-workflow.yml",
+      "bytes": 4944,
+      "sha256": "d85e9d98381eb1bd5acce62a18a061322077ebd0670276c1d142d87f5f36a245"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/workflow-source/.github/workflows/hepta-cell-framework-native.yml",
+      "bytes": 17557,
+      "sha256": "28b8c46c2d7999dd0fb069fb608bc8c31f24d5d1ff05253c6abfa646a6d72706"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/workflow-source/.github/workflows/ui-product-foundation.yml",
+      "bytes": 45640,
+      "sha256": "a6dde4cf1fd81abde35abd524c92ad7b757c3d34b87e8a4fc4c1e811cd41a8a0"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/workflow-source/apps/hepta-control-ui/e2e/robrix-font-transport.spec.mjs",
+      "bytes": 5510,
+      "sha256": "ba43bf0c74fa691826a1c9d19e42ae1e383b56165bc6aa3e71a6186c4649b101"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/workflow-source/apps/hepta-control-ui/package.json",
+      "bytes": 1210,
+      "sha256": "484662b6805d9331f1b949eb552ab80a7e5f29210cbdafb825505f0b77b60163"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/workflow-source/apps/hepta-control-ui/playwright.product.config.mjs",
+      "bytes": 1425,
+      "sha256": "2bb2a7dfbcdb8a3e4b06ee4986af09e839c5e4802f5db96944b5e81573d4d3e9"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/workflow-source/apps/hepta-control-ui/tools/build-product-preview.py",
+      "bytes": 3285,
+      "sha256": "2e9e39d0e46eae064abd974795040695589aef0ec6c86b302e5b4abf2c4f965e"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/workflow-source/apps/hepta-control-ui/tools/build-robrix.mjs",
+      "bytes": 15154,
+      "sha256": "7399d3649766f6a919703212cbbfd75467a365a8786fd249b04809725ea52d8d"
+    },
+    {
+      "path": "ui-status-diagnostic-preparation-v1/workflow-source/apps/hepta-control-ui/tools/build.mjs",
+      "bytes": 99,
+      "sha256": "c0c6411fe0f1f021045df30ce2d257629bdecac056c00013f29d182b4c0b6196"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/APPLIED_FILES.json",
+      "bytes": 709,
+      "sha256": "d7245173018ab901cd8b417b095051ff99eec18c304dd453eb57e1c71c6cdb72"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/INPUTS.json",
+      "bytes": 1242,
+      "sha256": "d3a7792539faf3c388f6e5e83c18f77fd945797cc4faa2673bd2473fb5acea35"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/PUBLICATION.json",
+      "bytes": 4738,
+      "sha256": "992a3ff74d307870196928c86db4b282fa56ecefe7dbfed32d23291dcb576a8c"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/apply-check.json",
+      "bytes": 546,
+      "sha256": "fe406f5daf776d58324e53535de9485f1843a68216cee24286dc9bf2de7f6755"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/apply-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/apply-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/apply.json",
+      "bytes": 526,
+      "sha256": "6ec588a0bd71dd9a4940c6633d7484d9bedf4a79dfc1c12cd5144a89e855dc9e"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/apply.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/apply.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/base-tree.json",
+      "bytes": 440,
+      "sha256": "7cab5949e0ebcb0b8cfbabf559ccba4a36599bad1e1fd1bafe6e2be6e84c6c74"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/base-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/base-tree.stdout",
+      "bytes": 41,
+      "sha256": "0e0cb67ccc30410c14997c484c2309bd93ec9ed5e1fc5f2498133841bef0da0c"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/create-isolated-worktree.json",
+      "bytes": 596,
+      "sha256": "606abd760eb5a339e526d415b05279085f6b27f29a26d29fb9693241a4648641"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/create-isolated-worktree.stderr",
+      "bytes": 2327,
+      "sha256": "a02cd4f38ff0349551eab12a46d4adc864ff240b5332e4da4c6f2af4b19eca4b"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/create-isolated-worktree.stdout",
+      "bytes": 78,
+      "sha256": "2955c89effbcecc0d1129ab44f7afec0ac0f6b305f556cad96431526b3ec5a70"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/exception.txt",
+      "bytes": 1057,
+      "sha256": "fb52986d480e5fe5fa7c6a178014a6194634882315a8ecd3fa84906465581cf2"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/local-branch-probe.json",
+      "bytes": 488,
+      "sha256": "2c288e23817636e8daae4a97c6240085db479081a14c838f09b46bf9ba965c67"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/local-branch-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/local-branch-probe.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/remote-branch-probe.json",
+      "bytes": 486,
+      "sha256": "08155a19d99f0f95c86c3b61e7ae747abe802b2a96bcba46a74bfc71e369065d"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/remote-branch-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/remote-branch-probe.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/source-before-status.json",
+      "bytes": 448,
+      "sha256": "bb117e074380dc0b1f07d0fa5f0a711bec3050514ff7954c59595b1c06ae5759"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/source-before-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/source-before-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v1/source.patch",
+      "bytes": 37654,
+      "sha256": "a4348fd892cd47589d7285710dba4ddcd27012319e266281008ec65a27b905e8"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/APPLIED_FILES.json",
+      "bytes": 709,
+      "sha256": "d7245173018ab901cd8b417b095051ff99eec18c304dd453eb57e1c71c6cdb72"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/FROZEN_SOURCE.json",
+      "bytes": 1755,
+      "sha256": "698ec1bbcb241b632bda363c70d492b358b319ebfe086140f8bede8ddf88f083"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/INPUTS.json",
+      "bytes": 1242,
+      "sha256": "d3a7792539faf3c388f6e5e83c18f77fd945797cc4faa2673bd2473fb5acea35"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/PUBLICATION.json",
+      "bytes": 19116,
+      "sha256": "4b2682c9b91278bcb55489d03663a34dc04dd854160f9ead4f2ab3b71d83e9d2"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/base-tree.json",
+      "bytes": 440,
+      "sha256": "f0fff7d05d37ed2a293dbab3bdfb429b688cebe442d612e760649ebe0cc3e341"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/base-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/base-tree.stdout",
+      "bytes": 41,
+      "sha256": "0e0cb67ccc30410c14997c484c2309bd93ec9ed5e1fc5f2498133841bef0da0c"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/commit.json",
+      "bytes": 453,
+      "sha256": "0a9a4f2cd03ccd14bf9cc5eb3570aca1f714df324ef7d413144ba61ff9ea9454"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/commit.stdout",
+      "bytes": 302,
+      "sha256": "dbbb760e4039585a80706af4ec4a70e02314ee4430286d3d2758a12766130cd8"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-branch.json",
+      "bytes": 434,
+      "sha256": "b633f1c14e7c44c3b1f93492ebe1157aff3fc398fc4a17ab47a4649f80ddf541"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-branch.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-branch.stdout",
+      "bytes": 46,
+      "sha256": "a40fea621f2aad781152d0125d75c05ddf662a631fad96daa6aa999c20d98825"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-head.json",
+      "bytes": 413,
+      "sha256": "e02abb8302a6627b004f11a3d6527f7b5ba89d219a3dd9b7168014d11b31681c"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-head.stdout",
+      "bytes": 41,
+      "sha256": "5e8d6ac146ceeec13345f90180d44709eb1b14282e6f7a3c1f00df26150f8dd5"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-modified-paths.json",
+      "bytes": 424,
+      "sha256": "a86e4c395e156d5fc6f299994a7a11d92c9f0da296890f5e12e4b4f371ea0030"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-modified-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-modified-paths.stdout",
+      "bytes": 109,
+      "sha256": "190e14f579feee47f4695e945f6673ba04f7b747c16685566768fae830cb4a4e"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-staged-paths.json",
+      "bytes": 439,
+      "sha256": "330a609f6ac3b750b7c46fd6024bafe2f730dbfbd14436693e261d2d067a5e06"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-staged-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-staged-paths.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-untracked-paths.json",
+      "bytes": 452,
+      "sha256": "4e07b792a485549a98b958f4fe71b722aa69fece91fb9c2a4d6d514a5b47ea1b"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-untracked-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/continuation-untracked-paths.stdout",
+      "bytes": 99,
+      "sha256": "962652d224ae7e787edcf7153bb85c6e81ab4cdaa92644590a0cd26a140099c1"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/diff-check.json",
+      "bytes": 404,
+      "sha256": "232fa15b6ecf2e2a5fc0800e6811a3405120c3eeca629a83cfa3da2f18986203"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/diff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/diff-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/frozen-paths.json",
+      "bytes": 506,
+      "sha256": "bff8eda8404eee89d9a855a1442f8af451faf8be5233e3b1080090275e85a4a6"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/frozen-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/frozen-paths.stdout",
+      "bytes": 208,
+      "sha256": "dfeadf74cd47c77b806cbbd2f77e42611b9153c4cb9e27cef1774f0153934979"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/frozen-source-status.json",
+      "bytes": 448,
+      "sha256": "f23416192f035e3ea5f5d78d957f166ab69e4781867164c913752418c8359cca"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/frozen-source-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/frozen-source-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/github-ref.json",
+      "bytes": 498,
+      "sha256": "56e4e3ef2ed1e1e8252d934c7683e64ca2a60172df4fac8f00529700e53ff7bb"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/github-ref.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/github-ref.stdout",
+      "bytes": 515,
+      "sha256": "e9fecc1a325d544c699b81cb32cbec9c70c725d9a71ff009bb6cdccc011f9beb"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/hold-helper-syntax.json",
+      "bytes": 530,
+      "sha256": "7b37ebd1c9c45a1bd120d4a1730e23908088be7a8667929e74998cd7968e1779"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/hold-helper-syntax.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/hold-helper-syntax.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/node-version.json",
+      "bytes": 397,
+      "sha256": "dba130458e1260fdebe6e75cad71a6b89bb5e6de9a7c97f957ee05ea18be8ee8"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/node-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/node-version.stdout",
+      "bytes": 9,
+      "sha256": "2266957ed9a639bd7264d714bfa798a961510bf2e50695c668ab8fc0c3f4e906"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/prettier-check.json",
+      "bytes": 607,
+      "sha256": "e2dd07dc811c1733b1cc80bf48c780a61499e48c6852b6e4938b7153dfc0028f"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/prettier-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/prettier-check.stdout",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/prettier-version.json",
+      "bytes": 480,
+      "sha256": "f36c3190a43550cbbfacad15c424d060888811d1714dad745be5acc39a1946e6"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/prettier-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/prettier-version.stdout",
+      "bytes": 6,
+      "sha256": "50060b8e79abd0beaf59e6309e519a73cba73a94b97defd0f8b68e1c8f6447b2"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/publish.json",
+      "bytes": 503,
+      "sha256": "13ba89dd893ef45d43ba7ba73cd7604be9c187bf247bc1ba241621574042d646"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/publish.stderr",
+      "bytes": 738,
+      "sha256": "56a6b3361aafc142f201210ccc972f5895c2c90ee10349b2d8bdbdcebd88d18b"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/publish.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/remote-branch-probe.json",
+      "bytes": 486,
+      "sha256": "f97b1061b9fc91a5a78997350d2bd6c9513ca7a0a21cc57ad29f768c2d628b72"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/remote-branch-probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/remote-branch-probe.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/remote-readback.json",
+      "bytes": 490,
+      "sha256": "e374cd8aef15e3664856278d48a20ee437bdb7da3e3ae04bdd3b1caa19892b09"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/remote-readback.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/remote-readback.stdout",
+      "bytes": 98,
+      "sha256": "d705a37520e1b8b4315fead92ad14b87a9967aac9609c4f8791e960babb142b0"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/reverse-apply-check.json",
+      "bytes": 571,
+      "sha256": "51d674db78bc6bf61e3f0eca47a7674fa6c3cce1d5a65b9b78db38f5ce340b05"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/reverse-apply-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/reverse-apply-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/ruff-check.json",
+      "bytes": 608,
+      "sha256": "dddaf654e4e63bd6913ae5c1bf413840d3790611c6765a9b74b3b26f432e595b"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/ruff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/ruff-check.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/ruff-format-check.json",
+      "bytes": 613,
+      "sha256": "edcf25a461b61b378348b4b6510984046a0872c04a67e4d1dde79f2825e8ed94"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/ruff-format-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/ruff-format-check.stdout",
+      "bytes": 25,
+      "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/ruff-version.json",
+      "bytes": 474,
+      "sha256": "2c790b91f0d78391ad4c46d6e6bace264a1c44c21d12e6908590ad84848355a3"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/ruff-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/ruff-version.stdout",
+      "bytes": 13,
+      "sha256": "0e5c455ef40e6fb922d42f5ea8cd386e3c19cca81ca91d7697a6c81d2583846c"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/run-observation-01.json",
+      "bytes": 524,
+      "sha256": "7015234504af0047f2c37bc1d43dcc5eb9d5a296979ba026048e0b6a9db30bc1"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/run-observation-01.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/run-observation-01.stdout",
+      "bytes": 14316,
+      "sha256": "fdc3e43f74d7b4c4f8512735516f10531bf829ab1eb44e099f0da8f24eb13253"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-after-publication-head.json",
+      "bytes": 425,
+      "sha256": "08a0bcee356c21683ae481e2863e44535e6e429d4295019450abf5dc3bb1cde9"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-after-publication-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-after-publication-head.stdout",
+      "bytes": 41,
+      "sha256": "06ddcb6dae64f693cb7a991751fbab484dd08aa056b940a7379768cff051cdfb"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-after-publication-status.json",
+      "bytes": 459,
+      "sha256": "b094be19945a87bd25fe453c9a18c4a662ce32ece9676465bac103ceb8994f2d"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-after-publication-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-after-publication-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-before-status.json",
+      "bytes": 447,
+      "sha256": "9a33cec974862f559fc7e93dc99f317cb744bee9755d7a3325af7fac537e5643"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-before-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-before-status.stdout",
+      "bytes": 220,
+      "sha256": "255b5e9e43156bda5f4207b4ace06396a989878b2a483c82b9e0c5b3d1f25f19"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-commit.json",
+      "bytes": 410,
+      "sha256": "d23f472aec481fb04c29a26fb5149a6aded117593344c573d9413cfb93c4c4e1"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-commit.stdout",
+      "bytes": 41,
+      "sha256": "06ddcb6dae64f693cb7a991751fbab484dd08aa056b940a7379768cff051cdfb"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-parent.json",
+      "bytes": 433,
+      "sha256": "f45222a3c0a7bf209246f60e76a72cd4cdc1445a67c26994d3912dfc0fa33c90"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-parent.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-parent.stdout",
+      "bytes": 41,
+      "sha256": "5e8d6ac146ceeec13345f90180d44709eb1b14282e6f7a3c1f00df26150f8dd5"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-tree.json",
+      "bytes": 414,
+      "sha256": "4d9d99d7cee56b4e2a7beb3dd4ef57c4a49e2cd6344c11bf9b715359ecbe6688"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source-tree.stdout",
+      "bytes": 41,
+      "sha256": "20b4fdf49ed2f552a895d62f6d52d5cd554829336273d00e3497f4d002f48f2d"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/source.patch",
+      "bytes": 37654,
+      "sha256": "a4348fd892cd47589d7285710dba4ddcd27012319e266281008ec65a27b905e8"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/stage-reviewed-four-files.json",
+      "bytes": 648,
+      "sha256": "2fcaf01c267db3516a83ff832c91b38c784f73e01f56afb62394bfcbbd282c20"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/stage-reviewed-four-files.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/stage-reviewed-four-files.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/staged-diff-check.json",
+      "bytes": 427,
+      "sha256": "9ae5157bfdddf5a5341c525d6c0ad79326928ce211dc2a3a24279c0336897bb8"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/staged-diff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/staged-diff-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/staged-paths.json",
+      "bytes": 426,
+      "sha256": "612dcf9357da3860931c5008632777de51640a27a0682860aec1ff4d94bd0e00"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/staged-paths.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/staged-paths.stdout",
+      "bytes": 208,
+      "sha256": "dfeadf74cd47c77b806cbbd2f77e42611b9153c4cb9e27cef1774f0153934979"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/status-spec-syntax.json",
+      "bytes": 534,
+      "sha256": "7f3ce157aa74991ee7ef9f9f796cc86f8cf51abca038cff7cceba5404153cc58"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/status-spec-syntax.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-status-diagnostic-publication-v2/status-spec-syntax.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/ui-status-diagnostic-originals-5e33-history-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "2048e5c29a9c4fce9f1b387539c44d1371d8080b37d2b750d28e98661c9b8c81"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/ui-status-diagnostic-originals-5e33-history-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "84ab26ec1094e4a9c93ddd2ebd7e409ed62427175e610cab9691f1a4b45eed26"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/ui-status-diagnostic-originals-5e33-history-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "11b97bd3c1584993b001c982d3067d8743b5ec259ce58010f01159c05a856bd1"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/ui-status-diagnostic-originals-5e33-history-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "8b970dfa6460499e77d0e720d97767b4bf8db92f5e426425c9cd817c6dd38af7"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/ui-status-diagnostic-originals-5e33-history-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 380476,
+      "sha256": "1ad159c48ead8d842efd46f53fe8487edf5a29bd538f441fe1c73e95d2351ff6"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

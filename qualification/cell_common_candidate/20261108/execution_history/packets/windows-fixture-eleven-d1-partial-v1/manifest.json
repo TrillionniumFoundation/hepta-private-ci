@@ -1,0 +1,561 @@
+{
+  "packet_id": "windows-fixture-eleven-d1-partial-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-fixture-eleven-d1-partial-packet-v1/windows-fixture-eleven-d1-partial.tar.xz",
+  "bytes": 18034120,
+  "sha256": "6b6c52207b134864fc02f8df16d46858036a15dfc6ee5c41d2869a1318acfe79",
+  "compression": "xz",
+  "file_member_count": 38,
+  "source_sha": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca",
+  "source_tree": "f95a33684df6aac0a32326e20b63d4017d7b1968",
+  "scope": "Historical d1 Windows observer bd7962, run 42545587597/job 128929757824, naturally cancelled at its original 65-minute cap. Four of the eleven planned cases actually executed: fleet and H7 passed; CLI and signed-credit failed. Seven did not execute, including Matrix after discovery compilation began and all six app-server cases. Original selected-case logs/JUnit and tested/observer before-after identities remain present; zero selected skips/retries/LEAK markers. Seven hidden execution-source copies were omitted by the original artifact upload and are explicitly not claimed archived or reconstructed. This partial cancelled run is not a complete scope pass and is never relabelled bf42.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false,
+  "required_json_members": [
+    {
+      "path": "SCOPE.json",
+      "bytes": 1867,
+      "sha256": "0eef04fb6247f09412e6ed1069009642e11e6b9fb6f0b4f49a1f29877fc2d1cc",
+      "equals": [
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "f95a33684df6aac0a32326e20b63d4017d7b1968"
+        },
+        {
+          "path": [
+            "observer_sha"
+          ],
+          "value": "bd7962c944e47fcadb0f205d808300f780491800"
+        },
+        {
+          "path": [
+            "run_id"
+          ],
+          "value": 42545587597
+        },
+        {
+          "path": [
+            "github_conclusion"
+          ],
+          "value": "cancelled"
+        },
+        {
+          "path": [
+            "case_totals",
+            "executed"
+          ],
+          "value": 4
+        },
+        {
+          "path": [
+            "case_totals",
+            "xmlPassed"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "case_totals",
+            "failed"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "case_totals",
+            "notExecutedOfPlannedEleven"
+          ],
+          "value": 7
+        },
+        {
+          "path": [
+            "complete_scope_passed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "missing_copies_are_not_claimed_archived"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "new_tests_run"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_cost"
+          ],
+          "value": null
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "CASE_ANALYSIS.json",
+      "bytes": 13323,
+      "sha256": "e816174144f4704167007d673883953c715734d2f90f280034764a116b3f4eb4"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 8423,
+      "sha256": "5acef262388a8f5d2aa9e719a361407f7ec25f725abe978da9395e45c07cccfd"
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 1867,
+      "sha256": "0eef04fb6247f09412e6ed1069009642e11e6b9fb6f0b4f49a1f29877fc2d1cc"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/CAPTURE.json",
+      "bytes": 1489,
+      "sha256": "6431d4829555e477021060b50b1d8c1a9b9cfb8634fb5539806865a0c2149416"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/CASE_ANALYSIS.json",
+      "bytes": 13323,
+      "sha256": "e816174144f4704167007d673883953c715734d2f90f280034764a116b3f4eb4"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/DOWNLOAD.json",
+      "bytes": 724,
+      "sha256": "5f47bc440d1d45bfa4b8f7f0050aa1dad8ceaabc7387720fb22c8d7912bb68b0"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/ZIP_MEMBERS.json",
+      "bytes": 24766,
+      "sha256": "36336ac401713f4348dc834907a7c11a8264882603c049a28d99c3f7af5c46fb"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/annotations.json",
+      "bytes": 1952,
+      "sha256": "daa176930aedfa2c19737fee29e388b57015a65e18ba8bc238c3bdefea915660"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/annotations.json.meta.json",
+      "bytes": 393,
+      "sha256": "27a0db9b9b315ec35a46b7a4e6aec496fa56299a2515c340a76e81b5d0c69c3a"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/annotations.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/artifact-13646055229.zip",
+      "bytes": 18598262,
+      "sha256": "85a33a864b58c535b2acbb829dc13430a39ac8ba74885b50648d4f0d526e0f71"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/artifact-download.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/artifacts.json",
+      "bytes": 864,
+      "sha256": "efb4dc0e46f8de21f912e6f594b784f273cdf46216f29c835c506d48f4ebc061"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/artifacts.json.meta.json",
+      "bytes": 389,
+      "sha256": "e315a5716ce5280cdcc520d0a86eb416cbf0009e72d3a54a9ac5bc10b28c92c7"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/artifacts.json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/old-d1-job.json",
+      "bytes": 3379,
+      "sha256": "f802867ae52543b0b2ff64c82fc95b020f8c14825440221e200079ad9f45f097"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/old-d1-job.meta.json",
+      "bytes": 340,
+      "sha256": "a2848f0c2c6c188478b0739127efad1545dcaa1e04eeba04bc521deafb70851f"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/old-d1-run.json",
+      "bytes": 14322,
+      "sha256": "9ea32046ef88ad1c304d1d34652999208cf93ccd817638e9e41e38dae36614b0"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/old-d1-run.meta.json",
+      "bytes": 340,
+      "sha256": "33453938d50d3c788ccad689ed3f0bc80aa8adc73d172593294e6b1241fb6c9a"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/raw.log",
+      "bytes": 97037,
+      "sha256": "cece7e756f040ee3841ff2368c58fc3309b6157334e9b99a1cade43ea2467c61"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/raw.log.meta.json",
+      "bytes": 367,
+      "sha256": "8d0fe3dddaf130ec43d6592b353aa07c1db69ddf42e4c37ef1cae3a635c3796e"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/raw.log.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/agentd-fleet-default/discovery-started.json",
+      "bytes": 815,
+      "sha256": "eb963da80092c2304c3b8caf57f2819593738cd3b5f534888a271912cb08d49f"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/agentd-fleet-default/nextest-store/local/junit.xml",
+      "bytes": 2203,
+      "sha256": "c0122f23e4fc53f1fc338ce439ae252d92bdd81fa42be7c6765e8ec07d60a48e"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/agentd-fleet-default/tests.json",
+      "bytes": 1038,
+      "sha256": "0db115b520a9c3c1f0adf11270555d80f43320f5a25e83a13664177fd39f7e45"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/agentd-fleet-default/tests.stderr",
+      "bytes": 10178,
+      "sha256": "dbf16c08283eecb252fcf19297dc4d348ce577d9c3587994d3fb22a4568fe7ff"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/agentd-fleet-default/tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/agentd-h7-qualification/discovery-started.json",
+      "bytes": 716,
+      "sha256": "2233144dac267fcac7e129589d6c3aeb7bbfbb82c943836b989b4447cb7aa5d5"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/agentd-h7-qualification/nextest-store/local/junit.xml",
+      "bytes": 548,
+      "sha256": "898a6c13ca539bcb70376a4da1f4e3b70a58dd9be2a7ade6010900fa06d31668"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/agentd-h7-qualification/tests.json",
+      "bytes": 938,
+      "sha256": "eac314318afcd4fa11f29d3dba9c4d7023e32d47a0b31f868673c57dc08df02d"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/agentd-h7-qualification/tests.stderr",
+      "bytes": 8898,
+      "sha256": "beffba8fa28952b60205e3c68e6d7171642f175ff5bd416d04c010f238cd1b0f"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/agentd-h7-qualification/tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/cli-cloud/discovery-started.json",
+      "bytes": 636,
+      "sha256": "c11665f454b107f64eb25ea3f475743202d7c375126e2522ff272c8dee125362"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/cli-cloud/nextest-store/local/junit.xml",
+      "bytes": 2159,
+      "sha256": "ba35dda48a4687549a2813ea98c58373239ebc5a67b8c808e6ab97b334b86add"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/cli-cloud/tests.json",
+      "bytes": 858,
+      "sha256": "69068bf727af999b674b21b2677ff09c9df57c0ca0636d91e2a36095df7d6c1d"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/cli-cloud/tests.stderr",
+      "bytes": 3526,
+      "sha256": "87ea0d00e3efa9c945362765d9e1a5a0ddfce6ea3f2ef76015054fee3f9e4623"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/cli-cloud/tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-fixture-eleven-d1-terminal-observation-20261109-0233/selected-originals/matrix-startup-diagnostic/discovery-started.json",
+      "bytes": 673,
+      "sha256": "a936f9450a6aeb0f738c7405410ef89237aec74e3b0acb29a12bb6a10813ac9b"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "2620eae3780e7f394e3b65fa0fe9a07e6783f67136769b5bfa09401abfea0474"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "a2868369898720161ad2ca5cecf1c40225183101f7c8c2b8e2eaaa43715937d6"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "c08978367fe3e8af8698a915149ae08c2718fb1f72a3f533b9d374568b466d1f"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "6727e00ca9fada3a74ab041520f60d0659cdfe2f133daf0140d4e17a1e0f9220"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 490000,
+      "sha256": "e766cd1663a3247ba0ad6ad87ab9272365e68fcb7a9474d25ebb2c954dd72836"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part006",
+      "offset": 2450000,
+      "bytes": 490000,
+      "sha256": "205c68fdbe9bd8e43bc933a29b24cc74789c03b633e862cc2cbc456375900ec3"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part007",
+      "offset": 2940000,
+      "bytes": 490000,
+      "sha256": "40b27718e27a230e98e7561527c9f6e04804329efa5de531754ce6e1bdf39f91"
+    },
+    {
+      "sequence": 8,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part008",
+      "offset": 3430000,
+      "bytes": 490000,
+      "sha256": "c0dcb92f13aadfdb1d4586d7b8658edf12c676ec56f71a5d2319498791ed1f78"
+    },
+    {
+      "sequence": 9,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part009",
+      "offset": 3920000,
+      "bytes": 490000,
+      "sha256": "496db3a6c9d63c6862c84e44a24b9607af5f106faf438f0b3db595a89794702b"
+    },
+    {
+      "sequence": 10,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part010",
+      "offset": 4410000,
+      "bytes": 490000,
+      "sha256": "928c552a64b1937994f94ce392bb284cdc5404de65d2b1938819be01cd5bfb08"
+    },
+    {
+      "sequence": 11,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part011",
+      "offset": 4900000,
+      "bytes": 490000,
+      "sha256": "e334e23ce5ff7e8d5af3491b964d71aa641e3f63e5dbbb150c09fea204e00dab"
+    },
+    {
+      "sequence": 12,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part012",
+      "offset": 5390000,
+      "bytes": 490000,
+      "sha256": "c3cffc2891849588d0d6f26024c0c26d6855d168bd2f63a0cb9f2445e4eb6e63"
+    },
+    {
+      "sequence": 13,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part013",
+      "offset": 5880000,
+      "bytes": 490000,
+      "sha256": "37aafafebe3a927aaf42e1ae2c21e1ceca5aba9d9eb79226790e5dd6f55fb945"
+    },
+    {
+      "sequence": 14,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part014",
+      "offset": 6370000,
+      "bytes": 490000,
+      "sha256": "2546f8802cd9024d6583ea3d1955df6187aab3d6dcc85bc0ece7abf0fb5df3a7"
+    },
+    {
+      "sequence": 15,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part015",
+      "offset": 6860000,
+      "bytes": 490000,
+      "sha256": "af8d66fbe159d3e3f6ce38bee96041861dd559625662cb9dacc21107765c8aee"
+    },
+    {
+      "sequence": 16,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part016",
+      "offset": 7350000,
+      "bytes": 490000,
+      "sha256": "bf34375e0bfdae914bd8494678816bb3d9dfde17a4f2c807f76541163d00bf26"
+    },
+    {
+      "sequence": 17,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part017",
+      "offset": 7840000,
+      "bytes": 490000,
+      "sha256": "2ffa5e07df6e894f49da1e7bbdc587f95d292b1dcb442a552717d7b11061d880"
+    },
+    {
+      "sequence": 18,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part018",
+      "offset": 8330000,
+      "bytes": 490000,
+      "sha256": "2c8c49e017bad6b381fdb7ded55ab336f2cb6d9234f05ade73e11dea07c91363"
+    },
+    {
+      "sequence": 19,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part019",
+      "offset": 8820000,
+      "bytes": 490000,
+      "sha256": "8180baf00991a6fdbd7f8fd7c87e59336c147bd16b83e128d65b5b36d627862d"
+    },
+    {
+      "sequence": 20,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part020",
+      "offset": 9310000,
+      "bytes": 490000,
+      "sha256": "312b3bfbb86f3dc6e2a22e91b1f04e38266bcb540cd2813f788c251f7e37182c"
+    },
+    {
+      "sequence": 21,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part021",
+      "offset": 9800000,
+      "bytes": 490000,
+      "sha256": "4b6381639d85cf1a82dba7380788bc1672f73fe7a2b2525b633ad7ac18a3ef01"
+    },
+    {
+      "sequence": 22,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part022",
+      "offset": 10290000,
+      "bytes": 490000,
+      "sha256": "c88aad5cb815743416ac58fc4ea53a340a7b4b1621290f2e480d2a44911c25a4"
+    },
+    {
+      "sequence": 23,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part023",
+      "offset": 10780000,
+      "bytes": 490000,
+      "sha256": "0dfb81ccfe24f42691f6ff7a529929e0bf2c0a5ade87633c7b0a5240ae1ea8dd"
+    },
+    {
+      "sequence": 24,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part024",
+      "offset": 11270000,
+      "bytes": 490000,
+      "sha256": "35a0beded491bc199c8439ed7899237776edd1160ba5c3810bd3bd81770a7487"
+    },
+    {
+      "sequence": 25,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part025",
+      "offset": 11760000,
+      "bytes": 490000,
+      "sha256": "8174357504feb815d5ea29310011065946db2d4db322d35f85735b77dbba22f2"
+    },
+    {
+      "sequence": 26,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part026",
+      "offset": 12250000,
+      "bytes": 490000,
+      "sha256": "8443d140fea4ecb4dcb752679db6f2533d16d2b462f0df0bd3dcac7a7256f4d4"
+    },
+    {
+      "sequence": 27,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part027",
+      "offset": 12740000,
+      "bytes": 490000,
+      "sha256": "ac3f3805eb10b1d01fab76533d7d0c9305e8491c5bc345d48e420fb7f1b40540"
+    },
+    {
+      "sequence": 28,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part028",
+      "offset": 13230000,
+      "bytes": 490000,
+      "sha256": "f86dee611329f1e26f49d3bdadf6c61c44686a7727086623827192855fe919a3"
+    },
+    {
+      "sequence": 29,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part029",
+      "offset": 13720000,
+      "bytes": 490000,
+      "sha256": "019ef6153891f09c344ab4c9a35cd15a07c481394c62ee412b5fbdf91c5e240a"
+    },
+    {
+      "sequence": 30,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part030",
+      "offset": 14210000,
+      "bytes": 490000,
+      "sha256": "e0f40d064dcde853fb4c752f8636e57d3cb15e20851fcb3fcef65c0d3cd4a4a6"
+    },
+    {
+      "sequence": 31,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part031",
+      "offset": 14700000,
+      "bytes": 490000,
+      "sha256": "37a0f30fb27f07f7d81eaa1afb9779c703c135f9d637de7152ac666029582d37"
+    },
+    {
+      "sequence": 32,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part032",
+      "offset": 15190000,
+      "bytes": 490000,
+      "sha256": "8d5147a480255a6fe10c0aaba5bb9f13e71f9aa11db912fa7d5f6f2101c34173"
+    },
+    {
+      "sequence": 33,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part033",
+      "offset": 15680000,
+      "bytes": 490000,
+      "sha256": "c96bbefa1ce62a3b70325ed52a7c0702580855920b04fead9adfae5bae26921e"
+    },
+    {
+      "sequence": 34,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part034",
+      "offset": 16170000,
+      "bytes": 490000,
+      "sha256": "c955d14f8e6fefb793256104f4d95f0b7030744a5f672a8e5c28e9e9113b0775"
+    },
+    {
+      "sequence": 35,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part035",
+      "offset": 16660000,
+      "bytes": 490000,
+      "sha256": "1967846544ac84112985d5d4e60066dde747db05e7095c06ac44a65962cf9761"
+    },
+    {
+      "sequence": 36,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part036",
+      "offset": 17150000,
+      "bytes": 490000,
+      "sha256": "bba55e018cb5a35cf8cd920b5fad8a4948167bc5434baed9c05cf7b1f4651158"
+    },
+    {
+      "sequence": 37,
+      "path": "packets/windows-fixture-eleven-d1-partial-v1/archive.part037",
+      "offset": 17640000,
+      "bytes": 394120,
+      "sha256": "28aeec419ceee7437f2e596bc644b4601c669a2514db86d433bb273b073e303d"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

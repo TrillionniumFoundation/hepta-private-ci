@@ -1,328 +1,330 @@
 # Source-bound execution history
 
 This is a bounded, lossless checkpoint of engineering evidence. It preserves
-selected original archives, including failures and preparation errors. It does
-not certify complete history, complete cost, production authority, ordinary
-daemon closure, or any S0–S5 advancement.
+original archives, failed attempts, source preparation and publication records.
+**S0, S1, S2, S3, S4 and S5 remain HOLD.** Complete execution history, full
+physical cost and full historical cost remain unknown.
 
-## Increment 003: successor repairs and retained failures
+## Increment 004: common source bf42 and original observations
 
-The common PR source remains `ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1`.
-Its original native framework workflow completed naturally and passed its
-complete default workspace scope. The isolated successor whose selected
-executions are retained in this checkpoint is
+The common draft candidate is now
+`bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d`, tree
+`f7b65a747a1d2f585be38a4665ab2b4f1b07efb6`. Its predecessor common candidate was
+`ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1`. The common branch advanced normally
+at 2026-11-09 02:50:20 UTC, after two fresh observations confirmed that all
+18 preceding ba4 workflows were terminal. The exact Git remote ref, commit,
+tree, parent and draft PR head were read back. No running Rust process was
+manually cancelled and no merge commit was manufactured for the fast-forward.
+
+The [draft PR](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5397)
+was updated and independently read back at 02:54:10 UTC. That PR body records
+the tested source, original failures and remaining qualification gaps.
+Publication is not an adoption result or an authority grant.
+
+The preceding checkpoint is
+[`4628cc139cc8067b1fa42713aa80c32c819e4e48`](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/4628cc139cc8067b1fa42713aa80c32c819e4e48/qualification/cell_common_candidate/20261108/execution_history),
+with 53 packets. All of its original packet bytes remain unchanged. Previous
+prose and index status remain recoverable at that exact commit. Historical d1
+successor status and ba4 native status are explicitly identified as historical
+in the new index; neither is attributed to current bf42.
+
+### Actual validation of bf42
+
+| Scope                                             | Original observed result                                                                                                                                                                            | Limit                                                                                                                                                                                                                               |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Same-source preparation and agentd H7 strict lint | All five original steps passed: V8 preparation, helper build, helper verification, owning-package `just fix` with `qualification-cognitive-write`, and separate readonly Clippy with `-D warnings`. | All 15,004 source entries remained clean and identical. Unchanged packages' earlier lint results retain their earlier source identities.                                                                                            |
+| Python and caller gates                           | 130 independent fixtures passed; 11 original receipts all passed, including self-test and unchanged CURRENT. The full caller scan took 380.6801889021881 seconds.                                   | Original caller ceiling remains 600 seconds. The 50 nested research fixtures are counted once, not again through their parent wrapper.                                                                                              |
+| Selected Linux native                             | 38 actual selected cases passed: agentd default 4, H7 qualification 1, CLI 1, Matrix startup 1, app-server 6 and the entire actually discovered operator library, 25.                               | Six fresh JUnit sets exactly match their original discovery sets. Source and binary hashes stayed unchanged. Zero selected skips or retries. This is not full workspace, Windows or scientific qualification.                       |
+| Independent readback of original nextest logs     | All six original merged stdout/stderr reports contain their exact initial PASS sets and no LEAK or leaky markers.                                                                                   | No tests were rerun. The original driver lacked an explicit LEAK gate; this separate derived readback preserves that limitation. It does not prove the absence of unobserved resource leaks.                                        |
+| Independent grouped Windows execution             | All eleven selected cases actually executed: ten passed and image-edit timed out at 60.015 seconds. The original aggregate and complete run both concluded failure.                                 | Exact bf42 source with observer 5574; five separately budgeted owner jobs. Zero selected skips, retries, explicit guard skips or observed LEAK markers. This does not replace the original single-job result or full repository CI. |
+| Original complete workflows                       | bf42 native, blocking CI, UI and original Windows workflows were launched on the common branch.                                                                                                     | Their initial registration is not a passing result. ba4 and intermediate-source outcomes do not fill pending bf42 coverage.                                                                                                         |
+
+The Linux groups' original unselected counts are respectively
+788 / 794 / 0 / 25 / 1,015 / 0. Filtered cases are not executed passes.
+Final-output repeats of PASS lines are not extra executions. Overlapping
+scopes and uploaded duplicate copies are not added into distinct coverage.
+
+The first bf42 preparation launch failed before any Cargo, V8, helper or test
+subprocess because the previously used Cargo target directory was absent. The
+cause of that disappearance is unknown. Its traceback, filesystem observations
+and recovery remain in the original native packet. The successful preparation
+used a new, initially empty target; registry-cache state was not measured.
+Preparation took 343.479 seconds, and the selected native chain took 533.084
+seconds. These are observed wall intervals for this attempt, not complete CPU,
+machine, learning or historical cost.
+
+The Python packet also retains the first sealer invocation failure: a basename
+guard rejected an absolute path before any new archive or test execution.
+The corrected invocation sealed the same original execution; it did not rerun
+the tests or change the result.
+
+### New packets in this increment
+
+The manifest is authoritative for the exact packet set and hashes. Member
+counts overlap between archives and do not represent test counts.
+
+| Packet                                            | Original archive SHA256                                            | Members and scope                                                                                                                                                                                |
+| ------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| bf42 Python execution                             | `793167e250598093524aa4f1de2de0a4b25f1fc691610db80675b731c21da200` | 49 members; original 130 independent fixtures, 11 receipts, full caller scan and sealer invocation failure.                                                                                      |
+| bf42 preparation and selected native execution    | `4deb1c2bdaf59eba048f8ab05de06a383909f60dc21e70c37886421f00f0a2d0` | 179 members; pre-Cargo failure, fresh-target admission, five preparation steps, 38 actual cases and independent original-log LEAK readback.                                                      |
+| Independent UI diagnostic history                 | `e8c880a965de795c7d11b8b82a0a089cf7e6eea8daeb79a06dd0148540e26923` | 417 members; original preparation failure, four-path diagnostic source, publication, job log, original artifact and bounded wait observations.                                                   |
+| Original d1 Windows eleven-case partial execution | `6b6c52207b134864fc02f8df16d46858036a15dfc6ee5c41d2869a1318acfe79` | 38 members; four executed cases, original 65-minute cancellation, raw job records and all present original ZIP members. Seven hidden source copies remain missing from the old artifact.         |
+| bf42 ordinary-learning checkpoint delivery audit  | `9ed951422bb44dcb9ac40c9bc77983ee09c091aa60107623a02819ee7f33b72b` | 45 members; exact-source targeted review, unchanged CURRENT and the concrete next implementation boundary. No source mutation, provisioning or new test execution.                               |
+| bf42 source and publication history               | `5a9962dc4db95f4db0b6bbf955e034235bfcc0a8c165e9dfe4397869781f7268` | 273 members; source freeze, quiet publication, previous evidence publication, PR updates, common fast-forward, exact remote readbacks and initial new CI registration.                           |
+| Windows Matrix owner originals                    | `4482994b3243513f0e324545cc12f6e5f22d172fab96f021740152f08bde6012` | 19 members; one selected case passed, with the original artifact ZIP and source/helper/case binding.                                                                                             |
+| Windows H7 owner originals                        | `db3a43d4f70ad6dc8547916c97ecbaac10d564b52eec7d968b4c53ae5f8d672d` | 24 members; one selected H7 case passed.                                                                                                                                                         |
+| Windows default agentd owner originals            | `f1656cc57fbc672774e694ed4bb7885e2fdacf5b9fd7fed898964dc6eff1287d` | 19 members; signed-credit and fleet-drain both passed.                                                                                                                                           |
+| Windows CLI owner originals                       | `db11066b80b9b6610e699ac3ad26fafcf1a4d3f5e42dcfdbc4b16194d851cce7` | 19 members; one CLI cloud-permission case passed, with same-source child-helper paths retained.                                                                                                  |
+| Windows app-server owner originals                | `d4cdc6f963ce15d83ed4e92899c6b662b7d6a63bd85d75dfeffbf9162118dbff` | 26 members; four cold-resume cases and approval passed; image-edit timed out.                                                                                                                    |
+| Windows observer and original aggregate history   | `46ce0378c8bc75fa4e083e53d34b09ac27f6899f6e21e4f7034473b249c73a7f` | 213 members; first Ruff ENOENT, preparation attempts, exact observer publication, original aggregate artifact and terminal run. Eleven executed, ten passed, one failed, overall failure.        |
+| Original bf42 common full-CI failure              | `4beffe0dace6d56e657cc9a7f58346fb032bcf8251ca3831717cdc39802127c5` | 235 members; snapshots 002/003, six completed failed-job raw logs and API records, actual merge identity, final target and original attempt accounting. No rerun, cancellation or test dispatch. |
+
+### Original d1 Windows failure remains a failure
+
+Run [42545587597](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42545587597)
+used observer `bd7962c944e47fcadb0f205d808300f780491800` and exact tested source
 `d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca`, tree
-`f95a33684df6aac0a32326e20b63d4017d7b1968`. Normal publication and Git/API
-readbacks verified this successor on its separate branch. This checkpoint does
-not relabel earlier results as successor executions.
+`f95a33684df6aac0a32326e20b63d4017d7b1968`. It ended naturally at its original
+single-job 65-minute limit at 02:31:47 UTC. The original annotation identifies
+that limit; no manual cancellation is substituted for its cause.
 
-| Exact source                               | Retained observation                                                                                                                                                                                                                                                                        | Scope boundary                                                                                                                                                                                                                                                                                                                                  |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bf516c1956848043b7805513aa069cada39517ce` | Same-source helper preparation and four changed-owner strict checks passed without source edits.                                                                                                                                                                                            | Planned native 12 did not run because the next directory-access correction produced a different source.                                                                                                                                                                                                                                         |
-| `82ff5119200cab9d65461eb62a3829567fbc2e8f` | Original Linux native 13 executed nine passes and four cold-resume failures. Actual discovery and fresh JUnit matched; selected skips and retries were zero. Python 130 and full caller scan passed in 388.7012557149865 seconds under the original 600-second limit.                       | All four cold cases failed at their first spawn observation under the original 10-second bound. The raw event was `SubAgentActivity`; the fixture expected `CollabAgentToolCall`. Child completion was already present, so a missing-child-subscription explanation is not supported.                                                           |
-| `a8d0b3dab62045a6aa6e61966c3fbeeccf1b48d6` | V8/helper and app-server strict preparation passed. Operator strict preparation failed with E0433 because the differential module lost an indirect Command import. Python 130 and complete caller scan passed in 369.8617806970142 seconds.                                                 | Native execution was not_run, with zero cases. Source remained unchanged; the compiler failure is retained.                                                                                                                                                                                                                                     |
-| `a39bf3eeac945c83aebcadbb81dfcb93d623e0f4` | V8/helper passed, but the operator preparation gate rejected source drift. Canonical just fix returned child exit 0 while changing two unit bindings into bare path statements and leaving two warnings. Python 130 and complete caller scan passed in 373.9014078550972 seconds.           | Native execution was not_run, with zero cases. The original clean file, changed file, full-index patch and both source inventories are retained. The automatic diff was not adopted into the common source.                                                                                                                                     |
-| `d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca` | Canonical formatting, V8, same-source helper build/verification, operator just fix and the subsequent nonmutating strict Clippy all passed. All 15,004 tracked entries had identical before/after inventories. Python 130 and the complete caller scan passed in 374.1610191750806 seconds. | Original Linux native 13 and all 25 actually discovered operator library cases passed: 38 selected passes, zero failures, selected skips or retries. All six fresh JUnit case sets matched actual discovery. Earlier package lint passes retain their own source identities; this is not a full workspace, Windows or scientific qualification. |
+Four actual cases executed: fleet passed in 0.619 seconds, H7 passed in 2.506
+seconds, CLI failed in 0.212 seconds with zero expected Wiremock requests, and
+signed-credit failed in 0.066 seconds with fixture `Invalid`. There were no
+selected skips, retries or observed LEAK markers. Matrix discovery/build had
+started but its case did not execute. The six app-server cases were not
+launched. These seven unexecuted cases are not assigned zero cost.
 
-The d1 native chain finished at 2026-11-09 01:31:43 UTC. Its original raw
-filtered/unselected counts were 788 for default agentd, 794 for H7 agentd, 0 for
-CLI, 25 for Matrix, 1015 for app-server and 0 for operator. Those counts are not
-selected skips, passes or additive distinct coverage. The cold four cases completed
-in 0.728–0.903 seconds under the unchanged 10-second case bounds; these fixture
-results are not measurements of learning benefit.
+Both tested source and observer were clean and unchanged before/after. All 88
+present ZIP members were independently verified. The original internal
+manifest's 87 present payloads matched, while seven source-file copies under
+hidden `.github` or `.config` directories were omitted by the old upload
+default. Those missing copies are not claimed as archived original evidence.
+The later observer enables hidden-file inclusion; it does not repair old bytes.
 
-The d1 parent-pin correction only makes the existing platform return types
-explicit. Windows retains its original ParentPin binding, lifetime and verify
-calls. Other platforms destructure the unit value, with one original
-open_reader call per function. It does not add an allow, disable a check,
-reopen a path, or change read/hash bounds.
+Additional run
+[42550332155](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42550332155)
+uses observer `5574d6b900571123239f0a8c0742a69d24cf7d99` and exact bf42 source.
+Its five owner jobs retain their original internal budgets and each has a
+65-minute ceiling. CLI helper paths come from exact, hash-verified same-source
+compiler metadata. The aggregate requires all five same-run, same-source
+receipts and the exact original eleven-case set. Raw LEAK markers independently
+reject a clean pass. This additional topology and its costs do not supersede
+the failed original single-job execution. All five original groups have now
+been independently reconciled against their discovery sets, fresh JUnit,
+raw logs, original manifests and five dual-source snapshots per job. The
+tested source and observer remained unchanged; original helper bytes were
+also verified. The new artifacts include all manifest-listed hidden source
+copies. No missing old artifact was reconstructed and relabelled as original.
 
-The earlier cold-observer correction uses the actual typed `SubAgentActivity`
-event and keeps exact parent task/turn/call, Started kind, worker path and
-child completion bindings. The original 10-second Linux and 25-second Windows
-budgets, subsequent durable assertions and zero-retry behavior remain intact.
+| Original group                    | Selected result                      | Original JUnit time                   |
+| --------------------------------- | ------------------------------------ | ------------------------------------- |
+| Matrix startup diagnostic         | 1 PASS                               | 5.831 seconds                         |
+| H7 expired-registry qualification | 1 PASS                               | 2.480 seconds                         |
+| Default agentd                    | signed-credit PASS; fleet-drain PASS | 2.339 and 0.820 seconds               |
+| CLI cloud permission              | 1 PASS                               | 31.998 seconds                        |
+| App-server cold resume            | Four cases PASS                      | 1.535 / 1.488 / 1.856 / 1.456 seconds |
+| App-server session approval       | 1 PASS                               | 4.636 seconds                         |
+| App-server attached-image edit    | TIMEOUT                              | 60.015 seconds                        |
 
-The operator fixture correction supplies the existing OS-resolved ProgramData
-value to fixture-created SSH commands. The production verification executable,
-isolation, command arguments, trust, grant and pin checks remain unchanged.
-The Unix differential oracle still explicitly uses /usr/bin/ssh-keygen,
-env_clear and its original locale and argument controls.
+The original aggregate job `128956308785` naturally finished at 03:03:49 UTC
+with `passed=false`, eleven validated executions, ten XML passes and one
+failure. The entire run concluded failure. The four passing groups do not
+make the app-server group pass. A successful Matrix selected case does not
+establish the cause or resolution of an earlier whole-target initialization
+failure and does not qualify power-loss durability.
 
-### Independent Windows observers
+For the failed image-edit case, the original stderr reports
+`CreateProcessWithLogonW failed: 267`; the actual turn later completed without
+an ImageGeneration item, leaving the original fixture waiting until its
+watchdog. The [original runner](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d/codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs)
+reads the Win32 last-error value after another Win32 call; Microsoft's
+[GetLastError contract](https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror)
+requires capturing useful error information immediately. The logged 267
+therefore remains a reported value rather than a
+newly verified launch cause. A separately prepared immediate-error-capture
+and exact-turn terminal diagnostic patch is not part of bf42 and does not
+establish an ACL, directory-lifetime or launch correction. Credentials and
+environment contents are not needed for that diagnostic boundary.
 
-Observer code and tested source are distinct identities. Original eleven-case Windows
-run [42540772106](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42540772106)
-uses observer `630a5cf57a4f61b21c0edf372319d55d71c4fab5` and tests exact 82ff.
-It ended naturally at its original 65-minute Actions limit at 01:38:09 UTC.
-Four cases actually executed: fleet and H7 passed, while CLI and signed-credit
-failed. There were no selected skips, retries or observed leaks. Seven planned
-cases did not execute. Matrix discovery/build had already started and incurred
-real cost; the six app-server cases were not launched. Clean source and observer
-identities were retained before and after. All 88 original artifact ZIP members
-were verified. This is a partial failed run, not an eleven-case pass.
+### Current common CI observations
 
-The successor Windows 11 run
-[42545587597](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42545587597)
-uses observer `bd7962c944e47fcadb0f205d808300f780491800` and declares exact d1.
-It was nonterminal in the retained 01:29:44 UTC observation. Final actual checkout and case
-receipts must be checked before claiming a result.
+The source-bound API observation at 03:30:34 UTC records original run
+[42553073160](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160)
+as completed with failure. Windows Bazel shards 2 and 4, both macOS Bazel
+jobs, the Windows aggregation and the required-CI aggregation failed. Each
+aggregation remains an outcome gate rather than an additional native testcase.
+The earlier snapshot at 03:16:38 UTC and its original four-job log collection
+at 03:21:07 UTC remain preserved; later observations do not rewrite their cutoff.
 
-The original-wrapper Bazel observer
-[42545618817](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42545618817)
-uses observer `e401c77ba202e132c25c497fe19ce51fd5bcbcae`, with exact d1 source
-pins. It reported a failure in its discovery/execution step. Original artifacts prove the discovery subprocess stopped after 0.0317 seconds
-with exit 1 and UTF-16LE output reporting that WSL has no installed distribution.
-There was no BEP or native execution: the original 33 were not_run. The actual
-source checkout was clean d1 before/after. The first observer did not record
-the resolved bash executable path/version, so those values remain unknown.
-A successor launcher correction uses the original workflow Git Bash, records
-the actual executable and its fingerprint, and retains the same source,
-target, flags and budgets.
+At the latest observation the UI foundation workflow
+[42553073250](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073250)
+and architecture workflow had completed successfully. That is an API job/run
+status observation; full original UI case qualification is a separate readback.
+Common native composition, the original Windows regression and both Windows
+V8 canaries were still running. Individual successful jobs do not fill those
+remaining scopes. The API head is bf42; actual checkout merge identity and
+final Bazel target results retain their own original bindings. Names appearing
+in failed attempts are not silently treated as the final unique failed-target
+count. No complete common CI pass or stage advancement is claimed.
 
-That corrected observer is `cea37b82c63bb2a6120789d44b2e9fea1d3a10d3`.
-Run [42546897394](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42546897394)
-completed successfully at 01:48:31 UTC. Actual original libtest discovery and
-execution matched all 33 unique cases, with zero ignored, filtered, retries or
-cache hits. BEP recorded one run, shard and attempt. Source d1 and observer
-identities remained clean before and after; all 53 original artifact ZIP
-members were verified. The original XML contains one aggregate wrapper
-testcase, so the 33-case result comes from actual libtest records and is not
-represented as 33 fabricated JUnit cases. The first launch failure remains
-preserved independently.
+All four failing native jobs actually checked out
+`8828133f2566b7e537cac0bad58c84eb5b0168bb`. Its tree is the exact bf42 tree;
+its ordered parents are `1eb72a1131285f5de98beeb7c95a27eab72d647e` and bf42.
+The actual commit remains distinct. Raw checkout records plus the original
+Git commit API establish that identity, rather than a complete post-build
+working-tree byte snapshot. The required-CI aggregator also checked out this
+merge but ran no native cases; the Windows aggregator had no test checkout.
 
-The Bazel plan retains the original
-`//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests`
-wrapper, Windows MSVC platform, original 120-minute ceiling, full unfiltered
-target, real libtest discovery/logs and BEP attempt/cache checks. It does not
-replace the wrapper with the manual inner binary or fabricate per-case JUnit
-from aggregate wrapper XML. Its single-target execution and lack of the
-original BuildBuddy secret are explicit environment differences. No global
-ProgramData override is introduced by the observer.
+| Original job    | Final nonpassing Bazel targets                                                                                                                                                   | Accounting limit                                                                                                                                                          |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Windows shard 2 | 3 FAILED: CLI unit, Windows sandbox unit, app-server all                                                                                                                         | The app-server target's original six failed invocations among twenty include repeated attempts in two of sixteen shards. They are not six distinct Rust cases.            |
+| Windows shard 4 | 2 FAILED: exec-server Windows filesystem, core all                                                                                                                               | The core target's original sixteen failed invocations among twenty-seven include repeated attempts. A recovered earlier shard attempt does not make the full target pass. |
+| macOS ARM       | 3 FAILED: forwarder, Matrix unit, Matrix store-version migration target                                                                                                          | The migration target's ordinary restart case is distinct from its ignored two-version qualification.                                                                      |
+| macOS Intel     | 5 FAILED: code-mode host gRPC, code-mode host WebSocket, forwarder, Matrix unit and Matrix store-version migration; 2 TIMEOUT: agentd unit and supervisor paired-process product | Both timeouts retain the original 300-second target budget. Running-over-sixty-seconds markers do not establish a deadlock or completed case result.                      |
 
-### Original common-source CI completion and failures
+These are target outcomes per platform/job, not a distinct-test total. The
+original logs identify multiple different boundaries. Matrix unit startup
+expires in `build_until` under the original twenty-second budget before the
+session-persistence assertion. The migration and forwarder messages remain
+too generic to locate the underlying operation. Windows app-server helper
+launches fail earlier with program-not-found, unlike the grouped Cargo run's
+reported logon error. The CLI doctor timeout, unexpected app-list notification,
+legacy isolation refusals and other core event waits remain separate findings.
+The packet retains exact proved observations, unknowns and narrow next actions;
+none is converted to a qualified root cause merely because another scope passed.
 
-The latest retained non-atomic snapshot ended at 2026-11-09 01:41:23 UTC;
-all 18 observed workflows had reached terminal states. Original native
-framework run
-[42534597157](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534597157)
-completed all three jobs successfully. Four original artifact ZIPs, all member
-hashes, command receipts, raw logs, source bindings and fresh JUnit identities
-were independently audited.
+### Independent UI diagnostics
 
-| Exact ba4 execution scope  | Actual outcome                                                                   | Coverage boundary                                                                                                                                               |
-| -------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Complete default workspace | 20,563 unique passes; 139 skipped in the original raw summary; 330 JUnit suites. | Zero failures, XML skips, retry elements or observed leak/nonpassing markers. The 139 raw skips remain explicit; this does not cover every feature combination. |
-| Scoped agentd composition  | 7,910 passes; 107 original raw skips.                                            | All 7,910 identities are already in the workspace set and are not added again.                                                                                  |
-| Mechanisms                 | 1,215 passes; seven original raw skips.                                          | All 1,215 identities are already in the workspace set and are not added again.                                                                                  |
-| Original ignored HostCAS   | One pass; 791 filtered cases.                                                    | This actual execution is outside the default workspace set. Identical copies in two uploaded artifacts are not separate executions.                             |
+Run [42549225359](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42549225359)
+uses diagnostic source `5e33ff84c6e556a63de77610ea968d480221747c`, tree
+`e73045f95d99644c6f7b2b1ff2b111f6b4969782`, based on d1. It changes exactly four
+paths for bounded breadcrumbs around original waits and its independent
+observer. Source identity stayed clean across all three original snapshots.
 
-The workspace raw test summary reports 2,073.718 seconds. That is the measured
-test interval, not total build, machine, physical or historical cost. Original
-source/tested identities were ba4 with clean before/after receipts and locked
-commands. No new tests were executed to produce this audit. These ba4 results
-do not qualify d1 or any later source.
+All seven actual cases passed with one attempt, zero skips and zero retries.
+They comprise six real-gateway status scenarios and one SDK transport control
+with the original synthetic export sink. This is one original browser group,
+not the whole UI workflow or all native/pixel/browser scopes. The previously
+failing 1280 timeout case completed in 19.760 seconds. The complete original
+command took 106.99170309 seconds. All 180 original artifact members were
+verified.
 
-Full repository CI and both UI lanes failed. Successful proposal
-metadata and the separate security workflow do not replace those failures.
+All six breadcrumb records have the expected paired boundaries. Intentional
+missing no-state OCR completion markers in navigation cases remain explicit.
+The four timeout/navigation continuations encountered the original expected
+late `Invalid InterceptionId` error and completed the existing catch/cleanup
+path. Cleanup began with zero pending holds in every case, so this execution
+does not exercise stalled pending cleanup. The original local unbounded awaits
+remain a source-level risk.
 
-Actual Windows and macOS Bazel checkout
-`f9d3da90698b470ffc9f8acecd73ca0a54dbfe4d` was verified from original checkout
-logs and immutable commit data; its tree matches ba4e, while its merge identity
-remains distinct. Windows shards 2/3/4 and both macOS jobs failed. Final failed
-targets, timeouts, flaky targets and repeated attempt logs remain separate;
-the number of raw FAILED lines is not a count of unique final target failures.
+The old failure was not reproduced, and its root cause remains unknown.
+Synchronous breadcrumb I/O can change scheduling. This diagnostic execution
+does not qualify the uninstrumented d1 or bf42 source, establish a production
+fix or prove a performance improvement.
 
-Original Windows regression run
-[42534602318](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534602318)
-ended at its original 65-minute Actions limit, proven by its annotation. No
-manual Rust cancellation occurred. Operator 33 passed. The first sandbox scope ran seven cases: six failed and
-one passed with a reported process leak; the separate delete-routes scope
-ran two cases and both failed. The passing-but-leaky case was
-`elevated_non_tty_cmd_forwards_env_output_and_exit`. A later core scope was
-launched without a complete receipt. An earlier retained packet label called
-these scopes "7+2 FAIL"; that classification was incorrect and is superseded
-by the original per-case results and this explicit correction. Original packet
-bytes, including the earlier label, are preserved. The source-before capture was clean ba4e/d2; source-after was absent.
-The whole workflow is not passed and its complete cost remains unknown.
+## Retained historical results
 
-Both UI lanes executed the original seven-case group with six passes and one
-same Chromium 1280 timeout under the original 90-second budget, with zero retries.
-The passes comprise five real-gateway status scenarios and one SDK transport
-control using its original synthetic WASM export sink. The failing case is a
-real-gateway status scenario. The
-initial missing-owner/status audit completed; the later fault-injection phase
-did not. The original artifacts contain no trace locating the exact await.
-In original base-merge artifact 13639452474, the `owner-not-attached.png` and
-`test-failed-1.png` originals are byte-identical
-(66,726 bytes; SHA256 `9d6df7f5a066594e2f85ddf6975f1523dac8e2bd7cacf0c10ef6ac06c3e0a7e8`).
-The earlier `before-read.png` is a different image (69,725 bytes; SHA256
-`6d20536aceeb636264fa619ff0a8b20028afe0db81b763df655229b34584eb12`).
-The recorded Refresh click point and bounds remain consistent across the
-earlier and missing-owner states. These observations do not establish a
-layout or click-target bug. A CDP wait is a source-backed possibility, not an
-established root cause. The explicit UI merge
-`5ffd865f49461cbbbf932d239434a5629224ec1a` and source-head ba4e share a tree but
-remain separate tested identities.
+| Exact source                                   | Retained observation                                                                                                                                                                                                                                                                              | Current interpretation                                                                                                                                                                                                                      |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ba4 `ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1` | Original native run [42534597157](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42534597157) passed 20,563 unique default-workspace cases with 139 original raw skips and 330 JUnit suites. Four original artifact ZIPs, source bindings and every member were checked. | The 7,910 scoped and 1,215 mechanisms cases are subsets. The original ignored HostCAS case is separate. This is ba4 coverage and not every feature combination.                                                                             |
+| ba4 repository and UI CI                       | Full repository CI and both UI lanes failed. Windows shards 2/3/4 and both macOS jobs failed; original Windows regression reached its 65-minute limit.                                                                                                                                            | Successful evidence checkers, proposal metadata and separate security jobs do not replace these failures. Distinct actual merge commits retain their identities even when their trees match ba4.                                            |
+| ba4 Windows original sandbox groups            | Six failed cases and one passed-but-leaky case in the first group; two failed cases in the delete group.                                                                                                                                                                                          | The earlier prose label `7+2 FAIL` was inaccurate. The original observer already rejected LEAK. Original bytes and the explicit correction remain together.                                                                                 |
+| `82ff5119200cab9d65461eb62a3829567fbc2e8f`     | Linux selected 13: nine passed, four cold-resume cases failed. Windows original eleven-case run: four executed, two passed, two failed, seven unexecuted.                                                                                                                                         | The typed spawn-observer mismatch is preserved. Neither failure is replaced by a later source's pass.                                                                                                                                       |
+| `a8d0b3dab62045a6aa6e61966c3fbeeccf1b48d6`     | Original operator E0433 strict-preparation failure.                                                                                                                                                                                                                                               | Zero native cases executed. Its Python pass is a separate scope.                                                                                                                                                                            |
+| `a39bf3eeac945c83aebcadbb81dfcb93d623e0f4`     | Preparation rejected automatic source drift after canonical `just fix`.                                                                                                                                                                                                                           | Zero native cases executed. The automatic diff was retained but not adopted.                                                                                                                                                                |
+| `d1b32a67cbe9ada0b7d911bdc7d08820253bb1ca`     | Linux 38 selected cases passed. Original Windows Bazel operator target separately passed 33 unique libtest cases in [42546897394](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42546897394), observer `cea37b82c63bb2a6120789d44b2e9fea1d3a10d3`.                      | The XML has one aggregate wrapper testcase; the 33 cases come from actual libtest records. This single target and its keyless BuildBuddy environment do not qualify the whole Windows shard. The first WSL-launch failure remains retained. |
 
-### Windows directory API diagnostic boundary
+The ba4 workspace raw test interval was 2,073.718 seconds. This is not complete
+build, physical or historical cost. The successor series preserves ba4's Cargo,
+Bazel and pnpm Git blobs and formal CURRENT bytes. That comparison does not say
+the original integrated PR's dependencies were unchanged from its earlier base.
+Platform working-tree hashes retain their own measured identities.
 
-The retained Python-only Win32 probe observed successful directory FlushFileBuffers
-after read/write open with the original backup/reparse flags; the read-only
-directory handle returned access denied. The original first probe failed its
-script fingerprint before calling the API and remains preserved. The successor
-probe retains checkout settings and the actual script fingerprint. These are
-API return observations on owned temporary objects. They do not demonstrate
-namespace durability or behavior under power loss.
+Earlier checkpoint packets retain the original integration compile failures,
+owner-observation recovery, zsh build/publication/consumer records, Python and
+caller gates, guarded execution rejections, scoped native tests and original
+CI artifacts. The packet index and each immutable manifest define their exact
+scope; no broad pass is inferred from the number of archives.
 
-Every successor retains the same Git source blobs for the Cargo, Bazel and
-pnpm locks and the formal CURRENT hash below. Individual platform working-tree
-byte hashes retain their own measured values: the original Windows Cargo.lock
-hash `192c40e4c327fc23dce2fe2ff10e5a1048079458ccfdeedf5bb41ecf8b7d77ad`
-is not relabeled as the Git blob hash. No cause for that byte difference is
-asserted here. **All S0–S5 remain HOLD.** The existing ordinary
-daemon capability and independent producer gaps remain unchanged.
+## Ordinary daemon delivery and stage boundary
 
-## Earlier retained source observations
+The targeted bf42 audit reads immutable Git objects. Its 24 selected main source
+files are byte-identical to ba4, with three additional transport files reviewed.
+The scope is named symbols and direct constructors/call sites, not a complete
+Rust type-resolution proof or an inventory of deployed host services.
 
-| Source                                                                                         | Original observed result                                                                                                                                                                                                                                  | Boundary                                                                                                                                                                                                                 |
-| ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `6fd7471bce6102de857c0c7f9da5d5e641b719f7`                                                     | 126 independent Python fixtures passed; full caller scan failed. The native run retained an ACT1 timeout.                                                                                                                                                 | Original failures remain in the history.                                                                                                                                                                                 |
-| `86ac7796345ec0a885bb212e5174ba85bb16485e`                                                     | 127 Python fixtures and full caller scan passed.                                                                                                                                                                                                          | The full scan exceeded the original CI budget. UI preparation used a separately recorded dirty patch.                                                                                                                    |
-| `09f543c732e383a62f9339e84b69b373992d6e07`                                                     | 130 Python fixtures and full caller scan passed. The scan took 371.628 seconds under the original 600-second cap. The local native chain executed 700 core-family cases, 729 agentd cases, and one original HostCAS case successfully.                    | These are scoped local executions, kept separate from overlapping CI and preparation runs.                                                                                                                               |
-| Original native CI run `42523028203`, source `09f543c`                                         | The complete default workspace executed 20,562 unique passing cases, with 139 skipped in the original raw summary. All three jobs completed successfully. Four original artifacts and their receipt/log/JUnit/source bindings were independently checked. | The 7,910-case scoped and 1,214-case mechanisms sets are subsets and are not added again. Original HostCAS and Python 23+6 are separate. This does not qualify a later source or the independent Windows/macOS failures. |
-| UI source `09f543c` and explicit base merge `e422c96f016da757a87134f33923633721702796`         | Each lane passed seven SDK cases and fifteen real browser cases across Chromium, Firefox and WebKit, plus both pixel reports. Original retries, skips and unexpected results were zero.                                                                   | The two tested commit identities remain distinct; their trees matched. Counts across lanes are not added as distinct coverage.                                                                                           |
-| Generic PR merge `f7fca4fe3be11c4bc266597e3c2e5205f10f49e7`                                    | Original Windows and macOS failures are retained with complete raw logs and job metadata.                                                                                                                                                                 | Its tree matched v3, but the tested merge commit is not relabeled as source-head execution.                                                                                                                              |
-| `ce754c38d6418765ba39eefaf80a1a1e174dfd9d`                                                     | 130 independent Python fixtures, original self-test, exact CURRENT comparison and full caller scan passed. The scan took 380.989 seconds under the original 600-second cap.                                                                               | Source stayed clean and unchanged. This Python result does not qualify its failed native compilation or the later observer correction.                                                                                   |
-| `5fd02472b62b411ead6ad8d59f1d91a604433516`                                                     | The corrected owner observation/recovery scope executed all 23 selected cases and five owning-package strict checks successfully, without source edits.                                                                                                   | The earlier ce754c3 three-error compile failure remains in a separate original packet. This is not relabeled as final-source execution.                                                                                  |
-| `ba4e1e42b6a8cbab724e1755bddfb9b5b8f298a1`                                                     | 130 independent Python fixtures passed; full caller scan 375.202 seconds; original native chain 701/729/HostCAS1 passed with actual discovery-to-fresh-JUnit comparison. The separate core/memory 4 and queue 4 scopes also passed.                       | Original source, budgets, watchdogs and zero-retry behavior remain bound to each receipt. Scopes and repetitions are not summed into a full-workspace result.                                                            |
-| Windows original 33, tested source `ba4e`, observer `2fccd13676ee45061f49a3d397631900440c4d38` | 33 actual cases passed with zero failure, skip or retry. Windows owning-package strict lint passed, and both checkouts remained clean.                                                                                                                    | The observer's source is distinct from the source being tested. The original CI did not upload its native test executable; that limitation is retained.                                                                  |
-| `ba4e`, repository quality and dependency graph                                                | Original Codespell, format and blob gates passed. A missing-UV PATH failure preceded the same-source format recovery. Two local Bazel dependency-resolution attempts timed out at the same 300-second bound.                                              | The Bazel gate is not passed; its root cause is not established. New complete CI is a separately observed, initially nonterminal execution.                                                                              |
+The existing Root factory opens the fixed cognitive checkpoint owner and its
+cognitive record type. That handle cannot be substituted for
+`HostAuthorityFrontierStore<LearningIterationCheckpointRecordV1>`.
+The concrete learning checkpoint already supports restoring its fixed request
+and owner set and one-step CAS. No production named provisioning/delivery path
+for that learning capability was found in this bounded source review; the
+existing `vacant` construction does not itself grant or create authority.
 
-The v3 tree is `9be76894a2984d28e1780a7ff7499c79f506b09a`.
-The ce754c3 tree is `c329c638bd48187927f34e4fdda5a5274321d48d`.
-Its later, separately committed test observer correction is
-`5fd02472b62b411ead6ad8d59f1d91a604433516`, tree
-`05252023acf4e40cd23d26c3c571cdb029b4c2f0`. Preparation and execution
-identities must not be interchanged.
+The next concrete implementation boundary is an explicitly installed,
+purpose-limited Root service retaining the original registered learning owner,
+with a Root/peer/pidfd/lifetime-bound client in the ordinary process. It must
+preserve existing five-lane behavior, bounded frames, original live writer
+fences, open-only registration and `CommitUncertain` semantics after an
+ambiguous write. Restore returns protected data, not an attestation or revoked
+permission. The audit packet is a proposal and records no implementation,
+provisioning or test execution.
 
-The published common tree at this checkpoint is
-`d2f261084bad25c230b95835e9a589fe7b866be1` at the ba4e commit above.
-Its Cargo/Bazel/pnpm Git source blobs and formal CURRENT bytes stayed unchanged by
-the latest repair series. Original 09f native CI used 86ac as its receipt base;
-this is preserved independently of the integration's common 1eb starting point.
+This can close part of checkpoint delivery, D02. It cannot manufacture the
+missing complete production `LearningIterationOwnerPortsV1`, independent
+stage-result producers, their signatures, effective CellBundle publication or
+a different real successor task's committed consumption. Existing FinalUse
+issuing and the measured terminal-profile HostCAS recovery remain useful
+components with their existing limited scopes.
 
-The 700-case local scope is exactly `codex-hepta-contracts`,
-`codex-hepta-neuron`, `codex-hepta-automation`, and
-`codex-hepta-bellman-operator`; it is not the `codex-core` suite. Original
-ignored and filtered cases remain separately recorded.
+| Stage | Remaining acceptance                                                                                                                                                                                                                   |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S0    | Ordinary daemon learning-owner composition; original registered learning checkpoint delivery; independent task/stage evidence; legitimate adoption; supported effective CellBundle loading; actual next-task consumption and recovery. |
+| S1    | Matched-budget net benefit on real tasks over strong retrieval, rule and control baselines; false-acceptance and retention thresholds.                                                                                                 |
+| S2    | Improved real completion with fewer unnecessary evidence/actions and correct fault semantics.                                                                                                                                          |
+| S3    | Effect or complete-cost advantage over sufficiently trained GRU/SSM, gradient or other appropriate baselines.                                                                                                                          |
+| S4    | Advantage over a fixed graph with a strong scheduler, including migration and organization costs.                                                                                                                                      |
+| S5    | Common starting point, component swaps, independent tasks, multiple actually adopted generations and complete history cost.                                                                                                            |
 
-The final 701-case scope has the same four package owners. The final native
-commands separately reported 14, 63, 791, 2,863 and 34 skipped or filtered
-cases for core-family, agentd, HostCAS, core/memory and queue, respectively.
-Selected cases passed without retries or selected skips; the other cases
-are not counted as passing.
-
-A non-atomic API snapshot at 2026-11-08 23:28:37–23:28:48 UTC captured 18 new
-workflows associated with ba4e: eight successful, seven in progress and three
-skipped, with no completed failures. The native, full repository, UI and
-original Windows workflows were still nonterminal. The advertised PR merge
-`f9d3da90698b470ffc9f8acecd73ca0a54dbfe4d` is not treated as a verified tested
-checkout. The snapshot's successful Bazel proposal job produced proposal
-metadata; it does not replace the two timed-out local lock-gate receipts.
-
-All source-bound Python packets retain the unchanged research result hash
+The formal CURRENT file remains exactly SHA256
 `c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4`.
-**S0, S1, S2, S3, S4 and S5 remain HOLD.**
-
-## Platform preparation and actual release consumption
-
-The Guardian/pagination preparation packet preserves the first compile and
-metadata failures, four actual native passing cases and owning-package lint on
-preparation commit `57556e4ed0b5cbba2fd20f106591ad3dce8eff9b`. It is not a
-final common-source Windows execution.
-
-The macOS Notes diagnostic uses the exact four original I/O function bodies.
-It preserves the immediate-peer-close failure and 1,024 held-peer successes.
-It is a narrow native diagnostic, not whole-crate qualification.
-
-The zsh C preparation packets retain original Linux and macOS failures and
-actual patched builds. The first tag, `codex-zsh-v0.1.1`, remains intact: its
-two Linux jobs passed, while both macOS jobs failed runner admission before
-execution and publication was skipped. No original run was rewritten or
-cancelled to obtain a successful receipt.
-
-The subsequent `codex-zsh-v0.1.2` tag targets
-`7a0f14490ad36cd6d23d2d06b522735d66710d48`. Its four native platform builds,
-smoke checks, metadata job and publication completed successfully. The
-existing Python package resolver anonymously downloaded and checked all four
-real asset sizes and SHA256 values. The existing DotSlash 0.5.9 entry point
-executed the published Linux x64 and macOS ARM64 packages in fresh caches.
-Initial orchestrator rejections remain in the packet.
-
-Both final consumer manifests are pinned to the real 2,702-byte release
-manifest with SHA256
-`f9374bd9434680fa5ec64cc8387ee1ba74b7d843a1fbbd25131b17687b65250d`.
-The Linux asset names include `musl`, but the actual binaries are dynamic
-glibc ELF files; their names are not evidence of musl compatibility. Native
-package execution is not substituted for the original Rust zsh tests.
-
-The original pinned Linux archives were downloaded and checked against their
-old manifests. Old and new binaries have the same observed loaders, NEEDED
-library sets and complete GLIBC symbol-version sets through 2.38. This does
-not establish complete ABI equivalence or general Linux compatibility.
-
-The Windows diagnostic history retains the first original 31/33 result and 16
-fixture contrasts, followed by a Python-only 22-by-two environment study.
-Adding only ProgramData, including the path returned by the OS known-folder
-API, admitted the exact namespace and rejected the wrong namespace. Removing
-it while adding all 14 other allowlisted variables retained the original 255
-failure. An empty value also initialized the observed binary; this observation
-is retained, but production uses the validated nonempty absolute OS path.
-The original Windows 33 were then executed successfully on the final common
-source. Diagnostic observations never replace that native gate.
+Its source/foundation fields and jointly admitted experiment set remain
+unfilled. This does not imply that the repository contains no baseline code or
+historical experiments; it means that this common candidate has not earned
+those joint acceptance claims.
 
 ## Verification and reconstruction
 
-Run from any directory:
+From the repository root, run the retained read-only verifier:
 
 ```sh
 python3 qualification/cell_common_candidate/20261108/execution_history/verify_packets.py
 ```
 
-To reconstruct exact original archives into new files, add
+To reconstruct the exact original archives into new files, add
 `--reconstruct-dir /absolute/path/to/output`. Existing output files are never
-overwritten. The verifier does not extract or execute archive members.
+overwritten. The verifier hashes every chunk, reconstructs the exact original
+archive, checks its complete file-member set and hashes, and never executes
+archive content. Its checks establish consistency of retained bytes; they do
+not recreate missing execution receipts or grant scientific qualification.
 
-Each compressed archive is split into ordered chunks of at most 490,000 bytes.
-Packet manifests bind the order, offsets, sizes and hashes, exact original
-archive hash, and every original file member. Reconstruction and member
-verification are completed before publication. Original inventory and bounded
-publication pattern reviews are retained separately; a pattern scan is not a
-complete secret-detection claim.
+Original archives are split into bounded Git blobs so the original compressed
+bytes remain recoverable. New metadata observations are stored separately from
+original packets. The publication receipt of this commit necessarily remains
+external to that same commit and can be retained in a later checkpoint.
 
 ## Scope and costs
 
-Packets overlap earlier history. Member counts, test counts and wall times
-must not be added across repetitions, nested wrappers or source versions. A
-passed command is not necessarily a test execution. Tests outside a selected
-scope remain skipped, filtered or not run as recorded by the original runner.
+This checkpoint has `complete_execution_history: false` and
+`full_history_cost: null`. Recorded subprocess and job wall intervals stay wall
+intervals. Cache state, dependency downloads, queueing, all earlier attempts,
+physical resource consumption and shared overhead are not silently assigned
+zero or inferred from selected test durations. A build that starts but never
+reaches a case still incurs cost. An unexecuted case remains unexecuted.
 
-The first checkpoint's classification retained four log references with only
-path linkage and 60 unknown log paths as host-only observations. That
-historical classification is preserved. It does not certify a complete
-present-day inventory. Large native executable sets and tool caches are
-represented by retained paths and content hashes where recorded; they are not
-all packaged here.
-
-Physical, CPU, learning and complete history costs remain unknown. Original
-wall intervals remain wall intervals. No aggregate cost is inferred from
-them. Evidence publication uses a separate Git branch and does not change any
-source commit tested by an original receipt. Publication commits are recorded
-in external Git readback receipts, avoiding self-referential manifest hashes.
-
-The ordinary daemon still needs a concrete learning-owner implementation and
-bootstrap, delivery of the existing registered checkpoint capability to the
-learning bootstrap, independently
-authorized stage-result producers, supported effective CellBundle loading,
-and actual successor-task consumption. Strong baselines, independent tasks,
-multi-generation adoption and complete costs are separate acceptance work.
+Bounded publication-pattern checks are not a claim of comprehensive secret
+detection. Full source identities, archive hashes, retained original commands,
+explicit failures and limits provide the review boundary. A byte-consistent
+evidence archive alone is not proof that the learning system completes the
+user's S0–S5 requirements.

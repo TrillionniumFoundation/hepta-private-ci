@@ -1,0 +1,503 @@
+{
+  "packet_id": "windows-fixture-owner-agentd-fleet-default-bf42-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/agentd-fleet-default/windows-fixture-owner-agentd-fleet-default-bf42.tar.xz",
+  "bytes": 18040428,
+  "sha256": "f1656cc57fbc672774e694ed4bb7885e2fdacf5b9fd7fed898964dc6eff1287d",
+  "compression": "xz",
+  "file_member_count": 19,
+  "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+  "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+  "scope": "Original Windows agentd-fleet-default owner job: 2 selected cases executed, 2 passed, 0 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false,
+  "required_json_members": [
+    {
+      "path": "SCOPE.json",
+      "bytes": 1820,
+      "sha256": "1416e734c2fe6c517c7f098f9d5de163b894d60b3fe8f0e0510477284d44aaed",
+      "equals": [
+        {
+          "path": [
+            "packet_id"
+          ],
+          "value": "windows-fixture-owner-agentd-fleet-default-bf42-v1"
+        },
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "observer_sha"
+          ],
+          "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+        },
+        {
+          "path": [
+            "observer_tree"
+          ],
+          "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+        },
+        {
+          "path": [
+            "run_id"
+          ],
+          "value": 42550332155
+        },
+        {
+          "path": [
+            "full_cost"
+          ],
+          "value": null
+        },
+        {
+          "path": [
+            "scientific_qualification_performed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "new_tests_run_by_packet_builder"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "group"
+          ],
+          "value": "agentd-fleet-default"
+        },
+        {
+          "path": [
+            "selected_scope_passed"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "actual_cases"
+          ],
+          "value": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+              "time_seconds": "2.339",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+              "time_seconds": "0.820",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "path": [
+            "selected_count"
+          ],
+          "value": 2
+        },
+        {
+          "path": [
+            "filter_excluded_count"
+          ],
+          "value": 259
+        },
+        {
+          "path": [
+            "old_failed_or_cancelled_results_superseded"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "complete_eleven_case_scope_claimed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_workspace_passed"
+          ],
+          "value": false
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "MANIFEST.json",
+      "bytes": 2975,
+      "sha256": "acec2d2c9461f3f7376e39180f38b126864e2ec10c2eb8fed34c3e10784f1a3c"
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 1820,
+      "sha256": "1416e734c2fe6c517c7f098f9d5de163b894d60b3fe8f0e0510477284d44aaed"
+    },
+    {
+      "path": "analysis-source/read_owner_group_artifacts_v1.py",
+      "bytes": 12552,
+      "sha256": "41c28121fc66d7944e251c51f33e64a3ba9c23e891cfabb1754f011bdef20701"
+    },
+    {
+      "path": "originals/CAPTURE.json",
+      "bytes": 1862,
+      "sha256": "a8b03557966a909c2cf847ebeee1c6fd6c94db2049685e8267fb77947b6ed4f2"
+    },
+    {
+      "path": "originals/INDEPENDENT_ANALYSIS.json",
+      "bytes": 4355,
+      "sha256": "04ecfc25e0f9f800459b8f3562c0b3a926e5004756821634b480390380357094"
+    },
+    {
+      "path": "originals/ZIP_MEMBERS.json",
+      "bytes": 12275,
+      "sha256": "e824421a4cc270c0e1ff1715e69c9f2ce4ac8a5e6a57923f87870c2ebdcbd93e"
+    },
+    {
+      "path": "originals/artifact.json",
+      "bytes": 937,
+      "sha256": "e38ba1a8b4db31ccbe2fe84515ba46d8dc5790f0dd88cd4839dad06590bbba40"
+    },
+    {
+      "path": "originals/artifact.meta.json",
+      "bytes": 617,
+      "sha256": "58f7ea4fbe40b0c665564a874b1d1572ce83bb3e06b7a67f923c0ae9933199ea"
+    },
+    {
+      "path": "originals/artifact.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/artifact.zip",
+      "bytes": 18573081,
+      "sha256": "6a9da552b5ae11b9b1b03416781cc76bd741380ff933c0b3cf564a6814a8dbfb"
+    },
+    {
+      "path": "originals/job.json",
+      "bytes": 4224,
+      "sha256": "9c5dec6f77b9857e8fb144e0f318772491017ded2ebe3eed7b4fe83b8c3117d9"
+    },
+    {
+      "path": "originals/raw.log",
+      "bytes": 96420,
+      "sha256": "90435165d6784d005cae57a362d18ddbba2b04f79589f7a5ba0e86b3d0726b3d"
+    },
+    {
+      "path": "originals/raw.meta.json",
+      "bytes": 606,
+      "sha256": "3a06d871742446e5a6fd0bc66aefb0f7afa9ada440cbb0e993b78bcc30665efd"
+    },
+    {
+      "path": "originals/raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "originals/snapshot-RESULT.json",
+      "bytes": 1345,
+      "sha256": "a5f841cab7061d59e1c86815ad718905e4857dfc8316491044c3b965f86a3160"
+    },
+    {
+      "path": "originals/snapshot-artifacts.json",
+      "bytes": 5143,
+      "sha256": "45404ce88d8de67e585a22d48dd5c4df9bbc1527cdf1d6c009a2de7a6c1c1976"
+    },
+    {
+      "path": "originals/snapshot-artifacts.meta.json",
+      "bytes": 484,
+      "sha256": "c90a41c582dc253b3d9bc7f9a93f039c3083257217f7f11bdb456cfc72734250"
+    },
+    {
+      "path": "originals/snapshot-jobs.json",
+      "bytes": 19191,
+      "sha256": "192f0d72210d944af69ffa3d4c9abfc4c7cf877175cdc41cfb6f06d0ab961563"
+    },
+    {
+      "path": "originals/snapshot-jobs.meta.json",
+      "bytes": 480,
+      "sha256": "caf8e681e84837145c8de4cbbe45b7adf81db7a7599ca69c50f338b33f3c6881"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "ce405dded187c65de525d8b989410dd8304f25787e91df9789f4e1321fa11927"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 490000,
+      "sha256": "d0d5337a4d56503b135e6e342fcdcf3d920506d94397d9ae7579166e005353e8"
+    },
+    {
+      "sequence": 3,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part003",
+      "offset": 980000,
+      "bytes": 490000,
+      "sha256": "f769692a5d85e97966f94d1b48f1085f1a31008c427befaeb65f1799a9aa5ce4"
+    },
+    {
+      "sequence": 4,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part004",
+      "offset": 1470000,
+      "bytes": 490000,
+      "sha256": "c5378a88b451560f8e2e97759651be041a64c7dfa5779544b5a8fbefaf1c10b7"
+    },
+    {
+      "sequence": 5,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part005",
+      "offset": 1960000,
+      "bytes": 490000,
+      "sha256": "246543b6c829a1b3157cbdf234676b018f87fbd7dc490110fe8e802a6e066d41"
+    },
+    {
+      "sequence": 6,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part006",
+      "offset": 2450000,
+      "bytes": 490000,
+      "sha256": "aa3ca243bda5408cb2bca5e9be2310d70b1654f25d7b51094e81b36fcb18e4d6"
+    },
+    {
+      "sequence": 7,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part007",
+      "offset": 2940000,
+      "bytes": 490000,
+      "sha256": "24e805c655c8b09c06b9cf456c674a26b31aeadbb209982fdf291a1cc601baf6"
+    },
+    {
+      "sequence": 8,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part008",
+      "offset": 3430000,
+      "bytes": 490000,
+      "sha256": "8fae2221625659d64345a0379a61f9a0cf464999b376365d40239ec1d18e1b0e"
+    },
+    {
+      "sequence": 9,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part009",
+      "offset": 3920000,
+      "bytes": 490000,
+      "sha256": "cfe3646ebfad0543fd184ed636fde8445ae2b9bc8f899cbc79a451296e0d73b8"
+    },
+    {
+      "sequence": 10,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part010",
+      "offset": 4410000,
+      "bytes": 490000,
+      "sha256": "1981e91cd72aa2edc9a2fa8efaf6f4fdb6f169f2645133cf5654f2ca0b92df3f"
+    },
+    {
+      "sequence": 11,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part011",
+      "offset": 4900000,
+      "bytes": 490000,
+      "sha256": "7811aaa84987a6a6f47702d031f0f6cd8effa6fe7257f1a9fc044d891964caf4"
+    },
+    {
+      "sequence": 12,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part012",
+      "offset": 5390000,
+      "bytes": 490000,
+      "sha256": "94dfd6e6cb8ca29ed169a148de42724b39f4d832e3ac96d4f4f86427a596145d"
+    },
+    {
+      "sequence": 13,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part013",
+      "offset": 5880000,
+      "bytes": 490000,
+      "sha256": "d6f51af065822f320fcb09968a30a2137af3f75ca4e0c1f920118c142cc1a038"
+    },
+    {
+      "sequence": 14,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part014",
+      "offset": 6370000,
+      "bytes": 490000,
+      "sha256": "9f586e6bf7295cb9940275db4b51925e1384533076d7afddeb25d5d31d43899e"
+    },
+    {
+      "sequence": 15,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part015",
+      "offset": 6860000,
+      "bytes": 490000,
+      "sha256": "2e9c6589cbe7b650abdf124b7b003ed2f7cb458fce16c45e41ce1c730cefc2e8"
+    },
+    {
+      "sequence": 16,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part016",
+      "offset": 7350000,
+      "bytes": 490000,
+      "sha256": "d646f6d3943226a6f163ec7056d6ba6a40e42835e74874c5a42febbe5925f98b"
+    },
+    {
+      "sequence": 17,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part017",
+      "offset": 7840000,
+      "bytes": 490000,
+      "sha256": "ac3578d03ce91d763f903a89920032d271837c3a2fda13007e5303c730a52a8f"
+    },
+    {
+      "sequence": 18,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part018",
+      "offset": 8330000,
+      "bytes": 490000,
+      "sha256": "ad79073d2988da89858bf61e6f02a4e7202525fd9be9d5b785f261ec158b653d"
+    },
+    {
+      "sequence": 19,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part019",
+      "offset": 8820000,
+      "bytes": 490000,
+      "sha256": "1062deba9622f50f8b3a9c194342aaf66b639c5119952adbe6f08344e3d6722b"
+    },
+    {
+      "sequence": 20,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part020",
+      "offset": 9310000,
+      "bytes": 490000,
+      "sha256": "97dd6e33e65387fad92ba8256f85bc0ff80214f26b6b4a4a65f38d57ed40d2f4"
+    },
+    {
+      "sequence": 21,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part021",
+      "offset": 9800000,
+      "bytes": 490000,
+      "sha256": "912452f0596ba1d1ed97575df66559da57ffdaa149b2cc3aa4af3fa85c482496"
+    },
+    {
+      "sequence": 22,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part022",
+      "offset": 10290000,
+      "bytes": 490000,
+      "sha256": "965e037b200df8965a82f3043e144fbd818ae3f61cf24dab80b4ff39f8980691"
+    },
+    {
+      "sequence": 23,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part023",
+      "offset": 10780000,
+      "bytes": 490000,
+      "sha256": "4087177318959607078161ea2953059fd09e6bf9ab3562ea5ae211f9bca9d070"
+    },
+    {
+      "sequence": 24,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part024",
+      "offset": 11270000,
+      "bytes": 490000,
+      "sha256": "933ce2594f9fc9f4b9f529802ac098f24d4afa90a33443b46db5290e91ab44e0"
+    },
+    {
+      "sequence": 25,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part025",
+      "offset": 11760000,
+      "bytes": 490000,
+      "sha256": "6483fc845218bd260e78a86ee9304fcc546e9951c03c9b6fcf8e3a3ebb4bb560"
+    },
+    {
+      "sequence": 26,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part026",
+      "offset": 12250000,
+      "bytes": 490000,
+      "sha256": "25f95e3906f6b41f112225de2802d90c6e982242f13c031b8794ac759b2ab8dd"
+    },
+    {
+      "sequence": 27,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part027",
+      "offset": 12740000,
+      "bytes": 490000,
+      "sha256": "f5b99d80dcffdfb3b8b577bb95c4aaf39794d9f9b3d3f447cb31694b565aa559"
+    },
+    {
+      "sequence": 28,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part028",
+      "offset": 13230000,
+      "bytes": 490000,
+      "sha256": "a31e3bf09073773b6081b73dafbbaf52e4e99236c32f4a6f77fca5d992688f3d"
+    },
+    {
+      "sequence": 29,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part029",
+      "offset": 13720000,
+      "bytes": 490000,
+      "sha256": "a9f5f87cf1b9a128cc7961cba2800911c67f4b17129bad4259c647bbdd14ec60"
+    },
+    {
+      "sequence": 30,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part030",
+      "offset": 14210000,
+      "bytes": 490000,
+      "sha256": "aa84903fc67fd04ea79f8e512fa298cd72bbfbb550067c300a06428537e0ebd9"
+    },
+    {
+      "sequence": 31,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part031",
+      "offset": 14700000,
+      "bytes": 490000,
+      "sha256": "cea67387989c0bd8387f1fa82eb175819f9c35ca702f4172fb64f4fe5b8e0c9a"
+    },
+    {
+      "sequence": 32,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part032",
+      "offset": 15190000,
+      "bytes": 490000,
+      "sha256": "89a50f14d03ac6a87e942cc9407ab5d2f477c5919728f27af58231bec4782ac2"
+    },
+    {
+      "sequence": 33,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part033",
+      "offset": 15680000,
+      "bytes": 490000,
+      "sha256": "4dfc8dd34e93289a9b72eee26798a7d4c5fb92ba5f4ca4ad73cf03409b30b917"
+    },
+    {
+      "sequence": 34,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part034",
+      "offset": 16170000,
+      "bytes": 490000,
+      "sha256": "595a2cbd9dcdb65ffd478af3d6e2436d6a8b51afe4eb37a73de997d9e333c267"
+    },
+    {
+      "sequence": 35,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part035",
+      "offset": 16660000,
+      "bytes": 490000,
+      "sha256": "cfc905ab6b37cd449afd5a2805766d55b11035bd04b6177d84b9e5a51a0fcad2"
+    },
+    {
+      "sequence": 36,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part036",
+      "offset": 17150000,
+      "bytes": 490000,
+      "sha256": "7d9db6349f66b060b16eb5508481ae59d075bf78a3fe9d964205d70c6e41aa95"
+    },
+    {
+      "sequence": 37,
+      "path": "packets/windows-fixture-owner-agentd-fleet-default-bf42-v1/archive.part037",
+      "offset": 17640000,
+      "bytes": 400428,
+      "sha256": "a7e2fc24cdf69aefaca32036edd5515ddf3caa31924f1b03f4480d7899b8e37b"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

@@ -1,0 +1,1863 @@
+{
+  "packet_id": "bf42-original-full-ci-failure-snapshots002-003-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/ci-bf42-failure-evidence-002-003-v1/bf42-original-full-ci-failures-002-003.tar.xz",
+  "bytes": 507152,
+  "sha256": "4beffe0dace6d56e657cc9a7f58346fb032bcf8251ca3831717cdc39802127c5",
+  "compression": "xz",
+  "file_member_count": 235,
+  "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "actual_native_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+  "actual_native_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "scope": "Original terminal blocking CI failure for API head bf42. Four native jobs actually checked out merge8828133f at the same tree; Windows2 has 3 failed targets, Windows4 has 2, macOS ARM has 3, and macOS Intel has 5 failed plus 2 timed-out targets. Two aggregation jobs add no test cases. Original repeated attempts, first errors, source bindings, full raw logs and snapshot cutoffs remain distinct. No reruns or scientific acceptance were performed.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false,
+  "required_json_members": [
+    {
+      "bytes": 2949,
+      "path": "SCOPE.json",
+      "sha256": "d308ac7c84f18b2710cea6bdb72e9413cd24e496788fd0fd63b6d93fd6a6826d",
+      "equals": [
+        {
+          "path": [
+            "packet_id"
+          ],
+          "value": "bf42-original-full-ci-failure-snapshots002-003-v1"
+        },
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "actual_native_checkout_sha"
+          ],
+          "value": "8828133f2566b7e537cac0bad58c84eb5b0168bb"
+        },
+        {
+          "path": [
+            "actual_native_checkout_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "blocking_run_id"
+          ],
+          "value": 42553073160
+        },
+        {
+          "path": [
+            "blocking_run_status"
+          ],
+          "value": "completed"
+        },
+        {
+          "path": [
+            "blocking_run_conclusion"
+          ],
+          "value": "failure"
+        },
+        {
+          "path": [
+            "full_repository_ci_green"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "observation_cutoff"
+          ],
+          "value": "2026-11-09T03:30:34.867406+00:00"
+        },
+        {
+          "path": [
+            "final_bazel_target_outcomes"
+          ],
+          "value": {
+            "128953043649": {
+              "failed": 3,
+              "flaky": 0,
+              "timeout": 0
+            },
+            "128953043675": {
+              "failed": 3,
+              "flaky": 0,
+              "timeout": 0
+            },
+            "128953043702": {
+              "failed": 5,
+              "flaky": 0,
+              "timeout": 2
+            },
+            "128953043792": {
+              "failed": 2,
+              "flaky": 0,
+              "timeout": 0
+            },
+            "128957722404": {
+              "additional_cases": 0,
+              "aggregation_only": true
+            },
+            "128961511532": {
+              "additional_cases": 0,
+              "aggregation_only": true
+            }
+          }
+        },
+        {
+          "path": [
+            "new_tests_executed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_history_cost"
+          ],
+          "value": null
+        },
+        {
+          "path": [
+            "stages_remain"
+          ],
+          "value": {
+            "S0": "HOLD",
+            "S1": "HOLD",
+            "S2": "HOLD",
+            "S3": "HOLD",
+            "S4": "HOLD",
+            "S5": "HOLD"
+          }
+        },
+        {
+          "path": [
+            "same_tree_not_same_commit"
+          ],
+          "value": true
+        }
+      ]
+    },
+    {
+      "bytes": 4180,
+      "path": "ci-bf42-failure-analysis-004c-v2/SOURCE_BINDING.json",
+      "sha256": "51f5c7c217da0a3d4ad3195c981b06a8fa16b8959a97ead1ab5ed693c8751598",
+      "equals": [
+        {
+          "path": [
+            "source_head"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "actual_native_checkout"
+          ],
+          "value": "8828133f2566b7e537cac0bad58c84eb5b0168bb"
+        },
+        {
+          "path": [
+            "actual_native_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "merge_parents_in_order"
+          ],
+          "value": [
+            "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+            "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+          ]
+        },
+        {
+          "path": [
+            "tree_identity_equal"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "commit_identity_equal"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "jobs"
+          ],
+          "value": [
+            {
+              "actual_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+              "actual_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+              "actual_tested_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+              "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+              "aggregate_only_no_additional_test_cases": false,
+              "checkout_proofs": [
+                {
+                  "command_line": 179,
+                  "sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "sha_line": 180
+                }
+              ],
+              "job_id": 128953043649,
+              "role": "windows-bazel-shard-2"
+            },
+            {
+              "actual_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+              "actual_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+              "actual_tested_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+              "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+              "aggregate_only_no_additional_test_cases": false,
+              "checkout_proofs": [
+                {
+                  "command_line": 187,
+                  "sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "sha_line": 188
+                }
+              ],
+              "job_id": 128953043675,
+              "role": "macos-arm-bazel"
+            },
+            {
+              "actual_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+              "actual_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+              "actual_tested_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+              "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+              "aggregate_only_no_additional_test_cases": false,
+              "checkout_proofs": [
+                {
+                  "command_line": 182,
+                  "sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "sha_line": 183
+                }
+              ],
+              "job_id": 128953043792,
+              "role": "windows-bazel-shard-4"
+            },
+            {
+              "actual_checkout_sha": null,
+              "actual_checkout_tree": null,
+              "actual_tested_sha": null,
+              "actual_tested_tree": null,
+              "aggregate_only_no_additional_test_cases": true,
+              "checkout_proofs": [],
+              "job_id": 128957722404,
+              "role": "windows-shard-aggregation"
+            },
+            {
+              "actual_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+              "actual_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+              "actual_tested_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+              "actual_tested_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+              "aggregate_only_no_additional_test_cases": false,
+              "checkout_proofs": [
+                {
+                  "command_line": 215,
+                  "sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "sha_line": 216
+                }
+              ],
+              "job_id": 128953043702,
+              "role": "macos-intel-bazel"
+            },
+            {
+              "actual_checkout_sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+              "actual_checkout_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+              "actual_tested_sha": null,
+              "actual_tested_tree": null,
+              "aggregate_only_no_additional_test_cases": true,
+              "checkout_proofs": [
+                {
+                  "command_line": 126,
+                  "sha": "8828133f2566b7e537cac0bad58c84eb5b0168bb",
+                  "sha_line": 127
+                }
+              ],
+              "job_id": 128961511532,
+              "role": "required-ci-aggregation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "bytes": 7408,
+      "path": "ci-bf42-current-snapshot-003/SUMMARY.json",
+      "sha256": "e6ca91aed884d39101751837c9730664f724c3273dc3be88aa1a5180c165fcc4",
+      "equals": [
+        {
+          "path": [
+            "observed_until"
+          ],
+          "value": "2026-11-09T03:30:34.867406+00:00"
+        },
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "runs"
+          ],
+          "value": [
+            {
+              "id": 42553073435,
+              "name": "Hepta Windows private-state native (security qualification only)",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073516,
+              "name": "v8-canary",
+              "status": "in_progress",
+              "conclusion": null,
+              "nonpassing_jobs": [
+                {
+                  "id": 128953446680,
+                  "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "started_at": "2026-11-09T02:52:55Z",
+                  "completed_at": null,
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073516/job/128953446680"
+                },
+                {
+                  "id": 128953446740,
+                  "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "started_at": "2026-11-09T02:53:05Z",
+                  "completed_at": null,
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073516/job/128953446740"
+                }
+              ]
+            },
+            {
+              "id": 42553073264,
+              "name": "Hepta HCSN training bridge",
+              "status": "completed",
+              "conclusion": "skipped",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073130,
+              "name": "App-server schema refresh",
+              "status": "completed",
+              "conclusion": "skipped",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073141,
+              "name": "Production HOS2 owner proposal",
+              "status": "completed",
+              "conclusion": "skipped",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073121,
+              "name": "Hepta Cell research stage evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073234,
+              "name": "Windows original CI regressions (declared scope only)",
+              "status": "in_progress",
+              "conclusion": null,
+              "nonpassing_jobs": [
+                {
+                  "id": 128952720859,
+                  "name": "original-regressions",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "started_at": "2026-11-09T02:50:38Z",
+                  "completed_at": null,
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073234/job/128952720859"
+                }
+              ]
+            },
+            {
+              "id": 42553073195,
+              "name": "Hepta PRED-1 CPU checks",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073191,
+              "name": "Hepta MEM-1 evidence verifier",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073280,
+              "name": "Hepta EVOLVE-1 CPU contracts",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073159,
+              "name": "Hepta VERIFY-1 engineering validation",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073323,
+              "name": "Keyring synchronous backend lock proposal",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073131,
+              "name": "Bazel stable lock proposal",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073250,
+              "name": "Rust UI product foundation",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553073160,
+              "name": "blocking-ci",
+              "status": "completed",
+              "conclusion": "failure",
+              "nonpassing_jobs": [
+                {
+                  "id": 128953043649,
+                  "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:51:34Z",
+                  "completed_at": "2026-11-09T03:05:52Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043649"
+                },
+                {
+                  "id": 128953043675,
+                  "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:52:24Z",
+                  "completed_at": "2026-11-09T03:09:09Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043675"
+                },
+                {
+                  "id": 128953043702,
+                  "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:52:13Z",
+                  "completed_at": "2026-11-09T03:21:17Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043702"
+                },
+                {
+                  "id": 128953043792,
+                  "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T02:52:25Z",
+                  "completed_at": "2026-11-09T03:06:54Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128953043792"
+                },
+                {
+                  "id": 128957722404,
+                  "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T03:08:57Z",
+                  "completed_at": "2026-11-09T03:09:00Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128957722404"
+                },
+                {
+                  "id": 128961511532,
+                  "name": "CI required",
+                  "status": "completed",
+                  "conclusion": "failure",
+                  "started_at": "2026-11-09T03:25:12Z",
+                  "completed_at": "2026-11-09T03:25:24Z",
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553073160/job/128961511532"
+                }
+              ]
+            },
+            {
+              "id": 42553073125,
+              "name": "Hepta architecture convergence",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553066841,
+              "name": "Hepta Cell research stage evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "nonpassing_jobs": []
+            },
+            {
+              "id": 42553066862,
+              "name": "Hepta Cell framework native validation",
+              "status": "in_progress",
+              "conclusion": null,
+              "nonpassing_jobs": [
+                {
+                  "id": 128952701454,
+                  "name": "Cell framework (agentd-composition)",
+                  "status": "in_progress",
+                  "conclusion": null,
+                  "started_at": "2026-11-09T02:50:44Z",
+                  "completed_at": null,
+                  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42553066862/job/128952701454"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "path": [
+            "scientific_advancement_claimed"
+          ],
+          "value": false
+        }
+      ]
+    },
+    {
+      "bytes": 11869,
+      "path": "ci-bf42-original-failure-findings-004c-v1.json",
+      "sha256": "46f14e6bfea5dcc34d0e532f28ad2091e4dd41e201e46fa78640a99e86f91039",
+      "equals": [
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "source_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "actual_native_checkout_sha"
+          ],
+          "value": "8828133f2566b7e537cac0bad58c84eb5b0168bb"
+        },
+        {
+          "path": [
+            "actual_native_checkout_tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "final_target_counts"
+          ],
+          "value": {
+            "128953043649": {
+              "failed": 3,
+              "timeout": 0,
+              "flaky": 0
+            },
+            "128953043675": {
+              "failed": 3,
+              "timeout": 0,
+              "flaky": 0
+            },
+            "128953043792": {
+              "failed": 2,
+              "timeout": 0,
+              "flaky": 0
+            },
+            "128953043702": {
+              "failed": 5,
+              "timeout": 2,
+              "flaky": 0
+            },
+            "128957722404": {
+              "aggregation_only": true,
+              "additional_cases": 0
+            },
+            "128961511532": {
+              "aggregation_only": true,
+              "additional_cases": 0
+            }
+          }
+        },
+        {
+          "path": [
+            "accounting"
+          ],
+          "value": {
+            "target_counts_are_not_rust_case_counts": true,
+            "repeated_final_failure_log_display_is_not_a_retry": true,
+            "windows_appserver": "Final target reports FAILED in 6 out of 20. Raw failed attempt paths show shards 2 and 11 of 16 each failing attempt_1, attempt_2 and final test.log. These are six failed invocations, not six distinct Rust tests. The target remains FAILED.",
+            "windows_core": "Final target reports FAILED in 16 out of 27. Raw failed paths show shards 1,4,6,7,13 each failing attempt_1, attempt_2 and final test.log, and shard16 failing attempt_1. The later absence of a shard16 final failure is not counted as a separate final FLAKY target. All original paths and the final target result are retained; no zero-retry claim is made.",
+            "macos": "Each nonpassing unsharded target has one observed FAIL or TIMEOUT marker. No additional retry is inferred from duplicated final diagnostic display. The raw data does not supply a complete per-case XML ledger for all passing targets.",
+            "rust_failed_names": "The parser lists distinct failed Rust names only to locate diagnostics. They are not presented as complete final run counts, and names from failed attempts are not added to target counts. TIMEOUT targets can have unfinished cases without individual FAILED outcomes."
+          }
+        },
+        {
+          "path": [
+            "observation_only"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "tests_run_by_analysis"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "source_modified"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "scientific_qualification_performed"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_repository_ci_green"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "full_history_cost"
+          ],
+          "value": null
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": "analyze-ci-bf42-originals-004c-v2-console.log",
+      "bytes": 3686,
+      "sha256": "bbb6ce08b6ac6202151852696887a5ea1194dbf8a93ad81d7ff036c42fc8355f"
+    },
+    {
+      "path": "analyze-ci-bf42-originals-004c-v2.py",
+      "bytes": 10160,
+      "sha256": "3b51e3bab9b0a033a83fe709a8cce192c18982b29b31cf0a82c832ab1085c194"
+    },
+    {
+      "path": "capture-bf42-ci-snapshot-v1.py",
+      "bytes": 4801,
+      "sha256": "e3b4ef8dea646b7c2386b556c9e6cebfd29a87d5a1dcd5f35d7893e0d63015a4"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/ADMISSION.json",
+      "bytes": 1736,
+      "sha256": "bc68d5f3b00e1007742dbfb5c1dc442f87c48c964c2dc11b9d3b531a42236d9f"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/RESULT.json",
+      "bytes": 16890,
+      "sha256": "030d6f7a02831b624f067a14e7f58e2be78467e4f04e0d2b5ba11a26d01d7579"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/driver.py",
+      "bytes": 6844,
+      "sha256": "6f18dfac2544ea46b5c391296eae55e393bd46f6c693b05385d2c5843ba5477b"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043649/DOWNLOAD.json",
+      "bytes": 1145,
+      "sha256": "176ff636dbdda65b3226d95d57fb9dc1c25f9a76dd68c12373ef76a6480683e8"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043649/EXTRACTED.json",
+      "bytes": 39270,
+      "sha256": "a493c8bd45253598bfeb180a243a5eaa7639152452e7118b9af8b299e7ba45d6"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043649/download.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043649/job.json",
+      "bytes": 3927,
+      "sha256": "002eb48702b34decf1829428b166fe6d0f33af66ffc7d70b1dcc75e95a298538"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043649/raw.log",
+      "bytes": 765250,
+      "sha256": "cade333c76326443cb50201e89af835062bd5b17394c9835e6ba69db8a54e680"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043675/DOWNLOAD.json",
+      "bytes": 1129,
+      "sha256": "0a553124609ae0221246ee4348501ac53f70d7f419d614986599141c182de349"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043675/EXTRACTED.json",
+      "bytes": 9981,
+      "sha256": "7d925bc87a9b9bf6b9cf0ce0ee3d8a6de1da4d8067458ea667d23b7d43b8611d"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043675/download.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043675/job.json",
+      "bytes": 4150,
+      "sha256": "413164241e9d84b4de1995d9404c145a3a23093afbe6ab6eff026317d048d016"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043675/raw.log",
+      "bytes": 970313,
+      "sha256": "a7aa95a99551cf960733913ce7772d014d25b4b09f5b80937f4a99937460ba34"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043792/DOWNLOAD.json",
+      "bytes": 1146,
+      "sha256": "50baa7aa62ff9c6015e0f2589d4cdd3f3fc51cb5ea05dcf714953a016954f549"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043792/EXTRACTED.json",
+      "bytes": 54217,
+      "sha256": "9281b44b54dcd6bf3e58e393de561a45e34c9171e61d9470ee6f8bb81593bd67"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043792/download.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043792/job.json",
+      "bytes": 3927,
+      "sha256": "e2c22777a349c83a6e6450913a3718101a239c6f5aa6a9b1a9d8690859bb9242"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128953043792/raw.log",
+      "bytes": 1805060,
+      "sha256": "67a91f8367011c2dca642031d5398bcb3937681060465589a02a916ec9c705e2"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128957722404/DOWNLOAD.json",
+      "bytes": 1159,
+      "sha256": "9cb9df1b5310880a8f8e3a1136abe904cca606f6fea4e848830966656ecb245e"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128957722404/EXTRACTED.json",
+      "bytes": 1744,
+      "sha256": "205dcf60b8323da03aa4b1590c95481fdc5e7bb2dd756d47d14953522b7f8ec2"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128957722404/download.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128957722404/job.json",
+      "bytes": 1812,
+      "sha256": "8b352c58d2c45fdc6a13e6f514dbd64c834c8401aa7fdc68eeee997c3f4e7bbe"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/job-128957722404/raw.log",
+      "bytes": 2640,
+      "sha256": "031cb6bcc947e31a271a176116bb525c9297ebb561f42defc8cf32322d59f2b3"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/snapshot-api/42553073160-jobs.json",
+      "bytes": 98058,
+      "sha256": "fbe9cb72f40387472cf4346d85233d816b33d2208b6db13662760499e852f7b5"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/snapshot-api/SUMMARY.json",
+      "bytes": 7771,
+      "sha256": "ffd48ce34f06f8ae335df987f258b8d1352345ee1d54fae7df91e922d12b53df"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/snapshot-api/common-before.json",
+      "bytes": 479,
+      "sha256": "f9d6565f47df413db87e9f0654e354b980101ae517833df2fac75eb14727e1a1"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/snapshot-api/runs.json",
+      "bytes": 269922,
+      "sha256": "09d3be34f6af624d384168b2dc26b38142d1c32be4bd35997e135febbf090ed6"
+    },
+    {
+      "path": "ci-bf42-completed-failures-002-v1/snapshot-api/source-commit.json",
+      "bytes": 1263,
+      "sha256": "b5bfb92ffeebeb9c593342023a61ce96a648fef131d3323df890d0aeb4c250bf"
+    },
+    {
+      "path": "ci-bf42-completed-failures-003-additions-v1/RESULT.json",
+      "bytes": 1366,
+      "sha256": "2a6dcc0bc39ac25b39f6dbd4d761693fc6cd47966d64f5975d86e7e51488d293"
+    },
+    {
+      "path": "ci-bf42-completed-failures-003-additions-v1/job-128953043702/DOWNLOAD.json",
+      "bytes": 528,
+      "sha256": "967143e4bbce9edda80dcd9393a16ac5407d73e6601d143128773e7bca62a4c7"
+    },
+    {
+      "path": "ci-bf42-completed-failures-003-additions-v1/job-128953043702/job.json",
+      "bytes": 4161,
+      "sha256": "0901b23bcd3586fc35ca4137b6d740a7e70daba37abeb588be0d5379fc6702fa"
+    },
+    {
+      "path": "ci-bf42-completed-failures-003-additions-v1/job-128953043702/raw.log",
+      "bytes": 1140457,
+      "sha256": "aa0596209826e0f19332f87b19778deb04ba4438a9e2f052c488ab2acde26041"
+    },
+    {
+      "path": "ci-bf42-completed-failures-003-additions-v1/job-128953043702/raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-completed-failures-003-additions-v1/job-128961511532/DOWNLOAD.json",
+      "bytes": 526,
+      "sha256": "d5eb259b406939ed8c1f45c0e026eccfe4367e6bc8dcc47d48a6831f83104ce8"
+    },
+    {
+      "path": "ci-bf42-completed-failures-003-additions-v1/job-128961511532/job.json",
+      "bytes": 2287,
+      "sha256": "1ea6a070add89233abe2e4a0232e7da50acc0272149e8e3c656fb6807ba88516"
+    },
+    {
+      "path": "ci-bf42-completed-failures-003-additions-v1/job-128961511532/raw.log",
+      "bytes": 18410,
+      "sha256": "8fa8c9baf9701f76b71dee67d12f407d3102467272db981859ff50bc02eb7c63"
+    },
+    {
+      "path": "ci-bf42-completed-failures-003-additions-v1/job-128961511532/raw.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553066841-jobs.json",
+      "bytes": 2319,
+      "sha256": "727bd2c04d9103696932b1c6b71edb67c6e5160e019311e96808b593fac3245f"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553066841-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "8c8c7530fc183a43251c0b8e889b08eef47353b13dd378af161cd859e517c10a"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553066841-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553066862-jobs.json",
+      "bytes": 13891,
+      "sha256": "d17f038e38bd138a0c849abe1d702766b1e6b6d4bdd55955fa8940ce6c16eed9"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553066862-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "c0de15304e1443175415b69adc505d061ef03cf89108c34927ca1e1a11d5cd76"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553066862-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073121-jobs.json",
+      "bytes": 2319,
+      "sha256": "c4024fdd717c37fa737233bc75bfd1d6f266c05481f4ca5e971aebf353071569"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073121-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "bb32f3fc0c7b85de822aedf28ef974ae0c14bb29302fa69ab96adc6e98c008b9"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073121-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073125-jobs.json",
+      "bytes": 12649,
+      "sha256": "60166394fe7b1338a58ad73b144c14c29052da3c19b64d16d575193c8749356c"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073125-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "09d4f6c98eddaa551769dacccc6011a487b85c95c689260f774b987978cdd625"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073125-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073130-jobs.json",
+      "bytes": 1037,
+      "sha256": "57e8ed51bec44fc27490ca373dbfe79635a867bf5f2312a2b5b585643decee6b"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073130-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "5a49b35514d85e1d545c6be6e94460953b8ddcb8a7357b39febfa4a6c9bd9750"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073130-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073131-jobs.json",
+      "bytes": 2645,
+      "sha256": "4858ae1cf6c4e4f808b7f7003cc34767c14abef151ccf332e27d1aa8409ee8fd"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073131-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "a00336c46e5abd606aa6c47772d4c55d6b4cb99e946ef4ff4416c893acad9bef"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073131-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073141-jobs.json",
+      "bytes": 1009,
+      "sha256": "3f7766aa6adf37ddb7d3a622498585d9e07aec567f1d7258dbcaddef4d1eae12"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073141-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "a2572c5ca478d0b22c02680655c87eff5c27454b9f4af64aeadbf083788bafb2"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073141-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073159-jobs.json",
+      "bytes": 8730,
+      "sha256": "71baec31d2c61e19162c2da59b44ca7ce190f885e7886f94748ae6ea252c0030"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073159-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "935a8644f994f82bd43a2d992f30846c39f62697a2aea1d95db0347aec084731"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073159-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073160-jobs.json",
+      "bytes": 98058,
+      "sha256": "fbe9cb72f40387472cf4346d85233d816b33d2208b6db13662760499e852f7b5"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073160-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "67fa0339655101c9819212d032002a4314193608d34dede371d105805f438353"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073160-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073191-jobs.json",
+      "bytes": 2491,
+      "sha256": "71923a4fa0b73bd227401f56a146ef2a1dc50520b68d104e708496394ea87145"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073191-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "1903855bb00eb7dd9bd392cccc9d11001d2c9eab725423b632a18d5aa5409fd8"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073191-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073195-jobs.json",
+      "bytes": 7565,
+      "sha256": "866afd8f3341bac3b6135931c58f07877df268bf26f00abf629a9ebdad02d0e0"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073195-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "75f72a0bb48edbfe619ff4761fd22f1a6cf58f5108fa1545ce9c58677b814c47"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073195-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073234-jobs.json",
+      "bytes": 2550,
+      "sha256": "07b47f92f8d6e9c8c5828da802c26de9660c591d68c2a1c916448e9b7ada5a74"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073234-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "e0bdb5cc9af2d8d5366c397e54a5b8d0738eff74974cadddd079066108b1adf6"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073234-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073250-jobs.json",
+      "bytes": 28683,
+      "sha256": "ce50d011b69e3ed61597ca139e7b9522f9769b1a3f3f08829c939da5fd1c6143"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073250-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "5532d10520d08799b8b521cf51c8cac9b17188fbc341e6add4fbfc8fd6f28681"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073250-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073264-jobs.json",
+      "bytes": 1989,
+      "sha256": "aad3b8a32b9ec709de50bd2895c2c2183087b8e570f5f84b45a892b66b8c9a27"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073264-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "14e46bd72901cd9f3b12427fae516b177716e3ee627acd78189ba0c64c80c989"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073264-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073280-jobs.json",
+      "bytes": 3540,
+      "sha256": "b024b16a1ea149b75869ef04b3376dfa23909672856301e922224304cd0928fe"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073280-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "3c010dbdc9adcc2f52803059b664670bfac8583f3a509403989805b2290a69f2"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073280-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073323-jobs.json",
+      "bytes": 2626,
+      "sha256": "3999da39cb17030e3210d3f9d54cc3039b499e92c85b4e0614721e301711b888"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073323-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "841461672fe97f5fede9172187020f113acfe34cd13f70301dd00c2e3c5efc62"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073323-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073435-jobs.json",
+      "bytes": 3985,
+      "sha256": "141ec54229fdce31e78cb8b20ea19b949a2d1cce78b2f4d200632770566025b2"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073435-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "3c2281d45d16c0424ba283f11fdbc4475ff58dc084393d267ead621c33642c3e"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073435-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073516-jobs.json",
+      "bytes": 54209,
+      "sha256": "9da9206ce529789a1e74e37ec5b6034c677d8557d00be3d24ebd2b91d65fd9cb"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073516-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "1f7c1dc51d07044bef48461a1caccfe65294abf7ed79b2e9b30478a6aa26c8c5"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/42553073516-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/FILES.json",
+      "bytes": 10118,
+      "sha256": "4c241d78cafe2b2351da7e06c331e47dc67a3429cfe4f9e3651f821f5de4c018"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/RESULT.json",
+      "bytes": 40076,
+      "sha256": "20e65cbe6232b069aee8473a486df154c64f3cc824a86058f51f25285565f27d"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/SUMMARY.json",
+      "bytes": 7771,
+      "sha256": "ffd48ce34f06f8ae335df987f258b8d1352345ee1d54fae7df91e922d12b53df"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/common-after.json",
+      "bytes": 479,
+      "sha256": "f9d6565f47df413db87e9f0654e354b980101ae517833df2fac75eb14727e1a1"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/common-after.receipt.json",
+      "bytes": 582,
+      "sha256": "359d562dc9b3c1e2d1216310b10dd400e033039c462d47ac9464284747718545"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/common-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/common-before.json",
+      "bytes": 479,
+      "sha256": "f9d6565f47df413db87e9f0654e354b980101ae517833df2fac75eb14727e1a1"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/common-before.receipt.json",
+      "bytes": 583,
+      "sha256": "acca07ff155c4d2ee239a5ab03a569595f0d05e32dd2770d15a5626e03c45180"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/common-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/driver.py",
+      "bytes": 4801,
+      "sha256": "e3b4ef8dea646b7c2386b556c9e6cebfd29a87d5a1dcd5f35d7893e0d63015a4"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/runs.json",
+      "bytes": 269922,
+      "sha256": "09d3be34f6af624d384168b2dc26b38142d1c32be4bd35997e135febbf090ed6"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/runs.receipt.json",
+      "bytes": 613,
+      "sha256": "b69151f35a2900c1c0a6a9ec26d92e3445ef03bfc1bbca39691d2c34a0100403"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/runs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/source-commit.json",
+      "bytes": 1263,
+      "sha256": "b5bfb92ffeebeb9c593342023a61ce96a648fef131d3323df890d0aeb4c250bf"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/source-commit.receipt.json",
+      "bytes": 588,
+      "sha256": "b3253214af901a0f528632a57ce7a90bce5ff614daf78867f23c5356c564eea1"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-002/source-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553066841-jobs.json",
+      "bytes": 2319,
+      "sha256": "727bd2c04d9103696932b1c6b71edb67c6e5160e019311e96808b593fac3245f"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553066841-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "7ae3b853d6c5cc679178a294e5a95ba7fece2b7aa425f2ed797d4a2ed66ee14a"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553066841-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553066862-jobs.json",
+      "bytes": 13891,
+      "sha256": "d17f038e38bd138a0c849abe1d702766b1e6b6d4bdd55955fa8940ce6c16eed9"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553066862-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "ca97f04cc32580785106d191391f1b1a0cfb044fe9a1cc9711f0fac6962bc3b5"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553066862-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073121-jobs.json",
+      "bytes": 2319,
+      "sha256": "c4024fdd717c37fa737233bc75bfd1d6f266c05481f4ca5e971aebf353071569"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073121-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "dd87659b03b1a65f6353303b7a936e39c6274073b34c49340d8e56a8c64eaef8"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073121-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073125-jobs.json",
+      "bytes": 14608,
+      "sha256": "8102d82edc8c314fcec988abfc977afd0e1564ed7dc2344049c1151b9235a888"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073125-jobs.receipt.json",
+      "bytes": 593,
+      "sha256": "5b9e6932d29a934d4683918fced215b952f39567763fd52735fe9e7d526e196d"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073125-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073130-jobs.json",
+      "bytes": 1037,
+      "sha256": "57e8ed51bec44fc27490ca373dbfe79635a867bf5f2312a2b5b585643decee6b"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073130-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "cce2769bc2762230d85faabf5d2d03390bd48967a5bab2d7319860e9585e5d19"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073130-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073131-jobs.json",
+      "bytes": 2645,
+      "sha256": "4858ae1cf6c4e4f808b7f7003cc34767c14abef151ccf332e27d1aa8409ee8fd"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073131-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "8177fb7226a539f57eff15f66a41e60d2bcecd5755eeb7a6dea81d4ff4f80515"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073131-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073141-jobs.json",
+      "bytes": 1009,
+      "sha256": "3f7766aa6adf37ddb7d3a622498585d9e07aec567f1d7258dbcaddef4d1eae12"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073141-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "6f55a69a9892170185a501c84b501bee83846b4f95aa8f0042083269e2a31566"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073141-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073159-jobs.json",
+      "bytes": 8730,
+      "sha256": "71baec31d2c61e19162c2da59b44ca7ce190f885e7886f94748ae6ea252c0030"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073159-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "3fee7648d4c2262ef92ac8e597dcb66ffcbc78c7a836036eedd3b89de1d5623f"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073159-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073160-jobs.json",
+      "bytes": 100362,
+      "sha256": "3b9851f10af61d37cc805b13bba1e66a30bb92772852e3754c78222276a2c795"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073160-jobs.receipt.json",
+      "bytes": 594,
+      "sha256": "05faf3aefc16f4a97256a1fbbc658fab99c0e5f59f2bf2d75d45fb74f110411a"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073160-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073191-jobs.json",
+      "bytes": 2491,
+      "sha256": "71923a4fa0b73bd227401f56a146ef2a1dc50520b68d104e708496394ea87145"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073191-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "374747cbb413dd92d4b09e4317b7d30c517059eb162098e37533643b4d5be441"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073191-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073195-jobs.json",
+      "bytes": 7565,
+      "sha256": "866afd8f3341bac3b6135931c58f07877df268bf26f00abf629a9ebdad02d0e0"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073195-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "c6e2d6ce14cddc8dff36d49a36cf816aec826e3a4e5b628e4efc592f2de1da81"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073195-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073234-jobs.json",
+      "bytes": 2550,
+      "sha256": "07b47f92f8d6e9c8c5828da802c26de9660c591d68c2a1c916448e9b7ada5a74"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073234-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "49d61d6ef1884f45fb132257d17bfd6bb5d7c32af34c3954a015a329fff9f91e"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073234-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073250-jobs.json",
+      "bytes": 29782,
+      "sha256": "828cdf4512e73ad5e58c09318c86af13b6dc199d80a52449c1c04d0f15071eba"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073250-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "aeebfbc6e2cbd9087865e6bbebf0e8c2fa18abe98f25918f0966d6ea81c18982"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073250-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073264-jobs.json",
+      "bytes": 1989,
+      "sha256": "aad3b8a32b9ec709de50bd2895c2c2183087b8e570f5f84b45a892b66b8c9a27"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073264-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "0461aefc7d19720a2be8e6492572ba0d6d13b7269effe371a2a232b14e0b301f"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073264-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073280-jobs.json",
+      "bytes": 3540,
+      "sha256": "b024b16a1ea149b75869ef04b3376dfa23909672856301e922224304cd0928fe"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073280-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "540cc35cf06242a87e1cb64d67d78ab9e12343c790131637071f8f961f085e58"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073280-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073323-jobs.json",
+      "bytes": 2626,
+      "sha256": "3999da39cb17030e3210d3f9d54cc3039b499e92c85b4e0614721e301711b888"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073323-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "42aa53a35450ae70e7b9464aed70d2d7a9a9bcc8287e7b68f1443703a55259b4"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073323-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073435-jobs.json",
+      "bytes": 3985,
+      "sha256": "141ec54229fdce31e78cb8b20ea19b949a2d1cce78b2f4d200632770566025b2"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073435-jobs.receipt.json",
+      "bytes": 591,
+      "sha256": "bb381a5f3f58da14ce0083fe0d7feb0ef3794a049a038b65df45d7a57dc5027f"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073435-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073516-jobs.json",
+      "bytes": 54209,
+      "sha256": "9da9206ce529789a1e74e37ec5b6034c677d8557d00be3d24ebd2b91d65fd9cb"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073516-jobs.receipt.json",
+      "bytes": 592,
+      "sha256": "9b3cb472d1bcfa66fcbdac21c1df87aa1bbdc8d1eeb8c39217a93c777a23d25e"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/42553073516-jobs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/FILES.json",
+      "bytes": 10119,
+      "sha256": "be576983c4d93e377f6ccbb974827290ebbdfb1b01dc17570d210b24999efaa6"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/RESULT.json",
+      "bytes": 40908,
+      "sha256": "81f6d9dcab77feb55cb200173deb7ef4974b853d4c103572d38e464a6417eb60"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/SUMMARY.json",
+      "bytes": 7408,
+      "sha256": "e6ca91aed884d39101751837c9730664f724c3273dc3be88aa1a5180c165fcc4"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/common-after.json",
+      "bytes": 479,
+      "sha256": "f9d6565f47df413db87e9f0654e354b980101ae517833df2fac75eb14727e1a1"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/common-after.receipt.json",
+      "bytes": 582,
+      "sha256": "80b34bb5938b4da21733a17e9de3281ece4576998f240d59caf1a81d95c39a17"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/common-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/common-before.json",
+      "bytes": 479,
+      "sha256": "f9d6565f47df413db87e9f0654e354b980101ae517833df2fac75eb14727e1a1"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/common-before.receipt.json",
+      "bytes": 582,
+      "sha256": "6e2fffe8e33b09a19f045f961fcb5540d44128cadee249006e8efb521fa0ea77"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/common-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/driver.py",
+      "bytes": 4801,
+      "sha256": "e3b4ef8dea646b7c2386b556c9e6cebfd29a87d5a1dcd5f35d7893e0d63015a4"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/runs.json",
+      "bytes": 269931,
+      "sha256": "973e62a3db698db605b101525abad28c0f3760dd80272959a87fb6853466a35a"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/runs.receipt.json",
+      "bytes": 612,
+      "sha256": "e7feca8bef22372b58f45276a88b724f66273d6e9c9f9a1fb480fa8988a8de02"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/runs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/source-commit.json",
+      "bytes": 1263,
+      "sha256": "b5bfb92ffeebeb9c593342023a61ce96a648fef131d3323df890d0aeb4c250bf"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/source-commit.receipt.json",
+      "bytes": 588,
+      "sha256": "0925c966e70df77bfc9df6e02eada81d6ca0124e245149a82035fbe51ba0d9ca"
+    },
+    {
+      "path": "ci-bf42-current-snapshot-003/source-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/EXTRACTION_INDEX.json",
+      "bytes": 107123,
+      "sha256": "ae06c649af12b38a613f8b0acfcd889d42017460d1e79d0db5e3643036ee64cc"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/SOURCE_FILES.json",
+      "bytes": 2038,
+      "sha256": "e0b4b05842ceede7b7b3d8e275cbc3668aacb7422cbb656820318f4d9f7e89d3"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/TurnCompleteEvent-search.stdout",
+      "bytes": 5607,
+      "sha256": "8bfc2b1c970632bfda6cd500378ca7d186e7651bc3f275c6a4bc678df42c13f0"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/apply_bespoke_event_handling-search.stdout",
+      "bytes": 1018,
+      "sha256": "4a74fe10911f5dc95f91d95d761e5ce4ad6d37a4b8093d1b0bd3c5c59d0e1e29"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/ci-windows-search.stdout",
+      "bytes": 2010,
+      "sha256": "5ed2176defcdb27b0c9c4c3f87bc4b1e7dcee5d2062299b40a65aff273fb087e"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/core-emitter-search.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/core-emitter-search.stdout",
+      "bytes": 5129,
+      "sha256": "b1948e90fd4670e67bf3b449615e69b0b02502f554de1a3741e3469fc339cf87"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/event-order-search.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/event-order-search.stdout",
+      "bytes": 7494,
+      "sha256": "a0db287d737c765d2b29cbd6243c7fe28339263834a907fd29c66033dca974c0"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/job-128953043649-error-blocks.json",
+      "bytes": 207367,
+      "sha256": "33bb01ab71da50e7e427e481cabf16b0dd05f124800243ed8684cab6ba49a0b9"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/job-128953043649-extraction.json",
+      "bytes": 19080,
+      "sha256": "8fa1eedff049ae8673b0c825e05bb9d0fd295fae25d4aad379a6b3fb83861621"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/job-128953043649-final-console.txt",
+      "bytes": 102780,
+      "sha256": "1f1b79611c8a18c8429542c29b1359620e9b4103f9848a993720392c8b4cf45a"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/job-128953043675-error-blocks.json",
+      "bytes": 2051,
+      "sha256": "6840547e0ca98d58d0b3022ec5c8e8da7e6d049cbfd141f7b441271d9c053838"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/job-128953043675-extraction.json",
+      "bytes": 60624,
+      "sha256": "05f7ab05e5bf4fa9844ec0acffbcd7a6068a4c1380b961b70bd6c2e965dc945a"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/job-128953043702-error-blocks.json",
+      "bytes": 9621,
+      "sha256": "1e7f269c66db7129b7896016dc8006d01d686768c0c941ea388eead5090236e1"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/job-128953043702-extraction.json",
+      "bytes": 61615,
+      "sha256": "d82daf4cd650144cd462c0bd3389ff3e51f393da4e7fa129980eb9c283f789a0"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/job-128953043792-error-blocks.json",
+      "bytes": 1276903,
+      "sha256": "95ec1012b704b77344da46471c486cc6e05472ec13b3fe9bf5579b26972a9861"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/job-128953043792-extraction.json",
+      "bytes": 21171,
+      "sha256": "62351b0ec2b439842d4cde43081d1a499dbf076b795639512465a1473ae39f39"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/job-128953043792-final-console.txt",
+      "bytes": 63907,
+      "sha256": "53aac8d0926f8cda7a00a1214f7f4b659bbb29f4a44d689e9a491d2c8134c559"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/job-128957722404-error-blocks.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/job-128957722404-extraction.json",
+      "bytes": 535,
+      "sha256": "baa1c956cda4e3441272050b4badfa3a87e830c7de795d11fad54b9d0b569a34"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/mac-failure-source-search.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/mac-failure-source-search.stdout",
+      "bytes": 487,
+      "sha256": "e736c12ea74b0e9bef1b9c7e92676d38d3315628152301899bbb945f331dfd7e"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/merge-commit.json",
+      "bytes": 2798,
+      "sha256": "a34d2622d40681fa5a4d3a107b7a343fb1edf42d66f194f092f263e8381c0b62"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/merge-commit.meta.json",
+      "bytes": 366,
+      "sha256": "e252a91b18a021bb66330f0f4fc6d2a44671b792278b19d8e801ee4021485dd0"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/merge-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/source/.bazelrc",
+      "bytes": 14071,
+      "sha256": "1fb435555b4cb0b73f010ddc2fe83aca930d3881389cf86cb8215504a6284397"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/source/codex-rs/app-server/src/bespoke_event_handling.rs",
+      "bytes": 162684,
+      "sha256": "ee3e710cb1d423fe41e9640ad107734ec216ef4f86f941a0718147a46f83b1fb"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/source/codex-rs/cli/src/doctor.rs",
+      "bytes": 152583,
+      "sha256": "b1f4b54e7a2f31482924d9351939049d02c5a21942ac044922d3b9d05142ff15"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/source/codex-rs/core/src/session/mod.rs",
+      "bytes": 215824,
+      "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/source/codex-rs/exec-server/tests/common/relay.rs",
+      "bytes": 9207,
+      "sha256": "59c5523ecd0fb7646ad8690044568d27962e2b5d80ccd88ddc22731fada9ff57"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/source/codex-rs/exec-server/tests/forward.rs",
+      "bytes": 4887,
+      "sha256": "939a466e682078bc372b9052124c43b6ba9d75481438d7aa59a3b6bc899d1dda"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/source/codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "bytes": 31622,
+      "sha256": "58abfbe87776886fceb04f17f5ed8c8c1e741d6cb45d4bf0991cbd2e4353f231"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/source/codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs",
+      "bytes": 6662,
+      "sha256": "f0e947d17e09c8579e218379001712cdccc10abc6a1326c074eae8a031f22d65"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v1/source/codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+      "bytes": 11670,
+      "sha256": "369051af61cc5445465dd6ad36dd868fec26feac81ae392414f7d175e5f1b77c"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/ADDITIONAL_SOURCE_FILES.json",
+      "bytes": 675,
+      "sha256": "fdb295a11bc23f2d803009c6a64e44d44cfa86a6471554fe8f89e80492281f8b"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/ANALYSIS.json",
+      "bytes": 142549,
+      "sha256": "d7a93544ca38754e6c33ae89c064574dd18b1f8a41b4033df7497b9df8773ed1"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/SOURCE_BINDING.json",
+      "bytes": 4180,
+      "sha256": "51f5c7c217da0a3d4ad3195c981b06a8fa16b8959a97ead1ab5ed693c8751598"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/SOURCE_FILES.json",
+      "bytes": 3461,
+      "sha256": "a58f109a5429431d25245c42558ff44dc4dc062b7014a0dfb5c1631718b159c1"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/driver.py",
+      "bytes": 10160,
+      "sha256": "3b51e3bab9b0a033a83fe709a8cce192c18982b29b31cf0a82c832ab1085c194"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/job-128953043649.json",
+      "bytes": 40274,
+      "sha256": "08f71a4620150e3d5fea4b74e1bcf24dd9adee7ed2ba8704489d7ed19aa92a98"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/job-128953043675.json",
+      "bytes": 12618,
+      "sha256": "c77c1f4ded61c9fae9a2eb811560937a43ac4c887810785ae1c4a8f8e9425850"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/job-128953043702.json",
+      "bytes": 23700,
+      "sha256": "2ce8568c03b199f944201b4a601a88cb89c914ad716624656fcef11f0490cc1d"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/job-128953043792.json",
+      "bytes": 47116,
+      "sha256": "ce19bea28e9bc1be9a5e504e79efbd96f912daa3f0a11318879a2ea66803789f"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/job-128957722404.json",
+      "bytes": 1864,
+      "sha256": "8517f5ef2587ae38f27fdc85a1a2e69c3ae76fe375e8d9f800dfd2de329d88a1"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/job-128961511532.json",
+      "bytes": 1921,
+      "sha256": "c13470971aa27ad2ba29833cd0a89b3797b62b9bb5ee2dad9ae0ac7ff6eab463"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/source-additional/codex-rs/app-server/BUILD.bazel",
+      "bytes": 1578,
+      "sha256": "a43e6c9e2b6b71b73e7c76494b3e3c85a1870c45fcf3915f549136f29e0ab702"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/source-additional/codex-rs/code-mode-host/tests/support/host.rs",
+      "bytes": 1651,
+      "sha256": "d6b8c4f852f0078f46b06d0623a450bdc331ffc0f4ca1733be763cccce3d0eef"
+    },
+    {
+      "path": "ci-bf42-failure-analysis-004c-v2/source-additional/codex-rs/windows-sandbox-rs/src/setup.rs",
+      "bytes": 83794,
+      "sha256": "1fa3bfafe7eb75d3ff009bc7ed741689ee9cf25595f7a5433538c325b1254b09"
+    },
+    {
+      "path": "PRELIMINARY_READER_LIMITATIONS.json",
+      "bytes": 981,
+      "sha256": "35fd62519ca37a16736261a564c899fea995a6b36da3a3807e1a9054fd1a9bd3"
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 2949,
+      "sha256": "d308ac7c84f18b2710cea6bdb72e9413cd24e496788fd0fd63b6d93fd6a6826d"
+    },
+    {
+      "path": "ci-bf42-original-failure-findings-004c-v1.json",
+      "bytes": 11869,
+      "sha256": "46f14e6bfea5dcc34d0e532f28ad2091e4dd41e201e46fa78640a99e86f91039"
+    },
+    {
+      "path": "collect-bf42-completed-failures002-v1.py",
+      "bytes": 6844,
+      "sha256": "6f18dfac2544ea46b5c391296eae55e393bd46f6c693b05385d2c5843ba5477b"
+    },
+    {
+      "path": "seal-ci-bf42-original-failures-004c-v1.py",
+      "bytes": 9565,
+      "sha256": "80487d6cf6ed423102ce9cf2b8473e01470a66006aef79810bd840868cd58728"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 81617,
+      "sha256": "daf1ac7aff36135e2473b504a0c98a7dc451cdc63dcd4bc45410677506125f14"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/bf42-original-full-ci-failure-snapshots002-003-v1/archive.part001",
+      "offset": 0,
+      "bytes": 490000,
+      "sha256": "757b4205c4b02740ed1d8f4468c706924b97cda248aaa6f6206c3aafab1bfc43"
+    },
+    {
+      "sequence": 2,
+      "path": "packets/bf42-original-full-ci-failure-snapshots002-003-v1/archive.part002",
+      "offset": 490000,
+      "bytes": 17152,
+      "sha256": "4007efd71c40c3968e91a539c409ed12cf911d5f6d1cd5db126023f5fc9d35db"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}

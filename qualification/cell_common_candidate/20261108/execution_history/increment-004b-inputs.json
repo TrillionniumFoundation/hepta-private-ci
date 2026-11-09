@@ -1,0 +1,1254 @@
+{
+  "schema": "hepta.evidence-increment-source-bound-inputs.v1",
+  "phase": "increment-004b",
+  "expected_evidence_head": "4628cc139cc8067b1fa42713aa80c32c819e4e48",
+  "expected_index_sha256": "a09be43f22b591e56472387e1f96cd6c276c5db0dc0a43ab4ddf437e95627bff",
+  "expected_common_source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "expected_common_source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "expected_prior_packet_count": 59,
+  "expected_final_packet_count": 65,
+  "scope": "The five naturally completed Windows owner-group original-artifact packets and their exact observer preparation/publication/aggregate history. Eleven actual selected executions: ten passed, one image-edit timeout. Additional five-job topology does not supersede either earlier single-job execution, qualify whole repository CI, or establish scientific acceptance.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "physical_cost": null,
+  "stages": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "current_common_validation": {
+    "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+    "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+    "formal_current_sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4",
+    "local_python": {
+      "packet_id": "bf42-python130-full-caller-originals-v1",
+      "independent_unit_cases_passed": 130,
+      "full_caller_passed": true,
+      "full_caller_elapsed_seconds": 380.6801889021881,
+      "full_caller_budget_seconds": 600,
+      "source_unchanged": true
+    },
+    "local_strict_preparation": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "prepared_clean",
+      "scope": "Same-source V8 and helper plus owning agentd qualification-cognitive-write just fix and read-only clippy; previous owners' unchanged-source preparations retain their own historical identities.",
+      "source_unchanged": true
+    },
+    "local_selected_native": {
+      "packet_id": "bf42-selected-linux-native38-and-preparation-history-v1",
+      "status": "PASS",
+      "selected_unique_cases_executed": 38,
+      "selected_unique_cases_passed": 38,
+      "selected_skips": 0,
+      "retries": 0,
+      "raw_nextest_leak_readback": "NO_NEXTEST_LEAK_OBSERVED",
+      "full_workspace": false,
+      "windows_execution": false,
+      "source_unchanged": true,
+      "filter_excluded_counts_not_added": true
+    },
+    "full_repository_ci": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "state": "pending_or_in_progress_at_publication_readback",
+      "conclusion": null,
+      "green": null,
+      "observation_cutoff": "2026-11-09T02:50:20.636321Z",
+      "registration_packet_id": "bf42-source-freeze-common-fastforward-and-publication-history-v3",
+      "initial_run_ids": {
+        "native": 42553066862,
+        "blocking": 42553073160,
+        "ui": 42553073250,
+        "windows": 42553073234
+      },
+      "completion_result_included": false
+    },
+    "independent_grouped_windows_result_included": true,
+    "ui_diagnostic_source_qualified_as_common": false,
+    "scientific_qualification_performed": false,
+    "full_history_cost": null,
+    "physical_cost": null,
+    "stage_advancement_claimed": false,
+    "independent_grouped_windows": {
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+      "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+      "run_id": 42550332155,
+      "terminal_status": "completed",
+      "terminal_conclusion": "failure",
+      "whole_selected_scope_passed": false,
+      "selected_executed": 11,
+      "selected_passed": 10,
+      "selected_failed": 1,
+      "selected_timeouts": 1,
+      "selected_skipped": 0,
+      "retry_records": 0,
+      "raw_leak_markers": 0,
+      "explicit_guard_skip_markers": 0,
+      "groups": [
+        {
+          "group": "matrix-startup-diagnostic",
+          "packet_id": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-matrix-sdk",
+              "name": "sdk::startup_deadline_tests::expired_finalization_rejects_success_without_erasing_a_written_session",
+              "time_seconds": "5.831",
+              "forbidden_nodes": []
+            }
+          ]
+        },
+        {
+          "group": "agentd-h7-qualification",
+          "packet_id": "windows-fixture-owner-agentd-h7-qualification-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+              "time_seconds": "2.480",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "agentd-fleet-default",
+          "packet_id": "windows-fixture-owner-agentd-fleet-default-bf42-v1",
+          "executed": 2,
+          "passed": 2,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+              "time_seconds": "2.339",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-hepta-agentd",
+              "name": "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+              "time_seconds": "0.820",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "cli-cloud",
+          "packet_id": "windows-fixture-owner-cli-cloud-bf42-v1",
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "selected_scope_passed": true,
+          "cases": [
+            {
+              "binary_id": "codex-cli::sandbox_cloud_config",
+              "name": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+              "time_seconds": "31.998",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        },
+        {
+          "group": "appserver-fixtures",
+          "packet_id": "windows-fixture-owner-appserver-fixtures-bf42-v1",
+          "executed": 6,
+          "passed": 5,
+          "failed": 1,
+          "selected_scope_passed": false,
+          "cases": [
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+              "time_seconds": "60.015",
+              "problems": [
+                {
+                  "kind": "failure",
+                  "attributes": {
+                    "type": "test timeout"
+                  }
+                }
+              ],
+              "xml_passed": false
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_1_inherits_parent_developer_instructions_without_an_override",
+              "time_seconds": "1.535",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_2_reapplies_configured_subagent_developer_instructions",
+              "time_seconds": "1.488",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_3_reapplies_updated_configured_role_settings_and_restores_paginated_usage",
+              "time_seconds": "1.856",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_4_reapplies_an_implicitly_selected_configured_default_role",
+              "time_seconds": "1.456",
+              "problems": [],
+              "xml_passed": true
+            },
+            {
+              "binary_id": "codex-app-server::all",
+              "name": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+              "time_seconds": "4.636",
+              "problems": [],
+              "xml_passed": true
+            }
+          ]
+        }
+      ],
+      "history_packet_id": "windows-fixture-owner-observer-history-bf42-v1",
+      "additional_topology": "five independent 65-minute owner jobs and an independent read-only aggregate",
+      "original_single_job_result_superseded": false,
+      "full_workspace_passed": false,
+      "full_history_cost": null,
+      "scientific_qualification_performed": false
+    }
+  },
+  "packets": [
+    {
+      "packet_id": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/matrix-startup-diagnostic/windows-fixture-owner-matrix-startup-diagnostic-bf42.tar.xz",
+      "bytes": 17967716,
+      "sha256": "4482994b3243513f0e324545cc12f6e5f22d172fab96f021740152f08bde6012",
+      "compression": "xz",
+      "file_member_count": 19,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+      "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+      "scope": "Original Windows matrix-startup-diagnostic owner job: 1 selected cases executed, 1 passed, 0 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "path": "SCOPE.json",
+          "bytes": 1358,
+          "sha256": "09b210a28a63ecf843a49d508878e7ab4305948dbfae86ac7d524942fb78600a",
+          "equals": [
+            {
+              "path": [
+                "packet_id"
+              ],
+              "value": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1"
+            },
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "observer_sha"
+              ],
+              "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+            },
+            {
+              "path": [
+                "observer_tree"
+              ],
+              "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+            },
+            {
+              "path": [
+                "run_id"
+              ],
+              "value": 42550332155
+            },
+            {
+              "path": [
+                "full_cost"
+              ],
+              "value": null
+            },
+            {
+              "path": [
+                "scientific_qualification_performed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "new_tests_run_by_packet_builder"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "group"
+              ],
+              "value": "matrix-startup-diagnostic"
+            },
+            {
+              "path": [
+                "selected_scope_passed"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "actual_cases"
+              ],
+              "value": [
+                {
+                  "binary_id": "codex-hepta-matrix-sdk",
+                  "name": "sdk::startup_deadline_tests::expired_finalization_rejects_success_without_erasing_a_written_session",
+                  "time_seconds": "5.831",
+                  "forbidden_nodes": []
+                }
+              ]
+            },
+            {
+              "path": [
+                "selected_count"
+              ],
+              "value": 1
+            },
+            {
+              "path": [
+                "filter_excluded_count"
+              ],
+              "value": 25
+            },
+            {
+              "path": [
+                "old_failed_or_cancelled_results_superseded"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "complete_eleven_case_scope_claimed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_workspace_passed"
+              ],
+              "value": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "windows-fixture-owner-agentd-h7-qualification-bf42-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/agentd-h7-qualification/windows-fixture-owner-agentd-h7-qualification-bf42.tar.xz",
+      "bytes": 18043196,
+      "sha256": "db3a43d4f70ad6dc8547916c97ecbaac10d564b52eec7d968b4c53ae5f8d672d",
+      "compression": "xz",
+      "file_member_count": 24,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+      "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+      "scope": "Original Windows agentd-h7-qualification owner job: 1 selected cases executed, 1 passed, 0 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "path": "SCOPE.json",
+          "bytes": 1527,
+          "sha256": "79a507ff209eb2545dda329900279a018cee4ab26a79f954527c83d994a0a354",
+          "equals": [
+            {
+              "path": [
+                "packet_id"
+              ],
+              "value": "windows-fixture-owner-agentd-h7-qualification-bf42-v1"
+            },
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "observer_sha"
+              ],
+              "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+            },
+            {
+              "path": [
+                "observer_tree"
+              ],
+              "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+            },
+            {
+              "path": [
+                "run_id"
+              ],
+              "value": 42550332155
+            },
+            {
+              "path": [
+                "full_cost"
+              ],
+              "value": null
+            },
+            {
+              "path": [
+                "scientific_qualification_performed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "new_tests_run_by_packet_builder"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "group"
+              ],
+              "value": "agentd-h7-qualification"
+            },
+            {
+              "path": [
+                "selected_scope_passed"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "actual_cases"
+              ],
+              "value": [
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+                  "time_seconds": "2.480",
+                  "problems": [],
+                  "xml_passed": true
+                }
+              ]
+            },
+            {
+              "path": [
+                "selected_count"
+              ],
+              "value": 1
+            },
+            {
+              "path": [
+                "filter_excluded_count"
+              ],
+              "value": 263
+            },
+            {
+              "path": [
+                "old_failed_or_cancelled_results_superseded"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "complete_eleven_case_scope_claimed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_workspace_passed"
+              ],
+              "value": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "windows-fixture-owner-agentd-fleet-default-bf42-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/agentd-fleet-default/windows-fixture-owner-agentd-fleet-default-bf42.tar.xz",
+      "bytes": 18040428,
+      "sha256": "f1656cc57fbc672774e694ed4bb7885e2fdacf5b9fd7fed898964dc6eff1287d",
+      "compression": "xz",
+      "file_member_count": 19,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+      "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+      "scope": "Original Windows agentd-fleet-default owner job: 2 selected cases executed, 2 passed, 0 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "path": "SCOPE.json",
+          "bytes": 1820,
+          "sha256": "1416e734c2fe6c517c7f098f9d5de163b894d60b3fe8f0e0510477284d44aaed",
+          "equals": [
+            {
+              "path": [
+                "packet_id"
+              ],
+              "value": "windows-fixture-owner-agentd-fleet-default-bf42-v1"
+            },
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "observer_sha"
+              ],
+              "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+            },
+            {
+              "path": [
+                "observer_tree"
+              ],
+              "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+            },
+            {
+              "path": [
+                "run_id"
+              ],
+              "value": 42550332155
+            },
+            {
+              "path": [
+                "full_cost"
+              ],
+              "value": null
+            },
+            {
+              "path": [
+                "scientific_qualification_performed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "new_tests_run_by_packet_builder"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "group"
+              ],
+              "value": "agentd-fleet-default"
+            },
+            {
+              "path": [
+                "selected_scope_passed"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "actual_cases"
+              ],
+              "value": [
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+                  "time_seconds": "2.339",
+                  "problems": [],
+                  "xml_passed": true
+                },
+                {
+                  "binary_id": "codex-hepta-agentd",
+                  "name": "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+                  "time_seconds": "0.820",
+                  "problems": [],
+                  "xml_passed": true
+                }
+              ]
+            },
+            {
+              "path": [
+                "selected_count"
+              ],
+              "value": 2
+            },
+            {
+              "path": [
+                "filter_excluded_count"
+              ],
+              "value": 259
+            },
+            {
+              "path": [
+                "old_failed_or_cancelled_results_superseded"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "complete_eleven_case_scope_claimed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_workspace_passed"
+              ],
+              "value": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "windows-fixture-owner-cli-cloud-bf42-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/cli-cloud/windows-fixture-owner-cli-cloud-bf42.tar.xz",
+      "bytes": 18004732,
+      "sha256": "db11066b80b9b6610e699ac3ad26fafcf1a4d3f5e42dcfdbc4b16194d851cce7",
+      "compression": "xz",
+      "file_member_count": 19,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+      "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+      "scope": "Original Windows cli-cloud owner job: 1 selected cases executed, 1 passed, 0 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "path": "SCOPE.json",
+          "bytes": 1481,
+          "sha256": "5640b518a27776707df89295b5ceaa61529bc995c4f9f5a241e5ff51e4d84666",
+          "equals": [
+            {
+              "path": [
+                "packet_id"
+              ],
+              "value": "windows-fixture-owner-cli-cloud-bf42-v1"
+            },
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "observer_sha"
+              ],
+              "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+            },
+            {
+              "path": [
+                "observer_tree"
+              ],
+              "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+            },
+            {
+              "path": [
+                "run_id"
+              ],
+              "value": 42550332155
+            },
+            {
+              "path": [
+                "full_cost"
+              ],
+              "value": null
+            },
+            {
+              "path": [
+                "scientific_qualification_performed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "new_tests_run_by_packet_builder"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "group"
+              ],
+              "value": "cli-cloud"
+            },
+            {
+              "path": [
+                "selected_scope_passed"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "actual_cases"
+              ],
+              "value": [
+                {
+                  "binary_id": "codex-cli::sandbox_cloud_config",
+                  "name": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+                  "time_seconds": "31.998",
+                  "problems": [],
+                  "xml_passed": true
+                }
+              ]
+            },
+            {
+              "path": [
+                "selected_count"
+              ],
+              "value": 1
+            },
+            {
+              "path": [
+                "filter_excluded_count"
+              ],
+              "value": 0
+            },
+            {
+              "path": [
+                "old_failed_or_cancelled_results_superseded"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "complete_eleven_case_scope_claimed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_workspace_passed"
+              ],
+              "value": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "windows-fixture-owner-appserver-fixtures-bf42-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/appserver-fixtures/windows-fixture-owner-appserver-fixtures-bf42.tar.xz",
+      "bytes": 18111768,
+      "sha256": "d4cdc6f963ce15d83ed4e92899c6b662b7d6a63bd85d75dfeffbf9162118dbff",
+      "compression": "xz",
+      "file_member_count": 26,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+      "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+      "scope": "Original Windows appserver-fixtures owner job: 6 selected cases executed, 5 passed, 1 failed. Exact discovery/JUnit/raw/helper/source/observer originals are retained; image-edit failure is the original 60.015-second timeout where applicable. One of five separate 65-minute owner jobs; no prior single-job, full-workspace, durability, or research qualification is implied.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "path": "SCOPE.json",
+          "bytes": 3250,
+          "sha256": "f44143223da8fbe094e49e97d79e3dbd7e7d873cd622d8480f69217a1e302c62",
+          "equals": [
+            {
+              "path": [
+                "packet_id"
+              ],
+              "value": "windows-fixture-owner-appserver-fixtures-bf42-v1"
+            },
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "observer_sha"
+              ],
+              "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+            },
+            {
+              "path": [
+                "observer_tree"
+              ],
+              "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+            },
+            {
+              "path": [
+                "run_id"
+              ],
+              "value": 42550332155
+            },
+            {
+              "path": [
+                "full_cost"
+              ],
+              "value": null
+            },
+            {
+              "path": [
+                "scientific_qualification_performed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "new_tests_run_by_packet_builder"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "group"
+              ],
+              "value": "appserver-fixtures"
+            },
+            {
+              "path": [
+                "selected_scope_passed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "actual_cases"
+              ],
+              "value": [
+                {
+                  "binary_id": "codex-app-server::all",
+                  "name": "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+                  "time_seconds": "60.015",
+                  "problems": [
+                    {
+                      "kind": "failure",
+                      "attributes": {
+                        "type": "test timeout"
+                      }
+                    }
+                  ],
+                  "xml_passed": false
+                },
+                {
+                  "binary_id": "codex-app-server::all",
+                  "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_1_inherits_parent_developer_instructions_without_an_override",
+                  "time_seconds": "1.535",
+                  "problems": [],
+                  "xml_passed": true
+                },
+                {
+                  "binary_id": "codex-app-server::all",
+                  "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_2_reapplies_configured_subagent_developer_instructions",
+                  "time_seconds": "1.488",
+                  "problems": [],
+                  "xml_passed": true
+                },
+                {
+                  "binary_id": "codex-app-server::all",
+                  "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_3_reapplies_updated_configured_role_settings_and_restores_paginated_usage",
+                  "time_seconds": "1.856",
+                  "problems": [],
+                  "xml_passed": true
+                },
+                {
+                  "binary_id": "codex-app-server::all",
+                  "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_4_reapplies_an_implicitly_selected_configured_default_role",
+                  "time_seconds": "1.456",
+                  "problems": [],
+                  "xml_passed": true
+                },
+                {
+                  "binary_id": "codex-app-server::all",
+                  "name": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+                  "time_seconds": "4.636",
+                  "problems": [],
+                  "xml_passed": true
+                }
+              ]
+            },
+            {
+              "path": [
+                "selected_count"
+              ],
+              "value": 6
+            },
+            {
+              "path": [
+                "filter_excluded_count"
+              ],
+              "value": 948
+            },
+            {
+              "path": [
+                "old_failed_or_cancelled_results_superseded"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "complete_eleven_case_scope_claimed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_workspace_passed"
+              ],
+              "value": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "packet_id": "windows-fixture-owner-observer-history-bf42-v1",
+      "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-observer-history-packet-v1/windows-fixture-owner-observer-history-bf42.tar.xz",
+      "bytes": 102780,
+      "sha256": "46ce0378c8bc75fa4e083e53d34b09ac27f6899f6e21e4f7034473b249c73a7f",
+      "compression": "xz",
+      "file_member_count": 213,
+      "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+      "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+      "observer_sha": "5574d6b900571123239f0a8c0742a69d24cf7d99",
+      "observer_tree": "7f341e4a4b8a780f34326c8a09c993d0195b0c42",
+      "scope": "Original Windows observer preparation and publication history, including first Ruff-path ENOENT and unchanged v1/v2 originals, exact observer 5574 publication/readbacks, terminal run and read-only aggregate originals. Independently reconciled closed set: eleven executions, ten passed, one timeout, overall failure. The five native artifact ZIPs are retained in separately bound packets; no tests or aggregation reruns were performed to seal this packet.",
+      "complete_execution_history": false,
+      "full_history_cost": null,
+      "stage_advancement_claimed": false,
+      "required_json_members": [
+        {
+          "path": "SCOPE.json",
+          "bytes": 5472,
+          "sha256": "0397ae790357bb3ee771a7236e3190520c7ddc5ebcac83ff10348717032bf621",
+          "equals": [
+            {
+              "path": [
+                "packet_id"
+              ],
+              "value": "windows-fixture-owner-observer-history-bf42-v1"
+            },
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "observer_sha"
+              ],
+              "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+            },
+            {
+              "path": [
+                "observer_tree"
+              ],
+              "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+            },
+            {
+              "path": [
+                "run_id"
+              ],
+              "value": 42550332155
+            },
+            {
+              "path": [
+                "full_cost"
+              ],
+              "value": null
+            },
+            {
+              "path": [
+                "scientific_qualification_performed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "new_tests_run_by_packet_builder"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "actual_executed"
+              ],
+              "value": 11
+            },
+            {
+              "path": [
+                "actual_passed_without_leak_or_guard_skip"
+              ],
+              "value": 10
+            },
+            {
+              "path": [
+                "actual_failed"
+              ],
+              "value": 1
+            },
+            {
+              "path": [
+                "whole_selected_scope_passed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "original_single_job_result_superseded"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_workspace_passed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "native_group_artifacts_in_separate_bound_packets"
+              ],
+              "value": [
+                {
+                  "group": "cli-cloud",
+                  "packet_id": "windows-fixture-owner-cli-cloud-bf42-v1",
+                  "packet_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/cli-cloud/windows-fixture-owner-cli-cloud-bf42.tar.xz",
+                  "packet_bytes": 18004732,
+                  "packet_sha256": "db11066b80b9b6610e699ac3ad26fafcf1a4d3f5e42dcfdbc4b16194d851cce7",
+                  "packet_result_sha256": "d827c8df5a24fbdece610915fe001e681eebe639da224ad936e6fa30798af2d0",
+                  "analysis_sha256": "15951f315a174f299c1717dba07dbd57707823893ef5a62d0edd52c73213be27",
+                  "original_receipt_sha256": "98427cbe6a0cb5720483d33dd6dbd92c46c975ad49f47140150fbb08e202d005",
+                  "selected_scope_passed": true,
+                  "executed": 1,
+                  "xml_passed": 1,
+                  "failed": 0,
+                  "filter_excluded": 0
+                },
+                {
+                  "group": "agentd-fleet-default",
+                  "packet_id": "windows-fixture-owner-agentd-fleet-default-bf42-v1",
+                  "packet_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/agentd-fleet-default/windows-fixture-owner-agentd-fleet-default-bf42.tar.xz",
+                  "packet_bytes": 18040428,
+                  "packet_sha256": "f1656cc57fbc672774e694ed4bb7885e2fdacf5b9fd7fed898964dc6eff1287d",
+                  "packet_result_sha256": "9e65015f62b4ed3a3f1f7fec0c0631ec918173f67ba7cf465633c93072e518ff",
+                  "analysis_sha256": "04ecfc25e0f9f800459b8f3562c0b3a926e5004756821634b480390380357094",
+                  "original_receipt_sha256": "2242a4dbb4eda47c08e703e27d12d82048e79c794a859e9149006a12609dfd16",
+                  "selected_scope_passed": true,
+                  "executed": 2,
+                  "xml_passed": 2,
+                  "failed": 0,
+                  "filter_excluded": 259
+                },
+                {
+                  "group": "agentd-h7-qualification",
+                  "packet_id": "windows-fixture-owner-agentd-h7-qualification-bf42-v1",
+                  "packet_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/agentd-h7-qualification/windows-fixture-owner-agentd-h7-qualification-bf42.tar.xz",
+                  "packet_bytes": 18043196,
+                  "packet_sha256": "db3a43d4f70ad6dc8547916c97ecbaac10d564b52eec7d968b4c53ae5f8d672d",
+                  "packet_result_sha256": "199e4aa711823826d4e9de89f78c0cb43606dc3bfdec7788159fe9be8d03f784",
+                  "analysis_sha256": "4326d332b9df5b4826dc77c3322e1461c743eab34a3e4159251d66a482e0b016",
+                  "original_receipt_sha256": "bed8c25b8d06f9ae2934f1db129a0a21a59c627d6786f7c61220e4a3af094a0d",
+                  "selected_scope_passed": true,
+                  "executed": 1,
+                  "xml_passed": 1,
+                  "failed": 0,
+                  "filter_excluded": 263
+                },
+                {
+                  "group": "matrix-startup-diagnostic",
+                  "packet_id": "windows-fixture-owner-matrix-startup-diagnostic-bf42-v1",
+                  "packet_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/matrix-startup-diagnostic/windows-fixture-owner-matrix-startup-diagnostic-bf42.tar.xz",
+                  "packet_bytes": 17967716,
+                  "packet_sha256": "4482994b3243513f0e324545cc12f6e5f22d172fab96f021740152f08bde6012",
+                  "packet_result_sha256": "b854f7938bfc3869431de9bfa67ca3dfd147ec21e1632ef91e65fc5a5e830be5",
+                  "analysis_sha256": "eadf19cf19c3b92f10a69bcef190518661cac0c1373ca9e5a997a875f0c34cc1",
+                  "original_receipt_sha256": "69d7f03339c9d4c65f6ed9b8fadb108fd2abd70d6cd483a717e6d45cc045d562",
+                  "selected_scope_passed": true,
+                  "executed": 1,
+                  "xml_passed": 1,
+                  "failed": 0,
+                  "filter_excluded": 25
+                },
+                {
+                  "group": "appserver-fixtures",
+                  "packet_id": "windows-fixture-owner-appserver-fixtures-bf42-v1",
+                  "packet_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/windows-owner-groups-packets-v1/appserver-fixtures/windows-fixture-owner-appserver-fixtures-bf42.tar.xz",
+                  "packet_bytes": 18111768,
+                  "packet_sha256": "d4cdc6f963ce15d83ed4e92899c6b662b7d6a63bd85d75dfeffbf9162118dbff",
+                  "packet_result_sha256": "1559ca0fc2eb266cd733f27b739f7f5bf9c87a8a9587aa87780e8e4a67134a9d",
+                  "analysis_sha256": "495d43579a831b470a6bf483b7160b167bec58a3240a521f500e3e6246a108e3",
+                  "original_receipt_sha256": "c198e09e13410a341e5acdc4c9f55052dd31f47a05ddb8ae4ef9677e655d90e0",
+                  "selected_scope_passed": false,
+                  "executed": 6,
+                  "xml_passed": 5,
+                  "failed": 1,
+                  "filter_excluded": 948
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "path": "READONLY_AGGREGATE_RECONCILIATION.json",
+          "bytes": 5279,
+          "sha256": "5c12cb913a474eb0344432c4e8366d0c0a702c0aa69dd283dba23f3b2600ee03",
+          "equals": [
+            {
+              "path": [
+                "source_sha"
+              ],
+              "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+            },
+            {
+              "path": [
+                "source_tree"
+              ],
+              "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+            },
+            {
+              "path": [
+                "observer_sha"
+              ],
+              "value": "5574d6b900571123239f0a8c0742a69d24cf7d99"
+            },
+            {
+              "path": [
+                "observer_tree"
+              ],
+              "value": "7f341e4a4b8a780f34326c8a09c993d0195b0c42"
+            },
+            {
+              "path": [
+                "run_id"
+              ],
+              "value": 42550332155
+            },
+            {
+              "path": [
+                "terminal_run_status"
+              ],
+              "value": "completed"
+            },
+            {
+              "path": [
+                "terminal_run_conclusion"
+              ],
+              "value": "failure"
+            },
+            {
+              "path": [
+                "original_aggregate_passed"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "actual_executed"
+              ],
+              "value": 11
+            },
+            {
+              "path": [
+                "actual_passed_without_leak_or_guard_skip"
+              ],
+              "value": 10
+            },
+            {
+              "path": [
+                "actual_failed"
+              ],
+              "value": 1
+            },
+            {
+              "path": [
+                "all_groups_original_artifacts_independently_reconciled"
+              ],
+              "value": true
+            },
+            {
+              "path": [
+                "new_native_tests_run"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "research_advancement"
+              ],
+              "value": false
+            },
+            {
+              "path": [
+                "full_cost"
+              ],
+              "value": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

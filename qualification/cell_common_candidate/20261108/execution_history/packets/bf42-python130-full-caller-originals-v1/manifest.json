@@ -1,0 +1,389 @@
+{
+  "packet_id": "bf42-python130-full-caller-originals-v1",
+  "archive_path": "/home/qian-qi/work/hepta-cell-s0-records-20261108-898e/followup5-bf42d2a-python-sealed-v1/original-python-execution.tar.xz",
+  "bytes": 22044,
+  "sha256": "793167e250598093524aa4f1de2de0a4b25f1fc691610db80675b731c21da200",
+  "compression": "xz",
+  "file_member_count": 49,
+  "source_sha": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d",
+  "source_tree": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6",
+  "scope": "Exact bf42 fixed-source engineering Python validation: 130 independent unit cases, original caller self-test and complete caller scan passing in 380.6801889021881 seconds under the unchanged 600-second gate, with original command logs, clean before/after source and unchanged formal CURRENT. The original earlier sealer-invocation failure is retained in the archive. This packet runs no Rust and provides no S0-S5 or complete-cost qualification.",
+  "complete_execution_history": false,
+  "full_history_cost": null,
+  "stage_advancement_claimed": false,
+  "required_json_members": [
+    {
+      "path": "execution-manifest.json",
+      "bytes": 21608,
+      "sha256": "f837b0ef75bab3dd1d28e892e9d0656f87f59109f35b577f1f8dab6fcffe0570",
+      "equals": [
+        {
+          "path": [
+            "state"
+          ],
+          "value": "finished"
+        },
+        {
+          "path": [
+            "all_commands_passed"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "source_unchanged"
+          ],
+          "value": true
+        },
+        {
+          "path": [
+            "expected_independent_unittest_count"
+          ],
+          "value": 130
+        },
+        {
+          "path": [
+            "before",
+            "commit"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "before",
+            "tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "after",
+            "commit"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "after",
+            "tree"
+          ],
+          "value": "f7b65a747a1d2f585be38a4665ab2b4f1b07efb6"
+        },
+        {
+          "path": [
+            "full_history_cost"
+          ],
+          "value": null
+        },
+        {
+          "path": [
+            "native_tests_included"
+          ],
+          "value": false
+        }
+      ]
+    },
+    {
+      "path": "caller-full-scan.json",
+      "bytes": 1462,
+      "sha256": "a9b6341ab78c6bc471692d44f6396104b767738d69bff09cb398230b4e39c463",
+      "equals": [
+        {
+          "path": [
+            "source_sha"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "tested_sha"
+          ],
+          "value": "bf42d2a5c2c1ed5134f8e7584de306fb015c1a8d"
+        },
+        {
+          "path": [
+            "status"
+          ],
+          "value": "passed"
+        },
+        {
+          "path": [
+            "elapsed_seconds"
+          ],
+          "value": 380.6801889021881
+        },
+        {
+          "path": [
+            "timed_out"
+          ],
+          "value": false
+        },
+        {
+          "path": [
+            "command_exit_code"
+          ],
+          "value": 0
+        }
+      ]
+    }
+  ],
+  "file_members": [
+    {
+      "path": ".hepta-lock-514d5240c4ef6c4bc9d5956b",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".hepta-lock-8b6854c6dded18d75a07c421",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".hepta-lock-9ba929ec18f2bd57d9fd54b4",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".hepta-lock-f551b88f7c23ea3e08817145",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CURRENT_RESULT.original.json",
+      "bytes": 7587,
+      "sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+    },
+    {
+      "path": "caller-closed-set-fixtures.console.log",
+      "bytes": 1493,
+      "sha256": "7846a8512f9ed8d1d63c0945d3bc4664dea3c260086b5631e83cb679060fb208"
+    },
+    {
+      "path": "caller-closed-set-fixtures.json",
+      "bytes": 1472,
+      "sha256": "b34ca80fda5cf6de52591bc16a9706e6139d0bc80f6514971f7a09fde7eded24"
+    },
+    {
+      "path": "caller-closed-set-fixtures.json.0d4f15add99a489eb4b26e102cfa005e.log",
+      "bytes": 153,
+      "sha256": "efd9f7284ad45c64f989dda6540fd49f40814bc0e8fcfb4e6fc896958b088072"
+    },
+    {
+      "path": "caller-full-scan.console.log",
+      "bytes": 79339,
+      "sha256": "7f513c6ea0747016c30892ad35478de7bfa02515ad772b17db6b7fad323c3d2a"
+    },
+    {
+      "path": "caller-full-scan.json",
+      "bytes": 1462,
+      "sha256": "a9b6341ab78c6bc471692d44f6396104b767738d69bff09cb398230b4e39c463"
+    },
+    {
+      "path": "caller-full-scan.json.09b828aad6b04d8ca54d75c0a3b7dc8e.log",
+      "bytes": 78013,
+      "sha256": "ca51a5dc3d991c8ace17cf2e70be8feeb779f3489f480e911f8c721b800c78c0"
+    },
+    {
+      "path": "caller-self-test.console.log",
+      "bytes": 1376,
+      "sha256": "0a950851a65eec02b6a5ff09a3c051d8e033ffe65fb1fee3a31cda3cfe6294b7"
+    },
+    {
+      "path": "caller-self-test.json",
+      "bytes": 1464,
+      "sha256": "36a2d6685f3d06710746b4daf319a6a4a388a9dca785bdc50baa409df1a44ef9"
+    },
+    {
+      "path": "caller-self-test.json.dfa413452f2a4c3ea55c223ad96e157d.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    },
+    {
+      "path": "caller-typed-fixtures.console.log",
+      "bytes": 1443,
+      "sha256": "83d20bee9df134812f5fcb9e92e3bb5fb5ce9d5d4ba4a687334514080692364b"
+    },
+    {
+      "path": "caller-typed-fixtures.json",
+      "bytes": 1458,
+      "sha256": "238641e037974317cb95dfd6186d87b0174780933e441499f77dc86c7a6538ce"
+    },
+    {
+      "path": "caller-typed-fixtures.json.98ec57514d7e4094a3edd25394b63832.log",
+      "bytes": 117,
+      "sha256": "cd280f15a749e8538add25387a6b69322e8640b23c5e83faa6d85fb13471ff42"
+    },
+    {
+      "path": "cell-research-stages/common-candidate-observation.json",
+      "bytes": 1395,
+      "sha256": "8a0dba23eea63e2ee74965e9e505d81082c7c43c36fe26400a44f431f6b088e9"
+    },
+    {
+      "path": "cell-research-stages/current-review.json",
+      "bytes": 7587,
+      "sha256": "c8b2bbb955272dde7679f86a7f0bf6113c46d7d4fbba3496446399c3615e10e4"
+    },
+    {
+      "path": "cell-research-stages/joint-configuration.json",
+      "bytes": 1549,
+      "sha256": "91d522fc7772443abb08571d1afc2a9c563967df9b812bffcd8e738c4581cd7d"
+    },
+    {
+      "path": "cell-research-stages/joint-configuration.json.6e0adb7f332b4d979b089cedca1a45e0.log",
+      "bytes": 4113,
+      "sha256": "c4fafcd0ac6c454358b1b33ce9d97359344ff8b42f771a0ef0c85e3f78360496"
+    },
+    {
+      "path": "cell-research-stages/research-gate.json",
+      "bytes": 1545,
+      "sha256": "d61e16930e6f9e625b578ada309fd7de50423a63afb43baea1054f3771d43e7b"
+    },
+    {
+      "path": "cell-research-stages/research-gate.json.9cfc54f3ba9640829d096ed955500a3b.log",
+      "bytes": 3422,
+      "sha256": "e9edcfcfe33e82d66e7dc07bf61e1b118fc40df889940d76dfdbfed0b74d5d90"
+    },
+    {
+      "path": "cell-research-stages/source.txt",
+      "bytes": 82,
+      "sha256": "cf888bb6ae72b680b7b48122088e22f8eb81d4d829b091470e39b328eec5d021"
+    },
+    {
+      "path": "cell-research-stages/successor-binding.json",
+      "bytes": 1552,
+      "sha256": "2110b10255dcd7ea32f854087e5bff44c207c34c7edf8cef50392f90461d9972"
+    },
+    {
+      "path": "cell-research-stages/successor-binding.json.11864d441dca4c648eeee369228f3283.log",
+      "bytes": 1670,
+      "sha256": "d8076cbe9760e676d407286de77bdbf807246ff5c02d7c07df5c9eb4944c8b22"
+    },
+    {
+      "path": "current-result-byte-comparison.console.log",
+      "bytes": 2144,
+      "sha256": "bfd5f38abeed5468651262458fb26fcb653a2c999bf9d2334d05c8ab882372c5"
+    },
+    {
+      "path": "current-result-byte-comparison.json",
+      "bytes": 2079,
+      "sha256": "ea964560019e8fd67ff7f7b692a2576ef3e3741c6d498be142c5b305089076ae"
+    },
+    {
+      "path": "current-result-byte-comparison.json.5fb02e708e2842d8b80a6083b7e89ef2.log",
+      "bytes": 213,
+      "sha256": "4b246ed11a0b555fb794a3ddcee2cdedc46a715b956a387c2123df94fc0f1350"
+    },
+    {
+      "path": "execution-manifest.json",
+      "bytes": 21608,
+      "sha256": "f837b0ef75bab3dd1d28e892e9d0656f87f59109f35b577f1f8dab6fcffe0570"
+    },
+    {
+      "path": "history-collector-regressions.console.log",
+      "bytes": 3008,
+      "sha256": "540f49918c5d9d8d91a217ebc01e41a674e2304f03942d9b2ed68329eea7252f"
+    },
+    {
+      "path": "history-collector-regressions.json",
+      "bytes": 1594,
+      "sha256": "569d547ee82110f7c686013abb7d318b0d1e158ce695b56a850088fb16cb2286"
+    },
+    {
+      "path": "history-collector-regressions.json.9cfa431d7a1440749801240287ec5e42.log",
+      "bytes": 1578,
+      "sha256": "b6971294d0fccaf761a5a920949ebccb0fa86bc8e3c0b82952c82e4414de6e3c"
+    },
+    {
+      "path": "orchestrator-original.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "orchestrator-original.stdout",
+      "bytes": 12486,
+      "sha256": "78eee3849d631ced00f12f4398f80b1fc1b103906992024c812b8c1663391bc8"
+    },
+    {
+      "path": "orchestrator-terminal-status.json",
+      "bytes": 734,
+      "sha256": "e8015261e7b73cb889dd8f230c01e6b80048f72ffdbe583f1ecc65998f8e02f0"
+    },
+    {
+      "path": "python-sealer-invocation-failure-v1.json",
+      "bytes": 4254,
+      "sha256": "d4234dbecd2bd7319359f67b5d96171514c3c38fa20f76a395ce1f71e013e636"
+    },
+    {
+      "path": "research-main.sh",
+      "bytes": 1466,
+      "sha256": "79630fd98c337fe6366f4a6c53b278b8e2627c3009fbbcaf19d4a72377e0ac2d"
+    },
+    {
+      "path": "research-observation.console.log",
+      "bytes": 1394,
+      "sha256": "4a2723e0f9a48a17ee0d23a9fa825afd706bb216077b773c1b82c48dbd6ba1d9"
+    },
+    {
+      "path": "research-observation.json",
+      "bytes": 1526,
+      "sha256": "5da95226dac8bafb59954dbe7e3e300f0b84475b05509afe4591d041b3421ed4"
+    },
+    {
+      "path": "research-observation.json.e988e9ff0f504586a7882224b6f6c754.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research-observation.sh",
+      "bytes": 2079,
+      "sha256": "095060d786fcfba8cf97d8b2bd298a372c7e6060ff1c8bb7ee1cd2ccd905a79a"
+    },
+    {
+      "path": "research-workflow-container.console.log",
+      "bytes": 14815,
+      "sha256": "b16e0b2735c4f579cc565f7f9b06efc59b7a253c061aba84f8baee2a70a9c08d"
+    },
+    {
+      "path": "research-workflow-container.json",
+      "bytes": 1532,
+      "sha256": "57da0201eaeab62349230bbc3e4ebf20c07fee8d65ecd85a59db15a35d0acf63"
+    },
+    {
+      "path": "research-workflow-container.json.91c6746731064e0e9259c1df2549a027.log",
+      "bytes": 13415,
+      "sha256": "b6d354eedf686f9d1966a5e54c5e16f8867e41599328b25a637456d4a610af70"
+    },
+    {
+      "path": "research-workflow.original.yml",
+      "bytes": 6228,
+      "sha256": "6620d22d22ffe275cdcb43ad52e2278c614aaa23bb945f158a79dcc06cc1bb75"
+    },
+    {
+      "path": "source-after.json",
+      "bytes": 138,
+      "sha256": "02d7082071f6e321512ebcc2d0c53e27f037d17096be8810a689d43a6a87582f"
+    },
+    {
+      "path": "source-before.json",
+      "bytes": 138,
+      "sha256": "02d7082071f6e321512ebcc2d0c53e27f037d17096be8810a689d43a6a87582f"
+    },
+    {
+      "path": "PACKET_MANIFEST.json",
+      "bytes": 9294,
+      "sha256": "16f440b80750ed82abe603b8dc4e9da820b666ae059039f7653362ab033fffa4"
+    }
+  ],
+  "publication_chunks": [
+    {
+      "sequence": 1,
+      "path": "packets/bf42-python130-full-caller-originals-v1/archive.part001",
+      "offset": 0,
+      "bytes": 22044,
+      "sha256": "793167e250598093524aa4f1de2de0a4b25f1fc691610db80675b731c21da200"
+    }
+  ],
+  "reassembled_original_bytes_verified": true,
+  "all_original_file_members_verified": true,
+  "required_json_member_bindings_verified": true
+}
