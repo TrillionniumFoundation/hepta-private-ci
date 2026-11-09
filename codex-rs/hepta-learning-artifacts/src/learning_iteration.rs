@@ -43,6 +43,8 @@ pub enum LearningIterationError {
     DeadlineExceeded,
     InvalidTimestamp,
     ContextMismatch,
+    UpdateScopeMismatch,
+    SlowReleaseRequired,
     CapacityExceeded,
     Bundle(CellBundleError),
     SnapshotMismatch,
