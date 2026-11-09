@@ -349,6 +349,8 @@ mod neuron_v13_generation_update;
 #[cfg(target_os = "linux")]
 mod neuron_v13_generation_update_runtime;
 #[cfg(target_os = "linux")]
+mod notes_action_observer;
+#[cfg(target_os = "linux")]
 mod notes_bootstrap;
 #[cfg(unix)]
 mod notes_channel;
