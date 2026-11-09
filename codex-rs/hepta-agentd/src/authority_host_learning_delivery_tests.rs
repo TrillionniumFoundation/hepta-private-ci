@@ -5,6 +5,7 @@ use crate::authority_host_config::HostAuthorityConsumerConfig;
 use crate::authority_host_config::HostAuthorityConsumersConfig;
 use crate::authority_host_config::HostAuthorityServiceConfig;
 use codex_hepta_contracts::HostAuthorityFrontierStore;
+use pretty_assertions::assert_eq;
 use sha2::Digest;
 use std::io::Read;
 

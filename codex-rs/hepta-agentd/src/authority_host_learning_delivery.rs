@@ -66,7 +66,7 @@ impl PreparedHostAuthoritySession {
         paths.push(&endpoint);
         listeners::validate_lane_paths(&paths, config.peer_gid)?;
         // Share only this fully registered service, never another pathname open.
-        let service = Arc::new(service);
+        let service: Arc<HostAuthorityService> = Arc::new(service);
         let profile = crate::RootLearningCheckpointProfileV1 {
             consumer: registration.clone(),
             peer_uid: config.peer_uid,

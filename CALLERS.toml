@@ -2377,7 +2377,7 @@ symbol = "PreparedHostAuthoritySession::serve_with_registered_learning_checkpoin
 receiver_type = "PreparedHostAuthoritySession"
 receiver_methods = ["serve_with_registered_learning_checkpoint"]
 definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_delivery.rs"
-definition_markers = ["pub fn serve_with_registered_learning_checkpoint(", "checkpoint: crate::LearningIterationCheckpointOwnerV1", "let service = Arc::new(service)", "service.learning_checkpoint_profile(checkpoint, profile, owner_pidfd.try_clone()?)?", "drop(stop)", ".join()"]
+definition_markers = ["pub fn serve_with_registered_learning_checkpoint(", "checkpoint: crate::LearningIterationCheckpointOwnerV1", "let service: Arc<HostAuthorityService> = Arc::new(service)", "service.learning_checkpoint_profile(checkpoint, profile, owner_pidfd.try_clone()?)?", "drop(stop)", ".join()"]
 product_callers = []
 caller_markers = []
 
