@@ -273,3 +273,7 @@ async fn read(
         acknowledged_head: acknowledged.map(parse).transpose()?,
     }))
 }
+
+#[cfg(test)]
+#[path = "circuit_learning_outbox_tests.rs"]
+mod tests;
