@@ -335,12 +335,12 @@ fn validate_joint_loading_receipt(
     receipt: &codex_hepta_neuron::CellGenerationReceiptV2,
 ) -> Result<(), AgentdError> {
     let c = &bundle.components;
-    if c.state_schema != Digest32::of_bytes(codex_hepta_infer_core::JOINT_V4_STATE_SCHEMA)
-        && c.output_schema != Digest32::of_bytes(codex_hepta_infer_core::JOINT_V4_OUTPUT_SCHEMA)
+    if c.state_schema != Digest32::of_bytes(codex_hepta_neuron::JOINT_V4_STATE_SCHEMA)
+        && c.output_schema != Digest32::of_bytes(codex_hepta_neuron::JOINT_V4_OUTPUT_SCHEMA)
     {
         return Ok(());
     }
-    let components = codex_hepta_infer_core::JointV4ComponentDigestsV1 {
+    let components = codex_hepta_neuron::JointV4ComponentDigestsV1 {
         base: c.base,
         organ_adapter: c.organ_adapter,
         cell_adapter: c.cell_adapter,

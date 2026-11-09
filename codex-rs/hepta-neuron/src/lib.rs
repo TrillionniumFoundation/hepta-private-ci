@@ -15,7 +15,10 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use codex_hepta_infer_core::JOINT_V4_OUTPUT_SCHEMA;
+pub use codex_hepta_infer_core::JOINT_V4_STATE_SCHEMA;
 pub use codex_hepta_infer_core::JointTensorPacketV1;
+pub use codex_hepta_infer_core::JointV4ComponentDigestsV1;
 pub use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 pub use codex_hepta_infer_core::NeuronFeatureRequestV1;
 pub use codex_hepta_infer_core::durable_control::DurableInferenceControl;
