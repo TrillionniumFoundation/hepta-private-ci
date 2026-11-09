@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/f211ba6d7ef7/hepta-bimodal/scripts/ndu_bimodal/cli.py", line 134, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/workspace/scratch/f211ba6d7ef7/hepta-bimodal/scripts/ndu_bimodal/cli.py", line 75, in main
+    weights = bounded_bytes(args.weights, 64 * 1024 * 1024, args.weights_sha256)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/f211ba6d7ef7/hepta-bimodal/scripts/ndu_bimodal/cli.py", line 25, in bounded_bytes
+    raise ValueError("Input size or SHA256 differs")
+ValueError: Input size or SHA256 differs
