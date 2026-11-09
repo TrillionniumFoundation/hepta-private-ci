@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.cell-common.command.v1",
+  "name": "helper-build-8857-v1",
+  "command": [
+    "cargo",
+    "build",
+    "--manifest-path",
+    "codex-rs/Cargo.toml",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--bin",
+    "hepta-joint-propose"
+  ],
+  "cwd": "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh",
+  "source_before": {
+    "head": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+    "tree": "965c462e0b31f04d54d0905c43456eacbd74186b",
+    "status": ""
+  },
+  "environment": {
+    "PATH": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "RUSTUP_HOME": "/home/qq/.rustup",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_HOME": "/home/qq/.cargo",
+    "LIBCLANG_PATH": "/usr/lib/llvm-21/lib",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem/usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "CARGO_TARGET_DIR": "/home/qq/hepta-cell-common-e1c98-20261109/target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "8",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CODEX_REPO_ROOT": "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh/scripts:/home/qq/hepta-cell-common-e1c98-20261109/source-fresh",
+    "TMPDIR": "/home/qq/hepta-cell-common-e1c98-20261109/tmp",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "CARGO_BIN_EXE_hepta-joint-propose": "/home/qq/hepta-cell-common-e1c98-20261109/target/debug/hepta-joint-propose",
+    "CARGO_BIN_EXE_hepta_joint_propose": "/home/qq/hepta-cell-common-e1c98-20261109/target/debug/hepta-joint-propose"
+  },
+  "started_unix": 1794224999.2184546,
+  "energy_joules": null,
+  "provider_cost": null,
+  "cost_scope": "whole subprocess including compile/test and child processes",
+  "exit_code": 0,
+  "existing_helper_sha256": "d3330069c16d5193c25def255482015bf896a838993d111d90d7f4d464a9900b",
+  "wall_seconds": 83.61230833502486,
+  "child_cpu_seconds": 248.37409,
+  "child_peak_rss_kib": 3171556,
+  "source_after": {
+    "head": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+    "tree": "965c462e0b31f04d54d0905c43456eacbd74186b",
+    "status": ""
+  },
+  "source_unchanged": true,
+  "raw_log_bytes": 12662,
+  "raw_log_sha256": "4e6748f25e598bfb23ca965e721a89bb1e82e36aca0e28968ca7dca80afeb93a",
+  "completed_unix": 1794225082.8319623
+}
