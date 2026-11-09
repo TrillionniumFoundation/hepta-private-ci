@@ -106,6 +106,12 @@ jobs:
             --output "$RUNNER_TEMP/cell-runtime-records/mdv-control-tests.json" \
             -- python -B -m unittest -v cell_repo_mdv.test_memory \
             cell_repo_mdv.test_runner cell_repo_mdv.test_compare
+      - name: Check distinct source and successor model inputs
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 5 \
+            --output "$RUNNER_TEMP/cell-runtime-records/model-task-input-tests.json" \
+            -- python3 -B -m unittest discover -s scripts/research \
+            -p test_smollm_task_inputs.py -v
       - name: Check the integrated semantic and temporal Cell routes
         run: |
           python scripts/hepta_ci_exec.py --timeout-seconds 300 --minimum-tests 49 \

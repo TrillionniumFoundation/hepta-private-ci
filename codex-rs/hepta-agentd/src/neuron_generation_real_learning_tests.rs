@@ -75,6 +75,53 @@ fn unavailable(error: impl std::fmt::Display) -> LearningIterationRuntimeErrorV1
     LearningIterationRuntimeErrorV1::OwnerUnavailable("actual-research-owner")
 }
 
+fn task_input(operation: &str, prepared: &Value, label: &str) -> anyhow::Result<Value> {
+    anyhow::ensure!(matches!(label, "source-task" | "next-task"), "unknown task stage");
+    for stage in ["source-task", "next-task"] {
+        let input = &prepared["task_inputs"][stage];
+        let prompt = input["prompt"].as_str().ok_or_else(|| anyhow::anyhow!("task prompt"))?;
+        anyhow::ensure!(
+            !prompt.trim().is_empty() && prompt.len() <= 2048 && input == &json!({
+                "mode":"conditional_binary", "request_id":format!("{operation}-{stage}"),
+                "prompt":prompt,
+            }),
+            "task input differs from its frozen stage"
+        );
+    }
+    let distinct = prepared["task_inputs"]["source-task"]["prompt"]
+        != prepared["task_inputs"]["next-task"]["prompt"];
+    match prepared["task_input_profile"].as_str() {
+        Some("distinct-source-next-v2") => anyhow::ensure!(distinct, "distinct profile reused the same prompt"),
+        Some("shared-next-prompt-v1") => anyhow::ensure!(!distinct, "legacy profile changed task content"),
+        _ => anyhow::bail!("missing or unsupported task input profile"),
+    }
+    Ok(prepared["task_inputs"][label].clone())
+}
+
+#[test]
+fn learning_iteration_real_model_task_input_routing_is_stage_bound() -> anyhow::Result<()> {
+    let mut prepared = json!({
+        "task_input_profile":"distinct-source-next-v2",
+        "task_inputs":{
+            "source-task":{"mode":"conditional_binary","request_id":"op-source-task","prompt":"first prompt"},
+            "next-task":{"mode":"conditional_binary","request_id":"op-next-task","prompt":"different prompt"},
+        },
+    });
+    let source = task_input("op", &prepared, "source-task")?;
+    let next = task_input("op", &prepared, "next-task")?;
+    assert_ne!(source["prompt"], next["prompt"]);
+    assert!(task_input("other-op", &prepared, "source-task").is_err());
+    assert!(task_input("op", &prepared, "unknown-task").is_err());
+    let mut missing = prepared.clone();
+    missing["task_inputs"]["next-task"] = Value::Null;
+    assert!(task_input("op", &missing, "source-task").is_err());
+    prepared["task_inputs"]["source-task"]["prompt"] = next["prompt"].clone();
+    assert!(task_input("op", &prepared, "source-task").is_err());
+    prepared["task_input_profile"] = json!("shared-next-prompt-v1");
+    assert_eq!(task_input("op", &prepared, "source-task")?["prompt"], next["prompt"]);
+    Ok(())
+}
+
 fn request(
     driver: &Driver,
     config: &CellGenerationConfigV2,
@@ -88,10 +135,7 @@ fn request(
         task_digest: config.task_digest,
         source_frontier: config.source_frontier,
         predecessor,
-        input: serde_json::to_vec(
-            &json!({"mode":"conditional_binary", "request_id":format!("{}-{label}", driver.operation),
-            "prompt":driver.prepared["next_prompt"]}),
-        )?,
+        input: serde_json::to_vec(&task_input(&driver.operation, &driver.prepared, label)?)?,
         admitted_at_micros: admitted,
         deadline_micros: admitted
             .checked_add(90_000_000)
@@ -368,6 +412,7 @@ impl ResearchPorts {
                     running.runtime.handle.snapshot().await?,
                     "next-task",
                 )?;
+                persist(&self.driver.evidence.join("next-task-input.json"), &request.input)?;
                 let intent = request.intent()?;
                 anyhow::ensure!(
                     adoption::next_use(
@@ -912,6 +957,8 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         source_handle.snapshot().await?,
         "source-task",
     )?;
+    let source_input = source_request.input.clone();
+    persist(&driver.evidence.join("source-task-input.json"), &source_input)?;
     let source_receipt = source_handle.step(source_request).await?;
     acknowledge(&driver, &source_handle, "source-use").await?;
     let completed = d(&serde_json::to_vec(&source_receipt)?);
@@ -1151,6 +1198,14 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         Err(_) if !updated => "NO_UPDATE_ADOPT_NOT_QUALIFIED",
         Err(_) => "FAIL_ADOPT_BINDING",
     };
+    let next_input = &running.request.as_ref().ok_or_else(|| anyhow::anyhow!("next input"))?.input;
+    let source_value: Value = serde_json::from_slice(&source_input)?;
+    let next_value: Value = serde_json::from_slice(next_input)?;
+    anyhow::ensure!(
+        source_value == task_input(&driver.operation, &driver.prepared, "source-task")?
+            && next_value == task_input(&driver.operation, &driver.prepared, "next-task")?,
+        "executed task input differs from frozen mapping"
+    );
     let result = json!({"schema":match flow {
             ResearchFlow::RetainedOnly => "hepta.research.real-model-native-completion.v1",
             ResearchFlow::ExternalTrainedArtifact => "hepta.research.external-trained-native-completion.v1",
@@ -1161,6 +1216,9 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         "operation":driver.operation,"initial_learning_head":initial.snapshot().head_digest.to_string(),"learning_head":finished.head_digest.to_string(),
         "checkpoint_sha256":d(&raw).to_string(),"frozen_plan_sha256":driver.frozen,"evaluation_profile":objective.to_string(),
         "actual_training_optimizer_steps":10,"actual_source_forward_calls":1,"actual_evaluation_forward_calls":8,"actual_next_task_forward_calls":1,
+        "task_input_profile":driver.prepared["task_input_profile"],
+        "source_input_sha256":d(&source_input).to_string(),"next_input_sha256":d(next_input).to_string(),
+        "task_prompt_content_distinct":source_value["prompt"] != next_value["prompt"],
         "disposition":if updated {"ResearchExternalTrainedArtifactAdopt"} else {"NoUpdate"},
         "real_new_candidate_adoption":updated && adoption_check.is_ok(),"native_proposal_update_candidates":updated,"selected_adapter":selected_material["adapter"],
         "selected_artifact_sha256":selected_material["file_sha256"],

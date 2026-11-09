@@ -1,5 +1,25 @@
 # Actual native model research validation, 2026-11-08
 
+## Explicit source and successor inputs, 2026-11-09
+
+The historical runs below used different request/run identities with the same
+prompt content. They prove two actual forwards and retained-version consumption,
+not two content-distinct tasks or ordinary daemon ingress.
+
+The process driver now supports `task_input_profile: distinct-source-next-v2`.
+This profile requires an explicit bounded `source_prompt`, different from the
+original plan's `next_prompt`. Preparation freezes both complete inputs with
+their exact source/next request IDs; native routing, live probe and cold readback
+must use the matching input. Raw task inputs and their digests are retained, and
+the completion record reports whether the executed prompt contents differ.
+Changing the mapping or either prompt after freezing refuses execution.
+
+Configurations without the new profile retain `shared-next-prompt-v1` semantics
+and cannot claim distinct content. A `source_prompt` on that legacy profile is
+rejected rather than ignored. These controls do not change training, evaluation,
+research custody, authority or scientific qualification. Historical passes do
+not qualify the changed source; a new exact-source execution is required.
+
 ## Tested source
 
 Commit 27849cbdcfc0d4afc69764d6c1742af22c41c293, tree

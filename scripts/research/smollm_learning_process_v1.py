@@ -19,6 +19,8 @@ import time
 
 HELPER_SHA = "185e747bb90e4c793ea9c2bc0ce8606f88780d7154873e153a902f4da4e2ee4e"
 WORKER_SHA = "10c09efcb24d65ce850ccbee61f3034262fa026ee5d19adab90bc9eda67049c0"
+LEGACY_TASK_INPUTS = "shared-next-prompt-v1"
+DISTINCT_TASK_INPUTS = "distinct-source-next-v2"
 
 
 def canonical(value):
@@ -42,6 +44,50 @@ def save(path, value):
         "sha256": hashlib.sha256(raw).hexdigest(),
         "bytes": len(raw),
     }
+
+
+def freeze_task_inputs(config, next_prompt):
+    """Bind each actual task's complete input; legacy replay stays explicit."""
+    profile = config.get("task_input_profile", LEGACY_TASK_INPUTS)
+    if profile not in (LEGACY_TASK_INPUTS, DISTINCT_TASK_INPUTS):
+        raise ValueError("unsupported task input profile")
+    if profile == LEGACY_TASK_INPUTS:
+        if "source_prompt" in config:
+            raise ValueError("source_prompt requires the distinct task input profile")
+        source_prompt = next_prompt
+    else:
+        source_prompt = config.get("source_prompt")
+    for prompt in (source_prompt, next_prompt):
+        if not isinstance(prompt, str) or not prompt.strip() or len(prompt.encode()) > 2048:
+            raise ValueError("bounded explicit source and next prompts required")
+    if profile == DISTINCT_TASK_INPUTS and source_prompt == next_prompt:
+        raise ValueError("source and next prompt content must differ")
+    operation = config.get("operation")
+    if not isinstance(operation, str) or not operation:
+        raise ValueError("task operation required")
+    inputs = {
+        label: dict(mode="conditional_binary", request_id=operation + "-" + label, prompt=prompt)
+        for label, prompt in (("source-task", source_prompt), ("next-task", next_prompt))
+    }
+    if any(len(canonical(value)) > 4096 for value in inputs.values()):
+        raise ValueError("task input exceeds native input bound")
+    return dict(task_input_profile=profile, task_inputs=inputs)
+
+
+def validate_frozen_task_inputs(config, frozen):
+    expected = freeze_task_inputs(config, frozen["next_prompt"])
+    present = "task_inputs" in frozen or "task_input_profile" in frozen
+    if present:
+        if any(frozen.get(key) != value for key, value in expected.items()):
+            raise ValueError("frozen task inputs differ from the pinned config")
+    elif expected["task_input_profile"] != LEGACY_TASK_INPUTS:
+        raise ValueError("distinct task inputs require their frozen mapping")
+    return expected
+
+
+def validate_probe_inputs(task_context, inputs):
+    if inputs not in task_context["task_inputs"].values():
+        raise ValueError("probe input differs from its exact frozen task")
 
 
 def main():
@@ -85,9 +131,10 @@ def main():
     if profile == "external-trained-artifact-v1":
         before[str(helper_path)] = sha(helper_path)
     if action == "prepare":
-        root.mkdir(mode=0o700, exist_ok=False)
         previous_result = json.loads((previous / "training-result.json").read_bytes())
         previous_plan = json.loads((previous / "frozen-plan.json").read_bytes())
+        task_context = freeze_task_inputs(config, previous_plan["next_task"]["prompt"])
+        root.mkdir(mode=0o700, exist_ok=False)
         parent_index, dataset_index = (
             (1, 0) if profile == "external-trained-artifact-v1" else (0, 1)
         )
@@ -134,6 +181,7 @@ def main():
             independent_evaluation=False,
             qualification="HOLD_NO_GO",
         )
+        frozen.update(task_context)
         if profile == "external-trained-artifact-v1":
             frozen["research_profile"] = profile
             frozen["next_request_id"] = config["operation"] + "-next-task"
@@ -165,11 +213,13 @@ def main():
             next_prompt=frozen["next_prompt"],
             device_sha256=sha("/proc/sys/kernel/osrelease"),
         )
+        result.update(task_context)
         if profile == "external-trained-artifact-v1":
             result["research_profile"] = profile
             result["runtime_scripts"] = runtime_scripts
     else:
         frozen = json.loads((root / "frozen.json").read_bytes())
+        task_context = validate_frozen_task_inputs(config, frozen)
         assert (
             frozen["operation"] == config["operation"]
             and frozen["source_before"] == before
@@ -341,10 +391,7 @@ def main():
             )
         elif action in ("probe", "probe_recover"):
             inputs = request["inputs"]
-            assert (
-                inputs["mode"] == "conditional_binary"
-                and inputs["prompt"] == frozen["next_prompt"]
-            )
+            validate_probe_inputs(task_context, inputs)
             material = parent
             if profile == "external-trained-artifact-v1":
                 assert inputs["request_id"] in (
