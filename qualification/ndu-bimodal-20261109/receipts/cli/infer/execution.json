@@ -1,0 +1,600 @@
+{
+  "action": "SUBMIT",
+  "cursors": [
+    16,
+    0,
+    0,
+    128
+  ],
+  "checkpoint_sha256": "b613a7d5be3bda45a4d75bdef03f6f513b66e997aca4cbbb75a35d11444c9c61",
+  "binary_sha256": "e128d01a00dae260f4751ea628f124055c75dc4331dab36ed7e00bd66ec700be",
+  "public_sha256": "67ee7575ca56af220b0f235c88c880119636deb1160c4386e79d2c4f33f3a9a6",
+  "state_sha256": "66bf58d75d86fb222a9d791d014abb56f89ed5611fb3321d698cbd7eff23239e",
+  "text_utf8": "ueeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "image_sha256": "b6e6db6ba5ce660c77d0def8be18182b033f73c34e024cba3f0dba55b2b82389",
+  "state_max_abs_error": 6.106226635438361e-16,
+  "calls": [
+    {
+      "kind": "observation",
+      "command_hex": "00110000000000000000",
+      "status": "passed",
+      "request_sha256": "536bc734de84c719450b86c5001b42aec0793adccb0dec9cccee539f3e472db7",
+      "request_bytes": 5059663,
+      "owner_remaining_micros": 29908432,
+      "timeout_seconds": 3.0,
+      "stdout_sha256": "e85a714389c48212c370cc74a0ca9285394f02814a7382ab85114ead538b3d55",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "phase_micros": [
+        72666,
+        498,
+        0,
+        0
+      ],
+      "wall_seconds": 0.08096778099934454,
+      "child_cpu_seconds": 0.077541,
+      "cost_scope": "native invocation nested in owner ledger; do not add twice"
+    },
+    {
+      "kind": "generate",
+      "command_hex": "0104",
+      "status": "passed",
+      "request_sha256": "f898d0fa7130b5103774e58b4500e4240535056ae18816237bd11a5c18733a0e",
+      "request_bytes": 5063741,
+      "owner_remaining_micros": 29815896,
+      "timeout_seconds": 3.0,
+      "stdout_sha256": "c31566734873dc7d07e718fec2cda8644cd1a7f06bbb20e264b7a8d9e1b3bdac",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "phase_micros": [
+        71597,
+        0,
+        436,
+        0
+      ],
+      "wall_seconds": 0.08026593400063575,
+      "child_cpu_seconds": 0.07683299999999998,
+      "cost_scope": "native invocation nested in owner ledger; do not add twice"
+    },
+    {
+      "kind": "generate",
+      "command_hex": "0101",
+      "status": "passed",
+      "request_sha256": "be400d329fbbb268a3c243e42d94bb0287de1cfd5d6f717f30a1c1e8d5b07a34",
+      "request_bytes": 5063741,
+      "owner_remaining_micros": 29725623,
+      "timeout_seconds": 3.0,
+      "stdout_sha256": "5cd75040832bebb9971b47400345fb5713df6a5e9d231cc3e027895d67bc747b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "phase_micros": [
+        70372,
+        0,
+        372,
+        0
+      ],
+      "wall_seconds": 0.07919541299997945,
+      "child_cpu_seconds": 0.07581199999999999,
+      "cost_scope": "native invocation nested in owner ledger; do not add twice"
+    },
+    {
+      "kind": "submit",
+      "command_hex": "0106",
+      "status": "passed",
+      "request_sha256": "2c52755d5feb1a240fdac64560ea10f6347a7804eaa14ba632e35d32c23b27b3",
+      "request_bytes": 5063741,
+      "owner_remaining_micros": 29639510,
+      "timeout_seconds": 3.0,
+      "stdout_sha256": "5faa1e496d43413a22888f28dad654452b9982d75253cc4c0dd5b7104fb66c4d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "phase_micros": [
+        71718,
+        0,
+        2302,
+        0
+      ],
+      "wall_seconds": 0.08048704099928727,
+      "child_cpu_seconds": 0.07876300000000004,
+      "cost_scope": "native invocation nested in owner ledger; do not add twice"
+    }
+  ],
+  "semantic_quality": null,
+  "production_update": "no-update",
+  "allocation": {
+    "text": 1,
+    "image": 1,
+    "both": 0
+  },
+  "requested_policy": "dynamic",
+  "effective_policy": "static-quota",
+  "dynamic_admitted": false,
+  "fallback_reason": "native state/semantic calibration and measured future net-gain absent",
+  "cost_ledger": {
+    "wall_seconds": 0.470766898994043,
+    "cpu_seconds": 0.17337375500000007,
+    "byte_seconds": 2445498.9488646677,
+    "calls": 4,
+    "monetary": null,
+    "elapsed_seconds": 0.49035173199808924,
+    "resident_bytes": 5150756,
+    "events": [
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 51.778633574595005,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 98474.22412700726,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 177.41419102461805,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "observation",
+        "status": "ok",
+        "wall_seconds": 0.031035929001518525,
+        "cpu_seconds": 0.031038244999999964,
+        "byte_seconds": 0.0,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 241.21080454124967,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 462480.1838576056,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "control",
+        "status": "ok",
+        "wall_seconds": 0.09142888399946969,
+        "cpu_seconds": 0.09143331500000018,
+        "byte_seconds": 0.0,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 32073.317443272168,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 409291.25505390816,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "observation",
+        "status": "ok",
+        "wall_seconds": 0.08092124199902173,
+        "cpu_seconds": 0.006334273000000001,
+        "byte_seconds": 0.0,
+        "calls": 1,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 327.5143939852969,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 18890.92603687451,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "control",
+        "status": "ok",
+        "wall_seconds": 0.0037699089989473578,
+        "cpu_seconds": 0.003772652999999959,
+        "byte_seconds": 0.0,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 263.8139081938061,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 36.21337355997821,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 89.87093601466768,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 8045.604003542503,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "control",
+        "status": "ok",
+        "wall_seconds": 0.0015774399980728049,
+        "cpu_seconds": 0.0015790089999998536,
+        "byte_seconds": 0.0,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 27578.705520399435,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 412369.6942936708,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "generate",
+        "status": "ok",
+        "wall_seconds": 0.08022260999860009,
+        "cpu_seconds": 0.006198261000000205,
+        "byte_seconds": 0.0,
+        "calls": 1,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 345.5783642234019,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 19425.10315660349,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "control",
+        "status": "ok",
+        "wall_seconds": 0.0037934539977868553,
+        "cpu_seconds": 0.0037953559999999165,
+        "byte_seconds": 0.0,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 226.91434482856494,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 77.97111894238697,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 4219.35740476556,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "control",
+        "status": "ok",
+        "wall_seconds": 0.0008326300012413412,
+        "cpu_seconds": 0.0008347920000000286,
+        "byte_seconds": 0.0,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 20121.716087384684,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 406805.06515719567,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "generate",
+        "status": "ok",
+        "wall_seconds": 0.07915890999720432,
+        "cpu_seconds": 0.006179433000000012,
+        "byte_seconds": 0.0,
+        "calls": 1,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 455.01663775765337,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 14968.428058811896,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "control",
+        "status": "ok",
+        "wall_seconds": 0.002927375000581378,
+        "cpu_seconds": 0.002929838000000018,
+        "byte_seconds": 0.0,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 226.14297741332848,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 18753.21551583189,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 413570.347646739,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "submit",
+        "status": "ok",
+        "wall_seconds": 0.08045214999947348,
+        "cpu_seconds": 0.004628164999999962,
+        "byte_seconds": 0.0,
+        "calls": 1,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 318.6417561008966,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 72484.91535270016,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "control",
+        "status": "ok",
+        "wall_seconds": 0.01411546199960867,
+        "cpu_seconds": 0.014118603999999868,
+        "byte_seconds": 0.0,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 235.0035533634582,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 2674.00507738339,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "submit",
+        "status": "ok",
+        "wall_seconds": 0.0005309040025167633,
+        "cpu_seconds": 0.0005318110000001042,
+        "byte_seconds": 0.0,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 113.7168735317573,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 35.63670378576717,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      },
+      {
+        "kind": "residency",
+        "status": "ok",
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "byte_seconds": 50.44650013014325,
+        "calls": 0,
+        "monetary": null,
+        "detail": ""
+      }
+    ]
+  },
+  "whole_cli_wall_seconds": 0.49464797800101223,
+  "whole_cli_parent_cpu_seconds": 0.197229176,
+  "whole_cli_child_cpu_seconds": 0.30894900000000003,
+  "accounting": "whole CLI and ledger clocks overlap; child CPU is separate; do not sum overlapping wall clocks",
+  "residency_scope": "logical named payload bytes; Python/Torch/native heap and RSS are not fully inventoried",
+  "complete_real_resource_accounting": false
+}

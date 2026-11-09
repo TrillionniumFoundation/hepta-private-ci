@@ -1,0 +1,90 @@
+{
+  "completed_qualification_runs": 2,
+  "entries": [
+    {
+      "counts_as_training_attempt": false,
+      "evidence": "Root agent tool observation; no run JSON created; full 40-character SHA required.",
+      "exit_code": 2,
+      "id": "runner-short-sha",
+      "kind": "argument-preflight",
+      "output_directory_created": false,
+      "status": "rejected",
+      "submitted_sha": "a945af520",
+      "training_started": false
+    },
+    {
+      "controller_fits": 6,
+      "counts_as_training_attempt": true,
+      "decision": "no-update",
+      "id": "attempt-001",
+      "kind": "qualification",
+      "python_tests_run": 37,
+      "reason": "Superseded after pending READ packet identity and cold-load calibration/feature validation fixes; raw evidence preserved.",
+      "receipt": "receipts/attempt-001/qualification.json",
+      "receipt_sha256": "1ce50dd98bd8d5bba064475b58af97d262ed684758133e761420324679ca3a13",
+      "rust_passed": 25,
+      "skipped": 0,
+      "source_commit": "a945af5202f61b9c0a7eeb241ca4c72afb5a275a",
+      "status": "superseded",
+      "training_started": true
+    },
+    {
+      "adjustment": "Freeze actual CLI/v4 dependency hashes and record full Git status instead of requiring unrelated concurrently edited controller files to be clean.",
+      "counts_as_training_attempt": false,
+      "id": "cli-preflight",
+      "infer_started": false,
+      "kind": "harness-preflight",
+      "reason": "Tracked source is not clean at acceptance start",
+      "receipt": "receipts/cli/preflight-attempt-1/report.json",
+      "started_at": "2026-11-09T08:42:14.077540+00:00",
+      "status": "failed",
+      "training_started": false
+    },
+    {
+      "counts_as_training_attempt": true,
+      "decision": "no-update",
+      "effective_policy": "static-quota",
+      "id": "cli-validation",
+      "kind": "public-cli",
+      "receipt": "receipts/cli/report.json",
+      "receipt_sha256": "896ebc49d4fbcae800f3c238a4c68891fb5f270de24d2a598f671841675694f4",
+      "requested_policy": "dynamic",
+      "source_commit": "a945af5202f61b9c0a7eeb241ca4c72afb5a275a",
+      "status": "passed_cli_contract_checks",
+      "training_scope": "One v4 content CLI fit, seed 41/12 steps; not another finite-controller fit or independent study.",
+      "training_started": true
+    },
+    {
+      "counts_as_failed_training": false,
+      "counts_as_training_attempt": false,
+      "elapsed_seconds": 1.2674933029993554,
+      "exit_code": 1,
+      "id": "cli-wrong-weight-sha",
+      "kind": "expected-negative",
+      "output_directory_created": false,
+      "receipt": "receipts/cli/commands.json",
+      "status": "passed_expected_rejection",
+      "training_started": false
+    },
+    {
+      "controller_fits": 6,
+      "counts_as_training_attempt": true,
+      "decision": "no-update",
+      "id": "cloud-final",
+      "kind": "qualification",
+      "project_cloud_environment_verified": false,
+      "python_tests_run": 39,
+      "receipt": "receipts/cloud-final/qualification.json",
+      "receipt_sha256": "28881525a1e6f46da4ce5c58ecbd080de999fa001477644be7016cfddf9a92a8",
+      "rust_passed": 25,
+      "same_registered_future_seeds_as_first_run": true,
+      "skipped": 0,
+      "source_commit": "2b70482f55d1b2007f04ad8636add032229d5fa1",
+      "status": "final",
+      "training_started": true
+    }
+  ],
+  "public_cli_validation_runs": 1,
+  "schema": "hepta.bimodal.attempts.v1",
+  "selection": "Final rerun follows correctness fixes, not best-seed/best-future selection; reused sources are not independent new validation."
+}

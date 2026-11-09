@@ -1,0 +1,104 @@
+{
+  "baseline_sha256": "b2bb46e59c4c517b2d21ac1ac3353f61961277aa9d06c239f6815fe7d04423e7",
+  "candidate_sha256": "b613a7d5be3bda45a4d75bdef03f6f513b66e997aca4cbbb75a35d11444c9c61",
+  "changed_parameter_groups": [
+    "action_embedding",
+    "adapters",
+    "audio_encoder",
+    "core",
+    "emissions",
+    "encoder_fusion",
+    "feedback_projection",
+    "image_encoder",
+    "initial_slots",
+    "text_condition",
+    "text_recurrent",
+    "token_encoder",
+    "transition_input",
+    "video_encoder"
+  ],
+  "losses": [
+    {
+      "image_mse": 0.15829262197087093,
+      "step": 0,
+      "text_nll": 5.358055562044598
+    },
+    {
+      "image_mse": 0.15197966274898977,
+      "step": 1,
+      "text_nll": 4.992281871009267
+    },
+    {
+      "image_mse": 0.16190736628291696,
+      "step": 2,
+      "text_nll": 5.1104916105961795
+    },
+    {
+      "image_mse": 0.159024754621297,
+      "step": 3,
+      "text_nll": 5.006091798705261
+    },
+    {
+      "image_mse": 0.1549532075871799,
+      "step": 4,
+      "text_nll": 4.759342934136859
+    },
+    {
+      "image_mse": 0.15484911808124793,
+      "step": 5,
+      "text_nll": 4.485814459721968
+    },
+    {
+      "image_mse": 0.1430236504936249,
+      "step": 6,
+      "text_nll": 4.058571989243253
+    },
+    {
+      "image_mse": 0.1514230660845632,
+      "step": 7,
+      "text_nll": 4.053302352507051
+    },
+    {
+      "image_mse": 0.13798251633652872,
+      "step": 8,
+      "text_nll": 3.7080175268179545
+    },
+    {
+      "image_mse": 0.14796421797092918,
+      "step": 9,
+      "text_nll": 3.6411480925846478
+    },
+    {
+      "image_mse": 0.1505343185550708,
+      "step": 10,
+      "text_nll": 3.416509693892973
+    },
+    {
+      "image_mse": 0.12676398446649204,
+      "step": 11,
+      "text_nll": 3.164413813951056
+    }
+  ],
+  "old_actor_trained": false,
+  "schema": "hepta.bimodal.content-training.v1",
+  "scope": "generated colour-card content training; no semantic or NDU gain claim",
+  "seed": 41,
+  "steps": 12,
+  "terminal_heads_trained": false,
+  "training_identity": "061509aece0aea2bdf5b6ceccdba111a6489ee57a8e01c227727901338550c49",
+  "training_sources": [
+    "ceb32354dff217e2f9be2889b6d0d1ac9b38f8231ed90c22e9c726864cf62d30",
+    "78a9fe8ade058e5dfedc9a9308ca7505054ddfba43795bd92b2481646a847708",
+    "8127c6ed9d492b449dac8d5efd53ea6c24775c59c913876c5bd58ac18cae2351",
+    "838b677d80154917926d44e23531904a8a8577a3163d787c8c6d58c81aaad213",
+    "4f063c5421928b7995175912de6d1c685cba5437da3e0ea149c81bed57053d7a",
+    "0fb622adb8dff0526b51c14ec6c75239bf5656caae04332791afddb0c7ce5817",
+    "864e2828f2d53287605792c5be996b5eef788b8a251bb306ffe008e0806dc9ed",
+    "0072d35245f4a32ed19d597a9d4533ee9a02b4e8094ad296ef91754c0c3d46a1",
+    "a7a07706a18a785cdb9f1b54d046aa8e12abf43de5dff8d25b2d6090bc1e081b",
+    "89d7a2c4a1bb14db6ec24c0abd60f61c8f7b91e481c10859e1dc23e0216fe64d",
+    "8889c3adb6c54918f2ebbf9106f2f515f7eab91f2c85479f49e27bc206ae7c7c",
+    "4294ae3546efd81d61cdadfdf5dfa9671641e9480ddd499d7238916de1294438"
+  ],
+  "wall_seconds": 0.30806195799959823
+}

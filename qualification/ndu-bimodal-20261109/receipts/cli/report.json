@@ -1,0 +1,58 @@
+{
+  "accounting": "Raw CLI/child/ledger clocks are retained; overlapping clocks are not additive. No semantic pass is asserted.",
+  "binary_sha256": "e128d01a00dae260f4751ea628f124055c75dc4331dab36ed7e00bd66ec700be",
+  "checks": {
+    "binary_hash_matches": true,
+    "dynamic_not_admitted": true,
+    "effective_static_quota": true,
+    "image_hash_matches": true,
+    "native_calls_passed": true,
+    "no_update": true,
+    "parity_error_finite": true,
+    "ppm_decodes_16x16_rgb": true,
+    "real_accounting_incompleteness_preserved": true,
+    "requested_dynamic": true,
+    "semantic_quality_unassessed": true,
+    "static_schedule_applied": true,
+    "weights_hash_matches": true
+  },
+  "commands_receipt": "commands.json",
+  "cost_receipt": "infer/execution.json",
+  "decoded_output": {
+    "format": "PPM",
+    "mode": "RGB",
+    "size": [
+      16,
+      16
+    ]
+  },
+  "dynamic_admitted": false,
+  "effective_policy": "static-quota",
+  "elapsed_seconds": 6.905524866000633,
+  "fallback_reason": "native state/semantic calibration and measured future net-gain absent",
+  "finished_at": "2026-11-09T08:43:24.907039+00:00",
+  "generated_image_sha256": "b6e6db6ba5ce660c77d0def8be18182b033f73c34e024cba3f0dba55b2b82389",
+  "generated_text_bytes": 128,
+  "input_created_after_checkpoint_freeze": true,
+  "input_disjoint_from_training_image_hashes": true,
+  "input_seed": 9100011,
+  "input_sha256": "684489fc04f9fdd47f519e8f280f2242bb69dec15f43a528d0bb1cce42c2dc81",
+  "native_calls": 4,
+  "production_update": "no-update",
+  "requested_policy": "dynamic",
+  "schema": "hepta.bimodal.public-cli-acceptance.v1",
+  "scientific_acceptance": "HOLD_NO_GO",
+  "scope": "actual train/infer CLI contract; no semantic efficacy evaluation",
+  "semantic_quality": null,
+  "semantic_quality_evaluated": false,
+  "source_commit": "a945af5202f61b9c0a7eeb241ca4c72afb5a275a",
+  "started_at": "2026-11-09T08:43:18.001564+00:00",
+  "state_max_abs_error": 6.106226635438361e-16,
+  "status": "passed_cli_contract_checks",
+  "weights_sha256": "b613a7d5be3bda45a4d75bdef03f6f513b66e997aca4cbbb75a35d11444c9c61",
+  "wrong_weight_sha": {
+    "exit_code": 1,
+    "output_created": false,
+    "rejected": true
+  }
+}
