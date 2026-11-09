@@ -1,0 +1,51 @@
+name: Hepta Cell local update contracts
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-types/**"
+      - ".github/workflows/hepta-cell-local-update.yml"
+  push:
+    branches:
+      - codex/cell-stem-routes-20261108-5e692
+      - work/cell-fixed-graph-20261109-30a869
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-cell-local-update-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-local-update:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            codex-rs
+            scripts
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Test native bundles and local-update restrictions
+        run: just test --locked -p codex-hepta-learning-artifacts --lib --test-threads 2
+      - name: Retain the native original report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-local-update-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: codex-rs/target/nextest/local/junit.xml
+          if-no-files-found: warn
+          retention-days: 14

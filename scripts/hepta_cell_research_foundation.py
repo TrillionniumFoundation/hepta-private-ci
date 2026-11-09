@@ -3,10 +3,12 @@
 import re
 
 import hepta_cell_joint_config as joint
+import hepta_cell_source_registry as source_registry_adapter
 
 
 SCHEMA = "hepta.cell-research-foundation.v1"
 SCHEMA_V2 = "hepta.cell-research-foundation.v2"
+SCHEMA_V3 = "hepta.cell-research-foundation.v3"
 ARTIFACT_ROLES = (
     "trajectory",
     "source_registry",
@@ -28,9 +30,11 @@ def review(document, evidence, joint_result):
     if not isinstance(document, dict) or document.get("schema") not in (
         SCHEMA,
         SCHEMA_V2,
+        SCHEMA_V3,
     ):
         raise ValueError("unknown foundation schema")
     legacy = document["schema"] == SCHEMA
+    typed_sources = document["schema"] == SCHEMA_V3
     fields = {
         "schema",
         "joint_configuration_sha256",
@@ -61,11 +65,14 @@ def review(document, evidence, joint_result):
                 "successor expectation requires a bounded task and explicit model role"
             )
         expectation = dict(expectation)
-    checked, readback = {}, None
+    checked, readback, source_registry = {}, None, None
     for role in ARTIFACT_ROLES:
         binding = artifacts[role]
         if role == "successor" and not legacy:
             readback = evidence.read(binding)
+            checked[role] = dict(binding)
+        elif role == "source_registry" and typed_sources:
+            source_registry = evidence.read(binding)
             checked[role] = dict(binding)
         else:
             checked[role] = evidence.read(binding, document=False)
@@ -102,7 +109,7 @@ def review(document, evidence, joint_result):
             )
             successor_status = "verified"
             successor_reason = "bound_to_verified_configuration"
-    return {
+    result = {
         "schema": "hepta.cell-research-foundation-review.v1",
         "foundation_schema": document["schema"],
         "foundation_bytes_verified": True,
@@ -128,3 +135,14 @@ def review(document, evidence, joint_result):
             else "SUCCESSOR_ADAPTER_UNSUPPORTED"
         ],
     }
+    if typed_sources:
+        result["source_registry_review"] = source_registry_adapter.review(
+            source_registry,
+            configuration_sha256=document["joint_configuration_sha256"],
+            protocol_sha256=document["protocol_sha256"],
+            successor_task_id=expectation["task_id"],
+        )
+        # Consistent source declarations do not establish actual exposure,
+        # custody, owner authenticity, or execution of an unseen successor.
+        result["blockers"].append("SOURCE_REGISTRY_CUSTODY_UNVERIFIED")
+    return result

@@ -1,0 +1,295 @@
+{
+  "schema": "hepta.sqlx-sqlite.compatibility-source.v1",
+  "crate": "sqlx-sqlite",
+  "version": "0.9.0",
+  "candidate_base": "877d7d549675175bdfe3348cc2ff57c094e76b5f",
+  "url": "https://static.crates.io/crates/sqlx-sqlite/sqlx-sqlite-0.9.0.crate",
+  "archive_sha256": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c",
+  "archive_bytes": 93440,
+  "file_count": 57,
+  "licenses": [
+    {
+      "path": "LICENSE-APACHE",
+      "sha256": "154397a08d0cb342110281129971868cd562542d0780b0d10722788cd11a1399"
+    },
+    {
+      "path": "LICENSE-MIT",
+      "sha256": "72af89a828df52a9dcc42512ed64663b3b8d7961dd7a5586d44478eede82bc7a"
+    }
+  ],
+  "edits": [
+    {
+      "path": "Cargo.toml",
+      "before_sha256": "d659405cf1a18299845d699b4ab681a3d341805556c4a837d70f5f1c3589bb9a",
+      "after_sha256": "22248dc7badb2a69fbbb8d6e60e1e45cc366f53625624fe5c491d024c3917366"
+    },
+    {
+      "path": "Cargo.toml.orig",
+      "before_sha256": "af4193e1d9d8e9f63c85bf2468cdb24f4e9b7c217bd0745082fecf1a7369b0c6",
+      "after_sha256": "fbe1e31c9a853658caff948fe9c7a7f40798706c5396de9adbd7738f1af31cd7"
+    }
+  ],
+  "minimal_patch_sha256": "c9020f366384cfa6353483f200d7b7c6ecb077c28a1621d1d5cc0839cf1e051e",
+  "unchanged_official_files": [
+    {
+      "path": ".cargo_vcs_info.json",
+      "sha256": "34f4ec6fd11a78aa8ef5214c49a5c2d5dffd80079196c13797887f36a88b9cab"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "aa84ca06b7b49982d0242cc5e4154e67bc2608434000da2e750864fbc8ff06f9"
+    },
+    {
+      "path": "LICENSE-APACHE",
+      "sha256": "154397a08d0cb342110281129971868cd562542d0780b0d10722788cd11a1399"
+    },
+    {
+      "path": "LICENSE-MIT",
+      "sha256": "72af89a828df52a9dcc42512ed64663b3b8d7961dd7a5586d44478eede82bc7a"
+    },
+    {
+      "path": "src/any.rs",
+      "sha256": "8e53372c37cee839dca016d16b6e8ea44432c0da41e68e548ec6bda84d90c6e0"
+    },
+    {
+      "path": "src/arguments.rs",
+      "sha256": "ba3cf95aa22adacddb01aee53918e77aaea8636c0e390e7800299eec1498ff58"
+    },
+    {
+      "path": "src/column.rs",
+      "sha256": "b3951777b4b94f5512038da6d0ab5dc59a42d12937281dab9b18c9f79a94c350"
+    },
+    {
+      "path": "src/connection/collation.rs",
+      "sha256": "d863421fe2f377315ca75c2912e702b13cbb4b978ec3940989ae08c9acf2f752"
+    },
+    {
+      "path": "src/connection/describe.rs",
+      "sha256": "f3cf13697aa71f09037017978f24292d358e4c2cdf32b06684e6fbb9e0d09372"
+    },
+    {
+      "path": "src/connection/deserialize.rs",
+      "sha256": "313984d02f10029201541e690ffda6f3620176b9676e598dac32d6ce04f59c3c"
+    },
+    {
+      "path": "src/connection/establish.rs",
+      "sha256": "447d5067838ec05c713a53b381df4b8ae16652917b4206c553cdea6d3a1fe92a"
+    },
+    {
+      "path": "src/connection/execute.rs",
+      "sha256": "d51b358721e8d790b3e81f1be6cf1d5db9391d0a81d6e04f607033fda7e61bf7"
+    },
+    {
+      "path": "src/connection/executor.rs",
+      "sha256": "290451e396a8337eb8d850757537b8830d834790e386ed9f3887c8257a567e08"
+    },
+    {
+      "path": "src/connection/explain.rs",
+      "sha256": "4ec3e03d58eeb0ac5a0ca8621319291c7b3450c1bd3851a1b377410fe9d65ddd"
+    },
+    {
+      "path": "src/connection/handle.rs",
+      "sha256": "63d9b11374ebd453f3f7d0be95a728030f05997d5ccdc756fd8057ee0d31dc6f"
+    },
+    {
+      "path": "src/connection/intmap.rs",
+      "sha256": "8bab4e1d38cf98ddbc463ac4ace1c4d4cfd34cda1a8e56ea71fcb674e3f25508"
+    },
+    {
+      "path": "src/connection/mod.rs",
+      "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd"
+    },
+    {
+      "path": "src/connection/preupdate_hook.rs",
+      "sha256": "9430c89b380aedf4cd96eac5ea38e3d0f214f8e3ba0e6782ce5c3ed828627402"
+    },
+    {
+      "path": "src/connection/worker.rs",
+      "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4"
+    },
+    {
+      "path": "src/database.rs",
+      "sha256": "d2ba29891e6cce6867c27f8bc1f406e0e424546f904ee85fd50edc7e3c170856"
+    },
+    {
+      "path": "src/error.rs",
+      "sha256": "446bf97a158fc6a3978fb8965e8c3d500e00baf6e9cc3fba086cd689c05579ad"
+    },
+    {
+      "path": "src/lib.rs",
+      "sha256": "6e19e45ffc8e018912798e2290527a2a332ecc775b70bd86223efffc06d6e57b"
+    },
+    {
+      "path": "src/logger.rs",
+      "sha256": "1e988a76580540586de2548a04081598615cbef88934d2a7afa1c7b2828ed471"
+    },
+    {
+      "path": "src/migrate.rs",
+      "sha256": "039a8072ddf9b05363f47ebde40f3649c040d329cfd81e1d2b2745c53c01790d"
+    },
+    {
+      "path": "src/options/auto_vacuum.rs",
+      "sha256": "0669bc62f9d0600e106443eeb1521635032ac48c123cbc232540fa3822aaaafd"
+    },
+    {
+      "path": "src/options/connect.rs",
+      "sha256": "6eab2d3914a2c9f35c60bd8b324e46790eca39a23c30a0d4101e35be52b04253"
+    },
+    {
+      "path": "src/options/journal_mode.rs",
+      "sha256": "73fd87ed1e830a127a5765ca5f7c22c717e5dec45c0c39fd33256348a4e1e695"
+    },
+    {
+      "path": "src/options/locking_mode.rs",
+      "sha256": "41e10ca2b5cb8f53306676aa29c884d4bc22be8cc0c9b2540aa191ed1c25ecb4"
+    },
+    {
+      "path": "src/options/mod.rs",
+      "sha256": "ff5005abc6408f2df073d95bf3440c2a3ee96c1a312d73468bf66123f8ab2f1e"
+    },
+    {
+      "path": "src/options/parse.rs",
+      "sha256": "d94008fcdd7e03e2df1c6c0d788cc55cde42e772a83efb6e5f4839249154e156"
+    },
+    {
+      "path": "src/options/synchronous.rs",
+      "sha256": "08b2ca83c2ed6781040d3cf49871cd45fc16321aad9c78ac0ab63ab0e2117d81"
+    },
+    {
+      "path": "src/query_result.rs",
+      "sha256": "228e6a059828ca9413881334ec891d33b8ef08062743917929447722ef8bf4bb"
+    },
+    {
+      "path": "src/regexp.rs",
+      "sha256": "ea7a509291d3c9fcbaaa97cd02a139ee5be4608db68adac94829e160ac2cf6a1"
+    },
+    {
+      "path": "src/row.rs",
+      "sha256": "1efd553cc6242f7c3217dc296ecedadebf9cafc1e83f04f8f3746eae40263484"
+    },
+    {
+      "path": "src/statement/handle.rs",
+      "sha256": "29b57bec4f15647b8057f46c450146c32b412f4ac5573717e09c929158231718"
+    },
+    {
+      "path": "src/statement/mod.rs",
+      "sha256": "71a7093f2f03065667da92a26843872be74ebd2ae1e216f98b669b6df48626c8"
+    },
+    {
+      "path": "src/statement/unlock_notify.rs",
+      "sha256": "3c57283b3a1e3ad8a77263f59f2fcd50046db01c425d286d2ce346f4a89639de"
+    },
+    {
+      "path": "src/statement/virtual.rs",
+      "sha256": "527a73735223d789abf7c403ab5c85482511719ff5aae6be7331100d528c220f"
+    },
+    {
+      "path": "src/testing/mod.rs",
+      "sha256": "fe6f6e31fbde5d6d37bf57f8179cd35cb89fe659466163c0f75d6d996a74b3d8"
+    },
+    {
+      "path": "src/transaction.rs",
+      "sha256": "5f6958702455ef631a9a7290e63c1666e60731c85ffc828a176c39d0ce01f6be"
+    },
+    {
+      "path": "src/type_checking.rs",
+      "sha256": "c52de7ef80bc362837006a30e8a0bddfdffc7c5350797b57a60a998f861775d5"
+    },
+    {
+      "path": "src/type_info.rs",
+      "sha256": "648170984482d66f22e48f5229dc959355a7bc4a34725e58c43eb2335ff9e19a"
+    },
+    {
+      "path": "src/types/bool.rs",
+      "sha256": "91c102eb72e593d72aec4c7409a1eb3278bcbefd13b1bb7e56b63ee94c22ded8"
+    },
+    {
+      "path": "src/types/bytes.rs",
+      "sha256": "4b100252d1e16606e0246dafb47fa9f75e832440199ac75de6f757b8d451f8bc"
+    },
+    {
+      "path": "src/types/chrono.rs",
+      "sha256": "35d95627aadc0f3bf68fd75f9badb7e71a49bc107ef5617f7d55acc9c90c7e77"
+    },
+    {
+      "path": "src/types/float.rs",
+      "sha256": "3c31f61d58fbc7314a2acb74ebf29ddff1759a3dca090179a1a192aceeb411e1"
+    },
+    {
+      "path": "src/types/int.rs",
+      "sha256": "6d2871e483fb3de6cb4abf4faa7f5f5b0347dd1935945d48223921606dcdc59d"
+    },
+    {
+      "path": "src/types/json.rs",
+      "sha256": "a837cac084b3a82a63b0ec709fc5160f0b29846e15697e7e0e0f52f93e71bf8b"
+    },
+    {
+      "path": "src/types/mod.rs",
+      "sha256": "82afc7e421a685cf14d21eeb9a058f335c594e99d861c4ccf0158b03276a7292"
+    },
+    {
+      "path": "src/types/str.rs",
+      "sha256": "346264cee42d107747e701df871d2cc9b38d5d9ec053bb4d41ffedc59628c0c2"
+    },
+    {
+      "path": "src/types/text.rs",
+      "sha256": "24cb7d3374dc095ef0d3814f47fea84bbcaeb794d4c88e2240c5ec3f6a242881"
+    },
+    {
+      "path": "src/types/time.rs",
+      "sha256": "2d4e082cbe93604718f8be514ac9e4f019867ac6cad96da58a310c7720f1bfb7"
+    },
+    {
+      "path": "src/types/uint.rs",
+      "sha256": "323ceaae2608521a410a4be9635ce8654c98b06914faac0aba1743caf78439d1"
+    },
+    {
+      "path": "src/types/uuid.rs",
+      "sha256": "42beb2e273bcb48426d4f7f0ee01ec6f7d80a38417a202269fe6d4bf45c794d1"
+    },
+    {
+      "path": "src/value.rs",
+      "sha256": "0d067051b2f86c53ed4e12f5c4fad27bbb3e4a4fb020e37b08415806c9b164d4"
+    }
+  ],
+  "all_other_archive_files_unchanged": true,
+  "storage_and_sql_implementation_unchanged": true,
+  "patch_format": "unified diff with zero context; apply with git apply --unidiff-zero",
+  "preserved_upstream_whitespace": {
+    "path": "src/connection/deserialize.rs",
+    "sha256": "313984d02f10029201541e690ffda6f3620176b9676e598dac32d6ce04f59c3c",
+    "reason": "Official Rust documentation retains Markdown hard-line-break spaces; no upstream implementation or documentation bytes changed.",
+    "lines": [
+      {
+        "line": 21,
+        "bytes_hex": "202020202f2f2f2020"
+      },
+      {
+        "line": 43,
+        "bytes_hex": "202020202f2f2f20416e206572726f722077696c6c2062652072657475726e6564206966206120736368656d6120776974682074686520676976656e206e616d65206973206e6f7420616c72656164792061747461636865642e2020"
+      },
+      {
+        "line": 51,
+        "bytes_hex": "202020202f2f2f2049662060726561645f6f6e6c7960206973206074727565602c2074686520736368656d61206973206f70656e656420617320726561642d6f6e6c7920285b6053514c4954455f444553455249414c495a455f524541444f4e4c59605d5b646573657269616c697a652d666c6167735d292e2020"
+      }
+    ]
+  },
+  "upstream_license_texts": [
+    {
+      "path": "UPSTREAM-LICENSE-APACHE",
+      "official_url": "https://raw.githubusercontent.com/launchbadge/sqlx/003b698e99e024f3621b8043a2426fde5b741171/LICENSE-APACHE",
+      "upstream_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "upstream_path": "LICENSE-APACHE",
+      "bytes": 10297,
+      "sha256": "c8f5453612253e8ea8bad241617fe74c4a6d5d592ba64ff881668c211b50ac99"
+    },
+    {
+      "path": "UPSTREAM-LICENSE-MIT",
+      "official_url": "https://raw.githubusercontent.com/launchbadge/sqlx/003b698e99e024f3621b8043a2426fde5b741171/LICENSE-MIT",
+      "upstream_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "upstream_path": "LICENSE-MIT",
+      "bytes": 1109,
+      "sha256": "5abbdd842310c8f1650fcde3a5a51a3e09412b9e5a6eea87519e0db9e32b339d"
+    }
+  ]
+}

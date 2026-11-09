@@ -21,6 +21,10 @@ pub type LearningIterationOwnerFutureV1<'a, T> =
 pub enum LearningIterationProposalPayloadV1 {
     Parameter(Box<ParameterPlasticityProductRequestV1>),
     Topology(Box<TopologyPlasticityProductRequestV1>),
+    #[cfg(all(test, unix))]
+    ResearchExternalTrainedArtifact(
+        Box<crate::learning_iteration_research_external::ResearchExternalTrainedArtifactProposalV1>,
+    ),
 }
 
 /// Resolved by the host from authenticated artifact/evaluation stores. The host
@@ -31,6 +35,45 @@ pub struct PreparedLearningIterationProposalV1 {
     pub candidate_bundle: Digest32,
     pub evaluation_evidence: Digest32,
     pub payload: LearningIterationProposalPayloadV1,
+}
+
+/// Original stage owners used with the registered checkpoint composition.
+/// Implementations resolve actual work and attestations through their existing
+/// owners; they receive no checkpoint writer or authority to register one.
+/// The ordinary iteration worker still verifies every returned receipt against
+/// its pinned trust, including after checkpoint recovery.
+pub trait LearningIterationStageOwnerPortsV1: Send + Sync {
+    /// Reconcile the exact recovered operation with the original owners and
+    /// their independent current head, trust/revocation and withdrawal cuts.
+    /// In particular, verify any Proposal against its original durable owner
+    /// and anchor: that stage has no learning-signature role. This check also
+    /// applies to empty, NoUpdate and completed snapshots. It must not rerun
+    /// work, renew a deadline, manufacture attestations or replace historical
+    /// bindings with the currently selected model. Completed work may reconcile
+    /// after expiry. The worker still performs its own current-clock and signed
+    /// receipt verification after this read-only check.
+    fn validate_recovery<'a>(
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+    ) -> LearningIterationOwnerFutureV1<'a, ()>;
+
+    fn execute_stage<'a>(
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+        stage: LearningIterationStageV1,
+    ) -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1>;
+
+    fn prepare_proposal<'a>(
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+    ) -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1>;
+
+    fn receipt_attestation<'a>(
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+        receipt: &'a LearningIterationReceiptV1,
+        now_unix_seconds: u64,
+    ) -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1>;
 }
 
 /// Supplied only by an explicit control-owner bootstrap. Implementations must
@@ -50,6 +93,13 @@ pub struct PreparedLearningIterationProposalV1 {
 /// ambiguous commit returns CommitUncertain. These are mandatory host duties,
 /// not guarantees provided by an in-memory implementation.
 pub trait LearningIterationOwnerPortsV1: Send + Sync {
+    /// The registered protected checkpoint's frozen V2 scope binding. Return
+    /// None for the legacy unscoped profile. This is a host custody contract,
+    /// not authority inferred from a trainer-supplied hash.
+    fn frozen_scope_binding(&self) -> Option<Digest32> {
+        None
+    }
+
     fn restore<'a>(
         &'a self,
         request: &'a LearningIterationRequestV1,

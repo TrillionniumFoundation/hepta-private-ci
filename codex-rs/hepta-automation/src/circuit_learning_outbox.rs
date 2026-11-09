@@ -50,6 +50,9 @@ impl From<TaskFlowError> for CircuitLearningOutboxErrorV1 {
 
 type Error = CircuitLearningOutboxErrorV1;
 
+#[path = "circuit_learning_drain.rs"]
+mod drain;
+
 impl AutomationStore {
     /// Called before ordinary ingress acknowledges its published terminal result.
     /// Replaying that ingress after a crash fills the same intent, not a new run.

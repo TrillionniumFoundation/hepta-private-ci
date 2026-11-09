@@ -157,6 +157,7 @@ pub use cell_types::CellInferenceAdmissionV1;
 pub use cell_types::CellInputEncoderV1;
 pub use cell_types::CellOwnerSnapshotV1;
 pub use cell_types::CellPolicyEntryV1;
+pub use cell_types::CellRepresentationV1;
 pub use cell_types::CellScopeV1;
 pub use cell_types::CellStateOwnerV1;
 pub use cell_types::CellStateProposalV1;

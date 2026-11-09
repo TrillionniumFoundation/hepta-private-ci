@@ -3,6 +3,7 @@
 
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_types::StableId;
 
 use super::*;
 
@@ -10,7 +11,11 @@ impl ObjectiveRuntimeHost {
     pub(crate) async fn reconcile_learning_outbox(
         &self,
         store: &AutomationStore,
+        source_run_id: Option<&StableId>,
     ) -> Result<(), AgentdError> {
+        let Some(source_run_id) = source_run_id else {
+            return Ok(());
+        };
         let sources = {
             let state = self
                 .state
@@ -21,7 +26,10 @@ impl ObjectiveRuntimeHost {
                 .records()
                 .map_err(store_error)?
                 .into_iter()
-                .filter(|record| record.disposition == RunStartObjectiveDispositionV1::Compiled)
+                .filter(|record| {
+                    record.disposition == RunStartObjectiveDispositionV1::Compiled
+                        && record.snapshot.run_id.as_str() == source_run_id.as_str()
+                })
                 .map(|record| {
                     (
                         record.snapshot.run_id.to_string(),
@@ -30,8 +38,8 @@ impl ObjectiveRuntimeHost {
                 })
                 .collect::<Vec<_>>()
         };
-        // The original journal bounds the scan to MAX_RUN_START_RECORDS. No new
-        // task, result publication, source grant, or learning stage is executed.
+        // The journal bounds the scan to MAX_RUN_START_RECORDS; only the
+        // configured source can enqueue. No new task or grant is executed.
         for (run_id, objective) in sources {
             let Some(trace) = store
                 .bounded_circuit_committed_trace(&run_id)

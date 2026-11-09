@@ -13,6 +13,7 @@ on:
       - engineering/training-result-bridge-858e
       - engineering/cell-integrated-20261108-08b6
       - engineering/cell-integrated-20261109-08b6
+      - work/cell-fixed-graph-20261109-30a869
   workflow_dispatch:
 
 permissions:
@@ -83,6 +84,12 @@ jobs:
           python scripts/hepta_ci_exec.py --timeout-seconds 300 --minimum-tests 6 \
             --output "$RUNNER_TEMP/cell-runtime-records/state-codec-tests.json" \
             -- python -B -m unittest -v ndu_real_runtime.test_state_codec
+      - name: Check research, successor and exposure declarations
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 35 \
+            --output "$RUNNER_TEMP/cell-runtime-records/research-foundation-tests.json" \
+            -- python -B -m unittest -v test_hepta_cell_research_gate \
+            test_hepta_cell_research_successor test_hepta_cell_source_registry
       - name: Check bounded trainer supervision and result recovery
         run: |
           python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 22 \

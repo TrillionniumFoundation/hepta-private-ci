@@ -16,7 +16,12 @@ use codex_hepta_neuron::CellStepInputV1;
 use codex_hepta_types::StableId;
 
 use crate::CircuitCellErrorV1;
+use crate::circuit_cell_bundle_manifest::circuit_cell_bundle_manifest_digest_v1;
 use crate::circuit_cell_output::circuit_cell_output_schema_v1;
+use crate::circuit_cell_ports::circuit_cell_output_schema_v2;
+
+// BoundedCircuitDefinitionV2 admits at most 256 nodes across all programs.
+pub(super) const MAX_CIRCUIT_CELL_BINDINGS: usize = 256;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CircuitCellRouteV1 {
@@ -43,7 +48,40 @@ pub struct CircuitCellRegistryV1 {
 }
 
 impl CircuitCellRegistryV1 {
+    /// Legacy composition: every Cell uses the exact Circuit parameter bundle.
+    /// Heterogeneous private heads require the explicit manifest constructor.
     pub fn new(
+        definition: BoundedCircuitDefinitionV2,
+        bindings: Vec<CircuitCellBindingV1>,
+    ) -> Result<Self, CircuitCellErrorV1> {
+        if !(1..=MAX_CIRCUIT_CELL_BINDINGS).contains(&bindings.len())
+            || bindings.iter().any(|binding| {
+                definition.parameter_bundle_digest.as_str()
+                    != binding.cell.bundle_digest.to_string()
+            })
+        {
+            return Err(CircuitCellErrorV1::InvalidBinding);
+        }
+        Self::validate(definition, bindings)
+    }
+
+    /// Compose Cells with independently pinned bundles, including private
+    /// heads or adapters over a shared foundation. The Circuit parameter pin
+    /// must name the complete manifest; route policy still binds each graph
+    /// slot to its full Cell definition. This does not install models, prove
+    /// a shared foundation, or change inference batching or state semantics.
+    pub fn new_with_bundle_manifest(
+        definition: BoundedCircuitDefinitionV2,
+        bindings: Vec<CircuitCellBindingV1>,
+    ) -> Result<Self, CircuitCellErrorV1> {
+        if definition.parameter_bundle_digest != circuit_cell_bundle_manifest_digest_v1(&bindings)?
+        {
+            return Err(CircuitCellErrorV1::InvalidBinding);
+        }
+        Self::validate(definition, bindings)
+    }
+
+    fn validate(
         definition: BoundedCircuitDefinitionV2,
         bindings: Vec<CircuitCellBindingV1>,
     ) -> Result<Self, CircuitCellErrorV1> {
@@ -84,9 +122,8 @@ impl CircuitCellRegistryV1 {
             // Work has one explicit unit. Memory and queue metrics remain in
             // the output receipt and are never added to microseconds.
             if max_work < binding.cell.runtime.resource_envelope.p99_latency_micros
-                || definition.parameter_bundle_digest.as_str()
-                    != binding.cell.bundle_digest.to_string()
-                || node.output_schema != circuit_cell_output_schema_v1()
+                || (node.output_schema != circuit_cell_output_schema_v1()
+                    && node.output_schema != circuit_cell_output_schema_v2())
                 || binding.routes.len() != binding.cell.candidates.len()
             {
                 return Err(CircuitCellErrorV1::InvalidBinding);
@@ -208,7 +245,7 @@ impl CircuitCellRegistryV1 {
 pub fn circuit_cell_route_policy_digest_v1(
     bindings: &[CircuitCellBindingV1],
 ) -> Result<Sha256Digest, CircuitCellErrorV1> {
-    if bindings.is_empty() || bindings.len() > 256 {
+    if !(1..=MAX_CIRCUIT_CELL_BINDINGS).contains(&bindings.len()) {
         return Err(CircuitCellErrorV1::InvalidBinding);
     }
     let mut ordered: Vec<_> = bindings.iter().collect();
