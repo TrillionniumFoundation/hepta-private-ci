@@ -1206,7 +1206,7 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
             && next_value == task_input(&driver.operation, &driver.prepared, "next-task")?,
         "executed task input differs from frozen mapping"
     );
-    let result = json!({"schema":match flow {
+    let mut result = json!({"schema":match flow {
             ResearchFlow::RetainedOnly => "hepta.research.real-model-native-completion.v1",
             ResearchFlow::ExternalTrainedArtifact => "hepta.research.external-trained-native-completion.v1",
         },"result":positive_result,
@@ -1216,9 +1216,7 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         "operation":driver.operation,"initial_learning_head":initial.snapshot().head_digest.to_string(),"learning_head":finished.head_digest.to_string(),
         "checkpoint_sha256":d(&raw).to_string(),"frozen_plan_sha256":driver.frozen,"evaluation_profile":objective.to_string(),
         "actual_training_optimizer_steps":10,"actual_source_forward_calls":1,"actual_evaluation_forward_calls":8,"actual_next_task_forward_calls":1,
-        "task_input_profile":driver.prepared["task_input_profile"],
         "source_input_sha256":d(&source_input).to_string(),"next_input_sha256":d(next_input).to_string(),
-        "task_prompt_content_distinct":source_value["prompt"] != next_value["prompt"],
         "disposition":if updated {"ResearchExternalTrainedArtifactAdopt"} else {"NoUpdate"},
         "real_new_candidate_adoption":updated && adoption_check.is_ok(),"native_proposal_update_candidates":updated,"selected_adapter":selected_material["adapter"],
         "selected_artifact_sha256":selected_material["file_sha256"],
@@ -1228,6 +1226,17 @@ async fn run(flow: ResearchFlow) -> anyhow::Result<()> {
         "generation_owner_reopened":true,"worker_process_restarted":true,"learning_owner_reopened":true,"reexecuted_after_recovery":false,
         "native_daemon_os_restart":false,"native_fleet_lifecycle_recreated":true,"research_keys_and_custody":true,"independent_operator_custody":false,
         "production_root_capability":false,"production_final_use":false,"production_activation":false,"qualification":"HOLD_NO_GO"});
+    let result_fields = result
+        .as_object_mut()
+        .ok_or_else(|| anyhow::anyhow!("native completion result is not an object"))?;
+    result_fields.insert(
+        "task_input_profile".into(),
+        driver.prepared["task_input_profile"].clone(),
+    );
+    result_fields.insert(
+        "task_prompt_content_distinct".into(),
+        Value::Bool(source_value["prompt"] != next_value["prompt"]),
+    );
     persist(
         &driver.evidence.join("native-result.json"),
         &serde_json::to_vec(&result)?,
