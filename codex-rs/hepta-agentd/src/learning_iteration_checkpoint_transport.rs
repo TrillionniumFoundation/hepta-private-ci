@@ -62,7 +62,7 @@ struct Channel {
 /// connection to reconcile the same registered operation.
 pub struct AgentdLearningCheckpointClientV1 {
     channel: Mutex<Option<Channel>>,
-    initial: LearningIterationSnapshotV1,
+    pub(super) initial: LearningIterationSnapshotV1,
 }
 
 impl AgentdLearningCheckpointClientV1 {

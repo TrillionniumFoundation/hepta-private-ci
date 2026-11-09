@@ -33,6 +33,45 @@ pub struct PreparedLearningIterationProposalV1 {
     pub payload: LearningIterationProposalPayloadV1,
 }
 
+/// Original stage owners used with the registered checkpoint composition.
+/// Implementations resolve actual work and attestations through their existing
+/// owners; they receive no checkpoint writer or authority to register one.
+/// The ordinary iteration worker still verifies every returned receipt against
+/// its pinned trust, including after checkpoint recovery.
+pub trait LearningIterationStageOwnerPortsV1: Send + Sync {
+    /// Reconcile the exact recovered operation with the original owners and
+    /// their independent current head, trust/revocation and withdrawal cuts.
+    /// In particular, verify any Proposal against its original durable owner
+    /// and anchor: that stage has no learning-signature role. This check also
+    /// applies to empty, NoUpdate and completed snapshots. It must not rerun
+    /// work, renew a deadline, manufacture attestations or replace historical
+    /// bindings with the currently selected model. Completed work may reconcile
+    /// after expiry. The worker still performs its own current-clock and signed
+    /// receipt verification after this read-only check.
+    fn validate_recovery<'a>(
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+    ) -> LearningIterationOwnerFutureV1<'a, ()>;
+
+    fn execute_stage<'a>(
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+        stage: LearningIterationStageV1,
+    ) -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1>;
+
+    fn prepare_proposal<'a>(
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+    ) -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1>;
+
+    fn receipt_attestation<'a>(
+        &'a self,
+        snapshot: &'a LearningIterationSnapshotV1,
+        receipt: &'a LearningIterationReceiptV1,
+        now_unix_seconds: u64,
+    ) -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1>;
+}
+
 /// Supplied only by an explicit control-owner bootstrap. Implementations must
 /// authenticate the completed task, current deletion/revocation frontiers, fixed
 /// dataset/model pins, independent evaluations and actual next-task receipts.
