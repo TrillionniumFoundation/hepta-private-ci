@@ -1,0 +1,358 @@
+{
+  "schema_version": 1,
+  "qualification": "ACT-2 observer phase 1",
+  "verdict": "SCOPED_PASS_PROMOTION_HOLD",
+  "baseline_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+  "tested_source": {
+    "commit": "cada860abe458be96671b11b339abfb7d2052580",
+    "tree": "8d98cf164ca52160a6c079506b6b8709218a2a13",
+    "lane": "source-head"
+  },
+  "workflow": {
+    "run_id": 42613527940,
+    "run_attempt": 1,
+    "format_job_id": 129147646924,
+    "native_job_id": 129147647221,
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42613527940"
+  },
+  "toolchain": {
+    "rustc_verbose": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+    "rustfmt": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)"
+  },
+  "companion": {
+    "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+    "commit": "fd8d56c52b971c2d5d0e6430f296803b43ef60a3",
+    "tree": "347fbb7e9931006c749b5bef0e1550c54bc08f27",
+    "session_sha256": "6ec59c62cdeb4849d4c20a1234cac0c9b9fdd9dcbd9cae62cee31112aa409d7d",
+    "app_sha256": "5af4d1c90a172134942dc3a0bcd242a8c41e32cbc6274a5eddebd4383727715f",
+    "cargo_locked": true
+  },
+  "lock_sha256": {
+    "hepta": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+    "companion": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f"
+  },
+  "commands": [
+    {
+      "record_in_native_zip": "automation.json",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-automation"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "passed_tests": 169,
+      "skipped_tests": 2,
+      "failed_tests": 0,
+      "elapsed_seconds": 276.068546053,
+      "runner_summary": [
+        "Summary [  14.837s] 169 tests run: 169 passed, 2 skipped"
+      ],
+      "log_sha256": "41e66a7748d58ace6b8370620c491f9e5aa306a4b98cbec7c1d1ed621fb2d465",
+      "log_bytes": 98999,
+      "source_before_after_clean": true,
+      "timed_out": false,
+      "output_limit_exceeded": false
+    },
+    {
+      "record_in_native_zip": "notes-owner.json",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(notes_act2) | test(notes_recovered_writer_persists_lost_reply_and_retires_without_replay) | test(notes_document_observer)"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "passed_tests": 8,
+      "skipped_tests": 778,
+      "failed_tests": 0,
+      "elapsed_seconds": 476.12271313799994,
+      "runner_summary": [
+        "Summary [   2.657s] 8 tests run: 8 passed, 778 skipped"
+      ],
+      "log_sha256": "79493e466abc7ae2ce3a4c9c29dcc2b9849164b1177c46b187fa1d182f4f8649",
+      "log_bytes": 78462,
+      "source_before_after_clean": true,
+      "timed_out": false,
+      "output_limit_exceeded": false
+    },
+    {
+      "record_in_native_zip": "ui-build.json",
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/home/runner/work/_temp/act2-ui-target",
+        "rustup",
+        "run",
+        "1.96.0",
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "/home/runner/work/_temp/act2-ui-source/ui/Cargo.toml",
+        "-p",
+        "trill-session",
+        "-p",
+        "trill-app-window",
+        "--bins"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "passed_tests": 0,
+      "skipped_tests": null,
+      "failed_tests": 0,
+      "elapsed_seconds": 115.984488382,
+      "runner_summary": [],
+      "log_sha256": "15726132a929c706071b69e6a7be550cb2ef43ecd7a6cf1a328b56e663961707",
+      "log_bytes": 19234,
+      "source_before_after_clean": true,
+      "timed_out": false,
+      "output_limit_exceeded": false
+    },
+    {
+      "record_in_native_zip": "notes-real-gui.json",
+      "command": [
+        "env",
+        "-u",
+        "WAYLAND_DISPLAY",
+        "dbus-run-session",
+        "--",
+        "xvfb-run",
+        "-a",
+        "-s",
+        "-screen 0 1280x800x24 -nolisten tcp",
+        "env",
+        "WINIT_UNIX_BACKEND=x11",
+        "LIBGL_ALWAYS_SOFTWARE=1",
+        "TRILL_NOTES_PROBE_ISOLATED=1",
+        "HEPTA_NOTES_SESSION_BIN=/home/runner/work/_temp/act2-ui-target/debug/trill-session",
+        "HEPTA_NOTES_QUALIFICATION_OUTPUT=/home/runner/work/_temp/act2-records/notes-actual.json",
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(notes_actual_ui_original_owner_roundtrip)",
+        "--run-ignored",
+        "only",
+        "--status-level",
+        "all"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "passed_tests": 1,
+      "skipped_tests": 785,
+      "failed_tests": 0,
+      "elapsed_seconds": 4.421610422000072,
+      "runner_summary": [
+        "Summary [   2.650s] 1 test run: 1 passed, 785 skipped"
+      ],
+      "log_sha256": "938c1cb35ff31e9aeeb9a78fffb8dbd16a3450a7a070f6899d840d75e9ec8134",
+      "log_bytes": 175170,
+      "source_before_after_clean": true,
+      "timed_out": false,
+      "output_limit_exceeded": false
+    },
+    {
+      "record_in_native_zip": "fix.json",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "passed_tests": 0,
+      "skipped_tests": null,
+      "failed_tests": 0,
+      "elapsed_seconds": 288.47091840500013,
+      "runner_summary": [],
+      "log_sha256": "5a7514a9a36a7b2fd93a9d05b16f39e9390c77d53f33e51d7a336d6d1b45305d",
+      "log_bytes": 56785,
+      "source_before_after_clean": true,
+      "timed_out": false,
+      "output_limit_exceeded": false
+    }
+  ],
+  "actual_goal": {
+    "operation_id": "notes-real-ui-fixture-lost-reply",
+    "historical_effect": "applied",
+    "current_goal": "satisfied",
+    "runtime_state": {
+      "outcome": "succeeded",
+      "state": "terminal"
+    },
+    "expected_revision": 2,
+    "current_revision": 3,
+    "expected_and_current_text_sha256": "d742490feb42388586933f9e89646c2917a4c3f95f166e2235076c408a0f229d",
+    "target_matches_original": true,
+    "recovery_effect_replay": false,
+    "recovery_requested_new_grant": false,
+    "production_authority": false,
+    "native_kernel_qualified": false,
+    "pixels_qualified": false
+  },
+  "post_test_source": {
+    "scoped_fix_changed_source": false,
+    "formatter_patch_sha256": "0e8fc74e5191fe632c784dfc066f26102c7b9fdf1c88e75bb5e855f1d914cad5",
+    "native_and_independent_formatter_patches_byte_identical": true,
+    "review_commit": "0817910eb1889c1d341a1bd5122a69777d539cd8",
+    "review_tree": "d58a6cff59ea966305fedce0bebb1e62f1853e85",
+    "review_tree_equals_tested_tree_plus_official_formatting_and_protocol_boundary_clarification": true,
+    "tests_rerun_after_formatter": false
+  },
+  "retained_artifacts": [
+    {
+      "path": "evidence/native-artifact.zip",
+      "github_artifact_id": 13672463407,
+      "bytes": 79917,
+      "sha256": "66e27122a24977cfde39e7bbdf1126edfd6d204f4c6e1e330129500ec58e7035"
+    },
+    {
+      "path": "evidence/formatter-artifact.zip",
+      "github_artifact_id": 13670983974,
+      "bytes": 43417,
+      "sha256": "2241598ae1182ea6e4f6ac2268546643aec16aeb7b234b5f6e8e025c5ba7ece1"
+    },
+    {
+      "path": "evidence/notes-actual.json",
+      "github_artifact_id": null,
+      "bytes": 6702,
+      "sha256": "d234b1f434cf0dc51f86a64a40548c6fd6f24ea760ef2e47cea38408ba4604cb"
+    }
+  ],
+  "review_prs": [
+    5470,
+    5511,
+    5512,
+    5514
+  ],
+  "blocking_ci_snapshot": {
+    "observed_at_utc": "2026-11-09 12:29:58 UTC",
+    "runs": [
+      {
+        "stage": "A",
+        "run_id": 42615514539,
+        "source_sha": "17a1d2c500099f338ab3fb1381c2ab6e03cb39a1",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42615514539"
+      },
+      {
+        "stage": "B",
+        "run_id": 42615511352,
+        "source_sha": "181e8ef9b2708692db673b237b50e230c2b0ee9c",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42615511352"
+      },
+      {
+        "stage": "C",
+        "run_id": 42615517410,
+        "source_sha": "f9cee303dd68642d6601acc3fb02451bf80ae94a",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42615517410"
+      },
+      {
+        "stage": "D",
+        "run_id": 42615785716,
+        "source_sha": "0817910eb1889c1d341a1bd5122a69777d539cd8",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42615785716"
+      }
+    ],
+    "all_required_checks_passed": false
+  },
+  "previous_failed_gate": {
+    "source_sha": "da4e882dd6740ccb64ca9623fe5aa413bd9df675",
+    "run_id": 42611167929,
+    "job_id": 129139839821,
+    "conclusion": "failure",
+    "log_retrieval": "BlobNotFound",
+    "cause": "UNKNOWN",
+    "superseded_by_scoped_success": false
+  },
+  "unknown_read_only_environment_discoveries": [
+    {
+      "host": "ai395",
+      "idempotency_key": "act2-env-locate-ai395-20261109-02",
+      "status": "UNKNOWN"
+    },
+    {
+      "host": "ai395",
+      "idempotency_key": "act2-env-pty-locate-ai395-20261109-03",
+      "session_id": "dpty-03e0ebf08505bd1cf9a01d00a386553a7f48f37538c233defd565f93743b4aea",
+      "status": "launch_unknown"
+    },
+    {
+      "host": "ai395",
+      "idempotency_key": "act2-m6-object-probe-ai395-20261109-04",
+      "status": "UNKNOWN"
+    },
+    {
+      "host": "desktop",
+      "idempotency_key": "act2-env-alt-desktop-20261109-05",
+      "status": "UNKNOWN"
+    }
+  ],
+  "holds": [
+    "Current-head required repository CI has not completed.",
+    "Notes cancellation facts, durable tombstones and late-commit exclusion are not qualified.",
+    "Expired checkpoint recovery plus this fresh observation path is not qualified.",
+    "Actual-App readback loss, drift and repeated complete handler paths are not all qualified.",
+    "Real long-compute/network-wait adapters and generic cross-observation ordering are not qualified.",
+    "Production authority, native kernel and pixels are not qualified."
+  ],
+  "learning": {
+    "training": "NOT_RUN",
+    "confirmatory_evaluation": "NOT_RUN",
+    "promotion": "HOLD",
+    "baselines": [
+      "original_workflow",
+      "handwritten_macro",
+      "flat_primitive",
+      "stateless_learned_hierarchy",
+      "private_gru_hierarchy"
+    ],
+    "fixed_skill_library_retained": true,
+    "reason": "The scoped observation result is not evidence of composition generalization or improved true-goal quality/cost."
+  },
+  "actual_fixture_totals": {
+    "counts_scope": "whole_actual_app_fixture",
+    "effect_dispatch_attempts": 3,
+    "issuer_requests": 4,
+    "distinct_effect_operations": [
+      {
+        "operation_id": "notes-real-ui-fixture",
+        "previous_revision": 0,
+        "revision": 1
+      },
+      {
+        "operation_id": "notes-real-ui-fixture-second",
+        "previous_revision": 1,
+        "revision": 2
+      },
+      {
+        "operation_id": "notes-real-ui-fixture-lost-reply",
+        "previous_revision": 2,
+        "revision": 3
+      }
+    ],
+    "issuer_requests_include_one_deliberate_denial": true
+  }
+}
