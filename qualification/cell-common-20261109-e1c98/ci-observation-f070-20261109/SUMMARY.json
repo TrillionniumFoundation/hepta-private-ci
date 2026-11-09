@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.common.late-ci-observation.v1",
+  "recorded_at_utc": "2026-11-09T12:59:43.396949+00:00",
+  "scope": "Only the requested failed blocking jobs, independent Windows-private workflow, and Architecture snapshot. Existing CI read-only; no tests or CI reruns and no runtime source changes.",
+  "pr_head": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "head_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+  "blocking_checkout": "9498ada2adfa88f5562d9e91acab3dad480fcb3d",
+  "blocking_checkout_tree_equals_pr_head_tree": true,
+  "maintenance_commit": "dde0c36ef2b90af37f5cdafe7dca0c7572585b09",
+  "blocking_run": 42615372714,
+  "formatting": {
+    "build_test_job": 129159652068,
+    "job_conclusion": "failure",
+    "failed_step": "Check formatting (run `just fmt` to fix)",
+    "python_files": [
+      "scripts/cell_repo_mdv/compare.py",
+      "scripts/cell_repo_mdv/runner.py",
+      "scripts/cell_repo_mdv/test_compare.py",
+      "scripts/codex_package/test_v8.py",
+      "scripts/research/smollm_learning_process_v1.py",
+      "scripts/research/test_smollm_task_inputs.py"
+    ],
+    "rust_files": 11,
+    "rust_hunks": 72,
+    "all_reported_python_paths_in_dde_format_patch": true,
+    "all_reported_rust_hunks_covered_by_dde": true,
+    "coverage_is_read_only_diff_review_not_remote_rerun": true,
+    "independent_hunk_review": "FORMATTING_HUNK_REVIEW.json"
+  },
+  "cargo_deny": {
+    "job": 129159652206,
+    "job_conclusion": "failure",
+    "failed_step": "Run cargo-deny",
+    "actual_failure_cause_observed": false,
+    "raw_log_available": false,
+    "retrieval_record": "CARGO_DENY_RETRIEVAL.json",
+    "interpretation": "The CI failure is observed; its reason remains unobserved. Log retrieval failures are not evidence of a network, policy, dependency, or V8 cause for the CI failure."
+  },
+  "windows_private": {
+    "run": 42615372441,
+    "job": 129153808326,
+    "checkout": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+    "conclusion": "failure",
+    "failed_step": "Enforce source-level Rust formatting for durable owners",
+    "rust_format_output_identical_to_build_test": true,
+    "covered_by_dde_hunk_review": true,
+    "native_suite_executed": false
+  },
+  "windows_bazel": {
+    "shard3_job": 129159652631,
+    "shard1_job": 129159652726,
+    "actual_native_failures": true,
+    "v8_failure": false,
+    "detailed_comparison": "WINDOWS_COMPARISON.json",
+    "new_runtime_regression_established": false,
+    "source_changed_or_tests_suppressed": false
+  },
+  "architecture_snapshot": {
+    "run": 42615372442,
+    "source_head_job": 129153810392,
+    "source_head_status": "in_progress",
+    "source_head_current_step": "Compiled service lifecycle and actual process restart",
+    "base_merge_job": 129153810121,
+    "base_merge_conclusion": "success",
+    "full_gate_terminal_result_established": false
+  },
+  "all_remote_ci_green": false,
+  "post_maintenance_test_or_ci_execution_by_this_task": false
+}
