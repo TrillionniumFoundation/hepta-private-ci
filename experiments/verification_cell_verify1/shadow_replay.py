@@ -140,6 +140,7 @@ def validate(data):
                      and type(result["ack"]) is bool and result["replayed"] is False, "invalid actual ACK evidence")
         if labels:
             _require(type(labels[0][1]["result"]) is bool and all(i < labels[0][0] for i, _ in effects), "label precedes effect frontier")
+        terminal_verdict = None
         if key in actual:
             row, accepted = actual[key], []
             _require(type(row["reached_step"]) is int and row["reached_step"] == len(effects), "claimed reached frontier mismatch")
@@ -147,13 +148,14 @@ def validate(data):
                 if operation["kind"] == "mandatory_host_check":
                     report = _report(operation["result"], cases[key[0]][key[1]]["goal"], 4, True)
                     _require(len(effects) == 3 and i > effects[-1][0], "terminal check precedes horizon")
+                    terminal_verdict = report["verdict"]
                     if report["accepted"]:
                         accepted.append(operation)
             _require(len(accepted) == int(row["accepted"]), "acceptance requires original mandatory report")
             if labels:
                 _require(row["outcome_error"] is labels[0][1]["result"], "label does not match original row")
         prepared[key] = {"initialized": bool(initial), "effects": [op for _, op in effects],
-                         "label": labels[0][1] if labels else None}
+                         "label": labels[0][1] if labels else None, "terminal_verdict": terminal_verdict}
     data["host_rows"], data["cases"] = prepared, cases
     data["gates"] = {"operation_and_trajectory_rosters": True, "panel_bindings": True,
                      "completed_inference_and_decision_bindings": bool(complete),
@@ -179,7 +181,8 @@ def records(data):
                 snapshots.append(Snapshot(identity, case["source_group"], subject, target, tick,
                                           tuple(int(op["result"]["ack"]) for op in effects[:tick])))
         disposition = ("accept" if row["accepted"] else "interrupted" if row["interrupted"]
-                       else "reject" if row["status"] == "completed" else "unknown") if row else "unknown"
+                       else "reject" if row["status"] == "completed" and host["terminal_verdict"] == "refuted"
+                       else "unknown") if row else "unknown"
         known = len(effects) == 3 and label is not None
         reason = None if known else "uninterrupted_horizon_not_observed" if len(effects) < 3 else "terminal_label_unavailable"
         labels.append(TerminalLabel(identity, case["source_group"], subject, target, disposition,

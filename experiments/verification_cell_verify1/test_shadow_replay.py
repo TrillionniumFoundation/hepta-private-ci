@@ -124,6 +124,23 @@ class ShadowReplayTests(unittest.TestCase):
         self.assertEqual((kept.disposition, kept.error, kept.evidence_sha256, kept.missing_reason),
                          ("accept", None, None, "terminal_label_unavailable"))
 
+    def test_unknown_terminal_verdict_retains_unknown_disposition_and_known_truth(self):
+        data = self.data()
+        row = next(r for r in data["rows"] if r["accepted"] and r["detected_step"] is None)
+        case, arm = row["case_id"], row["arm"]
+        operation = next(o for o in data["operations"] if o["kind"] == "mandatory_host_check"
+                         and o["context"].get("case_id") == case and o["context"].get("arm") == arm)
+        operation["result"].update(verdict="unknown", reason="host_authorization_denied",
+                                   residual_obligations=["host_authorization_denied"], accepted=False)
+        row.update(accepted=False, detected_step=4)
+        validated = validate(data)
+        self.assertEqual(validated["host_rows"]["confirmation", case, arm]["terminal_verdict"], "unknown")
+        _, groups = records(validated)
+        kept = next(x for x in groups["confirmation"][arm][1] if case in x.trajectory_id)
+        self.assertEqual((kept.disposition, kept.error, kept.observed_step, kept.missing_reason),
+                         ("unknown", False, 3, None))
+        self.assertIsNotNone(kept.evidence_sha256)
+
     def test_cli_output_is_create_only_and_originals_unchanged(self):
         before = {name: hashlib.sha256((self.directory / name).read_bytes()).hexdigest() for name in INPUTS}
         output = self.root / "replay"
