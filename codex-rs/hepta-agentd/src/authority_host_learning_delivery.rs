@@ -75,7 +75,7 @@ impl PreparedHostAuthoritySession {
             timeout_ms: config.timeout_ms,
             lifetime_ms: config.lifetime_ms,
         };
-        let learning =
+        let learning: crate::PreparedRootLearningCheckpointV1 =
             service.learning_checkpoint_profile(checkpoint, profile, owner_pidfd.try_clone()?)?;
         let sealed = learning.seal_handoff()?;
         let listener = listeners::bind_learning_listener(&endpoint, config.peer_gid)?;
