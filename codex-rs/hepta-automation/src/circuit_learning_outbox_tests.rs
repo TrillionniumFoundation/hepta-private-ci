@@ -13,7 +13,7 @@ use pretty_assertions::assert_eq;
 async fn store() -> (tempfile::TempDir, AutomationStore) {
     let root = tempfile::tempdir().unwrap();
     let store = AutomationStore::open_root(
-        root.path().join("automation"),
+        root.path().canonicalize().unwrap().join("automation"),
         fence(/*generation*/ 1).owner_agent_id,
     )
     .await
@@ -144,6 +144,61 @@ async fn completion_claim_and_ack_survive_reopen_without_releasing_delivery() {
             .is_empty()
     );
     reopened.close().await;
+}
+
+#[tokio::test]
+async fn learning_drain_distinguishes_unclaimed_intents_from_unsettled_claims_after_restart() {
+    let (_root, store) = store().await;
+    let trace = terminal(&store, "learning-drain").await;
+    let intent = store
+        .enqueue_circuit_learning(&trace, digest("objective"))
+        .await
+        .unwrap();
+    assert_eq!(store.circuit_learning_drain_blockers().await.unwrap(), 0);
+    let request = digest("original-request-and-owners");
+    assert!(store.claim_circuit_learning(&intent, &request).await.unwrap());
+    assert_eq!(store.circuit_drain_blockers().await.unwrap(), 0);
+    assert_eq!(store.circuit_learning_drain_blockers().await.unwrap(), 1);
+    let path = store.path().parent().unwrap().to_path_buf();
+    let owner = store.owner_agent_id().clone();
+    store.close().await;
+    let reopened = AutomationStore::open_root(path, owner).await.unwrap();
+    assert_eq!(reopened.circuit_learning_drain_blockers().await.unwrap(), 1);
+    reopened
+        .acknowledge_circuit_learning(&intent, &request, &digest("original-next-use-head"))
+        .await
+        .unwrap();
+    assert_eq!(reopened.circuit_learning_drain_blockers().await.unwrap(), 0);
+    // Even an ACK cannot conceal a corrupt original completion history.
+    sqlx::query("UPDATE circuit_v2_runs SET state_digest = ? WHERE run_id = ?")
+        .bind(digest("corrupt-projection").as_str())
+        .bind("learning-drain")
+        .execute(reopened.taskflow_pool())
+        .await
+        .unwrap();
+    assert!(reopened.circuit_learning_drain_blockers().await.is_err());
+    reopened.close().await;
+}
+
+#[tokio::test]
+async fn learning_drain_visits_late_claims_and_rejects_corrupt_delivery_metadata() {
+    let (_root, store) = store().await;
+    let mut last = None;
+    for index in 0..65 {
+        let trace = terminal(&store, &format!("drain-{index:03}")).await;
+        last = Some(store.enqueue_circuit_learning(&trace, digest("objective")).await.unwrap());
+    }
+    let intent = last.unwrap();
+    store.claim_circuit_learning(&intent, &digest("request")).await.unwrap();
+    assert_eq!(store.circuit_learning_drain_blockers().await.unwrap(), 1);
+    sqlx::query("UPDATE circuit_learning_outbox_v1 SET request_digest = ? WHERE run_id = ?")
+        .bind("z".repeat(64))
+        .bind(&intent.source_run_id)
+        .execute(store.taskflow_pool())
+        .await
+        .unwrap();
+    assert!(matches!(store.circuit_learning_drain_blockers().await, Err(Error::Conflict)));
+    store.close().await;
 }
 
 #[tokio::test]

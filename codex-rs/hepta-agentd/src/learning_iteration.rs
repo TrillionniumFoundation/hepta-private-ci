@@ -27,6 +27,8 @@ use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::LearningIterationOwnerPortsV1;
 use crate::PlasticityRuntimeCallErrorV1;
+use crate::state::learning_iteration::LearningIterationActivityV1;
+use crate::state::learning_iteration::LearningIterationPendingV1;
 
 #[path = "learning_iteration_delivery_runtime.rs"]
 mod delivery;
@@ -69,12 +71,14 @@ struct LearningIterationCommandV1 {
     mode: LearningIterationModeV1,
     request: Box<LearningIterationRequestV1>,
     response: oneshot::Sender<Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1>>,
+    _pending: LearningIterationPendingV1,
 }
 
 /// Capacity exhaustion refuses immediately; it does not accumulate waiters.
 #[derive(Clone)]
 pub struct LearningIterationHandleV1 {
     sender: mpsc::Sender<LearningIterationCommandV1>,
+    activity: Arc<LearningIterationActivityV1>,
 }
 
 impl LearningIterationHandleV1 {
@@ -105,6 +109,7 @@ impl LearningIterationHandleV1 {
                 mode,
                 request: Box::new(request),
                 response,
+                _pending: self.activity.admit(),
             })
             .map_err(|error| match error {
                 mpsc::error::TrySendError::Full(_) => LearningIterationRuntimeErrorV1::QueueFull,
@@ -132,6 +137,7 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     sender: mpsc::Sender<LearningIterationCommandV1>,
     circuit_delivery_request: Option<LearningIterationRequestV1>,
     enforce_circuit_admission: bool,
+    activity: Arc<LearningIterationActivityV1>,
 }
 
 pub fn learning_iteration_channel_v1(
@@ -212,9 +218,11 @@ fn learning_iteration_channel(
         ));
     }
     let (sender, receiver) = mpsc::channel(capacity);
+    let activity = Arc::new(LearningIterationActivityV1::default());
     Ok((
         LearningIterationHandleV1 {
             sender: sender.clone(),
+            activity: Arc::clone(&activity),
         },
         LearningIterationRuntimeBootstrapV1 {
             agent_id,
@@ -227,11 +235,20 @@ fn learning_iteration_channel(
             sender,
             circuit_delivery_request: None,
             enforce_circuit_admission: false,
+            activity,
         },
     ))
 }
 
 impl LearningIterationRuntimeBootstrapV1 {
+    pub(crate) fn attach_drain(&self, state: &AgentdState) -> Result<(), AgentdError> {
+        self.require_identity(state.identity())?;
+        state
+            .learning_iteration_activity
+            .set(Arc::clone(&self.activity))
+            .map_err(|_| AgentdError::Invalid("learning drain owner already attached".into()))
+    }
+
     pub(crate) fn require_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
         if self.agent_id != identity.agent_id || self.spawn_generation != identity.spawn_generation
         {
@@ -268,6 +285,9 @@ impl LearningIterationRuntimeBootstrapV1 {
                 result = self.process_with_deadline(&state, *command.request, command.mode) => result,
             };
             let _ = command.response.send(result);
+            // Caller cancellation must not release queued or active owner work.
+            // An uncertain delivery remains visible in the durable outbox too.
+            drop(command._pending);
         }
     }
 

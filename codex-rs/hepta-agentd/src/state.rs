@@ -42,6 +42,9 @@ mod control;
 mod circuit_task;
 pub use circuit_task::AgentdCircuitTaskInvocationProviderV1;
 
+#[path = "state_learning_iteration.rs"]
+pub(crate) mod learning_iteration;
+
 #[path = "notes_organ_state.rs"]
 mod notes_organ;
 
@@ -62,6 +65,8 @@ pub(crate) struct AgentdState {
         std::sync::OnceLock<Arc<dyn AgentdCircuitTaskInvocationProviderV1>>,
     circuit_learning_source: std::sync::OnceLock<StableId>,
     circuit_task_admissions: Arc<std::sync::atomic::AtomicUsize>,
+    pub(crate) learning_iteration_activity:
+        std::sync::OnceLock<Arc<learning_iteration::LearningIterationActivityV1>>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) cognitive_retrieval_context:
         std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
@@ -170,6 +175,7 @@ impl AgentdState {
             circuit_task_invocation: std::sync::OnceLock::new(),
             circuit_learning_source: std::sync::OnceLock::new(),
             circuit_task_admissions: Arc::new(std::sync::atomic::AtomicUsize::new(0)),
+            learning_iteration_activity: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
             objective_runtime: std::sync::OnceLock::new(),
@@ -579,6 +585,9 @@ impl AgentdState {
         let automation_blockers = automation_blockers
             .checked_add(self.circuit_task_drain_blockers().await?)
             .ok_or_else(|| AgentdError::Protocol("drain blocker count overflow".into()))?;
+        let automation_blockers = automation_blockers
+            .checked_add(self.learning_iteration_drain_status().await?.blockers()?)
+            .ok_or_else(|| AgentdError::Protocol("drain blocker count overflow".into()))?;
         self.drain_snapshot(automation_blockers)
     }
 
@@ -603,6 +612,7 @@ impl AgentdState {
                 && running_turns == 0
                 && automation_blockers == 0
                 && self.circuit_task_pending_count() == 0
+                && self.learning_iteration_pending_count() == 0
                 && generation_blockers == 0,
             lifecycle: runtime.lifecycle,
             fenced: runtime.fenced,

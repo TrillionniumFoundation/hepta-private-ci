@@ -50,6 +50,7 @@ impl LearningIterationRuntimeBootstrapV1 {
             .map(|request| CircuitLearningDeliveryRuntimeV1 {
                 handle: LearningIterationHandleV1 {
                     sender: self.sender.clone(),
+                    activity: Arc::clone(&self.activity),
                 },
                 spawn_generation: self.spawn_generation,
                 request,

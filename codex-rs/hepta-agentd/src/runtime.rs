@@ -153,6 +153,9 @@ pub async fn run_with_shutdown(
         registry,
         EVENT_CAPACITY,
     )?);
+    if let Some(owner) = &learning_iteration {
+        owner.attach_drain(&state)?;
+    }
     if let Some(delivery) = &circuit_learning_delivery {
         state.attach_circuit_learning_source(delivery.request.source_run_id.clone())?;
     }
@@ -742,6 +745,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
         if state.active_run_count()? == 0
             && state.neuron_generation_drain_blockers()? == 0
             && state.circuit_task_drain_blockers().await? == 0
+            && state.learning_iteration_drain_status().await?.is_clear()
         {
             return Ok(());
         }
@@ -757,6 +761,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
         if state.unresolved_run_count()? == 0
             && state.neuron_generation_drain_blockers()? == 0
             && state.circuit_task_drain_blockers().await? == 0
+            && state.learning_iteration_drain_status().await?.is_clear()
         {
             return Ok(());
         }
@@ -769,11 +774,14 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
     let unresolved = state.unresolved_run_count()?;
     let generation_blockers = state.neuron_generation_drain_blockers()?;
     let circuit_blockers = state.circuit_task_drain_blockers().await?;
-    if unresolved == 0 && generation_blockers == 0 && circuit_blockers == 0 {
+    let learning = state.learning_iteration_drain_status().await?;
+    if unresolved == 0 && generation_blockers == 0 && circuit_blockers == 0 && learning.is_clear() {
         Ok(())
     } else {
         Err(AgentdError::Protocol(format!(
-            "agentd shutdown left {unresolved} indeterminate run(s), {generation_blockers} generation service blocker(s) and {circuit_blockers} Circuit blocker(s); owner recovery is required"
+            "agentd shutdown left {unresolved} indeterminate run(s), {generation_blockers} generation service blocker(s), {circuit_blockers} Circuit blocker(s), {} queued/active learning command(s) and {} unacknowledged learning claim(s); owner recovery is required",
+            learning.queued_or_active,
+            learning.unacknowledged_claims,
         )))
     }
 }

@@ -19,11 +19,27 @@ use tokio::sync::Notify;
 
 use super::*;
 
+#[path = "learning_iteration_drain_tests.rs"]
+mod drain_tests;
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum OwnerWaitPoint {
+    Checkpoint,
+    Training,
+}
+
+struct OwnerWait {
+    point: OwnerWaitPoint,
+    entered: tokio::sync::oneshot::Sender<()>,
+    resume: tokio::sync::oneshot::Receiver<()>,
+}
+
 struct CurrentEvidencePorts {
     inner: Arc<IterationPorts>,
     planned: Mutex<Option<LearningIterationSnapshotV1>>,
     restores: AtomicUsize,
     restored: Notify,
+    owner_wait: Mutex<Option<OwnerWait>>,
 }
 
 impl CurrentEvidencePorts {
@@ -71,6 +87,7 @@ impl CurrentEvidencePorts {
             planned: Mutex::new(None),
             restores: AtomicUsize::new(0),
             restored: Notify::new(),
+            owner_wait: Mutex::new(None),
         })
     }
 
@@ -82,6 +99,21 @@ impl CurrentEvidencePorts {
         })
         .await
         .expect("delivery reached original checkpoint owner");
+    }
+
+    async fn wait_at(&self, point: OwnerWaitPoint) {
+        let wait = {
+            let mut wait = ok(self.owner_wait.lock());
+            if wait.as_ref().is_some_and(|wait| wait.point == point) {
+                wait.take()
+            } else {
+                None
+            }
+        };
+        if let Some(wait) = wait {
+            ok(wait.entered.send(()));
+            ok(wait.resume.await);
+        }
     }
 }
 
@@ -103,7 +135,10 @@ impl LearningIterationOwnerPortsV1 for CurrentEvidencePorts {
         expected: Digest32,
         snapshot: &'a LearningIterationSnapshotV1,
     ) -> LearningIterationOwnerFutureV1<'a, Digest32> {
-        self.inner.checkpoint(expected, snapshot)
+        Box::pin(async move {
+            self.wait_at(OwnerWaitPoint::Checkpoint).await;
+            self.inner.checkpoint(expected, snapshot).await
+        })
     }
 
     fn execute_stage<'a>(
@@ -112,6 +147,9 @@ impl LearningIterationOwnerPortsV1 for CurrentEvidencePorts {
         stage: LearningIterationStageV1,
     ) -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1> {
         Box::pin(async move {
+            if stage == LearningIterationStageV1::Training {
+                self.wait_at(OwnerWaitPoint::Training).await;
+            }
             let planned = ok(self.planned.lock()).clone();
             let Some(planned) = planned else {
                 return self.inner.execute_stage(snapshot, stage).await;
@@ -287,6 +325,7 @@ impl Services {
             /*capacity*/ 1,
         ));
         let mut bootstrap = ok(bootstrap.with_circuit_learning_delivery(request));
+        ok(bootstrap.attach_drain(&state));
         drop(external);
         let delivery = bootstrap
             .take_circuit_delivery()
