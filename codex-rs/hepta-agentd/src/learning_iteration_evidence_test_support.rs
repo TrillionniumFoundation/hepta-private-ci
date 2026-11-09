@@ -129,6 +129,9 @@ impl Fixture {
                 LearningEvidenceRoleV1::Generator => "generator",
                 LearningEvidenceRoleV1::Observer => "observer",
                 LearningEvidenceRoleV1::Evaluator => "evaluator",
+                // Preserve non-stage roles; the stage wire decoder rejects them.
+                LearningEvidenceRoleV1::CreditAllocator => "credit_allocator",
+                LearningEvidenceRoleV1::UnlearningAuthority => "unlearning_authority",
                 LearningEvidenceRoleV1::Selector => "selector",
             }
             .into(),
