@@ -1,0 +1,84 @@
+{
+  "cloud_training": {
+    "allocation_observed": false,
+    "artifacts_collected": false,
+    "execution_submitted": false,
+    "gpu_execution_observed": false,
+    "plan_created": false,
+    "resources_released": false
+  },
+  "controller": {
+    "mac": "macos",
+    "main": "macos",
+    "worker": "rog",
+    "worker_platform": "linux"
+  },
+  "cpu_evaluation": {
+    "account_resource_status": "NOT_OBSERVED",
+    "argv": [
+      "evaluate",
+      "--accelerator",
+      "cpu",
+      "--timeout",
+      "120",
+      "--json"
+    ],
+    "durable_job_id": null,
+    "executable": "hepta-compute (configured ROG executable)",
+    "host": "rog",
+    "idempotency_key": "pred-readiness-20261109-evaluate-cpu-v1",
+    "process_timeout_seconds": 300,
+    "readiness_result": "UNKNOWN",
+    "remote_submission_state": "UNKNOWN_FOR_READ_ONLY_EVALUATION",
+    "same_key_reconciliation_receipt": "MCP_REQUEST_TIMED_OUT",
+    "start_receipt": "MCP_REQUEST_TIMED_OUT"
+  },
+  "host_health": {
+    "authenticated": true,
+    "host": "rog",
+    "measurement": "SSH invocation, authentication and remote startup; not ICMP RTT",
+    "reachable": true,
+    "ssh_roundtrip_ms": 1465.156417,
+    "status": "healthy"
+  },
+  "installed_cli": {
+    "colab_configured_alias_count": 3,
+    "help_jobs": {
+      "colab": "1a1c00febf4-5e21-8bd",
+      "compute": "1a1c011e783-5e21-8cd",
+      "kaggle": "1a1c01100e3-5e21-8c5"
+    },
+    "help_stdout_observed": true,
+    "kaggle_configured_alias_count": 3,
+    "source_observed_account_locking": true,
+    "source_observed_parallel_probe_limit": 6,
+    "supported_commands": [
+      "evaluate",
+      "plan",
+      "execute",
+      "inspect",
+      "collect"
+    ]
+  },
+  "interpretation": "The configured CLI and healthy ROG connection are verified. CPU/GPU eligibility, quota and allocation are unverified because the CPU evaluation control request timed out. These observations neither prove the cloud pool is unavailable nor prove readiness. No cloud training or allocation was requested. Preserve the original evaluation key for reconciliation; do not change account, provider or request key to replace an unknown operation. Small local development diagnostics may proceed separately with truthful local CPU provenance.",
+  "observed_date_utc": "2026-11-09",
+  "reconciliation_search": {
+    "error_code": "INVALID_ARGUMENT",
+    "purpose": "Locate exact evaluation idempotency key in worker request.json records",
+    "result": "direct SSH admitted capacity exhausted; no child submitted; no automatic retry",
+    "scope_of_no_child_submitted_claim": "reconciliation search only; does not settle earlier evaluation starts"
+  },
+  "requested_workload": {
+    "accelerator": "cpu",
+    "estimated_tiny_fits": [
+      108,
+      162
+    ],
+    "framework": "numpy",
+    "old_confirmation_sets_permitted": false,
+    "planned_factor_cells": 27,
+    "query_time_estimate_note": "Preliminary 108\u2013162 estimate preceded the final 189-fit registration."
+  },
+  "schema": "pred-cloud-readiness-observation-v1",
+  "task": "PRED new train/dev crossed-seed diagnostics"
+}
