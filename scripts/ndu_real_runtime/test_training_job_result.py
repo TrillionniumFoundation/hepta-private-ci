@@ -350,6 +350,68 @@ class ResultAdmissionTests(unittest.TestCase):
         self.assertEqual(result["wall_seconds"], 661)
         self.assertIsNone(result["weights_sha256"])
 
+    def test_per_job_budget_controls_admission_launch_and_final_verification(self):
+        self.job["command"]["args"] += ["--max-wall-seconds", "5"]
+        for limit in (6.0, 10):
+            self.job["timeout_seconds"] = limit
+            budget = self.admission()["budget"]
+            self.assertEqual(budget["supervisor_limit_seconds"], limit)
+            self.assertEqual(budget["reserved_startup_and_io_seconds"], limit - 5)
+        for index, limit in enumerate(
+            (None, True, 0, -1, 5.9, 661, float("nan"), float("inf"))
+        ):
+            with self.subTest(limit=limit):
+                self.job["timeout_seconds"] = limit
+                with patch.object(pipeline, "run_logged") as launch:
+                    result = pipeline.run_training_job(
+                        self.job,
+                        self.config,
+                        self.root / ("invalid-budget-" + str(index)),
+                    )
+                    launch.assert_not_called()
+                self.assertIsNone(result["admission_sha256"])
+                self.assertEqual(result["status"], "failed")
+        del self.job["timeout_seconds"]
+        self.assertEqual(self.admission()["budget"]["supervisor_limit_seconds"], 660)
+        self.job["timeout_seconds"] = 10
+
+        def child(*args, **kwargs):
+            self.assertEqual(kwargs["timeout"], 9)
+            self.fixture_output(self.admission())
+            return {
+                "returncode": 0,
+                "error": None,
+                "cleanup_complete": True,
+                "policy": bridge.supervision_policy(),
+            }
+
+        with (
+            patch.object(pipeline, "run_logged", child),
+            patch.object(pipeline.time, "perf_counter", side_effect=[0, 1, 9, 11]),
+        ):
+            result = pipeline.run_training_job(
+                self.job, self.config, self.root / "short-job"
+            )
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["wall_seconds"], 11)
+        self.assertIsNone(result["weights_sha256"])
+
+    def test_short_job_reaps_real_child_inside_its_original_envelope(self):
+        self.job["command"]["args"] += ["--max-wall-seconds", "1"]
+        self.job["timeout_seconds"] = 2
+        self.fixture_executable(
+            "import time\nprint('started', flush=True)\ntime.sleep(30)\n"
+        )
+        result = pipeline.run_training_job(
+            self.job, self.config, self.root / "short-real-job"
+        )
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["error"]["type"], "TimeoutExpired")
+        self.assertTrue(result["process_supervision"]["child_reaped"])
+        self.assertTrue(result["process_supervision"]["cleanup_complete"])
+        self.assertLessEqual(result["process_supervision"]["timeout_seconds"], 2)
+        self.assertEqual(result["budget"]["supervisor_limit_seconds"], 2)
+
     def test_real_child_zero_exit_does_not_bypass_artifact_validation(self):
         self.fixture_executable("print('partial stdout', flush=True)\n")
         result = pipeline.run_training_job(self.job, self.config, self.root / "jobs")

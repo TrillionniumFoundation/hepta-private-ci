@@ -103,6 +103,16 @@ def admit(job, config, started_at):
         fit.max_wall_seconds <= FIT_SECONDS,
         "Child fit exceeds existing 600s allowance inside 660s supervisor",
     )
+    policy = supervision_policy()
+    supervisor_limit = job.get("timeout_seconds", OUTER_SECONDS)
+    require(
+        type(supervisor_limit) in (int, float)
+        and math.isfinite(supervisor_limit)
+        and fit.max_wall_seconds + policy["cleanup_reserve_seconds"]
+        <= supervisor_limit
+        <= OUTER_SECONDS,
+        "Invalid job supervisor budget or insufficient cleanup allowance",
+    )
     require(
         args.run_id == job["job_id"]
         and str(args.output) == job["output"]
@@ -324,13 +334,13 @@ def admit(job, config, started_at):
         "pretrained_lineage": lineage,
         "input_files": inputs,
         "supervision": {
-            "policy": supervision_policy(),
+            "policy": policy,
             "source_files": supervision_sources,
         },
         "budget": {
             "child_fit_limit_seconds": fit.max_wall_seconds,
-            "supervisor_limit_seconds": OUTER_SECONDS,
-            "reserved_startup_and_io_seconds": OUTER_SECONDS - FIT_SECONDS,
+            "supervisor_limit_seconds": supervisor_limit,
+            "reserved_startup_and_io_seconds": supervisor_limit - fit.max_wall_seconds,
             "scope": "existing wall envelope; actual child and supervisor costs retained, not full budget equivalence",
         },
         "native_owner_authentication": AUTHORITY,

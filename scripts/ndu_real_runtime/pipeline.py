@@ -15,7 +15,7 @@ from .study import collect, freeze, now, verify_plan
 from .subprocess_supervisor import run_logged
 from .training import FitConfig
 from .training_grid import fit_grid, model_index
-from .training_job_result import OUTER_SECONDS, admit, validate_output
+from .training_job_result import admit, validate_output
 
 
 def run_training_job(job, config, log_root):
@@ -56,7 +56,9 @@ def run_training_job(job, config, log_root):
                 raise RuntimeError(
                     "Original training output already exists; never implicitly rerun"
                 )
-            remaining = OUTER_SECONDS - (time.perf_counter() - started)
+            remaining = admitted["budget"]["supervisor_limit_seconds"] - (
+                time.perf_counter() - started
+            )
             supervision = run_logged(
                 command,
                 stdout=stdout,
@@ -92,7 +94,7 @@ def run_training_job(job, config, log_root):
             "traceback": traceback.format_exc(),
         }
     wall_seconds = time.perf_counter() - started
-    if success and wall_seconds > OUTER_SECONDS:
+    if success and wall_seconds > admitted["budget"]["supervisor_limit_seconds"]:
         success = False
         error = {
             "type": "TimeoutError",
