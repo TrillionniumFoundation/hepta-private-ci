@@ -152,6 +152,13 @@ where
                     .read(self.owner.journal(), *request);
                 respond(state, response, Ok(result))
             }
+            #[cfg(unix)]
+            GenerationCommand::LearningReadback { request, response } => {
+                let result = self
+                    .learning_publication
+                    .export(self.owner.journal(), *request);
+                respond(state, response, Ok(result))
+            }
             GenerationCommand::PendingRequest(response) => respond(
                 state,
                 response,
