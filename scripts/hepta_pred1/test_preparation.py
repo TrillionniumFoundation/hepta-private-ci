@@ -3,16 +3,22 @@
 from dataclasses import replace
 from types import SimpleNamespace
 import unittest
+from unittest import mock
 
 import numpy as np
 
 from .contracts import JOINT_SUPPORT
+from .models import Model
+from . import preparation as preparation_module
 from .preparation import (
+    PreparationTariff,
+    choose_fixed_one,
     choose_preparation,
     evaluate_development_preparations,
+    forecast_fixed_one,
     forecast_preparations,
 )
-from .simulator import Dataset, EvaluatorOnly
+from .simulator import Dataset, EvaluatorOnly, query_vector
 
 
 def fixture():
@@ -49,6 +55,49 @@ class ForecastModel:
         self.rows += len(history)
         hi, ai = query[0, 4:].argmax(), query[0, :4].argmax()
         return self.probabilities[history[:, 0, 0].astype(int), hi, ai].copy()
+
+
+class CachedForecastModel(ForecastModel):
+    kind = "gru"
+
+    def __init__(self, data):
+        super().__init__(data.evaluator.bayes_joint)
+        self.legal = data.legal_actions
+        self.observations, self.head_queries = [], []
+        self.initializations = 0
+
+    def initial_state(self, count):
+        self.initializations += 1
+        return {"fast": np.zeros((count, 2))}
+
+    def observe(self, observation, state):
+        if observation.flags.writeable:
+            raise AssertionError("mutable real prefix")
+        self.observations.append(observation.copy())
+        return {"fast": np.column_stack((observation[:, 0], state["fast"][:, 1] + 1))}
+
+    def predict_from_state(self, state, query):
+        if query.flags.writeable or state["fast"].flags.writeable:
+            raise AssertionError("mutable candidate inputs")
+        if not np.all(query[:, 4:] == [1, 0, 0]):
+            raise AssertionError("Fixed1 queried an unused horizon")
+        rows, actions = state["fast"][:, 0].astype(int), query[:, :4].argmax(axis=1)
+        if not self.legal[rows, actions].all():
+            raise AssertionError("Fixed1 queried an illegal action")
+        self.head_queries.extend(zip(rows.tolist(), actions.tolist()))
+        return np.log(np.maximum(self.probabilities[rows, 0, actions], 1e-300))
+
+
+def cheap_forecast(data, model, tariff, reset=False):
+    return forecast_fixed_one(
+        model,
+        data.x,
+        data.legal_actions,
+        data.deadline,
+        data.remaining_budget,
+        tariff=tariff,
+        reset=reset,
+    )
 
 
 def forecast(data, model=None, charge=None, delay=None):
@@ -244,6 +293,260 @@ class PreparationTests(unittest.TestCase):
                     decision_time=np.full(2, 0.5),
                 )
             self.assertEqual(model.calls, 0)
+
+
+class FixedOneTests(unittest.TestCase):
+    tariff = PreparationTariff(0.001, 0.001, 0.001, 0.0001, 0.0001, 0.0001)
+
+    def test_only_legal_admitted_rows_and_one_observed_prefix_are_computed(self):
+        data = replace(
+            fixture(),
+            legal_actions=np.array(
+                [[True, False, True, False], [False, True, False, False]]
+            ),
+            remaining_budget=np.array([20.0, 0.0]),
+        )
+        model = CachedForecastModel(data)
+        result = cheap_forecast(data, model, self.tariff)
+        self.assertEqual((model.calls, model.initializations), (0, 1))
+        self.assertEqual([len(x) for x in model.observations], [1] * 4)
+        self.assertEqual(model.head_queries, [(0, 0), (0, 2)])
+        self.assertEqual(result.meter["state_update_rows"], 4)
+        self.assertEqual(result.meter["prediction_rows"], 2)
+        self.assertEqual(result.meter["reserved_planning_candidate_rows"], 2)
+        self.assertTrue(np.isneginf(result.predicted_values[:, 1:]).all())
+        self.assertEqual(result.decision_work_charged.tolist(), [0.008, 0.0])
+
+    def test_no_budget_or_legal_action_stops_before_state_or_head_allocation(self):
+        for data in (
+            replace(fixture(), legal_actions=np.zeros((2, 4), dtype=bool)),
+            replace(fixture(), remaining_budget=np.full(2, 8.0)),
+            replace(fixture(), deadline=np.full(2, 8.0)),
+        ):
+            model = CachedForecastModel(data)
+            result = cheap_forecast(data, model, self.tariff)
+            self.assertEqual(
+                (model.initializations, model.observations, model.head_queries),
+                (0, [], []),
+            )
+            self.assertEqual(choose_fixed_one(result).action.tolist(), [-1, -1])
+            self.assertEqual(result.decision_work_charged.tolist(), [0.0, 0.0])
+
+    def test_full_support_plus_exact_operation_cost_and_time_boundaries(self):
+        tariff = PreparationTariff(0.1, 0.2, 0.05, 0.01, 0.02, 0.005)
+        data = replace(
+            fixture(), remaining_budget=np.full(2, 9.4), deadline=np.full(2, 8.14)
+        )
+        model = CachedForecastModel(data)
+        result = cheap_forecast(data, model, tariff)
+        self.assertEqual(result.meter["prediction_rows"], 8)
+        np.testing.assert_allclose(result.decision_work_charged, 1.4)
+        np.testing.assert_allclose(result.decision_time_charged, 0.14)
+        for field, bound in (("remaining_budget", 9.4), ("deadline", 8.14)):
+            below = replace(data, **{field: np.full(2, np.nextafter(bound, 0.0))})
+            stopped = CachedForecastModel(below)
+            cheap_forecast(below, stopped, tariff)
+            self.assertEqual(stopped.initializations, 0)
+        reset = cheap_forecast(data, CachedForecastModel(data), tariff, reset=True)
+        self.assertEqual(reset.meter["state_update_rows"], 2)
+        np.testing.assert_allclose(reset.decision_work_charged, 1.1)
+
+    def test_actual_kernels_match_uncached_fixed_one_with_fewer_state_updates(self):
+        data = fixture()
+        rng = np.random.default_rng(991)
+        data = replace(data, x=rng.normal(size=data.x.shape))
+        utility = (
+            JOINT_SUPPORT[:, 0]
+            - 0.03 * JOINT_SUPPORT[:, 2]
+            - 0.005 * JOINT_SUPPORT[:, 1]
+        )
+        for kind in ("gru", "single_step", "diag_ssm", "dual_timescale"):
+            for reset in (False, True):
+                with self.subTest(kind=kind, reset=reset):
+                    model = Model(kind, 16, 7, 32, 3, 71)
+                    result = cheap_forecast(data, model, self.tariff, reset)
+                    for action in range(4):
+                        expected = (
+                            model.predict_proba(
+                                data.x,
+                                np.tile(query_vector(action, 0), (2, 1)),
+                                reset=reset,
+                            )
+                            @ utility
+                        )
+                        np.testing.assert_allclose(
+                            result.predicted_values[:, 0, action],
+                            expected,
+                            rtol=1e-13,
+                            atol=1e-14,
+                        )
+                    steps = 1 if reset or kind == "single_step" else 4
+                    self.assertEqual(result.meter["state_update_rows"], 2 * steps)
+
+    def test_all_policies_are_frozen_before_evaluator_and_legacy_names_are_explicit(
+        self,
+    ):
+        data = fixture()
+        model = CachedForecastModel(data)
+        test = self
+        with (
+            mock.patch.object(
+                preparation_module, "choose_preparation", wraps=choose_preparation
+            ) as shared_choice,
+            mock.patch.object(
+                preparation_module, "choose_fixed_one", wraps=choose_fixed_one
+            ) as cheap_choice,
+        ):
+
+            class Guard:
+                def __getattr__(self, name):
+                    if name == "evaluator":
+                        test.assertEqual(
+                            (shared_choice.call_count, cheap_choice.call_count), (4, 1)
+                        )
+                        test.assertEqual(
+                            (model.calls, len(model.head_queries)), (12, 8)
+                        )
+                    return getattr(data, name)
+
+            report = evaluate_development_preparations(
+                model, Guard(), fixed1_tariff=self.tariff
+            )
+        self.assertEqual(report["schema"], "pred1-preparation-development-v3")
+        self.assertEqual(
+            set(report["arms"]),
+            {
+                "adaptive_shared_panel",
+                "fixed_1_shared_panel",
+                "fixed_3_shared_panel",
+                "fixed_6_shared_panel",
+                "fixed_1_cheap",
+            },
+        )
+        meter = report["meter"]
+        self.assertEqual(meter["fixed_1_cheap"]["planning_candidate_rows"], 8)
+        self.assertEqual(
+            (
+                meter["shared_panel"]["prediction_rows"],
+                meter["fixed_1_cheap"]["prediction_rows"],
+            ),
+            (24, 8),
+        )
+        self.assertEqual(
+            (
+                meter["shared_panel"]["state_update_rows"],
+                meter["fixed_1_cheap"]["state_update_rows"],
+            ),
+            (96, 8),
+        )
+        cheap = report["arms"]["fixed_1_cheap"]
+        self.assertEqual(cheap["stop_rate"], 1.0)
+        self.assertAlmostEqual(
+            cheap["expected_net_utility"], -0.03 * (1.5 + 0.012) - 0.005 * 0.0012
+        )
+        self.assertGreater(
+            cheap["expected_net_utility"],
+            report["arms"]["fixed_1_shared_panel"]["expected_net_utility"],
+        )
+        self.assertFalse(meter["physical_cost_complete"])
+
+    def test_tariff_and_override_errors_are_rejected_before_model_calls(self):
+        for bad in (-1, float("nan"), True):
+            with self.assertRaises(ValueError):
+                PreparationTariff(bad, 0, 0, 0, 0, 0)
+        data = fixture()
+        model = CachedForecastModel(data)
+        with self.assertRaisesRegex(ValueError, "no panel override"):
+            evaluate_development_preparations(
+                model, data, fixed1_tariff=self.tariff, decision_work=np.zeros(2)
+            )
+        with self.assertRaisesRegex(ValueError, "development groups"):
+            evaluate_development_preparations(
+                model,
+                replace(data, groups=("x:confirm:0", "x:confirm:1")),
+                fixed1_tariff=self.tariff,
+            )
+        with self.assertRaisesRegex(ValueError, "not finite"):
+            cheap_forecast(data, model, PreparationTariff(1e308, 1e308, 1e308, 0, 0, 0))
+        self.assertEqual((model.calls, model.initializations), (0, 0))
+
+    def test_mixed_admission_charges_only_executed_model_and_choice_work(self):
+        data = replace(fixture(), remaining_budget=np.array([0.0, 10.0]))
+        model = CachedForecastModel(data)
+        report = evaluate_development_preparations(
+            model, data, fixed1_tariff=self.tariff
+        )
+        meters, arms = report["meter"], report["arms"]
+        self.assertEqual(meters["shared_panel"]["planning_candidate_rows_per_arm"], 12)
+        self.assertEqual(meters["fixed_1_cheap"]["planning_candidate_rows"], 4)
+        self.assertEqual(
+            (
+                meters["shared_panel"]["state_update_rows"],
+                meters["fixed_1_cheap"]["state_update_rows"],
+            ),
+            (48, 4),
+        )
+        for name, arm in arms.items():
+            expected = 0.012 if name == "fixed_1_cheap" else 0.072
+            np.testing.assert_allclose(
+                arm["per_episode"]["decision_work"], [0, expected]
+            )
+            np.testing.assert_allclose(
+                arm["per_episode"]["decision_time"], [0, expected / 10]
+            )
+            self.assertEqual(arm["per_episode"]["selected_action"][0], -1)
+
+    def test_action_ablation_removes_history_and_query_in_both_paths(self):
+        data = fixture()
+        model = Model("gru", 16, 7, 32, 3, 71)
+        masked = data.x.copy()
+        masked[:, :, :3] = 0
+        query = np.tile(query_vector(0, 0), (2, 1))
+        query[:, :4] = 0
+        utility = (
+            JOINT_SUPPORT[:, 0]
+            - 0.03 * JOINT_SUPPORT[:, 2]
+            - 0.005 * JOINT_SUPPORT[:, 1]
+        )
+        expected = model.predict_proba(masked, query) @ utility
+        cheap = forecast_fixed_one(
+            model,
+            data.x,
+            data.legal_actions,
+            data.deadline,
+            data.remaining_budget,
+            tariff=self.tariff,
+            mask_candidate_action=True,
+        )
+        shared = forecast_preparations(
+            model,
+            data.x,
+            data.legal_actions,
+            data.deadline,
+            data.remaining_budget,
+            np.zeros(2),
+            np.zeros(2),
+            mask_candidate_action=True,
+        )
+        for result in (cheap, shared):
+            for action in range(4):
+                np.testing.assert_allclose(
+                    result.predicted_values[:, 0, action],
+                    expected,
+                    rtol=1e-13,
+                    atol=1e-14,
+                )
+
+    def test_candidate_mutation_cannot_change_the_reused_real_state(self):
+        data = fixture()
+        model = CachedForecastModel(data)
+
+        def mutate(state, query):
+            state["fast"][0, 0] = 99
+
+        model.predict_from_state = mutate
+        with self.assertRaisesRegex(ValueError, "read-only"):
+            cheap_forecast(data, model, self.tariff)
 
 
 if __name__ == "__main__":
