@@ -173,6 +173,12 @@ pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityTextUiRegistration;
 #[cfg(target_os = "linux")]
+pub use authority_host_service::PreparedRootLearningCheckpointV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootLearningCheckpointProfileV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::receive_learning_checkpoint_handoff_v1;
+#[cfg(target_os = "linux")]
 mod root_authority_session;
 #[cfg(target_os = "linux")]
 mod root_production_inputs;
@@ -664,6 +670,8 @@ pub use learning_iteration_checkpoint::LearningIterationCheckpointErrorV1;
 pub use learning_iteration_checkpoint::LearningIterationCheckpointOwnerV1;
 #[cfg(unix)]
 pub use learning_iteration_checkpoint::LearningIterationCheckpointRecordV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_checkpoint::transport::AgentdLearningCheckpointClientV1;
 pub use learning_iteration_ports::LearningIterationOwnerFutureV1;
 pub use learning_iteration_ports::LearningIterationOwnerPortsV1;
 pub use learning_iteration_ports::LearningIterationProposalPayloadV1;

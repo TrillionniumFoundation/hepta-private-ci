@@ -161,6 +161,30 @@ impl RegisteredWriter {
             .map_err(unavailable)
     }
 
+    pub(super) fn exchange_learning_checkpoint(
+        &self,
+        issuer: &DeploymentFinalUseIssuer,
+        clock: &HostAuthorityClock,
+        backend: &mut crate::learning_iteration_checkpoint::transport::LearningCheckpointBackend,
+        bytes: &[u8],
+    ) -> Result<Vec<u8>, HostIssuerTransportError> {
+        self.registration
+            .with_live(&self.leases, |_| {
+                if issuer.retained_writer_authorization(&self.registration)? != self.proof {
+                    return Err(io::Error::other("retained writer proof changed"));
+                }
+                let response = backend.exchange(bytes).map_err(io::Error::other)?;
+                let head = issuer.revocations()?;
+                let now = clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms;
+                validate_observation_lease(&self.registration.authority_lease, &head, now)?;
+                Ok(response)
+            })
+            .map_err(unavailable)
+    }
+
     pub(super) fn open(
         issuer: &DeploymentFinalUseIssuer,
         identity: &AgentdIdentity,
