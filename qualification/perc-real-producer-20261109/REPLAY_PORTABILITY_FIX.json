@@ -1,0 +1,12 @@
+{
+  "change": "post-run replay-tool portability correction: PID equality is diagnostic, not a gate",
+  "pilot_source_commit": "5ab776748e5c31dc2dd59189fab6183a88fc418a",
+  "executed_replay_sha256": "3c6703e7b554e80d1f49ea9707f0086ffdf2dbacde202caf9f3890bef11d2376",
+  "corrected_replay_sha256": "62bb99f2880c1f7bb22e649dda7e1aa2cc07dd147bc12a9fd7aba26b382b4638",
+  "syntax": "PASS",
+  "formatter_returncode": 0,
+  "format_ast_unchanged": true,
+  "experiment_or_output_changed": false,
+  "model_or_data_reexecution": false,
+  "reason": "PID values can coincide in different namespaces or after reuse; rejecting equality creates a false replay failure."
+}

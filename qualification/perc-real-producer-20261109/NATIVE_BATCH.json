@@ -1,0 +1,45 @@
+{
+  "schema": "perc1.native-batch.v1",
+  "status": "PASS",
+  "scope": "original capture bytes, frozen model binding and unchanged native observation validator",
+  "scientific_status": "HOLD",
+  "counts": {
+    "PASS": 799,
+    "FAIL": 0,
+    "SKIPPED_OCR_ONLY": 64
+  },
+  "execution_pins_sha256": "1b8b90fc58bea0b31afdd6dbdb3ff0003ec4888ec89ab474b1687d27795b36c4",
+  "dataset_sha256": "ad7e07138cefdb16e33a819f8aebef4402572acc22c51cefce0df19a9c54502b",
+  "native_build_sha256": "a9d039669376393f800fff9630805a42b6dca0cffa2ceb40ca30e53dde163870",
+  "wall_ns": 18576578120,
+  "cpu_ns": 6883158085,
+  "representations": {
+    "global": 432,
+    "dense": 367
+  },
+  "actual_bounds": {
+    "evidence_count": {
+      "min": 4,
+      "max": 4
+    },
+    "feature_scalars": {
+      "min": 8,
+      "max": 32
+    },
+    "wire_bytes": {
+      "min": 5714,
+      "max": 25543
+    },
+    "actor_raster_bytes": {
+      "min": 600,
+      "max": 5406
+    },
+    "evidence_raw_bytes": {
+      "min": 600,
+      "max": 5406
+    }
+  },
+  "all_roundtrips_equal": true,
+  "full_report_sha256": "6533e72a96ffd1c69d88e00a26061057bde3136c7eb01874be8276e4fb3b0d55",
+  "full_report_private_archive_path": "native-batch-final/summary.json"
+}
