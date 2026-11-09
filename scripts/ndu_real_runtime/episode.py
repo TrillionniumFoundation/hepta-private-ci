@@ -22,6 +22,8 @@ from PIL import Image
 from ndu_real_materials.common import read_bound, strict_json
 from ndu_real_materials.isolate import run_actor
 from .action_effects import action_effect, public_actions, public_content
+from .candidate_memory import CandidateScope
+from .candidate_runtime import read_audit, validate_activation, validate_profile
 from .controllers import ACTIONS, ControlPlan
 from .metering import Meter, atomic_json, canonical_sha, file_sha
 from .interval_costs import actor_receipts, close_observer_tail, reconcile
@@ -76,6 +78,23 @@ class EpisodeHost:
                 "Training exploration accepts registered train sources only"
             )
         self.operation_id = profile["original_operation_id"]
+        self.candidate_profile = (
+            validate_profile(profile["candidate_memory"])
+            if "candidate_memory" in profile
+            else None
+        )
+        self.candidate_profile_sha256 = (
+            canonical_sha(self.candidate_profile)
+            if self.candidate_profile is not None
+            else None
+        )
+        self.candidate_audit_tail = None
+        if self.candidate_profile is not None:
+            validate_activation(
+                start_step=0,
+                checkpoint_requested=False,
+                training_exploration=training,
+            )
         self.meter = Meter(
             self.operation_id, journal_path=self.output / "deployment.meter.jsonl"
         )
@@ -151,6 +170,16 @@ class EpisodeHost:
             }
         size = self.packet["source_size"]
         self.source_size = (size["width"], size["height"])
+        self.candidate_scope = (
+            CandidateScope(
+                self.operation_id,
+                case["id"],
+                self.source_binding["sha256"],
+                *self.source_size,
+            )
+            if self.candidate_profile is not None
+            else None
+        )
         self.observation = {
             "path": "overview.png",
             "sha256": self.packet["overview"]["sha256"],
@@ -234,6 +263,8 @@ class EpisodeHost:
                 or value.get("utility_profile_sha256") != self.utility_profile_sha256
                 or value.get("control_profile_sha256") != self.control_profile_sha256
                 or value.get("memory_mode") != self.control.memory_mode
+                or value.get("candidate_memory_profile_sha256")
+                != self.candidate_profile_sha256
             ):
                 raise ValueError("Invalid actor readiness or actual model pin")
             self.ready = True
@@ -251,6 +282,8 @@ class EpisodeHost:
             or value.get("control_profile_sha256") != self.control_profile_sha256
             or value.get("memory_mode") != self.control.memory_mode
             or value.get("parameters_unchanged") is not True
+            or value.get("candidate_memory_profile_sha256")
+            != self.candidate_profile_sha256
         ):
             raise ValueError("Unexpected actor message or model mutation")
         if self.training != (
@@ -287,6 +320,30 @@ class EpisodeHost:
         )
         if set(arguments) != expected:
             raise ValueError("Action contains unexpected arguments")
+        if self.candidate_profile is not None:
+            with self.meter.stage(
+                "sync", "bind candidate audit to original actor action"
+            ):
+                read_audit(
+                    self.actor_output,
+                    value.get("candidate_audit"),
+                    {
+                        "scope": asdict(self.candidate_scope),
+                        "step": len(self.steps),
+                        "profile": self.candidate_profile,
+                        "profile_sha256": self.candidate_profile_sha256,
+                        "weights_sha256": self.profile["model_sha256"],
+                        "parameters_sha256": self.ready_receipt.get(
+                            "parameters_sha256"
+                        ),
+                        "control_profile_sha256": self.control_profile_sha256,
+                        "public_case_sha256": self.case["packet"]["sha256"],
+                        "observation": self.last_public["observation"],
+                        "action": action,
+                        "previous_audit_sha256": self.candidate_audit_tail,
+                    },
+                )
+                self.candidate_audit_tail = value["candidate_audit"]["sha256"]
         before = public_content(self.prepared, self.observation, self.delivery)
         with self.meter.stage("codec", "execute real " + name):
             if name in {"PREPARE_ROI", "RENDER_IMAGE"}:
@@ -385,6 +442,15 @@ class EpisodeHost:
             command += ["--training-exploration"]
         if self.deployment_profile.exists():
             command += ["--deployment-profile", str(self.deployment_profile)]
+        if self.candidate_profile is not None:
+            command += [
+                "--candidate-memory-profile",
+                json.dumps(
+                    self.candidate_profile, sort_keys=True, separators=(",", ":")
+                ),
+                "--source-image-sha256",
+                self.source_binding["sha256"],
+            ]
         return command
 
     def run(self):
@@ -472,6 +538,14 @@ class EpisodeHost:
             "split": self.case["role"],
             "task_family": self.case["task_family"],
             "source_sha256": self.source_binding["sha256"],
+            **(
+                {
+                    "candidate_memory_profile_sha256": self.candidate_profile_sha256,
+                    "candidate_audit_chain_sha256": self.candidate_audit_tail,
+                }
+                if self.candidate_profile is not None
+                else {}
+            ),
             "terminal_status": "Failed"
             if error
             else "BudgetStop"
