@@ -211,8 +211,8 @@ impl ProductionDurableWriter {
                 "committed Notes fence event digest mismatch".to_string(),
             ));
         }
-        let event_digest = Sha256Digest::parse(&event_digest)
-            .map_err(|error| ProductionWriterError::Invalid(error.to_string()))?;
+        let event_digest =
+            Sha256Digest::parse(&event_digest).map_err(ProductionWriterError::Invalid)?;
         let proof = crate::production_notes::NotesFenceProof::from_committed_event(
             original_operation_id,
             &original.payload_json,

@@ -110,6 +110,16 @@ slow-timeout = { period = "30s", terminate-after = 8 }
 retries = 0
 
 [[profile.default.overrides]]
+# This opt-in qualification performs 1025 original-owner SQLite/journal
+# transactions to prove the bounded read floor rejects only after the exact cap.
+# Preserve every transaction and assertion; give the complete capacity workload
+# its own bounded watchdog and never rerun a killed partial history automatically.
+filter = 'package(codex-hepta-memory) & test(notes_document_floor_history_cap_refuses_without_ignoring_later_commits)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 12 }
+retries = 0
+
+[[profile.default.overrides]]
 filter = 'package(codex-hepta-learning-ledger) & test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits)'
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 6 }

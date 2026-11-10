@@ -2,7 +2,9 @@ name: ACT-2 observer qualification
 
 on:
   push:
-    branches: [validation/act2-observer-20261109, test/act2-real-observer-faults-20261109-r1, fix/act2-notes-observer-order-20261109, fix/act2-model-goal-success-20261110, feat/act2-notes-fence-owner-20261110, feat/act2-durable-read-floor-20261110, feat/act2-notes-fence-proof-20261110]
+    branches: [validation/act2-observer-20261109, test/act2-real-observer-faults-20261109-r1, fix/act2-notes-observer-order-20261109, fix/act2-model-goal-success-20261110, feat/act2-notes-fence-owner-20261110, feat/act2-durable-read-floor-20261110, feat/act2-notes-fence-proof-20261110, validation/act2-native-process-wait-borrowed-20261110, validation/act2-native-process-wait-borrowed-run-20261110]
+  pull_request:
+    branches: [feat/act2-native-process-wait-borrowed-20261110]
 
 permissions:
   contents: read
@@ -12,6 +14,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  ACT2_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
   ACT2_BASE: 885dae0f3285267e9e9c49d8b43b0d009779f9e8
   ACT2_UI_SOURCE: cc33ab6c44f3c945d83cb96be71d861e5613f99e
   CARGO_BUILD_JOBS: "2"
@@ -27,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
@@ -42,7 +45,7 @@ jobs:
           set -euo pipefail
           records="$RUNNER_TEMP/act2-format"
           mkdir -p "$records"
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$ACT2_SOURCE"
           git fetch --no-tags --depth=1 origin "$ACT2_BASE"
           git rev-parse HEAD HEAD^{tree} > "$records/source-identity.txt"
           rustfmt --version > "$records/rustfmt-version.txt"
@@ -64,12 +67,12 @@ jobs:
                   continue
               data = Path(name).read_bytes()
               files.append({"path": name, "sha256": hashlib.sha256(data).hexdigest(), "content": data.decode()})
-          Path(sys.argv[1]).write_text(json.dumps({"source_sha": os.environ["GITHUB_SHA"], "files": files}, indent=2) + "\n")
+          Path(sys.argv[1]).write_text(json.dumps({"source_sha": os.environ["ACT2_SOURCE"], "files": files}, indent=2) + "\n")
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: act2-format-${{ github.sha }}-${{ github.run_attempt }}
+          name: act2-format-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/act2-format
           if-no-files-found: error
           retention-days: 14
@@ -80,13 +83,13 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
-      SOURCE_SHA: ${{ github.sha }}
-      TESTED_SHA: ${{ github.sha }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       HEPTA_CI_LANE: source-head
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
           persist-credentials: false
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -103,7 +106,7 @@ jobs:
           mv act2-companion-input "$RUNNER_TEMP/act2-ui-source"
           records="$RUNNER_TEMP/act2-records"
           mkdir -p "$records"
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$ACT2_SOURCE"
           test -z "$(git status --porcelain)"
           git fetch --no-tags --depth=1 origin "$ACT2_BASE"
           git rev-parse HEAD HEAD^{tree} > "$records/hepta-source.txt"
@@ -198,7 +201,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: act2-native-${{ github.sha }}-${{ github.run_attempt }}
+          name: act2-native-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/act2-records
           if-no-files-found: error
           retention-days: 14

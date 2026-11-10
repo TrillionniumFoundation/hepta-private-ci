@@ -635,7 +635,12 @@ required_function_order = [{function = "fn prepare_thread(", sequence = ["self.p
 
 [[protected_file]]
 path = "codex-rs/hepta-memory/src/production_notes_owner.rs"
-required = ["self.verify_authority().await?", "retained.topic != crate::NOTES_REPLACE_TOPIC_V1", "payload_sha256", "Sha256Digest::for_bytes(receipt.as_bytes()).as_str() != digest", "NotesTerminalReceipt::from_json(&retained.payload_json, &receipt)"]
+required = ["self.verify_authority().await?", "!crate::production_notes::is_notes_topic(&retained.topic)", "payload_sha256", "Sha256Digest::for_bytes(receipt.as_bytes()).as_str() != digest", "NotesTerminalReceipt::from_json(&retained.payload_json, &receipt)"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-memory/src/production_notes_fence.rs"
+required = ["pub(crate) fn is_notes_topic(topic: &str) -> bool", "matches!(topic, NOTES_REPLACE_TOPIC_V1 | NOTES_FENCE_TOPIC_V1)"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]

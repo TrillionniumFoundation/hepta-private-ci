@@ -217,41 +217,47 @@ async fn notes_document_floor_history_cap_refuses_without_ignoring_later_commits
     .await?;
     let (template, identity, _) = fixture()?;
     let text = "bounded original-owner history";
-    for predecessor in 0_u64..1025 {
-        if predecessor == 1024 {
-            writer
-                .validate_notes_document_read(&NotesDocumentState {
-                    target: identity.clone(),
-                    revision: predecessor,
-                    text_sha256: Sha256Digest::for_bytes(text.as_bytes()),
-                    receipt_pending: false,
-                })
-                .await?;
+    let target = CapacityObserver {
+        destination: identity.destination_id(),
+        observations: AtomicUsize::new(0),
+        retirements: AtomicUsize::new(0),
+    };
+    // Preserve all 1025 original operations and settlements while reconciling
+    // each bounded discovery page together. Calling a limit-one discovery
+    // after every insertion rescans the growing ledger quadratically and
+    // tests that incidental schedule instead of the 1024/1025 read-floor cut.
+    const DISCOVERY_PAGE: u64 = 256;
+    for batch_start in (0_u64..1025).step_by(DISCOVERY_PAGE as usize) {
+        let batch_end = std::cmp::min(batch_start + DISCOVERY_PAGE, 1025);
+        for predecessor in batch_start..batch_end {
+            if predecessor == 1024 {
+                writer
+                    .validate_notes_document_read(&NotesDocumentState {
+                        target: identity.clone(),
+                        revision: predecessor,
+                        text_sha256: Sha256Digest::for_bytes(text.as_bytes()),
+                        receipt_pending: false,
+                    })
+                    .await?;
+            }
+            let operation_id = format!("notes-read-cap-{predecessor}");
+            let mut request: serde_json::Value = serde_json::from_str(&template)?;
+            request["operation_id"] = serde_json::json!(operation_id);
+            request["expected_revision"] = serde_json::json!(predecessor);
+            request["text"] = serde_json::json!(text);
+            prepare(&writer, serde_json::to_string(&request)?, &identity).await?;
         }
-        let operation_id = format!("notes-read-cap-{predecessor}");
-        let mut request: serde_json::Value = serde_json::from_str(&template)?;
-        request["operation_id"] = serde_json::json!(operation_id);
-        request["expected_revision"] = serde_json::json!(predecessor);
-        request["text"] = serde_json::json!(text);
-        let payload = serde_json::to_string(&request)?;
-        let target = Observer {
-            destination: identity.destination_id(),
-            receipt: serde_json::to_string(&serde_json::json!({
-                "schema_version":1,"target":identity,"operation_id":operation_id,
-                "payload_sha256":Sha256Digest::for_bytes(payload.as_bytes()).as_str(),
-                "result":{"status":"applied","previous_revision":predecessor,
-                    "revision":predecessor + 1,"text_sha256":Sha256Digest::for_bytes(text.as_bytes()).as_str()}
-            }))?,
-            observations: AtomicUsize::new(0),
-            retirements: AtomicUsize::new(0),
-            lose_first_ack: AtomicBool::new(false),
-        };
-        prepare(&writer, payload, &identity).await?;
         assert_eq!(
-            writer.reconcile_target_batch(&target, /*limit*/ 1).await?,
-            1
+            writer
+                .reconcile_target_batch(&target, usize::try_from(batch_end - batch_start)?,)
+                .await?,
+            usize::try_from(batch_end - batch_start)?
         );
     }
+    // The destination validates every original operation. Source retirement
+    // then acknowledges each of the five bounded reconciliation pages.
+    assert_eq!(target.observations.load(Ordering::SeqCst), 1025);
+    assert_eq!(target.retirements.load(Ordering::SeqCst), 5);
     let before = writer.recovery_anchor().await?;
     let error = writer
         .validate_notes_document_read(&NotesDocumentState {
@@ -266,4 +272,72 @@ async fn notes_document_floor_history_cap_refuses_without_ignoring_later_commits
         if reason.contains("exceeds its bounded scan")));
     assert_eq!(writer.recovery_anchor().await?, before);
     Ok(())
+}
+
+struct CapacityObserver {
+    destination: String,
+    observations: AtomicUsize,
+    retirements: AtomicUsize,
+}
+
+impl ProductionOutboxTarget for CapacityObserver {
+    fn dispatch<'a>(&'a self, _request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
+        panic!("capacity recovery must never dispatch an effect")
+    }
+}
+
+impl FinalUseProductionOutboxTarget for CapacityObserver {
+    fn destination_id(&self) -> &str {
+        &self.destination
+    }
+
+    fn observe_terminal<'a>(
+        &'a self,
+        request: &'a ProductionDispatchRequest,
+    ) -> ProductionTerminalObservationFuture<'a> {
+        self.observations.fetch_add(1, Ordering::SeqCst);
+        let observation = match capacity_receipt(request) {
+            Ok(receipt) => ProductionTerminalObservation::Applied { receipt },
+            Err(reason) => ProductionTerminalObservation::Indeterminate { reason },
+        };
+        Box::pin(async move { observation })
+    }
+
+    fn retire_notes_receipt(
+        &self,
+        permit: &NotesRetirementPermit,
+    ) -> Result<crate::ProductionRetirementAck, String> {
+        if permit.receipt() != capacity_receipt(permit.request())? {
+            return Err("capacity receipt differs from the original request".into());
+        }
+        self.retirements.fetch_add(1, Ordering::SeqCst);
+        crate::ProductionRetirementAck::from_validated_target(permit.request(), permit.receipt())
+    }
+}
+
+fn capacity_receipt(request: &ProductionDispatchRequest) -> Result<String, String> {
+    let payload: serde_json::Value =
+        serde_json::from_str(&request.payload_json).map_err(|error| error.to_string())?;
+    let operation_id = payload["operation_id"]
+        .as_str()
+        .ok_or_else(|| "capacity operation_id is absent".to_string())?;
+    let predecessor = payload["expected_revision"]
+        .as_u64()
+        .ok_or_else(|| "capacity expected_revision is absent".to_string())?;
+    let text = payload["text"]
+        .as_str()
+        .ok_or_else(|| "capacity text is absent".to_string())?;
+    serde_json::to_string(&serde_json::json!({
+        "schema_version": 1,
+        "target": payload["target"],
+        "operation_id": operation_id,
+        "payload_sha256": request.payload_sha256.as_str(),
+        "result": {
+            "status": "applied",
+            "previous_revision": predecessor,
+            "revision": predecessor + 1,
+            "text_sha256": Sha256Digest::for_bytes(text.as_bytes()).as_str(),
+        }
+    }))
+    .map_err(|error| error.to_string())
 }
