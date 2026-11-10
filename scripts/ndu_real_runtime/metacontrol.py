@@ -17,6 +17,12 @@ import time
 import numpy as np
 
 from .controllers import ACTIONS
+from .critic_context import (
+    CriticContext,
+    CriticContextError,
+    context_digest,
+    require_context,
+)
 
 MODES = ("point", "unconditional", "conditional")
 CONTINUATIONS = tuple(action for action in ACTIONS if action != "STOP")
@@ -111,8 +117,14 @@ class ObservedContinuation:
     effect_occurred: bool | None = None
     identity_receipt_sha256: str | None = None
     effect_receipt_sha256: str | None = None
+    context: CriticContext | None = None
+    evidence_context_sha256: str | None = None
 
     def __post_init__(self):
+        if self.evidence_context_sha256 != context_digest(self.context):
+            raise CriticContextError(
+                "recalibration_required: observation evidence context differs"
+            )
         if not all(
             isinstance(x, str) and 0 < len(x) <= 512
             for x in (self.source_group, self.decision_id)
@@ -182,7 +194,8 @@ def _cell(state, action):
     )
 
 
-def _records(records):
+def _records(records, context):
+    require_context(context)
     rows = tuple(records)
     if (
         not rows
@@ -192,6 +205,8 @@ def _records(records):
         raise ValueError("Expected a nonempty bounded observation collection")
     if len({row.decision_id for row in rows}) != len(rows):
         raise ValueError("Repeated decision IDs would duplicate one observation")
+    for row in rows:
+        require_context(row.context, context)
     return rows
 
 
@@ -259,6 +274,22 @@ class MetacontrolHeads:
     production update or complete-cost certification.
     """
 
+    @property
+    def context(self):
+        return getattr(self, "_context", None)
+
+    def _require_context(self, context):
+        expected = require_context(self.context)
+        require_context(context, expected)
+        pin = context_digest(expected)
+        if self.receipt.get("critic_context_sha256") != pin or (
+            self.calibration is not None
+            and self.calibration.get("critic_context_sha256") != pin
+        ):
+            raise CriticContextError(
+                "recalibration_required: fit or calibration context differs"
+            )
+
     def _vector(self, state, action):
         if (len(state.features), len(state.context_belief)) != self.shape:
             raise ValueError("Public feature or context profile differs from training")
@@ -276,7 +307,8 @@ class MetacontrolHeads:
             raise ValueError("Nonfinite derived public-state vector")
         return vector
 
-    def predict(self, state, action):
+    def predict(self, state, action, *, context=None):
+        self._require_context(context)
         if action not in self.supported_actions:
             raise ValueError("No observed-cost value labels for this action")
         x = self._vector(state, action)
@@ -295,14 +327,16 @@ class MetacontrolHeads:
             "full_cost_observed": self.receipt["full_cost_observed"],
             "full_cost_scope": "training_labels_only",
             "probability_is_semantic_correctness": False,
+            "critic_context_sha256": context_digest(self.context),
         }
 
-    def calibrate(self, records, *, alpha=0.1):
+    def calibrate(self, records, *, alpha=0.1, context=None):
+        self._require_context(context)
         if self.calibration is not None:
             raise ValueError(
                 "Calibration is frozen; fit a new candidate to recalibrate"
             )
-        rows = _records(records)
+        rows = _records(records, context)
         groups = {row.source_group for row in rows}
         if groups & self.training_groups or not _finite(alpha) or not 0 < alpha < 0.5:
             raise ValueError("Calibration needs disjoint sources and valid alpha")
@@ -312,7 +346,8 @@ class MetacontrolHeads:
                 continue
             try:
                 residual = (
-                    row.net_gain - self.predict(row.state, row.action)["net_gain"]
+                    row.net_gain
+                    - self.predict(row.state, row.action, context=context)["net_gain"]
                 )
             except ValueError:
                 unsupported += 1
@@ -333,6 +368,7 @@ class MetacontrolHeads:
 
         self.calibration_groups = groups
         self.calibration = {
+            "critic_context_sha256": context_digest(context),
             "alpha": alpha,
             "records_sha256": _digest([asdict(row) for row in rows]),
             "rows": len(rows),
@@ -342,6 +378,7 @@ class MetacontrolHeads:
             "conditional": {key: quantile(value) for key, value in conditional.items()},
         }
         return {
+            "critic_context_sha256": context_digest(context),
             "groups": len(groups),
             "known_cost_rows": sum(r.net_gain is not None for r in rows),
             "conditional_cells": len(conditional),
@@ -362,10 +399,34 @@ class MetacontrolHeads:
         margin=0.0,
         action_cost_bounds=None,
         finalization_reserve=0.0,
+        context=None,
     ):
         started = time.perf_counter()
+        if type(state) is not PublicControlState or "STOP" not in state.legal_actions:
+            raise ValueError("A valid public state with legal STOP is required")
         if mode not in MODES or light_action not in state.legal_actions:
             raise ValueError("Unknown mode or illegal light fallback")
+        try:
+            self._require_context(context)
+        except CriticContextError as error:
+            return "STOP", {
+                "scores_relative_to_stop": {"STOP": 0.0},
+                "unsupported": {
+                    action: str(error)
+                    for action in state.legal_actions
+                    if action != "STOP"
+                },
+                "fallback": True,
+                "recalibration_required": True,
+                "reason": str(error),
+                "mode": mode,
+                "full_cost_observed": False,
+                "cost_disposition": "HOLD",
+                "controller_seconds": time.perf_counter() - started,
+                "controller_cost_requires_caller_accounting": True,
+                "owner_predispatch_budget_check_required": True,
+                "production_update": "no-update",
+            }
         if (
             not _finite(margin)
             or margin < 0
@@ -400,7 +461,7 @@ class MetacontrolHeads:
                 )
                 continue
             try:
-                score = self.predict(state, action)["net_gain"]
+                score = self.predict(state, action, context=context)["net_gain"]
                 if mode != "point":
                     if self.calibration is None:
                         raise ValueError("No frozen source-disjoint calibration")
@@ -432,6 +493,8 @@ class MetacontrolHeads:
             "scores_relative_to_stop": scores,
             "unsupported": unavailable,
             "fallback": fallback,
+            "recalibration_required": False,
+            "critic_context_sha256": context_digest(context),
             "mode": mode,
             "training_full_cost_observed": self.receipt["full_cost_observed"],
             "calibration_full_cost_observed": calibration_costs,
@@ -448,10 +511,11 @@ class MetacontrolHeads:
             "production_update": "no-update",
         }
 
-    def diagnostics(self, records):
+    def diagnostics(self, records, *, context=None):
+        self._require_context(context)
         if self.calibration is None:
             raise ValueError("Freeze calibration before accessing future diagnostics")
-        rows = _records(records)
+        rows = _records(records, context)
         if {r.source_group for r in rows} & (
             self.training_groups | self.calibration_groups
         ):
@@ -459,7 +523,9 @@ class MetacontrolHeads:
         predictions, unsupported = [], 0
         for row in rows:
             try:
-                predictions.append((row, self.predict(row.state, row.action)))
+                predictions.append(
+                    (row, self.predict(row.state, row.action, context=context))
+                )
             except ValueError:
                 unsupported += 1
         result = {
@@ -540,6 +606,7 @@ class MetacontrolHeads:
         return result
 
     def snapshot(self):
+        self._require_context(self.context)
         calibration = (
             None
             if self.calibration is None
@@ -552,6 +619,8 @@ class MetacontrolHeads:
             }
         )
         return {
+            "context": self.context.to_wire(),
+            "critic_context_sha256": context_digest(self.context),
             "receipt": self.receipt,
             "value": self.value_weights.tolist(),
             "identity": self.identity_head,
@@ -571,10 +640,10 @@ class MetacontrolHeads:
         return _digest(self.snapshot())
 
 
-def fit_heads(records, *, ridge=0.001):
+def fit_heads(records, *, ridge=0.001, context=None):
     """Fit identical point critic for all residual modes; no DP or future calls."""
     started = time.perf_counter()
-    rows = _records(records)
+    rows = _records(records, context)
     if not _finite(ridge) or not 0 < ridge <= 1:
         raise ValueError("Ridge penalty must be positive and bounded")
     if len({(len(r.state.features), len(r.state.context_belief)) for r in rows}) != 1:
@@ -588,6 +657,7 @@ def fit_heads(records, *, ridge=0.001):
             "Need at least four observed comparisons from two source groups"
         )
     candidate = MetacontrolHeads()
+    candidate._context = context
     candidate.shape = (len(rows[0].state.features), len(rows[0].state.context_belief))
     raw = np.asarray([_base(r.state) for r in rows])
     candidate.minimum, candidate.maximum = raw.min(axis=0), raw.max(axis=0)
@@ -621,7 +691,8 @@ def fit_heads(records, *, ridge=0.001):
     candidate.calibration_groups, candidate.calibration = set(), None
     candidate.supported_actions = {r.action for r in rows if r.net_gain is not None}
     candidate.receipt = {
-        "schema": "ndu.real.metacontrol-fit.v1",
+        "schema": "ndu.real.metacontrol-fit.v2",
+        "critic_context_sha256": context_digest(context),
         "rows": len(rows),
         "training_groups": sorted(candidate.training_groups),
         "known_cost_rows": int(known.sum()),

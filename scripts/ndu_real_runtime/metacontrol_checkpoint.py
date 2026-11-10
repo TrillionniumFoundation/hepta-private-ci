@@ -7,6 +7,7 @@ from pathlib import Path
 
 import numpy as np
 
+from .critic_context import CriticContext, context_digest, require_context
 from .metacontrol import (
     CONTINUATIONS,
     MAX_PARAMETER_ABS,
@@ -17,7 +18,8 @@ from .metacontrol import (
 )
 
 
-def save_heads(candidate, path):
+def save_heads(candidate, path, *, context=None):
+    candidate._require_context(context)
     raw = (
         json.dumps(
             candidate.snapshot(), sort_keys=True, separators=(",", ":"), allow_nan=False
@@ -29,7 +31,7 @@ def save_heads(candidate, path):
     return hashlib.sha256(raw).hexdigest()
 
 
-def load_heads(raw, expected_sha256):
+def load_heads(raw, expected_sha256, *, context=None):
     """Load numeric state only; the pin must come from the frozen trusted record."""
     if (
         type(raw) is not bytes
@@ -47,7 +49,14 @@ def load_heads(raw, expected_sha256):
 
     data = json.loads(raw, object_pairs_hook=unique)
     json.dumps(data, allow_nan=False)
+    require_context(context)
+    bound_context = CriticContext.from_wire(
+        data.get("context") if isinstance(data, dict) else None
+    )
+    require_context(context, bound_context)
     if not isinstance(data, dict) or set(data) != {
+        "context",
+        "critic_context_sha256",
         "receipt",
         "value",
         "identity",
@@ -63,6 +72,8 @@ def load_heads(raw, expected_sha256):
         "calibration",
     }:
         raise ValueError("Unknown checkpoint schema")
+    if data["critic_context_sha256"] != context_digest(bound_context):
+        raise ValueError("Checkpoint critic context digest differs")
     shape = data["shape"]
     if (
         not isinstance(shape, list)
@@ -104,6 +115,7 @@ def load_heads(raw, expected_sha256):
         return set(value)
 
     candidate = MetacontrolHeads()
+    candidate._context = bound_context
     candidate.shape = tuple(shape)
     candidate.value_weights = numbers(data["value"], parameter_count)
     for key in ("mean", "scale", "minimum", "maximum"):
@@ -129,6 +141,7 @@ def load_heads(raw, expected_sha256):
         or set(receipt)
         != {
             "schema",
+            "critic_context_sha256",
             "rows",
             "training_groups",
             "known_cost_rows",
@@ -144,7 +157,8 @@ def load_heads(raw, expected_sha256):
             "full_cost_observed",
             "production_update",
         }
-        or receipt.get("schema") != "ndu.real.metacontrol-fit.v1"
+        or receipt.get("schema") != "ndu.real.metacontrol-fit.v2"
+        or receipt.get("critic_context_sha256") != context_digest(bound_context)
         or receipt.get("training_groups") != data["training_groups"]
         or type(receipt.get("terminal_targets")) is not int
         or receipt.get("terminal_targets") != 0
@@ -250,6 +264,7 @@ def load_heads(raw, expected_sha256):
             set(calibration)
             != {
                 "alpha",
+                "critic_context_sha256",
                 "unconditional",
                 "conditional",
                 "records_sha256",
@@ -258,6 +273,7 @@ def load_heads(raw, expected_sha256):
                 "full_cost_observed",
             }
             or not _finite(alpha)
+            or calibration.get("critic_context_sha256") != context_digest(bound_context)
             or not 0 < alpha < 0.5
             or not _sha(calibration.get("records_sha256"))
             or type(calibration.get("rows")) is not int
@@ -316,4 +332,5 @@ def load_heads(raw, expected_sha256):
         }
     elif candidate.calibration_groups:
         raise ValueError("Calibration sources without frozen calibration")
+    candidate._require_context(context)
     return candidate
