@@ -17,12 +17,15 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 
-use super::support::{Fixture as EvidenceFixture, read_request, reply, response};
+use super::support::Fixture as EvidenceFixture;
+use super::support::read_request;
+use super::support::reply;
+use super::support::response;
 use crate::neuron_generation_current::test_support::Fixture as Publication;
 use crate::neuron_generation_service::spawn_neuron_generation_service;
-use crate::neuron_generation_update_bootstrap::{
-    learning_test_baseline, learning_test_decision, learning_test_receipt,
-};
+use crate::neuron_generation_update_bootstrap::learning_test_baseline;
+use crate::neuron_generation_update_bootstrap::learning_test_decision;
+use crate::neuron_generation_update_bootstrap::learning_test_receipt;
 use crate::*;
 
 #[path = "neuron_generation_runtime_test_support.rs"]
@@ -638,7 +641,7 @@ async fn retained_and_updated_original_evidence_survives_actor_and_runtime_reope
 #[tokio::test]
 async fn substituted_receipt_and_unpublished_actor_never_contact_evidence_owner()
 -> anyhow::Result<()> {
-    let mut f = Fixture::new(Profile::Retained).await?;
+    let f = Fixture::new(Profile::Retained).await?;
     let (handle, bootstrap) = neuron_generation_channel_v2(
         &f.host.identity,
         f.host.journal_with("unpublished", f.host.config.clone()),
@@ -659,7 +662,7 @@ async fn substituted_receipt_and_unpublished_actor_never_contact_evidence_owner(
     };
     let receipt = learning_test_receipt(&f.coordinator, observation);
     let fixture = evidence_fixture(&f, receipt.clone())?;
-    let (client, mut server) = fixture.client()?;
+    let (client, _server) = fixture.client()?;
     let result = read_generation_learning_stage_v1(
         GenerationLearningStageReadbackRequestV1 {
             runtime: &handle,
