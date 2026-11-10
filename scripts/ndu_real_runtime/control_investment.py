@@ -211,6 +211,28 @@ def predict(heads, state, *, context=None):
     try:
         require_context(getattr(heads, "context", None))
         require_context(context, heads.context)
+        if not heads.calibration_sources:
+            raise CriticContextError(
+                "recalibration_required: no held-out calibration sources"
+            )
+        pooled = {
+            name
+            for name, group, count, radius in heads.residuals
+            if group is None
+            and count > 0
+            and type(radius) in (int, float)
+            and math.isfinite(radius)
+        }
+        if any(
+            weights is not None and name not in pooled
+            for name, weights in (
+                ("implementation", heads.probability),
+                ("value", heads.value),
+            )
+        ):
+            raise CriticContextError(
+                "recalibration_required: missing finite pooled calibration radius"
+            )
     except CriticContextError as error:
         output.update(recalibration_required=True, reason=str(error))
         for name in ("implementation", "value"):
