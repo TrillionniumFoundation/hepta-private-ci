@@ -233,6 +233,7 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
         self.rejects(DELIVERY, "fn with_original_circuit_learning_delivery(", "bootstrap.circuit_delivery_source = CircuitLearningSourceV1::OriginalObjective")
         self.rejects(DELIVERY, "fn run(", "if !claimed && matches!(self.source, CircuitLearningSourceV1::OriginalObjective)")
         self.rejects(DELIVERY, "fn run(", "state.require_circuit_learning_source(request)")
+        self.rejects(SOURCE, "fn require_circuit_learning_source(", "!self.circuit_learning_sources().contains(&request.source_run_id)")
         for occurrence in range(2):
             self.rejects(SOURCE, "fn require_circuit_learning_source(", "self.require_learning_source_authentication(&original.0)?", occurrence)
         self.rejects(SOURCE, "fn require_learning_source_authentication(", "authbus_ingress::require_objective_ready(self)?")
