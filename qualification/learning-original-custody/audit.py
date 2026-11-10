@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import re
 import stat
+import unicodedata
 
 STAGES = ('experience', 'dataset', 'training', 'evaluation', 'proposal',
           'selection', 'published_current', 'final_use', 'next_use',
@@ -106,7 +107,11 @@ def inspect(manifest: Path) -> dict:
     operators = [custody.get(name) for name in roles]
     if any(not isinstance(x, str) or not x.strip() for x in operators):
         fail('operator_custody_missing')
-    elif len(set(operators)) != len(operators):
+    elif len({unicodedata.normalize('NFKC', name).strip().casefold()
+              for name in operators}) != len(operators):
+        # Free-form self-reporting cannot prove independence, but case,
+        # surrounding whitespace and compatibility glyphs must not
+        # manufacture distinct declared operators.
         fail('same_operator_multiple_roles')
 
     entries = record.get('original_receipts')
