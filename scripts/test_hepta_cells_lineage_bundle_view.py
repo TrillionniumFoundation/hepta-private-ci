@@ -78,6 +78,18 @@ class NativeBundleClaimReviewTests(unittest.TestCase):
         with self.assertRaisesRegex(LineagePolicyError, "training lineage"):
             review_native_bundle_claims(r, claimed, source, changed, partition)
 
+    def test_rehashed_candidate_and_evidence_cannot_swap_frozen_dataset(self):
+        r, e, source, candidate, partition = case()
+        changed = replace(
+            candidate,
+            training_lineage=dict(candidate.training_lineage, dataset=pin(989)),
+        )
+        relabelled = replace(
+            e, candidate_bundle=changed.digest(), dataset_digest=pin(989)
+        )
+        with self.assertRaisesRegex(LineagePolicyError, "frozen lineage"):
+            review_native_bundle_claims(r, relabelled, source, changed, partition)
+
     def test_actual_bundle_rule_and_evaluation_are_not_caller_relabelled(self):
         r, e, source, candidate, partition = case()
         for key in ("update_rule", "evaluation_profile"):
