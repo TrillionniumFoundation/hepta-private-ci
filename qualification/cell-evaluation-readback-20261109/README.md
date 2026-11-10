@@ -54,10 +54,17 @@ object was compared to the local publishing candidate. Projection trees exclude
 later qualification documents; complete identities are in `validation.json`.
 The source archive retains the reversible tested-to-maintained patch.
 
-`native-evidence-v1.tar.xz` contains all three attempts, raw logs, inventories,
+Reassembled `native-evidence-v1.tar.xz` contains all three attempts, raw logs, inventories,
 resource usage and maintenance/compiler records. `source-and-review-evidence-v1.tar.xz`
 contains source binding, validation recipes and separate code-review scope.
-Both have internal manifests and external hashes in `SHA256SUMS`.
+The original archive's full SHA-256 is retained in `SHA256SUMS`; its two exact-byte Git parts are listed in `validation.json`. Only the 390,000-byte and 381,984-byte parts are tracked, respecting the 512,000-byte blob limit. Reassemble without decompressing or changing bytes:
+
+```sh
+cat native-evidence-v1.tar.xz.part-000 native-evidence-v1.tar.xz.part-001 > native-evidence-v1.tar.xz
+sha256sum -c SHA256SUMS
+```
+
+Run the verification in this directory. The separate `source-and-review-evidence-v1.tar.xz` remains unchanged. A failed checksum must block evidence use.
 
 The prior full caller proof covers evaluation code head `715dfcecd10afcdaf9db4d2559c306c11282ba7b`.
 It is not relabeled as a full caller proof for this later Cell change. This cut

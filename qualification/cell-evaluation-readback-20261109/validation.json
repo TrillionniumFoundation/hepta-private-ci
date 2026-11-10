@@ -168,7 +168,21 @@
     {
       "path": "native-evidence-v1.tar.xz",
       "bytes": 771984,
-      "sha256": "c6c5c9375d0b156827fc7f013879dbdeea4861e5bf85491d9fe24e084b23746f"
+      "sha256": "c6c5c9375d0b156827fc7f013879dbdeea4861e5bf85491d9fe24e084b23746f",
+      "storage": "exact_concat_parts",
+      "parts": [
+        {
+          "path": "native-evidence-v1.tar.xz.part-000",
+          "bytes": 390000,
+          "git_blob_sha": "7763fb1765409512a553041ed836a7422aa17637"
+        },
+        {
+          "path": "native-evidence-v1.tar.xz.part-001",
+          "bytes": 381984,
+          "git_blob_sha": "1317aac8d1b4f62d60b598c3fbd3bb6a34a49a01"
+        }
+      ],
+      "reassembly_sha256_mandatory": true
     },
     {
       "path": "source-and-review-evidence-v1.tar.xz",
