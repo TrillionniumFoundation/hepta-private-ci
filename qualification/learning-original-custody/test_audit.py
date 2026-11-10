@@ -86,6 +86,10 @@ class AuditTests(unittest.TestCase):
         self.record['admitted_attempt_ids'] = [['invalid']]
         self.assertIn('attempt_inventory_invalid', self.check()['issues'])
 
+    def test_unhashable_attempt_state_is_hold_not_exception(self):
+        self.record['attempts'][0]['state'] = ['completed']
+        self.assertIn('attempt_state:0', self.check()['issues'])
+
     def test_unchanged_bytes_not_candidate_adopt(self):
         self.record['selected_bundle'] = self.record['baseline_bundle']
         self.assertIn('selection_version_mismatch', self.check()['issues'])
