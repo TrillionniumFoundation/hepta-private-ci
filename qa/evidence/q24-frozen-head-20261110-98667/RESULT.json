@@ -1,0 +1,143 @@
+{
+  "archive": {
+    "bytes": 497812,
+    "name": "records.tar.xz",
+    "parts": [
+      {
+        "bytes": 360000,
+        "git_blob": "0ac6af3ca33c62ae0ae8e67638fdf36b388f6e64",
+        "name": "records.tar.xz.part001",
+        "sha256": "5bd297d938e6ad701db4eb94e9cbb1f59d66e37d7752f64675580d4c1242c11a"
+      },
+      {
+        "bytes": 137812,
+        "git_blob": "cbf2c7d9c16b0152a84b6311aa7df78d34d3afe3",
+        "name": "records.tar.xz.part002",
+        "sha256": "db81d575c108f7ed60510d68c890c015daaf0aeff44b1a283147e9a808e082fd"
+      }
+    ],
+    "sha256": "6e488f0cc140abc0e8716789f52e6b3fa596424127af99af20ff6247f29e6518"
+  },
+  "continuation": {
+    "archive": {
+      "key": "daemon-98667-resume-native107-archive-01",
+      "request_file": "native107-archive-request.json",
+      "state": "UNKNOWN: original start MCP-timed-out; no recovery dispatched yet",
+      "target": "/home/qq/hepta-daemon-learning-98667-20261109/resume-107148c3-native-evidence.tar.xz"
+    },
+    "bounded_repair_status_and_driver_read": "MCP timeout; repair phase/outcome and deployed driver identity remain unobserved",
+    "control_file_remote_writes": {
+      "native107-archive-request.json": "UNKNOWN: create-only write MCP-timed-out; do not overwrite; verify exact original path/version/hash",
+      "native107-envrepair-start-request.json": "UNKNOWN: create-only write MCP-timed-out; do not overwrite; verify exact original path/version/hash",
+      "native107-start-request.json": "UNKNOWN: create-only write MCP-timed-out; do not overwrite; verify exact original path/version/hash"
+    },
+    "current_source_state": "UNKNOWN while envrepair outcome is unobserved; do not checkout/reset/retest",
+    "durable_local_request_fallback": "Exact requests contain no credentials; root may publish them with repository qualification evidence if remote persistence cannot be confirmed",
+    "envrepair": {
+      "job_id": null,
+      "key": "daemon-98667-resume-native-107148c3-envrepair-01",
+      "remote_driver": "/home/qq/hepta-daemon-learning-98667-20261109/resume-107148c3-envrepair-driver.py",
+      "remote_records": "/home/qq/hepta-daemon-learning-98667-20261109/resume-107148c3-native-envrepair",
+      "repeat_under_new_key": false,
+      "request_file": "native107-envrepair-start-request.json",
+      "state": "UNKNOWN: launch and exact-argument same-key recovery both MCP-timed-out"
+    },
+    "final_source_followup": "Root will integrate explicit#5636 ancestor Rustfmt postimages plus true107 maintenance images after repair terminal, then final assembled compile-only/fmt/caller checks; no behavior relabel or rerun after maintenance",
+    "guard_only_head_from_parent": "fd3c9fd55d1a3427f70828024cac7c1eff7c1c0c",
+    "host": "ai395",
+    "native_interface_observation": "process_start initial+same-key recovery, durable inventory, binary_write and bounded read all MCP-timed-out; no further probes or new execution identities launched",
+    "native_source_sha": "107148c320fc0f25fcf9babd020d42ddcee1dfbf",
+    "native_source_tree": "b81df602d39c5210c52eb55268381509f44812c7",
+    "observed_unix": 1794298349.9949586,
+    "original_job_id": "1a1c46757b3-cf39-2ee",
+    "original_terminal": {
+      "errors": 0,
+      "exit_code": 1,
+      "failure_cause_observed": "driver TMPDIR produced path exceeding SUN_LEN",
+      "failure_name": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+      "failures": 1,
+      "inventory_sha256": "657c43e9b41639f7b46afa70baebe9cd1fffc7dbeec7388687d7101785462041",
+      "junit_cases": 1056,
+      "maintenance_started": false,
+      "new_q24_cases_passed": 3,
+      "ordinary_returncode": 100,
+      "original_composition_case_passed": true,
+      "passed": 1055,
+      "source_unchanged": true,
+      "state": "failed",
+      "stderr_bytes": 735605,
+      "stderr_sha256": "5d3819e8c109c92cffdb787bea258d902e5b8b8aa5a19074efd6e1a9791ed29e"
+    },
+    "positive_job_inventory_lookup": "MCP timeout; no positive result; absence is not established",
+    "recovery_rule": "Use only original exact same-key arguments and same controller/host; never create a new execution identity for unknown work. Verify unknown file creates by metadata/readback rather than overwrite.",
+    "schema_version": 1
+  },
+  "guard_source": {
+    "sha": "fd3c9fd55d1a3427f70828024cac7c1eff7c1c0c",
+    "tree": "6115602459e85ce59a6dc3ee1083c9d5082c1b39"
+  },
+  "native_first_run": {
+    "errors": 0,
+    "exit_code": 1,
+    "failure_cause_observed": "driver TMPDIR produced path exceeding SUN_LEN",
+    "failure_name": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+    "failures": 1,
+    "inventory_sha256": "657c43e9b41639f7b46afa70baebe9cd1fffc7dbeec7388687d7101785462041",
+    "junit_cases": 1056,
+    "maintenance_started": false,
+    "new_q24_cases_passed": 3,
+    "ordinary_returncode": 100,
+    "original_composition_case_passed": true,
+    "passed": 1055,
+    "source_unchanged": true,
+    "state": "failed",
+    "stderr_bytes": 735605,
+    "stderr_sha256": "5d3819e8c109c92cffdb787bea258d902e5b8b8aa5a19074efd6e1a9791ed29e"
+  },
+  "native_original_job": "1a1c46757b3-cf39-2ee",
+  "native_scope": "agentd,learning-artifacts,intelligence-eval ordinary --lib; ignored Root/bins/integration not qualified by this invocation",
+  "recorded_at_utc": "2026-11-10T08:19:14.487387+00:00",
+  "remaining": {
+    "acceptance": "HOLD",
+    "current_full_caller_proof": "NOT_RUN",
+    "independent_evaluation_qualified": false,
+    "optimizer_execution_qualified": false,
+    "ordinary_end_to_end_cold_recovery": "NOT_ESTABLISHED",
+    "ordinary_published_bootstrap": "NOT_ESTABLISHED",
+    "production_activation": false,
+    "repair_final_qualification": "UNKNOWN",
+    "required_fix_fmt_and_final_compile": "UNOBSERVED",
+    "root_original_stage_owner_assembly": "NOT_ASSEMBLED"
+  },
+  "remote_current_source_state": "UNKNOWN while envrepair outcome is unobserved; do not checkout/reset/retest",
+  "repair": {
+    "job_id": null,
+    "key": "daemon-98667-resume-native-107148c3-envrepair-01",
+    "remote_driver": "/home/qq/hepta-daemon-learning-98667-20261109/resume-107148c3-envrepair-driver.py",
+    "remote_records": "/home/qq/hepta-daemon-learning-98667-20261109/resume-107148c3-native-envrepair",
+    "repeat_under_new_key": false,
+    "request_file": "native107-envrepair-start-request.json",
+    "state": "UNKNOWN: launch and exact-argument same-key recovery both MCP-timed-out"
+  },
+  "retention": {
+    "archive_exact_local_members": 48,
+    "baseline92ed_full_log_retained": true,
+    "baseline92ed_xml_and_full_artifact_recovered": false,
+    "native_full_archive_recovered": false,
+    "native_full_stderr_recovered": false,
+    "native_raw_junit_xml_recovered": false,
+    "note": "Native original phase/JUnit summary and exact requests are retained. Full original native payloads remain on ai395 and are not claimed to be in this package. Baseline 92ed counts belong only to 92ed."
+  },
+  "runtime_source": {
+    "sha": "107148c320fc0f25fcf9babd020d42ddcee1dfbf",
+    "tree": "b81df602d39c5210c52eb55268381509f44812c7"
+  },
+  "schema": "hepta.q24.frozen-head.qualification.v1",
+  "source_checks": {
+    "failed": 0,
+    "inherited": 8,
+    "new": 6,
+    "scope": "scoped mutation and exact caller checks; not a complete current-head repository caller scan"
+  },
+  "source_pr": 5654
+}
