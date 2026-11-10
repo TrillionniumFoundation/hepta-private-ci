@@ -46,6 +46,14 @@ pub struct CellQ24ModelFilesV1 {
     pub heads: File,
 }
 
+/// One linear row in the fixed drive/prediction heads matrix. Indices are
+/// zero-based within their respective halves, not arbitrary byte ranges.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CellQ24PrivateHeadV1 {
+    Drive { index: u16 },
+    Prediction { index: u16 },
+}
+
 /// Actual parsed model bytes; callers cannot replace pins after loading.
 pub struct LoadedCellQ24ModelV1 {
     components: CellBundleComponentsV1,
@@ -109,6 +117,50 @@ impl LoadedCellQ24ModelV1 {
             encoder,
             heads,
         })
+    }
+
+    /// Validate actual already-loaded candidate material against this baseline.
+    /// Exactly one selected row must change; all other coefficients, shapes,
+    /// adapters and semantic components remain equal. HQ24 matrices/adapters
+    /// have canonical, exact-length integer encodings, so these comparisons
+    /// preserve the frozen file bytes as well as their component digests.
+    ///
+    /// Returns the immutable loaded candidate for the existing worker/bundle
+    /// checks. This proves no training, useful output, evidence or adoption
+    /// authority. Evaluation must execute these actual quantized bytes.
+    pub fn validate_single_head_candidate(
+        &self,
+        candidate: Self,
+        head: CellQ24PrivateHeadV1,
+    ) -> Result<Self, CellGenerationErrorV2> {
+        let (index, offset) = match head {
+            CellQ24PrivateHeadV1::Drive { index } => (usize::from(index), 0),
+            CellQ24PrivateHeadV1::Prediction { index } => {
+                (usize::from(index), self.heads.rows / 2)
+            }
+        };
+        if index >= self.heads.rows / 2
+            || candidate.heads.rows != self.heads.rows
+            || candidate.heads.cols != self.heads.cols
+            || candidate.base != self.base
+            || candidate.encoder != self.encoder
+            || candidate.organ != self.organ
+            || candidate.cell != self.cell
+        {
+            return Err(CellGenerationErrorV2::InvalidBinding);
+        }
+        let mut frozen = candidate.components.clone();
+        frozen.heads = self.components.heads;
+        let start = (offset + index) * self.heads.cols;
+        let end = start + self.heads.cols;
+        if frozen != self.components
+            || candidate.heads.values[..start] != self.heads.values[..start]
+            || candidate.heads.values[end..] != self.heads.values[end..]
+            || candidate.heads.values[start..end] == self.heads.values[start..end]
+        {
+            return Err(CellGenerationErrorV2::InvalidBinding);
+        }
+        Ok(candidate)
     }
 
     pub fn components(&self) -> &CellBundleComponentsV1 {
