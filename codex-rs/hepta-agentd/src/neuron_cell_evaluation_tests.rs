@@ -14,6 +14,8 @@ use support::*;
 pub(crate) mod learning;
 #[path = "neuron_cell_evaluation_readback_tests.rs"]
 mod readback;
+#[path = "neuron_cell_evaluation_owner_tests.rs"]
+mod original_owner;
 
 struct FileSink {
     file: std::fs::File,
