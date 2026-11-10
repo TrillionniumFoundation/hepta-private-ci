@@ -714,8 +714,10 @@
                 "completed_groups": 15,
                 "passed_groups": 13,
                 "failed_groups": 2,
-                "passed_tests": 130,
-                "failed_tests": 9,
+                "clean_passed_tests": 130,
+                "nonpassing_tests": 9,
+                "hard_failures": 8,
+                "leaky_tests": 1,
                 "failed_group_result": "the same hosted ambient parent FILE_DELETE_CHILD fail-closed condition: sandbox original 1 leaky pass plus 6 failures; native delete routes 0/2",
                 "not_run_groups": [
                   "exec-server-observation-wire (12)",
@@ -734,12 +736,61 @@
               "windows_timeout_successor": {
                 "pr": 5854,
                 "source": "92f888fc8dedaa96ca8cd7f3840e370b4a1ab4e3",
+                "tree": "b8936b3f1db486b606a983d80d98455f5bb995be",
                 "parent": "378c06a898728a7fa60498ef051843e38d592e67",
                 "changed_file": ".github/workflows/hepta-windows-current-ci.yml",
                 "change": "raise only the bounded job watchdog from 65 to 120 minutes after helper preparation plus 15 groups consumed 3799.843 seconds",
                 "preserves": "all 19 groups, exact selectors and required tests, retries=0, one test thread, source identity, native helper custody, failure semantics, permissions, artifact retention and false production/final-product flags",
                 "run": 42904689024,
-                "status": "IN_PROGRESS_NEW_EXACT_SOURCE_NO_TRANSFER"
+                "job": 130139489513,
+                "status": "FAILURE_ALL_GROUPS_COMPLETED",
+                "receipt_status": "FAIL_DECLARED_WINDOWS_SCOPE",
+                "source_unchanged": true,
+                "cargo_lock_sha256": "0961bfa4ed7512851b13f9eafe092f40fb52afc31a24ebb0a3b063d11128bd8b",
+                "platform": "Windows-2025Server-10.0.26100-SP0",
+                "machine": "AMD64",
+                "test_retries": 0,
+                "completed_groups": 19,
+                "passed_groups": 17,
+                "failed_groups": 2,
+                "selected_tests": 167,
+                "clean_passed_tests": 158,
+                "nonpassing_tests": 9,
+                "hard_failures": 8,
+                "leaky_tests": 1,
+                "group_duration_seconds": 3482.577,
+                "failed_group_result": "sandbox-original-failures: one elevated LEAK plus six legacy/ACL hard failures; sandbox-native-delete-routes: two legacy hard failures; all preserve the hosted ambient parent FILE_DELETE_CHILD fail-closed condition",
+                "formerly_not_run_now_passed": [
+                  "exec-server-observation-wire 12/12",
+                  "exec-server-protocol-observation-wire 3/3",
+                  "direct-pty-native-observation 3/3",
+                  "legacy-isolation-admission 10/10"
+                ],
+                "semantic_conflict": "the 10-test current admission contract requires legacy refusal before side effects, while eight old positive/ACL-specific tests require the legacy backend to execute; removing or reclassifying the old tests would weaken the original regression scope",
+                "required_replacement": "a qualified Windows backend or parent-boundary construction that preserves the original read policy and closes ambient FILE_DELETE_CHILD without widening authority",
+                "sandbox_helper_preparation": {
+                  "passed": true,
+                  "duration_seconds": 770.141,
+                  "binaries": [
+                    {
+                      "name": "codex-windows-sandbox-setup",
+                      "bytes": 35409920,
+                      "sha256": "e7ea6e93da9274eb8415a0b2322f3262409cb3adbc70d1df29893bbd20b774e9"
+                    },
+                    {
+                      "name": "codex-command-runner",
+                      "bytes": 24148992,
+                      "sha256": "c0038a9d4fafccb4d63882cd02cebcc968c7d7ee07a1f1aede2dd5117939e77d"
+                    }
+                  ]
+                },
+                "artifact_id": 13808469182,
+                "artifact_size_bytes": 115614,
+                "artifact_sha256": "bdb0a3537ba1022077e74576b73dd8dcbd56d3bd9d26e6dd7303269559cc1161",
+                "retained_zip": "qualification/act2-continuation-20261110/windows-original-42904689024.zip",
+                "production_authority_granted": false,
+                "final_product_qualification": false,
+                "classification": "the watchdog gap is closed and no group is NOT_RUN; the original Windows scope remains FAIL because the qualified legacy replacement is absent; no prior count transfers"
               }
             },
             "does_not_change": "dependencies, locks, caller set, operation, permission, FinalUse, readback, tombstone, receipt or promotion semantics; predecessor results do not transfer"
