@@ -1,0 +1,180 @@
+{
+  "actor_rerun": false,
+  "actual_complete_raw_archive_verified": false,
+  "actual_raw_archive_execution_status": "UNKNOWN_AFTER_MCP_TIMEOUT",
+  "additional_start_calls_authorized": false,
+  "all_packaged_member_bytes_rechecked": true,
+  "archive_members": [
+    {
+      "bytes": 14943,
+      "git_blob_sha1": "fbfc85de51def4af55c9969604590edf6f1da95c",
+      "path": "archive-run.py",
+      "sha256": "c2f6b2caaca1b3d7cd6c9e1a666189b35992dff0121a643df2b65fe00a5ddaae"
+    },
+    {
+      "bytes": 4830,
+      "git_blob_sha1": "96eddade4529632d2d5579baffeb811088ee913f",
+      "path": "archive-run-selfcheck.py",
+      "sha256": "b5a114b23773137f629fdd6e45ae442eaab0598f07be6aa3bf73f645113e030b"
+    },
+    {
+      "bytes": 701,
+      "git_blob_sha1": "69cec28bade437342a7b6523d486a398ce5d951f",
+      "path": "archive-run-selfcheck-normal.json",
+      "sha256": "c8cbf0ab8f3248f5a7c9939cd3501ce98f910cac37a5df8dcbea170d440616b3"
+    },
+    {
+      "bytes": 701,
+      "git_blob_sha1": "69cec28bade437342a7b6523d486a398ce5d951f",
+      "path": "archive-run-selfcheck-optimized.json",
+      "sha256": "c8cbf0ab8f3248f5a7c9939cd3501ce98f910cac37a5df8dcbea170d440616b3"
+    },
+    {
+      "bytes": 5207,
+      "git_blob_sha1": "3c9e575544abd33cc91165330eee5a85897022f2",
+      "path": "archive-run-strict-v2-selfcheck.py",
+      "sha256": "e47c13fc0c4820c671e43e14dae832be2be3fc7c397977d951815756f9491d54"
+    },
+    {
+      "bytes": 701,
+      "git_blob_sha1": "69cec28bade437342a7b6523d486a398ce5d951f",
+      "path": "archive-run-strict-v2-selfcheck-normal.json",
+      "sha256": "c8cbf0ab8f3248f5a7c9939cd3501ce98f910cac37a5df8dcbea170d440616b3"
+    },
+    {
+      "bytes": 701,
+      "git_blob_sha1": "69cec28bade437342a7b6523d486a398ce5d951f",
+      "path": "archive-run-strict-v2-selfcheck-optimized.json",
+      "sha256": "c8cbf0ab8f3248f5a7c9939cd3501ce98f910cac37a5df8dcbea170d440616b3"
+    },
+    {
+      "bytes": 2475,
+      "git_blob_sha1": "542e80e3ec5bcee0ce14fa8e95bf9c5c5c607b44",
+      "path": "archive-run-strict-v2-tar-check.py",
+      "sha256": "6bcffcfac30bbca6112b52d6d43001db4cd3d0aba5a444ce0ba71449c77e63e3"
+    },
+    {
+      "bytes": 479,
+      "git_blob_sha1": "169a3b3b49edb254610f1789a278c127cf1e0fc1",
+      "path": "archive-run-strict-v2-tar-check-normal.json",
+      "sha256": "34c6d8ba153480db4d0102e55dec55f349a7d95ba0ee057fff35691ed9eefdef"
+    },
+    {
+      "bytes": 479,
+      "git_blob_sha1": "169a3b3b49edb254610f1789a278c127cf1e0fc1",
+      "path": "archive-run-strict-v2-tar-check-optimized.json",
+      "sha256": "34c6d8ba153480db4d0102e55dec55f349a7d95ba0ee057fff35691ed9eefdef"
+    },
+    {
+      "bytes": 3545,
+      "git_blob_sha1": "24248ff26474d929abd2d54e814b3e43f24df3d1",
+      "path": "archive-run-validation.json",
+      "sha256": "4c8545cd359cc9568197e1efce36d94523719b1241fa1be2a4611bfde982f871"
+    },
+    {
+      "bytes": 1828,
+      "git_blob_sha1": "a728eb41aacdec3c719551cae5c2592b2ca76c05",
+      "path": "archive-run-review.txt",
+      "sha256": "0ecf1000e46b0648fff08d2015c2a9f8600af58e2bd86aa3ce98b5847ce5d715"
+    },
+    {
+      "bytes": 92011,
+      "git_blob_sha1": "a4e84e5723a3d7348f2f69445d55dec72fd0505d",
+      "path": "archive-strict-v2-preformat-ast.json",
+      "sha256": "73f27d22bdd00f4179a4950718d9cc0cfb7fe02bec9985cab95b35aed3bfe86d"
+    },
+    {
+      "bytes": 30857,
+      "git_blob_sha1": "033601fc006a8eeeffd5ceef8e52e531c7d63950",
+      "path": "raw-archive-start-request.json",
+      "sha256": "6d73280ba441a82c0aadcd32c05bcbaa0536a2ba3584f14ca1d5b7d56d6eecfd"
+    },
+    {
+      "bytes": 476,
+      "git_blob_sha1": "c80ec5973838e45be6af8b5202c63a95444b3158",
+      "path": "raw-archive-start-timeout.json",
+      "sha256": "051c9c5da1294cf0e35860c5a8d95327178f004a00af2a911a6e13cda76a08a9"
+    },
+    {
+      "bytes": 4623,
+      "git_blob_sha1": "5146fa7487e2ccadb02d865c55f128670ca4d30b",
+      "path": "raw-archive-recovery-observations.json",
+      "sha256": "8844d530898981943fd388005ff3bb0472cbd129e1de7efec4c95e0d7efc74a5"
+    },
+    {
+      "bytes": 3342,
+      "git_blob_sha1": "2022c84736ec55cdad6faa02ec2e591f4f8646bf",
+      "path": "package-archive-instrument.py",
+      "sha256": "6160cdb711045c5ee0e55a8526df3af0247ff98b402dd419ff993350d59a689a"
+    }
+  ],
+  "archive_process_identity": "UNRESOLVED",
+  "assets": [
+    {
+      "bytes": 16669,
+      "git_blob_sha1": "274198e18b5a6fec8d2d97fb77cd928295e4805e",
+      "path": "archive-run-strict-v2.py",
+      "sha256": "3e8466d63a03306f8e52de6e5f68bd378ce235731f98f9022ec47a4696677897"
+    },
+    {
+      "bytes": 2630,
+      "git_blob_sha1": "d9efd9cd47a5613d75397c8c822259878924d6f2",
+      "path": "README.md",
+      "sha256": "59ccf04cb68648ed8cdcd19dbc3dc0efe27d228103f811c7a945c315da89e8b4"
+    },
+    {
+      "bytes": 23620,
+      "git_blob_sha1": "60f32a9738139ee9b75ca3efc830f4ee6de32e6c",
+      "path": "validation-records.tar.xz",
+      "sha256": "740e27546fc78486a4ac73a4413322cb822f653f56573794e7f94e96169c41a1"
+    }
+  ],
+  "exact_source_ci_archive": {
+    "bytes": 21856,
+    "git_blob_sha1": "2bff58d4aad0e1b6b97bd229cbbed1f58334b44f",
+    "path": "exact-source-ci-records.tar.xz",
+    "sha256": "e74894374922af1e82a9fd2456ea79dbb869fff61db78d78d133b08c03f063d9"
+  },
+  "exact_source_ci_members": [
+    {
+      "bytes": 80111,
+      "path": "final5643-terminal-job.log",
+      "sha256": "7828cad62dfdfc4b6164b9d178e25d5bae25422c0ee5634a82818535006a642e"
+    },
+    {
+      "bytes": 17333,
+      "path": "final5643-terminal-readback.json",
+      "sha256": "b4829bd900234016bb48a20e6e4c911bd1f7e2e1f5b8eef0ae6ec0eda9668010"
+    },
+    {
+      "bytes": 54052,
+      "path": "final5643-terminal-overall-ci-snapshot.json",
+      "sha256": "ba9e1691a28d1af50eaaea16dfbd632fa60c0e4eafde2e18982e35d494137ab1"
+    },
+    {
+      "bytes": 13210,
+      "path": "repo-final-terminal-triage.json",
+      "sha256": "ee527462f14a1698a4fffb489c5ea8947d2e9f6dd8cb7ebf361445ca4d406370"
+    },
+    {
+      "bytes": 63810,
+      "path": "repo-final-terminal-raw.json",
+      "sha256": "295782f03bc547fd7d1fa152de80bf03f9a83acf927ff7770c7ed0edc0b79230"
+    },
+    {
+      "bytes": 1195,
+      "path": "final5643-readback.json",
+      "sha256": "85fc660e4276768d6f6871f58a22cbb08cd0906953cb23a44c0f3886ab5c939c"
+    },
+    {
+      "bytes": 4474,
+      "path": "ci-readback.json",
+      "sha256": "8e88db2e43e50a5a803e88a6fa8e6ae20511f37fa311434934873c7417d6a142"
+    }
+  ],
+  "next_action": "Read-only original stable-key identity/status/log/INDEX recovery after connection resumes",
+  "real_study_result_pr": 5676,
+  "same_key_reconciliation_required": true,
+  "schema": "hepta.mem5.archive-instrument-publication.v1",
+  "scientific_acceptance": "HOLD"
+}
