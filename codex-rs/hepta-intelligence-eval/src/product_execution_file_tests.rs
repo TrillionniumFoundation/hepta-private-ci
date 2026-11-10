@@ -2,6 +2,7 @@ use super::*;
 
 use std::fs;
 use std::fs::OpenOptions;
+use std::io::{Read, Seek, SeekFrom};
 use std::path::PathBuf;
 use std::process::Command;
 use std::sync::atomic::AtomicU64;
@@ -191,7 +192,23 @@ fn external_minimum_rejects_an_older_or_divergent_valid_journal() {
     let mut store = temp.create();
     store.claim(&key("plan")).expect("claim");
     let pending = store.anchor();
-    let backup = fs::read(&temp.0).expect("backup pending journal");
+    // Read the pending prefix through its original locked owner. Opening a
+    // second handle for fs::read fails under Windows' exclusive file lock.
+    let original_cursor = store.file.stream_position().expect("original cursor");
+    store
+        .file
+        .seek(SeekFrom::Start(0))
+        .expect("seek locked journal");
+    let mut backup = Vec::new();
+    store
+        .file
+        .read_to_end(&mut backup)
+        .expect("backup pending journal through its owner");
+    assert_eq!(backup.len() as u64, store.length);
+    store
+        .file
+        .seek(SeekFrom::Start(original_cursor))
+        .expect("restore original cursor");
     store
         .complete(&key("plan"), b"original")
         .expect("completion");
