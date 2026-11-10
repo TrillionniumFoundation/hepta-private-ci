@@ -1,6 +1,9 @@
 //! Concrete handoff to the original learning runtime. The outbox carries no
 //! learning authority: current source/frontier/signature checks remain there.
 
+use std::future::Future;
+use std::pin::Pin;
+
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
@@ -16,6 +19,9 @@ enum DeliveryMode {
     Readback,
 }
 
+pub(crate) type PostClaimSourceCheck<'a> =
+    Pin<Box<dyn Future<Output = Result<(), Error>> + Send + 'a>>;
+
 /// No backend leaves the intent pending. A prior durable claim, including one
 /// whose process crashed before submit, permits only the original readback.
 pub async fn deliver_circuit_learning_v1(
@@ -24,7 +30,29 @@ pub async fn deliver_circuit_learning_v1(
     request: LearningIterationRequestV1,
     owners: LearningIterationOwnersV1,
 ) -> Result<LearningIterationSnapshotV1, Error> {
-    delivery(store, backend, request, owners, DeliveryMode::FirstAttempt).await
+    delivery(store, backend, request, owners, DeliveryMode::FirstAttempt, None).await
+}
+
+/// Root-only new-claim path. Recheck the original Objective/Circuit owners
+/// after the durable SQLite claim and before dispatch. A failed recheck leaves
+/// the original claim pending, without invoking the learning worker. This is
+/// fail-closed validation, not an atomic transaction across independent owners.
+pub(crate) async fn deliver_circuit_learning_with_post_claim_source_v1(
+    store: &AutomationStore,
+    backend: Option<&LearningIterationHandleV1>,
+    request: LearningIterationRequestV1,
+    owners: LearningIterationOwnersV1,
+    source_recheck: PostClaimSourceCheck<'_>,
+) -> Result<LearningIterationSnapshotV1, Error> {
+    delivery(
+        store,
+        backend,
+        request,
+        owners,
+        DeliveryMode::FirstAttempt,
+        Some(source_recheck),
+    )
+    .await
 }
 
 /// Use after any uncertain delivery or ACK. Never claims or submits new work.
@@ -34,7 +62,7 @@ pub async fn reconcile_circuit_learning_v1(
     request: LearningIterationRequestV1,
     owners: LearningIterationOwnersV1,
 ) -> Result<LearningIterationSnapshotV1, Error> {
-    delivery(store, backend, request, owners, DeliveryMode::Readback).await
+    delivery(store, backend, request, owners, DeliveryMode::Readback, None).await
 }
 
 async fn delivery(
@@ -43,6 +71,7 @@ async fn delivery(
     request: LearningIterationRequestV1,
     owners: LearningIterationOwnersV1,
     mode: DeliveryMode,
+    source_recheck: Option<PostClaimSourceCheck<'_>>,
 ) -> Result<LearningIterationSnapshotV1, Error> {
     let backend = backend.ok_or(Error::OwnerUnavailable("learning backend is not installed"))?;
     let row = store
@@ -75,6 +104,9 @@ async fn delivery(
             .map_err(|_| Error::CommitUncertain)?
     };
     let snapshot = if submit {
+        if let Some(recheck) = source_recheck {
+            recheck.await?;
+        }
         backend.submit(request.clone()).await?
     } else {
         backend.readback(request.clone()).await?
