@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.verify.dependency-joint-source.v1",
+  "status": "source_composed_pending_joint_resolution",
+  "common_commit": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+  "matrix_vendor_stage": "b26eb014e502709f9652955758690fdb5601b872",
+  "matrix_wiring_stage": "bff586789ddd5efa49771dde0de81eda28a2d8dc",
+  "pin_utils_checkpoint": {
+    "pull_request": 5691,
+    "commit": "5cae5adaeaa806bb05510171b246d4f8ceb6e3a8",
+    "original_dependency_commit": "54d73e897e088369b37db1575af146d228b5db25"
+  },
+  "selected_pin_utils_blobs": {
+    "codex-rs/Cargo.lock": "e2ccaea9223bfbbbd86deb97618c01a9b45e2ec6",
+    "MODULE.bazel.lock": "99920e713b6434ba20ec753838b06b5697ce1366"
+  },
+  "excluded_pin_utils_workflow": ".github/workflows/common-pin-utils-qualification.yml",
+  "exclusion_reason": "Its exact three-file common-source scope intentionally excludes the Matrix integration. Joint source has one separately adapted proposal executor.",
+  "verify_python_files_preserved": 50,
+  "lockfiles_resolved_for_matrix_source": false,
+  "original_ctrl_branch_merged": false,
+  "native_qualification": false,
+  "rustsec_remediation_qualified": false,
+  "scientific_gate_qualified": false,
+  "production_adoption": false,
+  "next_step": "Reuse the strict #5655 proposal on this exact source; verify original SQLx archive, resolve sys0.39.1/rusqlite0.41.1/rmcp3.9.0, regenerate both locks and retain all failure stages."
+}
