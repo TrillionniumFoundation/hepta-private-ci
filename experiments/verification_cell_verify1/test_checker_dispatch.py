@@ -118,11 +118,12 @@ class CheckerDispatchTests(unittest.TestCase):
         )
 
     def test_same_model_hash_with_changed_costs_refuses_before_callback(self):
-        self.source.model = replace(
+        # Normal replacement now refuses at construction. A malformed restored
+        # object must still be refused at the dispatch boundary before effects.
+        object.__setattr__(
             self.source.model,
-            checkers=tuple(
-                replace(checker, cost=0) for checker in self.source.model.checkers
-            ),
+            "checkers",
+            tuple(replace(checker, cost=0) for checker in self.source.model.checkers),
         )
         with self.assertRaises(ValueError):
             self.dispatch()

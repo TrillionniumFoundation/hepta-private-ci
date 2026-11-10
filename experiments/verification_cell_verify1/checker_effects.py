@@ -24,14 +24,20 @@ def _require(condition, message):
 
 
 def _text(value):
-    _require(type(value) is str and 0 < len(value) <= 128 and value.strip() == value
-             and value.isprintable(),
-             "expected bounded nonempty text")
+    _require(
+        type(value) is str
+        and 0 < len(value) <= 128
+        and value.strip() == value
+        and value.isprintable(),
+        "expected bounded nonempty text",
+    )
 
 
 def _sha(value):
-    _require(type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value) is not None,
-             "expected lowercase SHA256")
+    _require(
+        type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value) is not None,
+        "expected lowercase SHA256",
+    )
 
 
 def _number(value, maximum=1e12):
@@ -40,8 +46,12 @@ def _number(value, maximum=1e12):
         result = float(value)
     except OverflowError as error:
         raise ValueError("expected finite number") from error
-    _require(math.isfinite(result) and result >= 0
-             and (maximum is None or result <= maximum), "number outside range")
+    _require(
+        math.isfinite(result)
+        and result >= 0
+        and (maximum is None or result <= maximum),
+        "number outside range",
+    )
     return result
 
 
@@ -67,8 +77,12 @@ class EffectScope:
         _text(self.event)
         _sha(self.continuation_policy_sha256)
         _sha(self.context_sha256)
-        _require(type(self.horizon_start) is int and type(self.horizon_end) is int
-                 and 0 <= self.horizon_start <= self.horizon_end, "invalid horizon")
+        _require(
+            type(self.horizon_start) is int
+            and type(self.horizon_end) is int
+            and 0 <= self.horizon_start <= self.horizon_end,
+            "invalid horizon",
+        )
 
 
 @dataclass(frozen=True)
@@ -102,26 +116,49 @@ class PairedPanel:
         _text(self.source_group)
         _sha(self.snapshot_sha256)
         _require(type(self.scope) is EffectScope, "invalid effect scope")
-        for name in ("checker_ids", "checker_versions", "outcomes", "checker_evidence_sha256"):
+        for name in (
+            "checker_ids",
+            "checker_versions",
+            "outcomes",
+            "checker_evidence_sha256",
+        ):
             values = getattr(self, name)
-            _require(type(values) in (tuple, list) and 1 <= len(values) <= 8,
-                     "panel needs one to eight paired checker observations")
+            _require(
+                type(values) in (tuple, list) and 1 <= len(values) <= 8,
+                "panel needs one to eight paired checker observations",
+            )
             object.__setattr__(self, name, tuple(values))
-        _require(len(self.checker_ids) == len(self.checker_versions) == len(self.outcomes)
-                 == len(self.checker_evidence_sha256), "incomplete paired panel")
+        _require(
+            len(self.checker_ids)
+            == len(self.checker_versions)
+            == len(self.outcomes)
+            == len(self.checker_evidence_sha256),
+            "incomplete paired panel",
+        )
         for value in self.checker_ids:
             _text(value)
-        _require(len(set(self.checker_ids)) == len(self.checker_ids), "duplicate checker ID")
-        _require(all(type(value) is str and value in OUTCOMES for value in self.outcomes), "unknown outcome")
+        _require(
+            len(set(self.checker_ids)) == len(self.checker_ids), "duplicate checker ID"
+        )
+        _require(
+            all(type(value) is str and value in OUTCOMES for value in self.outcomes),
+            "unknown outcome",
+        )
         for value in self.checker_versions + self.checker_evidence_sha256:
             _sha(value)
-        _require(self.error is None or type(self.error) is bool, "invalid outcome label")
+        _require(
+            self.error is None or type(self.error) is bool, "invalid outcome label"
+        )
         if self.error is None:
-            _require(self.label_evidence_sha256 is None, "missing label has label evidence")
+            _require(
+                self.label_evidence_sha256 is None, "missing label has label evidence"
+            )
             _text(self.missing_label_reason)
         else:
             _sha(self.label_evidence_sha256)
-            _require(self.missing_label_reason is None, "known label has missing reason")
+            _require(
+                self.missing_label_reason is None, "known label has missing reason"
+            )
 
 
 @dataclass(frozen=True)
@@ -148,6 +185,100 @@ class EffectsModel:
     data_sha256: str
     model_sha256: str
 
+    def __post_init__(self):
+        self.validate()
+
+    def validate(self):
+        """Bind canonical immutable contents to the original model digest.
+
+        Recheck at consumption as well as construction: frozen dataclasses alone
+        do not authenticate replaced or restored bodies. This binds the supplied
+        data digest, not the authenticity or independence of the training panels.
+        """
+        _require(type(self.scope) is EffectScope, "invalid model scope")
+        EffectScope(**asdict(self.scope))
+        _require(
+            type(self.checkers) is tuple and 1 <= len(self.checkers) <= 8,
+            "immutable bounded checker registry required",
+        )
+        for checker in self.checkers:
+            _require(type(checker) is CheckerSpec, "invalid model checker spec")
+            _text(checker.checker_id)
+            _sha(checker.version_sha256)
+            _number(checker.cost)
+        _require(
+            len({c.checker_id for c in self.checkers}) == len(self.checkers),
+            "duplicate model checker ID",
+        )
+        for groups in (self.training_groups, self.heldout_groups):
+            _require(
+                type(groups) is tuple and 0 < len(groups) <= 100000,
+                "immutable bounded model groups required",
+            )
+            _require(groups == _groups(groups), "noncanonical model groups")
+        _require(
+            not set(self.training_groups).intersection(self.heldout_groups),
+            "model training/heldout group overlap",
+        )
+        _require(
+            type(self.table) is tuple
+            and len(self.table) <= 2 * 3 ** len(self.checkers),
+            "immutable bounded joint table required",
+        )
+        keys, known = [], 0
+        for row in self.table:
+            _require(type(row) is tuple and len(row) == 3, "invalid joint count row")
+            truth, outcomes, count = row
+            _require(
+                type(truth) is bool
+                and type(outcomes) is tuple
+                and len(outcomes) == len(self.checkers)
+                and all(type(value) is str and value in OUTCOMES for value in outcomes),
+                "invalid joint outcome vector",
+            )
+            _require(type(count) is int and 0 < count <= 100000, "invalid joint count")
+            keys.append((truth, outcomes))
+            known += count
+        _require(keys == sorted(set(keys)), "noncanonical or duplicate joint vector")
+        _require(
+            type(self.missing_labels) is int
+            and 0 <= self.missing_labels <= 100000
+            and 0 < known + self.missing_labels <= 100000,
+            "invalid panel count",
+        )
+        _require(
+            type(self.min_class_count) is int and self.min_class_count >= 2,
+            "minimum support must be >=2",
+        )
+        _require(
+            type(self.observed_group_counts) is tuple
+            and len(self.observed_group_counts) == len(self.training_groups),
+            "invalid observed group roster",
+        )
+        observed_known, observed_missing = 0, 0
+        for group, row in zip(self.training_groups, self.observed_group_counts):
+            _require(
+                type(row) is tuple and len(row) == 3 and row[0] == group,
+                "observed model group mismatch",
+            )
+            _require(
+                all(type(value) is int and 0 <= value <= 100000 for value in row[1:])
+                and sum(row[1:]) > 0,
+                "invalid observed group counts",
+            )
+            observed_known += row[1]
+            observed_missing += row[2]
+        _require(
+            (observed_known, observed_missing) == (known, self.missing_labels),
+            "joint and observed group counts differ",
+        )
+        _sha(self.data_sha256)
+        _sha(self.model_sha256)
+        body = asdict(self)
+        claimed = body.pop("model_sha256")
+        body["schema"] = "hepta.verify.checker-effects.v1"
+        _require(digest(body) == claimed, "model content does not match frozen digest")
+
     def condition(self, prior_error, history=None, *, scope):
         """Condition the *pre-history* prior and return correct/error row channels.
 
@@ -158,77 +289,151 @@ class EffectsModel:
         estimates for research, never proof of impossibility. Every truth class
         needs minimum support. Declared costs do not qualify full physical cost.
         """
+        self.validate()
         prior = _number(prior_error, 1)
         history = {} if history is None else history
         _require(type(history) is dict, "history must map checker IDs to outcomes")
-        indices = {checker.checker_id: index for index, checker in enumerate(self.checkers)}
-        _require(all(type(key) is str and key in indices and type(value) is str
-                     and value in OUTCOMES for key, value in history.items()),
-                 "history contains an unregistered checker or outcome")
-        counts = tuple(sum(n for truth, _, n in self.table if truth is label)
-                       for label in (False, True))
-        selected = tuple((truth, outcomes, n) for truth, outcomes, n in self.table
-                         if all(outcomes[indices[key]] == value for key, value in history.items()))
-        matched = tuple(sum(n for truth, _, n in selected if truth is label)
-                        for label in (False, True))
-        reason = ("scope_mismatch" if type(scope) is not EffectScope or scope != self.scope
-                  else "insufficient_class_support" if min(counts) < self.min_class_count
-                  else "insufficient_history_support" if min(matched) < self.min_class_count
-                  else None)
+        indices = {
+            checker.checker_id: index for index, checker in enumerate(self.checkers)
+        }
+        _require(
+            all(
+                type(key) is str
+                and key in indices
+                and type(value) is str
+                and value in OUTCOMES
+                for key, value in history.items()
+            ),
+            "history contains an unregistered checker or outcome",
+        )
+        counts = tuple(
+            sum(n for truth, _, n in self.table if truth is label)
+            for label in (False, True)
+        )
+        selected = tuple(
+            (truth, outcomes, n)
+            for truth, outcomes, n in self.table
+            if all(outcomes[indices[key]] == value for key, value in history.items())
+        )
+        matched = tuple(
+            sum(n for truth, _, n in selected if truth is label)
+            for label in (False, True)
+        )
+        reason = (
+            "scope_mismatch"
+            if type(scope) is not EffectScope or scope != self.scope
+            else "insufficient_class_support"
+            if min(counts) < self.min_class_count
+            else "insufficient_history_support"
+            if min(matched) < self.min_class_count
+            else None
+        )
         if reason:
-            return ConditionedEffects("unsupported", reason, None, (), counts, matched,
-                                      self.model_sha256)
+            return ConditionedEffects(
+                "unsupported", reason, None, (), counts, matched, self.model_sha256
+            )
         weights = ((1 - prior) * matched[0] / counts[0], prior * matched[1] / counts[1])
         posterior = weights[1] / math.fsum(weights)
-        channels = tuple(CheckerChannel(
-            checker.checker_id, OUTCOMES,
-            tuple(tuple(sum(n for truth, outcomes, n in selected
-                            if truth is label and outcomes[index] == outcome) / matched[int(label)]
-                        for outcome in OUTCOMES) for label in (False, True)), checker.cost)
-            for index, checker in enumerate(self.checkers))
-        return ConditionedEffects("supported", "empirical_joint_counts_only", posterior,
-                                  channels, counts, matched, self.model_sha256)
+        channels = tuple(
+            CheckerChannel(
+                checker.checker_id,
+                OUTCOMES,
+                tuple(
+                    tuple(
+                        sum(
+                            n
+                            for truth, outcomes, n in selected
+                            if truth is label and outcomes[index] == outcome
+                        )
+                        / matched[int(label)]
+                        for outcome in OUTCOMES
+                    )
+                    for label in (False, True)
+                ),
+                checker.cost,
+            )
+            for index, checker in enumerate(self.checkers)
+        )
+        return ConditionedEffects(
+            "supported",
+            "empirical_joint_counts_only",
+            posterior,
+            channels,
+            counts,
+            matched,
+            self.model_sha256,
+        )
 
     def diagnostics(self):
         """Keep counts/denominators and distinguish UNKNOWN from a false pass."""
-        counts = tuple(sum(n for truth, _, n in self.table if truth is label)
-                       for label in (False, True))
+        self.validate()
+        counts = tuple(
+            sum(n for truth, _, n in self.table if truth is label)
+            for label in (False, True)
+        )
 
         def rate(label, predicate):
             denominator = counts[int(label)]
-            numerator = sum(n for truth, outcomes, n in self.table
-                            if truth is label and predicate(outcomes))
-            return {"numerator": numerator, "denominator": denominator,
-                    "value": numerator / denominator if denominator else None}
+            numerator = sum(
+                n
+                for truth, outcomes, n in self.table
+                if truth is label and predicate(outcomes)
+            )
+            return {
+                "numerator": numerator,
+                "denominator": denominator,
+                "value": numerator / denominator if denominator else None,
+            }
 
         return {
-            "schema": "hepta.verify.checker-effects.v1", "data_sha256": self.data_sha256,
-            "model_sha256": self.model_sha256, "scope": asdict(self.scope),
-            "class_order": ["correct", "error"], "class_counts": list(counts),
-            "missing_labels_excluded": self.missing_labels, "min_class_count": self.min_class_count,
-            "training_groups": list(self.training_groups), "heldout_groups": list(self.heldout_groups),
-            "observed_group_counts": {group: {"known_labels": known, "missing_labels": missing}
-                                      for group, known, missing in self.observed_group_counts},
+            "schema": "hepta.verify.checker-effects.v1",
+            "data_sha256": self.data_sha256,
+            "model_sha256": self.model_sha256,
+            "scope": asdict(self.scope),
+            "class_order": ["correct", "error"],
+            "class_counts": list(counts),
+            "missing_labels_excluded": self.missing_labels,
+            "min_class_count": self.min_class_count,
+            "training_groups": list(self.training_groups),
+            "heldout_groups": list(self.heldout_groups),
+            "observed_group_counts": {
+                group: {"known_labels": known, "missing_labels": missing}
+                for group, known, missing in self.observed_group_counts
+            },
             "minimum_support_is_confidence_guarantee": False,
             "source_groups_establish_independent_samples": False,
-            "full_physical_cost_complete": False, "cost_units": "declared_decision_loss",
-            "checkers": [{"checker_id": checker.checker_id,
-                          "version_sha256": checker.version_sha256, "cost": checker.cost,
-                          "sensitivity": rate(True, lambda o: o[i] == "fail"),
-                          "false_positive_rate": rate(False, lambda o: o[i] == "fail"),
-                          "unknown_given_error": rate(True, lambda o: o[i] == "unknown"),
-                          "unknown_given_correct": rate(False, lambda o: o[i] == "unknown")}
-                         for i, checker in enumerate(self.checkers)],
-            "paired_errors": [{"checkers": [left.checker_id, right.checker_id],
-                               "common_miss_including_unknown": rate(True, lambda o: o[i] != "fail" and o[j] != "fail"),
-                               "common_false_pass": rate(True, lambda o: o[i] == o[j] == "pass")}
-                              for i, left in enumerate(self.checkers)
-                              for j, right in enumerate(self.checkers) if i < j],
+            "full_physical_cost_complete": False,
+            "cost_units": "declared_decision_loss",
+            "checkers": [
+                {
+                    "checker_id": checker.checker_id,
+                    "version_sha256": checker.version_sha256,
+                    "cost": checker.cost,
+                    "sensitivity": rate(True, lambda o: o[i] == "fail"),
+                    "false_positive_rate": rate(False, lambda o: o[i] == "fail"),
+                    "unknown_given_error": rate(True, lambda o: o[i] == "unknown"),
+                    "unknown_given_correct": rate(False, lambda o: o[i] == "unknown"),
+                }
+                for i, checker in enumerate(self.checkers)
+            ],
+            "paired_errors": [
+                {
+                    "checkers": [left.checker_id, right.checker_id],
+                    "common_miss_including_unknown": rate(
+                        True, lambda o: o[i] != "fail" and o[j] != "fail"
+                    ),
+                    "common_false_pass": rate(True, lambda o: o[i] == o[j] == "pass"),
+                }
+                for i, left in enumerate(self.checkers)
+                for j, right in enumerate(self.checkers)
+                if i < j
+            ],
         }
 
 
-def fit_checker_effects(panels, *, scope, checkers, training_groups, heldout_groups,
-                        min_class_count=2):
+def fit_checker_effects(
+    panels, *, scope, checkers, training_groups, heldout_groups, min_class_count=2
+):
     """Fit exact joint frequencies using labeled training panels only.
 
     All listed checkers must have run on each same snapshot without modifying it.
@@ -238,39 +443,90 @@ def fit_checker_effects(panels, *, scope, checkers, training_groups, heldout_gro
     missingness identification and transport to other contexts are unproved.
     """
     _require(type(scope) is EffectScope, "invalid scope")
-    _require(type(checkers) in (tuple, list) and 1 <= len(checkers) <= 8,
-             "one to eight checkers required")
+    _require(
+        type(checkers) in (tuple, list) and 1 <= len(checkers) <= 8,
+        "one to eight checkers required",
+    )
     checkers = tuple(checkers)
-    _require(all(type(checker) is CheckerSpec for checker in checkers), "invalid checker spec")
-    _require(len({checker.checker_id for checker in checkers}) == len(checkers), "duplicate checker ID")
+    _require(
+        all(type(checker) is CheckerSpec for checker in checkers),
+        "invalid checker spec",
+    )
+    _require(
+        len({checker.checker_id for checker in checkers}) == len(checkers),
+        "duplicate checker ID",
+    )
     train, heldout = _groups(training_groups), _groups(heldout_groups)
     _require(not set(train).intersection(heldout), "training/heldout group overlap")
-    _require(type(min_class_count) is int and min_class_count >= 2, "minimum support must be >=2")
-    _require(type(panels) in (tuple, list) and 0 < len(panels) <= 100000, "bounded panel roster required")
-    _require(all(type(panel) is PairedPanel for panel in panels), "invalid paired panel")
+    _require(
+        type(min_class_count) is int and min_class_count >= 2,
+        "minimum support must be >=2",
+    )
+    _require(
+        type(panels) in (tuple, list) and 0 < len(panels) <= 100000,
+        "bounded panel roster required",
+    )
+    _require(
+        all(type(panel) is PairedPanel for panel in panels), "invalid paired panel"
+    )
     panels = tuple(sorted(panels, key=lambda panel: panel.panel_id))
-    _require(len({panel.panel_id for panel in panels}) == len(panels), "duplicate panel ID")
-    _require(len({panel.snapshot_sha256 for panel in panels}) == len(panels), "duplicate candidate snapshot")
+    _require(
+        len({panel.panel_id for panel in panels}) == len(panels), "duplicate panel ID"
+    )
+    _require(
+        len({panel.snapshot_sha256 for panel in panels}) == len(panels),
+        "duplicate candidate snapshot",
+    )
     versions = tuple(checker.version_sha256 for checker in checkers)
     for panel in panels:
-        _require(panel.source_group in train, "panel is outside declared training groups")
+        _require(
+            panel.source_group in train, "panel is outside declared training groups"
+        )
         _require(panel.scope == scope, "panel scope mismatch")
-        _require(panel.checker_ids == tuple(checker.checker_id for checker in checkers),
-                 "checker roster/order mismatch")
+        _require(
+            panel.checker_ids == tuple(checker.checker_id for checker in checkers),
+            "checker roster/order mismatch",
+        )
         _require(panel.checker_versions == versions, "checker roster/version mismatch")
-    _require({panel.source_group for panel in panels} == set(train),
-             "declared training groups must match observed groups")
+    _require(
+        {panel.source_group for panel in panels} == set(train),
+        "declared training groups must match observed groups",
+    )
     coverage = Counter((panel.source_group, panel.error is None) for panel in panels)
-    group_counts = tuple((group, coverage[group, False], coverage[group, True]) for group in train)
-    counts = Counter((panel.error, panel.outcomes) for panel in panels if panel.error is not None)
-    table = tuple((truth, outcomes, n) for (truth, outcomes), n in sorted(counts.items()))
+    group_counts = tuple(
+        (group, coverage[group, False], coverage[group, True]) for group in train
+    )
+    counts = Counter(
+        (panel.error, panel.outcomes) for panel in panels if panel.error is not None
+    )
+    table = tuple(
+        (truth, outcomes, n) for (truth, outcomes), n in sorted(counts.items())
+    )
     missing = sum(panel.error is None for panel in panels)
     data_sha = digest([asdict(panel) for panel in panels])
-    model_sha = digest({"schema": "hepta.verify.checker-effects.v1", "scope": asdict(scope),
-                        "checkers": [asdict(checker) for checker in checkers], "training_groups": train,
-                        "heldout_groups": heldout, "table": table, "observed_group_counts": group_counts,
-                        "missing_labels": missing,
-                        "min_class_count": min_class_count, "data_sha256": data_sha})
-    return EffectsModel(scope=scope, checkers=checkers, training_groups=train, heldout_groups=heldout,
-                        table=table, observed_group_counts=group_counts, missing_labels=missing,
-                        min_class_count=min_class_count, data_sha256=data_sha, model_sha256=model_sha)
+    model_sha = digest(
+        {
+            "schema": "hepta.verify.checker-effects.v1",
+            "scope": asdict(scope),
+            "checkers": [asdict(checker) for checker in checkers],
+            "training_groups": train,
+            "heldout_groups": heldout,
+            "table": table,
+            "observed_group_counts": group_counts,
+            "missing_labels": missing,
+            "min_class_count": min_class_count,
+            "data_sha256": data_sha,
+        }
+    )
+    return EffectsModel(
+        scope=scope,
+        checkers=checkers,
+        training_groups=train,
+        heldout_groups=heldout,
+        table=table,
+        observed_group_counts=group_counts,
+        missing_labels=missing,
+        min_class_count=min_class_count,
+        data_sha256=data_sha,
+        model_sha256=model_sha,
+    )
