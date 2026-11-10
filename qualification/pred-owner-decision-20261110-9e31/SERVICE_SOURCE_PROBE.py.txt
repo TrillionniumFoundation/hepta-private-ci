@@ -1,0 +1,194 @@
+"""Read-only, bounded discovery on already matched same-user Hepta processes."""
+
+from itertools import islice
+from pathlib import Path
+import json
+import os
+import re
+import shlex
+import signal
+import sqlite3
+import subprocess
+import time
+
+signal.alarm(25)
+started = time.monotonic()
+processes, units, roots, db_paths, errors = [], set(), {}, set(), []
+
+
+def read_bounded(path, size):
+    with Path(path).open("rb") as stream:
+        data = stream.read(size + 1)
+    if len(data) > size:
+        raise ValueError("bounded read exceeded")
+    return data
+
+
+def identity(pid):
+    proc = Path("/proc") / str(pid)
+    stat = read_bounded(proc / "stat", 4096).decode()
+    return stat.rsplit(")", 1)[1].split()[19]
+
+
+def note_root(value, source):
+    # Do not expand arbitrary environment references or execute substitutions.
+    if value and len(value) <= 4096 and Path(value).is_absolute():
+        roots.setdefault(value, []).append(source)
+
+
+def env_tokens(text, source):
+    try:
+        tokens = shlex.split(text)
+    except ValueError:
+        errors.append({"source": source, "error": "unparseable selected environment field"})
+        return
+    for token in tokens:
+        if token.startswith("HEPTA_FLEET_ROOT="):
+            note_root(token.split("=", 1)[1], source)
+
+
+def selected_config(path, source):
+    try:
+        data = read_bounded(path, 262144).decode("utf-8", errors="strict")
+    except (OSError, ValueError, UnicodeError) as error:
+        errors.append({"source": source, "error_type": type(error).__name__})
+        return
+    for line in data.splitlines():
+        line = line.strip()
+        if line.startswith("Environment="):
+            env_tokens(line.split("=", 1)[1], source)
+        elif line.startswith("HEPTA_FLEET_ROOT="):
+            env_tokens(line, source)
+        # Only retain explicit absolute paths whose basename is the owner DB.
+        for match in re.finditer(r'(?<![A-Za-z0-9])(/[^\s\"\x27;]+/automation_1\.sqlite3)(?=[\s\"\x27;]|$)', line):
+            db_paths.add(match.group(1))
+
+
+expected_names = {3733355: "hepta-tool-gate", 3735415: "hepta-ib-execut"}
+entries = [Path("/proc") / str(pid) for pid in expected_names]
+matched = 0
+for entry in entries[:8192]:
+    if not entry.name.isdigit() or time.monotonic() - started > 15:
+        continue
+    try:
+        if entry.stat().st_uid != os.getuid():
+            continue
+        name = read_bounded(entry / "comm", 64).decode().strip()
+        if name != expected_names[int(entry.name)]:
+            errors.append({"pid": int(entry.name), "error": "previously observed process name no longer matches"})
+            continue
+        matched += 1
+        if matched > 32:
+            continue
+        pid = int(entry.name)
+        start_ticks = identity(pid)
+        row = {"pid": pid, "comm": name, "start_ticks": start_ticks}
+        try:
+            env = read_bounded(entry / "environ", 1048576)
+            values = [part.split(b"=", 1)[1].decode() for part in env.split(b"\0") if part.startswith(b"HEPTA_FLEET_ROOT=")]
+            row["fleet_root_values"] = values
+            row["fleet_root_environment_access"] = "read_exact_key_only"
+            for value in values:
+                note_root(value, f"process:{pid}:HEPTA_FLEET_ROOT")
+        except (OSError, ValueError, UnicodeError) as error:
+            row["fleet_root_environment_access"] = type(error).__name__
+        try:
+            cgroup = read_bounded(entry / "cgroup", 32768).decode()
+            names = sorted({part for line in cgroup.splitlines() for part in line.split("/") if part.endswith(".service") and "hepta" in part.lower()})
+            row["hepta_unit_names"] = names
+            units.update(names)
+        except (OSError, ValueError, UnicodeError) as error:
+            row["unit_lookup_error"] = type(error).__name__
+        linked = []
+        try:
+            fds = list(islice((entry / "fd").iterdir(), 257))
+            for fd in fds[:256]:
+                try:
+                    target = os.readlink(fd)
+                    if Path(target).name in {"automation_1.sqlite3", "automation_1.sqlite3-wal", "automation_1.sqlite3-shm"}:
+                        base = target.removesuffix("-wal").removesuffix("-shm")
+                        db_paths.add(base)
+                        linked.append(base)
+                except OSError:
+                    pass
+            row["owner_database_fd_paths"] = sorted(set(linked))
+            row["fd_listing_truncated"] = len(fds) > 256
+        except OSError as error:
+            row["fd_lookup_error"] = type(error).__name__
+        row["same_start_identity_after_read"] = identity(pid) == start_ticks
+        processes.append(row)
+    except (OSError, ValueError, UnicodeError) as error:
+        errors.append({"pid": int(entry.name), "error_type": type(error).__name__})
+
+unit_rows = []
+for unit in sorted(units)[:8]:
+    if time.monotonic() - started > 17:
+        errors.append({"source": unit, "error": "time budget reached"})
+        break
+    try:
+        result = subprocess.run(
+            ["/usr/bin/systemctl", "--user", "show", unit, "--no-pager", "--property=Id,ActiveState,FragmentPath,DropInPaths,Environment,EnvironmentFiles"],
+            capture_output=True, timeout=3, check=False,
+        )
+        if len(result.stdout) > 262144:
+            raise ValueError("bounded unit response exceeded")
+        fields = {}
+        for line in result.stdout.decode().splitlines():
+            key, _, value = line.partition("=")
+            fields[key] = value
+        row = {"unit": unit, "query_exit_code": result.returncode, "active_state": fields.get("ActiveState"), "identity": fields.get("Id")}
+        env_tokens(fields.get("Environment", ""), f"unit:{unit}:Environment")
+        configs = []
+        if fields.get("FragmentPath"):
+            configs.append(fields["FragmentPath"])
+        configs.extend(shlex.split(fields.get("DropInPaths", "")))
+        # systemd emits absolute EnvironmentFiles paths followed by flags.
+        configs.extend(re.findall(r'(/[^\s]+)\s+\(ignore_errors=(?:yes|no)\)', fields.get("EnvironmentFiles", "")))
+        row["selected_config_paths"] = []
+        for config in configs[:16]:
+            if Path(config).is_absolute():
+                row["selected_config_paths"].append({"path": config, "exists": Path(config).exists()})
+                selected_config(config, f"unit:{unit}:file:{config}")
+        unit_rows.append(row)
+    except (OSError, ValueError, UnicodeError, subprocess.TimeoutExpired) as error:
+        errors.append({"source": unit, "error_type": type(error).__name__})
+
+root_rows = []
+for value, sources in list(roots.items())[:16]:
+    root = Path(value)
+    found = list(islice((root / "agents").glob("*/automation/automation_1.sqlite3"), 65)) if (root / "agents").is_dir() else []
+    root_rows.append({"path": value, "sources": sources, "exists": root.exists(), "database_count_bounded": len(found[:64]), "truncated": len(found) > 64})
+    db_paths.update(str(path) for path in found[:64])
+
+database_rows = []
+tables = ("taskflow_effect_dispatch_attempts", "taskflow_effect_dispatch_observations", "taskflow_effect_dispatch_reconciliations")
+for value in sorted(db_paths)[:16]:
+    path = Path(value)
+    row = {"path": value, "exists": path.is_file()}
+    if path.is_file() and time.monotonic() - started < 21:
+        try:
+            db = sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True, timeout=1)
+            db.execute("PRAGMA query_only=ON")
+            db.set_progress_handler(lambda: int(time.monotonic() - started > 22), 1000)
+            row["tables"] = {}
+            for table in tables:
+                present = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)).fetchone() is not None
+                item = {"present": present}
+                if present:
+                    item["columns"] = [{"name": r[1], "type": r[2]} for r in db.execute("PRAGMA table_info(" + table + ")")]
+                    item["row_count"] = db.execute("SELECT count(*) FROM " + table).fetchone()[0]
+                row["tables"][table] = item
+            db.close()
+        except (OSError, sqlite3.Error) as error:
+            row["read_error_type"] = type(error).__name__
+    database_rows.append(row)
+
+print(json.dumps({
+    "schema": "pred-owner-service-source-probe-v1", "processes": processes,
+    "matched_process_count_bounded": min(matched, 32), "process_matches_truncated": matched > 32,
+    "proc_entries_truncated": len(entries) > 8192, "unit_config_checks": unit_rows,
+    "roots": root_rows, "databases": database_rows, "errors": errors,
+    "elapsed_seconds": time.monotonic() - started,
+    "scope": "only the two previously observed pocket4 same-UID Hepta process IDs with matching comm names, exact HEPTA_FLEET_ROOT values, their Hepta cgroup unit configuration and bounded open-FD targets; no process inventory or command line output, no full environment output, no home or disk scan; read-only SQLite if an exact owner path is found",
+    "business_actions_executed": 0, "owner_database_writes": 0,
+}), flush=True)
