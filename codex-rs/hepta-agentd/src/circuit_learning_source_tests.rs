@@ -133,6 +133,20 @@ async fn original_learning_source_survives_new_consumer_generation_without_readm
             .compare_and_transition(&f.runtime.identity.agent_id, generation, lifecycle)?
             .generation;
     }
+    // A fresh AgentdState must acquire the original prompt registry's
+    // exclusive lock. Retain the immutable source owners, but release the
+    // predecessor state before trying to reopen the same durable roots.
+    // The independent placeholder is never used to serve this agent.
+    let original_issuer = Arc::clone(
+        f.runtime.state.authbus.get().context("original issuer")?,
+    );
+    let original_journal = Arc::clone(
+        f.runtime.state.objective_runtime.get().context("original journal")?,
+    );
+    let mut inactive_placeholder = runtime_fixture();
+    std::mem::swap(&mut f.runtime.state, &mut inactive_placeholder.state);
+    drop(inactive_placeholder);
+
     let mut identity = f.runtime.identity.clone();
     identity.spawn_generation = generation;
     let state = Arc::new(AgentdState::new(
@@ -153,9 +167,10 @@ async fn original_learning_source_survives_new_consumer_generation_without_readm
     state.attach_automation_store(f.store.clone())?;
     // Retain the original source owners, rather than manufacturing new
     // publications. This is a consumer-generation test, not process restart.
-    assert!(state.authbus.set(Arc::clone(f.runtime.state.authbus.get().expect("original issuer"))).is_ok());
-    assert!(state.objective_runtime.set(Arc::clone(f.runtime.state.objective_runtime.get().expect("original journal"))).is_ok());
+    assert!(state.authbus.set(original_issuer).is_ok());
+    assert!(state.objective_runtime.set(original_journal).is_ok());
     state.attach_circuit_learning_source(request.source_run_id.clone())?;
+    f.runtime.state = Arc::clone(&state);
     assert_ne!(record.snapshot.generation, state.current_generation()?);
     assert!(state.require_current_run_start(&record).is_err());
     state.require_circuit_learning_source(&request).await?;
