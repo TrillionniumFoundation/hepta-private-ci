@@ -418,7 +418,9 @@ async fn root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen() -> any
     Ok(())
 }
 
-async fn sealed_scoped_checkpoint_recovery(scope: Option<LearningUpdateScopeV2>) -> anyhow::Result<()> {
+async fn sealed_scoped_checkpoint_recovery(
+    scope: Option<LearningUpdateScopeV2>,
+) -> anyhow::Result<()> {
     let root = root_state()?;
     let (_fixture, identity, mut coordinator) = fixture()?;
     let initial = coordinator.snapshot().clone();
