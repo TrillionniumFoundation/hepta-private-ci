@@ -178,8 +178,22 @@ def inspect(manifest: Path) -> dict:
         expected_task = ids[3] if stage == 'next_use' else ids[2]
         if entry.get('task_id') != expected_task:
             fail(f'foreign_task:{stage}')
-        if stage in ('published_current', 'final_use', 'next_use', 'learning_next_use') and entry.get('bundle_sha256') != chosen:
+        # The independently selected version must already agree at Selection;
+        # checking only publication and NextUse would miss a replaced decision.
+        if stage in ('selection', 'published_current', 'final_use', 'next_use', 'learning_next_use') and entry.get('bundle_sha256') != chosen:
             fail(f'wrong_consumed_version:{stage}')
+        if stage in ('selection', 'learning_next_use'):
+            selection_digest = entry.get('selection_digest')
+            if not isinstance(selection_digest, str) or not HEX64.fullmatch(selection_digest):
+                fail(f'invalid_selection_digest:{stage}')
+            elif stage == 'learning_next_use':
+                # The original coordinator's NextUse must reference the exact
+                # independently selected decision, not just the same bundle.
+                selection_entry = entries.get('selection')
+                selected_digest = (selection_entry.get('selection_digest')
+                                   if isinstance(selection_entry, dict) else None)
+                if selection_digest != selected_digest:
+                    fail('terminal_selection_unbound')
 
     # Each admitted attempt must have a terminal or explicitly unresolved
     # record, including failed/cancelled attempts; UNKNOWN is never success.
