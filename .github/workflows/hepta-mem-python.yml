@@ -80,6 +80,12 @@ jobs:
             --output "$RUNNER_TEMP/mem-records/replay-tests.json" \
             -- python -B -m unittest discover -s scripts/memory_cell_mem1 \
             -p test_coverage_control.py -v
+      - name: Check full-trajectory replay matching and failure accounting
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 5 \
+            --output "$RUNNER_TEMP/mem-records/trajectory-tests.json" \
+            -- python -B -m unittest discover -s scripts/memory_cell_mem1 \
+            -p test_trajectory_coverage.py -v
       - name: Check frozen cohort and failed-attempt accounting
         run: |
           python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 7 \
@@ -109,3 +115,4 @@ jobs:
           path: ${{ runner.temp }}/mem-records
           if-no-files-found: error
           retention-days: 14
+
