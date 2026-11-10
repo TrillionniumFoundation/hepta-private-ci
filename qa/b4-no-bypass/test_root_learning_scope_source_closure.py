@@ -19,6 +19,7 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 PROFILE = AGENT + "authority_host_learning_profile.rs"
+Q24_PLAN = AGENT + "cell_composed_q24_training_plan.rs"
 REGISTRATION = AGENT + "authority_host_learning_registration.rs"
 CHECKPOINT = AGENT + "learning_iteration_checkpoint.rs"
 TRANSPORT = AGENT + "learning_iteration_checkpoint_transport.rs"
@@ -26,7 +27,7 @@ INPUTS = AGENT + "root_production_learning_inputs.rs"
 WORKER = AGENT + "learning_iteration.rs"
 SCOPE = "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs"
 CALLERS = {
-    "learning_frozen_update_scope_constructor": (PROFILE,),
+    "learning_frozen_update_scope_constructor": (PROFILE, Q24_PLAN),
     "root_learning_scoped_profile_constructor": (),
     "root_learning_scoped_checkpoint_record": (REGISTRATION,),
     "root_learning_scoped_checkpoint_constructor": (REGISTRATION,),
