@@ -33,6 +33,9 @@ mod delivery;
 
 const MAX_LEARNING_QUEUE: usize = 64;
 const MAX_ITERATION_SECONDS: u64 = 86_400;
+// A complete history needs multiple sequential original-owner reads. Keep
+// their total reconciliation bounded independently of the old work deadline.
+const READBACK_TIMEOUT: Duration = Duration::from_secs(30);
 
 #[derive(Debug)]
 pub enum LearningIterationRuntimeErrorV1 {
@@ -77,6 +80,11 @@ pub struct LearningIterationHandleV1 {
     sender: mpsc::Sender<LearningIterationCommandV1>,
 }
 
+/// One bounded actor slot held before a durable delivery claim is recorded.
+pub(crate) struct LearningIterationReservationV1<'a> {
+    permit: mpsc::Permit<'a, LearningIterationCommandV1>,
+}
+
 impl LearningIterationHandleV1 {
     pub async fn submit(
         &self,
@@ -99,19 +107,46 @@ impl LearningIterationHandleV1 {
         request: LearningIterationRequestV1,
         mode: LearningIterationModeV1,
     ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
+        self.reserve()?.call(request, mode).await
+    }
+
+    pub(crate) fn reserve(
+        &self,
+    ) -> Result<LearningIterationReservationV1<'_>, LearningIterationRuntimeErrorV1> {
+        let permit = self.sender.try_reserve().map_err(|error| match error {
+            mpsc::error::TrySendError::Full(_) => LearningIterationRuntimeErrorV1::QueueFull,
+            mpsc::error::TrySendError::Closed(_) => LearningIterationRuntimeErrorV1::Unavailable,
+        })?;
+        Ok(LearningIterationReservationV1 { permit })
+    }
+}
+
+impl LearningIterationReservationV1<'_> {
+    pub(crate) async fn submit(
+        self,
+        request: LearningIterationRequestV1,
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
+        self.call(request, LearningIterationModeV1::Submit).await
+    }
+
+    pub(crate) async fn readback(
+        self,
+        request: LearningIterationRequestV1,
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
+        self.call(request, LearningIterationModeV1::Readback).await
+    }
+
+    async fn call(
+        self,
+        request: LearningIterationRequestV1,
+        mode: LearningIterationModeV1,
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
         let (response, receive) = oneshot::channel();
-        self.sender
-            .try_send(LearningIterationCommandV1 {
-                mode,
-                request: Box::new(request),
-                response,
-            })
-            .map_err(|error| match error {
-                mpsc::error::TrySendError::Full(_) => LearningIterationRuntimeErrorV1::QueueFull,
-                mpsc::error::TrySendError::Closed(_) => {
-                    LearningIterationRuntimeErrorV1::Unavailable
-                }
-            })?;
+        self.permit.send(LearningIterationCommandV1 {
+            mode,
+            request: Box::new(request),
+            response,
+        });
         // Missing acknowledgement does not prove absence of a durable commit.
         receive
             .await
@@ -286,9 +321,13 @@ impl LearningIterationRuntimeBootstrapV1 {
         if remaining > MAX_ITERATION_SECONDS {
             return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
         }
-        // Expired operations may reconcile a completed receipt. New stages and
-        // create-if-absent checkpoints are still rejected inside process.
-        tokio::time::timeout(Duration::from_secs(remaining.max(1)), async {
+        // Only explicit readback receives a separate reconciliation budget.
+        // Submission keeps its work deadline even while restoring a checkpoint.
+        let timeout = match mode {
+            LearningIterationModeV1::Readback => READBACK_TIMEOUT,
+            LearningIterationModeV1::Submit => Duration::from_secs(remaining.max(1)),
+        };
+        tokio::time::timeout(timeout, async {
             match mode {
                 LearningIterationModeV1::Readback => {
                     self.process_readback(state, request, now_unix_seconds)

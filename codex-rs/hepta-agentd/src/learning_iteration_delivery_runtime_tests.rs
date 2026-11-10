@@ -19,6 +19,12 @@ use tokio::sync::Notify;
 
 use super::*;
 
+#[path = "learning_iteration_capacity_tests.rs"]
+mod capacity_tests;
+
+#[path = "learning_iteration_readback_budget_tests.rs"]
+mod readback_budget_tests;
+
 struct CurrentEvidencePorts {
     inner: Arc<IterationPorts>,
     planned: Mutex<Option<LearningIterationSnapshotV1>>,
@@ -645,6 +651,10 @@ async fn root_learning_post_claim_source_refusal_keeps_original_claim_without_st
     assert_eq!(ports.restores.load(Ordering::SeqCst), 0);
     assert!(ok(ports.inner.executed.lock()).is_empty());
     assert!(ok(ports.inner.checkpoint_calls.lock()).is_empty());
+    assert!(
+        handle.reserve().is_ok(),
+        "refused source releases actor capacity"
+    );
     drop(handle);
     drop(bootstrap);
     store.close().await;

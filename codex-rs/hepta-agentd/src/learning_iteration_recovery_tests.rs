@@ -516,7 +516,7 @@ async fn readback_missing_or_partial_checkpoint_never_creates_or_resumes_work() 
 }
 
 #[tokio::test]
-async fn actual_delivery_preserves_pending_without_backend_and_claimed_with_closed_owner() {
+async fn actual_delivery_preserves_pending_with_closed_owner_and_reconciles_existing_claim() {
     use codex_hepta_automation::AutomationStore;
     use codex_hepta_automation::CircuitCommandV2;
     use codex_hepta_automation::CircuitEventV2;
@@ -606,9 +606,25 @@ async fn actual_delivery_preserves_pending_without_backend_and_claimed_with_clos
             .await,
         Err(LearningIterationRuntimeErrorV1::Unavailable)
     ));
+    let pending = ok(store.pending_circuit_learning(/*limit*/ 1).await);
+    assert_eq!(pending[0].request_digest, None);
+    assert_eq!(pending[0].acknowledged_head, None);
+
+    // Simulate a historical claim made while its original worker was available.
+    // A known closed worker above must not create this durable uncertainty.
+    let initial = ok(LearningIterationCoordinatorV1::new(
+        request.clone(),
+        ports.owners(),
+    ));
+    assert!(ok(store
+        .claim_circuit_learning(
+            &intent,
+            &ok(Sha256Digest::parse(
+                initial.snapshot().head_digest.to_string()
+            )),
+        )
+        .await));
     let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
-    assert!(claimed[0].request_digest.is_some());
-    assert_eq!(claimed[0].acknowledged_head, None);
     assert!(matches!(
         crate::deliver_circuit_learning_v1(&store, Some(&handle), request.clone(), ports.owners())
             .await,
