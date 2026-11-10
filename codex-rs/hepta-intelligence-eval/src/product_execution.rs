@@ -191,7 +191,10 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         &mut self,
         request: &ProductEvaluationExecutionRequestV1<'_>,
     ) -> Result<
-        (ProductEvaluationExecutionKeyV1, Option<FinalHoldoutJournalReceiptV1>),
+        (
+            ProductEvaluationExecutionKeyV1,
+            Option<FinalHoldoutJournalReceiptV1>,
+        ),
         ProductEvaluationExecutionErrorV1,
     > {
         request.plan.validate_integrity()?;
