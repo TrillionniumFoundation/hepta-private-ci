@@ -15,14 +15,17 @@ Only `answer.weight` changed. All other tensors remained bitwise equal, the
 candidate cold-loaded identically, and NumPy/Torch export selection differences
 were zero. CPU Torch was 2.9.1+cpu.
 
-| Fitting diagnostic | Frozen base | Candidate |
-| --- | ---: | ---: |
-| Source-balanced selection quality | 0.5375 | 0.5375 |
+| Fitting diagnostic                |  Frozen base |    Candidate |
+| --------------------------------- | -----------: | -----------: |
+| Source-balanced selection quality |       0.5375 |       0.5375 |
 | Covered-state source-balanced NLL | 0.1156530364 | 0.0218154284 |
 
 74 of 160 states lack a correct candidate. Consequently 86/160=0.5375 is the
 quality ceiling for these fixed fitting candidate sets; the baseline already
-attained it. Lower NLL here changes confidence and does not demonstrate an
+attained it. A separate read-only check verified exactly four unique raw feature
+states in each of the 40 sources, and 160 raw states equal the 160 native encoded
+states. Thus the source-balanced capacity agrees with this ratio; see
+ANSWER_REPAIR_CAPACITY.json. Lower NLL here changes confidence and does not demonstrate an
 accuracy gain. No independent future label was read. The remaining 37 sources
 must stay sealed until a complete prospective study is frozen.
 
