@@ -76,8 +76,8 @@
     },
     {
       "id": "MEM-REQUIRED-REPO-CI",
-      "status": "OPEN_CARGO_DENY_FAILURE_AND_PENDING_JOBS",
-      "evidence": "Frozen source repo-checks/build-test129705041733 passed including formatting; cargo-deny129705041583 failed, but two original-log reads returned Transport closed so source-specific cause remains UNKNOWN. Other required jobs and Architecture source-head remain in progress at retained observation.",
+      "status": "OPEN_CARGO_DENY_AND_NATIVE_BAZEL_FAILURES",
+      "evidence": "At08:15:29 frozen source build/format passed; cargo-deny129705041583 failed with unreadable logs/source cause UNKNOWN; macOS ARM Bazel129705042127 and Windows shard1 129705042213 failed with complete bound logs. Native owner/fixture and policy refusals are observed; a unified cause or MEM-selector cause is not established. Architecture source-head129691795736 remains in progress; other required jobs pending.",
       "required": "Source-specific required jobs pass; preserve unsuppressed dependency advisories and all original failed records"
     }
   ]
