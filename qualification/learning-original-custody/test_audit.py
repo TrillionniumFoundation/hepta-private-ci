@@ -42,6 +42,8 @@ class AuditTests(unittest.TestCase):
                 'sha256': hashlib.sha256(p.read_bytes()).hexdigest(),
                 'operation_id': 'op-2' if stage == 'next_use' else 'op-1',
                 'learning_operation_id': 'op-1' if stage == 'next_use' else None,
+                'next_operation_id': 'op-2' if stage == 'learning_next_use' else None,
+                'next_task_id': 'task-B' if stage == 'learning_next_use' else None,
                 'task_id': 'task-B' if stage == 'next_use' else 'task-A',
                 'bundle_sha256': 'b' * 64,
             }
@@ -79,7 +81,7 @@ class AuditTests(unittest.TestCase):
         result = self.check()
         self.assertEqual(result['integrity'], 'PASS')
         self.assertEqual(result['status'], 'HOLD')
-        self.assertEqual(result['receipt_bytes_required'], 7)
+        self.assertEqual(result['receipt_bytes_required'], 8)
         self.assertFalse(result['owner_authenticated'])
 
     def test_trainer_no_update_rejects_forged_evaluation_stage(self):
@@ -122,7 +124,7 @@ class AuditTests(unittest.TestCase):
             entry['bundle_sha256'] = self.record['selected_bundle']
         result = self.check()
         self.assertEqual(result['integrity'], 'PASS')
-        self.assertEqual(result['receipt_bytes_required'], 8)
+        self.assertEqual(result['receipt_bytes_required'], 9)
         self.assertEqual(result['status'], 'HOLD')
         self.record['original_receipts']['proposal'] = {
             'file': 'proposal.receipt',
@@ -139,10 +141,37 @@ class AuditTests(unittest.TestCase):
             entry['bundle_sha256'] = self.record['selected_bundle']
         result = self.check()
         self.assertEqual(result['integrity'], 'PASS')
-        self.assertEqual(result['receipt_bytes_required'], 9)
+        self.assertEqual(result['receipt_bytes_required'], 10)
         self.assertEqual(result['status'], 'HOLD')
         self.record['original_receipts'].pop('proposal')
         self.assertIn('missing_receipt:proposal', self.check()['issues'])
+
+    def test_original_learning_next_use_cannot_be_omitted_or_replaced_by_consumer(self):
+        # LearningIterationReceiptV1::record() pins the learning operation.
+        # The next ordinary task's receipt uses its own different operation.
+        self.record['original_receipts'].pop('learning_next_use')
+        issues = self.check()['issues']
+        self.assertIn('receipt_coverage', issues)
+        self.assertIn('missing_receipt:learning_next_use', issues)
+
+    def test_terminal_learning_next_use_has_original_operation_and_consumer_link(self):
+        entry = self.record['original_receipts']['learning_next_use']
+        entry['operation_id'] = 'op-2'
+        self.assertIn('foreign_operation:learning_next_use', self.check()['issues'])
+        entry['operation_id'] = 'op-1'
+        entry['next_operation_id'] = 'foreign-op'
+        self.assertIn('learning_next_use_unbound_to_consumer_operation', self.check()['issues'])
+        entry['next_operation_id'] = 'op-2'
+        entry['next_task_id'] = 'task-A'
+        self.assertIn('learning_next_use_unbound_to_consumer_task', self.check()['issues'])
+
+    def test_trainer_no_update_still_requires_terminal_learning_receipt(self):
+        self.trainer_no_update()
+        result = self.check()
+        self.assertEqual(result['integrity'], 'PASS')
+        self.assertEqual(result['receipt_bytes_required'], 8)
+        self.record['original_receipts'].pop('learning_next_use')
+        self.assertIn('missing_receipt:learning_next_use', self.check()['issues'])
 
     def test_no_update_origin_must_be_explicit(self):
         self.record['decision'] = 'no_update'
