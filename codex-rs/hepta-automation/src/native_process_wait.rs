@@ -10,7 +10,7 @@
 use std::fs;
 use std::io;
 use std::os::fd::AsRawFd;
-use std::os::fd::OwnedFd;
+use std::os::fd::BorrowedFd;
 use std::path::Path;
 
 use codex_hepta_contracts::Sha256Digest;
@@ -58,12 +58,12 @@ pub enum NativeProcessInputWaitObservationV1 {
     Unknown,
 }
 
-/// Non-cloneable owner of the pre-held process pin and input writer. The
-/// writer is retained only to bind the sampled read syscall to the original
-/// input object; this type exposes no write method or descriptor extraction.
-pub struct NativeProcessInputWaitObserver {
-    process_pidfd: OwnedFd,
-    input_writer: OwnedFd,
+/// Non-cloneable borrower of the owner's process pin and input writer. The
+/// writer is borrowed only to bind the sampled read syscall to the original
+/// input object; this type cannot close, write, or extract either descriptor.
+pub struct NativeProcessInputWaitObserver<'owner> {
+    process_pidfd: BorrowedFd<'owner>,
+    input_writer: BorrowedFd<'owner>,
     process_id: u32,
     process_start_ticks: u64,
     boot_id: String,
@@ -72,13 +72,14 @@ pub struct NativeProcessInputWaitObserver {
     binding: ActionSkillBindingV1,
 }
 
-impl NativeProcessInputWaitObserver {
-    /// Adopt only descriptors already held by the process owner. The input
+impl<'owner> NativeProcessInputWaitObserver<'owner> {
+    /// Borrow only descriptors already held by the process owner. The input
     /// descriptor must be write-only and the child reader must already name
-    /// the same pipe. No PID lookup, process spawn, or input send occurs here.
+    /// the same pipe. No PID lookup, process spawn, input send, or descriptor
+    /// ownership transfer occurs here.
     pub fn from_inherited(
-        process_pidfd: OwnedFd,
-        input_writer: OwnedFd,
+        process_pidfd: BorrowedFd<'owner>,
+        input_writer: BorrowedFd<'owner>,
         process_id: u32,
         input_reader_fd: u32,
         binding: ActionSkillBindingV1,
@@ -96,7 +97,7 @@ impl NativeProcessInputWaitObserver {
         if fs::read_link(format!("/proc/self/fd/{pidfd_number}"))?
             != Path::new("anon_inode:[pidfd]")
             || pidfd_process_id(pidfd_number)? != process_id
-            || !pidfd_alive(&process_pidfd)?
+            || !pidfd_alive(process_pidfd)?
         {
             return Err(NativeProcessWaitError::Invalid("process pidfd"));
         }
@@ -135,7 +136,7 @@ impl NativeProcessInputWaitObserver {
     /// the `read(2)` syscall on the retained pipe becomes WaitingForInput.
     /// All other live or changing states stay UNKNOWN.
     pub fn observe(&self) -> Result<NativeProcessInputWaitObservationV1, NativeProcessWaitError> {
-        if !pidfd_alive(&self.process_pidfd)?
+        if !pidfd_alive(self.process_pidfd)?
             || bounded_text(Path::new("/proc/sys/kernel/random/boot_id"))?.trim() != self.boot_id
         {
             return Ok(NativeProcessInputWaitObservationV1::Unknown);
@@ -158,7 +159,7 @@ impl NativeProcessInputWaitObserver {
             return Ok(NativeProcessInputWaitObservationV1::Unknown);
         }
         let after = process_snapshot(self.process_id)?;
-        if after != before || !pidfd_alive(&self.process_pidfd)? {
+        if after != before || !pidfd_alive(self.process_pidfd)? {
             return Ok(NativeProcessInputWaitObservationV1::Unknown);
         }
         let input_pipe_sha256 = Sha256Digest::for_bytes(self.input_pipe_target.as_bytes());
@@ -189,9 +190,9 @@ impl NativeProcessInputWaitObserver {
     }
 }
 
-fn pidfd_alive(pidfd: &OwnedFd) -> Result<bool, NativeProcessWaitError> {
+fn pidfd_alive(pidfd: BorrowedFd<'_>) -> Result<bool, NativeProcessWaitError> {
     let mut descriptors = [rustix::event::PollFd::new(
-        pidfd,
+        &pidfd,
         rustix::event::PollFlags::IN,
     )];
     Ok(rustix::event::poll(&mut descriptors, Some(&rustix::event::Timespec::default()))? == 0)

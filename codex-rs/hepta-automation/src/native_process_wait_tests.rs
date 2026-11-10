@@ -1,3 +1,4 @@
+use std::os::fd::AsFd;
 use std::os::fd::OwnedFd;
 use std::process::Command;
 use std::process::Stdio;
@@ -36,8 +37,14 @@ fn actual_pidfd_and_pipe_identify_only_the_original_blocked_reader() {
     let writer: OwnedFd = child.stdin.take().unwrap().into();
     let process = rustix::process::Pid::from_raw(pid as i32).unwrap();
     let pidfd = rustix::process::pidfd_open(process, rustix::process::PidfdFlags::empty()).unwrap();
-    let observer =
-        NativeProcessInputWaitObserver::from_inherited(pidfd, writer, pid, 0, binding()).unwrap();
+    let observer = NativeProcessInputWaitObserver::from_inherited(
+        pidfd.as_fd(),
+        writer.as_fd(),
+        pid,
+        0,
+        binding(),
+    )
+    .unwrap();
     let deadline = Instant::now() + Duration::from_secs(5);
     let evidence = loop {
         match observer.observe().unwrap() {
@@ -57,6 +64,11 @@ fn actual_pidfd_and_pipe_identify_only_the_original_blocked_reader() {
     assert!(evidence.process_start_ticks > 0);
 
     drop(observer);
+    assert!(
+        child.try_wait().unwrap().is_none(),
+        "dropping the observer must not close the owner's input capability"
+    );
+    drop(writer);
     assert!(!child.wait().unwrap().success());
 }
 
@@ -75,9 +87,14 @@ fn compute_and_network_sleep_never_become_input_wait() {
         let process = rustix::process::Pid::from_raw(pid as i32).unwrap();
         let pidfd =
             rustix::process::pidfd_open(process, rustix::process::PidfdFlags::empty()).unwrap();
-        let observer =
-            NativeProcessInputWaitObserver::from_inherited(pidfd, writer, pid, 0, binding())
-                .unwrap();
+        let observer = NativeProcessInputWaitObserver::from_inherited(
+            pidfd.as_fd(),
+            writer.as_fd(),
+            pid,
+            0,
+            binding(),
+        )
+        .unwrap();
         std::thread::sleep(Duration::from_millis(25));
         assert_eq!(
             observer.observe().unwrap(),
@@ -99,9 +116,15 @@ fn wrong_reader_descriptor_is_refused_before_observation() {
     let writer: OwnedFd = child.stdin.take().unwrap().into();
     let process = rustix::process::Pid::from_raw(pid as i32).unwrap();
     let pidfd = rustix::process::pidfd_open(process, rustix::process::PidfdFlags::empty()).unwrap();
-    let error = NativeProcessInputWaitObserver::from_inherited(pidfd, writer, pid, 9, binding())
-        .err()
-        .unwrap();
+    let error = NativeProcessInputWaitObserver::from_inherited(
+        pidfd.as_fd(),
+        writer.as_fd(),
+        pid,
+        9,
+        binding(),
+    )
+    .err()
+    .unwrap();
     assert!(matches!(error, NativeProcessWaitError::Unavailable(_)));
     child.kill().unwrap();
     child.wait().unwrap();
