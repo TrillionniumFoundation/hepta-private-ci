@@ -1,0 +1,27 @@
+{
+  "API_source_head": "7351e1a2c60e318686d3c01372acbde149af4432",
+  "README_changed": false,
+  "cargo_log_retrieval": "Transport closed; original failed response retained, no retry. Cause of cargo-deny failure remains unestablished by this observation.",
+  "cost_scope": "Read-only local source and returned log inspection; complete manual/tool-call CPU or wall not measured.",
+  "exact_failure_marker": "FAIL_HEPTA_DEVELOPMENT_DOCS_V8: readiness verifier FAIL_HEPTA_IMPLEMENTATION_READINESS: README.md readiness discovery link",
+  "interpretation": "The actual contract log fails the readiness discovery link check. The inspected local root README is an empty committed file, unchanged from a143bfda5036a54ed87afe21d184b5a9749fa0ee. This record does not change the checker, add a placeholder discovery token, or claim all other jobs pass.",
+  "job": 130151193772,
+  "local_inspected_head": "48632e4ed3f24f575381762f788bdd1c76ab9021",
+  "local_source_inputs": {
+    "README.md": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "scripts/hepta-readiness.py": {
+      "bytes": 44212,
+      "sha256": "7945093ba408b70e550e8b6df2aef311281bb856253e447f99dfd2eb3096a3cd"
+    }
+  },
+  "original_decoded_log": {
+    "bytes": 1574772,
+    "path": "contract.log",
+    "sha256": "ddf141c352f582bdb3d1178bf956666cc5ad3c6a89775f924a75b8b2e797a630"
+  },
+  "readiness_gate_rerun": false,
+  "schema": "current-contract-failure-source-explanation-v1"
+}

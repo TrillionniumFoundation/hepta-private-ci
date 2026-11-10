@@ -1,0 +1,63 @@
+{
+  "captured_sources": {
+    "demonstrate.py": {
+      "bytes": 1890,
+      "sha256": "d61be6b08a81e8f99eb0537eb280df34d1f6e5b13f60955ae9e0e7c7e904df36"
+    },
+    "fixture.json": {
+      "bytes": 22700,
+      "sha256": "114929bf372a4c2d607df53533b5835dfeec0f4e6d24967d4bbd6cb22a2f0290"
+    },
+    "metadata_summary.py": {
+      "bytes": 8979,
+      "sha256": "746c15964701174a6e34c199265499071ebc4e8e293d687d0d560e4c968be5a1"
+    },
+    "outer.json": {
+      "bytes": 1542,
+      "sha256": "06d3cefeaa150c63a66bcf5e115436073604b7178ed40f6d9113e05d3d485cb2"
+    }
+  },
+  "cases": [
+    {
+      "case": "unchanged_control",
+      "outer_changes": {},
+      "outer_gate": true,
+      "qualified_named_finite_fixture": true
+    },
+    {
+      "case": "actual_wall_exceeds_stage_grant",
+      "outer_changes": {
+        "whole_process_wall_seconds": 901.0
+      },
+      "outer_gate": true,
+      "qualified_named_finite_fixture": true
+    },
+    {
+      "case": "sampled_RSS_exceeds_fixed_cap",
+      "outer_changes": {
+        "sampled_peak_RSS_bytes": 2147483649
+      },
+      "outer_gate": true,
+      "qualified_named_finite_fixture": true
+    },
+    {
+      "case": "reported_outer_RSS_exceeds_fixed_cap",
+      "outer_changes": {
+        "reported_child_peak_RSS_sample_bytes": 2147483649
+      },
+      "outer_gate": true,
+      "qualified_named_finite_fixture": true
+    },
+    {
+      "case": "declared_outer_RSS_cap_changed",
+      "outer_changes": {
+        "RSS_limit_bytes": 3221225472
+      },
+      "outer_gate": true,
+      "qualified_named_finite_fixture": true
+    }
+  ],
+  "invalid_outer_records_admitted": 4,
+  "schema": "postmortem-outer-budget-metadata-counterexample-v1",
+  "scope": "Copies of already saved JSON; no model, stage, oracle, or training execution."
+}

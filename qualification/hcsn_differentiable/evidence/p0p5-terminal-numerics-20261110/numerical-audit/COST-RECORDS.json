@@ -1,0 +1,72 @@
+{
+  "concurrency_scope": "Original audit shared the host with an independent full-D replay and, from21:13:44Z, C2 continuation processes. No idle-host claim.",
+  "currency_cost": null,
+  "energy_joules": null,
+  "no_numeric_retries": true,
+  "rows": [
+    {
+      "CPU_is_lower_bound": true,
+      "id": "original_audit_launcher",
+      "missing_component": "Unreaped active s101/.003 finite-best-8 CPU after the process-group kill.",
+      "scope": "Whole original audit controller process group; do not add nested stage totals.",
+      "source": "original-terminal/launch-receipt.json",
+      "waited_CPU_seconds": 10278.141465,
+      "wall_seconds": 10800.006360915024
+    },
+    {
+      "CPU_is_lower_bound": true,
+      "id": "original_bootstrap",
+      "recorded_wall_seconds": 10808.759284527972,
+      "scope": "Includes source fetch, native23tests and original launcher/stages; overlaps original_audit_launcher.",
+      "source": "original-terminal/bootstrap-receipt.json",
+      "waited_children_CPU_seconds": 10299.398115
+    },
+    {
+      "count_with_outer_cost": 85,
+      "id": "85_observed_stage_outers",
+      "missing_or_invalid_cost_rows": [
+        {
+          "name": "hcsn-s101-lr0.003",
+          "stage": "finite-best-8"
+        }
+      ],
+      "scope": "Existing original per-stage outer timers, nested inside the controller/launcher. Do not add these to whole-attempt or bootstrap cost. Missing active-child CPU after a process-group kill cannot be inferred from these rows.",
+      "stage_outer_wall_seconds": 10237.81142629357,
+      "waited_stage_CPU_seconds": 10229.718831999999
+    },
+    {
+      "id": "metadata_collection_bootstrap",
+      "own_CPU_sample_seconds": 0.196772086,
+      "scope": "Separate metadata task after original termination. Download and collector child are nested; final serialization after sample is outside this sample.",
+      "source": "collector-launch/receipt.json",
+      "waited_children_CPU_seconds": 11.635231,
+      "wall_sample_seconds": 13.594199081882834
+    },
+    {
+      "id": "metadata_collection_child",
+      "scope": "Complete collector child; nested in metadata_collection_bootstrap.",
+      "source": "collector-launch/receipt.json",
+      "waited_child_CPU_seconds": 11.4558,
+      "whole_child_wall_seconds": 11.501382886897773
+    },
+    {
+      "CPU_sample_seconds": 11.140371099,
+      "id": "metadata_collection_internal",
+      "scope": "Collector inner sample before final receipt serialization; nested in collector child.",
+      "source": "postmortem/COLLECTION-RECEIPT.json",
+      "wall_sample_seconds": 11.16766932187602
+    },
+    {
+      "id": "publication_inventory",
+      "scope": "Read the preserved whole-command GNU record; this separate metadata inventory is outside the numeric/collector attempts.",
+      "source": "publication-inventory/GNU-TIME.txt"
+    },
+    {
+      "id": "draft_publication",
+      "scope": "Whole-command GNU record includes upload/readback; uploader RESULT internal clocks are nested. No retry/upload duplication.",
+      "source": "publication/UPLOAD-GNU-TIME.txt"
+    }
+  ],
+  "schema": "terminal-numerics-scope-separated-costs-v1",
+  "transport_CPU_scope": "Cloud/native readback control-channel CPU and billing were not measured; do not set them to zero."
+}
