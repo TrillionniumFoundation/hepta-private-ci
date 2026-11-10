@@ -328,6 +328,57 @@ impl Services {
 }
 
 #[tokio::test]
+async fn expired_completed_learning_readback_can_finish_after_one_second_without_new_work() {
+    // Protocol-only synthetic owners. This exercises the real supervised
+    // readback queue, not training, independent custody or product benefit.
+    let daemon = AgentdFixture::new();
+    let mut request = iteration_request(&daemon);
+    request.envelope.expiry_unix_seconds = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("wall clock")
+        .as_secs()
+        .saturating_sub(5);
+    let ports = CurrentEvidencePorts::new();
+    let completed =
+        completed_snapshot(request.clone(), &ports.inner, Decision::EvaluatedNoUpdate).await;
+    install_checkpoint(&ports.inner, &completed);
+
+    let (entered, entered_rx) = tokio::sync::oneshot::channel();
+    let (resume, resume_rx) = tokio::sync::oneshot::channel();
+    *ok(ports.inner.attestation_barrier.lock()) = Some(AttestationBarrier {
+        entered,
+        resume: resume_rx,
+    });
+    let (state, cognitive) = admitted_state(&daemon).await;
+    let (handle, bootstrap) = ok(learning_iteration_channel_v1(
+        daemon.identity.agent_id.clone(),
+        /*spawn_generation*/ 1,
+        ports.inner.owners(),
+        ports.clone(),
+        ports.inner.verifier.clone(),
+        /*capacity*/ 1,
+    ));
+    let cancellation = CancellationToken::new();
+    let worker = tokio::spawn(bootstrap.run(Arc::clone(&state), cancellation.clone()));
+    let readback = handle.readback(request);
+    tokio::pin!(readback);
+    tokio::select! {
+        unexpected = &mut readback => panic!("readback ended before original attestor: {unexpected:?}"),
+        original = entered_rx => ok(original),
+    }
+    tokio::time::sleep(Duration::from_millis(1_200)).await;
+    assert!(
+        resume.send(()).is_ok(),
+        "expired readback must retain the original owner wait beyond one second"
+    );
+    assert_eq!(ok(readback.await), completed);
+    assert_no_work_or_checkpoint(&ports.inner, &completed);
+    cancellation.cancel();
+    ok(ok(worker.await));
+    cognitive.close().await;
+}
+
+#[tokio::test]
 async fn ordinary_delivery_authenticates_completed_snapshot_and_retains_required_service() {
     let daemon = AgentdFixture::new();
     let (store, request) = completed_circuit(&daemon).await;

@@ -37,6 +37,7 @@ pub(crate) use registry::MAX_REGISTERED_CIRCUIT_LEARNING;
 
 const MAX_LEARNING_QUEUE: usize = 64;
 const MAX_ITERATION_SECONDS: u64 = 86_400;
+const MAX_READBACK_SECONDS: u64 = 30;
 
 #[derive(Debug)]
 pub enum LearningIterationRuntimeErrorV1 {
@@ -315,16 +316,24 @@ impl LearningIterationRuntimeBootstrapV1 {
         request: LearningIterationRequestV1,
         mode: LearningIterationModeV1,
     ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
-        let remaining = request
-            .envelope
-            .expiry_unix_seconds
-            .saturating_sub(now_unix_seconds()?);
-        if remaining > MAX_ITERATION_SECONDS {
-            return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
-        }
-        // Expired operations may reconcile a completed receipt. New stages and
-        // create-if-absent checkpoints are still rejected inside process.
-        tokio::time::timeout(Duration::from_secs(remaining.max(1)), async {
+        // Readback can only restore the original operation and reauthenticate
+        // its historical owner receipts. It must not inherit a one-second work
+        // timeout after expiry or a far-future new-work admission ceiling.
+        // Neither expiry nor this bounded read-only window grants new stages.
+        let timeout_seconds = match &mode {
+            LearningIterationModeV1::Readback => MAX_READBACK_SECONDS,
+            LearningIterationModeV1::Submit => {
+                let remaining = request
+                    .envelope
+                    .expiry_unix_seconds
+                    .saturating_sub(now_unix_seconds()?);
+                if remaining > MAX_ITERATION_SECONDS {
+                    return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
+                }
+                remaining.max(1)
+            }
+        };
+        tokio::time::timeout(Duration::from_secs(timeout_seconds), async {
             match mode {
                 LearningIterationModeV1::Readback => {
                     self.process_readback(state, request, now_unix_seconds)

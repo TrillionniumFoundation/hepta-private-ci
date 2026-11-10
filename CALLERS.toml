@@ -2673,12 +2673,13 @@ required_function_order = [
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/learning_iteration.rs"
-required = ["scope: Option<FrozenLearningScopeV2>"]
+required = ["scope: Option<FrozenLearningScopeV2>", "const MAX_READBACK_SECONDS: u64 = 30;"]
 forbidden = ["AllowVerifier", "permit_all"]
 required_function_order = [
   { function = "fn learning_iteration_channel_v1(", sequence = ["learning_iteration_channel(", "None"] },
   { function = "fn learning_iteration_channel_scoped_v2(", sequence = ["learning_iteration_channel(", "Some(scope)"] },
   { function = "fn learning_iteration_channel(", sequence = ["owners.evidence_trust_digest != verifier.trust_digest()", "ports.frozen_scope_binding() != scope.as_ref().map(FrozenLearningScopeV2::binding)", "mpsc::channel(capacity)", "LearningIterationRuntimeBootstrapV1 {"] },
+  { function = "fn process_with_deadline(", sequence = ["let timeout_seconds = match &mode", "LearningIterationModeV1::Readback => MAX_READBACK_SECONDS", "LearningIterationModeV1::Submit =>", ".saturating_sub(now_unix_seconds()?)", "if remaining > MAX_ITERATION_SECONDS", "remaining.max(1)", "tokio::time::timeout(Duration::from_secs(timeout_seconds), async", "LearningIterationModeV1::Readback =>", "self.process_readback(state, request, now_unix_seconds)", "LearningIterationModeV1::Submit =>", "self.process(state, request, now_unix_seconds).await", ".map_err(|_| LearningIterationRuntimeErrorV1::CommitUncertain)?"] },
   { function = "fn require_frozen_scope(", sequence = ["self.ports.frozen_scope_binding()", "self.scope.as_ref().map(FrozenLearningScopeV2::binding)", "scope.validate_request(request, &self.owners)?"] },
   { function = "fn process_readback(", sequence = ["self.require_frozen_scope(&request)?", ".restore(&request)", "LearningIterationCoordinatorV1::from_snapshot(snapshot)?", "scope.validate_snapshot(restored.snapshot())?", "authenticate_restored_iteration_v1("] },
   { function = "fn process(", sequence = ["self.require_frozen_scope(&request)?", "self.ports.restore(&request)", "LearningIterationCoordinatorV1::from_snapshot(snapshot)?", "scope.validate_snapshot(restored.snapshot())?", "authenticate_restored_iteration_v1(", "authenticate_iteration_receipt_v1(", "scope.validate_observation(&receipt.observation)?", "coordinator.record(receipt, clock()?)?", ".checkpoint(previous, coordinator.snapshot())"] },
@@ -2829,7 +2830,7 @@ caller_markers = []
 path = "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs"
 required = ["SystemTime::now()", "prepare(now_unix_seconds()?)?", "prepare(now)? != receipt", "generator.principal() != &request.context.generator", "observer.principal() != &request.context.evaluator"]
 forbidden = ["SigningKey", "UnixStream::connect", "File::open", "unwrap_or", "permit_all"]
-required_function_order = [{ function = "fn read_cell_learning_evaluation_v1(", sequence = ["prepare(now_unix_seconds()?)?", "trainer.readback(request.snapshot, training).await?", "evaluator.readback(request.snapshot, &receipt).await?", "let now = now_unix_seconds()?", "prepare(now)? != receipt", "LearningEvidenceRoleV1::Generator", "learning_iteration_receipt_signing_bytes_v1(training)", "LearningEvidenceRoleV1::Evaluator", "learning_iteration_receipt_signing_bytes_v1(&receipt)", "verify_signed_actor_separation(&generator, &observer, now)", "Ok(AuthenticatedCellLearningEvaluationV1"] }]
+required_function_order = [{ function = "fn read_cell_learning_evaluation_v1(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(request.snapshot.clone())", "let retained =", "let predecessor = match retained", "prepare(now_unix_seconds()?)?", "if retained.is_some_and(|index| request.snapshot.receipts[index] != receipt)", "trainer.readback(request.snapshot, training).await?", "evaluator.readback(request.snapshot, &receipt).await?", "let now = now_unix_seconds()?", "prepare(now)? != receipt", "LearningEvidenceRoleV1::Generator", "learning_iteration_receipt_signing_bytes_v1(training)", "LearningEvidenceRoleV1::Evaluator", "learning_iteration_receipt_signing_bytes_v1(&receipt)", "verify_signed_actor_separation(&generator, &observer, now)", "Ok(AuthenticatedCellLearningEvaluationV1"] }]
 
 
 [[boundary]]
