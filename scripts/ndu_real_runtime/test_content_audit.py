@@ -14,7 +14,7 @@ from .content_identity import selection_receipt
 
 
 class ContentAuditTests(unittest.TestCase):
-    def fixture(self, root, *, selected=False, fault=None):
+    def fixture(self, root, *, selected=False, fault=None, launch_fault=None):
         def put(name, value):
             raw = (json.dumps(value, ensure_ascii=False) + "\n").encode()
             (root / name).write_bytes(raw)
@@ -48,8 +48,8 @@ class ContentAuditTests(unittest.TestCase):
             {
                 "schema": "ndu.real.actor-isolation.v1",
                 "stdout": wire + "\n",
-                "exit_code": 0,
-                "enforced_before_actor_exec": True,
+                "exit_code": {"exit": 1, "boolean": False}.get(launch_fault, 0),
+                "enforced_before_actor_exec": launch_fault != "isolation",
                 "host_exchanges": [
                     {
                         "event_sha256": hashlib.sha256(wire.encode()).hexdigest()
@@ -236,6 +236,21 @@ class ContentAuditTests(unittest.TestCase):
                 self.assertEqual(
                     report["episodes"][0]["rows"][0]["first_observed_discrepancy"],
                     expected,
+                )
+
+    def test_failed_or_unisolated_launch_cannot_prove_selected_used(self):
+        for fault in ("exit", "isolation", "boolean"):
+            with self.subTest(fault=fault), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                raw, pin = self.fixture(root, selected=True, launch_fault=fault)
+                episode = audit(root, raw, pin)["episodes"][0]
+                row = episode["rows"][0]
+                self.assertFalse(episode["launch_completed"])
+                self.assertIs(row["checks"]["candidate_selection"], True)
+                self.assertIs(row["checks"]["isolated_actor_completed"], False)
+                self.assertIsNone(row["selected_used"])
+                self.assertEqual(
+                    row["first_observed_discrepancy"], "isolated_actor_completed"
                 )
 
     def test_current_witness_is_distinct_from_legacy_and_tampered_input_is_rejected(
