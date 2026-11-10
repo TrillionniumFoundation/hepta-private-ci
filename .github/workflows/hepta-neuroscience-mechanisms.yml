@@ -1,0 +1,98 @@
+name: Hepta neuroscience mechanism diagnostics
+
+on:
+  push:
+    branches: [research/neuroscience-mechanisms-20261110]
+    paths:
+      - qualification/cell_common_foundations/credit_axes.py
+      - qualification/cell_common_foundations/learning_clocks.py
+      - qualification/cell_common_foundations/memory_replay.py
+      - qualification/cell_common_foundations/run_neuroscience.py
+      - qualification/cell_common_foundations/test_credit_axes.py
+      - qualification/cell_common_foundations/test_learning_clocks.py
+      - qualification/cell_common_foundations/test_memory_replay.py
+      - qualification/cell_common_foundations/test_run_neuroscience.py
+      - qualification/cell_common_foundations/protocol.py
+      - qualification/cell_common_foundations/NEUROSCIENCE_PROTOCOL_20261110.md
+      - .github/workflows/hepta-neuroscience-mechanisms.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuroscience-mechanisms-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  development-diagnostics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out the exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install the declared NumPy dependencies and locked formatter
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/neuroscience"
+          python3 -m venv "$RUNNER_TEMP/neuroscience-venv"
+          echo "$RUNNER_TEMP/neuroscience-venv/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/neuroscience-venv/bin/python" -m pip install numpy==2.3.5 ruff==0.15.13 2>&1 | tee "$RUNNER_TEMP/neuroscience/dependencies.log"
+      - name: Check only the new Python modules and tests
+        run: |
+          set -euo pipefail
+          files=(
+            qualification/cell_common_foundations/credit_axes.py
+            qualification/cell_common_foundations/learning_clocks.py
+            qualification/cell_common_foundations/memory_replay.py
+            qualification/cell_common_foundations/run_neuroscience.py
+            qualification/cell_common_foundations/test_credit_axes.py
+            qualification/cell_common_foundations/test_learning_clocks.py
+            qualification/cell_common_foundations/test_memory_replay.py
+            qualification/cell_common_foundations/test_run_neuroscience.py
+          )
+          ruff check "${files[@]}" 2>&1 | tee "$RUNNER_TEMP/neuroscience/ruff-check.log"
+          ruff format --check "${files[@]}" 2>&1 | tee "$RUNNER_TEMP/neuroscience/ruff-format.log"
+      - name: Run the NumPy regression suites
+        run: |
+          set -euo pipefail
+          python -m unittest -v \
+            qualification.cell_common_foundations.test_protocol \
+            qualification.cell_common_foundations.test_credit \
+            qualification.cell_common_foundations.test_plasticity \
+            qualification.cell_common_foundations.test_runner \
+            qualification.cell_common_foundations.test_credit_axes \
+            qualification.cell_common_foundations.test_learning_clocks \
+            qualification.cell_common_foundations.test_memory_replay \
+            qualification.cell_common_foundations.test_run_neuroscience \
+            2>&1 | tee "$RUNNER_TEMP/neuroscience/unittest.log"
+      - name: Run the complete frozen development roster
+        run: |
+          set -euo pipefail
+          python -m qualification.cell_common_foundations.run_neuroscience \
+            --output "$RUNNER_TEMP/neuroscience/results" \
+            2>&1 | tee "$RUNNER_TEMP/neuroscience/development-roster.log"
+      - name: Verify that the checkout was unchanged
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/neuroscience"
+          git diff --exit-code 2>&1 | tee "$RUNNER_TEMP/neuroscience/checkout-diff.log"
+      - name: Retain development plans, raw attempts and all logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuroscience-mechanisms-${{ github.sha }}
+          path: ${{ runner.temp }}/neuroscience/
+          if-no-files-found: warn
