@@ -135,9 +135,7 @@ impl LoadedCellQ24ModelV1 {
     ) -> Result<Self, CellGenerationErrorV2> {
         let (index, offset) = match head {
             CellQ24PrivateHeadV1::Drive { index } => (usize::from(index), 0),
-            CellQ24PrivateHeadV1::Prediction { index } => {
-                (usize::from(index), self.heads.rows / 2)
-            }
+            CellQ24PrivateHeadV1::Prediction { index } => (usize::from(index), self.heads.rows / 2),
         };
         if index >= self.heads.rows / 2
             || candidate.heads.rows != self.heads.rows
