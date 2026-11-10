@@ -23,11 +23,18 @@ ALLOWED_CHANGES = {
     "cell_adapter_and_heads": frozenset({"heads", "cell_adapter"}),
     "kernel_and_heads": frozenset({"base", "heads"}),
 }
-COST_AXES = frozenset({
-    "training_cpu_seconds", "evaluation_cpu_seconds", "inference_cpu_seconds",
-    "recovery_cpu_seconds", "accelerator_seconds", "resident_byte_seconds",
-    "transport_bytes", "provider_charges",
-})
+COST_AXES = frozenset(
+    {
+        "training_cpu_seconds",
+        "evaluation_cpu_seconds",
+        "inference_cpu_seconds",
+        "recovery_cpu_seconds",
+        "accelerator_seconds",
+        "resident_byte_seconds",
+        "transport_bytes",
+        "provider_charges",
+    }
+)
 _TOKEN = re.compile(r"[A-Za-z0-9._:-]{1,128}\Z")
 _HEX = re.compile(r"[0-9a-f]{64}\Z")
 
@@ -80,15 +87,21 @@ class ComponentPins:
         if not isinstance(other, ComponentPins):
             raise LineagePolicyError("candidate has no complete component inventory")
         return frozenset(
-            f.name for f in fields(self)
+            f.name
+            for f in fields(self)
             if getattr(self, f.name) != getattr(other, f.name)
         )
 
     @property
     def shared_feature_identity(self):
         return (
-            self.base, self.organ_adapter, self.encoder, self.tokenizer,
-            self.normalizer, self.composition, self.numeric_profile,
+            self.base,
+            self.organ_adapter,
+            self.encoder,
+            self.tokenizer,
+            self.normalizer,
+            self.composition,
+            self.numeric_profile,
         )
 
 
@@ -117,7 +130,14 @@ class CellEnrollment:
     def __post_init__(self):
         if self.lineage not in LINEAGES or self.kernel not in KERNELS:
             raise LineagePolicyError("unknown lineage or kernel")
-        for key in ("principal_id", "agent_id", "cell_id", "run_id", "state_owner", "data_scope"):
+        for key in (
+            "principal_id",
+            "agent_id",
+            "cell_id",
+            "run_id",
+            "state_owner",
+            "data_scope",
+        ):
             _token(getattr(self, key), key)
         _digest(self.bundle_digest, "bundle")
         if type(self.generation) is not int or not 1 <= self.generation < 2**64:
@@ -127,18 +147,25 @@ class CellEnrollment:
         if self.feature_share_group is not None:
             _token(self.feature_share_group, "feature_share_group")
             if self.kernel != "shared_semantic":
-                raise LineagePolicyError("only semantic features may share this frozen pool")
+                raise LineagePolicyError(
+                    "only semantic features may share this frozen pool"
+                )
             # A shared runtime feature pool needs an explicit frozen interface
             # identity in addition to matching model/encoder/numeric pins.
             _digest(self.feature_abi, "feature_abi")
         elif self.feature_abi is not None:
             raise LineagePolicyError("unshared Cell cannot claim a pooled feature ABI")
-        if self.trainable_scope not in SCOPES[self.kernel] and self.trainable_scope is not None:
+        if (
+            self.trainable_scope not in SCOPES[self.kernel]
+            and self.trainable_scope is not None
+        ):
             raise LineagePolicyError("kernel cannot train the requested fields")
         if self.lineage == "LEARN" and (
             self.kernel != "deterministic" or self.trainable_scope is not None
         ):
-            raise LineagePolicyError("LEARN orchestrates original owners; not another optimizer")
+            raise LineagePolicyError(
+                "LEARN orchestrates original owners; not another optimizer"
+            )
         if self.trainable_scope is None:
             if (
                 type(self.max_training_steps) is not int
@@ -183,7 +210,10 @@ class CellRoster:
             raise LineagePolicyError("all seven responsibilities must be represented")
         if len({c.partition for c in self.cells}) != len(self.cells):
             raise LineagePolicyError("duplicate Cell state partition")
-        if sum(c.trainable_scope is not None for c in self.cells) > self.max_trainable_instances:
+        if (
+            sum(c.trainable_scope is not None for c in self.cells)
+            > self.max_trainable_instances
+        ):
             raise LineagePolicyError("too many simultaneously trainable instances")
         groups = {}
         for cell in self.cells:
@@ -191,13 +221,19 @@ class CellRoster:
                 # Live shared features cannot cross an original state run partition.
                 # No separate owner or implicit cross-run reuse is introduced here.
                 identity = (
-                    cell.principal_id, cell.agent_id, cell.run_id,
-                    cell.state_owner, cell.data_scope,
-                    cell.components.shared_feature_identity, cell.feature_abi,
+                    cell.principal_id,
+                    cell.agent_id,
+                    cell.run_id,
+                    cell.state_owner,
+                    cell.data_scope,
+                    cell.components.shared_feature_identity,
+                    cell.feature_abi,
                 )
                 old = groups.setdefault(cell.feature_share_group, identity)
                 if old != identity:
-                    raise LineagePolicyError("feature group mixes owner or frozen bindings")
+                    raise LineagePolicyError(
+                        "feature group mixes owner or frozen bindings"
+                    )
 
     def cell(self, partition):
         matches = [c for c in self.cells if c.partition == partition]
@@ -244,8 +280,12 @@ def review_update(roster: CellRoster, evidence: UpdateEvidence) -> UpdateReview:
     if cell.trainable_scope is None:
         raise LineagePolicyError("frozen cell cannot request a neural update")
     for key in (
-        "source_bundle", "candidate_bundle", "training_source", "dataset_digest",
-        "update_rule", "evaluation_profile",
+        "source_bundle",
+        "candidate_bundle",
+        "training_source",
+        "dataset_digest",
+        "update_rule",
+        "evaluation_profile",
     ):
         _digest(getattr(evidence, key), key)
     if (
@@ -259,7 +299,9 @@ def review_update(roster: CellRoster, evidence: UpdateEvidence) -> UpdateReview:
         or not 1 <= evidence.candidate_generation < 2**64
         or evidence.candidate_generation != cell.generation + 1
     ):
-        raise LineagePolicyError("candidate violates frozen lineage or evaluation binding")
+        raise LineagePolicyError(
+            "candidate violates frozen lineage or evaluation binding"
+        )
     if (
         type(evidence.completed_training_steps) is not int
         or not 1 <= evidence.completed_training_steps <= cell.max_training_steps
@@ -291,7 +333,9 @@ def review_update(roster: CellRoster, evidence: UpdateEvidence) -> UpdateReview:
         _digest(evidence.evaluation_receipt_digest, "evaluation_receipt")
     return UpdateReview(
         status="HOLD" if missing else "REVIEW_ONLY",
-        reasons=tuple(sorted(missing)) if missing else (
+        reasons=tuple(sorted(missing))
+        if missing
+        else (
             "native original-bundle byte validation pending",
             "independent signed evaluator provenance pending",
             "old-task retention and measured net-benefit pending",
