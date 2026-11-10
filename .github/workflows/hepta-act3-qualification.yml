@@ -78,6 +78,22 @@ jobs:
           "$RUNNER_TEMP/act3-venv/bin/python" -m unittest discover -s scripts/act2_learning -p test_file_family.py -v > "$RUNNER_TEMP/act3-records/filesystem-tests.log" 2>&1
           "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/qualify_families.py --archive qualification/act2-learning-20261110/run2 --families filesystem --output "$RUNNER_TEMP/act3-records/filesystem" > "$RUNNER_TEMP/act3-records/filesystem.log" 2>&1
           "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/audit_families.py "$RUNNER_TEMP/act3-records/filesystem" > "$RUNNER_TEMP/act3-records/filesystem-audit.json"
+      - name: Install the pinned real browser runtime
+        if: github.ref_name == 'research/act3-browser-20261110' || github.ref_name == 'research/act3-composite-20261110' || github.ref_name == 'research/act3-procedural-replay-20261110'
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/act3-venv/bin/pip" install playwright==1.62.0
+          "$RUNNER_TEMP/act3-venv/bin/python" -m playwright install --with-deps chromium
+          "$RUNNER_TEMP/act3-venv/bin/pip" freeze > "$RUNNER_TEMP/act3-records/browser-packages.txt"
+      - name: Require actual DOM and owner effects without skipping
+        if: github.ref_name == 'research/act3-browser-20261110' || github.ref_name == 'research/act3-composite-20261110' || github.ref_name == 'research/act3-procedural-replay-20261110'
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/test_family_qualification.py --archive qualification/act2-learning-20261110/run2 -v > "$RUNNER_TEMP/act3-records/family-failure-tests.log" 2>&1
+          "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/browser_family.py --output "$RUNNER_TEMP/act3-records/browser-engineering.json" > "$RUNNER_TEMP/act3-records/browser-engineering.log" 2>&1
+          "$RUNNER_TEMP/act3-venv/bin/python" -m unittest discover -s scripts/act2_learning -p test_browser_family.py -v > "$RUNNER_TEMP/act3-records/browser-tests.log" 2>&1
+          "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/qualify_families.py --archive qualification/act2-learning-20261110/run2 --families browser --output "$RUNNER_TEMP/act3-records/browser-panel" > "$RUNNER_TEMP/act3-records/browser-panel.log" 2>&1
+          "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/audit_families.py "$RUNNER_TEMP/act3-records/browser-panel" > "$RUNNER_TEMP/act3-records/browser-audit.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
