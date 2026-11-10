@@ -1,0 +1,43 @@
+{
+  "capture": {
+    "artifact_id": 13745581832,
+    "job_id": 129707151554,
+    "partial": false,
+    "run_id": 42779904306,
+    "source_head_sha": "139e27d2fbff70a0f5bb808aa506c09e9924f611",
+    "status": "captured"
+  },
+  "dependency_remediation": "OPEN",
+  "diagnostic_acquisition": "CLOSED",
+  "fatal_error_blocks": 6,
+  "files": {
+    "README.md": {
+      "bytes": 1746,
+      "sha256": "310fc6f8d28697fe3670811b13354e934010c3bd936df02fd90d459a8fbbefed"
+    },
+    "capture-result.json": {
+      "bytes": 1095,
+      "sha256": "bab7cb7daa51b141a209163e806b9c116e6ddb6b6c2a38398759f3a09d955635"
+    },
+    "error-index.json": {
+      "bytes": 13458,
+      "sha256": "c515491b36178d0f7ce62ddb68088c9301bd4096b701646e805c5cb6ea04df43"
+    },
+    "original-cargo-deny-129677997786.zip": {
+      "bytes": 1738610,
+      "sha256": "f34aa002b006c36131417fc5baf5d0bdd4355ca56b605bb9520a22650dfba956"
+    }
+  },
+  "original": {
+    "job_id": 129677997786,
+    "metadata_head_sha": "38069398cef4372c8e189545970f9fe2e6c24ae2",
+    "raw_bytes": 19821541,
+    "raw_member": "original-job.log",
+    "raw_sha256": "b1f3d61e67000b7dfedc0dcb0a2cb93e7989447e2a0be09ecd782b6f0f49ea73",
+    "run_id": 42770804390
+  },
+  "production_authority": "NONE",
+  "same_source_cargo_deny_gate": "OPEN",
+  "schema": "hepta.original-cargo-deny-evidence.v1",
+  "scientific_admission": "HOLD"
+}
