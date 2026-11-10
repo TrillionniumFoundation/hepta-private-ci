@@ -1,0 +1,39 @@
+import sys,json,hashlib,statistics,collections
+from pathlib import Path
+sys.path.insert(0,'scripts/memory_cell_mem1')
+from run_trajectory_coverage import readback_trajectory,PROFILES
+from environment import Owner,panels,schedule
+p=Path('native_artifact'); campaign=p/'campaign'; r=json.loads((campaign/'results.json').read_text()); manifest=json.loads((campaign/'manifest.json').read_text())
+source={q.name:hashlib.sha256(q.read_bytes()).hexdigest() for q in Path('scripts/memory_cell_mem1').glob('*.py')}
+assert all(manifest['source_sha256'][k]==v for k,v in source.items())
+assert len(r['roster'])==30 and len(r['pairs'])==10 and not r.get('failures') and all(x['status']=='completed' for x in r['roster'])
+assert (p/'source-status-after.txt').read_text()==''
+assert (p/'source-after.txt').read_bytes()==(p/'source-identity.txt').read_bytes()
+assert (p/'source-after.txt').read_text().splitlines()[0]==manifest['source_revision']
+assert manifest['native_sha256'] in (p/'native-binary-sha256.txt').read_text()
+matched=0; scored={}; totals=collections.Counter();checkpoint_count=0
+for e in r['roster']:
+ condition,seed,profile=e['condition'],e['seed'],e['profile']; suffix='reference' if profile=='priority_reference' else profile; d=campaign/f'{condition}-{seed}-{suffix}'
+ summary=json.loads((d/'summary.json').read_text()); assert summary==e['summary']
+ events=[json.loads(t) for t in (d/'events.jsonl').read_text().splitlines()];counts=collections.Counter(t['event'] for t in events); totals.update(counts)
+ assert counts['prequential']==sum(len(x) for _,x in schedule(seed))
+ owner=Owner(seed);phase_scores={}
+ for phase in ('A1','B','A2'):
+  if phase=='B' and condition=='dynamic':owner.change_rules_and_revoke()
+  probes=[x for x in events if x['event']=='probe' and x['phase']==phase]
+  expected_roster=[(name,list(q)) for name,qs in panels().items() for q in qs]
+  assert [(x['panel'],x['sources']) for x in probes]==expected_roster
+  scores={}
+  for q in probes:
+   expected=[owner.facts[s].label for s in q['sources']] if all(owner.resolve(s) is not None for s in q['sources']) else None
+   s=scores.setdefault(q['panel'],[0,0]);s[0]+=q['output']==expected;s[1]+=1
+  for panel,(correct,total) in scores.items():assert summary['panels'][phase][panel]['accuracy']==correct/total
+  phase_scores[phase]=scores
+ scored.setdefault(condition,{}).setdefault(profile,[]).append({'seed':seed,'stable_after_B':phase_scores['B']['stable'][0]/8,'b_prequential':summary['b_prequential_accuracy']})
+ for binfile in d.glob('candidate-*.bin'):
+  metadata=json.loads(binfile.with_suffix('.json').read_text());assert hashlib.sha256(binfile.read_bytes()).hexdigest()==metadata['sha256'];checkpoint_count+=1
+ if profile in PROFILES:
+  rb=readback_trajectory(d,campaign/f'{condition}-{seed}-reference',seed=seed,profile=profile,owner_change=condition=='dynamic')
+  assert rb==json.loads((d/'independent-readback.json').read_text());matched+=1
+report={'schema':'mem4-independent-artifact-audit-v1','source_revision':manifest['source_revision'],'native_sha256':manifest['native_sha256'],'artifact_id':13729549400,'zip_sha256':hashlib.sha256(Path('mem4-native-ae04.zip').read_bytes()).hexdigest(),'planned_runs':30,'completed_runs':30,'matched_trajectories':matched,'matched_pairs':10,'readback_windows':matched*2,'candidate_checkpoint_hashes_checked':checkpoint_count,'event_counts':dict(totals),'source_inputs_compared':list(source),'scores':scored,'descriptive_means':{c:{prof:{'stable_A_after_B':statistics.mean(x['stable_after_B'] for x in rows),'B_prequential':statistics.mean(x['b_prequential'] for x in rows)} for prof,rows in profs.items()} for c,profs in scored.items()},'scientific_qualification':'HOLD','production_adoption':'NoUpdate','limitations':['five synthetic stream seeds, no real-task confirmation','independent retained-data reconstruction, not executor authentication','teacher charged in full to both arms; physical costs not equalized','native-worker restart only; not full owner cold recovery']}
+Path('mem4-independent-audit.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({k:report[k] for k in ['completed_runs','matched_pairs','readback_windows','event_counts','descriptive_means']},indent=2))
