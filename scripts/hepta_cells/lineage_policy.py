@@ -105,6 +105,8 @@ class CellEnrollment:
     generation: int
     components: ComponentPins
     data_scope: str
+    # Immutable training dataset identity, not proof of data-owner custody.
+    dataset_digest: str | None = None
     feature_share_group: str | None = None
     feature_abi: str | None = None
     trainable_scope: str | None = None
@@ -141,6 +143,7 @@ class CellEnrollment:
             if (
                 type(self.max_training_steps) is not int
                 or self.max_training_steps != 0
+                or self.dataset_digest is not None
                 or self.evaluation_profile is not None
                 or self.update_rule is not None
             ):
@@ -151,6 +154,7 @@ class CellEnrollment:
                 or not 1 <= self.max_training_steps <= 1024
             ):
                 raise LineagePolicyError("trainable cell needs a bounded step budget")
+            _digest(self.dataset_digest, "dataset_digest")
             _digest(self.evaluation_profile, "evaluation_profile")
             _digest(self.update_rule, "update_rule")
 
@@ -248,6 +252,7 @@ def review_update(roster: CellRoster, evidence: UpdateEvidence) -> UpdateReview:
         evidence.source_bundle != cell.bundle_digest
         or evidence.training_source != evidence.source_bundle
         or evidence.candidate_bundle == evidence.source_bundle
+        or evidence.dataset_digest != cell.dataset_digest
         or evidence.update_rule != cell.update_rule
         or evidence.evaluation_profile != cell.evaluation_profile
         or type(evidence.candidate_generation) is not int
