@@ -139,8 +139,16 @@
     },
     {
       "id": "NATIVE_PROCESS_WAIT_ADAPTER",
-      "status": "UNQUALIFIED",
-      "required": "original-authorized owned process/input capability and actual kernel/process evidence; long computation/network wait cannot become input wait"
+      "status": "IMPLEMENTED_AWAITING_HOSTED_QUALIFICATION",
+      "required": "hosted Linux/Bazel qualification and integration with an original-authorized process/input capability; input delivery, goal completion, network wait, cross-platform and full handler remain separate",
+      "pr": 5709,
+      "source": "ef757ba61552c4b9d83289b466924270aee08da9",
+      "tree": "ccda7682c0ce8f3f74e415b5ab4b70c4dcc3272f",
+      "parent": "c0d5d0ededb6627103c390e86b8714135977025c",
+      "implemented": "non-cloneable observer consumes pre-held original pidfd and original input pipe writer; positive only for stable single-thread read(2) on exact reader fd; sleep, compute, wrong fd, exit and unavailable kernel observation stay UNKNOWN",
+      "local_result": "3/3 actual pidfd/pipe/process tests; complete codex-hepta-automation 172/172 passed with 2 existing skips; scoped fix and repository format clean",
+      "hosted_status": "PENDING",
+      "build_limit": "local Bazel lock refresh NOT_RUN because bazel binary unavailable; hosted Bazel/CI must decide exact source"
     },
     {
       "id": "BROAD_CI",
