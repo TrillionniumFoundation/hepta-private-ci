@@ -267,11 +267,15 @@ async fn discover_streamable_http_oauth_with_manager(
             scopes_supported: normalize_scopes(resolution.metadata.scopes_supported),
         })),
         Err(AuthError::NoAuthorizationSupport) => Ok(None),
-        Err(err) => {
+        Err(err @ (AuthError::HttpError(_) | AuthError::UrlError(_))) => Err(err.into()),
+        Err(err) if std::error::Error::source(&err).is_some() => {
+            // RMCP 3.9 retains discovery request causes in a source-bearing error.
+            // Keep the established metadata classification and the original cause.
             let error = anyhow::Error::from(err);
-            let diagnostic = format!("{error:#}");
+            let diagnostic = AuthError::MetadataError(format!("{error:#}"));
             Err(error.context(diagnostic))
         }
+        Err(err) => Err(err.into()),
     }
 }
 
