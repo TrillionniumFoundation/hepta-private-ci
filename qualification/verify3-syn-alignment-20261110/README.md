@@ -1,5 +1,23 @@
 # Frozen joint-candidate Syn edge qualification
 
+## Qualification source-path continuation
+
+The #5771 head added the reviewed helper and this README, but the preparation
+code's exact proposal-file allowlist omitted both paths. Its source gate would
+reject that head before download or candidate mutation. Add precisely those two
+paths to the existing set; all pinned inputs and the rejection of any other
+source change remain enforced. The workflow and lock-edge helper are unchanged.
+
+The original five preparation tests pass with an extended real temporary Git
+history that first includes both allowed additions plus an unrelated file,
+proves rejection without an evidence/vendor directory, then removes only the
+unrelated file and completes the original fixture preparation. With the old
+allowlist restored, that positive continuation fails at the original source
+gate. This is a preparation regression, not native dependency qualification.
+Ruff 0.15.13 lint/format and AST preservation apply to the touched Python files;
+the partial scratch checkout still lacks the justfile for full `just fmt`.
+The queued #5771 attempt remains unchanged and must not be called passed.
+
 This continues the disposable qualification in #5696 at
 `2c5dbaf66729c1c9464166349343bfa9185e48c2`; it does not adopt the candidate.
 Original run `42787638375`, job `129732774017`, failed its consumer and format
