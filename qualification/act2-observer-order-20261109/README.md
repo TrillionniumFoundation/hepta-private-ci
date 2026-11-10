@@ -107,3 +107,13 @@ promotion is claimed by this scoped result.
 The parent's successful App-fault evidence stays separately in
 [PR #5589](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5589).
 Its counts were not transferred to this candidate.
+
+## Required repository CI audit
+
+[The retained audit](required-ci/README.md) preserves nine complete job logs in
+bounded ZIPs, exact checkout identities and separately classified Mac/Windows
+failures. The local Notes formatting error has an exact official maintenance
+postimage above. Owned temporary-root fixture normalization is a separate
+pending candidate in [PR #5618](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5618).
+It does not establish a unique historical root cause or resolve separate
+permission, file-lock, sandbox and other repository failures.
