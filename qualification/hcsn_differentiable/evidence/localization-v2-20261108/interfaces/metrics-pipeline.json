@@ -1,0 +1,2119 @@
+{
+  "claim_boundary": "64 development events, unequal tiny capacities and four updates per model only validate interfaces/metric arithmetic. No model ranking, SNN adequacy, generalization, statistical significance or performance conclusion.",
+  "class_count": 11,
+  "definitions": {
+    "accuracy": "mean(argmax(logit)==label); first-index tie breaking",
+    "brier_normalized_zero_one": "multiclass_brier_sum / 2; not divided by class count",
+    "calibration": "raw softmax; no temperature or other calibration was fitted",
+    "multiclass_brier_sum": "mean(sum over 11 classes of (probability-onehot_target)^2), range [0,2]",
+    "negative_log_likelihood": "mean(logsumexp(logits)-true_class_logit), natural-log nats",
+    "top_label_ece_15_equal_width": "sum count/N * abs(bin accuracy - mean top probability); [i/15,(i+1)/15), final bin includes 1"
+  },
+  "development_event_label_counts": {
+    "0": 64
+  },
+  "development_events": 64,
+  "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+  "formal_fits_started": 0,
+  "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+  "native_tensor_audit_status": "passed_interface_evidence_audit",
+  "records": [
+    {
+      "arm": "gru",
+      "logits_sha256": "ffb49a051cfe122aa8c8fce0957346ac5b9c3c1413015b20593f440c31a87918",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 8.881784197001252e-16,
+      "peak_ram_bytes": 625102848,
+      "process_cpu_seconds": 3.170006474,
+      "scores": {
+        "accuracy": 0.0625,
+        "brier_normalized_zero_one": 0.43747597202429755,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 6.059660333981655,
+            "correct": 2,
+            "count": 37
+          },
+          {
+            "confidence_sum": 4.675693847590312,
+            "correct": 2,
+            "count": 20
+          },
+          {
+            "confidence_sum": 1.9389674848954155,
+            "correct": 0,
+            "count": 7
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.8749519440485951,
+        "negative_log_likelihood": 2.1598075851150966,
+        "top_label_ece_15_equal_width": 0.13553627603855284
+      },
+      "seed": 20261108,
+      "trainable_parameters": 427,
+      "training_interface_wall_seconds": 3.3535729399882257
+    },
+    {
+      "arm": "cfc",
+      "logits_sha256": "b049d1d802eae85976c19b39952e578a95fc0794cda03b20c8087f9aa510c14b",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 2.220446049250313e-16,
+      "peak_ram_bytes": 625803264,
+      "process_cpu_seconds": 3.030346203,
+      "scores": {
+        "accuracy": 0.609375,
+        "brier_normalized_zero_one": 0.3985670985805032,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 10.521353981962077,
+            "correct": 37,
+            "count": 62
+          },
+          {
+            "confidence_sum": 0.4231215347428905,
+            "correct": 2,
+            "count": 2
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.7971341971610064,
+        "negative_log_likelihood": 1.8962730016087228,
+        "top_label_ece_15_equal_width": 0.43836757005148486
+      },
+      "seed": 20261108,
+      "trainable_parameters": 807,
+      "training_interface_wall_seconds": 3.054459927137941
+    },
+    {
+      "arm": "snn_plif",
+      "logits_sha256": "0558bb1a541822cbc8455d8bff143b0a90d7ee879c11f1492d95a7ec9c89fb3e",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 8.881784197001252e-16,
+      "peak_ram_bytes": 633683968,
+      "process_cpu_seconds": 3.440051565,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.46793486723541255,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 4.882261307008388,
+            "correct": 0,
+            "count": 39
+          },
+          {
+            "confidence_sum": 3.6833544364530937,
+            "correct": 0,
+            "count": 25
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.9358697344708251,
+        "negative_log_likelihood": 2.514125738120915,
+        "top_label_ece_15_equal_width": 0.13383774599158565
+      },
+      "seed": 20261108,
+      "trainable_parameters": 176,
+      "training_interface_wall_seconds": 3.47252615285106
+    },
+    {
+      "arm": "ssm_s4d",
+      "logits_sha256": "4242d6d368ecb96ea35c80abce4143419ff7c586c9dbc75dfbbec0d5c537a8f5",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 8.881784197001252e-16,
+      "peak_ram_bytes": 628363264,
+      "process_cpu_seconds": 2.9832825859999996,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.421176237272758,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 9.611530597304894,
+            "correct": 0,
+            "count": 64
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.842352474545516,
+        "negative_log_likelihood": 2.0425506785648055,
+        "top_label_ece_15_equal_width": 0.15018016558288896
+      },
+      "seed": 20261108,
+      "trainable_parameters": 335,
+      "training_interface_wall_seconds": 3.0612333728931844
+    },
+    {
+      "arm": "attention",
+      "logits_sha256": "a3eddef89b2d496fc1e5258f402108f76970e00577fc8322707ee17413532e70",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 1.3322676295501878e-15,
+      "peak_ram_bytes": 628789248,
+      "process_cpu_seconds": 2.980739308,
+      "scores": {
+        "accuracy": 0.140625,
+        "brier_normalized_zero_one": 0.47588300431168695,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 2.9289499773492365,
+            "correct": 1,
+            "count": 16
+          },
+          {
+            "confidence_sum": 8.762441798572553,
+            "correct": 8,
+            "count": 38
+          },
+          {
+            "confidence_sum": 2.4465663658288848,
+            "correct": 0,
+            "count": 8
+          },
+          {
+            "confidence_sum": 0.6935623873658177,
+            "correct": 0,
+            "count": 2
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.9517660086233739,
+        "negative_log_likelihood": 2.669869514773481,
+        "top_label_ece_15_equal_width": 0.09111750826744519
+      },
+      "seed": 20261108,
+      "trainable_parameters": 1179,
+      "training_interface_wall_seconds": 3.0298164549749345
+    },
+    {
+      "arm": "hcsn",
+      "logits_sha256": "c8d89929505c9e789adae2312f4bb92af62d04b0d7a7254a1decbd03f5700fe0",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 4.440892098500626e-16,
+      "peak_ram_bytes": 742342656,
+      "process_cpu_seconds": 34.196331099,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.44650639693548694,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 7.997482356128047,
+            "correct": 0,
+            "count": 64
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.8930127938709739,
+        "negative_log_likelihood": 2.284226383409373,
+        "top_label_ece_15_equal_width": 0.12496066181450073
+      },
+      "seed": 20261108,
+      "trainable_parameters": 9804,
+      "training_interface_wall_seconds": 34.31482992693782
+    },
+    {
+      "arm": "gru",
+      "logits_sha256": "4d1e3ce9143d2ce28c15a12baf2ab881cf1e9b5282d54fba10464c030b78156c",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 0.0,
+      "peak_ram_bytes": 627138560,
+      "process_cpu_seconds": 3.013292431,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.49354750200315733,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 9.913921300822945,
+            "correct": 0,
+            "count": 58
+          },
+          {
+            "confidence_sum": 1.2173871427085594,
+            "correct": 0,
+            "count": 6
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.9870950040063147,
+        "negative_log_likelihood": 2.7903312071784874,
+        "top_label_ece_15_equal_width": 0.17392669443017977
+      },
+      "seed": 20261109,
+      "trainable_parameters": 427,
+      "training_interface_wall_seconds": 3.0312718520872295
+    },
+    {
+      "arm": "cfc",
+      "logits_sha256": "e7d3cc7be4b5fa2831beebfe297b0f2dce8523edd1f7ff70458274eb177a9248",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 0.0,
+      "peak_ram_bytes": 626728960,
+      "process_cpu_seconds": 3.0750088420000004,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.4645025784210823,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 2.9974698443576755,
+            "correct": 0,
+            "count": 24
+          },
+          {
+            "confidence_sum": 5.8428390995966115,
+            "correct": 0,
+            "count": 40
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.9290051568421646,
+        "negative_log_likelihood": 2.4786866422990896,
+        "top_label_ece_15_equal_width": 0.13812982724928574
+      },
+      "seed": 20261109,
+      "trainable_parameters": 807,
+      "training_interface_wall_seconds": 3.0905363289639354
+    },
+    {
+      "arm": "snn_plif",
+      "logits_sha256": "4467bfeac9fd4d31918218fc0d7dc6f725c23954e1059e8b6304c16b1e1e9bbd",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 4.440892098500626e-16,
+      "peak_ram_bytes": 633520128,
+      "process_cpu_seconds": 3.3448009069999998,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.5004253272370921,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 4.908102913342478,
+            "correct": 0,
+            "count": 31
+          },
+          {
+            "confidence_sum": 6.8377366818280825,
+            "correct": 0,
+            "count": 33
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 1.0008506544741842,
+        "negative_log_likelihood": 2.9028713254422147,
+        "top_label_ece_15_equal_width": 0.18352874367454
+      },
+      "seed": 20261109,
+      "trainable_parameters": 176,
+      "training_interface_wall_seconds": 3.362251583021134
+    },
+    {
+      "arm": "ssm_s4d",
+      "logits_sha256": "23e144a238353158b160292c52567bb945d8f79fa1f1674ae3e386a8da0138af",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 0.0,
+      "peak_ram_bytes": 628703232,
+      "process_cpu_seconds": 2.951913686,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.4751180952425763,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.2531401313888829,
+            "correct": 0,
+            "count": 2
+          },
+          {
+            "confidence_sum": 9.789191856562368,
+            "correct": 0,
+            "count": 61
+          },
+          {
+            "confidence_sum": 0.224946625492654,
+            "correct": 0,
+            "count": 1
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.9502361904851526,
+        "negative_log_likelihood": 2.583715101857672,
+        "top_label_ece_15_equal_width": 0.160426228335061
+      },
+      "seed": 20261109,
+      "trainable_parameters": 335,
+      "training_interface_wall_seconds": 2.9847863509785384
+    },
+    {
+      "arm": "attention",
+      "logits_sha256": "19b01f7f4539804906f227115d8cbc01d792759019eb3b72c07fd0893a37a80c",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 4.440892098500626e-16,
+      "peak_ram_bytes": 627802112,
+      "process_cpu_seconds": 3.31810696,
+      "scores": {
+        "accuracy": 0.171875,
+        "brier_normalized_zero_one": 0.4491998751395641,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.12759903735886635,
+            "correct": 1,
+            "count": 1
+          },
+          {
+            "confidence_sum": 7.385310101117789,
+            "correct": 10,
+            "count": 44
+          },
+          {
+            "confidence_sum": 3.9308213054952663,
+            "correct": 0,
+            "count": 18
+          },
+          {
+            "confidence_sum": 0.28406345236896,
+            "correct": 0,
+            "count": 1
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.8983997502791282,
+        "negative_log_likelihood": 2.294267061893876,
+        "top_label_ece_15_equal_width": 0.12034336905293079
+      },
+      "seed": 20261109,
+      "trainable_parameters": 1179,
+      "training_interface_wall_seconds": 3.3310222590807825
+    },
+    {
+      "arm": "hcsn",
+      "logits_sha256": "ff1dd221925ef6fa14c442d97bb72ef0646a215cb86437e7df27541e7043319e",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 8.881784197001252e-16,
+      "peak_ram_bytes": 782454784,
+      "process_cpu_seconds": 34.968122033,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.46263435431445643,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 7.596939099806386,
+            "correct": 0,
+            "count": 63
+          },
+          {
+            "confidence_sum": 0.133617883834714,
+            "correct": 0,
+            "count": 1
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.9252687086289129,
+        "negative_log_likelihood": 2.4586006764512116,
+        "top_label_ece_15_equal_width": 0.12078995286939219
+      },
+      "seed": 20261109,
+      "trainable_parameters": 9804,
+      "training_interface_wall_seconds": 35.080750704044476
+    },
+    {
+      "arm": "gru",
+      "logits_sha256": "d903889fd171379b6edadeb310de8505259509e914323811065907ce0046d4bc",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 8.881784197001252e-16,
+      "peak_ram_bytes": 627060736,
+      "process_cpu_seconds": 2.8907964429999997,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.4727711348241225,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 7.731231106106756,
+            "correct": 0,
+            "count": 47
+          },
+          {
+            "confidence_sum": 3.682646758057775,
+            "correct": 0,
+            "count": 17
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.945542269648245,
+        "negative_log_likelihood": 2.553856843466942,
+        "top_label_ece_15_equal_width": 0.17834184162757077
+      },
+      "seed": 20261110,
+      "trainable_parameters": 427,
+      "training_interface_wall_seconds": 2.9084048729855567
+    },
+    {
+      "arm": "cfc",
+      "logits_sha256": "baeac8dc42fe2a024f0f6687a180eed407930260f882eea0bb5aca9e62b77938",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 0.0,
+      "peak_ram_bytes": 626982912,
+      "process_cpu_seconds": 3.032590161,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.49269679818315876,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 8.580681432250127,
+            "correct": 0,
+            "count": 54
+          },
+          {
+            "confidence_sum": 2.091907271950901,
+            "correct": 0,
+            "count": 10
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.9853935963663175,
+        "negative_log_likelihood": 2.8130714051867933,
+        "top_label_ece_15_equal_width": 0.16675919850314108
+      },
+      "seed": 20261110,
+      "trainable_parameters": 807,
+      "training_interface_wall_seconds": 3.046443371102214
+    },
+    {
+      "arm": "snn_plif",
+      "logits_sha256": "32b9ef306685a23ea56c71b4078a7ba46731c6b16de166e30f9e2ed2c3285e7a",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 2.6645352591003757e-15,
+      "peak_ram_bytes": 633970688,
+      "process_cpu_seconds": 3.193003907,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.5013200219161477,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 8.004932719140145,
+            "correct": 0,
+            "count": 61
+          },
+          {
+            "confidence_sum": 0.5666800950552882,
+            "correct": 0,
+            "count": 3
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 1.0026400438322953,
+        "negative_log_likelihood": 2.999220227362991,
+        "top_label_ece_15_equal_width": 0.13393145022180364
+      },
+      "seed": 20261110,
+      "trainable_parameters": 176,
+      "training_interface_wall_seconds": 3.211057550041005
+    },
+    {
+      "arm": "ssm_s4d",
+      "logits_sha256": "048a2aeab3a314a063abb8dcfe66b0046dafcf320537f37e4dbfff902785c139",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 4.440892098500626e-16,
+      "peak_ram_bytes": 629170176,
+      "process_cpu_seconds": 3.019491605,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.4395680567415539,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 7.914108489308793,
+            "correct": 0,
+            "count": 60
+          },
+          {
+            "confidence_sum": 0.5335080838356627,
+            "correct": 0,
+            "count": 4
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.8791361134831078,
+        "negative_log_likelihood": 2.2065627021586085,
+        "top_label_ece_15_equal_width": 0.13199400895538213
+      },
+      "seed": 20261110,
+      "trainable_parameters": 335,
+      "training_interface_wall_seconds": 3.0509195430204272
+    },
+    {
+      "arm": "attention",
+      "logits_sha256": "59548c9f92de4534509c89ffd380ea798607ead39e951f59563f65f61bd76408",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 1.3322676295501878e-15,
+      "peak_ram_bytes": 628981760,
+      "process_cpu_seconds": 2.949005583,
+      "scores": {
+        "accuracy": 0.109375,
+        "brier_normalized_zero_one": 0.467199680971504,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 2.961555883564999,
+            "correct": 2,
+            "count": 16
+          },
+          {
+            "confidence_sum": 7.654211944985702,
+            "correct": 0,
+            "count": 34
+          },
+          {
+            "confidence_sum": 2.9774020763976634,
+            "correct": 4,
+            "count": 10
+          },
+          {
+            "confidence_sum": 1.350983528490624,
+            "correct": 1,
+            "count": 4
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.934399361943008,
+        "negative_log_likelihood": 2.50977965513078,
+        "top_label_ece_15_equal_width": 0.15608358251005722
+      },
+      "seed": 20261110,
+      "trainable_parameters": 1179,
+      "training_interface_wall_seconds": 2.9602087328676134
+    },
+    {
+      "arm": "hcsn",
+      "logits_sha256": "bb19a92947767287ee2e2cbba788c20f72e73d35bb45b5655bf6944b202b59c3",
+      "missing_metrics": {
+        "complete_energy_joules": {
+          "reason": "No complete-system energy meter was available.",
+          "value": null
+        },
+        "inference_throughput_events_per_second": {
+          "reason": "Interface wall time includes imports, optimization, table builds and checkpoint I/O.",
+          "value": null
+        },
+        "p99_latency_seconds": {
+          "reason": "No warmed repeated latency benchmark was run.",
+          "value": null
+        },
+        "peak_vram_bytes": {
+          "reason": "GPU execution was prohibited; no VRAM peak counter was sampled.",
+          "value": null
+        },
+        "persistent_state_bytes": {
+          "reason": "No common retained-state instrumentation; official S4D FFT adapter exposes no streaming state.",
+          "value": null
+        }
+      },
+      "nll_vs_native_cross_entropy_residual": 0.0,
+      "peak_ram_bytes": 747880448,
+      "process_cpu_seconds": 34.644544505,
+      "scores": {
+        "accuracy": 0.0,
+        "brier_normalized_zero_one": 0.46062498336974356,
+        "ece_bin_sufficient_statistics": [
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 7.560195458238215,
+            "correct": 0,
+            "count": 59
+          },
+          {
+            "confidence_sum": 0.6710658751699864,
+            "correct": 0,
+            "count": 5
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          },
+          {
+            "confidence_sum": 0.0,
+            "correct": 0,
+            "count": 0
+          }
+        ],
+        "multiclass_brier_sum": 0.9212499667394871,
+        "negative_log_likelihood": 2.444255038444939,
+        "top_label_ece_15_equal_width": 0.12861345833450313
+      },
+      "seed": 20261110,
+      "trainable_parameters": 9804,
+      "training_interface_wall_seconds": 34.76437253691256
+    }
+  ],
+  "schema": "hcsn-localization-v2-metric-pipeline-check-v1",
+  "scoring_script_sha256": "7879075399065d7a9670bd1716b10f96cc460f659bc4ed9b917a99cdadb72177",
+  "status": "passed_saved_logit_metric_check",
+  "suite_sha256": "2925658aa11c071bdcd0fef33f274c8735f9751ebb0585e7f3d7e3c2b0d7ff54",
+  "train_event_label_counts": {
+    "0": 122,
+    "4": 6
+  },
+  "training_or_model_forwards_in_this_check": 0
+}

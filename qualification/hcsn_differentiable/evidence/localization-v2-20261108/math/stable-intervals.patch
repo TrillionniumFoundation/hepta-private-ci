@@ -1,0 +1,168 @@
+--- a/qualification/hcsn_differentiable/MODEL.md
++++ b/qualification/hcsn_differentiable/MODEL.md
+@@ -102,9 +102,15 @@
+  \Phi\!\left(\frac{-x+\mu T-y}{\sigma\sqrt T}\right).
+ \]
+ 
+-Cell probabilities are differences of adjacent tails. These expressions use
+-log-CDF sums, a stable exponential difference, and rationalized roots. The
+-normal log-CDF backward uses the Mills ratio with `erfcx`; it deliberately
++Finite-cell probabilities use the difference of two reflected Gaussian
++**interval masses**. Each normal interval is evaluated with a log-CDF
++difference on the left or its symmetric survival difference on the right;
++the image subtraction uses `expm1`. This avoids subtracting two survivor
++probabilities near one, which can reverse a tiny positive bin's sign in
++FP64. The tail coefficient still uses `S_L` directly, never `1-sum(bins)`.
++There is no clipping, normalization, or positivity-tolerance exemption.
++These expressions use log-CDF sums and rationalized roots. The normal log-CDF
++backward uses the Mills ratio with `erfcx`; it deliberately
+ supports first-order reverse AD only. Numerical stability is tested afresh.
+ 
+ Discounted active occupation is evaluated by a positive quadrature:
+--- a/qualification/hcsn_differentiable/operator.py
++++ b/qualification/hcsn_differentiable/operator.py
+@@ -164,6 +164,35 @@
+     return torch.exp(first) * (-torch.expm1(second - first))
+ 
+ 
++def _normal_interval_logprob(lower, upper):
++    """Log Gaussian interval mass, using SF in the right half-line.
++
++    Select the arguments BEFORE evaluating logdiff: an unselected CDF
++    subtraction near one would otherwise create log(0) and NaN gradients.
++    """
++    right_tail = lower >= 0
++    large_arg = torch.where(right_tail, -lower, upper)
++    small_arg = torch.where(right_tail, -upper, lower)
++    large, small = _logcdf(large_arg), _logcdf(small_arg)
++    return large + torch.log(-torch.expm1(small - large))
++
++
++def _killed_interval_probability(x, horizon, mu, sigma, left, right):
++    """Integrate the reflected Gaussian density over 0<=left<right.
++
++    Subtract interval masses in log space rather than adjacent survivor
++    tails near one. The image density is pointwise no larger than the free
++    density on y>=0; unresolved sign errors still fail the caller's checks.
++    """
++    scale = sigma * torch.sqrt(horizon)
++    first = _normal_interval_logprob((left - x - mu * horizon) / scale,
++                                     (right - x - mu * horizon) / scale)
++    image = (-2.0 * mu * x / sigma.square()
++             + _normal_interval_logprob((left + x - mu * horizon) / scale,
++                                        (right + x - mu * horizon) / scale))
++    return torch.exp(first) * (-torch.expm1(image - first))
++
++
+ class DifferentiableDistributionOperator(torch.nn.Module):
+     """One physical propagation, 0<=dt<=d, with an unchanged parameter graph.
+ 
+@@ -223,6 +252,7 @@
+             "actual_phase_edge_fractions": [str(edge) for edge in self._phase_edges],
+             "dtype": "float64",
+             "normal_cdf_derivatives": "first_order_stable_mills_ratio",
++            "active_bin_probability": "direct_gaussian_interval_logdiff_reflection_v1",
+             "source_quadrature": "positive_gauss_legendre_fixed_order",
+             "occupation_quadrature": "positive_gauss_legendre_squared_time",
+             "tail_basis": "returning_shifted_exponential",
+@@ -280,9 +310,10 @@
+         x, horizon = torch.broadcast_tensors(x, _tensor(horizon, x))
+         nodes, weights, edges = self._constants(x)
+         mu, sigma, discount = params.mu, params.sigma, params.discount
+-        tails = _survivor_tail(x[..., None], horizon[..., None], mu, sigma, edges)
+-        bins = tails[..., :-1] - tails[..., 1:]
+-        active = torch.cat((bins, tails[..., -1:]), dim=-1)
++        bins = _killed_interval_probability(x[..., None], horizon[..., None], mu, sigma,
++                                             edges[:-1], edges[1:])
++        tail = _survivor_tail(x, horizon, mu, sigma, edges[-1])
++        active = torch.cat((bins, tail[..., None]), dim=-1)
+         hit = _first_hit(x, horizon, mu, sigma)
+         discounted_hit = _first_hit(x, horizon, mu, sigma, discount)
+         # Direct positive occupation quadrature avoids division of close
+--- a/qualification/hcsn_differentiable/tests/test_probability_intervals.py
++++ b/qualification/hcsn_differentiable/tests/test_probability_intervals.py
+@@ -0,0 +1,84 @@
++"""Regression for cancellation between survivor probabilities near one."""
++
++import math
++import unittest
++
++import torch
++
++from qualification.hcsn_differentiable.contract import GridSpec
++from qualification.hcsn_differentiable.network import TrainablePhysics
++from qualification.hcsn_differentiable.operator import (
++    DifferentiableDistributionOperator, _killed_interval_probability, _normal_interval_logprob,
++)
++
++
++def tensor(value, grad=False):
++    return torch.tensor(value, dtype=torch.float64, requires_grad=grad)
++
++
++def integral(x, mu, sigma, duration, left, right, steps=4000):
++    # Positive killed density: phi((y-x-mu*t)/s)/s * (1-exp(-2*x*y/s**2)).
++    variance = sigma * sigma * duration
++    def density(y):
++        return (math.exp(-(y - x - mu * duration) ** 2 / (2 * variance))
++                / math.sqrt(2 * math.pi * variance) * -math.expm1(-2 * x * y / variance))
++    h = (right - left) / steps
++    return h / 3 * (density(left) + density(right)
++                    + math.fsum((4 if i % 2 else 2) * density(left + i * h) for i in range(1, steps)))
++
++
++class ProbabilityIntervalTests(unittest.TestCase):
++    def test_rare_left_bin_matches_eighty_digit_reference(self):
++        p = TrainablePhysics().double().requires_grad_(False)()
++        x, dt, right = float.fromhex("0x1.a502e0d34aa95p-1"), 0.0810876, 0.009375
++        result = _killed_interval_probability(tensor(x), tensor(dt), p.mu, p.sigma, tensor(0), tensor(right))
++        reference = 1.118858573369923048040421964063422109637e-16
++        self.assertGreater(float(result), 0)
++        self.assertAlmostEqual(float(result) / reference, 1, delta=2e-12)
++        self.assertAlmostEqual(float(result) / integral(x, float(p.mu), float(p.sigma), dt, 0, right), 1, delta=2e-12)
++        self.numerical_evidence = {"probability": float(result), "reference_80_digits": reference,
++                                   "relative_error": abs(float(result) / reference - 1)}
++
++    def test_normal_intervals_cover_cdf_sf_and_extreme_tails(self):
++        for lower, upper in ((-12, -11.9), (-1.0, 0.2), (0.2, 1.0), (11.9, 12)):
++            lo, hi = tensor(lower, True), tensor(upper, True)
++            result = torch.exp(_normal_interval_logprob(lo, hi))
++            expected = (0.5 * (math.erfc(-upper / math.sqrt(2)) - math.erfc(-lower / math.sqrt(2)))
++                        if lower < 0 else 0.5 * (math.erfc(lower / math.sqrt(2)) - math.erfc(upper / math.sqrt(2))))
++            self.assertAlmostEqual(float(result) / expected, 1, delta=3e-13)
++            derivatives = torch.autograd.grad(result, (lo, hi))
++            self.assertAlmostEqual(float(derivatives[0]) / (-math.exp(-lower ** 2 / 2) / math.sqrt(2 * math.pi)), 1, delta=3e-12)
++            self.assertAlmostEqual(float(derivatives[1]) / (math.exp(-upper ** 2 / 2) / math.sqrt(2 * math.pi)), 1, delta=3e-12)
++
++    def test_killed_intervals_and_first_order_gradients(self):
++        for x, mu, sigma, dt, left, right in ((0.15, -0.12, 0.35, 0.05, 0, 0.2),
++                                             (0.8, 0.2, 0.4, 0.3, 0.1, 0.6),
++                                             (0.001, 0., 0.5, 1., 0, 0.1)):
++            values = [tensor(v, True) for v in (x, mu, sigma)]
++            result = _killed_interval_probability(values[0], tensor(dt), values[1], values[2], tensor(left), tensor(right))
++            reference = integral(x, mu, sigma, dt, left, right)
++            self.assertAlmostEqual(float(result) / reference, 1, delta=3e-10)
++            derivatives = torch.autograd.grad(result, values)
++            for index, derivative in enumerate(derivatives):
++                estimates = []
++                for sign in (-1, 1):
++                    arguments = [v.detach().clone() for v in values]
++                    arguments[index] += sign * 1e-5
++                    estimates.append(_killed_interval_probability(arguments[0], tensor(dt), arguments[1], arguments[2], tensor(left), tensor(right)))
++                fd = float((estimates[1] - estimates[0]) / 2e-5)
++                self.assertAlmostEqual(float(derivative), fd, delta=3e-7 * max(1e-4, abs(fd)))
++
++    def test_full_triggering_space_refinement_preserves_probability(self):
++        p = TrainablePhysics().double().requires_grad_(False)()
++        operator = DifferentiableDistributionOperator(GridSpec(active_cells=256, endpoint=2.4,
++                    phase_cells=16, refractory=0.2, quadrature_order=32))
++        table = operator(*p.tensors()[:4], 0.0810876, p.discount)
++        self.assertGreaterEqual(float(table.matrix.min()), 0)
++        self.assertLess(float((table.matrix.sum(-1) - 1).abs().max()), 5e-11)
++        self.numerical_evidence = {"mass_residual": float((table.matrix.sum(-1) - 1).abs().max()),
++                                   "minimum_probability": float(table.matrix.min()),
++                                   "active_bin_profile": operator.configuration()["active_bin_probability"]}
++
++
++if __name__ == "__main__":
++    unittest.main()

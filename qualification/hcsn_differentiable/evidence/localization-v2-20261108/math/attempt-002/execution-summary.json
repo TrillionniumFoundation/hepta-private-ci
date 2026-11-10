@@ -1,0 +1,46 @@
+{
+  "steps": [
+    {
+      "stage": "qualification",
+      "exit_code": 0,
+      "wall_seconds": 30.685890448046848,
+      "result": "/home/qian-qi/hepta-hcsn-math-closure-20261108-v1/attempts/localization-v2-budget-002/qualification.json",
+      "result_sha256": "9610040fd99f9501ba4d1cfc047517101d0142bfa3994073a68b797d59c5df34",
+      "status": "passed",
+      "tests_run": 75,
+      "source_unchanged": true,
+      "gates": null,
+      "errors": 0
+    },
+    {
+      "stage": "original-four-fixture-budget",
+      "exit_code": 0,
+      "wall_seconds": 20.412979716900736,
+      "result": "/home/qian-qi/hepta-hcsn-math-closure-20261108-v1/attempts/localization-v2-budget-002/original-four-fixture-budget.json",
+      "result_sha256": "e9c4a749bb8740ee5ae662fef677983910d014f27de2019ffb09d3c635bed48f",
+      "status": "passed",
+      "tests_run": null,
+      "source_unchanged": true,
+      "gates": null,
+      "errors": null
+    },
+    {
+      "stage": "v2-profile",
+      "exit_code": 0,
+      "wall_seconds": 82.75709031592123,
+      "result": "/home/qian-qi/hepta-hcsn-math-closure-20261108-v1/attempts/localization-v2-budget-002/v2/result.json",
+      "result_sha256": "1c31a015de53ad720bfa7ac3e952fdbe494a8251161f5741c49239b247a53ddc",
+      "status": "passed_locked_frozen_profile",
+      "tests_run": null,
+      "source_unchanged": true,
+      "gates": {
+        "all_global_gap_interfaces": true,
+        "locked_gap_perpetual": true,
+        "locked_unconditioned_sequences": true,
+        "refinement_anchors": true
+      },
+      "errors": []
+    }
+  ],
+  "completed": true
+}

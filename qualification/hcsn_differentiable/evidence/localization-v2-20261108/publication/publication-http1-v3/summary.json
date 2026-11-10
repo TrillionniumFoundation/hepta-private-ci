@@ -1,0 +1,17 @@
+{
+  "job_id": "1a1baf6759d-12894-1eb1",
+  "idempotency_key": "hcsn-math-closure-20261108-native-publication-http1-v3",
+  "status": "failed",
+  "exit_code": 1,
+  "timed_out": false,
+  "phase": "exact_object_read_only_reconciliation",
+  "error_classification": "tcp_dial_timeout",
+  "endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/084a445f325e542357229a34f911634abb04aa8b",
+  "recovery_post_reached": false,
+  "publication_wrapper_entered": false,
+  "stage_verified_count": 0,
+  "github_write_retry_started": false,
+  "source_plan_sha256": "52e1e4baf0b45012031ff3d9d6cb9ec44c7d2cdffd6a4fc2e60d6403abfee253",
+  "protocol_control": "GODEBUG=http2client=0",
+  "claim": "This attempt failed during its initial read-only GET before the recovery journal/write branch; script uploads completed but no GitHub mutation was reached by this attempt."
+}
