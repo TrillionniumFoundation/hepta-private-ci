@@ -218,6 +218,7 @@ def qualify(output, expected):
         result.update(
             validate_build(metadata, image, (output / "image.iid").read_text().strip())
         )
+        result["archive"]["status"] = "NOT_EXPORTED"
         save_result()
         (output / "probe.sh").write_text(PROBE)
         container = "rbe-openssh-" + result["operation_id"]
@@ -227,6 +228,7 @@ def qualify(output, expected):
                 [
                     "docker",
                     "run",
+                    "--interactive",
                     "--rm",
                     "--name",
                     container,

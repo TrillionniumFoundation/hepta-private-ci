@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.rbe.original-image-failure.v1",
+  "source_commit": "6a0a818932504b66da0d391e5cc0d16baf6b00cc",
+  "run_id": 42775482152,
+  "job_id": 129692880348,
+  "job_conclusion": "failure",
+  "artifact_id": 13745128453,
+  "artifact_zip_bytes": 28291,
+  "artifact_zip_sha256": "c08ca81e4957c885ce55f2d1fae1fcded9d544c92f13a93218c61d94d4693905",
+  "original_result": {
+    "schema": "hepta.rbe.openssh-image-qualification.v1",
+    "status": "FAILED",
+    "operation_id": "6834eba3-85ef-4625-9033-e7b8a4da560b",
+    "expected_source_commit": "6a0a818932504b66da0d391e5cc0d16baf6b00cc",
+    "registry_publication_performed": false,
+    "image_pin_changed": false,
+    "operator_acceptance_blocker_closed": false,
+    "scientific_admission": "HOLD",
+    "production_authority": "NONE",
+    "archive": {
+      "status": "NOT_BUILT"
+    },
+    "source_tree": "3bb242fad64e60e4cb2cc551ccad42999131be5a",
+    "dockerfile_git_blob": "86aec25ca45c527cf4d424e8aadecba3b45ce749",
+    "local_image_id": "sha256:208597da74b596049ffe4b3208adaaa118a9b4cc121f44bd62a01495ad86a77d",
+    "resolved_base_material": {
+      "uri": "pkg:docker/ubuntu@24.04?platform=linux%2Famd64",
+      "digest": {
+        "sha256": "fe81560990fae86dc4743202b2cb4d3df98d0bcf949173cecef15ce1127ef852"
+      }
+    },
+    "build_output_digest": "sha256:208597da74b596049ffe4b3208adaaa118a9b4cc121f44bd62a01495ad86a77d",
+    "registry_publication_digest": null,
+    "error": "RuntimeError('probe completion marker missing')"
+  },
+  "probe_observation": {
+    "exit_code": 0,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "stdin_forwarding_flag_present": false,
+    "sign_verify_or_tamper_execution_established": false
+  },
+  "artifact_manifest": {
+    "entries": 35,
+    "present_verified": 33,
+    "omitted_files": [
+      "source/.github/workflows/Dockerfile.bazel",
+      "source/.github/workflows/hepta-rbe-openssh-image.yml"
+    ]
+  },
+  "diagnosis": "Docker run omitted --interactive while its /bin/sh -s probe consumes stdin; no probe commands are established by the empty streams. The unchanged marker gate correctly refused qualification. Artifact upload omitted copied hidden .github sources.",
+  "planned_repair": "Forward stdin with --interactive and retain the intentionally copied hidden source files with include-hidden-files:true. Preserve the original marker, provenance, image binding and constrained container checks. Original failure bytes and literal archive.status=NOT_BUILT remain unchanged.",
+  "next_gate": "Execute a new exact-source native build and require actual keygen/dependency/sign/verify/tamper records plus archive/report source completeness. No registry publication, pin activation or operator-test qualification follows automatically.",
+  "operator_acceptance_blocker_closed": false
+}
