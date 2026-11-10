@@ -25,9 +25,9 @@ jobs:
         uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2
         with:
           ignore_words_file: .codespellignore
-          # Immutable diagnostics, a ZIP fragment and an encoded transport receipt are not prose.
+          # Immutable diagnostics, a ZIP fragment, an encoded receipt and its exact failed-lint log are not prose.
           # Their original bytes remain checked by the research evidence manifests.
-          skip: ./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/hcsn_differentiable/evidence/p0p5-20261110/review/baseline36-c1-native-v1/v2/bootstrap/6e1c204a063b39f1fff14c405c09d153fe3ca57f.json
+          skip: ./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/hcsn_differentiable/evidence/p0p5-20261110/review/baseline36-c1-native-v1/v2/bootstrap/6e1c204a063b39f1fff14c405c09d153fe3ca57f.json,./qualification/hcsn_differentiable/evidence/p0p5-ci-launch-closure-20261110/codespell-fix/original-red.stdout
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
