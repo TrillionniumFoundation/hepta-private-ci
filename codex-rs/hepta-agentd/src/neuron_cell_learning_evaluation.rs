@@ -71,6 +71,9 @@ pub fn prepare_cell_learning_evaluation_v1(
         Digest32::of_bytes(&learning_iteration_receipt_signing_bytes_v1(training)?);
     let comparison = qualification.comparison();
     let product = qualification.product();
+    // The Product signature authenticates a decision, but does not prove that
+    // the temporal result used the durable signed original execution owner.
+    receipt.require_original_signed_execution(&product.evaluator)?;
     if comparison != receipt.plan().record()
         || product.temporal_execution_digest != receipt.temporal().execution_digest
         || comparison.learning_evaluation_profile

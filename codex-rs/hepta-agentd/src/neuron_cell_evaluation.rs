@@ -27,6 +27,7 @@ use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
 use codex_hepta_intelligence_eval::TemporalEvaluationPlan;
 use codex_hepta_intelligence_eval::freeze_product_evaluation_plan_v1;
+use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::CellGenerationErrorV2;
@@ -213,6 +214,9 @@ fn freeze_plan<C: AnchorWitnessStore, F: AnchorWitnessStore>(
 pub struct CellEvaluationReceiptV1 {
     plan: CellEvaluationPlanV1,
     temporal: ProductTemporalEvaluationReceiptV1,
+    // None on the unsupervised direct evaluator. A signed Product decision
+    // cannot substitute for the original signed execution and its owner.
+    original_execution_evaluator: Option<AuthenticatedPrincipalV1>,
 }
 
 impl CellEvaluationReceiptV1 {
@@ -224,6 +228,16 @@ impl CellEvaluationReceiptV1 {
     }
     pub fn authority(&self) -> AuthorityPosture {
         AuthorityPosture::DENY_ALL
+    }
+
+    pub(crate) fn require_original_signed_execution(
+        &self,
+        evaluator: &AuthenticatedPrincipalV1,
+    ) -> Result<(), CellEvaluationErrorV1> {
+        if self.original_execution_evaluator.as_ref() != Some(evaluator) {
+            return Err(CellEvaluationErrorV1::Binding("original execution evaluator"));
+        }
+        Ok(())
     }
 }
 
@@ -285,6 +299,7 @@ impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
         Ok(CellEvaluationReceiptV1 {
             plan: plan.clone(),
             temporal,
+            original_execution_evaluator: None,
         })
     }
 
@@ -322,6 +337,7 @@ impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
         Ok(CellEvaluationReceiptV1 {
             plan: plan.clone(),
             temporal,
+            original_execution_evaluator: Some(request.evaluator.clone()),
         })
     }
 
