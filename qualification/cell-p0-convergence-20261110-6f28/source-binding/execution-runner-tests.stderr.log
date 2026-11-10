@@ -1,0 +1,20 @@
+test_actual_command_success_binds_source_tree_parents_and_argv (test_hepta_ci_exec.ExecutionRecordTests.test_actual_command_success_binds_source_tree_parents_and_argv) ... ok
+test_conflicting_merge_never_dispatches_an_arbitrary_resolution (test_hepta_ci_exec.ExecutionRecordTests.test_conflicting_merge_never_dispatches_an_arbitrary_resolution) ... ok
+test_divergent_clean_merge_records_recomputed_tree (test_hepta_ci_exec.ExecutionRecordTests.test_divergent_clean_merge_records_recomputed_tree) ... ok
+test_existing_receipt_cannot_be_overwritten_or_reused (test_hepta_ci_exec.ExecutionRecordTests.test_existing_receipt_cannot_be_overwritten_or_reused) ... ok
+test_killed_command_is_failed_not_passed (test_hepta_ci_exec.ExecutionRecordTests.test_killed_command_is_failed_not_passed) ... ok
+test_matching_parents_with_wrong_tree_reject_before_command (test_hepta_ci_exec.ExecutionRecordTests.test_matching_parents_with_wrong_tree_reject_before_command) ... ok
+test_merge_lane_rejects_symbolic_base_identity (test_hepta_ci_exec.ExecutionRecordTests.test_merge_lane_rejects_symbolic_base_identity) ... ok
+test_nonzero_command_is_retained_and_not_converted_to_pass (test_hepta_ci_exec.ExecutionRecordTests.test_nonzero_command_is_retained_and_not_converted_to_pass) ... ok
+test_shallow_checkout_records_real_commit_parents_not_traversal_grafts (test_hepta_ci_exec.ExecutionRecordTests.test_shallow_checkout_records_real_commit_parents_not_traversal_grafts) ... ok
+test_source_lane_cannot_relabel_another_commit (test_hepta_ci_exec.ExecutionRecordTests.test_source_lane_cannot_relabel_another_commit) ... ok
+test_successful_command_mutating_source_still_fails (test_hepta_ci_exec.ExecutionRecordTests.test_successful_command_mutating_source_still_fails) ... ok
+test_synthetic_merge_accepts_only_exact_ordered_parents (test_hepta_ci_exec.ExecutionRecordTests.test_synthetic_merge_accepts_only_exact_ordered_parents) ... ok
+test_wrong_checkout_and_dirty_inputs_never_dispatch (test_hepta_ci_exec.ExecutionRecordTests.test_wrong_checkout_and_dirty_inputs_never_dispatch) ... ok
+test_shell_preserves_test_targets_and_strict_lint_arguments (test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_preserves_test_targets_and_strict_lint_arguments) ... ok
+test_shell_test_failure_has_no_lint_pass_receipt (test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_test_failure_has_no_lint_pass_receipt) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 4.219s
+
+OK

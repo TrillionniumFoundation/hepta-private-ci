@@ -1,0 +1,16 @@
+{"argv": ["rustc", "--version"]}
+rustc 1.96.0 (ac68faa20 2026-05-25)
+{"exit_code": 0}
+{"argv": ["cargo", "--version"]}
+cargo 1.96.0 (30a34c682 2026-05-25)
+{"exit_code": 0}
+{"argv": ["just", "test", "-p", "codex-hepta-intelligence-eval", "--offline"]}
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+error: no such command: `nextest`
+
+help: a command with a similar name exists: `test`
+
+help: view all installed commands with `cargo --list`
+help: find a package to install `nextest` with `cargo search cargo-nextest`
+error: recipe `test` failed on line 89 with exit code 101
+{"exit_code": 101}
