@@ -258,10 +258,11 @@ async fn cancellation_and_rejection_do_not_erase_observed_effects() {
         let wire = contract
             .encode_invocation(b"create".to_vec())
             .expect("wire");
+        let calls = Arc::new(AtomicUsize::new(0));
         let mut driver = GoalCheckedActionSkillDriver::new(
             contract,
             ProbeProvider {
-                calls: Arc::new(AtomicUsize::new(0)),
+                calls: Arc::clone(&calls),
                 status,
             },
             ProbeObserver(case),
@@ -297,5 +298,34 @@ async fn cancellation_and_rejection_do_not_erase_observed_effects() {
             .await
             .expect("read-only feedback");
         assert_eq!(feedback.cancellation, ActionCancellationStateV1::Requested);
+        let plan = ActionCheckPlanV1 {
+            binding: feedback.binding.clone(),
+            generation: 1,
+            effective_model_digest: Sha256Digest::for_bytes(b"model"),
+            source_frontier_digest: Sha256Digest::for_bytes(b"source"),
+            checker_digest: Sha256Digest::for_bytes(b"checker"),
+            remediation_digest: Sha256Digest::for_bytes(b"response"),
+            cost_unit: "test-unit".to_string(),
+            timing: ActionCheckTimeV1::Unknown,
+            estimate: ActionCheckEstimateV1 {
+                error_ppm: 1_000_000,
+                detection_ppm: 1_000_000,
+                false_positive_ppm: 0,
+                remediation_success_ppm: 1_000_000,
+                error_loss: 100,
+                check_cost: 1,
+                true_positive_response_cost: 1,
+                false_positive_response_cost: 1,
+            },
+        };
+        assert_eq!(
+            driver.observe_check_plan(&pending, &wire, &plan, &ActionCheckClockV1::Unknown).await,
+            Ok(ActionCheckReadbackV1 {
+                observation: feedback,
+                assessment: plan.assess(&plan.binding, &ActionCheckClockV1::Unknown).expect("assessment"),
+            })
+        );
+        // Readback never dispatches, even when its estimate favors checking.
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
     }
 }

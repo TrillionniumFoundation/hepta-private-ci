@@ -142,6 +142,30 @@ impl<A: ProviderEffectAdapter, O: ActionSkillObserver> GoalCheckedActionSkillDri
             .await
     }
 
+    /// Pair a prediction policy with actual original-owner readback. This
+    /// reads the existing provider/observer only; it neither runs a checker nor
+    /// remediation and does not settle or authorize any durable attempt.
+    /// The recommendation applies to the supplied pre-readback clock cut; it
+    /// does not timestamp the returned observation or prove freshness after
+    /// the provider/observer awaits. Reassess with a new cut before later use.
+    pub async fn observe_check_plan(
+        &self,
+        pending: &AuthorizedEffectPending,
+        original_wire_payload: &[u8],
+        plan: &crate::ActionCheckPlanV1,
+        current: &crate::ActionCheckClockV1,
+    ) -> Result<crate::ActionCheckReadbackV1, ActionSkillError> {
+        let binding = self.bind_pending(pending, original_wire_payload)?;
+        let assessment = plan.assess(&binding, current)?;
+        let observation = self
+            .observe_pending(pending, original_wire_payload)
+            .await?;
+        Ok(crate::ActionCheckReadbackV1 {
+            observation,
+            assessment,
+        })
+    }
+
     fn bind_pending(
         &self,
         pending: &AuthorizedEffectPending,
